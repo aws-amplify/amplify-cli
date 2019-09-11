@@ -91,8 +91,8 @@ describe('amplify add api', () => {
     expect(oidc.openIDConnectConfig).toBeDefined();
     expect(oidc.openIDConnectConfig.issuer).toEqual('https://facebook.com/');
     expect(oidc.openIDConnectConfig.clientId).toEqual('clientId');
-    expect(oidc.openIDConnectConfig.iatTTL).toEqual(0);
-    expect(oidc.openIDConnectConfig.authTTL).toEqual(0);
+    expect(oidc.openIDConnectConfig.iatTTL).toEqual(1000);
+    expect(oidc.openIDConnectConfig.authTTL).toEqual(2000);
 
     expect(GraphQLAPIIdOutput).toBeDefined()
     expect(GraphQLAPIEndpointOutput).toBeDefined()

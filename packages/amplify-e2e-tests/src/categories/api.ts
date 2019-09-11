@@ -91,9 +91,9 @@ export function updateApiWithMultiAuth(
       // Cognito
       .wait(/.*Do you want to use the default authentication and security configuration.*/)
       .sendline('')
-      .wait('How do you want users to be able to sign in when using your Cognito User Pool?')
+      .wait('How do you want users to be able to sign in?')
       .sendline('')
-      .wait('What attributes are required for signing up?')
+      .wait('Do you want to configure advanced settings?')
       .sendline('')
       // OIDC
       .wait(/.*Enter a name for the OpenID Connect provider:.*/)
