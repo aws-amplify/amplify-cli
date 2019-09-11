@@ -1,0 +1,73 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "auth<%= props.cognitoResourceName %>UserPoolId": {
+            "Type": "String",
+            "Default": "auth<%= props.cognitoResourceName %>UserPoolId"
+        },
+        "env": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+    <% for(var i=0; i < props.groups.length; i++) { %>
+        "<%= props.groups[i].groupName%>Group": {
+          "Type" : "AWS::Cognito::UserPoolGroup",
+          "Properties" : {
+              "GroupName" : "<%= props.groups[i].groupName %>",
+              "Precedence" : <%= props.groups[i].precedence %>,
+              "RoleArn" : {
+                "Fn::GetAtt": [
+                    "<%= props.groups[i].groupName %>GroupRole",
+                    "Arn"
+                ]
+              },
+              "UserPoolId" : {
+                "Ref": "auth<%= props.cognitoResourceName %>UserPoolId"
+              } 
+            }
+        },
+        "<%= props.groups[i].groupName %>GroupRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName":{
+                    "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Ref": "auth<%= props.cognitoResourceName %>UserPoolId"
+                          },
+                          "-<%= props.groups[i].groupName %>GroupRole"
+                        ]
+                    ]
+                },
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Federated": "cognito-identity.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRoleWithWebIdentity"
+                        }
+                    ]
+                }
+            }
+        },
+    <% } %>
+    },
+    "Outputs": {
+      <% for(var i=0; i < props.groups.length; i++) { %>
+        "<%= props.groups[i].groupName %>GroupRole": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "<%= props.groups[i].groupName %>GroupRole",
+                    "Arn"
+                ]
+            }
+        },
+      <% } %>
+    }
+}

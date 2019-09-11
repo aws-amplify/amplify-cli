@@ -7067,6 +7067,16 @@ enhanced-resolve@^4.1.0:
     memory-fs "^0.4.0"
     tapable "^1.0.0"
 
+<<<<<<< HEAD
+=======
+enquirer@2.3.1, enquirer@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/enquirer/-/enquirer-2.3.1.tgz#f1bf52ea38470525f41412d723a62ba6868559c6"
+  integrity sha512-7slmHsJY+mvnIrzD0Z0FfTFLmVJuIzRNCW72X9s35BshOoC+MI4jLJ8aPyAC/BelAirXBZB+Mu1wSqP0wpW4Kg==
+  dependencies:
+    ansi-colors "^3.2.1"
+
+>>>>>>> feat: adding cognito userpool groups
 entities@^1.1.1, entities@~1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"

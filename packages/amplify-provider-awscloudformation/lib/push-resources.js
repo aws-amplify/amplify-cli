@@ -8,6 +8,7 @@ const providerName = require('./constants').ProviderName;
 const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
 const { prePushGraphQLCodegen, postPushGraphQLCodegen } = require('./graphql-codegen');
+const { prePushAuthTransform } = require('./auth-transform');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
@@ -34,6 +35,7 @@ async function run(context, resourceDefinition) {
       })
     )
     .then(() => uploadAppSyncFiles(context, resources, allResources))
+    .then(() => prePushAuthTransform(context, resources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
@@ -383,7 +385,7 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
     const resources = Object.keys(amplifyMeta[category]);
     resources.forEach(resource => {
       const resourceDetails = amplifyMeta[category][resource];
-      if (category === 'auth') {
+      if (category === 'auth' && resource !== 'userpoolGroups') {
         authResourceName = resource;
       }
       const resourceKey = category + resource;

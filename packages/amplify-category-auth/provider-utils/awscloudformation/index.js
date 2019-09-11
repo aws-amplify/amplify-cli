@@ -1,8 +1,11 @@
 const inquirer = require('inquirer');
 const open = require('open');
+const path = require('path');
+const fs = require('fs-extra');
 const _ = require('lodash');
 const { existsSync } = require('fs');
 const { copySync } = require('fs-extra');
+const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 
 let serviceMetadata;
 
@@ -133,13 +136,59 @@ async function addResource(context, category, service) {
 
       await lambdaTriggers(props, context, null);
 
+      await createUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
+
       await copyCfnTemplate(context, category, props, cfnFilename);
-      saveResourceParameters(context, provider, category, result.resourceName, props, ENV_SPECIFIC_PARAMS);
+
+      saveResourceParameters(
+        context,
+        provider,
+        category,
+        result.resourceName,
+        props,
+        ENV_SPECIFIC_PARAMS,
+      );
     })
     .then(async () => {
       await copyS3Assets(context, props);
       return props.resourceName;
     });
+}
+
+async function createUserPoolGroups(context, resourceName, userPoolGroupList) {
+  if (userPoolGroupList && userPoolGroupList.length > 0) {
+    const userPoolGroupPrecedenceList = [];
+
+    for (let i = 0; i < userPoolGroupList.length; i += 1) {
+      userPoolGroupPrecedenceList.push({
+        groupName: userPoolGroupList[i],
+        precedence: i + 1,
+      });
+    }
+
+    const userPoolGroupFile = path.join(
+      context.amplify.pathManager.getBackendDirPath(),
+      'auth',
+      'userPoolGroups',
+      'user-pool-group-precedence.json',
+    );
+
+    fs.outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
+
+    context.amplify.updateamplifyMetaAfterResourceAdd('auth', 'userPoolGroups', {
+      service: 'Cognito-UserPool-Groups',
+      providerPlugin: 'awscloudformation',
+      dependsOn: [
+        {
+          category: 'auth',
+          resourceName,
+          attributes: [
+            'UserPoolId',
+          ],
+        },
+      ],
+    });
+  }
 }
 
 async function updateResource(context, category, serviceResult) {
@@ -297,7 +346,7 @@ async function migrate(context) {
   const { roles } = require(defaultValuesSrc);
 
   const providerInstance = amplify.getPluginInstance(context, provider);
-  const resourceName = Object.keys(existingAuth)[0];
+  const resourceName = await getAuthResourceName(context);
   const props = providerInstance.loadResourceParameters(context, 'auth', resourceName);
   // Roles have changed to ref. Removing old hardcoded role ref
   Object.keys(roles).forEach(key => {

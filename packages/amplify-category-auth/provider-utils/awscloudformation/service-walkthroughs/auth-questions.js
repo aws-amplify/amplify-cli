@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 const { uniq, pullAll } = require('lodash');
+const { Sort } = require('enquirer');
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap, capabilities } = require('../assets/string-maps');
 
@@ -14,6 +15,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   const projectType = amplify.getProjectConfig().frontend;
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
+  let userPoolGroupList = [];
 
   handleUpdates(context, coreAnswers);
 
@@ -31,6 +33,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
 
     // ASK QUESTION
     const answer = await inquirer.prompt(q);
+
+    if (answer.userPoolGroups === true) {
+      userPoolGroupList = await updateUserPoolGroups(context);
+    }
 
     if (answer.triggers && answer.triggers !== '{}') {
       const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
@@ -181,7 +187,79 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
 
   return {
     ...coreAnswers,
+    userPoolGroupList,
   };
+}
+
+
+async function updateUserPoolGroups(context) {
+  let answer = await inquirer.prompt([
+    {
+      name: 'userPoolGroupName',
+      type: 'input',
+      message: 'Provide a name for your user pool group:',
+      validate: context.amplify.inputValidation({
+        validation: {
+          operator: 'regex',
+          value: '^[a-zA-Z0-9]+$',
+          onErrorMsg: 'Resource name should be alphanumeric',
+        },
+        required: true,
+      }),
+    },
+  ]);
+
+  let userPoolGroupList = [answer.userPoolGroupName];
+
+  let addAnother = await inquirer.prompt({
+    name: 'repeater',
+    type: 'confirm',
+    default: false,
+    message: 'Do you want to add another User Pool Group',
+  });
+
+  while (addAnother.repeater === true) {
+    answer = await inquirer.prompt([
+      {
+        name: 'userPoolGroupName',
+        type: 'input',
+        message: 'Provide a name for your user pool group:',
+        validate: context.amplify.inputValidation({
+          validation: {
+            operator: 'regex',
+            value: '^[a-zA-Z0-9]+$',
+            onErrorMsg: 'Resource name should be alphanumeric',
+          },
+          required: true,
+        }),
+      },
+    ]);
+
+    userPoolGroupList.push(answer.userPoolGroupName);
+
+    addAnother = await inquirer.prompt({
+      name: 'repeater',
+      type: 'confirm',
+      default: false,
+      message: 'Do you want to add another User Pool Group',
+    });
+  }
+
+  // Get distinct list
+  const distinctSet = new Set(userPoolGroupList);
+  userPoolGroupList = Array.from(distinctSet);
+
+  // Sort the Array to get precedence
+
+  const sortPrompt = new Sort({
+    name: 'sortUserPools',
+    message: 'Sort the user pool groups in order of preference',
+    choices: userPoolGroupList,
+  });
+
+  const sortedUserPoolGroupList = await sortPrompt.run();
+
+  return sortedUserPoolGroupList;
 }
 
 /*

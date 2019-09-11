@@ -278,7 +278,21 @@
 					}
 				]
 			},
-
+			{
+				"key": "userPoolGroups",
+				"question": "Do you want to add User Pool Groups?",
+				"learnMore": "This flow will help you add multiple user pool groups to your user-pool",
+				"required": true,
+				"type": "list",
+				"map": "booleanOptions",
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					}
+				]
+			},
 			{
 				"key": "additionalQuestions",
 				"question": "Do you want to configure advanced settings?",
