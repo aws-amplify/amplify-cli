@@ -166,14 +166,14 @@ export class RelationalDBSchemaTransformer {
             )
             fields.push(
                 getOperationFieldDefinition(`create${toUpper(type.name.value)}`,
-                    [getInputValueDefinition(getNonNullType(getNamedType(`Create${type.name.value}Input`)),
-                        `create${type.name.value}Input`)],
+                    [getInputValueDefinition(getNonNullType(getNamedType(`Create${toUpper(type.name.value)}Input`)),
+                        `create${toUpper(type.name.value)}Input`)],
                     getNamedType(`${type.name.value}`), null)
             )
             fields.push(
                 getOperationFieldDefinition(`update${toUpper(type.name.value)}`,
-                    [getInputValueDefinition(getNonNullType(getNamedType(`Update${type.name.value}Input`)),
-                        `update${type.name.value}Input`)],
+                    [getInputValueDefinition(getNonNullType(getNamedType(`Update${toUpper(type.name.value)}Input`)),
+                        `update${toUpper(type.name.value)}Input`)],
                     getNamedType(`${type.name.value}`), null)
             )
         }
