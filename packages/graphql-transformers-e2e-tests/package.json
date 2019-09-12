@@ -39,13 +39,15 @@
     "graphql-elasticsearch-transformer": "3.12.0",
     "graphql-function-transformer": "1.7.0",
     "graphql-key-transformer": "1.7.0",
-    "graphql-versioned-transformer": "3.10.0",
     "graphql-tag": "^2.10.1",
+    "graphql-versioned-transformer": "3.10.0",
+    "isomorphic-fetch": "^2.2.1",
     "jest": "^23.1.0",
     "node-fetch": "^2.6.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "ws": "^7.1.2"
   },
   "jest": {
     "transform": {
