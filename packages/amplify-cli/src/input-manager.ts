@@ -66,24 +66,24 @@ function normailizeInput(input: Input): Input {
   // -v --version => version command
   // -h --help => help command
   // -y --yes => yes option
-  if (!input.command && input.options) {
+  if (input.options) {
     if (input.options[Constant.VERSION] || input.options[Constant.VERSION_SHORT]) {
-      input.command = Constant.VERSION;
       input.options[Constant.VERSION] = true;
       delete input.options[Constant.VERSION_SHORT];
-    } else if (input.options[Constant.HELP] || input.options[Constant.HELP_SHORT]) {
-      input.command = Constant.HELP;
+    }
+
+    if (input.options[Constant.HELP] || input.options[Constant.HELP_SHORT]) {
       input.options[Constant.HELP] = true;
       delete input.options[Constant.HELP_SHORT];
+    }
+
+    if (input.options && input.options[Constant.YES_SHORT]) {
+      input.options[Constant.YES] = true;
+      delete input.options[Constant.YES_SHORT];
     }
   }
 
   input.command = input.command || Constant.PLUGIN_DEFAULT_COMMAND;
-
-  if (input.options && input.options[Constant.YES_SHORT]) {
-    input.options[Constant.YES] = true;
-    delete input.options[Constant.YES_SHORT];
-  }
 
   return input;
 }
@@ -106,16 +106,33 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
         result.helpCommandAvailable = true;
       }
 
-      if ((input.command! === Constant.PLUGIN_DEFAULT_COMMAND && commands!.includes(name))) {
-        input.command = name;
+      if ((commands && commands!.includes(input.command!))) {
         result.verified = true;
         break;
       }
 
-      if ((commands && commands!.includes(input.command!)) ||
-        (commandAliases && Object.keys(commandAliases).includes(input.command!))) {
+      if (commandAliases && Object.keys(commandAliases).includes(input.command!)) {
+        input.command = commandAliases[input.command!];
         result.verified = true;
         break;
+      }
+
+      if (input.command! === Constant.PLUGIN_DEFAULT_COMMAND) {
+        if (commands && commands!.includes(name)) {
+          input.command = name;
+          result.verified = true;
+          break;
+        }
+        if (commands && commands!.includes(Constant.HELP)) {
+          input.command = Constant.HELP;
+          result.verified = true;
+          break;
+        }
+        if (commands && commands!.includes(Constant.VERSION)) {
+          input.command = Constant.VERSION;
+          result.verified = true;
+          break;
+        }
       }
     }
     if (!result.verified) {

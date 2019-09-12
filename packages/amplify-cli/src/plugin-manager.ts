@@ -86,9 +86,7 @@ export function getPluginsWithNameAndCommand(
                             (aliases && aliases!.includes(nameOrAlias));
 
       if (nameOrAliasMatching) {
-        if (command === constants.PLUGIN_DEFAULT_COMMAND) {
-          result.push(pluginInfo);
-        } else if ((commands && commands.includes(command)) ||
+        if ((commands && commands.includes(command)) ||
                     (commandAliases && Object.keys(commandAliases).includes(command))) {
           result.push(pluginInfo);
         }
