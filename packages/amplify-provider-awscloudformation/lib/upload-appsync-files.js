@@ -60,11 +60,12 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     let hasApiKey = false;
 
     if (appSyncApi) {
-      if (appSyncApi.output.securityType && appSyncApi.output.securityType === 'API_KEY') {
-        hasApiKey = true;
-      } else {
-        const { authConfig } = appSyncApi.output;
+      // Check for legacy security configuration and multi-auth as well
+      const { authConfig, securityType } = appSyncApi.output;
 
+      if (securityType && securityType === 'API_KEY') {
+        hasApiKey = true;
+      } else if (authConfig) {
         if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
           hasApiKey = true;
         } else if (authConfig.additionalAuthenticationProviders &&
