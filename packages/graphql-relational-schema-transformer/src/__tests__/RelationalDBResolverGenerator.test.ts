@@ -19,9 +19,13 @@ const schema = parse(`
 let simpleStringFieldMap = new Map<string, string[]>()
 let simpleIntFieldMap = new Map<string, string[]>()
 let simplePrimaryKeyMap = new Map<string, string>()
+let simplePrimaryKeyTypeMap = new Map<string,string>()
+
 simplePrimaryKeyMap.set('Pet', 'Id')
 simplePrimaryKeyMap.set('Owner', 'Id')
-const context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap)
+simplePrimaryKeyTypeMap.set('Pet', 'String')
+simplePrimaryKeyTypeMap.set('Owner', 'Int')
+const context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap, simplePrimaryKeyTypeMap)
 const generator = new RelationalDBResolverGenerator(context)
 
 /**

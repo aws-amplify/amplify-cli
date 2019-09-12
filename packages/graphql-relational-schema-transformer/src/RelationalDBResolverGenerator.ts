@@ -24,12 +24,14 @@ export default class RelationalDBResolverGenerator {
     stringFieldMap: Map<string, string[]>
     intFieldMap: Map<string, string[]>
     resolverFilePath: string
+    typePrimaryKeyTypeMap: Map<string,string>
 
     constructor(context: TemplateContext) {
         this.document = context.schemaDoc
         this.typePrimaryKeyMap = context.typePrimaryKeyMap
         this.stringFieldMap = context.stringFieldMap
         this.intFieldMap = context.intFieldMap
+        this.typePrimaryKeyTypeMap = context.typePrimaryKeyTypeMap;
     }
 
     /**
@@ -69,8 +71,12 @@ export default class RelationalDBResolverGenerator {
     private makeCreateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
         const fieldName = graphqlName('create' + toUpper(type))
         let createSql = `INSERT INTO ${type} $colStr VALUES $valStr`
-        let selectSql =
-            `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.create${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
+        let selectSql;
+        if (this.typePrimaryKeyTypeMap.get(type).includes("String")) {
+            selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.create${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}\'`;
+        } else {
+            selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.create${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`;
+        }
 
         const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`
         const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`
@@ -136,7 +142,12 @@ export default class RelationalDBResolverGenerator {
      */
     private makeGetRelationalResolver(type: string, queryTypeName: string = 'Query') {
         const fieldName = graphqlName('get' + toUpper(type))
-        let sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
+        let sql;
+        if (this.typePrimaryKeyTypeMap.get(type).includes("String")) {
+            sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.${this.typePrimaryKeyMap.get(type)}\'`
+        } else {
+            sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
+        }
         const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`
         const resFileName = `${queryTypeName}.${fieldName}.res.vtl`
 
@@ -191,8 +202,13 @@ export default class RelationalDBResolverGenerator {
         const fieldName = graphqlName('update' + toUpper(type))
         const updateSql =
             `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
-        const selectSql =
-            `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
+        let selectSql
+        if (this.typePrimaryKeyTypeMap.get(type).includes("String")) {
+            selectSql =
+            `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}\'`
+        } else {
+            selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
+        }
         const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`
         const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`
 
@@ -254,7 +270,12 @@ export default class RelationalDBResolverGenerator {
      */
     private makeDeleteRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
         const fieldName = graphqlName('delete' + toUpper(type))
-        const selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
+        let selectSql;
+        if (this.typePrimaryKeyTypeMap.get(type).includes("String")) {
+            selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.${this.typePrimaryKeyMap.get(type)}\'`
+        } else {
+            selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
+        }
         const deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
         const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`
         const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`
