@@ -65,7 +65,8 @@ describe('command - generateStatementsAndTypes', () => {
     const forceDownload = false;
     await generateStatementsAndTypes(MOCK_CONTEXT, forceDownload);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false, undefined, false, undefined);
+    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false, undefined,
+      false, undefined);
     expect(generateTypes).toHaveBeenCalledWith(MOCK_CONTEXT, false, false, undefined);
   });
 

@@ -48,8 +48,7 @@ async function generateStatementsAndTypes(context, forceDownloadSchema,
   if (!withoutInit) {
     ({ projectPath } = context.amplify.getEnvInfo());
   }
-  
-  
+
 
   let downloadPromises;
   if (!withoutInit) {
