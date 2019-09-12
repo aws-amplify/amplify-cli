@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "private": true,
   "dependencies": {
     "add": "^2.0.6",

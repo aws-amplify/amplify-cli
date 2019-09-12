@@ -41,14 +41,17 @@ export async function check(currentCloudBackendDir: string, buildDirectory: stri
         const diffs = getDiffs(current, next);
         // Loop through the diffs and call each DiffRule.
         // We loop once so each rule does not need to loop.
-        for (const diff of diffs) {
-            for (const rule of diffRules) {
-                rule(diff, current, next);
+        if (diffs) {
+            for (const diff of diffs) {
+                for (const rule of diffRules) {
+                    rule(diff, current, next);
+                }
+            }
+            for (const projectRule of projectRules) {
+                projectRule(diffs, current, next);
             }
         }
-        for (const projectRule of projectRules) {
-            projectRule(diffs, current, next);
-        }
+
     }
 }
 

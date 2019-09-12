@@ -86,8 +86,13 @@ const deleteTable = async (tableName: string, region: string) => {
   return await service.deleteTable({ TableName: tableName }).promise();
 }
 
+const getAppSyncApi = async(appSyncApiId: string, region: string) => {
+  const service = new AWS.AppSync({ region });
+  return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
+}
+
 export {
   getDDBTable, checkIfBucketExists, getUserPool,
   getUserPoolClients, getBot, getLambdaFunction,
-  getFunction, getTable, deleteTable, getCollection,
+  getFunction, getTable, deleteTable, getAppSyncApi, getCollection,
 };

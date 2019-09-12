@@ -205,6 +205,48 @@ export function extensionWithFields(object: ObjectTypeExtensionNode, fields: Fie
     }
 }
 
+export function extensionWithDirectives(object: ObjectTypeExtensionNode, directives: DirectiveNode[]): ObjectTypeExtensionNode {
+    if (directives && directives.length > 0) {
+        const newDirectives = [];
+
+        for (const directive of directives) {
+            if (!object.directives.find((d) => d.name.value === directive.name.value)) {
+                newDirectives.push(directive);
+            }
+        }
+
+        if (newDirectives.length > 0) {
+            return {
+                ...object,
+                directives: [...object.directives, ...newDirectives]
+            }
+        }
+    }
+
+    return object;
+}
+
+export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode {
+    if (directives && directives.length > 0) {
+        const newDirectives = [];
+
+        for (const directive of directives) {
+            if (!field.directives.find((d) => d.name.value === directive.name.value)) {
+                newDirectives.push(directive);
+            }
+        }
+
+        if (newDirectives.length > 0) {
+            return {
+                ...field,
+                directives: [...field.directives, ...newDirectives]
+            }
+        }
+    }
+
+    return field;
+}
+
 export function makeInputObjectDefinition(name: string, inputs: InputValueDefinitionNode[]): InputObjectTypeDefinitionNode {
     return {
         kind: 'InputObjectTypeDefinition',

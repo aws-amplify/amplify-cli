@@ -107,7 +107,14 @@ beforeAll(async () => {
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelConnectionTransformer(),
-      new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' }),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
     ],
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
@@ -228,8 +235,8 @@ test('Test that only Admins can create Employee records.', async () => {
     {}
   );
   logDebug(createUser1);
-  expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
-  expect(createUser1.data.createEmployee.salary).toEqual(100);
+  expect(createUser1.data.createEmployee.email).toBeNull();
+  expect(createUser1.data.createEmployee.salary).toBeNull();
 
   const tryToCreateAsNonAdmin = await GRAPHQL_CLIENT_2.query(
     `mutation {
@@ -274,8 +281,8 @@ test('Test that only Admins may update salary & email.', async () => {
   logDebug(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
-  expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
-  expect(createUser1.data.createEmployee.salary).toEqual(100);
+  expect(createUser1.data.createEmployee.email).toBeNull();
+  expect(createUser1.data.createEmployee.salary).toBeNull();
 
   const tryToUpdateAsNonAdmin = await GRAPHQL_CLIENT_2.query(
     `mutation {
@@ -362,8 +369,8 @@ test('Test that owners may update their bio.', async () => {
   logDebug(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
-  expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
-  expect(createUser1.data.createEmployee.salary).toEqual(100);
+  expect(createUser1.data.createEmployee.email).toBeNull();
+  expect(createUser1.data.createEmployee.salary).toBeNull();
 
   const tryToUpdateAsNonAdmin = await GRAPHQL_CLIENT_2.query(
     `mutation {
@@ -397,8 +404,8 @@ test('Test that everyone may view employee bios.', async () => {
   logDebug(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
-  expect(createUser1.data.createEmployee.email).toEqual('user3@test.com');
-  expect(createUser1.data.createEmployee.salary).toEqual(100);
+  expect(createUser1.data.createEmployee.email).toBeNull();
+  expect(createUser1.data.createEmployee.salary).toBeNull();
   expect(createUser1.data.createEmployee.bio).toEqual('Likes long walks on the beach');
 
   const getAsNonAdmin = await GRAPHQL_CLIENT_2.query(
@@ -456,8 +463,8 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
   logDebug(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
-  expect(createUser1.data.createEmployee.email).toEqual('user3@test.com');
-  expect(createUser1.data.createEmployee.salary).toEqual(200);
+  expect(createUser1.data.createEmployee.email).toBeNull()
+  expect(createUser1.data.createEmployee.salary).toBeNull()
   expect(createUser1.data.createEmployee.notes).toEqual('note1');
 
   const tryToDeleteUserNotes = await GRAPHQL_CLIENT_2.query(

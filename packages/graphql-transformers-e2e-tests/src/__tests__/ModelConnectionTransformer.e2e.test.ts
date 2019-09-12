@@ -66,7 +66,7 @@ beforeAll(async () => {
         children: [Album] @connection(name: "AlbumAlbums", keyField: "parentId")
         photos: [Photo] @connection(name: "AlbumPhotos", keyField: "albumId")
     }
-    type Photo @model @auth(rules: [{allow: owner}]) {
+    type Photo @model {
         id: ID!
         album: Album @connection (name: "AlbumPhotos", keyField: "albumId")
     }
@@ -74,8 +74,14 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer(),
-            new ModelConnectionTransformer()
+            new ModelConnectionTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }}),
         ]
     })
     const out = transformer.transform(validSchema);
@@ -90,7 +96,7 @@ beforeAll(async () => {
     try {
         console.log('Creating Stack ' + STACK_NAME)
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+            customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
             BUILD_TIMESTAMP
         )
 

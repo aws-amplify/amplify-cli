@@ -11,16 +11,6 @@ export class ResourceFactory {
 
     public makeParams() {
         return {
-            [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
-                Description: 'The name of the AppSync API',
-                Default: 'AppSyncSimpleTransform'
-            }),
-            [ResourceConstants.PARAMETERS.APIKeyExpirationEpoch]: new NumberParameter({
-                Description: 'The epoch time in seconds when the API Key should expire.' +
-                    ' Setting this to 0 will default to 1 week from the deployment date.' +
-                    ' Setting this to -1 will not create an API Key.',
-                Default: 0
-            }),
             [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
                 Description: 'The number of read IOPS the table should support.',
                 Default: 5

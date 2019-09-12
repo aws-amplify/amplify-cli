@@ -1,25 +1,43 @@
-import React, { Component } from 'react';
 import GraphiQL from 'graphiql';
 import GraphiQLExplorer from 'graphiql-explorer';
-import { buildClientSchema, getIntrospectionQuery, parse } from 'graphql';
-import 'semantic-ui-css/semantic.min.css';
-import { AuthModal } from './AuthModal';
-
 import 'graphiql/graphiql.css';
+import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, parse } from 'graphql';
+import React, { Component } from 'react';
+import 'semantic-ui-css/semantic.min.css';
 import './App.css';
+import { AuthModal, AUTH_MODE } from './AuthModal';
+import { refreshToken } from './utils/jwt';
 
-import { GraphQLSchema } from 'graphql';
+const DEFAULT_COGNITO_JWT_TOKEN = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZDhjYTUyOC00OTMxLTQyNTQtOTI3My1lYTVlZTg1M2YyNzEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS91cy1lYXN0LTFfZmFrZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6dHJ1ZSwiY29nbml0bzp1c2VybmFtZSI6InVzZXIxIiwiYXVkIjoiMmhpZmEwOTZiM2EyNG12bTNwaHNrdWFxaTMiLCJldmVudF9pZCI6ImIxMmEzZTJmLTdhMzYtNDkzYy04NWIzLTIwZDgxOGJkNzhhMSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxOTc0MjY0NDEyLCJwaG9uZV9udW1iZXIiOiIrMTIwNjIwNjIwMTYiLCJleHAiOjE1NjQyNjgwMTIsImlhdCI6MTU2NDI2NDQxMywiZW1haWwiOiJ1c2VyQGRvbWFpbi5jb20ifQ.wHKY2KIhvWn4zpJ4TZ1vS3zRE9mGWsLY4NCV2Cof17Q`;
+const DEFAULT_OIDC_JWT_TOKEN = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczovL3NvbWUtb2lkYy1wcm92aWRlci9hdXRoIiwicGhvbmVfbnVtYmVyX3ZlcmlmaWVkIjp0cnVlLCJhdWQiOiIyaGlmYTA5NmIzYTI0bXZtM3Boc2t1YXFpMyIsImV2ZW50X2lkIjoiYjEyYTNlMmYtN2EzNi00OTNjLTg1YjMtMjBkODE4YmQ3OGExIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE5NzQyNjQ0MTIsInBob25lX251bWJlciI6IisxMjA2MjA2MjAxNiIsImV4cCI6MTU2NDI2ODAxMiwiaWF0IjoxNTY0MjY0NDEzLCJlbWFpbCI6InVzZXJAZG9tYWluLmNvbSJ9.uAegFXomOnA7Dkl-5FcS5icu5kL9Juqb81GnTrOZZqM`;
 
-const DEFAULT_JWT_TOKEN = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZDhjYTUyOC00OTMxLTQyNTQtOTI3My1lYTVlZTg1M2YyNzEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS91cy1lYXN0LTFfZmFrZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6dHJ1ZSwiY29nbml0bzp1c2VybmFtZSI6InVzZXIxIiwiYXVkIjoiMmhpZmEwOTZiM2EyNG12bTNwaHNrdWFxaTMiLCJldmVudF9pZCI6ImIxMmEzZTJmLTdhMzYtNDkzYy04NWIzLTIwZDgxOGJkNzhhMSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxOTc0MjY0NDEyLCJwaG9uZV9udW1iZXIiOiIrMTIwNjIwNjIwMTYiLCJleHAiOjE1NjQyNjgwMTIsImlhdCI6MTU2NDI2NDQxMywiZW1haWwiOiJ1c2VyQGRvbWFpbi5jb20ifQ.wHKY2KIhvWn4zpJ4TZ1vS3zRE9mGWsLY4NCV2Cof17Q`;
+const AUTH_TYPE_TO_NAME = {
+  AMAZON_COGNITO_USER_POOLS: 'User Pool',
+  API_KEY: 'API Key',
+  OPENID_CONNECT: 'Open ID',
+};
 
-const DEFAULT_API_INFO = {
+type AmplifyAppSyncSimulatorAuthInfo = {
+  authenticationType: string;
+};
+type AmplifyAppSyncSimulatorApiInfo = {
+  name: string;
+  defaultAuthenticationType: AmplifyAppSyncSimulatorAuthInfo;
+  apiKey: string;
+  additionalAuthenticationProviders: AmplifyAppSyncSimulatorAuthInfo[];
+};
+const DEFAULT_API_INFO: AmplifyAppSyncSimulatorApiInfo = {
   name: 'AppSyncTransformer',
-  authenticationType: 'API_KEY',
+  defaultAuthenticationType: {
+    authenticationType: 'API_KEY',
+  },
+  additionalAuthenticationProviders: [],
   apiKey: 'da2-fakeApiId123456',
 };
 
 const LOCAL_STORAGE_KEY_NAMES = {
-  jwtToken: 'AMPLIFY_GRPAHIQL_EXPLORER_JWT_TOKEN',
+  cognitoToken: 'AMPLIFY_GRPAHIQL_EXPLORER_COGNITO_JWT_TOKEN',
+  oidcToken: 'AMPLIFY_GRPAHIQL_EXPLORER_OIDC_JWT_TOKEN',
   apiKey: 'AMPLIFY_GRPAHIQL_EXPLORER_API_KEY',
 };
 
@@ -39,7 +57,7 @@ function fetcher(params: Object, additionalHeaders): Promise<any> {
     body: JSON.stringify(params),
   })
     .then(function(response) {
-      return response.text();
+      return response.json();
     })
     .then(function(responseBody) {
       try {
@@ -61,19 +79,29 @@ type State = {
   authModalVisible: boolean;
   jwtToken?: string;
   apiKey?: string;
-  apiInfo?: {};
+  apiInfo: AmplifyAppSyncSimulatorApiInfo;
+  currentAuthMode: AUTH_MODE;
+  credentials: {
+    apiKey?: string;
+    cognitoJWTToken?: string;
+    oidcJWTToken?: string;
+  };
 };
 
 class App extends Component<{}, State> {
   _graphiql: GraphiQL;
-  state = {
+  state: State = {
     schema: null,
     query: DEFAULT_QUERY,
     explorerIsOpen: true,
     authModalVisible: false,
     apiInfo: DEFAULT_API_INFO,
-    jwtToken: DEFAULT_JWT_TOKEN,
-    apiKey: DEFAULT_API_INFO.apiKey,
+    currentAuthMode: AUTH_MODE.API_KEY,
+    credentials: {
+      apiKey: '',
+      cognitoJWTToken: '',
+      oidcJWTToken: '',
+    },
   };
 
   constructor(props, ...rest) {
@@ -99,10 +127,13 @@ class App extends Component<{}, State> {
   }
 
   toggleAuthModal = () =>
-    this.setState({
-      authModalVisible: !this.state.authModalVisible,
-    });
+    this.setState((prevState) =>({
+      authModalVisible: !prevState.authModalVisible,
+    }));
 
+  switchAuthMode = val => {
+    this.setState({ currentAuthMode: val });
+  };
   _handleInspectOperation = (cm: any, mousePos: { line: Number; ch: Number }) => {
     const parsedQuery = parse(this.state.query || '');
 
@@ -164,10 +195,12 @@ class App extends Component<{}, State> {
 
   fetch(params) {
     const headers = {};
-    if (this.state.apiInfo.authenticationType === 'API_KEY') {
-      headers['x-api-key'] = this.state.apiKey;
-    } else {
-      headers['Authorization'] = this.state.jwtToken;
+    if (this.state.currentAuthMode === AUTH_MODE.API_KEY) {
+      headers['x-api-key'] = this.state.credentials.apiKey;
+    } else if (this.state.currentAuthMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS) {
+      headers['Authorization'] = this.state.credentials.cognitoJWTToken;
+    } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
+      headers['Authorization'] = this.state.credentials.oidcJWTToken;
     }
     return fetcher(params, headers);
   }
@@ -180,43 +213,87 @@ class App extends Component<{}, State> {
     if (credentials.authMode === 'API_KEY') {
       newState['apiKey'] = credentials.apiKey;
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.apiKey, credentials.apiKey);
-    } else {
-      newState['jwtToken'] = credentials.jwtToken;
-      window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.jwtToken, credentials.jwtToken);
+    } else if (credentials.authMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS) {
+      newState['cognitoJWTToken'] = credentials.cognitoToken;
+      window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken, credentials.cognitoToken);
+    } else if (credentials.authMode === AUTH_MODE.OPENID_CONNECT) {
+      newState['oidcJWTToken'] = credentials.OIDCToken;
+      window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.oidcToken, credentials.OIDCToken);
     }
-    this.setState(newState);
+    this.setState((prevState) => ({
+      credentials: {
+        ...prevState.credentials,
+        ...newState,
+      },
+      currentAuthMode: credentials.authMode,
+    }));
   }
 
   loadCredentials(apiInfo = this.state.apiInfo) {
     const credentials = {};
-    if (apiInfo.authenticationType === 'API_KEY') {
-      credentials['apiKey'] =
-        window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.apiKey) || DEFAULT_API_INFO.apiKey;
-    } else {
-      credentials['jwtToken'] =
-        window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.jwtToken) || DEFAULT_JWT_TOKEN;
+    const authProviders = [
+      apiInfo.defaultAuthenticationType,
+      ...apiInfo.additionalAuthenticationProviders,
+    ];
+    const possibleAuth = authProviders.map(auth => auth.authenticationType);
+    if (possibleAuth.includes('API_KEY')) {
+      credentials['apiKey'] = DEFAULT_API_INFO.apiKey;
     }
-    this.setState(credentials);
+
+    if (possibleAuth.includes('AMAZON_COGNITO_USER_POOLS')) {
+      try {
+        credentials['cognitoJWTToken'] = refreshToken(
+          window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken) || ''
+        );
+      } catch (e) {
+        console.warn('Invalid Cognito token found in local storage. Using the default OIDC token');
+        // token is not valid
+        credentials['cognitoJWTToken'] = refreshToken(DEFAULT_COGNITO_JWT_TOKEN);
+      }
+    }
+
+    if (possibleAuth.includes('OPENID_CONNECT')) {
+      const issuers = authProviders
+        .filter(auth => auth.authenticationType === AUTH_MODE.OPENID_CONNECT)
+        .map((auth: any) => auth.openIDConnectConfig.Issuer);
+      try {
+        credentials['oidcJWTToken'] = refreshToken(
+          window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.oidcToken) || '',
+          issuers[0]
+        );
+      } catch (e) {
+        console.warn('Invalid OIDC token found in local storage. Using the default OIDC token');
+        credentials['oidcJWTToken'] = refreshToken(DEFAULT_OIDC_JWT_TOKEN, issuers[0]);
+      }
+    }
+
+    this.setState(() => ({
+      currentAuthMode:
+        AUTH_MODE[apiInfo.defaultAuthenticationType.authenticationType] || AUTH_MODE.API_KEY,
+    }));
+    this.setState({ credentials });
     return credentials;
   }
 
   render() {
-    const { query, schema, authModalVisible } = this.state;
+    const { query, schema, authModalVisible, apiInfo } = this.state;
+    const authModes = [
+      AUTH_MODE[apiInfo.defaultAuthenticationType.authenticationType],
+      ...apiInfo.additionalAuthenticationProviders.map(auth => AUTH_MODE[auth.authenticationType]),
+    ].filter(auth => auth);
     const authModal = authModalVisible ? (
       <AuthModal
-        authMode={this.state.apiInfo.authenticationType}
-        apiKey={this.state.apiKey}
-        currentToken={this.state.jwtToken}
+        selectedAuthMode={this.state.currentAuthMode}
+        currentOIDCToken={this.state.credentials.oidcJWTToken}
+        currentCognitoToken={this.state.credentials.cognitoJWTToken}
+        apiKey={this.state.credentials.apiKey}
+        authModes={authModes}
         onClose={credentials => {
           this.storeCredentials(credentials);
           this.setState({ authModalVisible: false });
         }}
       />
     ) : null;
-    const authButton =
-      this.state.apiInfo.authenticationType !== 'API_KEY' ? (
-        <GraphiQL.Button onClick={this.toggleAuthModal} label='Auth' title='Auth Setting' />
-      ) : null;
     return (
       <>
         {authModal}
@@ -252,7 +329,21 @@ class App extends Component<{}, State> {
                 label='Explorer'
                 title='Toggle Explorer'
               />
-              {authButton}
+              <GraphiQL.Button
+                onClick={this.toggleAuthModal}
+                label='Update Auth'
+                title='Auth Setting'
+              />
+              <GraphiQL.Select label='Auth' onSelect={this.switchAuthMode}>
+                {authModes.map(mode => (
+                  <GraphiQL.SelectOption
+                    label={`Use:${AUTH_TYPE_TO_NAME[mode]}`}
+                    value={mode}
+                    key={mode}
+                    selected={mode === this.state.currentAuthMode}
+                  ></GraphiQL.SelectOption>
+                ))}
+              </GraphiQL.Select>
             </GraphiQL.Toolbar>
           </GraphiQL>
         </div>

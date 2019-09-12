@@ -147,7 +147,7 @@ export function cfnSelect(
       `FN::Select expects list item to be an array instead got ${JSON.stringify(valNode)}`
     );
   }
-  if (index >= valNode[1]) {
+  if (index >= valNode[1].length) {
     throw new Error(
       `FN::Select expects index tp be less than or equal to size of listOfObject ${JSON.stringify(
         valNode

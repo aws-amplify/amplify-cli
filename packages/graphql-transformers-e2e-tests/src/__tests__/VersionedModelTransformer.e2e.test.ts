@@ -1,12 +1,8 @@
-import {
-    ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
-    Kind
-} from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import VersionedModelTransformer from 'graphql-versioned-transformer'
-import ModelAuthTransformer from 'graphql-versioned-transformer'
+import ModelAuthTransformer from 'graphql-auth-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
@@ -19,16 +15,17 @@ import emptyBucket from '../emptyBucket';
 jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
-const customS3Client = new S3Client('us-west-2')
-const awsS3Client = new S3({ region: 'us-west-2' })
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
 const STACK_NAME = `VersionedTest-${BUILD_TIMESTAMP}`
 const BUCKET_NAME = `versioned-test-bucket-${BUILD_TIMESTAMP}`
-const TMP_ROOT = '/tmp/model_transform_versioned_tests/'
-const ROOT_KEY = 'deployments'
+const LOCAL_FS_BUILD_DIR = '/tmp/model_transform_versioned_tests/'
+const S3_ROOT_DIR_KEY = 'deployments'
 
 let GRAPHQL_CLIENT = undefined;
+
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
 function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
@@ -50,26 +47,33 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer(),
-            new VersionedModelTransformer()
+            new VersionedModelTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }}),
         ]
     })
-    const out = transformer.transform(validSchema);
     try {
-        await awsS3Client.createBucket({
-            Bucket: BUCKET_NAME,
-        }).promise()
+        await awsS3Client.createBucket({Bucket: BUCKET_NAME}).promise()
     } catch (e) {
-        console.error(`Failed to create S3 bucket: ${e}`)
+        console.error(`Failed to create bucket: ${e}`)
     }
+
     try {
+        const out = transformer.transform(validSchema);
         console.log('Creating Stack ' + STACK_NAME)
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
             BUILD_TIMESTAMP
         )
+        expect(finishedStack).toBeDefined()
+
         // Arbitrary wait to make sure everything is ready.
-        await cf.wait(10, () => Promise.resolve())
+        //await cf.wait(10, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
         expect(finishedStack).toBeDefined()
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)

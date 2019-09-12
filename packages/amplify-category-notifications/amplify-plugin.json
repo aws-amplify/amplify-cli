@@ -1,0 +1,22 @@
+{
+    "name": "notifications",
+    "aliases": ["notification"],
+    "type": "category",
+    "commands": [
+        "add",
+        "configure",
+        "console",
+        "remove",
+        "status",
+        "help"
+    ],
+    "commandAliases":{
+        "enable": "add",
+        "update": "configure",
+        "disable": "remove",
+        "delete": "remove",
+        "list": "status",
+        "ls": "status"
+    },
+    "eventHandlers": []
+}

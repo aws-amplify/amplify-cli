@@ -1,4 +1,3 @@
-import Amplify, { Auth } from 'aws-amplify';
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
@@ -179,7 +178,13 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' })
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     try {

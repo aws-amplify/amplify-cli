@@ -116,6 +116,7 @@ export class ModelDirectiveConfiguration {
             getName = makeName('get');
             listName = makeName('list', null, true);
         }
+
         const subscriptions = directiveArguments.subscriptions;
         if (subscriptions === null) {
             shouldHaveOnCreate = false;

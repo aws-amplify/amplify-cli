@@ -85,7 +85,7 @@ export class SubscriptionServer {
 
   async afterClientConnect(client) {
     const { id: clientId } = client;
-    console.info(`client connected to subscription server (${clientId})`);
+    log.info(`client connected to subscription server (${clientId})`);
     const timeout = this.iteratorTimeout.get(client.id);
     if (timeout) {
       clearTimeout(timeout);
@@ -126,16 +126,16 @@ export class SubscriptionServer {
     }
 
     const { asyncIterator, topicId, variables } = reg;
-    log.info('clientConnect', { clientId, subscriptionId:topicId, variables });
+    log.info('clientConnect', { clientId, subscriptionId: topicId, variables });
 
     while (true) {
       let { value: payload } = await asyncIterator.next();
       if (!this.shouldPublishSubscription(payload, variables)) {
-        console.info('skipping publish', { clientId, subscriptionId:topicId });
+        console.info('skipping publish', { clientId, subscriptionId: topicId });
         continue;
       }
 
-      console.info('publish', inspect({ payload, subscriptionId:topicId }, { depth: null }));
+      console.info('publish', inspect({ payload, subscriptionId: topicId }, { depth: null }));
       this.mqttServer.publish({
         topic: topicId,
         payload: JSON.stringify(payload),
@@ -196,7 +196,7 @@ export class SubscriptionServer {
         : null;
     const topicId = [clientId, subscriptionName, paramHash].join('/');
 
-    log.info('register', { clientId, subscriptionId:topicId });
+    log.info('register', { clientId, subscriptionId: topicId });
 
     const registration = {
       context,
@@ -274,8 +274,12 @@ export class SubscriptionServer {
       return true;
     }
 
-    const payloadData = Object.entries(payload.data)[0].pop();
+    const data = Object.entries(payload.data || {});
+    const payloadData = data.length ? data[0].pop() : null;
 
+    if (!payloadData) {
+      return false;
+    }
     // every variable key/value pair must match corresponding payload key/value pair
     const variableResult = variableEntries.every(
       ([variableKey, variableValue]) => payloadData[variableKey] === variableValue

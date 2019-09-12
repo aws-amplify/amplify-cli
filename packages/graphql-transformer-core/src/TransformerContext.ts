@@ -16,7 +16,6 @@ import {
     parse,
     EnumTypeDefinitionNode,
     TypeDefinitionNode,
-    DefinitionNode,
     OperationTypeDefinitionNode,
     InterfaceTypeDefinitionNode
 } from 'graphql'
@@ -27,7 +26,7 @@ import {
     UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode,
     InputObjectTypeExtensionNode, InputValueDefinitionNode
 } from 'graphql/language/ast';
-import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
+import { _Kind } from 'graphql/language/kinds';
 
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
@@ -179,6 +178,22 @@ export default class TransformerContext {
         if (!this.getSchema()) {
             this.putSchema(DefaultSchemaDefinition);
         }
+    }
+
+    /**
+     * Scans through the context nodeMap and returns all type definition nodes
+     * that are of the given kind.
+     * @param kind Kind value of type definition nodes expected.
+     */
+    public getTypeDefinitionsOfKind(kind: string) {
+        const typeDefs: TypeDefinitionNode[] = [];
+        for (const key of Object.keys(this.nodeMap)) {
+            const definition = this.nodeMap[key];
+            if (definition.kind === kind) {
+                typeDefs.push(definition as TypeDefinitionNode);
+            }
+        }
+        return typeDefs
     }
 
     public mergeResources(resources: { [key: string]: Resource }) {
@@ -402,8 +417,18 @@ export default class TransformerContext {
         }
         // AppSync does not yet understand type extensions so fold the types in.
         const oldNode = this.getObject(obj.name.value)
-        const newDirs = obj.directives || []
+        const newDirs = []
         const oldDirs = oldNode.directives || []
+
+        // Filter out duplicate directives, do not add them
+        if (obj.directives) {
+            for (const newDir of obj.directives) {
+                if (Boolean(oldDirs.find((d) => d.name.value === newDir.name.value)) === false) {
+                    newDirs.push(newDir);
+                }
+            }
+        }
+
         const mergedDirs = [...oldDirs, ...newDirs]
 
         // An extension cannot redeclare fields.

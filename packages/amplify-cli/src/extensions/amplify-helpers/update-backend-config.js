@@ -37,7 +37,8 @@ function updateBackendConfigAfterResourceRemove(category, resourceName) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfig = readJsonFile(backendConfigFilePath);
 
-  if (backendConfig[category][resourceName] !== undefined) {
+  if (backendConfig[category]
+    && backendConfig[category][resourceName] !== undefined) {
     delete backendConfig[category][resourceName];
   }
 

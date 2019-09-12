@@ -31,13 +31,16 @@ export class CloudFormationClient {
         this.client = new CloudFormation({ apiVersion: '2010-05-15', region: this.region });
     }
 
-    async createStack(template: any, name: string, defParams: any = {}) {
-        const params = [
-            {
+    async createStack(template: any, name: string, defParams: any = {}, addAppSyncApiName: boolean = true) {
+        const params = [];
+
+        if (addAppSyncApiName === true) {
+            params.push({
                 ParameterKey: ResourceConstants.PARAMETERS.AppSyncApiName,
                 ParameterValue: name
-            }
-        ]
+            });
+        }
+
         for (const key of Object.keys(defParams)) {
             params.push({
                 ParameterKey: key,

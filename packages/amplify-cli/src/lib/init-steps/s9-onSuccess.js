@@ -3,7 +3,6 @@ const sequential = require('promise-sequential');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 const gitManager = require('../../extensions/amplify-helpers/git-manager');
-const { print } = require('gluegun/print');
 const { initializeEnv } = require('../initialize-env');
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
@@ -51,9 +50,9 @@ async function run(context) {
 
   await initializeEnv(context, currentAmplifyMeta);
 
-  printWelcomeMessage();
+  printWelcomeMessage(context);
   // Exit the process with a success code
-  process.exit(0);
+  // process.exit(0);
 }
 
 function generateLocalRuntimeFiles(context) {
@@ -130,19 +129,19 @@ function generateGitIgnoreFile(context) {
   }
 }
 
-function printWelcomeMessage() {
-  print.info('');
-  print.success('Your project has been successfully initialized and connected to the cloud!');
-  print.info('');
-  print.success('Some next steps:');
-  print.info("\"amplify status\" will show you what you've added already and if it's locally configured or deployed");
-  print.info('"amplify <category> add" will allow you to add features like user login or a backend API');
-  print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
-  print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
-  print.info('');
-  print.success('Pro tip:');
-  print.info('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything');
-  print.info('');
+function printWelcomeMessage(context) {
+  context.print.info('');
+  context.print.success('Your project has been successfully initialized and connected to the cloud!');
+  context.print.info('');
+  context.print.success('Some next steps:');
+  context.print.info("\"amplify status\" will show you what you've added already and if it's locally configured or deployed");
+  context.print.info('"amplify <category> add" will allow you to add features like user login or a backend API');
+  context.print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
+  context.print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
+  context.print.info('');
+  context.print.success('Pro tip:');
+  context.print.info('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything');
+  context.print.info('');
 }
 
 module.exports = {

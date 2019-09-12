@@ -1,5 +1,4 @@
 const fs = require('fs-extra');
-const { filesystem } = require('gluegun/filesystem');
 const path = require('path');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
@@ -58,7 +57,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
     ));
 
     if (fs.pathExistsSync(targetDir)) {
-      filesystem.remove(targetDir);
+      fs.removeSync(targetDir);
     }
 
     fs.ensureDirSync(targetDir);
@@ -210,7 +209,7 @@ function updateamplifyMetaAfterResourceDelete(category, resourceName) {
 
   const jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
-  filesystem.remove(resourceDir);
+  fs.removeSync(resourceDir);
 }
 
 function checkForCyclicDependencies(category, resourceName, dependsOn) {
