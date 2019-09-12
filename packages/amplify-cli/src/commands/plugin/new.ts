@@ -1,7 +1,7 @@
 import Context from '../../domain/context';
 import constants from '../../domain/constants';
 import { createNewPlugin } from '../../plugin-manager';
-import { addUserPluginPackage, scan } from '../../plugin-manager';
+import { addUserPluginPackage } from '../../plugin-manager';
 import { AddPluginError } from '../../domain/add-plugin-result';
 import path from 'path';
 
@@ -19,7 +19,6 @@ async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string):
   const addPluginResult = addUserPluginPackage(context.pluginPlatform, pluginDirPath);
   if (addPluginResult.isAdded) {
     isPluggedIn = true;
-    await scan(context.pluginPlatform);
   } else {
     context.print.error('Failed to add the plugin package to the local Amplify CLI.');
     context.print.info(`Error code: ${addPluginResult.error}`);
