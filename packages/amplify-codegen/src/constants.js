@@ -62,4 +62,5 @@ module.exports = {
   INFO_MESSAGE_OPS_GEN_SUCCESS: 'Generated GraphQL operations successfully and saved at ',
   INFO_MESSAGE_ADD_ERROR:
     'amplify codegen add takes only apiId as parameter. \n$ amplify codegen add [--apiId <API_ID>]',
+  ERROR_NOT_AMPLIFY_PROJECT: 'You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify',
 };
