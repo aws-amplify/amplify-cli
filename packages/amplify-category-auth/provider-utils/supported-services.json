@@ -287,10 +287,10 @@
 				"map": "booleanOptions",
 				"andConditions": [
 					{
-						"key": "authSelections",
-						"value": "identityPoolOnly",
-						"operator": "!="
-					}
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					}		
 				]
 			},
 			{
@@ -769,7 +769,6 @@
 				"key": "EditURLS",
 				"question": "Which redirect signin URIs do you want to edit?",
 				"type": "multiselect",
-				"updateGroups": ["callbacks", "manual"],
 				"iterator": "CallbackURLs",
 				"iteratorValidation": {
 					"operator": "regex",
@@ -801,7 +800,6 @@
 			{
 				"key": "addCallbackOnUpdate",
 				"question": "Do you want to add redirect signin URIs?",
-				"updateGroups": ["callbacks", "manual"],
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
@@ -830,7 +828,6 @@
 				"key": "newCallbackURLs",
 				"question": "Enter your new redirect signin URI:",
 				"required": true,
-				"updateGroups": ["callbacks", "manual"],
 				"concatKey": "CallbackURLs",
 				"addAnotherLoop" : "redirect signin URI",
 				"andConditions": [
@@ -879,7 +876,6 @@
 				"key": "editLogoutURLs",
 				"question": "Which redirect signout URIs do you want to edit?",
 				"type": "multiselect",
-				"updateGroups": ["callbacks", "manual"],
 				"iterator": "LogoutURLs",
 				"iteratorValidation": {
 					"operator": "regex",
@@ -911,7 +907,6 @@
 			{
 				"key": "addLogoutOnUpdate",
 				"question": "Do you want to add redirect signout URIs?",
-				"updateGroups": ["callbacks", "manual"],
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
@@ -940,7 +935,6 @@
 				"key": "newLogoutURLs",
 				"question": "Enter your new redirect signout URI:",
 				"required": true,
-				"updateGroups": ["callbacks", "manual"],
 				"concatKey": "LogoutURLs",
 				"addAnotherLoop" : "redirect signout URI",
 				"andConditions": [
@@ -1029,7 +1023,6 @@
 			{
 				"key": "authProvidersUserPool",
 				"question": "Select the identity providers you want to configure for your user pool:",
-				"updateGroups": ["providers", "manual"],
 				"temp": true,
 				"type": "multiselect",
 				"map": "hostedUIProviders",
@@ -1056,7 +1049,6 @@
 				"key": "facebookAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
 				"question": "Enter your Facebook App ID for your OAuth flow: ",
-				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1069,7 +1061,6 @@
 			{
 				"key": "facebookAppSecretUserPool",
 				"question": "Enter your Facebook App Secret for your OAuth flow: ",
-				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1083,7 +1074,6 @@
 				"key": "googleAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
 				"question": "Enter your Google Web Client ID for your OAuth flow: ",
-				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1096,7 +1086,6 @@
 			{
 				"key": "googleAppSecretUserPool",
 				"question": "Enter your Google Web Client Secret for your OAuth flow: ",
-				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1110,7 +1099,6 @@
 				"key": "loginwithamazonAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
 				"question": "Enter your Amazon App ID for your OAuth flow: ",
-				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1123,7 +1111,6 @@
 			{
 				"key": "loginwithamazonAppSecretUserPool",
 				"question": "Enter your Amazon App Secret for your OAuth flow: ",
-				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{

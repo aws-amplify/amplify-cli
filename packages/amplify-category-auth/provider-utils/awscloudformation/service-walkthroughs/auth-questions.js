@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 const { uniq, pullAll } = require('lodash');
+const path = require('path');
 const { Sort } = require('enquirer');
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap, capabilities } = require('../assets/string-maps');
@@ -23,10 +24,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   let j = 0;
   while (j < inputs.length) {
     const questionObj = inputs[j];
-
-    if (context.updatingAuth && coreAnswers.updateFlow && filterInput(inputs[j], coreAnswers.updateFlow)) {
-      j += 1;
-    }
 
     // CREATE QUESTION OBJECT
     const q = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
@@ -117,7 +114,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
         if the user selects a default or fully manual config option during an update,
         we set the useDefault value so that the appropriate questions are displayed
       */
-      if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
+      if (answer.updateFlow === 'updateUserPoolGroups') {
+        userPoolGroupList = await updateUserPoolGroups(context);
+      } else if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
         answer.useDefault = answer.updateFlow;
         if (answer.useDefault === 'defaultSocial') {
           coreAnswers.hostedUI = true;
@@ -193,23 +192,56 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
 
 
 async function updateUserPoolGroups(context) {
-  let answer = await inquirer.prompt([
-    {
-      name: 'userPoolGroupName',
-      type: 'input',
-      message: 'Provide a name for your user pool group:',
-      validate: context.amplify.inputValidation({
-        validation: {
-          operator: 'regex',
-          value: '^[a-zA-Z0-9]+$',
-          onErrorMsg: 'Resource name should be alphanumeric',
-        },
-        required: true,
-      }),
-    },
-  ]);
+  let userPoolGroupList = [];
+  let existingGroups;
 
-  let userPoolGroupList = [answer.userPoolGroupName];
+  const userGroupParamsPath = path.join(
+    context.amplify.pathManager.getBackendDirPath(),
+    'auth',
+    'userPoolGroups',
+    'user-pool-group-precedence.json',
+  );
+
+  try {
+    existingGroups = context.amplify.readJsonFile(userGroupParamsPath);
+    userPoolGroupList = existingGroups.map(e => e.groupName);
+  } catch (e) {
+    existingGroups = null;
+  }
+
+  if (existingGroups) {
+    const deletionChoices = existingGroups.map((e) => {
+      return { name: e.groupName, value: e.groupName };
+    });
+
+    const deletionAnswer = await inquirer.prompt([
+      {
+        name: 'groups2BeDeleted',
+        type: 'checkbox',
+        message: 'Select any user pool groups you want to delete:',
+        choices: deletionChoices,
+      },
+    ]);
+
+    userPoolGroupList = userPoolGroupList.filter(i => !deletionAnswer.groups2BeDeleted.includes(i));
+  } else {
+    let answer = await inquirer.prompt([
+      {
+        name: 'userPoolGroupName',
+        type: 'input',
+        message: 'Provide a name for your user pool group:',
+        validate: context.amplify.inputValidation({
+          validation: {
+            operator: 'regex',
+            value: '^[a-zA-Z0-9]+$',
+            onErrorMsg: 'Resource name should be alphanumeric',
+          },
+          required: true,
+        }),
+      },
+    ]);
+    userPoolGroupList.push(answer.userPoolGroupName);
+  }
 
   let addAnother = await inquirer.prompt({
     name: 'repeater',
@@ -429,16 +461,6 @@ function parseOAuthCreds(providers, metadata, envCreds) {
     return {};
   }
   return providerKeys;
-}
-
-/*
-  Filter inputs for update flow
-*/
-function filterInput(input, updateFlow) {
-  if (input.updateGroups && !input.updateGroups.includes('manual') && !input.updateGroups.includes(updateFlow.type)) {
-    return true;
-  }
-  return false;
 }
 
 /*
