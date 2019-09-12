@@ -1,0 +1,16 @@
+{
+    "name": "interactions",
+    "aliases": ["interaction"],
+    "type": "category",
+    "commands": [
+        "add",
+        "push",
+        "remove",
+        "update",
+        "help"
+    ],
+    "commandAliases":{
+        "configure": "update"
+    },
+    "eventHandlers": []
+}

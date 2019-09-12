@@ -1,0 +1,14 @@
+{
+    "name": "newplugin",
+    "type": "category",
+    "commands": [
+        "version",
+        "help"
+    ],
+    "eventHandlers":[
+        "PreInit",
+        "PostInit",
+        "PrePush",
+        "PostPush"
+    ]
+}

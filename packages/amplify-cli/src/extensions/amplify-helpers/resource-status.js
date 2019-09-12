@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { print } = require('gluegun/print');
+const print = require('./print');
 const chalk = require('chalk');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
@@ -312,7 +312,6 @@ async function showResourceTable(category, resourceName, filteredResources) {
   print.info('');
   print.info(`${chalk.green('Current Environment')}: ${envName}`);
   print.info('');
-
 
   const {
     resourcesToBeCreated,

@@ -1,0 +1,17 @@
+{
+    "name": "awscloudformation",
+    "aliases": ["awscfn", "aws"],
+    "type": "provider",
+    "commands": [
+        "configure",
+        "console",
+        "reset-cache",
+        "setupNewUser"
+    ],
+    "commandAliases":{
+        "resetCache": "reset-cache",
+        "setup-new-user": "setupNewUser",
+        "newUser": "setupNewUser",
+        "new-user": "setupNewUser"
+    }
+}
