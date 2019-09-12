@@ -5,6 +5,6 @@ module.exports = {
   name: cliConstants.CliName,
   alias: ['h', '-h'],
   run: async (context) => {
-    showAllHelp(context);
+    await showAllHelp(context);
   },
 };

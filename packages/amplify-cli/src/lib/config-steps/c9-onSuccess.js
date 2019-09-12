@@ -1,5 +1,4 @@
 const fs = require('fs-extra');
-const { print } = require('gluegun/print');
 
 async function run(context) {
   const { projectPath } = context.exeInfo;
@@ -15,14 +14,14 @@ async function run(context) {
 
   await context.amplify.onCategoryOutputsChange(context);
 
-  printWelcomeMessage();
+  printWelcomeMessage(context);
 }
 
 
-function printWelcomeMessage() {
-  print.info('');
-  print.success('Successfully made configuration changes to your project.');
-  print.info('');
+function printWelcomeMessage(context) {
+  context.print.info('');
+  context.print.success('Successfully made configuration changes to your project.');
+  context.print.info('');
 }
 
 module.exports = {
