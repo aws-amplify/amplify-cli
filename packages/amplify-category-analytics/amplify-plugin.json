@@ -1,0 +1,12 @@
+{
+    "name": "analytics",
+    "type": "category",
+    "commands": [
+        "add",
+        "remove",
+        "push",
+        "console",
+        "help"
+    ],
+    "eventHandlers": []
+}

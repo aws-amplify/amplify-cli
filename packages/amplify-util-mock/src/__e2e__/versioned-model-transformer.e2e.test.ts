@@ -29,7 +29,14 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [
         new DynamoDBModelTransformer(),
-        new ModelAuthTransformer(),
+        new ModelAuthTransformer({
+          authConfig: {
+            defaultAuthentication: {
+              authenticationType: 'API_KEY',
+            },
+            additionalAuthenticationProviders: [],
+          },
+        }),
         new VersionedModelTransformer(),
       ],
     });
@@ -42,7 +49,7 @@ beforeAll(async () => {
     server = result.simulator;
 
     const endpoint = server.url + '/graphql';
-    console.log(`Using graphql url: ${endpoint}`);
+    logDebug(`Using graphql url: ${endpoint}`);
 
     const apiKey = result.config.appSync.apiKey;
     expect(apiKey).toBeDefined();
