@@ -102,6 +102,8 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
         const intFieldList = new Array()
         const stringFieldList = new Array()
 
+        const upperTable = toUpper(tableName)
+
         for (const columnDescription of columnDescriptions) {
             // If a field is the primary key, save it.
             if (columnDescription.Key == 'PRI') {
@@ -155,7 +157,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
         //     }
         // }
 
-        return new TableContext(getTypeDefinition(fields, tableName), getInputTypeDefinition(createFields, `Create${toUpper(tableName)}Input`),
-                getInputTypeDefinition(updateFields, `Update${toUpper(tableName)}Input`), primaryKey, primaryKeyType, stringFieldList, intFieldList)
+        return new TableContext(getTypeDefinition(fields, tableName), getInputTypeDefinition(createFields, `Create${upperTable}Input`),
+                getInputTypeDefinition(updateFields, `Update${upperTable}Input`), primaryKey, primaryKeyType, stringFieldList, intFieldList)
     }
 }
