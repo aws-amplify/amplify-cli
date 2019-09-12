@@ -6,11 +6,12 @@
         "codegen",
         "configure",
         "remove",
-        "statement",
+        "statements",
         "types"
     ],
     "commandAliases":{
-        "update": "configure"
+        "update": "configure",
+        "statement": "statements"
     },
     "eventHandlers": []
 }
