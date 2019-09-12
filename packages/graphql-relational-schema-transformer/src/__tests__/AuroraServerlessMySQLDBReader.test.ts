@@ -69,7 +69,7 @@ test('Test describe table', async () => {
 })
 
 function describeTableTestCommon(tableName: string, fieldLength: number, isForeignKey: boolean, tableContext: TableContext) {
-    const upperTable = toUpper(tableName)
+    const formattedTableName = toUpper(tableName)
     expect(tableContext.tableKeyField).toEqual('id')
     expect(tableContext.tableKeyFieldType).toEqual('Int')
     expect(tableContext.createTypeDefinition).toBeDefined()
@@ -80,9 +80,9 @@ function describeTableTestCommon(tableName: string, fieldLength: number, isForei
     expect(tableContext.createTypeDefinition.kind).toEqual(Kind.INPUT_OBJECT_TYPE_DEFINITION)
     expect(tableContext.tableTypeDefinition.name.value).toEqual(tableName)
     expect(tableContext.tableTypeDefinition.name.kind).toEqual(Kind.NAME)
-    expect(tableContext.updateTypeDefinition.name.value).toEqual(`Update${upperTable}Input`)
+    expect(tableContext.updateTypeDefinition.name.value).toEqual(`Update${formattedTableName}Input`)
     expect(tableContext.updateTypeDefinition.name.kind).toEqual(Kind.NAME)
-    expect(tableContext.createTypeDefinition.name.value).toEqual(`Create${upperTable}Input`)
+    expect(tableContext.createTypeDefinition.name.value).toEqual(`Create${formattedTableName}Input`)
     expect(tableContext.createTypeDefinition.name.kind).toEqual(Kind.NAME)
     /**
      * If it's a table with a foreign key constraint, the base type will have one additional element

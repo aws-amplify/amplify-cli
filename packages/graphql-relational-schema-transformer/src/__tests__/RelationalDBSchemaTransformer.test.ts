@@ -24,7 +24,7 @@ function getTableContext(tableName: string): TableContext {
     const primaryKey = 'id'
     const primaryKeyType = 'VarChar(128)'
     const stringFieldList = ['name', 'description']
-    const upperTable = toUpper(tableName)
+    const formattedTableName = toUpper(tableName)
 
     for (const fieldName of stringFieldList) {
 
@@ -44,8 +44,8 @@ function getTableContext(tableName: string): TableContext {
         updateFields.push(getInputValueDefinition(updateType, fieldName))
     }
     return new TableContext(getTypeDefinition(fields, tableName),
-                    getInputTypeDefinition(createFields, `Create${upperTable}Input`),
-                    getInputTypeDefinition(updateFields, `Update${upperTable}Input`), primaryKey,
+                    getInputTypeDefinition(createFields, `Create${formattedTableName}Input`),
+                    getInputTypeDefinition(updateFields, `Update${formattedTableName}Input`), primaryKey,
                     primaryKeyType, stringFieldList, [])
 }
 
