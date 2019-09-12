@@ -7,25 +7,49 @@ const generateStatements = require('./statements');
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../utils');
+const path = require('path');
+const fs = require('fs-extra');
 
 async function generateStatementsAndTypes(context, forceDownloadSchema,
-  maxDepth, withoutInit = false, decoupleFrontend = '') {
+  maxDepth) {
+  let withoutInit = false;
+  // Determine if working in an amplify project
+  try {
+    context.amplify.getProjectMeta();
+  } catch (e) {
+    withoutInit = true;
+  }
+
+  // Check if introspection schema exists
+  const schema = './schema.json';
+  const schemaPath = path.join(process.cwd(), schema);
+  if (!fs.existsSync(schemaPath) && withoutInit) {
+    throw Error(`Please download the introspection schema and place in ${schemaPath} before codegen when not in an amplify project`);
+  }
+
+  if (withoutInit) {
+    forceDownloadSchema = false;
+  }
   const config = loadConfig(context);
   const projects = config.getProjects();
-
-  let projectPath = process.cwd();
-  if (!withoutInit) {
-    ({ projectPath } = context.amplify.getEnvInfo());
+  if (!projects.length) {
+    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
   }
   let apis = [];
   if (!withoutInit) {
     apis = getAppSyncAPIDetails(context);
   }
-  if (!projects.length || !apis.length) {
-    if (!withoutInit) {
-      throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
-    }
+  if (!apis.length && !withoutInit) {
+    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
   }
+  const project = projects[0];
+  const { frontend } = project.amplifyExtension;
+  let projectPath = process.cwd();
+  if (!withoutInit) {
+    ({ projectPath } = context.amplify.getEnvInfo());
+  }
+  
+  
 
   let downloadPromises;
   if (!withoutInit) {
@@ -40,8 +64,8 @@ async function generateStatementsAndTypes(context, forceDownloadSchema,
     );
     await Promise.all(downloadPromises);
   }
-  await generateStatements(context, false, maxDepth, withoutInit, decoupleFrontend);
-  await generateTypes(context, false, withoutInit, decoupleFrontend);
+  await generateStatements(context, false, maxDepth, withoutInit, frontend);
+  await generateTypes(context, false, withoutInit, frontend);
 }
 
 module.exports = generateStatementsAndTypes;

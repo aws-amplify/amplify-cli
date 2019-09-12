@@ -147,8 +147,8 @@ async function add(context, apiId = null) {
       docsFilePath: answer.docsFilePath,
       region,
       apiId,
-      frontend: withoutInit ? frontend : 'NA',
-      framework: withoutInit ? framework : 'NA',
+      ...(withoutInit ? { frontend } : {}),
+      ...(withoutInit ? { framework } : {}),
     },
   };
 
