@@ -144,7 +144,14 @@ beforeAll(async () => {
             new DynamoDBModelTransformer(),
             new KeyTransformer(),
             new ModelConnectionTransformer(),
-            new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' }),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+                    },
+                    additionalAuthenticationProviders: [],
+                },
+            }),
         ]
     })
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
