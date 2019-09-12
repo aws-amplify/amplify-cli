@@ -118,7 +118,7 @@ export async function ensureMissingStackMappings(config: ProjectOptions) {
         const transformOutput = await _buildProject(config);
         const copyOfCloudBackend = await readFromPath(currentCloudBackendDirectory);
         const stackMapping = transformOutput.stackMapping;
-        if (copyOfCloudBackend && copyOfCloudBackend.build) {
+        if (copyOfCloudBackend && copyOfCloudBackend.build && copyOfCloudBackend.build.stacks) {
             // leave the custom stack alone. Don't split them into separate stacks
             const customStacks = Object.keys(copyOfCloudBackend.stacks || {});
             const stackNames = Object.keys(copyOfCloudBackend.build.stacks).filter(
