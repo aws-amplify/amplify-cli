@@ -162,22 +162,23 @@ export class RelationalDBSchemaTransformer {
         const fields = []
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
+            const formattedTypeValue = toUpper(type.name.value)
             fields.push(
-                getOperationFieldDefinition(`delete${toUpper(type.name.value)}`,
+                getOperationFieldDefinition(`delete${formattedTypeValue}`,
                     [getInputValueDefinition(getNonNullType(getNamedType(typeContext.tableKeyFieldType)),
                         typeContext.tableKeyField)],
                     getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`create${toUpper(type.name.value)}`,
-                    [getInputValueDefinition(getNonNullType(getNamedType(`Create${type.name.value}Input`)),
-                        `create${type.name.value}Input`)],
+                getOperationFieldDefinition(`create${formattedTypeValue}`,
+                    [getInputValueDefinition(getNonNullType(getNamedType(`Create${formattedTypeValue}Input`)),
+                        `create${formattedTypeValue}Input`)],
                     getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`update${toUpper(type.name.value)}`,
-                    [getInputValueDefinition(getNonNullType(getNamedType(`Update${type.name.value}Input`)),
-                        `update${type.name.value}Input`)],
+                getOperationFieldDefinition(`update${formattedTypeValue}`,
+                    [getInputValueDefinition(getNonNullType(getNamedType(`Update${formattedTypeValue}Input`)),
+                        `update${formattedTypeValue}Input`)],
                     getNamedType(`${type.name.value}`), null)
             )
         }
@@ -195,10 +196,11 @@ export class RelationalDBSchemaTransformer {
         const fields = []
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
+            const formattedTypeValue = toUpper(type.name.value)
             fields.push(
-                getOperationFieldDefinition(`onCreate${toUpper(type.name.value)}`, [],
+                getOperationFieldDefinition(`onCreate${formattedTypeValue}`, [],
                     getNamedType(`${type.name.value}`),
-                    [getDirectiveNode(`create${toUpper(type.name.value)}`)])
+                    [getDirectiveNode(`create${formattedTypeValue}`)])
             )
         }
         return getTypeDefinition(fields, 'Subscription')
@@ -215,14 +217,15 @@ export class RelationalDBSchemaTransformer {
         const fields = []
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
+            const formattedTypeValue = toUpper(type.name.value)
             fields.push(
-                getOperationFieldDefinition(`get${toUpper(type.name.value)}`,
+                getOperationFieldDefinition(`get${formattedTypeValue}`,
                 [getInputValueDefinition(getNonNullType(getNamedType(typeContext.tableKeyFieldType)),
                     typeContext.tableKeyField)],
                 getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`list${toUpper(type.name.value)}s`,
+                getOperationFieldDefinition(`list${formattedTypeValue}s`,
                 [],
                 getNamedType(`[${type.name.value}]`), null)
             )

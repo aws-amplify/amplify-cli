@@ -4,6 +4,7 @@ import { RelationalDBParsingException } from '../RelationalDBParsingException';
 import { IRelationalDBReader } from '../IRelationalDBReader';
 import { getNamedType, getNonNullType, getInputValueDefinition, getGraphQLTypeFromMySQLType,
     getTypeDefinition, getFieldDefinition, getInputTypeDefinition } from '../RelationalDBSchemaTransformerUtils'
+import { toUpper } from 'graphql-transformer-common'
 
 
 
@@ -23,6 +24,7 @@ function getTableContext(tableName: string): TableContext {
     const primaryKey = 'id'
     const primaryKeyType = 'VarChar(128)'
     const stringFieldList = ['name', 'description']
+    const formattedTableName = toUpper(tableName)
 
     for (const fieldName of stringFieldList) {
 
@@ -42,8 +44,8 @@ function getTableContext(tableName: string): TableContext {
         updateFields.push(getInputValueDefinition(updateType, fieldName))
     }
     return new TableContext(getTypeDefinition(fields, tableName),
-                    getInputTypeDefinition(createFields, `Create${tableName}Input`),
-                    getInputTypeDefinition(updateFields, `Update${tableName}Input`), primaryKey,
+                    getInputTypeDefinition(createFields, `Create${formattedTableName}Input`),
+                    getInputTypeDefinition(updateFields, `Update${formattedTableName}Input`), primaryKey,
                     primaryKeyType, stringFieldList, [])
 }
 
