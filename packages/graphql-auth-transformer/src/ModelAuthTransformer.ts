@@ -1837,7 +1837,7 @@ found '${rule.provider}' assigned.`);
         }
 
         for (const rule of rules) {
-            if (rule.allow === 'private' && rule.provider === 'iam') {
+            if ((rule.allow === 'private' || rule.allow === 'public') && rule.provider === 'iam') {
                 this.generateIAMPolicyforAuthRole = true;
                 return;
             }
@@ -1909,6 +1909,7 @@ found '${rule.provider}' assigned.`);
 
         if (iamPublicRules.length > 0) {
             this.unauthPolicyResources.add(`${typeName}/null`);
+            this.authPolicyResources.add(`${typeName}/null`);
         }
         if (iamPrivateRules.length > 0) {
             this.authPolicyResources.add(`${typeName}/null`);
@@ -1921,6 +1922,7 @@ found '${rule.provider}' assigned.`);
 
         if (iamPublicRules.length > 0) {
             this.unauthPolicyResources.add(`${typeName}/${fieldName}`);
+            this.authPolicyResources.add(`${typeName}/${fieldName}`);
         }
         if (iamPrivateRules.length > 0) {
             this.authPolicyResources.add(`${typeName}/${fieldName}`);
