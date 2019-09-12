@@ -1,4 +1,3 @@
-import ora from 'ora';
 import PluginPlatform from './domain/plugin-platform';
 import PluginInfo from './domain/plugin-info';
 import { readPluginsJsonFileSync, writePluginsJsonFileSync } from './plugin-helpers/access-plugins-file';
