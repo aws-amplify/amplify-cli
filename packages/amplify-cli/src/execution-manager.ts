@@ -21,7 +21,7 @@ export async function executeCommand(context: Context) {
 
   if (pluginCandidates.length === 1) {
     await executePluginModuleCommand(context, pluginCandidates[0]);
-  } else {
+  } else if (pluginCandidates.length > 1) {
     const answer = await inquirer.prompt({
       type: 'list',
       name: 'section',
