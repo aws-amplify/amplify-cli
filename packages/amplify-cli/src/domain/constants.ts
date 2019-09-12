@@ -5,6 +5,7 @@ export default {
   VERSION_SHORT: 'v',
   YES: 'yes',
   YES_SHORT: 'y',
+  PLUGIN_DEFAULT_COMMAND: 'PLUGIN_DEFAULT_COMMAND',
   MANIFEST_FILE_NAME: 'amplify-plugin.json',
   PACKAGEJSON_FILE_NAME: 'package.json',
   PLUGINS_FILE_NAME: 'plugins.json',

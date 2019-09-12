@@ -62,7 +62,7 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   return result;
 }
 
-export function normailizeInput(input: Input): Input {
+function normailizeInput(input: Input): Input {
   // -v --version => version command
   // -h --help => help command
   // -y --yes => yes option
@@ -78,7 +78,7 @@ export function normailizeInput(input: Input): Input {
     }
   }
 
-  input.command = input.command || Constant.HELP;
+  input.command = input.command || Constant.PLUGIN_DEFAULT_COMMAND;
 
   if (input.options && input.options[Constant.YES_SHORT]) {
     input.options[Constant.YES] = true;
@@ -99,12 +99,19 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
 
   if (pluginCandidates.length > 0) {
     for (let i = 0; i < pluginCandidates.length; i++) {
-      const { commands, commandAliases } = pluginCandidates[i].manifest;
+      const { name, commands, commandAliases } = pluginCandidates[i].manifest;
 
       if ((commands && commands!.includes(Constant.HELP)) ||
         (commandAliases && Object.keys(commandAliases).includes(Constant.HELP))) {
         result.helpCommandAvailable = true;
       }
+
+      if ((input.command! === Constant.PLUGIN_DEFAULT_COMMAND && commands!.includes(name))) {
+        input.command = name;
+        result.verified = true;
+        break;
+      }
+
       if ((commands && commands!.includes(input.command!)) ||
         (commandAliases && Object.keys(commandAliases).includes(input.command!))) {
         result.verified = true;
