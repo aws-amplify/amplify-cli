@@ -14,6 +14,7 @@ import { AddPluginError } from '../../domain/add-plugin-result';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 
 const NEWPLUGINPACKAGE = 'A new plugin package';
+const CANCAL = 'cancel';
 
 export async function run(context: Context) {
   if (context.input.subCommands && context.input.subCommands.length > 1) {
@@ -43,54 +44,63 @@ async function resolvePluginPathAndAdd(context: Context, inputPath: string) {
   const pluginDirPath = await resolvePluginPackagePath(context, inputPath);
   if (pluginDirPath) {
     addNewPluginPackage(context, pluginDirPath);
-  } else {
-    await promptAndAdd(context);
   }
 }
 
 async function resolvePluginPackagePath(context: Context, inputPath: string):
 Promise<string | undefined> {
-  if (fs.existsSync(inputPath)) {
-    return inputPath;
-  }{
-    let result;
+  let result;
 
-    const { pluginPlatform } = context;
-    let searchDirPaths = [
-      constants.ParentDirectory,
-      constants.LocalNodeModules,
-      constants.GlobalNodeModules,
-    ];
-    searchDirPaths = searchDirPaths.filter(dirPath =>
-      !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
-    searchDirPaths = searchDirPaths.concat(pluginPlatform.pluginDirectories);
+  const { pluginPlatform } = context;
+  let searchDirPaths = [
+    constants.ParentDirectory,
+    constants.LocalNodeModules,
+    constants.GlobalNodeModules,
+    process.cwd(),
+  ];
+  searchDirPaths = searchDirPaths.filter(dirPath =>
+    !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
+  searchDirPaths = searchDirPaths.concat(pluginPlatform.pluginDirectories);
 
-    const candicatePluginDirPaths = searchDirPaths.map(dirPath =>
-      path.normalize(path.join(normalizePluginDirectory(dirPath), inputPath)),
-    ).filter(pluginDirPath =>
-      fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory(),
-    );
+  const candicatePluginDirPaths = searchDirPaths.map(dirPath =>
+    path.normalize(path.join(normalizePluginDirectory(dirPath), inputPath)),
+  ).filter(pluginDirPath =>
+    fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory(),
+  );
 
-    if (candicatePluginDirPaths.length === 1) {
+  if (candicatePluginDirPaths.length === 0) {
+    context.print.error('Can not locate the plugin package.');
+    result = await promptForPluginPath();
+  } else if (candicatePluginDirPaths.length === 1) {
+    context.print.green('Plugin package found.');
+    context.print.blue(candicatePluginDirPaths[0]);
+    const { confirmed } = await inquirer.prompt({
+      type: 'confirm',
+      name: 'confirmed',
+      message: `Please confirm to add the plugin package to your Amplify CLI.`,
+      default: true,
+    });
+    if (confirmed) {
       result = candicatePluginDirPaths[0];
-    } else if (candicatePluginDirPaths.length > 1) {
-      context.print.info('Multiple plugins with the package name are found')
-      const options = candicatePluginDirPaths.concat(NEWPLUGINPACKAGE);
-      const answer = await inquirer.prompt({
-        type: 'list',
-        name: 'selection',
-        message: 'Select the plugin package to add',
-        choices: options,
-      });
-      if (answer.selection === NEWPLUGINPACKAGE) {
-        result = await promptForPluginPath();
-      } else {
-        result = answer.selection;
-      }
     }
+  } else if (candicatePluginDirPaths.length > 1) {
+    context.print.warning('Multiple plugins with the package name are found.');
 
-    return result;
+    const options = candicatePluginDirPaths.concat([
+      CANCAL,
+    ]);
+    const answer = await inquirer.prompt({
+      type: 'list',
+      name: 'selection',
+      message: 'Select the plugin package to add',
+      choices: options,
+    });
+    if (answer.selection !== CANCAL) {
+      result = answer.selection;
+    }
   }
+
+  return result;
 }
 
 
