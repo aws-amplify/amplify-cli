@@ -325,7 +325,7 @@ export class ModelAuthTransformer extends Transformer {
         // Retrieve the configuration options for the related @model directive
         const modelConfiguration = new ModelDirectiveConfiguration (modelDirective, def);
         // Get the directives we need to add to the GraphQL nodes
-        const directives = this.getDirectivesForRules(rules);
+        const directives = this.getDirectivesForRules(rules, false);
 
         // Add the directives to the Type node itself
         if (directives.length > 0) {
@@ -434,6 +434,16 @@ Static group authorization should perform as expected.`
         // Delete operations are only protected by @auth directives on objects.
         const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule))
         this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration)
+
+        // Check if subscriptions is enabled
+        if (modelConfiguration.getName('level') !== "off") {
+            this.protectOnCreateSubscription(ctx, createRules, parent,
+                modelConfiguration);
+            this.protectOnUpdateSubscription(ctx, updateRules, parent,
+                modelConfiguration);
+            this.protectOnDeleteSubscription(ctx, deleteRules, parent,
+                modelConfiguration);
+        }
     }
 
     private protectReadForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[],
@@ -442,14 +452,13 @@ Static group authorization should perform as expected.`
 
             // Get the directives we need to add to the GraphQL nodes
             const directives = this.getDirectivesForRules(rules, false);
-            let operationName: string = undefined;
 
             if (directives.length > 0) {
                 this.addDirectivesToField(ctx, parent.name.value, field.name.value, directives);
 
                 const addDirectivesForOperation = (operationType: ModelDirectiveOperationType) => {
                     if (modelConfiguration.shouldHave(operationType)) {
-                        operationName = modelConfiguration.getName(operationType);
+                        const operationName = modelConfiguration.getName(operationType);
                         // If the parent type has any rules for this operation AND
                         // the default provider we've to get directives including the default
                         // as well.
@@ -464,10 +473,15 @@ Static group authorization should perform as expected.`
                 addDirectivesForOperation('list');
             }
 
-            if (operationName) {
-                this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
-                this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
-            }
+            const addResourceReference = (operationType: ModelDirectiveOperationType) => {
+                if (modelConfiguration.shouldHave(operationType)) {
+                    const operationName = modelConfiguration.getName(operationType);
+                    this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
+                }
+            };
+
+            addResourceReference('get');
+            addResourceReference('list');
 
             const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value);
             // If the resolver exists (e.g. @connection use it else make a blank one against None)
@@ -1227,7 +1241,7 @@ All @auth directives used on field definitions are performed when the field is r
                 // If the parent type has any rules for this operation AND
                 // the default provider we've to get directives including the default
                 // as well.
-                const includeDefault = field && this.isTypeHasRulesForOperation(parent, isUpdate ? 'update' : 'delete');
+                const includeDefault = Boolean(!field && this.isTypeHasRulesForOperation(parent, isUpdate ? 'update' : 'delete'));
                 const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
                 if (operationDirectives.length > 0) {
@@ -1447,7 +1461,7 @@ All @auth directives used on field definitions are performed when the field is r
         const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
         if (names) {
             names.forEach( (name) => {
-                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'onCreate', modelConfiguration)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'create')
             })
         }
     }
@@ -1459,7 +1473,7 @@ All @auth directives used on field definitions are performed when the field is r
         const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
         if (names) {
             names.forEach( (name) => {
-                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'onUpdate', modelConfiguration)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'update')
             })
         }
     }
@@ -1471,7 +1485,7 @@ All @auth directives used on field definitions are performed when the field is r
         const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
         if (names) {
             names.forEach( (name) => {
-                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'onDelete', modelConfiguration)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'delete')
             })
         }
     }
@@ -1479,7 +1493,7 @@ All @auth directives used on field definitions are performed when the field is r
     // adds subscription resolvers (request / response) based on the operation provided
     private addSubscriptionResolvers(ctx: TransformerContext, rules: AuthRule[],
         parent: ObjectTypeDefinitionNode, level: ModelSubscriptionLevel, fieldName: string,
-        operation: ModelDirectiveOperationType, modelConfiguration: ModelDirectiveConfiguration) {
+        mutationOperation: ModelDirectiveOperationType) {
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
         const resolver = this.resources.generateSubscriptionResolver(fieldName);
         // If the data source does not exist it is created and added as a resource for public && on levels
@@ -1493,7 +1507,8 @@ All @auth directives used on field definitions are performed when the field is r
             ctx.setResource(resolverResourceId, resolver);
         } else {
             // Get the directives we need to add to the GraphQL nodes
-            const directives = this.getDirectivesForRules(rules, false);
+            const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, mutationOperation) : false;
+            const directives = this.getDirectivesForRules(rules, includeDefault);
 
             if (directives.length > 0) {
                 this.addDirectivesToField(ctx, ctx.getSubscriptionTypeName(), fieldName, directives);

@@ -5,6 +5,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import GraphQLTransform from 'graphql-transformer-core';
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
 import ModelAuthTransformer from 'graphql-auth-transformer';
+import KeyTransformer from 'graphql-key-transformer'
 import ModelConnectionTransformer from 'graphql-connection-transformer'
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -24,9 +25,17 @@ import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
+import AWS = require('aws-sdk');
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require("node-fetch");
+
+// To overcome of the way of how AmplifyJS picks up currentUserCredentials
+const anyAWS = (AWS as any);
+
+if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
+    delete anyAWS.config.credentials;
+}
 
 jest.setTimeout(2000000);
 
@@ -156,12 +165,30 @@ beforeAll(async () => {
         content: String!
         post: PostConnection @connection(name: "PostComments")
     }
+
+    type PostIAMWithKeys @model
+    @auth (
+        rules: [
+            // API Key can CRUD
+            { allow: public }
+            // IAM can read
+            { allow: public, provider iam, operations: [read] }
+        ]
+    )
+    @key (name: "byDate", fields: ["type", "date"], queryField: "getPostIAMWithKeysByDate")
+    {
+        id: ID!
+        title: String
+        type: String
+        date: AWSDateTime
+    }
     `;
 
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer(),
+            new KeyTransformer(),
             new ModelAuthTransformer({
                 authConfig: {
                     defaultAuthentication: {
@@ -1136,5 +1163,58 @@ describe(`Connection tests with @auth on type`, () => {
         expect(responseGetComment.data.getCommentConnection.id).toEqual(commentId);
         expect(responseGetComment.data.getCommentConnection.content).toEqual('Comment');
         expect(responseGetComment.data.getCommentConnection.post).toBeNull();
+    });
+});
+
+describe.only(`IAM Tests`, () => {
+    const createMutation = gql(`mutation {
+        createPostIAMWithKeys(input: { title: "Hello, World!", type: "Post", date: "2019-01-01T00:00:00Z" }) {
+            id
+            title
+            type
+            date
+        }
+    }`);
+
+    const getPostIAMWithKeysByDate = gql(`query {
+        getPostIAMWithKeysByDate(type: "Post") {
+            items {
+                id
+                title
+                type
+                date
+            }
+        }
+    }`);
+
+    let postId = '';
+
+    beforeAll(async () => {
+        try {
+            // - Create API Key - Success
+            const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+                mutation: createMutation,
+                fetchPolicy: 'no-cache',
+            });
+
+            postId = response.data.createPostIAMWithKeys.id;
+        } catch (e) {
+            console.error(e);
+            expect(true).toEqual(false);
+            }
+    });
+
+    it ('Execute @key query - Succeed', async () => {
+        const response = await IAM_UNAUTHCLIENT.query<any>({
+            query: getPostIAMWithKeysByDate,
+            fetchPolicy: 'no-cache',
+        });
+        expect(response.data.getPostIAMWithKeysByDate.items).toBeDefined();
+        expect(response.data.getPostIAMWithKeysByDate.items.length).toEqual(1);
+        const post = response.data.getPostIAMWithKeysByDate.items[0];
+        expect(post.id).toEqual(postId);
+        expect(post.title).toEqual('Hello, World!');
+        expect(post.type).toEqual('Post');
+        expect(post.date).toEqual('2019-01-01T00:00:00Z');
     });
 });
