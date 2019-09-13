@@ -26,9 +26,8 @@ export async function run(context: Context): Promise<PluginPlatform> {
     maxScanIntervalInSeconds,
     exit,
   ];
-  let answer = {
-    selection: exit,
-  };
+
+  let answer: any;
 
   do {
     answer = await inquirer.prompt({
