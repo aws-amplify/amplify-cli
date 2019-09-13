@@ -947,15 +947,15 @@ All @auth directives used on field definitions are performed when the field is r
      * @param rules The set of rules that apply to the operation.
      */
     private protectListQuery(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[],
-        parent: ObjectTypeDefinitionNode | null, modelConfiguration: ModelDirectiveConfiguration) {
+        parent: ObjectTypeDefinitionNode | null, modelConfiguration: ModelDirectiveConfiguration,
+        explicitOperationName: string = undefined) {
 
         const resolver = ctx.getResource(resolverResourceId)
         if (!rules || rules.length === 0 || !resolver) {
             return
         } else {
-
             if (modelConfiguration.shouldHave('list')) {
-                const operationName = modelConfiguration.getName('list');
+                const operationName = explicitOperationName ? explicitOperationName : modelConfiguration.getName('list');
                 // If the parent type has any rules for this operation AND
                 // the default provider we've to get directives including the default
                 // as well.
@@ -1436,7 +1436,7 @@ All @auth directives used on field definitions are performed when the field is r
         for (const keyWithQuery of secondaryKeyDirectivesWithQueries) {
             const args = getDirectiveArguments(keyWithQuery);
             const resolverResourceId = ResolverResourceIDs.ResolverResourceID(ctx.getQueryTypeName(), args.queryField);
-            this.protectListQuery(ctx, resolverResourceId, rules, null, modelConfiguration)
+            this.protectListQuery(ctx, resolverResourceId, rules, null, modelConfiguration, args.queryField)
         }
     }
 
