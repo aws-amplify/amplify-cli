@@ -9,7 +9,6 @@
     "clean": "rm -rf ./lib",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
-    "prettier": "prettier --config ../../.prettierrc --write src/**/*.ts",
     "test": "jest",
     "test-ci": "jest"
   },
@@ -56,7 +55,6 @@
     "amplify-graphiql-explorer": "0.17.0",
     "aws-sdk": "^2.510.0",
     "jest": "^24.8.0",
-    "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"

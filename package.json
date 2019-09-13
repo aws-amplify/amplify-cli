@@ -36,7 +36,8 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "npm run lint && npm run test-changed"
+      "pre-push": "npm run lint && npm run test-changed",
+      "pre-commit": "pretty-quick --staged"
     }
   },
   "author": "Amazon Web Services",
@@ -54,7 +55,12 @@
     "commitizen": "^3.1.2",
     "cz-conventional-changelog": "^3.0.2",
     "husky": "^3.0.3",
-    "codecov": "^3.6.1"
+    "codecov": "^3.6.1",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "pretty-quick": "^1.11.1"
   },
   "config": {
     "commitizen": {
