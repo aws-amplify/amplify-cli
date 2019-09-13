@@ -77,7 +77,7 @@ function normailizeInput(input: Input): Input {
       delete input.options[Constant.HELP_SHORT];
     }
 
-    if (input.options && input.options[Constant.YES_SHORT]) {
+    if (input.options[Constant.YES] || input.options[Constant.YES_SHORT]) {
       input.options[Constant.YES] = true;
       delete input.options[Constant.YES_SHORT];
     }
@@ -123,28 +123,44 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
           result.verified = true;
           break;
         }
+        if (input.options && input.options[Constant.VERSION] &&
+          commands && commands!.includes(Constant.VERSION)) {
+          input.command = Constant.VERSION;
+          result.verified = true;
+          break;
+        }
+        if (input.options && input.options[Constant.HELP] &&
+          commands && commands!.includes(Constant.HELP)) {
+          input.command = Constant.HELP;
+          result.verified = true;
+          break;
+        }
+
+        // as a fall back, use the help command
         if (commands && commands!.includes(Constant.HELP)) {
           input.command = Constant.HELP;
           result.verified = true;
           break;
         }
-        if (commands && commands!.includes(Constant.VERSION)) {
-          input.command = Constant.VERSION;
-          result.verified = true;
-          break;
-        }
       }
     }
+
     if (!result.verified) {
-      if (input.plugin === constants.CORE) {
-        result.message = `The Amplify CLI can NOT find command: ${input.command}.`
-      } else {
-        result.message = `The Amplify CLI can NOT find command: ${input.plugin} ${input.command}.`
+      let commandString = '';
+
+      if (input.command! !== Constant.PLUGIN_DEFAULT_COMMAND) {
+        commandString = input.command!;
       }
+
+      if (input.subCommands) {
+        commandString += ' ' + input.subCommands!.join(' ');
+      }
+
+      result.message = `The Amplify CLI can NOT find command: ${commandString}`;
     }
   } else {
     result.verified = false;
-    result.message = `The Amplify CLI can NOT find any plugin with name: ${input.plugin}`
+    result.message = `The Amplify CLI can NOT find any plugin with name: ${input.plugin}`;
   }
 
   return result;
