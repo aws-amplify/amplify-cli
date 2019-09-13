@@ -13,8 +13,8 @@ import inquirer, { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
 import { AddPluginError } from '../../domain/add-plugin-result';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 
-const NEWPLUGINPACKAGE = 'A new plugin package';
-const CANCAL = 'cancel';
+const NEW_PLUGIN_PACKAGE = 'A new plugin package';
+const CANCEL = 'cancel';
 
 export async function run(context: Context) {
   if (context.input.subCommands && context.input.subCommands.length > 1) {
@@ -49,6 +49,10 @@ async function resolvePluginPathAndAdd(context: Context, inputPath: string) {
 
 async function resolvePluginPackagePath(context: Context, inputPath: string):
 Promise<string | undefined> {
+  if (path.isAbsolute(inputPath)) {
+    return inputPath;
+  }
+
   let result;
 
   const { pluginPlatform } = context;
@@ -77,7 +81,7 @@ Promise<string | undefined> {
     const { confirmed } = await inquirer.prompt({
       type: 'confirm',
       name: 'confirmed',
-      message: `Please confirm to add the plugin package to your Amplify CLI.`,
+      message: `Confirm to add the plugin package to your Amplify CLI.`,
       default: true,
     });
     if (confirmed) {
@@ -87,7 +91,7 @@ Promise<string | undefined> {
     context.print.warning('Multiple plugins with the package name are found.');
 
     const options = candicatePluginDirPaths.concat([
-      CANCAL,
+      CANCEL,
     ]);
     const answer = await inquirer.prompt({
       type: 'list',
@@ -95,7 +99,7 @@ Promise<string | undefined> {
       message: 'Select the plugin package to add',
       choices: options,
     });
-    if (answer.selection !== CANCAL) {
+    if (answer.selection !== CANCEL) {
       result = answer.selection;
     }
   }
@@ -127,9 +131,9 @@ async function promptAndAdd(context: Context) {
 
   if (options.length > 0) {
     options.unshift({
-      name: NEWPLUGINPACKAGE,
-      value: NEWPLUGINPACKAGE,
-      short: NEWPLUGINPACKAGE,
+      name: NEW_PLUGIN_PACKAGE,
+      value: NEW_PLUGIN_PACKAGE,
+      short: NEW_PLUGIN_PACKAGE,
     });
     const answer = await inquirer.prompt({
       type: 'list',
@@ -137,7 +141,7 @@ async function promptAndAdd(context: Context) {
       message: 'Select the plugin package to add',
       choices: options,
     });
-    if (answer.selection === NEWPLUGINPACKAGE) {
+    if (answer.selection === NEW_PLUGIN_PACKAGE) {
       const pluginDirPath = await promptForPluginPath();
       await addNewPluginPackage(context, pluginDirPath);
     } else {
