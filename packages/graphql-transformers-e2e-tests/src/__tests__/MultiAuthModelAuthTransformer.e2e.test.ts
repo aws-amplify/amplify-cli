@@ -1166,7 +1166,7 @@ describe(`Connection tests with @auth on type`, () => {
     });
 });
 
-describe.only(`IAM Tests`, () => {
+describe(`IAM Tests`, () => {
     const createMutation = gql(`mutation {
         createPostIAMWithKeys(input: { title: "Hello, World!", type: "Post", date: "2019-01-01T00:00:00Z" }) {
             id
