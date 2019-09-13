@@ -10,7 +10,6 @@ export async function run(context: Context) {
   const plugins = 'active plugins';
   const excluded = 'excluded plugins';
   const generalInfo = 'general information';
-  const all = 'all';
 
   const options =
     [
