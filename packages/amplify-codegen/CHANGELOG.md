@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.1-plugin.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.5.7...amplify-codegen@1.13.1-plugin.0) (2019-09-14)
+
+
+### Bug Fixes
+
+* [#1056](https://github.com/aws-amplify/amplify-cli/issues/1056), dedup environment file reading ([#2088](https://github.com/aws-amplify/amplify-cli/issues/2088)) ([940deaa](https://github.com/aws-amplify/amplify-cli/commit/940deaa))
+* local mock fix ([#1982](https://github.com/aws-amplify/amplify-cli/issues/1982)) ([8ee9029](https://github.com/aws-amplify/amplify-cli/commit/8ee9029))
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d0))
+* **amplify-codegen:** await statement generation before generating types ([#2168](https://github.com/aws-amplify/amplify-cli/issues/2168)) ([4c3aad0](https://github.com/aws-amplify/amplify-cli/commit/4c3aad0)), closes [#2129](https://github.com/aws-amplify/amplify-cli/issues/2129)
+* **amplify-codegen:** support multi os team workflow in codegen ([#2212](https://github.com/aws-amplify/amplify-cli/issues/2212)) ([e4a0454](https://github.com/aws-amplify/amplify-cli/commit/e4a0454)), closes [#2147](https://github.com/aws-amplify/amplify-cli/issues/2147) [#2002](https://github.com/aws-amplify/amplify-cli/issues/2002)
+* **amplify-codegen:** support nonarray includes/excludes in codegen conf ([#2271](https://github.com/aws-amplify/amplify-cli/issues/2271)) ([30904a0](https://github.com/aws-amplify/amplify-cli/commit/30904a0)), closes [#2262](https://github.com/aws-amplify/amplify-cli/issues/2262)
+* **cli:** fix new plugin platform codegen related issue ([#2266](https://github.com/aws-amplify/amplify-cli/issues/2266)) ([c557182](https://github.com/aws-amplify/amplify-cli/commit/c557182))
+
+
+### Features
+
+* add support for multiauth in mock server ([#2109](https://github.com/aws-amplify/amplify-cli/issues/2109)) ([fe8ee8c](https://github.com/aws-amplify/amplify-cli/commit/fe8ee8c))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+* **cli:** new plugin platform ([#2254](https://github.com/aws-amplify/amplify-cli/issues/2254)) ([7ec29dd](https://github.com/aws-amplify/amplify-cli/commit/7ec29dd))
+
+
+
+
+
 # [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.5.7...amplify-codegen@1.11.0) (2019-08-30)
 
 

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.15.1-plugin.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.7.3...amplify-category-auth@1.15.1-plugin.0) (2019-09-14)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** consolidates parameters below limit ([#1948](https://github.com/aws-amplify/amplify-cli/issues/1948)) ([3cdbad8](https://github.com/aws-amplify/amplify-cli/commit/3cdbad8))
+* [#1056](https://github.com/aws-amplify/amplify-cli/issues/1056), dedup environment file reading ([#2088](https://github.com/aws-amplify/amplify-cli/issues/2088)) ([940deaa](https://github.com/aws-amplify/amplify-cli/commit/940deaa))
+* [#429](https://github.com/aws-amplify/amplify-cli/issues/429) - Editor hanging bug ([#2086](https://github.com/aws-amplify/amplify-cli/issues/2086)) ([6767445](https://github.com/aws-amplify/amplify-cli/commit/6767445))
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d0))
+* **amplify-category-auth:** fix add to group cognito trigger bug [#2216](https://github.com/aws-amplify/amplify-cli/issues/2216) ([9471576](https://github.com/aws-amplify/amplify-cli/commit/9471576)), closes [#2214](https://github.com/aws-amplify/amplify-cli/issues/2214)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* **cli:** new plugin platform ([#2254](https://github.com/aws-amplify/amplify-cli/issues/2254)) ([7ec29dd](https://github.com/aws-amplify/amplify-cli/commit/7ec29dd))
+
+
+
+
+
 # [1.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.7.3...amplify-category-auth@1.13.0) (2019-08-30)
 
 

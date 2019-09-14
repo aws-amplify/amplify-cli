@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1-plugin.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@1.0.13...graphql-relational-schema-transformer@1.8.1-plugin.0) (2019-09-14)
+
+
+### Bug Fixes
+
+* **graphql-relational-schema-transformer:** fix input type casing ([#2249](https://github.com/aws-amplify/amplify-cli/issues/2249)) ([3a00d56](https://github.com/aws-amplify/amplify-cli/commit/3a00d56)), closes [#2217](https://github.com/aws-amplify/amplify-cli/issues/2217)
+* **graphql-relational-schema-transformer:** fix template for string keys ([#2205](https://github.com/aws-amplify/amplify-cli/issues/2205)) ([294fbc6](https://github.com/aws-amplify/amplify-cli/commit/294fbc6)), closes [#2133](https://github.com/aws-amplify/amplify-cli/issues/2133)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e))
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@1.0.13...graphql-relational-schema-transformer@1.6.0) (2019-08-30)
 
 

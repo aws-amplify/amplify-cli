@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.7.1-plugin.0 (2019-09-14)
+
+
+### Bug Fixes
+
+* [#2032](https://github.com/aws-amplify/amplify-cli/issues/2032) - add AWSTimestamp and AWSIPAddress types to mock ([#2116](https://github.com/aws-amplify/amplify-cli/issues/2116)) ([77e2e69](https://github.com/aws-amplify/amplify-cli/commit/77e2e69))
+* local mock fix ([#1982](https://github.com/aws-amplify/amplify-cli/issues/1982)) ([8ee9029](https://github.com/aws-amplify/amplify-cli/commit/8ee9029))
+* **amplify-appsync-simulator:** allow null returns in response template ([#2267](https://github.com/aws-amplify/amplify-cli/issues/2267)) ([7056250](https://github.com/aws-amplify/amplify-cli/commit/7056250)), closes [#2248](https://github.com/aws-amplify/amplify-cli/issues/2248)
+
+
+### Features
+
+* add support for multiauth in mock server ([#2109](https://github.com/aws-amplify/amplify-cli/issues/2109)) ([fe8ee8c](https://github.com/aws-amplify/amplify-cli/commit/fe8ee8c))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+
+
+
+
+
 # 0.5.0 (2019-08-30)
 
 

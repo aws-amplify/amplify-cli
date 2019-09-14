@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.1-plugin.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@1.6.2...amplify-e2e-tests@1.14.1-plugin.0) (2019-09-14)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** consolidates parameters below limit ([#1948](https://github.com/aws-amplify/amplify-cli/issues/1948)) ([3cdbad8](https://github.com/aws-amplify/amplify-cli/commit/3cdbad8))
+* **amplify-e2e-tests:** fixing predictions e2e tests ([#1969](https://github.com/aws-amplify/amplify-cli/issues/1969)) ([6c6bbb2](https://github.com/aws-amplify/amplify-cli/commit/6c6bbb2))
+* e2e test failures after merge ([#2240](https://github.com/aws-amplify/amplify-cli/issues/2240)) ([d828c6c](https://github.com/aws-amplify/amplify-cli/commit/d828c6c))
+* regression for e2e tests because of nexpect reference ([#2120](https://github.com/aws-amplify/amplify-cli/issues/2120)) ([7659500](https://github.com/aws-amplify/amplify-cli/commit/7659500))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
 # [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@1.6.2...amplify-e2e-tests@1.12.0) (2019-08-30)
 
 

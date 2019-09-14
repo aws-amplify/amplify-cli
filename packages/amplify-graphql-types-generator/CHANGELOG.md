@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1-plugin.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.12...amplify-graphql-types-generator@1.8.1-plugin.0) (2019-09-14)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** generate valid swift code ([2f25bf7](https://github.com/aws-amplify/amplify-cli/commit/2f25bf7)), closes [#1903](https://github.com/aws-amplify/amplify-cli/issues/1903)
+* change text from queries to operations ([a8b0259](https://github.com/aws-amplify/amplify-cli/commit/a8b0259))
+
+
+### Features
+
+* add support for multiauth in mock server ([#2109](https://github.com/aws-amplify/amplify-cli/issues/2109)) ([fe8ee8c](https://github.com/aws-amplify/amplify-cli/commit/fe8ee8c))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e))
+* improve error message when graphql.parse fails ([06bf940](https://github.com/aws-amplify/amplify-cli/commit/06bf940))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+* **amplify-graphql-types-generator:** show error msg for missing query ([#2274](https://github.com/aws-amplify/amplify-cli/issues/2274)) ([d8a2722](https://github.com/aws-amplify/amplify-cli/commit/d8a2722)), closes [#2228](https://github.com/aws-amplify/amplify-cli/issues/2228) [#1434](https://github.com/aws-amplify/amplify-cli/issues/1434)
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.12...amplify-graphql-types-generator@1.6.0) (2019-08-30)
 
 

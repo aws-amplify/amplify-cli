@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.1-plugin.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.1.1...graphql-mapping-template@3.9.1-plugin.0) (2019-09-14)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** fixed es req template ([311f57d](https://github.com/aws-amplify/amplify-cli/commit/311f57d))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* updated version of [#2118](https://github.com/aws-amplify/amplify-cli/issues/2118) with addressed review comments ([#2230](https://github.com/aws-amplify/amplify-cli/issues/2230)) ([be3c499](https://github.com/aws-amplify/amplify-cli/commit/be3c499))
+
+
+
+
+
 # [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.1.1...graphql-mapping-template@3.7.0) (2019-08-30)
 
 
