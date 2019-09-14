@@ -452,15 +452,13 @@ workflows:
           requires:
             - build
             - test
-            - integration_test
-            - graphql_e2e_tests
-            - amplify_e2e_tests
           filters:
             branches:
               only:
                 - release
                 - master
                 - beta
+                - plugin
       - integration_test_js:
           filters:
             branches:
