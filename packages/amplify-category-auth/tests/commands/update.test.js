@@ -23,6 +23,9 @@ describe('auth update: ', () => {
       pathManager: {
         getBackendDirPath: jest.fn(),
       },
+      getResourceStatus: (() =>  {
+        return { allResources: [{ service: 'Cognito' }] };
+      }),
     },
     print: {
       warning: jest.fn(),
