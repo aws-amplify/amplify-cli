@@ -224,8 +224,16 @@ async function updateUserPoolGroups(context) {
     ]);
 
     userPoolGroupList = userPoolGroupList.filter(i => !deletionAnswer.groups2BeDeleted.includes(i));
-  } else {
-    let answer = await inquirer.prompt([
+  }
+
+  let answer;
+
+  /* Must be sure to ask this question in the event that it is the
+  first time in the user pool group flow, or it is an update but
+  the user has deleted all existing groups. If they want to delete
+  all groups they should just delete the resource */
+  if (userPoolGroupList.length < 1) {
+    answer = await inquirer.prompt([
       {
         name: 'userPoolGroupName',
         type: 'input',
@@ -282,15 +290,17 @@ async function updateUserPoolGroups(context) {
   userPoolGroupList = Array.from(distinctSet);
 
   // Sort the Array to get precedence
+  let sortedUserPoolGroupList = [];
 
-  const sortPrompt = new Sort({
-    name: 'sortUserPools',
-    message: 'Sort the user pool groups in order of preference',
-    choices: userPoolGroupList,
-  });
+  if (userPoolGroupList && userPoolGroupList.length > 0) {
+    const sortPrompt = new Sort({
+      name: 'sortUserPools',
+      message: 'Sort the user pool groups in order of preference',
+      choices: userPoolGroupList,
+    });
 
-  const sortedUserPoolGroupList = await sortPrompt.run();
-
+    sortedUserPoolGroupList = await sortPrompt.run();
+  }
   return sortedUserPoolGroupList;
 }
 

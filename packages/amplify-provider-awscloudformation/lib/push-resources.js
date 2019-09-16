@@ -385,7 +385,7 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
     const resources = Object.keys(amplifyMeta[category]);
     resources.forEach(resource => {
       const resourceDetails = amplifyMeta[category][resource];
-      if (category === 'auth' && resource !== 'userpoolGroups') {
+      if (category === 'auth' && resource !== 'userPoolGroups') {
         authResourceName = resource;
       }
       const resourceKey = category + resource;
