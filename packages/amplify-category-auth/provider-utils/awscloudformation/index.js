@@ -198,7 +198,7 @@ async function createUserPoolGroups(context, resourceName, userPoolGroupList) {
     }
     /* eslint-enable */
 
-    fs.outputFileSync(userPoolGroupParams, JSON.stringify(groupParams, null, 4))
+    fs.outputFileSync(userPoolGroupParams, JSON.stringify(groupParams, null, 4));
     fs.outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
 
     context.amplify.updateamplifyMetaAfterResourceAdd('auth', 'userPoolGroups', {
