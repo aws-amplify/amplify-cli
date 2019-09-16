@@ -28,7 +28,6 @@ export async function ensureDynamoDBTables(dynamodb, config) {
           const existingGSIs: GSIType[] | undefined =
             existingTable.Table.GlobalSecondaryIndexes || [];
 
-          //TODO handle existing updates to keys
           const existing = existingGSIs.filter(gsi =>
             newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
           );
@@ -84,7 +83,7 @@ export async function ensureDynamoDBTables(dynamodb, config) {
           await dynamodb.createTable(tableConfig).promise();
         }
       } catch (err) {
-        console.log('error', err);
+        // console.log('error', err);
         if (err.code !== 'ResourceInUseException') throw err;
       }
     })
