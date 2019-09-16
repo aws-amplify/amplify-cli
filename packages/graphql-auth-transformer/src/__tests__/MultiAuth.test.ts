@@ -70,6 +70,7 @@ const ownerAuthDirective = '@auth(rules: [{allow: owner}])';
 const ownerWithIAMAuthDirective = '@auth(rules: [{allow: owner, provider: iam }])';
 const ownerRestrictedPublicAuthDirective = '@auth(rules: [{allow: owner},{allow: public, operations: [read]}])';
 const groupsAuthDirective = '@auth(rules: [{allow: groups}])';
+const groupsWithApiKeyAuthDirective = '@auth(rules: [{allow: groups}, {allow: public, operations: [read]}])';
 const groupsWithProviderAuthDirective = '@auth(rules: [{allow: groups, provider: iam }])';
 const ownerOpenIdAuthDirective = '@auth(rules: [{allow: owner, provider: oidc }])';
 const privateAuthDirective = '@auth(rules: [{allow: private}])';
@@ -96,6 +97,17 @@ const getSchemaWithFieldAuth = (authDirective: string) => {
         createdAt: String
         updatedAt: String
         protected: String ${authDirective}
+    }`;
+};
+
+const getSchemaWithTypeAndFieldAuth = (typeAuthDirective: string, fieldAuthDirective: string) => {
+    return `
+    type Post @model ${typeAuthDirective} {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+        protected: String ${fieldAuthDirective}
     }`;
 };
 
@@ -185,7 +197,7 @@ authentication provider configured.`
         validationTest(
             groupsWithProviderAuthDirective,
             userPoolsDefaultConfig,
-            `@auth directive with 'groups' strategy does not support providers, but found \
+            `@auth directive with 'groups' strategy only supports 'userPools' provider, but found \
 'iam' assigned`
         );
     });
@@ -331,6 +343,56 @@ describe('Type directive transformation tests', () => {
 
     test(`Field level @auth is propagated to type and the type related operations`, () => {
         const schema = getSchemaWithFieldAuth(ownerRestrictedPublicAuthDirective);
+        const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+
+        const out = transformer.transform(schema);
+        const schemaDoc = parse(out.schema);
+        const queryType = getObjectType(schemaDoc, 'Query');
+        const mutationType = getObjectType(schemaDoc, 'Mutation');
+
+        expect (expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
+        expect (expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+
+        expect (expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+
+        const postType = getObjectType(schemaDoc, 'Post');
+        expect (expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']));
+
+        // Check that resolvers containing the authMode check block
+        const authModeCheckSnippet = '## [Start] Determine request authentication mode';
+
+        expect(out.resolvers['Post.protected.req.vtl']).toContain(authModeCheckSnippet);
+    });
+
+    test(`'groups' @auth at field level is propagated to type and the type related operations`, () => {
+        const schema = getSchemaWithFieldAuth(groupsAuthDirective);
+        const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+
+        const out = transformer.transform(schema);
+        const schemaDoc = parse(out.schema);
+        const queryType = getObjectType(schemaDoc, 'Query');
+        const mutationType = getObjectType(schemaDoc, 'Mutation');
+
+        expect (expectOne(getField(queryType, 'getPost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(queryType, 'listPosts'), 'aws_cognito_user_pools'));
+
+        expect (expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+
+        const postType = getObjectType(schemaDoc, 'Post');
+        expect (expectOne(getField(postType, 'protected'), 'aws_cognito_user_pools'));
+
+        // Check that resolvers containing the authMode check block
+        const authModeCheckSnippet = '## [Start] Determine request authentication mode';
+
+        expect(out.resolvers['Post.protected.req.vtl']).toContain(authModeCheckSnippet);
+    });
+
+    test(`'groups' @auth at field level is propagated to type and the type related operations, also default provider for read`, () => {
+        const schema = getSchemaWithTypeAndFieldAuth(groupsAuthDirective, groupsWithApiKeyAuthDirective);
         const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
         const out = transformer.transform(schema);

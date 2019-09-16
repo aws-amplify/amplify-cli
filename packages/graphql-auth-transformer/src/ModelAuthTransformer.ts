@@ -398,9 +398,12 @@ Static group authorization should perform as expected.`
 
         this.addFieldToResourceReferences(parent.name.value, definition.name.value, rules);
 
-        // Add the directives to the parent type as well, but default must be included
-        // in propagation
-        const typeDirectives = this.getDirectivesForRules(rules);
+        // Add the directives to the parent type as well, we've to add the default provider if
+        // - The type has no @auth directives, so there are NO restrictions on the type
+        // or
+        // - The type has @auth rules for the default provider
+        const includeDefault = this.isTypeNeedsDefaultProviderAccess(parent);
+        const typeDirectives = this.getDirectivesForRules(rules, includeDefault);
 
         if (typeDirectives.length > 0) {
             this.extendTypeWithDirectives(ctx, parent.name.value, typeDirectives);
@@ -1763,6 +1766,7 @@ All @auth directives used on field definitions are performed when the field is r
             if (!rule.provider) {
                 switch (rule.allow) {
                     case 'owner':
+                    case 'groups':
                         rule.provider = 'userPools';
                         break;
                     case 'private':
@@ -1784,9 +1788,9 @@ All @auth directives used on field definitions are performed when the field is r
         // Groups
         //
 
-        if (rule.allow === 'groups' && rule.provider !== null) {
+        if (rule.allow === 'groups' && rule.provider !== 'userPools') {
             throw new InvalidDirectiveError(
-                `@auth directive with 'groups' strategy does not support providers, but found '${rule.provider}' assigned.`);
+                `@auth directive with 'groups' strategy only supports 'userPools' provider, but found '${rule.provider}' assigned.`);
         }
 
         //
@@ -1908,6 +1912,20 @@ found '${rule.provider}' assigned.`);
 
         // Get and validate the auth rules.
         return getArg('rules', []) as AuthRule[];
+    }
+
+    private isTypeNeedsDefaultProviderAccess(def: ObjectTypeDefinitionNode): boolean {
+        const authDirective = def.directives.find((dir) => dir.name.value === 'auth');
+        if (!authDirective) {
+            return true;
+        }
+
+        // Get and validate the auth rules.
+        const rules = this.getAuthRulesFromDirective(authDirective);
+        // Assign default providers to rules where no provider was explicitly defined
+        this.ensureDefaultAuthProviderAssigned(rules);
+
+        return Boolean(rules.find((r) => r.provider === this.configuredAuthProviders.default));
     }
 
     private isTypeHasRulesForOperation(def: ObjectTypeDefinitionNode, operation: ModelDirectiveOperationType): boolean {
