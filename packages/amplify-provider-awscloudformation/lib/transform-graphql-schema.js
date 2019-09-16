@@ -140,22 +140,6 @@ async function migrateProject(context, options) {
   }
 }
 
-function loadCustomTransformersConfig(transformerConfigPath, context) {
-  if (!transformerConfigPath) {
-    context.print.warning('Could not determine transformer config path. Have you enabled AppSync GraphQL API?');
-    return null;
-  }
-
-  try {
-    const transformerConfig = JSON.parse(fs.readFileSync(transformerConfigPath));
-    return transformerConfig;
-  } catch (error) {
-    context.print.error('Tranformer config parsing failure');
-    context.print.error(error);
-    return null;
-  }
-}
-
 async function transformGraphQLSchema(context, options) {
   const flags = context.parameters.options;
   if ('gql-override' in flags && !flags['gql-override']) {
@@ -309,8 +293,7 @@ async function transformGraphQLSchema(context, options) {
     transformerList.push(new SearchableModelTransformer());
   }
 
-  const transformerConfigPath = path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME);
-  const customTransformersConfig = loadCustomTransformersConfig(transformerConfigPath, context);
+  const customTransformersConfig = await readTransformerConfiguration(resourceDir);
   const customTransformers =
     (customTransformersConfig && customTransformersConfig.transformers
       ? customTransformersConfig.transformers
@@ -320,14 +303,16 @@ async function transformGraphQLSchema(context, options) {
         const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
         // handle 'cannot find module'
         try {
-          const imported = require(modulePath);
-          const CustomTransformer = imported.default;
-          return CustomTransformer.call({});
+          return require(modulePath);
         } catch (error) {
           context.print.error(`Unable to import custom transformer module(${modulePath}).`);
-          context.print.error(`You may fix this error by editing transformers at ${transformerConfigPath}`);
+          context.print.error(`You may fix this error by editing transformers at ${TRANSFORM_CONFIG_FILE_NAME}`);
           throw error;
         }
+      })
+      .map((imported) => {
+        const CustomTransformer = imported.default;
+        return CustomTransformer.call({});
       })
       .filter(customTransformer => customTransformer);
 
