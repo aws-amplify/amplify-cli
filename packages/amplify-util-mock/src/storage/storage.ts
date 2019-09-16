@@ -1,9 +1,9 @@
-import { AmplifyStorageSimulator } from "amplify-storage-simulator";
-import * as path from "path";
-import * as fs from "fs-extra";
-import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from "../utils";
-import { ConfigOverrideManager } from "../utils/config-override";
-import { invoke } from "amplify-category-function";
+import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
+import { ConfigOverrideManager } from '../utils/config-override';
+import { invoke } from 'amplify-category-function';
 
 const category = 'function';
 
@@ -21,28 +21,18 @@ export class StorageTest {
     const meta = context.amplify.getProjectDetails().amplifyMeta;
     const existingStorage = meta.storage;
     this.storageRegion = meta.providers.awscloudformation.Region;
-    if (
-      existingStorage === undefined ||
-      Object.keys(existingStorage).length === 0
-    ) {
-      return context.print.warning(
-        "Storage has not yet been added to this project."
-      );
+    if (existingStorage === undefined || Object.keys(existingStorage).length === 0) {
+      return context.print.warning('Storage has not yet been added to this project.');
     }
     let backendPath = context.amplify.pathManager.getBackendDirPath();
     const resourceName = Object.keys(existingStorage)[0];
-    const parametersFilePath = path.join(
-      backendPath,
-      "storage",
-      resourceName,
-      "parameters.json"
-    );
+    const parametersFilePath = path.join(backendPath, 'storage', resourceName, 'parameters.json');
 
     const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath();
     const localEnvInfo = context.amplify.readJsonFile(localEnvFilePath);
     const storageParams = context.amplify.readJsonFile(parametersFilePath);
     this.bucketName = `${storageParams.bucketName}-${localEnvInfo.envName}`;
-    const route = path.join("/", this.bucketName);
+    const route = path.join('/', this.bucketName);
 
     let localDirS3 = this.createLocalStorage(context, `${storageParams.bucketName}`);
 
@@ -55,10 +45,10 @@ export class StorageTest {
       const storageConfig = { port, route, localDirS3 };
       this.storageSimulator = new AmplifyStorageSimulator(storageConfig);
       await this.storageSimulator.start();
-      console.log("Mock Storage endpoint is running at", this.storageSimulator.url);
+      console.log('Mock Storage endpoint is running at', this.storageSimulator.url);
       await this.generateTestFrontendExports(context);
     } catch (e) {
-      console.error("Failed to start Mock Storage server", e);
+      console.error('Failed to start Mock Storage server', e);
     }
   }
 
@@ -76,12 +66,14 @@ export class StorageTest {
       const resourceName = Object.keys(existingStorage)[0];
       const CFNFilePath = path.join(
         backendPath,
-        "storage",
+        'storage',
         resourceName,
-        "s3-cloudformation-template.json"
+        's3-cloudformation-template.json'
       );
       const storageParams = context.amplify.readJsonFile(CFNFilePath);
-      const lambdaConfig = storageParams.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
+      const lambdaConfig =
+        storageParams.Resources.S3Bucket.Properties.NotificationConfiguration &&
+        storageParams.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
       //no trigger case
       if (lambdaConfig === undefined) {
         return;
@@ -94,26 +86,29 @@ export class StorageTest {
         let prefix_arr = obj.Filter;
         if (prefix_arr === undefined) {
           let eventName = String(eventObj.Records[0].event.eventName).split(':')[0];
-          if ( eventName === "ObjectRemoved" || eventName === "ObjectCreated") {
-            triggerName = String(obj.Function.Ref).split("function")[1].split("Arn")[0];
+          if (eventName === 'ObjectRemoved' || eventName === 'ObjectCreated') {
+            triggerName = String(obj.Function.Ref)
+              .split('function')[1]
+              .split('Arn')[0];
             break;
           }
-        }
-        else {
+        } else {
           let keyName = String(eventObj.Records[0].s3.object.key);
           prefix_arr = obj.Filter.S3Key.Rules;
           for (let rules of prefix_arr) {
             let node;
-            if (typeof (rules.Value) === 'object') {
+            if (typeof rules.Value === 'object') {
               node = String(Object.values(rules.Value)[0][1][0] + String(region) + ':');
             }
 
-            if (typeof (rules.Value) === 'string') {
+            if (typeof rules.Value === 'string') {
               node = String(rules.Value);
             }
             // check prefix given  is the prefix of keyname in the event object
             if (keyName.indexOf(node) === 0) {
-              triggerName = String(obj.Function.Ref).split("function")[1].split("Arn")[0];
+              triggerName = String(obj.Function.Ref)
+                .split('function')[1]
+                .split('Arn')[0];
               break;
             }
           }
@@ -134,14 +129,13 @@ export class StorageTest {
       };
       invoke(invokeOptions);
     });
-
   }
 
   private async generateTestFrontendExports(context) {
     await this.generateFrontendExports(context, {
       endpoint: this.storageSimulator.url,
       name: this.storageName,
-      testMode: true
+      testMode: true,
     });
   }
 
@@ -159,18 +153,18 @@ export class StorageTest {
     if (localStorageDetails) {
       const storageMeta = override[localStorageDetails.name] || { output: {} };
       override[localStorageDetails.name] = {
-        service: "S3",
+        service: 'S3',
         ...storageMeta,
         output: {
           BucketName: this.bucketName,
           Region: this.storageRegion,
-          ...storageMeta.output
+          ...storageMeta.output,
         },
         testMode: localStorageDetails.testMode,
-        lastPushTimeStamp: new Date()
+        lastPushTimeStamp: new Date(),
       };
     }
-    this.configOverrideManager.addOverride("storage", override);
+    this.configOverrideManager.addOverride('storage', override);
     await this.configOverrideManager.generateOverriddenFrontendExports(context);
   }
 
@@ -179,7 +173,7 @@ export class StorageTest {
     const { storage: tmp = {} } = currentMeta;
     let name = null;
     Object.entries(tmp).some((entry: any) => {
-      if (entry[1].service === "S3") {
+      if (entry[1].service === 'S3') {
         name = entry[0];
         return true;
       }
@@ -189,7 +183,7 @@ export class StorageTest {
 
   // create local storage for S3 on disk which is fixes as the test folder
   private createLocalStorage(context, resourceName: string) {
-    const directoryPath = path.join(getMockDataDirectory(context), "S3"); // get bucket through parameters remove afterwards
+    const directoryPath = path.join(getMockDataDirectory(context), 'S3'); // get bucket through parameters remove afterwards
     fs.ensureDirSync(directoryPath);
 
     const localPath = path.join(directoryPath, resourceName);
