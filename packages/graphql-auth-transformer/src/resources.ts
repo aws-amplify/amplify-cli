@@ -595,8 +595,8 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
                 customClaim = rule.groupClaim;
             }
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
-            const groupsAttributeName = `groupsAttribute${ruleNumber}`
-            const groupName = `group${ruleNumber}`
+            const groupsAttributeName = fieldBeingProtected ? `${fieldBeingProtected}_groupsAttribute${ruleNumber}` : `groupsAttribute${ruleNumber}`
+            const groupName = fieldBeingProtected ? `${fieldBeingProtected}_group${ruleNumber}` : `group${ruleNumber}`
             groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
                 comment(`Authorization rule${fieldMention}: { allow: ${rule.allow}, groupsField: "${groupsAttribute}" }`),
                 // Add the new auth expression and values
@@ -644,8 +644,8 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const ownerFieldIsList = fieldIsList(ownerAttribute)
-            const ownerName = `owner${ruleNumber}`
-            const identityName = `identity${ruleNumber}`
+            const ownerName = fieldBeingProtected ? `${fieldBeingProtected}_owner${ruleNumber}` : `owner${ruleNumber}`
+            const identityName = fieldBeingProtected ? `${fieldBeingProtected}_identity${ruleNumber}` : `identity${ruleNumber}`
 
             ownerAuthorizationExpressions.push(
                 // tslint:disable:max-line-length
@@ -818,7 +818,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             not(parens(
                 or([
                     equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
-                    parens(raw('$authCondition && $authCondition.expression != ""'))
+                    parens(raw('$totalAuthExpression != ""'))
                 ])
             )), raw('$util.unauthorized()')
         )
@@ -831,11 +831,11 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         return block('Collect Auth Condition', [
             set(
                 ref(ResourceConstants.SNIPPETS.AuthCondition),
-                obj({
+                raw(`$util.defaultIfNull($authCondition, ${print(obj({
                     expression: str(""),
                     expressionNames: obj({}),
                     expressionValues: obj({})
-                })
+                }))})`)
             ),
             set(ref('totalAuthExpression'), str('')),
             comment('Add dynamic group auth conditions if they exist'),
@@ -875,7 +875,11 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             comment('Set final expression if it has changed.'),
             iff(
                 raw(`$totalAuthExpression != ""`),
-                set(ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`), str('($totalAuthExpression)'))
+                ifElse(
+                    raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthCondition}.expression)`),
+                    set(ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`), str(`($totalAuthExpression)`)),
+                    set(ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`), str(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression AND ($totalAuthExpression)`))
+                )
             )
         ])
     }
@@ -1017,7 +1021,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         const authPiece = isAuthPolicy ? "auth" : "unauth";
         const policyResources: object[] = [];
 
-        for(const resource of resources) {
+        for (const resource of resources) {
             // We always have 2 parts, no need to check
             const resourceParts = resource.split("/");
 
