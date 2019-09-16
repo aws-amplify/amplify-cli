@@ -306,7 +306,7 @@ async function transformGraphQLSchema(context, options) {
           return require(modulePath);
         } catch (error) {
           context.print.error(`Unable to import custom transformer module(${modulePath}).`);
-          context.print.error(`You may fix this error by editing transformers at ${TRANSFORM_CONFIG_FILE_NAME}`);
+          context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
           throw error;
         }
       })
