@@ -192,7 +192,6 @@
                                 "const response = require('cfn-response');",
                                 "const AWS = require('aws-sdk');",
                                 "exports.handler = (event, context) => {",
-                                "console.log('event.ResourceProperties', event.ResourceProperties);",
                                 "if (event.RequestType == 'Delete') {",
                                 "    response.send(event, context, response.SUCCESS, {message: 'Request type delete'})",
                                 "};",
@@ -224,7 +223,6 @@
                                 "    response.send(event, context, response.SUCCESS, {message: 'Successfully updated identity pool.'})",
                                 "    } catch(err) {",
                                 
-                                "console.log('err', err);",
                                 "        response.send(event, context, response.FAILED, {message: 'Error updating identity pool'});",
                                 "    }",
                                 "   };",
