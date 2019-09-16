@@ -16,6 +16,7 @@ const MOCK_CONTEXT = {
   },
   amplify: {
     getEnvInfo: jest.fn(),
+    getProjectMeta: jest.fn(),
   },
 };
 
@@ -64,8 +65,9 @@ describe('command - generateStatementsAndTypes', () => {
     const forceDownload = false;
     await generateStatementsAndTypes(MOCK_CONTEXT, forceDownload);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false, undefined);
-    expect(generateTypes).toHaveBeenCalledWith(MOCK_CONTEXT, false);
+    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false, undefined,
+      false, undefined);
+    expect(generateTypes).toHaveBeenCalledWith(MOCK_CONTEXT, false, false, undefined);
   });
 
   it('should download the schema if forceDownload flag is passed', async () => {

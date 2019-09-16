@@ -7,18 +7,29 @@ const constants = require('../constants');
 const loadConfig = require('../codegen-config');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
-async function generateTypes(context, forceDownloadSchema) {
-  const frontend = getFrontEndHandler(context);
+async function generateTypes(context, forceDownloadSchema, withoutInit = false, decoupleFrontend = '') {
+  let frontend = decoupleFrontend;
+  if (!withoutInit) {
+    frontend = getFrontEndHandler(context);
+  }
   if (frontend !== 'android') {
     const config = loadConfig(context);
     const projects = config.getProjects();
-    const apis = getAppSyncAPIDetails(context);
+    let apis = [];
+    if (!withoutInit) {
+      apis = getAppSyncAPIDetails(context);
+    }
     if (!projects.length || !apis.length) {
-      context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
-      return;
+      if (!withoutInit) {
+        context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+        return;
+      }
     }
 
-    const { projectPath } = context.amplify.getEnvInfo();
+    let projectPath = process.cwd();
+    if (!withoutInit) {
+      ({ projectPath } = context.amplify.getEnvInfo());
+    }
 
     try {
       projects.forEach(async (cfg) => {
@@ -37,8 +48,12 @@ async function generateTypes(context, forceDownloadSchema) {
         const target = cfg.amplifyExtension.codeGenTarget;
 
         const outputPath = path.join(projectPath, generatedFileName);
-        const { region } = cfg.amplifyExtension;
-        await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
+        let region;
+        if (!withoutInit) {
+          ({ region } = cfg.amplifyExtension);
+          await ensureIntrospectionSchema(context, schemaPath,
+            apis[0], region, forceDownloadSchema);
+        }
         const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
         codeGenSpinner.start();
         try {

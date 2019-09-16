@@ -1,11 +1,17 @@
 const getFrontendHandler = require('./getFrontEndHandler');
 
-function getFrontEndFramework(context) {
+function getFrontEndFramework(context, withoutInit = false, decoupleFrontend = '', decoupleFramework = '') {
   const { amplify } = context;
-  const fontendHandler = getFrontendHandler(context);
-  if (fontendHandler === 'javascript') {
-    const projectConfig = amplify.getProjectConfig();
-    return projectConfig.javascript.framework;
+  let frontendHandler = decoupleFrontend;
+  if (!withoutInit) {
+    frontendHandler = getFrontendHandler(context);
+  }
+  if (frontendHandler === 'javascript') {
+    if (!withoutInit) {
+      const projectConfig = amplify.getProjectConfig();
+      return projectConfig.javascript.framework;
+    }
+    return decoupleFramework;
   }
   return '';
 }

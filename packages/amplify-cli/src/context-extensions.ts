@@ -44,8 +44,6 @@ export function attachExtentions(context: Context) {
   attachTemplate(context);
 }
 
-export { print };
-
 function attachPrompt(context: Context) {
   const inquirer = require('inquirer');
   context.prompt = {
@@ -187,6 +185,8 @@ const print = {
   red,
   blue,
 }
+
+export { print };
 
 function info(message: string): void {
   console.log(colors.info(message));

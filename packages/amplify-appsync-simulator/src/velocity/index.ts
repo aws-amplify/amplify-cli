@@ -117,7 +117,7 @@ export class VelocityTemplate {
       identity,
       stash: convertToJavaTypes(stash || {}),
       source: convertToJavaTypes(source),
-      result: convertToJavaTypes(result || {}),
+      result: convertToJavaTypes(result),
     };
 
     if (prevResult) {
