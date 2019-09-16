@@ -95,11 +95,11 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
 
 
     ## [Start] Collect Auth Condition **
-    #set( $authCondition = {
+    #set( $authCondition = $util.defaultIfNull($authCondition, {
   \\"expression\\": \\"\\",
   \\"expressionNames\\": {},
   \\"expressionValues\\": {}
-} )
+}) )
     #set( $totalAuthExpression = \\"\\" )
     ## Add dynamic group auth conditions if they exist **
     #if( $groupAuthExpressions )
@@ -136,14 +136,18 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
     #end
     ## Set final expression if it has changed. **
     #if( $totalAuthExpression != \\"\\" )
-      #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+      #if( $util.isNullOrEmpty($authCondition.expression) )
+        #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+      #else
+        #set( $authCondition.expression = \\"$authCondition.expression AND ($totalAuthExpression)\\" )
+      #end
     #end
     ## [End] Collect Auth Condition **
   #end
 
 
   ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
     $util.unauthorized()
   #end
   ## [End] Throw if unauthorized **
@@ -304,11 +308,11 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 
 
     ## [Start] Collect Auth Condition **
-    #set( $authCondition = {
+    #set( $authCondition = $util.defaultIfNull($authCondition, {
   \\"expression\\": \\"\\",
   \\"expressionNames\\": {},
   \\"expressionValues\\": {}
-} )
+}) )
     #set( $totalAuthExpression = \\"\\" )
     ## Add dynamic group auth conditions if they exist **
     #if( $groupAuthExpressions )
@@ -345,14 +349,18 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
     #end
     ## Set final expression if it has changed. **
     #if( $totalAuthExpression != \\"\\" )
-      #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+      #if( $util.isNullOrEmpty($authCondition.expression) )
+        #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+      #else
+        #set( $authCondition.expression = \\"$authCondition.expression AND ($totalAuthExpression)\\" )
+      #end
     #end
     ## [End] Collect Auth Condition **
   #end
 
 
   ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
     $util.unauthorized()
   #end
   ## [End] Throw if unauthorized **
@@ -679,11 +687,11 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
 
 
     ## [Start] Collect Auth Condition **
-    #set( $authCondition = {
+    #set( $authCondition = $util.defaultIfNull($authCondition, {
   \\"expression\\": \\"\\",
   \\"expressionNames\\": {},
   \\"expressionValues\\": {}
-} )
+}) )
     #set( $totalAuthExpression = \\"\\" )
     ## Add dynamic group auth conditions if they exist **
     #if( $groupAuthExpressions )
@@ -720,14 +728,18 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
     #end
     ## Set final expression if it has changed. **
     #if( $totalAuthExpression != \\"\\" )
-      #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+      #if( $util.isNullOrEmpty($authCondition.expression) )
+        #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+      #else
+        #set( $authCondition.expression = \\"$authCondition.expression AND ($totalAuthExpression)\\" )
+      #end
     #end
     ## [End] Collect Auth Condition **
   #end
 
 
   ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
     $util.unauthorized()
   #end
   ## [End] Throw if unauthorized **
@@ -888,11 +900,11 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 
 
     ## [Start] Collect Auth Condition **
-    #set( $authCondition = {
+    #set( $authCondition = $util.defaultIfNull($authCondition, {
   \\"expression\\": \\"\\",
   \\"expressionNames\\": {},
   \\"expressionValues\\": {}
-} )
+}) )
     #set( $totalAuthExpression = \\"\\" )
     ## Add dynamic group auth conditions if they exist **
     #if( $groupAuthExpressions )
@@ -929,14 +941,18 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
     #end
     ## Set final expression if it has changed. **
     #if( $totalAuthExpression != \\"\\" )
-      #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+      #if( $util.isNullOrEmpty($authCondition.expression) )
+        #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+      #else
+        #set( $authCondition.expression = \\"$authCondition.expression AND ($totalAuthExpression)\\" )
+      #end
     #end
     ## [End] Collect Auth Condition **
   #end
 
 
   ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
     $util.unauthorized()
   #end
   ## [End] Throw if unauthorized **
