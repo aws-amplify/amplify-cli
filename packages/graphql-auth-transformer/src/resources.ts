@@ -1,19 +1,18 @@
 import Template from 'cloudform-types/types/template'
-import Cognito from 'cloudform-types/types/cognito'
-import Output from 'cloudform-types/types/output'
 import Policy from 'cloudform-types/types/iam/policy';
 import { AppSync, Fn, StringParameter, Refs, NumberParameter, IAM, Value } from 'cloudform-types'
 import { AuthRule, AuthProvider } from './AuthRule'
 import {
     str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, equals, comment,
-    or, Expression, SetNode, and, not, parens,
+    or, Expression, and, not, parens,
     block, print, ifElse, newline
 } from 'graphql-mapping-template'
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 import GraphQLAPI, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, AdditionalAuthenticationProvider } from './graphQlApi'
 import * as Transformer from './ModelAuthTransformer'
+import { FieldDefinitionNode } from 'graphql';
 
 import {
     DEFAULT_OWNER_FIELD,
@@ -226,7 +225,7 @@ export class ResourceFactory {
      * true if the user is static group authorized.
      * @param rules The list of static group authorization rules.
      */
-    public staticGroupAuthorizationExpression(rules: AuthRule[]): Expression {
+    public staticGroupAuthorizationExpression(rules: AuthRule[], field?: FieldDefinitionNode ): Expression {
         if (!rules || rules.length === 0) {
             return comment(`No Static Group Authorization Rules`)
         }
@@ -247,19 +246,20 @@ export class ResourceFactory {
                 customClaim = rule.groupClaim;
             }
         }
+        const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
 
         return block('Static Group Authorization Checks', [
             comment(`Authorization rule: { allow: groups, groups: "${JSON.stringify(allowedGroups)}" }`),
             this.setUserGroups(customClaim),
             set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
             // tslint:disable-next-line
-            raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull(
-                $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
+            raw(`#set($${staticGroupAuthorizedVariable} = $util.defaultIfNull(
+                $${staticGroupAuthorizedVariable}, false))`),
             forEach(ref('userGroup'), ref('userGroups'), [
                 forEach(ref('allowedGroup'), ref('allowedGroups'), [
                     iff(
                         raw('$allowedGroup == $userGroup'),
-                        set(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true'))
+                        set(ref(staticGroupAuthorizedVariable), raw('true'))
                     )
                 ])
             ])
@@ -813,11 +813,12 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     // A = IsStaticallyAuthed
     // B = AuthConditionIsNotNull
     // ! (A OR B) == (!A AND !B)
-    public throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(): Expression {
+    public throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(field?: FieldDefinitionNode): Expression {
+        const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
         const ifUnauthThrow = iff(
             not(parens(
                 or([
-                    equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
+                    equals(ref(staticGroupAuthorizedVariable), raw('true')),
                     parens(raw('$totalAuthExpression != ""'))
                 ])
             )), raw('$util.unauthorized()')
@@ -1015,6 +1016,11 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         }
 
         return block("Determine request authentication mode", expressions);
+    }
+
+    public getStaticAuthorizationVariable(field: FieldDefinitionNode): string {
+        return field ? `${field.name.value}_${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}` :
+            ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable;
     }
 
     public makeIAMPolicyForRole(isAuthPolicy: Boolean, resources: Set<string>): Policy {

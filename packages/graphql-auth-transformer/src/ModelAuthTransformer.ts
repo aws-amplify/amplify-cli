@@ -582,7 +582,9 @@ Either make the field optional, set auth on the object and not the field, or dis
                 ownerAuthorizationRules.length > 0) {
 
                 // Generate the expressions to validate each strategy.
-                const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+                const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
+                    staticGroupAuthorizationRules,
+                    field)
 
                 // In create mutations, the dynamic group and ownership authorization checks
                 // are done before calling PutItem.
@@ -1264,7 +1266,9 @@ All @auth directives used on field definitions are performed when the field is r
                 ownerAuthorizationRules.length > 0) {
 
                 // Generate the expressions to validate each strategy.
-                const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+                const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
+                    staticGroupAuthorizationRules,
+                    field)
 
                 // In create mutations, the dynamic group and ownership authorization checks
                 // are done before calling PutItem.
@@ -1287,8 +1291,9 @@ All @auth directives used on field definitions are performed when the field is r
                 )
 
                 const collectAuthCondition = this.resources.collectAuthCondition()
+                const staticGroupAuthorizedVariable = this.resources.getStaticAuthorizationVariable(field);
                 const ifNotStaticallyAuthedCreateAuthCondition = iff(
-                    raw(`! $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
+                    raw(`! $${staticGroupAuthorizedVariable}`),
                     compoundExpression([
                         dynamicGroupAuthorizationExpression,
                         newline(),
@@ -1298,7 +1303,8 @@ All @auth directives used on field definitions are performed when the field is r
                     ])
                 )
 
-                const throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty = this.resources.throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty()
+                const throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty = this.resources.throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(
+                    field)
 
                 // If we've any modes to check, then add the authMode check code block
                 // to the start of the resolver.
