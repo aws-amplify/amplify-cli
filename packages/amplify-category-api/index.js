@@ -177,9 +177,6 @@ async function executeAmplifyCommand(context) {
     commandPath = path.join(commandPath, category, context.input.command);
   }
 
-  context.print.info(commandPath);
-  context.print.info(context.input);
-
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
