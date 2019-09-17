@@ -938,10 +938,10 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         ])
     }
 
-    public setOperationExpression(operation: string) {
-        return block('Setting the operation', [
+    public setOperationExpression(operation: string): string {
+        return print(block('Setting the operation', [
             set(ref('context.result.operation'), str(operation))
-        ])
+        ]))
     }
 
     public getAuthModeCheckWrappedExpression(expectedAuthModes: Set<AuthProvider>, expression: Expression): Expression {
