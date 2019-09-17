@@ -169,9 +169,9 @@ beforeAll(async () => {
     type PostIAMWithKeys @model
     @auth (
         rules: [
-            // API Key can CRUD
+            # API Key can CRUD
             { allow: public }
-            // IAM can read
+            # IAM can read
             { allow: public, provider iam, operations: [read] }
         ]
     )
