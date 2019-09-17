@@ -12,7 +12,6 @@
         "help"
     ],
     "commandAliases":{
-        "add-datesource": "add-graphql-datasource",
         "configure": "update"
     },
     "eventHandlers": []
