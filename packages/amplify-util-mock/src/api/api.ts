@@ -164,8 +164,8 @@ export class APITest {
       testMode: true,
     });
   }
-  private ensureDDBTables(config) {
-    return ensureDynamoDBTables(this.ddbClient, config);
+  private async ensureDDBTables(config) {
+    await ensureDynamoDBTables(this.ddbClient, config);
   }
 
   private configureLambdaDataSource(config) {
