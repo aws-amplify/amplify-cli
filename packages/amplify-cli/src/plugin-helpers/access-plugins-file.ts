@@ -5,6 +5,8 @@ import PluginPlatform from '../domain/plugin-platform';
 import constants from '../domain/constants';
 import { readJsonFile, readJsonFileSync } from '../utils/readJsonFile';
 
+const JSON_SPACE = 4;
+
 export function readPluginsJsonFileSync(): PluginPlatform | undefined {
   let result: PluginPlatform | undefined;
   const pluginsFilePath = path.join(os.homedir(),
@@ -35,7 +37,7 @@ export function writePluginsJsonFileSync(pluginsJson: PluginPlatform): void {
 
   fs.ensureDirSync(systemDotAmplifyDirPath);
 
-  const jsonString = JSON.stringify(pluginsJson, null, 4);
+  const jsonString = JSON.stringify(pluginsJson, null, JSON_SPACE);
   fs.writeFileSync(pluginsJsonFilePath, jsonString, 'utf8');
 }
 
@@ -45,6 +47,6 @@ export async function writePluginsJsonFile(pluginsJson: PluginPlatform): Promise
 
   await fs.ensureDir(systemDotAmplifyDirPath);
 
-  const jsonString = JSON.stringify(pluginsJson, null, 4);
+  const jsonString = JSON.stringify(pluginsJson, null, JSON_SPACE);
   await fs.writeFile(pluginsJsonFilePath, jsonString, 'utf8');
 }
