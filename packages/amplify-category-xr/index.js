@@ -102,7 +102,7 @@ async function executeAmplifyCommand(context) {
 }
 
 async function handleAmplifyEvent(context, args) {
-  console.log(`${category} handleAmplifyEvent to be implmented`);
+  context.print.info(`${category} handleAmplifyEvent to be implmented`);
   context.print.info(`Received event args ${args}`);
 }
 
