@@ -17,7 +17,7 @@ async function executeAmplifyCommand(context) {
 
 
 async function handleAmplifyEvent(context, args) {
-  console.log(`${pluginName} handleAmplifyEvent to be implmented`);
+  context.print.info(`${pluginName} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }
 
