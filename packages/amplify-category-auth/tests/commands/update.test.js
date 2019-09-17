@@ -23,7 +23,8 @@ describe('auth update: ', () => {
       pathManager: {
         getBackendDirPath: jest.fn(),
       },
-      getResourceStatus: (() =>  {
+      // eslint-disable-next-line
+      getResourceStatus: (() => {
         return { allResources: [{ service: 'Cognito' }] };
       }),
     },
