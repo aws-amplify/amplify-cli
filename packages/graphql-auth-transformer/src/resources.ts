@@ -226,7 +226,7 @@ export class ResourceFactory {
      * true if the user is static group authorized.
      * @param rules The list of static group authorization rules.
      */
-    public staticGroupAuthorizationExpression(rules: AuthRule[]): Expression {
+    public staticGroupAuthorizationExpression(rules: AuthRule[], fieldName?: string ): Expression {
         if (!rules || rules.length === 0) {
             return comment(`No Static Group Authorization Rules`)
         }
@@ -247,19 +247,22 @@ export class ResourceFactory {
                 customClaim = rule.groupClaim;
             }
         }
+        const staticGroupAuthorizedVariable = fieldName ?
+            `${fieldName}_${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}` :
+            ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable
 
         return block('Static Group Authorization Checks', [
             comment(`Authorization rule: { allow: groups, groups: "${JSON.stringify(allowedGroups)}" }`),
             this.setUserGroups(customClaim),
             set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
             // tslint:disable-next-line
-            raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull(
-                $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
+            raw(`#set($${staticGroupAuthorizedVariable} = $util.defaultIfNull(
+                $${staticGroupAuthorizedVariable}, false))`),
             forEach(ref('userGroup'), ref('userGroups'), [
                 forEach(ref('allowedGroup'), ref('allowedGroups'), [
                     iff(
                         raw('$allowedGroup == $userGroup'),
-                        set(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true'))
+                        set(ref(staticGroupAuthorizedVariable), raw('true'))
                     )
                 ])
             ])
@@ -813,11 +816,13 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     // A = IsStaticallyAuthed
     // B = AuthConditionIsNotNull
     // ! (A OR B) == (!A AND !B)
-    public throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(): Expression {
+    public throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(fieldName?: string): Expression {
+        const staticGroupAuthorizedVariable = fieldName ? `${fieldName}_${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}` :
+                    ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable
         const ifUnauthThrow = iff(
             not(parens(
                 or([
-                    equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
+                    equals(ref(staticGroupAuthorizedVariable), raw('true')),
                     parens(raw('$totalAuthExpression != ""'))
                 ])
             )), raw('$util.unauthorized()')
