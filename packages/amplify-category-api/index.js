@@ -177,12 +177,15 @@ async function executeAmplifyCommand(context) {
     commandPath = path.join(commandPath, category, context.input.command);
   }
 
+  context.print.info(commandPath);
+  context.print.info(context.input);
+  
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
 
 async function handleAmplifyEvent(context, args) {
-  console.log(`${category} handleAmplifyEvent to be implmented`);
+  context.print.info(`${category} handleAmplifyEvent to be implmented`);
   context.print.info(`Received event args ${args}`);
 }
 
