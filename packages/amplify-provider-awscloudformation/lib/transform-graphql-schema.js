@@ -281,26 +281,37 @@ async function transformGraphQLSchema(context, options) {
     directiveMap.directives,
   );
 
-  const transformerList = [
-    // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
-    new DynamoDBModelTransformer(),
-    new VersionedModelTransformer(),
-    new FunctionTransformer(),
-    new HTTPTransformer(),
-    new KeyTransformer(),
-    new ModelConnectionTransformer(),
-    // TODO: Build dependency mechanism into transformers. Auth runs last
-    // so any resolvers that need to be protected will already be created.
-    new ModelAuthTransformer({ authConfig }),
-  ];
+  const transformerListFactory = (addSearchableTransformer) => {
+    const transformerList = [
+      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
+      new DynamoDBModelTransformer(),
+      new VersionedModelTransformer(),
+      new FunctionTransformer(),
+      new HTTPTransformer(),
+      new KeyTransformer(),
+      new ModelConnectionTransformer(),
+      // TODO: Build dependency mechanism into transformers. Auth runs last
+      // so any resolvers that need to be protected will already be created.
+      new ModelAuthTransformer({ authConfig }),
+    ];
+
+    if (addSearchableTransformer) {
+      transformerList.push(new SearchableModelTransformer());
+    }
+
+    return transformerList;
+  };
+
+  let searchableTransformerFlag = false;
 
   if (directiveMap.directives.includes('searchable')) {
-    transformerList.push(new SearchableModelTransformer());
+    searchableTransformerFlag = true;
   }
 
   const buildConfig = {
     projectDirectory: options.dryrun ? false : resourceDir,
-    transformers: transformerList,
+    transformersFactory: transformerListFactory,
+    transformersFactoryArgs: [searchableTransformerFlag],
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     disableResolverOverrides: options.disableResolverOverrides,
