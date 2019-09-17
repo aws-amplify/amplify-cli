@@ -2,7 +2,7 @@
     "name": "api",
     "type": "category",
     "commands": [
-        "add-datesource",
+        "add-graphql-datasource",
         "add",
         "console",
         "gql-compile",
