@@ -16,12 +16,12 @@ exports[`Test "create", "update", "delete" auth operations 3`] = `
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -75,12 +75,12 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -147,7 +147,7 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
 
 
   ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+  #if( !($authCondition == true || ($totalAuthExpression != \\"\\")) )
     $util.unauthorized()
   #end
   ## [End] Throw if unauthorized **
@@ -288,12 +288,12 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -360,7 +360,7 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 
 
   ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+  #if( !($authCondition == true || ($totalAuthExpression != \\"\\")) )
     $util.unauthorized()
   #end
   ## [End] Throw if unauthorized **
@@ -436,12 +436,12 @@ exports[`Test that checks subscription resolvers are generated with auth logic 1
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -492,12 +492,12 @@ exports[`Test that checks subscription resolvers are generated with auth logic 2
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -548,12 +548,12 @@ exports[`Test that checks subscription resolvers are generated with auth logic 3
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -608,12 +608,12 @@ exports[`Test that operation overwrites queries in auth operations 3`] = `
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -667,12 +667,12 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -739,7 +739,7 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
 
 
   ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+  #if( !($authCondition == true || ($totalAuthExpression != \\"\\")) )
     $util.unauthorized()
   #end
   ## [End] Throw if unauthorized **
@@ -880,12 +880,12 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
   ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
@@ -952,7 +952,7 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 
 
   ## [Start] Throw if unauthorized **
-  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+  #if( !($authCondition == true || ($totalAuthExpression != \\"\\")) )
     $util.unauthorized()
   #end
   ## [End] Throw if unauthorized **
@@ -1022,12 +1022,12 @@ exports[`Test that subscriptions are only generated if the respective mutation o
   ## Authorization rule: { allow: groups, groups: \\"[\\"Moderator\\"]\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Moderator\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
+  #set($authCondition = $util.defaultIfNull(
+                $authCondition, false))
   #foreach( $userGroup in $userGroups )
     #foreach( $allowedGroup in $allowedGroups )
       #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
+        #set( $authCondition = true )
       #end
     #end
   #end
