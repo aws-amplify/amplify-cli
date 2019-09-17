@@ -41,14 +41,18 @@ export async function ensureDynamoDBTables(dynamodb, config) {
   const tablesToCreate = tables.filter(
     table => !existingTables.TableNames.includes(table.TableName)
   );
-  const creationPromises = tablesToCreate.map(tableConfig =>
-    dynamodb.createTable(tableConfig).promise()
-  );
+  const creationPromises: Promise<any>[] = tablesToCreate.map(tableConfig => {
+    console.info(`Will CREATE table ${tableConfig.TableName} locally`);
+
+    return dynamodb.createTable(tableConfig).promise();
+  });
 
   // table updates
-  const tablesToUpdate = tables.filter(table =>
-    existingTables.TableNames.includes(table.TableName)
-  );
+  const tablesToUpdate = tables.filter(table => {
+    // console.info(`Will UPDATE table ${table.TableName} locally`);
+
+    return existingTables.TableNames.includes(table.TableName);
+  });
 
   const tablesToUpdateConfigs = await Promise.all(
     tablesToUpdate.map(tableConfig => {
@@ -62,192 +66,80 @@ export async function ensureDynamoDBTables(dynamodb, config) {
     })
   );
 
-  const gsiModifications = tablesToUpdateConfigs.map(({ Table: tableConfig }: { Table: any }) => {
-    const TableName = tableConfig.TableName;
+  const gsiModifications: Promise<any>[] = tablesToUpdateConfigs.map(
+    ({ Table: tableConfig }: { Table: any }) => {
+      const TableName = tableConfig.TableName;
 
-    const existingGSIs: GSIType[] | undefined = tableConfig.GlobalSecondaryIndexes || [];
-    const existingTable = tables.filter(table => table.TableName === TableName)[0];
+      const existingGSIs: GSIType[] | undefined = tableConfig.GlobalSecondaryIndexes || [];
+      const existingTable = tables.filter(table => table.TableName === TableName)[0];
 
-    if (!existingTable) return undefined;
+      if (!existingTable) return undefined;
 
-    const newGSIs: GSIType[] | undefined = existingTable.GlobalSecondaryIndexes || [];
+      const newGSIs: GSIType[] | undefined = existingTable.GlobalSecondaryIndexes || [];
 
-    const existing = existingGSIs.filter(gsi =>
-      newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-    );
+      const existing = existingGSIs.filter(gsi =>
+        newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
+      );
 
-    const additions = newGSIs.filter(
-      gsi => !existingGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-    );
+      const additions = newGSIs.filter(
+        gsi => !existingGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
+      );
 
-    const Additions = additions.map(createAddition).map(GSIUpdate =>
-      dynamodb
-        .updateTable({
-          TableName,
-          AttributeDefinitions: existingTable.AttributeDefinitions,
-          GlobalSecondaryIndexUpdates: [GSIUpdate],
-        })
-        .promise()
-    );
+      const Additions = additions.map(createAddition).map(GSIUpdate => {
+        console.info(
+          `Will ADD GSI ${GSIUpdate.Create.IndexName} for table ${tableConfig.TableName} locally`
+        );
 
-    const deletions = existingGSIs.filter(
-      gsi => !newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-    );
+        return dynamodb
+          .updateTable({
+            TableName,
+            AttributeDefinitions: existingTable.AttributeDefinitions,
+            GlobalSecondaryIndexUpdates: [GSIUpdate],
+          })
+          .promise();
+      });
 
-    const Deletions = deletions.map(createDeletion).map(GSIUpdate =>
-      dynamodb
-        .updateTable({
-          TableName,
-          AttributeDefinitions: existingTable.AttributeDefinitions,
-          GlobalSecondaryIndexUpdates: [GSIUpdate],
-        })
-        .promise()
-    );
+      const deletions = existingGSIs.filter(
+        gsi => !newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
+      );
 
-    return [...Additions, ...Deletions];
-  });
+      const Deletions = deletions.map(createDeletion).map(GSIUpdate => {
+        console.info(
+          `Will DELETE GSI ${GSIUpdate.Delete.IndexName} for table ${tableConfig.TableName} locally`
+        );
 
-  const allPromises = [
-    ...creationPromises,
-    ...gsiModifications.reduce((acc, cur) => [...acc, ...cur], []),
-    [],
-  ];
+        return dynamodb
+          .updateTable({
+            TableName,
+            AttributeDefinitions: existingTable.AttributeDefinitions,
+            GlobalSecondaryIndexUpdates: [GSIUpdate],
+          })
+          .promise();
+      });
+
+      const operations = [...Additions, ...Deletions];
+      return operations.reduce(
+        (acc, cur) => (cur instanceof Array ? [...acc, ...cur] : [...acc, cur]),
+        []
+      );
+    }
+  );
+
+  const tableOperations = [...creationPromises, ...gsiModifications];
 
   try {
-    allPromises
-      .filter(item => item instanceof Promise)
-      .reduce((promiseChain, currentTask) => {
-        return promiseChain
-          .then(chainResults => {
-            return currentTask
-              .then(currentResult => chainResults && [...chainResults, currentResult])
-              .catch(err => {
-                if (err.code !== 'ResourceInUseException') throw err;
-              });
-          })
-          .catch(err => {
-            if (err.code !== 'ResourceInUseException') throw err;
-          });
-      }, Promise.resolve([]))
-      // .then(arrayOfResults => {
-      //   console.log('arrayOfResults', arrayOfResults);
-      //   // Do something with all results
-      // })
-      .catch(err => {
-        if (err.code !== 'ResourceInUseException') throw err;
-      });
+    for (const operation of tableOperations) {
+      await operation;
+    }
+    // await tableOperations
+    //   .filter((item: any) => item instanceof Promise)
+    //   .reduce(async (_total, job) => {
+    //     await job();
+    //   }, Promise.resolve([]));
   } catch (err) {
-    // console.log('error', err);
     if (err.code !== 'ResourceInUseException') throw err;
+    console.log('err', err);
   }
-  // create promises
-  // const tableOperations = tables.map(tableConfig => {
-  //   const TableName = tableConfig.TableName;
-  //   try {
-  //     const tableExists = existingTables.TableNames.includes(TableName);
-  //     if (tableExists) {
-  //       const existingTable = dynamodb
-  //         .describeTable({
-  //           TableName,
-  //         })
-  //         .promise();
-  //       // update GSIs
-  //       const newGSIs: GSIType[] | undefined = tableConfig.GlobalSecondaryIndexes || [];
-  //       const existingGSIs: GSIType[] | undefined =
-  //         existingTable.Table.GlobalSecondaryIndexes || [];
-
-  //       // const existing = existingGSIs.filter(gsi =>
-  //       //   newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-  //       // );
-  //       const additions = newGSIs.filter(
-  //         gsi => !existingGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-  //       );
-
-  //       // create additions
-  //       const Additions = additions.map(createAddition);
-
-  //       const deletions = existingGSIs.filter(
-  //         gsi => !newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-  //       );
-
-  //       const Deletions = deletions.map(createDeletion);
-
-  //       let GlobalSecondaryIndexUpdates = [...Additions, ...Deletions];
-  //       if (GlobalSecondaryIndexUpdates.length > 0) {
-  //         await GlobalSecondaryIndexUpdates.reduce((acc, GSIUpdate) => {
-  //           return acc.then(() =>
-  //             dynamodb
-  //               .updateTable({
-  //                 TableName,
-  //                 AttributeDefinitions: existingTable.Table.AttributeDefinitions,
-  //                 GlobalSecondaryIndexUpdates: [GSIUpdate],
-  //               })
-  //               .promise()
-  //           );
-  //         }, Promise.resolve(null));
-  //       }
-  //     } else {
-  //       console.info(`Creating table ${tableConfig.TableName} locally`);
-  //       return dynamodb.createTable(tableConfig).promise();
-  //     }
-  //   } catch (error) {}
-  // });
-
-  // await tables.reduce((acc, tableConfig) => {
-  //   return acc.then(async () => {
-  //     const TableName = tableConfig.TableName;
-  //     try {
-  //       const tableExists = existingTables.TableNames.includes(TableName);
-  //       if (tableExists) {
-  //         const params = {
-  //           TableName,
-  //         };
-  //         const existingTable = await dynamodb.describeTable(params).promise();
-  //         // update GSIs
-  //         const newGSIs: GSIType[] | undefined = tableConfig.GlobalSecondaryIndexes || [];
-  //         const existingGSIs: GSIType[] | undefined =
-  //           existingTable.Table.GlobalSecondaryIndexes || [];
-
-  //         // const existing = existingGSIs.filter(gsi =>
-  //         //   newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-  //         // );
-  //         const additions = newGSIs.filter(
-  //           gsi => !existingGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-  //         );
-
-  //         // create additions
-  //         const Additions = additions.map(createAddition);
-
-  //         const deletions = existingGSIs.filter(
-  //           gsi => !newGSIs.map(gsi => gsi.IndexName).includes(gsi.IndexName)
-  //         );
-
-  //         const Deletions = deletions.map(createDeletion);
-
-  //         let GlobalSecondaryIndexUpdates = [...Additions, ...Deletions];
-  //         if (GlobalSecondaryIndexUpdates.length > 0) {
-  //           await GlobalSecondaryIndexUpdates.reduce((acc, GSIUpdate) => {
-  //             return acc.then(() =>
-  //               dynamodb
-  //                 .updateTable({
-  //                   TableName,
-  //                   AttributeDefinitions: existingTable.Table.AttributeDefinitions,
-  //                   GlobalSecondaryIndexUpdates: [GSIUpdate],
-  //                 })
-  //                 .promise()
-  //             );
-  //           }, Promise.resolve(null));
-  //         }
-  //       } else {
-  //         console.info(`Creating table ${tableConfig.TableName} locally`);
-  //         await dynamodb.createTable(tableConfig).promise();
-  //       }
-  //     } catch (err) {
-  //       console.log('error', err);
-  //       if (err.code !== 'ResourceInUseException') throw err;
-  //     }
-  //   });
-  // }, Promise.resolve(null));
 }
 
 export function configureDDBDataSource(config, ddbConfig) {
