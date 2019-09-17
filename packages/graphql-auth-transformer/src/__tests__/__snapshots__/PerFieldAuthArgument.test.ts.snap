@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test that subscriptions are only generated if the respective mutation operation exists 1`] = `
+"## [Start] Checking for allowed operations which can return this field **
+#set( $operation = $util.defaultIfNull($context.source.operation, \\"null\\") )
+#if( $operation == \\"Mutation\\" )
+$util.toJson(null)
+#else
+$util.toJson($context.source.secret)
+#end
+## [End] Checking for allowed operations which can return this field **"
+`;
+
+exports[`Test that subscriptions are only generated if the respective mutation operation exists 2`] = `
+"## [Start] Setting the operation **
+#set( $context.result.operation = \\"Mutation\\" )
+## [End] Setting the operation **
+
+$util.toJson($context.result)"
+`;
+
+exports[`Test that subscriptions are only generated if the respective mutation operation exists 3`] = `
+"## [Start] Setting the operation **
+#set( $context.result.operation = \\"Mutation\\" )
+## [End] Setting the operation **
+
+$util.toJson($context.result)"
+`;
+
+exports[`Test that subscriptions are only generated if the respective mutation operation exists 4`] = `
+"## [Start] Setting the operation **
+#set( $context.result.operation = \\"Mutation\\" )
+## [End] Setting the operation **
+
+$util.toJson($context.result)"
+`;
