@@ -179,7 +179,7 @@ async function executeAmplifyCommand(context) {
 
   context.print.info(commandPath);
   context.print.info(context.input);
-  
+
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
