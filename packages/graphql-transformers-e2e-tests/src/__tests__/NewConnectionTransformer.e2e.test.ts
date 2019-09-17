@@ -127,7 +127,14 @@ type PostAuthor
         transformers: [
             new DynamoDBModelTransformer(),
             new KeyTransformer(),
-            new ModelConnectionTransformer()
+            new ModelConnectionTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema);
