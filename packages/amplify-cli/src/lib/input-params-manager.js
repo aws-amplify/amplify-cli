@@ -56,8 +56,6 @@ function normalizeProviderName(name, providerPluginList) {
   if (!providerPluginList || providerPluginList.length < 1) {
     return undefined;
   }
-  const nameSplit = name.split('-');
-  name = nameSplit[nameSplit.length - 1];
   name = providerPluginList.includes(name) ? name : undefined;
   return name;
 }
@@ -66,8 +64,6 @@ function normalizeFrontendHandlerName(name, frontendPluginList) {
   if (!frontendPluginList || frontendPluginList.length < 1) {
     return undefined;
   }
-  const nameSplit = name.split('-');
-  name = nameSplit[nameSplit.length - 1];
   name = frontendPluginList.includes(name) ? name : undefined;
   return name;
 }

@@ -35,7 +35,7 @@ export function writePluginsJsonFileSync(pluginsJson: PluginPlatform): void {
 
   fs.ensureDirSync(systemDotAmplifyDirPath);
 
-  const jsonString = JSON.stringify(pluginsJson, null);
+  const jsonString = JSON.stringify(pluginsJson, null, 4);
   fs.writeFileSync(pluginsJsonFilePath, jsonString, 'utf8');
 }
 
@@ -45,6 +45,6 @@ export async function writePluginsJsonFile(pluginsJson: PluginPlatform): Promise
 
   await fs.ensureDir(systemDotAmplifyDirPath);
 
-  const jsonString = JSON.stringify(pluginsJson, null);
+  const jsonString = JSON.stringify(pluginsJson, null, 4);
   await fs.writeFile(pluginsJsonFilePath, jsonString, 'utf8');
 }

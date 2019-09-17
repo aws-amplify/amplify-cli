@@ -182,7 +182,7 @@ async function executeAmplifyCommand(context) {
 }
 
 async function handleAmplifyEvent(context, args) {
-  context.print.info(`${category} handleAmplifyEvent to be implmented`);
+  context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }
 

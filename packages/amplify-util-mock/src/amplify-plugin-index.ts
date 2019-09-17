@@ -10,6 +10,6 @@ export async function executeAmplifyCommand(context: any) {
 }
 
 export async function handleAmplifyEvent(context: any, args: any) {
-  console.log(`${pluginName} handleAmplifyEvent to be implmented`);
+  context.print.info(`${pluginName} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }
