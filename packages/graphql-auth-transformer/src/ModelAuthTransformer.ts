@@ -1291,8 +1291,7 @@ All @auth directives used on field definitions are performed when the field is r
                 )
 
                 const collectAuthCondition = this.resources.collectAuthCondition()
-                const staticGroupAuthorizedVariable = field ? `${field.name.value}_${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}` :
-                    ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable
+                const staticGroupAuthorizedVariable = this.resources.getStaticAuthorizationVariable(field);
                 const ifNotStaticallyAuthedCreateAuthCondition = iff(
                     raw(`! $${staticGroupAuthorizedVariable}`),
                     compoundExpression([

@@ -246,7 +246,7 @@ export class ResourceFactory {
                 customClaim = rule.groupClaim;
             }
         }
-        const staticGroupAuthorizedVariable = this.setStaticAuthVariable(field);
+        const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
 
         return block('Static Group Authorization Checks', [
             comment(`Authorization rule: { allow: groups, groups: "${JSON.stringify(allowedGroups)}" }`),
@@ -814,7 +814,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     // B = AuthConditionIsNotNull
     // ! (A OR B) == (!A AND !B)
     public throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(field?: FieldDefinitionNode): Expression {
-        const staticGroupAuthorizedVariable = this.setStaticAuthVariable(field);
+        const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
         const ifUnauthThrow = iff(
             not(parens(
                 or([
@@ -1018,9 +1018,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         return block("Determine request authentication mode", expressions);
     }
 
-    public setStaticAuthVariable(field: FieldDefinitionNode): string {
-        return field ? `${field.name.value}_${ResourceConstants.SNIPPETS.AuthCondition}` :
-            ResourceConstants.SNIPPETS.AuthCondition;
+    public getStaticAuthorizationVariable(field: FieldDefinitionNode): string {
+        return field ? `${field.name.value}_${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}` :
+            ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable;
     }
 
     public makeIAMPolicyForRole(isAuthPolicy: Boolean, resources: Set<string>): Policy {
