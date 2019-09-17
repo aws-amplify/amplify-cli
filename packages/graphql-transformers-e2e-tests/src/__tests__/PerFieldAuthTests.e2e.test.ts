@@ -151,6 +151,15 @@ beforeAll(async () => {
         bio: String,
         notes: String @auth(rules: [{allow: owner}])
     }
+
+    type Post @model
+        @auth(rules: [{ allow: groups, groups: ["Admin"] },
+                      { allow: owner, ownerField: "owner1", operations: [read, create] }])
+    {
+        id: ID!
+        owner1: String! @auth(rules: [{allow: owner, ownerField: "notAllowed", operations: [update]}])
+        text: String @auth(rules: [{ allow: owner, ownerField: "owner1", operations : [update]}])
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
@@ -534,4 +543,41 @@ test('Test with auth with subscriptions on default behavior', async () => {
     }`, {})
     console.log(queryAsStudent1)
     expect(queryAsStudent1.data.getStudent.notes).toBeNull()
+})
+
+test('AND per-field dynamic auth rule test', async () => {
+    const createPostResponse = await GRAPHQL_CLIENT_1.query(`mutation CreatePost {
+        createPost(input: {owner1: "${USERNAME1}", text: "mytext"}) {
+          id
+          text
+          owner1
+        }
+      }`)
+    console.log(createPostResponse)
+    const postID1 = createPostResponse.data.createPost.id;
+    expect(postID1).toBeDefined()
+    expect(createPostResponse.data.createPost.text).toEqual('mytext')
+    expect(createPostResponse.data.createPost.owner1).toEqual(USERNAME1)
+
+    const badUpdatePostResponse = await GRAPHQL_CLIENT_1.query(`mutation UpdatePost {
+        updatePost(input: {id: "${postID1}", text: "newText", owner1: "${USERNAME1}"}) {
+          id
+          owner1
+          text
+        }
+      }
+      `)
+      console.log(badUpdatePostResponse)
+      expect(badUpdatePostResponse.errors[0].errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
+
+      const correctUpdatePostResponse = await GRAPHQL_CLIENT_1.query(`mutation UpdatePost {
+        updatePost(input: {id: "${postID1}", text: "newText"}) {
+          id
+          owner1
+          text
+        }
+      }`)
+      console.log(correctUpdatePostResponse)
+      expect(correctUpdatePostResponse.data.updatePost.owner1).toEqual(USERNAME1)
+      expect(correctUpdatePostResponse.data.updatePost.text).toEqual('newText')
 })
