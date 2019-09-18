@@ -30,7 +30,7 @@ async function generateStatementsAndTypes(context, forceDownloadSchema,
   if (withoutInit) {
     forceDownloadSchema = false;
   }
-  const config = loadConfig(context);
+  const config = loadConfig(context, withoutInit);
   const projects = config.getProjects();
   if (!projects.length) {
     throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);

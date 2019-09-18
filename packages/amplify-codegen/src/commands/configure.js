@@ -9,7 +9,7 @@ async function configure(context) {
   } catch (e) {
     withoutInit = true;
   }
-  const config = loadConfig(context);
+  const config = loadConfig(context, withoutInit);
   if (!config.getProjects().length) {
     await add(context);
     return;
