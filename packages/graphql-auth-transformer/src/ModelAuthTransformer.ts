@@ -528,7 +528,7 @@ Either make the field optional, set auth on the object and not the field, or dis
 
     private protectDeleteForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode,
         rules: AuthRule[], modelConfiguration: ModelDirectiveConfiguration) {
-        const resolverResourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(parent.name.value);
+        const resolverResourceId = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(parent.name.value);
         const subscriptionOperation: ModelDirectiveOperationType = "onDelete";
         this.protectDeleteMutation(ctx, resolverResourceId, rules, parent, modelConfiguration, field, subscriptionOperation)
     }
@@ -545,8 +545,7 @@ Either make the field optional, set auth on the object and not the field, or dis
         const typeName = parent.name.value;
         const resolverResourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
         const createResolverResource = ctx.getResource(resolverResourceId);
-        const operation = ctx.getMutationTypeName();
-        const operationExpression = this.resources.setOperationExpression(operation);
+        const mutationTypeName = ctx.getMutationTypeName();
         if (rules && rules.length && createResolverResource) {
             // Get the directives we need to add to the GraphQL nodes
             const directives = this.getDirectivesForRules(rules, false);
@@ -564,12 +563,12 @@ Either make the field optional, set auth on the object and not the field, or dis
 
                     operationName = modelConfiguration.getName('create');
 
-                    this.addDirectivesToOperation(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
+                    this.addDirectivesToOperation(ctx, mutationTypeName, operationName, operationDirectives);
                 }
             }
 
             if (operationName) {
-                this.addFieldToResourceReferences(ctx.getMutationTypeName(), operationName, rules);
+                this.addFieldToResourceReferences(mutationTypeName, operationName, rules);
             }
 
             // Break the rules out by strategy.
@@ -659,10 +658,14 @@ Either make the field optional, set auth on the object and not the field, or dis
 
             if (modelConfiguration.shouldHave('onCreate') &&
                 modelConfiguration.getName('level') as ModelSubscriptionLevel === 'on') {
-                const getTemplateParts = [
-                    print(operationExpression),
-                    createResolverResource.Properties.ResponseMappingTemplate,
-                ];
+                    const getTemplateParts = [
+                        createResolverResource.Properties.ResponseMappingTemplate,
+                    ];
+
+                    if (!this.isOperationExpressionSet(mutationTypeName,
+                        createResolverResource.Properties.ResponseMappingTemplate)) {
+                            getTemplateParts.unshift(this.resources.setOperationExpression(mutationTypeName));
+                    }
                 createResolverResource.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
                 ctx.setResource(resolverResourceId, createResolverResource)
             }
@@ -823,23 +826,23 @@ All @auth directives used on field definitions are performed when the field is r
     // commmon rule validation between obj and field
     private commonRuleValidation(rule: AuthRule) {
         const { identityField, identityClaim, allow,
-           groups, groupsField, groupClaim
+            groups, groupsField, groupClaim
         } = rule;
-       if ( allow === 'groups' && (identityClaim || identityField)) {
-           throw new InvalidDirectiveError(`
-           @auth identityField/Claim can only be used for 'allow: owner'`)
-       }
-       if (allow === 'owner' && groupClaim) {
-           throw new InvalidDirectiveError(`
-           @auth groupClaim can only be used 'allow: groups'`);
-       }
-       if ( groupsField && groups) {
-           throw new InvalidDirectiveError("This rule has groupsField and groups, please use one or the other")
-       }
-       if (identityField && identityClaim) {
-           throw new InvalidDirectiveError("Please use consider IdentifyClaim over IdentityField as it is deprecated.")
-       }
-   }
+        if ( allow === 'groups' && (identityClaim || identityField)) {
+            throw new InvalidDirectiveError(`
+            @auth identityField/Claim can only be used for 'allow: owner'`)
+        }
+        if (allow === 'owner' && groupClaim) {
+            throw new InvalidDirectiveError(`
+            @auth groupClaim can only be used 'allow: groups'`);
+        }
+        if ( groupsField && groups) {
+            throw new InvalidDirectiveError("This rule has groupsField and groups, please use one or the other")
+        }
+        if (identityField && identityClaim) {
+            throw new InvalidDirectiveError("Please use consider IdentifyClaim over IdentityField as it is deprecated.")
+        }
+    }
 
     /**
      * Protect get queries.
@@ -1115,6 +1118,7 @@ All @auth directives used on field definitions are performed when the field is r
         if (!rules || rules.length === 0 || !resolver) {
             return
         } else {
+            const mutationTypeName = ctx.getMutationTypeName();
 
             if (modelConfiguration.shouldHave('create')) {
                 const operationName = modelConfiguration.getName('create');
@@ -1125,10 +1129,10 @@ All @auth directives used on field definitions are performed when the field is r
                 const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
                 if (operationDirectives.length > 0) {
-                    this.addDirectivesToOperation(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
+                    this.addDirectivesToOperation(ctx, mutationTypeName, operationName, operationDirectives);
                 }
 
-                this.addFieldToResourceReferences(ctx.getMutationTypeName(), operationName, rules);
+                this.addFieldToResourceReferences(mutationTypeName, operationName, rules);
             }
 
             // Break the rules out by strategy.
@@ -1240,6 +1244,7 @@ All @auth directives used on field definitions are performed when the field is r
         if (!rules || rules.length === 0 || !resolver) {
             return
         } else {
+            const mutationTypeName =  ctx.getMutationTypeName();
 
             if (modelConfiguration.shouldHave(isUpdate ? 'update' : 'delete')) {
                 const operationName = modelConfiguration.getName(isUpdate ? 'update' : 'delete');
@@ -1250,10 +1255,10 @@ All @auth directives used on field definitions are performed when the field is r
                 const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
                 if (operationDirectives.length > 0) {
-                    this.addDirectivesToOperation(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
+                    this.addDirectivesToOperation(ctx, mutationTypeName, operationName, operationDirectives);
                 }
 
-                this.addFieldToResourceReferences(ctx.getMutationTypeName(), operationName, rules);
+                this.addFieldToResourceReferences(mutationTypeName, operationName, rules);
             }
 
             // Break the rules out by strategy.
@@ -1354,11 +1359,13 @@ All @auth directives used on field definitions are performed when the field is r
             if (field && operation &&
                 modelConfiguration.shouldHave(operation) &&
                 modelConfiguration.getName('level') as ModelSubscriptionLevel === 'on') {
-                const operationExpression = this.resources.setOperationExpression(operation);
                 const getTemplateParts = [
-                    print(operationExpression),
                     resolver.Properties.ResponseMappingTemplate,
                 ];
+                if (!this.isOperationExpressionSet(mutationTypeName,
+                    resolver.Properties.ResponseMappingTemplate)) {
+                        getTemplateParts.unshift(this.resources.setOperationExpression(mutationTypeName))
+                    }
                 resolver.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
                 ctx.setResource(resolverResourceId, resolver)
             }
@@ -1993,6 +2000,10 @@ found '${rule.provider}' assigned.`);
         if (iamPrivateRules.length > 0) {
             this.authPolicyResources.add(`${typeName}/${fieldName}`);
         }
+    }
+
+    private isOperationExpressionSet(operationTypeName: string, template: string): boolean {
+        return template.includes(`$context.result.operation = "${operationTypeName}"`);
     }
 }
 
