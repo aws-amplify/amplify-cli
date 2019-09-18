@@ -16,7 +16,7 @@
   "dependencies": {
     "amplify-appsync-simulator": "0.7.0",
     "amplify-category-function": "1.17.0",
-    "amplify-codegen": "1.13.0",
+    "amplify-codegen": "1.16.0",
     "amplify-dynamodb-simulator": "0.7.0",
     "amplify-provider-awscloudformation": "3.4.0",
     "amplify-storage-simulator": "0.7.0",
