@@ -146,10 +146,10 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
     }
 
     if (!result.verified) {
-      let commandString = '';
+      let commandString = input.plugin === constants.CORE ? '' : input.plugin;
 
       if (input.command! !== Constant.PLUGIN_DEFAULT_COMMAND) {
-        commandString = input.command!;
+        commandString += ' ' + input.command!;
       }
 
       if (input.subCommands) {
