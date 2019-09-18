@@ -436,6 +436,7 @@ workflows:
             branches:
               only:
                 - master
+                - beta
           requires:
             - build
             - integration_test_ios
