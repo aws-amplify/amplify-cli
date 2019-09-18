@@ -7,8 +7,11 @@ module.exports = {
     const { subCommands } = context.input;
     let subcommand = 'help';
     if (subCommands && subCommands.length > 0) {
-      [subcommand] = subCommands;
+      /* eslint-disable */
+      subcommand = subCommands[0];
+      /* eslint-enable */
     }
+    shiftParams(context);
     if (subcommand === 'help') {
       displayHelp(context);
     } else {
@@ -27,6 +30,25 @@ module.exports = {
   },
 };
 
+function shiftParams(context) {
+  delete context.parameters.first;
+  delete context.parameters.second;
+  delete context.parameters.third;
+  const { subCommands } = context.input;
+  /* eslint-disable */
+  if (subCommands && subCommands.length > 1) {
+    if (subCommands.length > 1) {
+      context.parameters.first = (subCommands)[1];
+    }
+    if (subCommands.length > 2) {
+      context.parameters.second = (subCommands)[2];
+    }
+    if (subCommands.length > 3) {
+      context.parameters.third = (subCommands)[3];
+    }
+  }
+  /* eslint-enable */
+}
 
 function displayHelp(context) {
   const header = `amplify ${featureName} <subcommands>`;
