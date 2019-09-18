@@ -124,7 +124,7 @@ export class OperationServer {
             operationName
           );
           const errors = [...(results.errors || []), ...context.appsyncErrors];
-          if (errors.length) {
+          if (errors.length > 0) {
             results.errors = exposeGraphQLErrors(errors);
           }
           return response.send({ data: null, ...results });

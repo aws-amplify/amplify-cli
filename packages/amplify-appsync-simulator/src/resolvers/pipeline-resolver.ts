@@ -33,7 +33,7 @@ export class AppSyncPipelineResolver {
     let stash = {};
     let templateErrors;
 
-    // Pipe line request mapping template
+    // Pipeline request mapping template
     ({ result, stash, errors: templateErrors } = requestMappingTemplate.render(
       { source, arguments: args, stash },
       context,
@@ -41,7 +41,7 @@ export class AppSyncPipelineResolver {
     ));
     context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
 
-    // Pipe line functions
+    // Pipeline functions
     await this.config.functions
       .reduce((chain, fn) => {
         const fnResolver = this.simulatorContext.getFunction(fn);

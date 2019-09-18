@@ -2,7 +2,7 @@ import { GraphQLResolveInfo } from 'graphql';
 
 export class TemplateSentError extends Error {
   extensions: any;
-  constructor(message, errorType, data, errorInfo, info: GraphQLResolveInfo) {
+  constructor(public message:string, public errorType:string , public data: any, public errorInfo: any, info: GraphQLResolveInfo) {
     super(message);
     const fieldName = info.fieldName;
     let path = info.path;
@@ -14,7 +14,6 @@ export class TemplateSentError extends Error {
 
     const fieldNode = info.fieldNodes.find(f => f.name.value === fieldName);
     const filedLocation = fieldNode && fieldNode.loc.startToken || null;
-    Object.assign(this, { message, errorType, data, errorInfo });
     this.extensions = {
       message: message,
       errorType,
@@ -33,15 +32,12 @@ export class TemplateSentError extends Error {
 }
 
 export class Unauthorized extends TemplateSentError {
-  extensions: any;
-  errorType: string;
   constructor(gqlMessage, info) {
     super(gqlMessage, 'Unauthorized', {}, {}, info);
   }
 }
 export class ValidateError extends Error {
-  constructor(message, type, data) {
+  constructor(public message: string, public type: string, public data: any) {
     super(message);
-    Object.assign(this, { message, type, data });
   }
 }
