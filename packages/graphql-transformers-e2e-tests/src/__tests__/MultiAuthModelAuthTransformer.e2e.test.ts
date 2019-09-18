@@ -172,7 +172,7 @@ beforeAll(async () => {
             # API Key can CRUD
             { allow: public }
             # IAM can read
-            { allow: public, provider iam, operations: [read] }
+            { allow: public, provider: iam, operations: [read] }
         ]
     )
     @key (name: "byDate", fields: ["type", "date"], queryField: "getPostIAMWithKeysByDate")
