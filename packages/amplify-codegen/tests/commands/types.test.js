@@ -18,6 +18,7 @@ const MOCK_CONTEXT = {
   },
   amplify: {
     getEnvInfo: jest.fn(),
+    getProjectMeta: jest.fn(),
   },
 };
 
@@ -73,7 +74,7 @@ describe('command - types', () => {
     const forceDownload = false;
     await generateTypes(MOCK_CONTEXT, forceDownload);
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
+    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT, false);
     expect(sync).toHaveBeenCalledWith([MOCK_INCLUDE_PATH, `!${MOCK_EXCLUDE_PATH}`], { cwd: MOCK_PROJECT_ROOT, absolute: true });
     expect(generate).toHaveBeenCalledWith(
       MOCK_QUERIES,

@@ -15,7 +15,7 @@ const MOCK_CONFIG_METHOD = {
 
 const MOCK_CONFIG_WALK_THROUGH = 'MOCK_CONFIG_WALK_THROUGH';
 const MOCK_APPSYNC_APIS = ['API1'];
-const MOCK_CONTEXT = { amplify: {} };
+const MOCK_CONTEXT = { amplify: { getProjectMeta: jest.fn() } };
 describe('command - configure', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -26,8 +26,8 @@ describe('command - configure', () => {
 
   it('should update the configuration of project', async () => {
     await configure(MOCK_CONTEXT);
-    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(configureProjectWalkThrough).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_APPSYNC_APIS, true);
+    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT, false);
+    expect(configureProjectWalkThrough).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_APPSYNC_APIS, false);
     expect(MOCK_CONFIG_METHOD.addProject).toHaveBeenCalledWith(MOCK_CONFIG_WALK_THROUGH);
     expect(MOCK_CONFIG_METHOD.save).toHaveBeenCalledWith();
 
