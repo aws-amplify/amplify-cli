@@ -14,7 +14,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-appsync-simulator": "0.7.0",
+    "amplify-appsync-simulator": "0.10.0",
     "amplify-category-function": "1.17.0",
     "amplify-codegen": "1.16.0",
     "amplify-dynamodb-simulator": "0.10.0",
