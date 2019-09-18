@@ -795,11 +795,12 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         ])
     }
 
-    public throwIfUnauthorized(): Expression {
+    public throwIfUnauthorized(field?: FieldDefinitionNode): Expression {
+        const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
         const ifUnauthThrow = iff(
             not(parens(
                 or([
-                    equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
+                    equals(ref(staticGroupAuthorizedVariable), raw('true')),
                     equals(ref(ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable), raw('true')),
                     equals(ref(ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable), raw('true'))
                 ])

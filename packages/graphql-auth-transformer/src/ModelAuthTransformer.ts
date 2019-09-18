@@ -605,7 +605,7 @@ Either make the field optional, set auth on the object and not the field, or dis
                     fieldIsList
                 )
 
-                const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized()
+                const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized(field)
 
                 // Populate a list of configured authentication providers based on the rules
                 const authModesToCheck = new Set<AuthProvider>();
