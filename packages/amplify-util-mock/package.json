@@ -4,7 +4,7 @@
   "description": "amplify cli plugin providing local testing",
   "main": "lib/index.js",
   "scripts": {
-    "e2e": "jest -w 1 --forceExit src/__e2e__/*.e2e.test.ts",
+    "e2e": "jest --runInBand  --forceExit src/__e2e__/*.e2e.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
@@ -47,7 +47,9 @@
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "jsonwebtoken": "^8.5.1",
+    "jest-junit": "^8.0.0"
   },
   "jest": {
     "transform": {
@@ -58,6 +60,10 @@
       "src/**/*.ts",
       "!**/node_modules/**",
       "!src/__tests__/**"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
     ],
     "testEnvironment": "node",
     "testURL": "http://localhost/",
@@ -70,5 +76,11 @@
       "json",
       "node"
     ]
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
   }
 }

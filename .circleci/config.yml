@@ -65,6 +65,10 @@ jobs:
           name: Run Transformer end-to-end tests with mock server
           command: cd packages/amplify-util-mock/ && yarn e2e
           no_output_timeout: 90m
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+      - store_test_results:
+          path: packages/amplify-util-mock/
 
   amplify_e2e_tests:
     <<: *defaults
@@ -423,12 +427,8 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - mock_e2e_tests
       - mock_e2e_tests:
-          filters:
-            branches:
-              only:
-                - master
-                - beta
           requires:
             - build
       - integration_test:
@@ -440,6 +440,7 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - mock_e2e_tests
       - amplify_e2e_tests:
           filters:
             branches:
@@ -448,6 +449,7 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - mock_e2e_tests
       - deploy:
           requires:
             - build
@@ -455,6 +457,7 @@ workflows:
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
+            - mock_e2e_tests
           filters:
             branches:
               only:
@@ -469,6 +472,7 @@ workflows:
           requires:
             - build
             - test
+            - mock_e2e_tests
       - integration_test_ios:
           filters:
             branches:
@@ -477,3 +481,4 @@ workflows:
           requires:
             - build
             - test
+            - mock_e2e_tests
