@@ -1,13 +1,13 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "AWS CloudFormation Provider",
   "main": "index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-predictions": "1.8.0",
-    "amplify-category-storage": "1.17.0",
+    "amplify-category-storage": "1.18.0",
     "amplify-codegen": "1.13.0",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.510.0",
