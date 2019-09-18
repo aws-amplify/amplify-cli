@@ -132,7 +132,7 @@ async function migrateProject(context, options) {
 
 async function transformGraphQLSchema(context, options) {
   const flags = context.parameters.options;
-  if ('gql-override' in flags && !flags['gql-override']) {
+  if (flags['no-gql-override']) {
     return;
   }
 
