@@ -455,9 +455,18 @@ test('Test that owners cannot update the field of a FieldProtected object unless
         }
     }`, {})
     console.log(response3);
-    expect(response3.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id)
+    const resposne3ID = response3.data.updateFieldProtected.id;
+    expect(resposne3ID).toEqual(response1.data.createFieldProtected.id)
     expect(response3.data.updateFieldProtected.owner).toEqual(USERNAME1)
-    expect(response3.data.updateFieldProtected.ownerOnly).toEqual("updated")
+
+    const response3query = await GRAPHQL_CLIENT_1.query(`query getMake1 {
+        getFieldProtected(id: "${resposne3ID}"){
+            id
+            owner
+            ownerOnly
+        }
+    }`)
+    expect(response3query.data.getFieldProtected.ownerOnly).toEqual("updated")
 
     // This request should succeed since we are not updating the protected field.
     const response4 = await GRAPHQL_CLIENT_3.query(`mutation {
@@ -470,7 +479,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     console.log(response4);
     expect(response4.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id)
     expect(response4.data.updateFieldProtected.owner).toEqual(USERNAME3)
-    expect(response4.data.updateFieldProtected.ownerOnly).toEqual("updated")
+    expect(response4.data.updateFieldProtected.ownerOnly).toBeNull()
 
     const response5 = await GRAPHQL_CLIENT_3.query(`query {
         getFieldProtected( id: "${response1.data.createFieldProtected.id}" ) {

@@ -528,7 +528,7 @@ Either make the field optional, set auth on the object and not the field, or dis
 
     private protectDeleteForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode,
         rules: AuthRule[], modelConfiguration: ModelDirectiveConfiguration) {
-        const resolverResourceId = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(parent.name.value);
+        const resolverResourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(parent.name.value);
         const subscriptionOperation: ModelDirectiveOperationType = "onDelete";
         this.protectDeleteMutation(ctx, resolverResourceId, rules, parent, modelConfiguration, field, subscriptionOperation)
     }
@@ -1238,7 +1238,7 @@ All @auth directives used on field definitions are performed when the field is r
         isUpdate: boolean,
         field?: FieldDefinitionNode,
         ifCondition?: Expression,
-        operation?: ModelDirectiveOperationType,
+        subscriptionOperation?: ModelDirectiveOperationType,
     ) {
         const resolver = ctx.getResource(resolverResourceId)
         if (!rules || rules.length === 0 || !resolver) {
@@ -1356,18 +1356,26 @@ All @auth directives used on field definitions are performed when the field is r
             }
 
             // if protect is for field and there is a subscription for update / delete then protect the field in that operation
-            if (field && operation &&
-                modelConfiguration.shouldHave(operation) &&
+            if (field && subscriptionOperation &&
+                modelConfiguration.shouldHave(subscriptionOperation) &&
                 modelConfiguration.getName('level') as ModelSubscriptionLevel === 'on') {
+                    let mutationResolver = resolver;
+                    let mutationResolverResourceID = resolverResourceId;
+                    // if we are protecting delete then we need to get the delete resolver
+                    if (subscriptionOperation === 'onDelete') {
+                        mutationResolverResourceID = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(parent.name.value);
+                        mutationResolver = ctx.getResource(mutationResolverResourceID);
+                    }
+                const deleteResolver = ctx.getResource(resolverResourceId)
                 const getTemplateParts = [
-                    resolver.Properties.ResponseMappingTemplate,
+                    mutationResolver.Properties.ResponseMappingTemplate,
                 ];
                 if (!this.isOperationExpressionSet(mutationTypeName,
-                    resolver.Properties.ResponseMappingTemplate)) {
+                    mutationResolver.Properties.ResponseMappingTemplate)) {
                         getTemplateParts.unshift(this.resources.setOperationExpression(mutationTypeName))
                     }
-                resolver.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
-                ctx.setResource(resolverResourceId, resolver)
+                    mutationResolver.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
+                ctx.setResource(mutationResolverResourceID, mutationResolver)
             }
         }
     }
@@ -1386,11 +1394,11 @@ All @auth directives used on field definitions are performed when the field is r
         rules: AuthRule[], parent: ObjectTypeDefinitionNode,
         modelConfiguration: ModelDirectiveConfiguration,
         field?: FieldDefinitionNode,
-        operation?: ModelDirectiveOperationType,
+        subscriptionOperation?: ModelDirectiveOperationType,
     ) {
         return this.protectUpdateOrDeleteMutation(
             ctx, resolverResourceId, rules, parent, modelConfiguration, true, field,
-            field ? raw(`$ctx.args.input.containsKey("${field.name.value}")`) : undefined, operation
+            field ? raw(`$ctx.args.input.containsKey("${field.name.value}")`) : undefined, subscriptionOperation
         );
     }
 
@@ -1408,12 +1416,12 @@ All @auth directives used on field definitions are performed when the field is r
         rules: AuthRule[], parent: ObjectTypeDefinitionNode,
         modelConfiguration: ModelDirectiveConfiguration,
         field?: FieldDefinitionNode,
-        operation?: ModelDirectiveOperationType
+        subscriptionOperation?: ModelDirectiveOperationType
     ) {
         return this.protectUpdateOrDeleteMutation(
             ctx, resolverResourceId, rules, parent, modelConfiguration, false, field,
             field ? raw(`$ctx.args.input.containsKey("${field.name.value}") && $util.isNull($ctx.args.input.get("${field.name.value}"))`) : undefined,
-            operation
+            subscriptionOperation
         )
     }
 
