@@ -9,11 +9,16 @@ const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = 
 
 async function generateTypes(context, forceDownloadSchema, withoutInit = false, decoupleFrontend = '') {
   let frontend = decoupleFrontend;
+  try {
+    context.amplify.getProjectMeta();
+  } catch (e) {
+    withoutInit = true;
+  }
   if (!withoutInit) {
     frontend = getFrontEndHandler(context);
   }
   if (frontend !== 'android') {
-    const config = loadConfig(context);
+    const config = loadConfig(context, withoutInit);
     const projects = config.getProjects();
     let apis = [];
     if (!withoutInit) {

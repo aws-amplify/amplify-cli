@@ -9,7 +9,12 @@ const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = 
 
 async function generateStatements(context, forceDownloadSchema,
   maxDepth, withoutInit = false, decoupleFrontend = '') {
-  const config = loadConfig(context);
+  try {
+    context.amplify.getProjectMeta();
+  } catch (e) {
+    withoutInit = true;
+  }
+  const config = loadConfig(context, withoutInit);
   const projects = config.getProjects();
   let apis = [];
   if (!withoutInit) {

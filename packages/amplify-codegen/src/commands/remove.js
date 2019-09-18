@@ -4,7 +4,13 @@ const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 
 async function remove(context) {
-  const config = loadConfig(context);
+  let withoutInit = false;
+  try {
+    context.amplify.getProjectMeta();
+  } catch (e) {
+    withoutInit = true;
+  }
+  const config = loadConfig(context, withoutInit);
   const projects = config.getProjects();
   let projectName;
   if (projects.length === 0) {

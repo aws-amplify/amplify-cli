@@ -33,8 +33,8 @@ async function add(context, apiId = null) {
     context.amplify.getProjectMeta();
   } catch (e) {
     withoutInit = true;
-    const testconfig = loadConfig(context);
-    if (testconfig.getProjects().length) {
+    const config = loadConfig(context, withoutInit);
+    if (config.getProjects().length) {
       throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
     }
   }
@@ -76,7 +76,7 @@ async function add(context, apiId = null) {
   if (!withoutInit) {
     region = getProjectAwsRegion(context);
   }
-  const config = loadConfig(context);
+  const config = loadConfig(context, withoutInit);
   if (config.getProjects().length) {
     throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
   }

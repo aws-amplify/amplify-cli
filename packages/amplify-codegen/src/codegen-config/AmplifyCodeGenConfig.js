@@ -4,14 +4,19 @@ const upath = require('upath');
 const { graphQlToAmplifyConfig } = require('./utils');
 
 class AmplifyCodeGenConfig {
-  constructor(context) {
+  constructor(context, withoutInit = false) {
     try {
       this.gqlConfig = graphQLConfig.getGraphQLConfig();
       this.fixOldConfig();
     } catch (e) {
       if (e instanceof graphQLConfig.ConfigNotFoundError) {
         const { amplify } = context;
-        const projectRoot = amplify.getEnvInfo().projectPath || process.cwd();
+        let projectRoot;
+        if (!withoutInit) {
+          projectRoot = amplify.getEnvInfo().projectPath || process.cwd();
+        } else {
+          projectRoot = process.cwd();
+        }
         const configPath = join(projectRoot, '.graphqlconfig.yml');
         this.gqlConfig = new graphQLConfig.GraphQLConfig(null, configPath);
         this.gqlConfig.config = {};
