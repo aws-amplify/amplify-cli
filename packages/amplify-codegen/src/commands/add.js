@@ -148,7 +148,7 @@ async function add(context, apiId = null) {
       region,
       apiId,
       ...(withoutInit ? { frontend } : {}),
-      ...(withoutInit ? { framework } : {}),
+      ...((withoutInit && frontend === 'javascript') ? { framework } : {}),
     },
   };
 
