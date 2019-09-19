@@ -27,7 +27,7 @@ interface KeyArguments {
     queryField?: string;
 }
 
-export default class FunctionTransformer extends Transformer {
+export default class KeyTransformer extends Transformer {
 
     constructor() {
         super(
