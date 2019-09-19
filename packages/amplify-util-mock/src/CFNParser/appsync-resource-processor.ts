@@ -160,10 +160,14 @@ export function graphQLResolverHandler(
   transformResult: any
 ) {
   const { Properties: properties } = resource;
-  const requestMappingTemplate =
-    'resolvers/' + [properties.TypeName, properties.FieldName, 'req.vtl'].join('.');
-  const responseMappingTemplate =
-    'resolvers/' + [properties.TypeName, properties.FieldName, 'res.vtl'].join('.');
+  const requestMappingTemplate = parseValue(
+    properties.RequestMappingTemplateS3Location,
+    cfnContext
+  ).replace('s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/', '');
+  const responseMappingTemplate = parseValue(
+    properties.ResponseMappingTemplateS3Location,
+    cfnContext
+  ).replace('s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/', '');
   let dataSourceName;
   let functions;
   if (properties.Kind === 'PIPELINE') {
