@@ -13,8 +13,6 @@ import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 
 jest.setTimeout(2000000);
 
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `PerFieldAuthTests-${BUILD_TIMESTAMP}`;
 
 let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;

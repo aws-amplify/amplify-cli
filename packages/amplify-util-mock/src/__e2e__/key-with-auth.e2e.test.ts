@@ -12,9 +12,6 @@ import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
 jest.setTimeout(2000000);
 
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `ModelAuthTransformerTest-${BUILD_TIMESTAMP}`;
-
 let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;
 let dbPath = null;

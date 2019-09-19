@@ -7,13 +7,9 @@ import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
-// to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
 jest.setTimeout(2000000);
-
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `ConnectionsWithAuthTests-${BUILD_TIMESTAMP}`;
 
 let GRAPHQL_ENDPOINT = undefined;
 
