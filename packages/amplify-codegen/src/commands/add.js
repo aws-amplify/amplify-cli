@@ -39,12 +39,10 @@ async function add(context, apiId = null) {
     }
   }
 
-  const schemaName = './schema.json';
-  const schemaPath = path.join(process.cwd(), schemaName);
-  if (!fs.existsSync(schemaPath) && withoutInit) {
-    throw Error(`Please download the introspection schema and place in ${schemaPath} before adding codegen when not in an amplify project`);
+  const schemaPath = ['schema.graphql', 'schema.json'].map(p => path.join(process.cwd(), p)).find(p => fs.existsSync(p));
+  if (withoutInit && !schemaPath) {
+    throw Error(`Please download schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`);
   }
-
   // Grab the frontend
   let frontend;
   if (withoutInit) {
@@ -133,7 +131,7 @@ async function add(context, apiId = null) {
       schema = getSDLSchemaLocation(apiDetails.name);
     }
   } else {
-    schema = './schema.json';
+    schema = schemaPath;
   }
 
   const newProject = {
