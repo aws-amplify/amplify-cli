@@ -1,4 +1,4 @@
-process.env.AWS_SDK_LOAD_CONFIG = true;
+//process.env.AWS_SDK_LOAD_CONFIG = true;
 const aws = require('aws-sdk');
 const proxyAgent = require('proxy-agent');
 const configurationManager = require('../../lib/configuration-manager');
