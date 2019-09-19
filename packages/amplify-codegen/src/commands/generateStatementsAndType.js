@@ -21,10 +21,9 @@ async function generateStatementsAndTypes(context, forceDownloadSchema,
   }
 
   // Check if introspection schema exists
-  const schema = './schema.json';
-  const schemaPath = path.join(process.cwd(), schema);
-  if (!fs.existsSync(schemaPath) && withoutInit) {
-    throw Error(`Please download the introspection schema and place in ${schemaPath} before codegen when not in an amplify project`);
+  const schemaPath = ['schema.graphql', 'schema.json'].map(p => path.join(process.cwd(), p)).find(p => fs.existsSync(p));
+  if (withoutInit && !schemaPath) {
+    throw Error(`Please download the schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`);
   }
 
   if (withoutInit) {
