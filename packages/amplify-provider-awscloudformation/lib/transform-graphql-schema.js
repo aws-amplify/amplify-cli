@@ -41,18 +41,24 @@ async function transformerVersionCheck(
   updatedResources, usedDirectives,
 ) {
   const versionChangeMessage = 'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
-  let transformerConfig;
+  const checkVersionExist = config => (config && config.Version);
+
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
-  try {
-    transformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
-  } catch (err) {
-    // check local resource if the question has been answered before
-    transformerConfig = await readTransformerConfiguration(resourceDir);
-  }
+  const cloudTransformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
+  const cloudVersionExist = checkVersionExist(cloudTransformerConfig);
+
+  // check local resource if the question has been answered before
+  const localTransformerConfig = await readTransformerConfiguration(resourceDir);
+  const localVersionExist = checkVersionExist(localTransformerConfig);
+
+  // if we already asked the confirmation question before at a previous push
+  // or during current operations we should not ask again.
+  const showPrompt = !(cloudVersionExist || localVersionExist);
+
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
-  if (!transformerConfig.Version && usedDirectives.includes('auth')
-  && resources.length > 0) {
+
+  if (showPrompt && usedDirectives.includes('auth') && resources.length > 0) {
     if (context.exeInfo &&
       context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       context.print.warning(`\n${versionChangeMessage}\n`);
@@ -60,7 +66,7 @@ async function transformerVersionCheck(
       const response = await inquirer.prompt({
         name: 'transformerConfig',
         type: 'confirm',
-        message: `\n${versionChangeMessage} \n Do you wish to continue?`,
+        message: `${versionChangeMessage}\nDo you wish to continue?`,
         default: false,
       });
       if (!response.transformerConfig) {
@@ -68,8 +74,12 @@ async function transformerVersionCheck(
       }
     }
   }
-  transformerConfig.Version = 4.0;
-  await writeTransformerConfiguration(resourceDir, transformerConfig);
+
+  // Only touch the file if it misses the Version property
+  if (!localTransformerConfig.Version) {
+    localTransformerConfig.Version = 4.0;
+    await writeTransformerConfiguration(resourceDir, localTransformerConfig);
+  }
 }
 
 function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
