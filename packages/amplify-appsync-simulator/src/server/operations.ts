@@ -123,12 +123,9 @@ export class OperationServer {
             variables,
             operationName
           );
-          if (Object.keys(context.appsyncErrors).length) {
-            results.errors = JSON.stringify(context.appsyncErrors);
-          }
-          // Make extensions available at the root level
-          if (results.errors) {
-            results.errors = exposeGraphQLErrors(results.errors);
+          const errors = [...(results.errors || []), ...context.appsyncErrors];
+          if (errors.length > 0) {
+            results.errors = exposeGraphQLErrors(errors);
           }
           return response.send({ data: null, ...results });
 

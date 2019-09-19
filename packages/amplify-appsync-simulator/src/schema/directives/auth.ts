@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLSchema,
   valueFromASTUntyped,
+  GraphQLResolveInfo,
 } from 'graphql';
 import { buildSchemaFromTypeDefinitions, forEachField } from 'graphql-tools';
 import { AmplifyAppSyncSimulator } from '../..';
@@ -121,10 +122,10 @@ export function protectResolversWithAuthRules(
     const allowedAuthTypes = getAuthDirectiveForField(schema, field, typeName, simulator);
     const allowedCognitoGroups = getAllowedCognitoGroups(schema, field, typeName);
 
-    const newResolver = (root, args, ctx: AmplifyAppSyncSimulatorRequestContext, info) => {
+    const newResolver = (root, args, ctx: AmplifyAppSyncSimulatorRequestContext, info: GraphQLResolveInfo) => {
       const currentAuthMode = ctx.requestAuthorizationMode;
       if (!allowedAuthTypes.includes(currentAuthMode)) {
-        const err = new Unauthorized(`Not Authorized to access ${fieldName} on type ${typeName}`);
+        const err = new Unauthorized(`Not Authorized to access ${fieldName} on type ${typeName}`, info);
         throw err;
       }
       if (
@@ -135,7 +136,7 @@ export function protectResolversWithAuthRules(
         const groups = getCognitoGroups(ctx.jwt || {});
         const authorized = groups.some(group => allowedCognitoGroups.includes(group));
         if (!authorized) {
-          const err = new Unauthorized(`Not Authorized to access ${fieldName} on type ${typeName}`);
+          const err = new Unauthorized(`Not Authorized to access ${fieldName} on type ${typeName}`, info.operation.loc);
           throw err;
         }
       }
