@@ -1,5 +1,15 @@
-//process.env.AWS_SDK_LOAD_CONFIG = true;
-const aws = require('aws-sdk');
+let aws;
+
+try {
+  delete require.cache[require.resolve('aws-sdk')];
+  process.env.AWS_SDK_LOAD_CONFIG = true;
+  aws = require('aws-sdk');
+} catch (e) {
+  delete require.cache[require.resolve('aws-sdk')];
+  delete process.env.AWS_SDK_LOAD_CONFIG;
+  aws = require('aws-sdk');
+}
+
 const proxyAgent = require('proxy-agent');
 const configurationManager = require('../../lib/configuration-manager');
 
