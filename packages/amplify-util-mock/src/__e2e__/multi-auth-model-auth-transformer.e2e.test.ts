@@ -4,7 +4,6 @@ import ModelConnectionTransformer from 'graphql-connection-transformer';
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
 import gql from 'graphql-tag';
 import GraphQLTransform from 'graphql-transformer-core';
-import * as moment from 'moment';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
@@ -18,9 +17,6 @@ const REGION = 'us-west-2';
 let ddbEmulator = null;
 let dbPath = null;
 let server;
-
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `MultiAuthModelAuthTransformerTest-${BUILD_TIMESTAMP}`;
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -198,7 +194,6 @@ afterAll(async () => {
       await server.stop();
     }
     await terminateDDB(ddbEmulator, dbPath);
-    logDebug('Successfully deleted stack ' + STACK_NAME);
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
