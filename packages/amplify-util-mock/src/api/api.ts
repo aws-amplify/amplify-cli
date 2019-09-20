@@ -12,6 +12,7 @@ import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
 import { invoke } from '../utils/lambda/invoke';
+import { getAllLambdaFunctions } from '../utils/lambda/load';
 
 export class APITest {
   private apiName: string;
@@ -80,7 +81,7 @@ export class APITest {
     let config: any = processAppSyncResources(stack, transformerOutput);
     await this.ensureDDBTables(config);
     this.transformerResult = this.configureDDBDataSource(config);
-    this.transformerResult = this.configureLambdaDataSource(config);
+    this.transformerResult = this.configureLambdaDataSource(context, config);
     const overriddenTemplates = await this.resolverOverrideManager.sync(
       this.transformerResult.mappingTemplates
     );
@@ -169,34 +170,41 @@ export class APITest {
     await ensureDynamoDBTables(this.ddbClient, config);
   }
 
-  private configureLambdaDataSource(config) {
-    config.dataSources
-      .filter(d => d.type === 'AWS_LAMBDA')
-      .forEach(d => {
+  private configureLambdaDataSource(context, config) {
+    const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
+    if (lambdaDataSources.length) {
+      const provisionedLambdas = getAllLambdaFunctions(
+        context,
+        path.join(this.projectRoot, 'amplify', 'backend')
+      );
+
+      lambdaDataSources.forEach(d => {
         const arn = d.LambdaFunctionArn;
         const arnParts = arn.split(':');
         let functionName = arnParts[arnParts.length - 1];
         if (functionName.endsWith('-${env}')) {
           functionName = functionName.replace('-${env}', '');
-          const lambdaPath = path.join(
-            this.projectRoot,
-            'amplify',
-            'backend',
-            'function',
-            functionName,
-            'src'
-          );
-          if (!fs.existsSync(path.join(lambdaPath, 'index.js'))) {
+          const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
+          if(!lambdaConfig) {
+            throw new Error(
+              `Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`
+            );
+          }
+          const [fileName, handlerFn ] = lambdaConfig.handler.split('.')
+
+          const lambdaPath = path.join(lambdaConfig.basePath, `${fileName}.js`);
+          if (!fs.existsSync(lambdaPath)) {
             throw new Error(
               `Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`
             );
           }
           d.invoke = payload => {
             return invoke({
-              packageFolder: lambdaPath,
-              handler: 'handler',
-              fileName: 'index.js',
+              packageFolder: lambdaConfig.basePath,
+              handler: handlerFn,
+              fileName: `${fileName}.js`,
               event: payload,
+              environment: lambdaConfig.environment
             });
           };
         } else {
@@ -205,6 +213,8 @@ export class APITest {
           );
         }
       });
+    }
+
     return config;
   }
 
