@@ -62,7 +62,7 @@ function validateKeyField(field: FieldDefinitionNode): void {
 function validateKeyFieldConnectionWithKey(field: FieldDefinitionNode, ctx: TransformerContext): void {
     const isNonNull = isNonNullType(field.type);
     const isAList = isListType(field.type);
-    const isAScalarOrEnum = isScalarOrEnum(ctx.getTypeDefinitionsOfKind(Kind.DOCUMENT) as EnumTypeDefinitionNode[])(field.type);
+    const isAScalarOrEnum = isScalarOrEnum(field.type, ctx.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[]);
 
     // The only valid key fields are single non-null fields.
     if (!isAList && isNonNull && isAScalarOrEnum) {
