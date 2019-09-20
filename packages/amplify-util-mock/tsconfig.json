@@ -6,7 +6,7 @@
         "outDir": "lib",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        // "sourceRoot": "src",
+        "sourceRoot": "src",
         "lib": [
             "es2017",
             "esnext.asynciterable"
