@@ -5,7 +5,7 @@ const path = require('path');
 async function run(context) {
   if (context.parameters.options.app) {
     // Setting up a sample app
-    context.print.warning('Note: GIT WARNING GOES HERE');
+    context.print.warning('Note: Amplify does not have knowledge or necessarily approve of url provided');
     const repoUrl = context.parameters.options.app;
     await validateGithubRepo(repoUrl);
     await cloneRepo(repoUrl);
@@ -51,10 +51,9 @@ async function validateGithubRepo(repoUrl) {
 }
 
 /**
- * Clones repo from url to specified destination
+ * Clones repo from url to current directory (must be empty)
  *
  * @param repoUrl the url to be cloned
- * @param dest the destination to clone to, defaults to current directory (.)
  */
 async function cloneRepo(repoUrl) {
   execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
