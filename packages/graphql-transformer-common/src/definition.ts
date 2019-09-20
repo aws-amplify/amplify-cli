@@ -86,20 +86,18 @@ export function isScalar(type: TypeNode) {
     }
 }
 
-export function isScalarOrEnum(enums: EnumTypeDefinitionNode[]) {
-    return (type: TypeNode) => {
-        if (type.kind === Kind.NON_NULL_TYPE) {
-            return isScalar(type.type)
-        } else if (type.kind === Kind.LIST_TYPE) {
-            return isScalar(type.type)
-        } else {
-            for (const e of enums) {
-                if (e.name.value === type.name.value) {
-                    return true
-                }
+export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]) {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+        return isScalarOrEnum(type.type, enums)
+    } else if (type.kind === Kind.LIST_TYPE) {
+        return isScalarOrEnum(type.type, enums)
+    } else {
+        for (const e of enums) {
+            if (e.name.value === type.name.value) {
+                return true
             }
-            return Boolean(DEFAULT_SCALARS[type.name.value])
         }
+        return Boolean(DEFAULT_SCALARS[type.name.value])
     }
 }
 
