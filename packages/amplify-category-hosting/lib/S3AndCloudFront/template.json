@@ -206,6 +206,9 @@
         "CloudFrontDomainName": {
             "Value": {"Fn::GetAtt": ["CloudFrontDistribution", "DomainName"]}
         },
+        "CloudFrontS3CanonicalUserId": {
+            "Value": {"Fn::GetAtt": ["OriginAccessIdentity", "S3CanonicalUserId"]}
+        },
         "CloudFrontSecureURL": {
             "Value": {
                 "Fn::Join": [

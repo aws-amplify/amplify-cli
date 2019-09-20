@@ -12,14 +12,14 @@ const providerName = 'awscloudformation';
 async function run(context, distributionDirPath) {
   const { WebsiteConfiguration } = context.exeInfo.template.Resources.S3Bucket.Properties;
   const fileList =
-    fileScanner.scan(context, distributionDirPath, WebsiteConfiguration.IndexDocument);
+    fileScanner.scan(context, distributionDirPath, WebsiteConfiguration);
 
   const uploadFileTasks = [];
   const s3Client = await getS3Client(context, 'update');
   const hostingBucketName = getHostingBucketName(context);
   fileList.forEach((filePath) => {
     uploadFileTasks.push(() =>
-      uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath));
+      uploadFile(context, s3Client, hostingBucketName, distributionDirPath, filePath));
   });
 
   const spinner = new Ora('Uploading files...');
@@ -45,9 +45,13 @@ function getHostingBucketName(context) {
   return amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
 }
 
-async function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath) {
-  let relativeFilePath = path.relative(distributionDirPath, filePath);
+async function uploadFile(context, s3Client, hostingBucketName, distributionDirPath, filePath) {
+  const { amplifyMeta } = context.exeInfo;
+  const cloudFrontS3CanonicalUserId =
+    amplifyMeta[constants.CategoryName][serviceName].output.CloudFrontS3CanonicalUserId;
 
+
+  let relativeFilePath = path.relative(distributionDirPath, filePath);
   // make Windows-style relative paths compatible to S3
   relativeFilePath = relativeFilePath.replace(/\\/g, '/');
 
@@ -58,8 +62,13 @@ async function uploadFile(s3Client, hostingBucketName, distributionDirPath, file
     Key: relativeFilePath,
     Body: fileStream,
     ContentType: contentType || 'text/plain',
-    ACL: 'public-read',
   };
+
+  if (cloudFrontS3CanonicalUserId) {
+    uploadParams.GrantRead = `id=${cloudFrontS3CanonicalUserId}`;
+  } else {
+    uploadParams.ACL = 'public-read';
+  }
 
   const data = await s3Client.upload(uploadParams).promise();
 

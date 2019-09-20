@@ -1,5 +1,6 @@
 const path = require('path');
 const inquirer = require('inquirer');
+const configureWebsite = require('./configure-Website');
 
 const originErrorCodes = {
   400: 'Bad Request',
@@ -39,6 +40,9 @@ async function configure(context) {
       context.exeInfo.template.Outputs.CloudFrontDistributionID = Outputs.CloudFrontDistributionID;
       context.exeInfo.template.Outputs.CloudFrontDomainName = Outputs.CloudFrontDomainName;
       context.exeInfo.template.Outputs.CloudFrontSecureURL = Outputs.CloudFrontSecureURL;
+      context.exeInfo.template.Outputs.CloudFrontS3CanonicalUserId =
+        Outputs.CloudFrontS3CanonicalUserId;
+      delete context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration;
       // Don't remove the following line,
       // customer projects setup by the CLI prior to 2/22/2019 has this resource
       delete context.exeInfo.template.Resources.BucketPolicy;
@@ -61,8 +65,19 @@ async function configure(context) {
       delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
       delete context.exeInfo.template.Outputs.CloudFrontDomainName;
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-      const { AccessControl } = originalTemplate.Resources.S3Bucket.Properties;
+      delete context.exeInfo.template.Outputs.CloudFrontS3CanonicalUserId;
+
+      const {
+        AccessControl,
+        WebsiteConfiguration,
+      } = originalTemplate.Resources.S3Bucket.Properties;
       context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
+      context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration =
+        WebsiteConfiguration;
+
+      context.print.warning('Static webhosting will be enabled for the hosting bucket once your remove CloudFront Distribution.');
+      context.print.info('Set it configuration:');
+      await configureWebsite.configure(context);
     }
   }
 
