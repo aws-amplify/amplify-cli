@@ -26,7 +26,7 @@ function normalizeKey(key) {
 }
 
 function normalizeValue(key, value) {
-  if (key === 'app' || key === 'dest') {
+  if (key === 'app') {
     return value;
   }
   const normalizedValue = JSON.parse(value);
