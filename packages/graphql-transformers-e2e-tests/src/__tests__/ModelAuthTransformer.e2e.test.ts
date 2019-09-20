@@ -113,7 +113,7 @@ beforeAll(async () => {
     }
     type AdminNote @model @auth(
         rules: [
-            {allow: groups, groups: ["Admin"]}
+            {allow: groups, groups: ["Admin"], groupClaim: "cognito:groups"}
         ]
     ) {
         id: ID!
