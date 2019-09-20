@@ -22,8 +22,7 @@ import {
     OWNER_AUTH_STRATEGY,
     GROUPS_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
-} from './constants'
-import UserPool from 'cloudform-types/types/cognito/userPool';
+} from './constants';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -1595,16 +1594,17 @@ All @auth directives used on field definitions are performed when the field is r
                 ctx.setResource(resolverResourceId, resolver);
 
                 // check if owner is enabled in auth
-                const hasOwner = rules.find(rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
+                const ownerRules = rules.filter(rule => rule.allow === OWNER_AUTH_STRATEGY);
+                const needsDefaultOwnerField = ownerRules.find(rule => !rule.ownerField);
                 const hasStaticGroupAuth = rules.find(rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
-                if (hasOwner) {
-                    this.addOwner(ctx, parent.name.value);
-                    // If static group is specified in any of the rules then it would specify the owner arg as optional
-                    if (hasStaticGroupAuth) {
-                        this.addSubscriptionOwnerArgument(ctx, resolver, false)
-                    } else {
-                        this.addSubscriptionOwnerArgument(ctx, resolver, true)
+                if (ownerRules) {
+                    // if there is an owner rule without ownerField add the owner field in the type
+                    if (needsDefaultOwnerField) {
+                        this.addOwner(ctx, parent.name.value);
                     }
+                    // If static group is specified in any of the rules then it would specify the owner arg(s) as optional
+                    const makeNonNull = hasStaticGroupAuth ? false : true;
+                    this.addSubscriptionOwnerArgument(ctx, resolver, ownerRules, makeNonNull);
                 }
             }
         }
@@ -1616,16 +1616,20 @@ All @auth directives used on field definitions are performed when the field is r
         ctx.mapResourceToStack(parent.name.value, resolverResourceId);
     }
 
-    private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, makeNonNull: boolean = false) {
+    private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver,
+        ownerRules: AuthRule[], makeNonNull: boolean = false) {
         let subscription = ctx.getSubscription();
         let createField: FieldDefinitionNode = subscription.fields.find(
             field => field.name.value === resolver.Properties.FieldName,
             ) as FieldDefinitionNode;
         const nameNode: any = makeNonNull ? makeNonNullType(makeNamedType('String')) : makeNamedType('String');
-        const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
+        // const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
+        const ownerArgumentList = ownerRules.map( rule => {
+            return makeInputValueDefinition(rule.ownerField || DEFAULT_OWNER_FIELD, nameNode);
+        })
         createField = {
             ...createField,
-            arguments: createArguments,
+            arguments: ownerArgumentList,
         };
         subscription = {
             ...subscription,
