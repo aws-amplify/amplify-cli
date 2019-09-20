@@ -175,6 +175,7 @@ function attachPrint(context: Context) {
 
 const print = {
   info,
+  fancy,
   warning,
   error,
   success,
@@ -218,6 +219,10 @@ function red(message: string): void {
 
 function blue(message: string): void {
   console.log(colors.blue(message));
+}
+
+function fancy(message: string): void {
+  console.log(message);
 }
 
 function debug(message: string, title: string = 'DEBUG'): void {

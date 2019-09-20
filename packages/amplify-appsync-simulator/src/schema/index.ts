@@ -46,27 +46,28 @@ export function generateResolvers(
             resolverConfig.typeName,
             resolverConfig.fieldName
           );
-          // Mutation and Query
-          if (typeName !== 'Subscription') {
-            const res = await resolver.resolve(source, args, context, info);
-            return res;
-          } else if (!source) { // Subscription at connect time
-            try {
+          try {
+            // Mutation and Query
+            if (typeName !== 'Subscription') {
               const res = await resolver.resolve(source, args, context, info);
               return res;
-            } catch (e) {
-              context.appsyncErrors.push(e);
+            } else if (!source) {
+              // Subscription at connect time
+              const res = await resolver.resolve(source, args, context, info);
+              return res;
             }
+            // subscription at publish time. No filtering
+            return source;
+          } catch (e) {
+            context.appsyncErrors.push(e);
           }
-          // at subscription time
-          return source;
         },
         ...(typeName === 'Subscription'
           ? {
               subscribe: (source, args, context, info) => {
                 // Connect time error. Not allowing subscription
-                if(context.appsyncErrors.length) {
-                  throw new Error('Subscription failed')
+                if (context.appsyncErrors.length) {
+                  throw new Error('Subscription failed');
                 }
                 return simulatorContext.pubsub.asyncIterator(fieldName);
               },

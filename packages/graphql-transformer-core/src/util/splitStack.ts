@@ -66,7 +66,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
         }
         return stackMap;
     }
-    
+
     /**
      * Returns a map where the keys are the resource ids and the values are the
      * names of the stack where that resource belongs.
@@ -131,9 +131,9 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     }
 
     /**
-     * Looks at each stack to finds all its Ref and GetAtt expressions
-     * and relaces them with Import/Export when siblings and Parameter/Ref
-     * when parent-child.
+     * Looks at each stack to find all its Ref and GetAtt expressions
+     * and relaces them with Import/Export (when siblings) and Parameter/Ref
+     * (when parent-child).
      */
     function replaceReferences(stacks: {[name: string]: Template}, resourceToStackMap: { [key: string]: string }): NestedStackInfo {
         // For each stack create a list of stacks that it depends on.

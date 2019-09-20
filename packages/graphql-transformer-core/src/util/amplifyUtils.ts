@@ -256,7 +256,7 @@ function mergeUserConfigWithTransformOutput(
             }
         }
         // Providing a parameter value when the parameters is not explicitly defined
-        // in the template causes CloudFormation to throw and error. This will only
+        // in the template causes CloudFormation to throw an error. This will only
         // provide the value to the nested stack if the user has specified it.
         const parametersForStack = Object.keys(userDefinedStack.Parameters).reduce((acc, k) => ({
             ...acc,
