@@ -30,7 +30,7 @@ module.exports = async (context, apiDetails) => {
 
 
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  fs.write(amplifyMetaFilePath, JSON.stringify(amplifyMeta, null, 2));
+  fs.write(amplifyMetaFilePath, JSON.stringify(amplifyMeta, null, 4));
 
   const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
   const currentAmplifyMeta = JSON.parse(fs.read(currentAmplifyMetaFilePath));
@@ -38,7 +38,7 @@ module.exports = async (context, apiDetails) => {
     currentAmplifyMeta.api = {};
   }
   currentAmplifyMeta.api[apiDetails.name] = appsyncMetadata;
-  fs.write(currentAmplifyMetaFilePath, JSON.stringify(currentAmplifyMeta, null, 2));
+  fs.write(currentAmplifyMetaFilePath, JSON.stringify(currentAmplifyMeta, null, 4));
 
   await context.amplify.onCategoryOutputsChange(context);
   context.print.success(`Successfully added API ${apiDetails.name} to your Amplify project`);
