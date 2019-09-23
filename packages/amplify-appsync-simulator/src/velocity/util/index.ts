@@ -17,6 +17,6 @@ export function create(errors = [], now: Date = new Date(), info: GraphQLResolve
     now,
     errors,
     info,
-    time: time(now),
+    time: time(),
   };
 }
