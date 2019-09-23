@@ -21,7 +21,8 @@ async function run(context, distributionDirPath) {
   const hostingBucketName = getHostingBucketName(context);
 
   let cloudFrontS3CanonicalUserId;
-  if (output.CloudFrontOriginAccessIdentity) {
+  if (context.exeInfo.template.Resources.OriginAccessIdentity && 
+    output.CloudFrontOriginAccessIdentity) {
     const cloudFrontClient = await getCloudFrontClient(context, 'retrieve');
     const params = { Id: output.CloudFrontOriginAccessIdentity };
     const originAccessIdentity =
