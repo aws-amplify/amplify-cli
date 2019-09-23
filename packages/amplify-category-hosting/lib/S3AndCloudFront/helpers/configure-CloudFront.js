@@ -40,8 +40,8 @@ async function configure(context) {
       context.exeInfo.template.Outputs.CloudFrontDistributionID = Outputs.CloudFrontDistributionID;
       context.exeInfo.template.Outputs.CloudFrontDomainName = Outputs.CloudFrontDomainName;
       context.exeInfo.template.Outputs.CloudFrontSecureURL = Outputs.CloudFrontSecureURL;
-      context.exeInfo.template.Outputs.CloudFrontS3CanonicalUserId =
-        Outputs.CloudFrontS3CanonicalUserId;
+      context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity =
+        Outputs.CloudFrontOriginAccessIdentity;
       delete context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration;
       // Don't remove the following line,
       // customer projects setup by the CLI prior to 2/22/2019 has this resource
@@ -65,7 +65,7 @@ async function configure(context) {
       delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
       delete context.exeInfo.template.Outputs.CloudFrontDomainName;
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-      delete context.exeInfo.template.Outputs.CloudFrontS3CanonicalUserId;
+      delete context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity;
 
       const {
         AccessControl,
