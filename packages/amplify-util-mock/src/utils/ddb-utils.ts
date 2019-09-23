@@ -13,13 +13,22 @@ export async function ensureDynamoDBTables(dynamodb, config) {
 }
 
 export function configureDDBDataSource(config, ddbConfig) {
-  config.dataSources
-    .filter(d => d.type === 'AMAZON_DYNAMODB')
-    .forEach(d => {
-      d.config.endpoint = ddbConfig.endpoint;
-      d.config.region = ddbConfig.region;
-      d.config.accessKeyId = ddbConfig.accessKeyId;
-      d.config.secretAccessKey = ddbConfig.secretAccessKey;
-    });
-  return config;
+  return {
+    ...config,
+    dataSources: config.dataSources.map(d => {
+      if (d.type !== 'AMAZON_DYNAMODB') {
+        return d;
+      }
+        return {
+          ...d,
+          config: {
+            ...d.config,
+            endpoint: ddbConfig.endpoint,
+            region: ddbConfig.region,
+            accessKeyId: ddbConfig.accessKeyId,
+            secretAccessKey: ddbConfig.secretAccessKey,
+          },
+        };
+    }),
+  };
 }
