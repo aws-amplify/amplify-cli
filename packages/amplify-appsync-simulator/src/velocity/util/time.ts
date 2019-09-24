@@ -9,7 +9,7 @@ declare module 'moment' {
   }
 }
 
-function parseTimeStamp(dateTime: string, format?: string, timezone?: string): moment.Moment {
+const parseTimestamp = (dateTime: string, format?: string, timezone?: string): moment.Moment => {
   if (!dateTime || !format) {
     return null;
   }
@@ -52,11 +52,11 @@ export const time = () => ({
     format: string,
     timezone?: string
   ): number | null {
-    const timestamp = parseTimeStamp(dateTime, format, timezone);
+    const timestamp = parseTimestamp(dateTime, format, timezone);
     return timestamp ? timestamp.valueOf() : null;
   },
   parseISO8601ToEpochMilliSeconds(dateTime): number | null {
-    const timestamp = parseTimeStamp(dateTime, 'YYYY-MM-DDTHH:mm:ss.SZ');
+    const timestamp = parseTimestamp(dateTime, 'YYYY-MM-DDTHH:mm:ss.SZ');
     return timestamp ? timestamp.valueOf() : null;
   },
   epochMilliSecondsToSeconds(milliseconds: number): number | null {
