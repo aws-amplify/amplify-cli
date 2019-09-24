@@ -80,7 +80,7 @@ export class APITest {
     const { transformerOutput, stack } = await runTransformer(context);
     let config: any = processAppSyncResources(stack, transformerOutput);
     await this.ensureDDBTables(config);
-    this.transformerResult = this.configureDDBDataSource(config);
+    config = this.configureDDBDataSource(config);
     this.transformerResult = this.configureLambdaDataSource(context, config);
     const overriddenTemplates = await this.resolverOverrideManager.sync(
       this.transformerResult.mappingTemplates
@@ -172,25 +172,32 @@ export class APITest {
 
   private configureLambdaDataSource(context, config) {
     const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
-    if (lambdaDataSources.length) {
-      const provisionedLambdas = getAllLambdaFunctions(
-        context,
-        path.join(this.projectRoot, 'amplify', 'backend')
-      );
+    if (lambdaDataSources.length === 0) {
+      return config;
+    }
+    const provisionedLambdas = getAllLambdaFunctions(
+      context,
+      path.join(this.projectRoot, 'amplify', 'backend')
+    );
 
-      lambdaDataSources.forEach(d => {
+    return {
+      ...config,
+      dataSources: config.dataSources.map(d => {
+        if (d.type !== 'AWS_LAMBDA') {
+          return d;
+        }
         const arn = d.LambdaFunctionArn;
         const arnParts = arn.split(':');
         let functionName = arnParts[arnParts.length - 1];
         if (functionName.endsWith('-${env}')) {
           functionName = functionName.replace('-${env}', '');
           const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
-          if(!lambdaConfig) {
+          if (!lambdaConfig) {
             throw new Error(
               `Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`
             );
           }
-          const [fileName, handlerFn ] = lambdaConfig.handler.split('.')
+          const [fileName, handlerFn] = lambdaConfig.handler.split('.');
 
           const lambdaPath = path.join(lambdaConfig.basePath, `${fileName}.js`);
           if (!fs.existsSync(lambdaPath)) {
@@ -198,24 +205,25 @@ export class APITest {
               `Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`
             );
           }
-          d.invoke = payload => {
-            return invoke({
-              packageFolder: lambdaConfig.basePath,
-              handler: handlerFn,
-              fileName: `${fileName}.js`,
-              event: payload,
-              environment: lambdaConfig.environment
-            });
+          return {
+            ...d,
+            invoke: payload => {
+              return invoke({
+                packageFolder: lambdaConfig.basePath,
+                handler: handlerFn,
+                fileName: `${fileName}.js`,
+                event: payload,
+                environment: lambdaConfig.environment,
+              });
+            },
           };
         } else {
           throw new Error(
             'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function'
           );
         }
-      });
-    }
-
-    return config;
+      }),
+    };
   }
 
   private async watch(context) {
