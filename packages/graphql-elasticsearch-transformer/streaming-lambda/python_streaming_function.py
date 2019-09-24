@@ -7,12 +7,15 @@ import time
 import traceback
 from urllib.parse import urlparse, quote
 
+import botocore
+import boto3
 from botocore.auth import SigV4Auth
 from botocore.awsrequest import AWSRequest
 from botocore.credentials import get_credentials
 from botocore.endpoint import BotocoreHTTPSession
 from botocore.session import Session
 from boto3.dynamodb.types import TypeDeserializer
+
 
 
 # The following parameters are required to configure the ES cluster

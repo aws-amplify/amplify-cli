@@ -30,7 +30,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchStreamingFunctionName]: new StringParameter({
                 Description: 'The name of the streaming lambda function.',
-                Default: 'DdbToEsFn'
+                Default: 'DDBToEsFn'
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName]: new StringParameter({
                 Description: 'The name of the streaming lambda function IAM role.',
