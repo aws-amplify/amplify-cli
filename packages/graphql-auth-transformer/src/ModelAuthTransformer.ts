@@ -436,16 +436,6 @@ Static group authorization should perform as expected.`
         // Delete operations are only protected by @auth directives on objects.
         const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule))
         this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration)
-
-        // Check if subscriptions is enabled
-        if (modelConfiguration.getName('level') !== "off") {
-            this.protectOnCreateSubscription(ctx, createRules, parent,
-                modelConfiguration);
-            this.protectOnUpdateSubscription(ctx, updateRules, parent,
-                modelConfiguration);
-            this.protectOnDeleteSubscription(ctx, deleteRules, parent,
-                modelConfiguration);
-        }
     }
 
     private protectReadForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[],
@@ -499,6 +489,8 @@ Static group authorization should perform as expected.`
                 resolver = this.resources.blankResolver(parent.name.value, field.name.value)
             }
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')
+            // if subscriptions auth is enabled protect this field by checking for the operation
+            // if the operation is a mutation then we deny the a read operation on the field
             if (modelConfiguration.getName('level') === 'on') {
                 if (field.type.kind === Kind.NON_NULL_TYPE) {
                     throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
@@ -655,6 +647,7 @@ Either make the field optional, set auth on the object and not the field, or dis
                 ctx.setResource(resolverResourceId, createResolverResource)
             }
 
+            // if subscriptions is enabled the operation is specified in the mutation response resolver
             if (modelConfiguration.shouldHave('onCreate') &&
                 modelConfiguration.getName('level') as ModelSubscriptionLevel === 'on') {
                     const getTemplateParts = [
@@ -1365,7 +1358,6 @@ All @auth directives used on field definitions are performed when the field is r
                         mutationResolverResourceID = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(parent.name.value);
                         mutationResolver = ctx.getResource(mutationResolverResourceID);
                     }
-                const deleteResolver = ctx.getResource(resolverResourceId)
                 const getTemplateParts = [
                     mutationResolver.Properties.ResponseMappingTemplate,
                 ];
