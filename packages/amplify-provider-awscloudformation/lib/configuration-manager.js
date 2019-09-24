@@ -30,6 +30,7 @@ async function init(context) {
 }
 
 async function configure(context) {
+  context.exeInfo = context.exeInfo || context.amplify.getProjectDetails();
   normalizeInputParams(context);
   context.exeInfo.awsConfigInfo = getCurrentConfig(context);
   await newUserCheck(context);
