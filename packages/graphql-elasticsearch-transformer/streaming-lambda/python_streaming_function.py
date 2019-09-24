@@ -7,6 +7,8 @@ import time
 import traceback
 from urllib.parse import urlparse, quote
 
+import botocore
+import boto3
 from botocore.auth import SigV4Auth
 from botocore.awsrequest import AWSRequest
 from botocore.credentials import get_credentials
