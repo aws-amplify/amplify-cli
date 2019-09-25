@@ -28,7 +28,7 @@ import {
 } from 'graphql/language/ast';
 import { _Kind } from 'graphql/language/kinds';
 
-interface MappingParameters {
+export interface MappingParameters {
     [key: string]: {
         [key: string]: {
             [key: string]: string | number | string[];

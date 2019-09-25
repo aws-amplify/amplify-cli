@@ -10,14 +10,7 @@ import {
     int, Expression
 } from 'graphql-mapping-template'
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
-
-interface Mappings {
-    [key: string]: {
-        [key: string]: {
-            [key: string]: string | number | string[];
-        };
-    };
-};
+import { MappingParameters } from 'graphql-transformer-core/src/TransformerContext'
 
 export class ResourceFactory {
 
@@ -123,7 +116,7 @@ export class ResourceFactory {
         }).dependsOn(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID)
     }
 
-    public getLayerMapping(): Mappings {
+    public getLayerMapping(): MappingParameters {
         return {
             "LayerResourceMapping":{
                 "ap-northeast-1": {
