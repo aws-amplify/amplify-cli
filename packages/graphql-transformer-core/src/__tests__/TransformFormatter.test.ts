@@ -61,8 +61,17 @@ const template: Template = {
             Description: "PostTable Arn.",
             Value: Fn.GetAtt("PostTable", 'Arn')
         }
+    },
+    Mappings: {
+        "LayerResourceMapping":{
+            "us-east-1": {
+                "layerRegion": "arn:aws:lambda:us-east-1:668099181075:layer:AWSLambda-Python-AWS-SDK:1"
+            },
+        }
     }
 }
+    
+
 
 
 test('Test getTemplateReferences', () => {
