@@ -77,6 +77,12 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
         return createMapByStackRules(Object.keys(template.Resources));
     }
 
+    function mapMappingToStack(
+        template: Template,
+    ): { [key: string]: string } {
+        return createMapByStackRules(Object.keys(template.Mappings));
+    }
+
     /**
      * Returns a map where the keys are the Outputs ids and the values are the
      * names of the stack where that Output belongs.
@@ -90,7 +96,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     /**
      * Uses the stackRules to split resources out into the different stacks.
      */
-    function collectTemplates(template: Template, resourceToStackMap: { [k: string]: string }, outputToStackMap: { [k: string]: string }) {
+    function collectTemplates(template: Template, resourceToStackMap: { [k: string]: string }, outputToStackMap: { [k: string]: string }, mappingsToStackMap: { [k: string]: string }) {
         const resourceIds = Object.keys(resourceToStackMap);
         const templateMap = {}
         for (const resourceId of resourceIds) {
@@ -124,6 +130,15 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
             const output = template.Outputs[outputId];
             templateMap[stackName].Outputs[outputId] = output;
         }
+
+        const mappingIds = Object.keys(mappingToStackMap);
+        for (const mappingId of mappingIds) {
+            const stackName = mappingsToStackMap[mappingId];
+            const mappings = template.Mappings[mappingId];
+            templateMap[stackName].Mappings[mappingId] = mappings;
+        }
+
+        
         // The root stack exposes all parameters at the top level.
         templateMap[rootStackName].Parameters = template.Parameters;
         templateMap[rootStackName].Conditions = template.Conditions;
@@ -354,8 +369,9 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     const templateJson: any = JSON.parse(JSON.stringify(stack));
     const resourceToStackMap = mapResourcesToStack(templateJson);
     const outputToStackMap = mapOutputsToStack(templateJson);
-    const stackMapping = { ...resourceToStackMap, ...outputToStackMap };
-    const stacks = collectTemplates(templateJson, resourceToStackMap, outputToStackMap);
+    const mappingToStackMap = mapMappingToStack(templateJson);
+    const stackMapping = { ...resourceToStackMap, ...outputToStackMap, ...mappingToStackMap };
+    const stacks = collectTemplates(templateJson, resourceToStackMap, outputToStackMap, stackMapping);
     const stackInfo = replaceReferences(stacks, resourceToStackMap);
     let rootStack = stacks[rootStackName];
     delete(stacks[rootStackName]);
