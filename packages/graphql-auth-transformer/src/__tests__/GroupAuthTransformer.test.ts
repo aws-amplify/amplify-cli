@@ -118,3 +118,44 @@ test('Test ModelAuthTransformer validation @auth on non @model. Should fail.', (
         expect(e).toBeDefined()
     }
 });
+
+test('Test for dynamic group auth with custom token', () => {
+    const validSchema = `
+    type Todo @model
+        @auth(
+            rules: [
+                { allow: groups, groupsField: "groups", groupClaim: "groups" }
+            ])
+    {
+        id: ID!
+        groups: String
+        content: String
+    }`
+
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }
+            })
+        ]
+    })
+
+    const out = transformer.transform(validSchema)
+    expect(out).toBeDefined()
+    // check the mutation operations to contain identityClaim from custom value in jwt
+    expect(
+        out.resolvers['Mutation.createTodo.req.vtl']
+    ).toContain('#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get("groups"), []) )')
+    expect(
+        out.resolvers['Mutation.updateTodo.req.vtl']
+    ).toContain('#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get("groups"), []) )')
+    expect(
+        out.resolvers['Mutation.deleteTodo.req.vtl']
+    ).toContain('#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get("groups"), []) )')
+})

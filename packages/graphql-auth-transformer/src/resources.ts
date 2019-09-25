@@ -900,10 +900,10 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     public setUserGroups(customGroup?: string): Expression {
         if (customGroup) {
             return block( `Using groupClaim: ${customGroup} as source for userGroup`, [
-                set(ref('userGroup'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${customGroup}"), [])`)),
+                set(ref('userGroups'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${customGroup}"), [])`)),
                 iff(
-                    raw('$util.isString($userGroup)'),
-                    set(ref('userGroup'), raw('[$userGroup]')),
+                    raw('$util.isString($userGroups)'),
+                    set(ref('userGroups'), raw('[$userGroups]')),
                 ),
             ]);
         }
