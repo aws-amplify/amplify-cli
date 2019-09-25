@@ -8,6 +8,7 @@ export default function blankTemplate(def: Template = {}): Template {
         Parameters: {},
         Resources: {},
         Outputs: {},
+        Mappings: {},
         ...def
     }
 }

@@ -28,6 +28,14 @@ import {
 } from 'graphql/language/ast';
 import { _Kind } from 'graphql/language/kinds';
 
+export interface MappingParameters {
+    [key: string]: {
+        [key: string]: {
+            [key: string]: string | number | string[];
+        };
+    };
+}
+
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
         kind: 'ObjectTypeDefinition',
@@ -249,6 +257,15 @@ export default class TransformerContext {
             }
         }
         this.template.Outputs = { ...this.template.Outputs, ...outputs }
+    }
+
+    public mergeMappings(mapping: MappingParameters ) {
+        for (const mappingName of Object.keys(mapping)) {
+            if (this.template.Mappings[mappingName]) {
+                throw new Error(`Conflicting CloudFormation mapping name: ${mappingName}`)
+            }
+        }
+        this.template.Mappings = {...this.template.Mappings, ...mapping }
     }
 
     /**
