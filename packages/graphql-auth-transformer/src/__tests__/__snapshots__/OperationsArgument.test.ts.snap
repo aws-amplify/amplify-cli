@@ -13,16 +13,15 @@ exports[`Test "create", "update", "delete" auth operations 3`] = `
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -72,16 +71,15 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -285,16 +283,15 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -433,16 +430,15 @@ exports[`Test that checks subscription resolvers are generated with auth logic 1
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -489,16 +485,15 @@ exports[`Test that checks subscription resolvers are generated with auth logic 2
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -545,16 +540,15 @@ exports[`Test that checks subscription resolvers are generated with auth logic 3
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -605,16 +599,15 @@ exports[`Test that operation overwrites queries in auth operations 3`] = `
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -664,16 +657,15 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -877,16 +869,15 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
@@ -1019,16 +1010,15 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
-  ## Authorization rule: { allow: groups, groups: \\"[\\"Moderator\\"]\\" } **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+            $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Moderator\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Moderator\\"] )
-  #set($isStaticGroupAuthorized = $util.defaultIfNull(
-                $isStaticGroupAuthorized, false))
   #foreach( $userGroup in $userGroups )
-    #foreach( $allowedGroup in $allowedGroups )
-      #if( $allowedGroup == $userGroup )
-        #set( $isStaticGroupAuthorized = true )
-      #end
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
     #end
   #end
   ## [End] Static Group Authorization Checks **
