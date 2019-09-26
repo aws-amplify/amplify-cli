@@ -22,8 +22,7 @@ import {
     OWNER_AUTH_STRATEGY,
     GROUPS_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
-} from './constants'
-import UserPool from 'cloudform-types/types/cognito/userPool';
+} from './constants';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -437,16 +436,6 @@ Static group authorization should perform as expected.`
         // Delete operations are only protected by @auth directives on objects.
         const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule))
         this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration)
-
-        // Check if subscriptions is enabled
-        if (modelConfiguration.getName('level') !== "off") {
-            this.protectOnCreateSubscription(ctx, createRules, parent,
-                modelConfiguration);
-            this.protectOnUpdateSubscription(ctx, updateRules, parent,
-                modelConfiguration);
-            this.protectOnDeleteSubscription(ctx, deleteRules, parent,
-                modelConfiguration);
-        }
     }
 
     private protectReadForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[],
@@ -500,6 +489,8 @@ Static group authorization should perform as expected.`
                 resolver = this.resources.blankResolver(parent.name.value, field.name.value)
             }
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')
+            // if subscriptions auth is enabled protect this field by checking for the operation
+            // if the operation is a mutation then we deny the a read operation on the field
             if (modelConfiguration.getName('level') === 'on') {
                 if (field.type.kind === Kind.NON_NULL_TYPE) {
                     throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
@@ -656,6 +647,7 @@ Either make the field optional, set auth on the object and not the field, or dis
                 ctx.setResource(resolverResourceId, createResolverResource)
             }
 
+            // if subscriptions is enabled the operation is specified in the mutation response resolver
             if (modelConfiguration.shouldHave('onCreate') &&
                 modelConfiguration.getName('level') as ModelSubscriptionLevel === 'on') {
                     const getTemplateParts = [
@@ -1366,7 +1358,6 @@ All @auth directives used on field definitions are performed when the field is r
                         mutationResolverResourceID = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(parent.name.value);
                         mutationResolver = ctx.getResource(mutationResolverResourceID);
                     }
-                const deleteResolver = ctx.getResource(resolverResourceId)
                 const getTemplateParts = [
                     mutationResolver.Properties.ResponseMappingTemplate,
                 ];
@@ -1595,16 +1586,17 @@ All @auth directives used on field definitions are performed when the field is r
                 ctx.setResource(resolverResourceId, resolver);
 
                 // check if owner is enabled in auth
-                const hasOwner = rules.find(rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
+                const ownerRules = rules.filter(rule => rule.allow === OWNER_AUTH_STRATEGY);
+                const needsDefaultOwnerField = ownerRules.find(rule => !rule.ownerField);
                 const hasStaticGroupAuth = rules.find(rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
-                if (hasOwner) {
-                    this.addOwner(ctx, parent.name.value);
-                    // If static group is specified in any of the rules then it would specify the owner arg as optional
-                    if (hasStaticGroupAuth) {
-                        this.addSubscriptionOwnerArgument(ctx, resolver, false)
-                    } else {
-                        this.addSubscriptionOwnerArgument(ctx, resolver, true)
+                if (ownerRules) {
+                    // if there is an owner rule without ownerField add the owner field in the type
+                    if (needsDefaultOwnerField) {
+                        this.addOwner(ctx, parent.name.value);
                     }
+                    // If static group is specified in any of the rules then it would specify the owner arg(s) as optional
+                    const makeNonNull = hasStaticGroupAuth ? false : true;
+                    this.addSubscriptionOwnerArgument(ctx, resolver, ownerRules, makeNonNull);
                 }
             }
         }
@@ -1616,16 +1608,20 @@ All @auth directives used on field definitions are performed when the field is r
         ctx.mapResourceToStack(parent.name.value, resolverResourceId);
     }
 
-    private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, makeNonNull: boolean = false) {
+    private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver,
+        ownerRules: AuthRule[], makeNonNull: boolean = false) {
         let subscription = ctx.getSubscription();
         let createField: FieldDefinitionNode = subscription.fields.find(
             field => field.name.value === resolver.Properties.FieldName,
             ) as FieldDefinitionNode;
         const nameNode: any = makeNonNull ? makeNonNullType(makeNamedType('String')) : makeNamedType('String');
-        const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
+        // const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
+        const ownerArgumentList = ownerRules.map( rule => {
+            return makeInputValueDefinition(rule.ownerField || DEFAULT_OWNER_FIELD, nameNode);
+        })
         createField = {
             ...createField,
-            arguments: createArguments,
+            arguments: ownerArgumentList,
         };
         subscription = {
             ...subscription,
