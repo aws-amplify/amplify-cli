@@ -1,4 +1,4 @@
-import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction, DeletionPolicy } from 'cloudform-types'
+import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction, DeletionPolicy, ApplicationAutoScaling } from 'cloudform-types'
 import Output from 'cloudform-types/types/output';
 import {
     DynamoDBMappingTemplate, printBlock, str, print,
@@ -6,19 +6,12 @@ import {
     ifElse, compoundExpression, qref, bool, equals, iff, raw, comment, forEach, list
 } from 'graphql-mapping-template'
 import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs } from 'graphql-transformer-common'
+import { Ref } from 'cloudform-types/types/functions';
 
 export class ResourceFactory {
 
     public makeParams() {
         return {
-            [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
-                Description: 'The number of read IOPS the table should support.',
-                Default: 5
-            }),
-            [ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS]: new NumberParameter({
-                Description: 'The number of write IOPS the table should support.',
-                Default: 5
-            }),
             [ResourceConstants.PARAMETERS.DynamoDBBillingMode]: new StringParameter({
                 Description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
                 Default: 'PAY_PER_REQUEST',
@@ -26,6 +19,30 @@ export class ResourceFactory {
                     'PAY_PER_REQUEST',
                     'PROVISIONED'
                 ]
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBAutoScaling]: new StringParameter({
+                Description: 'For PROVISIONED billing modes, allow auto scaling of read and write capacity.',
+                Default: 'false',
+                AllowedValues: [
+                    'true',
+                    'false'
+                ]
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
+                Description: 'The number of read IOPS the table should support. If auto scaling is enabled, this is the maximum capacity.',
+                Default: 5
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS]: new NumberParameter({
+                Description: 'The number of write IOPS the table should support. If auto scaling is enabled, this is the maximum capacity.',
+                Default: 5
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableMinReadIOPS]: new NumberParameter({
+                Description: 'If auto scaling is enabled, this is the minimum read capacity.',
+                Default: 5
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableMinWriteIOPS]: new NumberParameter({
+                Description: 'If auto scaling is enabled, this is the minimum write capacity.',
+                Default: 5
             }),
             [ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery]: new StringParameter({
                 Description: 'Whether to enable Point in Time Recovery on the table',
@@ -62,6 +79,8 @@ export class ResourceFactory {
             Conditions: {
                 [ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling]:
                     Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode), 'PAY_PER_REQUEST'),
+                [ResourceConstants.CONDITIONS.ShouldUseProvisionedAutoScaling]:
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBAutoScaling), 'true'),
 
                 [ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery]:
                     Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery), 'true'),
@@ -361,10 +380,10 @@ export class ResourceFactory {
                             ifElse(
                                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
                                 forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),
-                                [
-                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
-                                    qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
-                                ]),
+                                    [
+                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
+                                        qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
+                                    ]),
                                 compoundExpression([
                                     qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
                                     qref('$condition.expressionNames.put("#id", "id")')
@@ -603,10 +622,10 @@ export class ResourceFactory {
                             ifElse(
                                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
                                 forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),
-                                [
-                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
-                                    qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
-                                ]),
+                                    [
+                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
+                                        qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
+                                    ]),
                                 compoundExpression([
                                     qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
                                     qref('$condition.expressionNames.put("#id", "id")')
@@ -667,4 +686,143 @@ export class ResourceFactory {
             )
         })
     }
+
+    /**
+     * Create IAM role required for auto scaling the table
+     * auto scaling for the table.
+     */
+    public makeAutoScalingIAMRole(tableName: string) {
+        return new IAM.Role({
+            AssumeRolePolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                    {
+                        Effect: 'Allow',
+                        Principal: {
+                            Service: 'application-autoscaling.amazonaws.com'
+                        },
+                        Action: 'sts:AssumeRole'
+                    }
+                ]
+            },
+            Policies: [
+                new IAM.Role.Policy({
+                    PolicyName: 'DynamoDBAutoScaling',
+                    PolicyDocument: {
+                        Version: '2012-10-17',
+                        Statement: [
+                            {
+                                Effect: 'Allow',
+                                Action: [
+                                    'dynamodb:DescribeTable',
+                                    'dynamodb:UpdateTable'
+                                ],
+                                Resource: [
+                                    Fn.Sub(
+                                        'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}',
+                                        { tableName }
+                                    )
+                                ]
+                            },
+                            {
+                                Effect: 'Allow',
+                                Action: [
+                                    'cloudwatch:PutMetricAlarm',
+                                    'cloudwatch:DescribeAlarms',
+                                    'cloudwatch:SetAlarmState',
+                                    'cloudwatch:DeleteAlarms'
+                                ],
+                                Resource: [
+                                    Fn.Sub(
+                                        'arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:TargetTracking-table/${tableName}-AlarmLow-*',
+                                        { tableName }
+                                    ),
+                                    Fn.Sub(
+                                        'arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:TargetTracking-table/${tableName}-AlarmHigh-*',
+                                        { tableName }
+                                    ),
+                                ]
+                            },
+                            {
+                                Effect: 'Allow',
+                                Action: [
+                                    'cloudwatch:GetMetricStatistics'
+                                ],
+                                Resource: [
+                                    '*'
+                                ]
+                            }
+                        ]
+                    }
+                })
+            ]
+        })
+    }
+    public makeAutoScalingReadTarget(tableName: string, autoScalingRoleLogicalId: string) {
+        return new ApplicationAutoScaling.ScalableTarget({
+            MaxCapacity: ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS,
+            MinCapacity: ResourceConstants.PARAMETERS.DynamoDBModelTableMinReadIOPS,
+            ResourceId: Fn.Sub(
+                'table/${tableName}',
+                {
+                    tableName
+                }
+            ),
+            RoleARN: Fn.GetAtt(autoScalingRoleLogicalId, "Arn"),
+            ScalableDimension: 'dynamodb:table:ReadCapacityUnits',
+            ServiceNamespace: 'dynamodb'
+        })
+    }
+    public makeAutoScalingReadPolicy(tableName: string, autoScalingRoleLogicalId: string, targetLogicalId: string) {
+        return new ApplicationAutoScaling.ScalingPolicy({
+            PolicyName: Fn.Sub(
+                '${AWS::StackName}-${tableName}-read',
+                { tableName }
+            ),
+            PolicyType: 'TargetTrackingScaling',
+            ScalingTargetId: Ref(targetLogicalId),
+            TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 75,
+                ScaleInCooldown: 60,
+                ScaleOutCooldown: 60,
+                PredefinedMetricSpecification: {
+                    PredefinedMetricType: 'DynamoDBReadCapacityUtilization'
+                }
+            }
+        })
+    }
+    public makeAutoScalingWriteTarget(tableName: string, autoScalingRoleLogicalId: string) {
+        return new ApplicationAutoScaling.ScalableTarget({
+            MaxCapacity: ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS,
+            MinCapacity: ResourceConstants.PARAMETERS.DynamoDBModelTableMinWriteIOPS,
+            ResourceId: Fn.Sub(
+                'table/${tableName}',
+                {
+                    tableName
+                }
+            ),
+            RoleARN: Fn.GetAtt(autoScalingRoleLogicalId, "Arn"),
+            ScalableDimension: 'dynamodb:table:WriteCapacityUnits',
+            ServiceNamespace: 'dynamodb'
+        })
+    }
+    public makeAutoScalingWritePolicy(tableName: string, autoScalingRoleLogicalId: string, targetLogicalId: string) {
+        return new ApplicationAutoScaling.ScalingPolicy({
+            PolicyName: Fn.Sub(
+                '${AWS::StackName}-${tableName}-write',
+                { tableName }
+            ),
+            PolicyType: 'TargetTrackingScaling',
+            ScalingTargetId: Ref(targetLogicalId),
+            TargetTrackingScalingPolicyConfiguration: {
+                TargetValue: 75,
+                ScaleInCooldown: 60,
+                ScaleOutCooldown: 60,
+                PredefinedMetricSpecification: {
+                    PredefinedMetricType: 'DynamoDBWriteCapacityUtilization'
+                }
+            }
+        })
+    }
+
 }

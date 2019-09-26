@@ -40,9 +40,12 @@ export class ResourceConstants {
         APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
         // DynamoDB
-        DynamoDBBillingMode:   'DynamoDBBillingMode',
+        DynamoDBBillingMode: 'DynamoDBBillingMode',
+        DynamoDBAutoScaling: 'DynamoDBAutoScaling',
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
+        DynamoDBModelTableMinReadIOPS: 'DynamoDBModelTableReadMinIOPS',
+        DynamoDBModelTableMinWriteIOPS: 'DynamoDBModelTableWriteMinIOPS',
         DynamoDBEnablePointInTimeRecovery: 'DynamoDBEnablePointInTimeRecovery',
         DynamoDBEnableServerSideEncryption: 'DynamoDBEnableServerSideEncryption',
 
