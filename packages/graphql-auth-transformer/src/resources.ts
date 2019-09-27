@@ -9,7 +9,6 @@ import {
     block, print, ifElse, newline
 } from 'graphql-mapping-template'
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
-import { InvalidDirectiveError } from 'graphql-transformer-core';
 import GraphQLAPI, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, AdditionalAuthenticationProvider } from './graphQlApi'
 import * as Transformer from './ModelAuthTransformer'
 import { FieldDefinitionNode } from 'graphql';
@@ -230,12 +229,12 @@ export class ResourceFactory {
         if (!rules || rules.length === 0) {
             return comment(`No Static Group Authorization Rules`)
         }
-        const variableToSet = ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable;
+        const variableToSet = this.getStaticAuthorizationVariable(field);
         let groupAuthorizationExpressions = []
         for (const rule of rules) {
             const groups = rule.groups;
             const groupClaimAttribute = rule.groupClaim || DEFAULT_GROUP_CLAIM
-           
+
             if (groups) {
                 groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
                     comment(`Authorization rule: { allow: groups, groups: ${JSON.stringify(groups)}, groupClaim: "${groupClaimAttribute}" }`),
@@ -883,8 +882,6 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
                         set(ref('userGroups'), raw('$util.parseJson($userGroups)')),
                         set(ref('userGroups'), raw('[$userGroups]'))
                     )
-                        
-                
                 ),
             ]);
         }
