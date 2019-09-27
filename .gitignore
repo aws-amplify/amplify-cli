@@ -20,3 +20,4 @@ packages/*/package-lock.json
 **/.env
 amplify-integ*/
 packages/amplify-storage-simulator/lib
+packages/*/reports/junit
