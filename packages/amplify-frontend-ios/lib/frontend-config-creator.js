@@ -155,12 +155,10 @@ function getCognitoConfig(cognitoResources, projectRegion) {
           AppClientSecret: cognitoResource.output.AppClientSecret,
           Region: projectRegion,
         },
+        CustomAuth: !!cognitoResources.find(i => i.customAuth),
       },
     });
   }
-
-  cognitoConfig.customAuth = !!cognitoResources.find(i => i.customAuth);
-
 
   if (cognitoResource.output.GoogleWebClient || cognitoResource.output.GoogleIOSClient) {
     cognitoConfig.GoogleSignIn = {
