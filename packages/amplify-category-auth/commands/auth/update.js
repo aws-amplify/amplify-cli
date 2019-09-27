@@ -56,6 +56,17 @@ module.exports = {
         if (authParameters.dependsOn) {
           amplify.updateamplifyMetaAfterResourceUpdate(category, name, 'dependsOn', authParameters.dependsOn);
         }
+
+        let customAuthConfigured = false;
+        if (authParameters.triggers) {
+          const triggers = JSON.parse(authParameters.triggers);
+          customAuthConfigured =
+            triggers.DefineAuthChallenge && triggers.DefineAuthChallenge.length > 0 &&
+            triggers.CreateAuthChallenge && triggers.CreateAuthChallenge.length > 0 &&
+            triggers.VerifyAuthChallengeResponse && triggers.VerifyAuthChallengeResponse.length > 0;
+        }
+        amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'customAuth', customAuthConfigured);
+
         const { print } = context;
         print.success(`Successfully updated resource ${name} locally`);
         print.info('');
