@@ -191,6 +191,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   let idpFederation = false;
   let federationTarget;
 
+  const customAuth = !!cognitoResources.find(i => i.customAuth);
+
   if (cognitoResource.output.HostedUIDomain) {
     domain = `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
   }
@@ -238,6 +240,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     aws_user_pools_web_client_id: cognitoResource.output.AppClientIDWeb,
     oauth,
     federationTarget,
+    customAuth,
   };
 }
 
