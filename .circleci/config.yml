@@ -244,6 +244,8 @@ jobs:
           path: /root/videos
       - store_artifacts:
           path: /root/screenshots
+      - store_test_results:
+          path: packages/amplify-ui-tests/
   integration_test_ios:
     macos:
       xcode: "10.3.0"
@@ -298,6 +300,8 @@ jobs:
             npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum
           when: always
       - store_artifacts:
+          path: ../uitest_logs
+      - store_test_results:
           path: ../uitest_logs
   integration_test_android:
     docker:
