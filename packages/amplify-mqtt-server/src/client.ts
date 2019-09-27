@@ -110,8 +110,8 @@ export class Client {
       return;
     }
 
-    var timeout = (this.keepAlive * 1000 * 3) / 2;
-    var that = this;
+    const timeout = (this.keepAlive * 1000 * 3) / 2;
+    const that = this;
 
     this.logger.debug({ timeout: timeout }, 'setting keepAlive timeout');
 
@@ -143,16 +143,15 @@ export class Client {
 
     this.logger.trace({ topic: topic }, 'delivering message');
 
-    var sub = this.subscriptions[subTopic],
-      indexWildcard = subTopic.indexOf('#'),
-      indexPlus = subTopic.indexOf('+'),
-      forward = true,
-      newId = this.nextId++;
+    const indexWildcard = subTopic.indexOf('#');
+    const indexPlus = subTopic.indexOf('+');
+    let forward = true;
+    const newId = this.nextId++;
 
     // Make sure 'nextId' always fits in a uint16 (http://git.io/vmgKI).
     this.nextId %= 65536;
 
-    var packet = {
+    const packet = {
       topic: topic,
       payload: payload,
       qos: qos,
@@ -199,7 +198,7 @@ export class Client {
   }
 
   private unsubscribeMapTo(topic, cb) {
-    var sub = this.subscriptions[topic];
+    const sub = this.subscriptions[topic];
     if (!sub || !sub.handler) {
       this.server.emit('unsubscribed', topic, this);
       return cb();
@@ -274,7 +273,7 @@ export class Client {
   }
 
   doSubscribe(s, cb) {
-    var handler = (topic, payload, options) => {
+    const handler = (topic, payload, options) => {
       this.forward(topic, payload, options, s.topic, s.qos);
     };
 
@@ -306,7 +305,7 @@ export class Client {
 
     logger.debug({ packet: packet }, 'subscribe received');
 
-    var granted = Client.calculateGranted(this, packet);
+    const granted = Client.calculateGranted(this, packet);
 
     steed().map(this, packet.subscriptions, this.handleEachSub, (err, authorized) => {
       if (err) {
@@ -352,7 +351,7 @@ export class Client {
       }
     }
 
-    var doPubAck = () => {
+    const doPubAck = () => {
       if (packet.qos === 1 && !(this._closed || this._closing)) {
         this.connection.puback({
           messageId: packet.messageId,

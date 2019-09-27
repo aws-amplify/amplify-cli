@@ -7,7 +7,6 @@ import * as nanoid from 'nanoid';
 import { TrieListener } from './trie-listener';
 import { Client } from './client';
 import { EventEmitter } from 'events';
-import { defer } from 'q';
 
 export type MQTTServerOptions = {
   id?: string;
@@ -139,10 +138,8 @@ export class MQTTServer extends EventEmitter {
 
     this.on('ready', () => {
       this.listener.subscribe('$SYS/+/new/clients', (topic, payload) => {
-        var serverId, clientId;
-
-        serverId = topic.split('/')[1];
-        clientId = payload;
+        const serverId = topic.split('/')[1];
+        const clientId = payload;
 
         if (this.clients[clientId] && serverId !== this.id) {
           this.clients[clientId].close(null, 'new connection request');
@@ -192,7 +189,7 @@ export class MQTTServer extends EventEmitter {
   }
 
   publish(packet, client?, callback?) {
-    var logger = this.logger;
+    let logger = this.logger;
 
     if (typeof client === 'function') {
       callback = client;
@@ -205,7 +202,7 @@ export class MQTTServer extends EventEmitter {
       callback = nop;
     }
 
-    var newPacket = {
+    const newPacket = {
       topic: packet.topic,
       payload: packet.payload,
       messageId: this.generateUniqueId(),
@@ -213,7 +210,7 @@ export class MQTTServer extends EventEmitter {
       retain: packet.retain,
     };
 
-    var opts: any = {
+    const opts: any = {
       qos: packet.qos,
       messageId: newPacket.messageId,
     };
@@ -239,7 +236,7 @@ export class MQTTServer extends EventEmitter {
   }
 
   close(callback = nop) {
-    var stuffToClose = [];
+    const stuffToClose = [];
 
     if (this.closed) {
       return callback();
@@ -275,14 +272,14 @@ export class MQTTServer extends EventEmitter {
     }
   }
   attachHttpServer(server, path) {
-    var opt: { server: any; path?: string } = { server: server };
+    const opt: { server: any; path?: string } = { server: server };
     if (path) {
       opt.path = path;
     }
 
     const wss = ws.createServer(opt);
     wss.on('stream', stream => {
-      var conn = new Connection(stream);
+      const conn = new Connection(stream);
       new Client(conn, this);
     });
   }
