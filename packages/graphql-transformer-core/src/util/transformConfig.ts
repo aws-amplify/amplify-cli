@@ -1,4 +1,4 @@
-const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
+export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 import * as path from 'path';
 import { Template } from "cloudform-types";
 import { throwIfNotJSONExt } from './fileUtils';
@@ -56,15 +56,24 @@ export interface TransformConfig {
      */
     Version?: number;
 }
+/**
+ * try to load transformer config from specified projectDir
+ * if it does not exist then we return a blank object
+ *  */
+
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
-    const configPath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
-    const configExists = await fs.exists(configPath);
     let config = {};
-    if (configExists) {
-        const configStr = await fs.readFile(configPath);
-        config = JSON.parse(configStr.toString());
+    try {
+        const configPath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
+        const configExists = await fs.exists(configPath);
+        if (configExists) {
+            const configStr = await fs.readFile(configPath);
+            config = JSON.parse(configStr.toString());
+        }
+        return config as TransformConfig;
+    } catch (err) {
+        return config;
     }
-    return config as TransformConfig;
 }
 export async function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig> {
     const configFilePath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);

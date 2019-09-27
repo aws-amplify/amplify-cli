@@ -23,7 +23,7 @@ async function copyBatch(context, jobs, props, force, writeParams) {
   // If the file exists
   const shouldGenerate = async (target) => {
     if (!filesystem.exists(target) || force) return true;
-    return await confirm(`overwrite ${target}`);
+    return confirm(`overwrite ${target}`);
   };
 
 

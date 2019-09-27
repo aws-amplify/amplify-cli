@@ -108,7 +108,7 @@ beforeAll(async () => {
     # Owners of "Admin" group may create and update employee salaries.
     type Employee @model (
         subscriptions: {
-            level: PUBLIC
+            level: public
         }
     ) @auth(rules: [
         { allow: owner, ownerField: "email", operations: [update] },
@@ -151,12 +151,27 @@ beforeAll(async () => {
         bio: String,
         notes: String @auth(rules: [{allow: owner}])
     }
+
+    type Post @model
+        @auth(rules: [{ allow: groups, groups: ["Admin"] },
+                      { allow: owner, ownerField: "owner1", operations: [read, create] }])
+    {
+        id: ID!
+        owner1: String! @auth(rules: [{allow: owner, ownerField: "notAllowed", operations: [update]}])
+        text: String @auth(rules: [{ allow: owner, ownerField: "owner1", operations : [update]}])
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer(),
-            new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' }),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }}),
         ]
     })
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
@@ -484,6 +499,10 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
 })
 
 test('Test with auth with subscriptions on default behavior', async () => {
+    /**
+     * client 1 and 2 are in the same user pool though client 1 should
+     * not be able to see notes if they are created by client 2
+     * */
     const secureNote1 = "secureNote1"
     const createStudent2 = await GRAPHQL_CLIENT_2.query(`mutation {
         createStudent(input: {bio: "bio1", name: "student1", notes: "${secureNote1}"}) {
@@ -499,7 +518,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
     const createStudent1queryID = createStudent2.data.createStudent.id
     expect(createStudent2.data.createStudent.bio).toEqual('bio1')
     expect(createStudent2.data.createStudent.notes).toBeNull()
-    // running query as username1 should return value
+    // running query as username2 should return value
     const queryForStudent2 = await GRAPHQL_CLIENT_2.query(`query {
         getStudent(id: "${createStudent1queryID}") {
             bio
@@ -512,7 +531,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
     console.log(queryForStudent2)
     expect(queryForStudent2.data.getStudent.notes).toEqual(secureNote1)
 
-    // running query as username1 should return the type though return notes as null
+    // running query as username3 should return the type though return notes as null
     const queryAsStudent1 = await GRAPHQL_CLIENT_1.query(`query {
         getStudent(id: "${createStudent1queryID}") {
             bio
@@ -524,4 +543,41 @@ test('Test with auth with subscriptions on default behavior', async () => {
     }`, {})
     console.log(queryAsStudent1)
     expect(queryAsStudent1.data.getStudent.notes).toBeNull()
+})
+
+test('AND per-field dynamic auth rule test', async () => {
+    const createPostResponse = await GRAPHQL_CLIENT_1.query(`mutation CreatePost {
+        createPost(input: {owner1: "${USERNAME1}", text: "mytext"}) {
+          id
+          text
+          owner1
+        }
+      }`)
+    console.log(createPostResponse)
+    const postID1 = createPostResponse.data.createPost.id;
+    expect(postID1).toBeDefined()
+    expect(createPostResponse.data.createPost.text).toEqual('mytext')
+    expect(createPostResponse.data.createPost.owner1).toEqual(USERNAME1)
+
+    const badUpdatePostResponse = await GRAPHQL_CLIENT_1.query(`mutation UpdatePost {
+        updatePost(input: {id: "${postID1}", text: "newText", owner1: "${USERNAME1}"}) {
+          id
+          owner1
+          text
+        }
+      }
+      `)
+      console.log(badUpdatePostResponse)
+      expect(badUpdatePostResponse.errors[0].errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
+
+      const correctUpdatePostResponse = await GRAPHQL_CLIENT_1.query(`mutation UpdatePost {
+        updatePost(input: {id: "${postID1}", text: "newText"}) {
+          id
+          owner1
+          text
+        }
+      }`)
+      console.log(correctUpdatePostResponse)
+      expect(correctUpdatePostResponse.data.updatePost.owner1).toEqual(USERNAME1)
+      expect(correctUpdatePostResponse.data.updatePost.text).toEqual('newText')
 })

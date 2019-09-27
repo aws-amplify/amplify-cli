@@ -12,6 +12,7 @@ import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
 import { invoke } from '../utils/lambda/invoke';
+import { getAllLambdaFunctions } from '../utils/lambda/load';
 
 export class APITest {
   private apiName: string;
@@ -79,8 +80,8 @@ export class APITest {
     const { transformerOutput, stack } = await runTransformer(context);
     let config: any = processAppSyncResources(stack, transformerOutput);
     await this.ensureDDBTables(config);
-    this.transformerResult = this.configureDDBDataSource(config);
-    this.transformerResult = this.configureLambdaDataSource(config);
+    config = this.configureDDBDataSource(config);
+    this.transformerResult = this.configureLambdaDataSource(context, config);
     const overriddenTemplates = await this.resolverOverrideManager.sync(
       this.transformerResult.mappingTemplates
     );
@@ -114,11 +115,13 @@ export class APITest {
   }
 
   private async reload(context, filePath, action) {
-    const apiDir = await this.getAPIBackendDirectory(context)
+    const apiDir = await this.getAPIBackendDirectory(context);
     const inputSchemaPath = path.join(apiDir, 'schema');
     try {
       let shouldReload;
-      if (this.resolverOverrideManager.isTemplateFile(filePath)) {
+      if (
+        this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink' ? true : false)
+      ) {
         switch (action) {
           case 'add':
             shouldReload = this.resolverOverrideManager.onAdd(filePath);
@@ -141,7 +144,7 @@ export class APITest {
             mappingTemplates,
           });
         }
-      } else if(filePath.includes(inputSchemaPath)) {
+      } else if (filePath.includes(inputSchemaPath)) {
         context.print.info('GraphQL Schema change detected. Reloading...');
         const config = await this.runTransformer(context);
         await this.appSyncSimulator.reload(config);
@@ -167,41 +170,60 @@ export class APITest {
     await ensureDynamoDBTables(this.ddbClient, config);
   }
 
-  private configureLambdaDataSource(config) {
-    config.dataSources
-      .filter(d => d.type === 'AWS_LAMBDA')
-      .forEach(d => {
+  private configureLambdaDataSource(context, config) {
+    const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
+    if (lambdaDataSources.length === 0) {
+      return config;
+    }
+    const provisionedLambdas = getAllLambdaFunctions(
+      context,
+      path.join(this.projectRoot, 'amplify', 'backend')
+    );
+
+    return {
+      ...config,
+      dataSources: config.dataSources.map(d => {
+        if (d.type !== 'AWS_LAMBDA') {
+          return d;
+        }
         const arn = d.LambdaFunctionArn;
         const arnParts = arn.split(':');
         let functionName = arnParts[arnParts.length - 1];
         if (functionName.endsWith('-${env}')) {
           functionName = functionName.replace('-${env}', '');
-          const lambdaPath = path.join(
-            this.projectRoot,
-            'amplify',
-            'backend',
-            'function',
-            functionName,
-            'src'
-          );
-          if (!fs.existsSync(path.join(lambdaPath, 'index.js'))) {
-            throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
+          const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
+          if (!lambdaConfig) {
+            throw new Error(
+              `Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`
+            );
           }
-          d.invoke = payload => {
-            return invoke({
-              packageFolder: lambdaPath,
-              handler: 'handler',
-              fileName: 'index.js',
-              event: payload,
-            });
+          const [fileName, handlerFn] = lambdaConfig.handler.split('.');
+
+          const lambdaPath = path.join(lambdaConfig.basePath, `${fileName}.js`);
+          if (!fs.existsSync(lambdaPath)) {
+            throw new Error(
+              `Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`
+            );
+          }
+          return {
+            ...d,
+            invoke: payload => {
+              return invoke({
+                packageFolder: lambdaConfig.basePath,
+                handler: handlerFn,
+                fileName: `${fileName}.js`,
+                event: payload,
+                environment: lambdaConfig.environment,
+              });
+            },
           };
         } else {
           throw new Error(
             'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function'
           );
         }
-      });
-    return config;
+      }),
+    };
   }
 
   private async watch(context) {

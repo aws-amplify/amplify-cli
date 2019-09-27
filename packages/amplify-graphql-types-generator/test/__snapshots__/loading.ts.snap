@@ -381,3 +381,8 @@ Object {
   "kind": "Document",
 }
 `;
+
+exports[`Validation should throw a helpful message when a file has invalid gql snippets 1`] = `
+"Could not parse graphql operations in test/fixtures/misc/invalid-gqlQueries.js
+  Failed on : world and other words"
+`;

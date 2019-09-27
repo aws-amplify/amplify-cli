@@ -139,7 +139,7 @@ module.exports = {
         return datasource;
       })
       .then((datasourceName) => {
-        context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true });
+        context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
         return datasourceName;
       })
       .then((datasourceName) => {

@@ -1,26 +1,11 @@
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import ModelAuthTransformer from 'graphql-auth-transformer';
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
 import GraphQLTransform from 'graphql-transformer-core';
-import * as moment from 'moment';
-import {
-  addUserToGroup,
-  configureAmplify,
-  createGroup,
-  createUserPool,
-  createUserPoolClient,
-  deleteUserPool,
-  signupAndAuthenticateUser,
-} from './utils/cognito-utils';
+import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
 jest.setTimeout(2000000);
-
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `ModelAuthTransformerTest-${BUILD_TIMESTAMP}`;
-
-// // to deal with bug in cognito-identity-js
 
 (global as any).fetch = require('node-fetch');
 
@@ -49,23 +34,16 @@ let GRAPHQL_CLIENT_2 = undefined;
  */
 let GRAPHQL_CLIENT_3 = undefined;
 
-let USER_POOL_ID = undefined;
+const USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
 const USERNAME3 = 'user3@test.com';
-const TMP_PASSWORD = 'Password123!';
-const REAL_PASSWORD = 'Password1234!';
 
 const ADMIN_GROUP_NAME = 'Admin';
 const DEVS_GROUP_NAME = 'Devs';
 const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
-
-const cognitoClient = new CognitoClient({
-  apiVersion: '2016-04-19',
-  region: 'us-west-2',
-});
 
 beforeAll(async () => {
   // Create a stack for the post model with auth enabled.
@@ -154,17 +132,17 @@ beforeAll(async () => {
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
-      new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' }),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
     ],
   });
-  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
-  const userPoolClientResponse = await createUserPoolClient(
-    cognitoClient,
-    USER_POOL_ID,
-    `UserPool${STACK_NAME}`
-  );
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
+
   try {
     const out = transformer.transform(validSchema);
 
@@ -175,69 +153,38 @@ beforeAll(async () => {
     server = result.simulator;
 
     GRAPHQL_ENDPOINT = server.url + '/graphql';
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+    logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
 
-    // Configure Amplify, create users, and sign in.
-    configureAmplify(USER_POOL_ID, userPoolClientId);
-
-    const authRes: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME1,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-    const authRes2: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME2,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-    const authRes3: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME3,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-
-    await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
-    await createGroup(USER_POOL_ID, PARTICIPANT_GROUP_NAME);
-    await createGroup(USER_POOL_ID, WATCHER_GROUP_NAME);
-    await createGroup(USER_POOL_ID, DEVS_GROUP_NAME);
-    await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, USER_POOL_ID);
-    await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, USER_POOL_ID);
-    await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, USER_POOL_ID);
-    await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, USER_POOL_ID);
-    const authResAfterGroup: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME1,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-
-    const idToken = authResAfterGroup.getIdToken().getJwtToken();
+    const idToken = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [
+      ADMIN_GROUP_NAME,
+      PARTICIPANT_GROUP_NAME,
+      WATCHER_GROUP_NAME,
+    ]);
     GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken,
     });
 
-    const accessToken = authResAfterGroup.getAccessToken().getJwtToken();
+    const accessToken = signUpAddToGroupAndGetJwtToken(
+      USER_POOL_ID,
+      USERNAME1,
+      USERNAME1,
+      [ADMIN_GROUP_NAME, PARTICIPANT_GROUP_NAME, WATCHER_GROUP_NAME],
+      'access'
+    );
     GRAPHQL_CLIENT_1_ACCESS = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: accessToken,
     });
 
-    const authRes2AfterGroup: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME2,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-    const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [
+      DEVS_GROUP_NAME,
+    ]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
 
-    const idToken3 = authRes3.getIdToken().getJwtToken();
+    const idToken3 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME3, []);
     GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken3,
     });
@@ -253,7 +200,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    await deleteUserPool(cognitoClient, USER_POOL_ID);
     if (server) {
       await server.stop();
     }
@@ -287,6 +233,7 @@ test('Test createPost mutation', async () => {
   expect(response.data.createPost.updatedAt).toBeDefined();
   expect(response.data.createPost.owner).toEqual(USERNAME1);
 
+  logDebug('Using access token based client\n');
   const response2 = await GRAPHQL_CLIENT_1_ACCESS.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {

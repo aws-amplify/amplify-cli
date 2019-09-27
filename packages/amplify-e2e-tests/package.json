@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "1.11.0",
+  "version": "1.23.0",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -14,6 +14,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "23.1.6",
+    "@types/nexpect": "0.4.30",
     "@types/node": "^8.10.51",
     "aws-amplify": "^1.1.36",
     "dotenv": "6.2.0",

@@ -25,15 +25,6 @@ const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 
-function failOnInvalidAuthType(usedDirectives, opts) {
-  if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
-    throw new Error(`You are trying to
-use the @auth directive without enabling Amazon Cognito user pools for your API.
-Run \`amplify update api\` and choose
-"Amazon Cognito User Pool" as the authorization type for the API.`);
-  }
-}
-
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => (!map[type].includes('auth') && map[type].includes('model')));
   if (unAuthModelTypes.length) {
@@ -51,18 +42,24 @@ async function transformerVersionCheck(
   updatedResources, usedDirectives,
 ) {
   const versionChangeMessage = 'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
-  let transformerConfig;
+  const checkVersionExist = config => (config && config.Version);
+
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
-  try {
-    transformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
-  } catch (err) {
-    // check local resource if the question has been answered before
-    transformerConfig = await readTransformerConfiguration(resourceDir);
-  }
+  const cloudTransformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
+  const cloudVersionExist = checkVersionExist(cloudTransformerConfig);
+
+  // check local resource if the question has been answered before
+  const localTransformerConfig = await readTransformerConfiguration(resourceDir);
+  const localVersionExist = checkVersionExist(localTransformerConfig);
+
+  // if we already asked the confirmation question before at a previous push
+  // or during current operations we should not ask again.
+  const showPrompt = !(cloudVersionExist || localVersionExist);
+
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
-  if (!transformerConfig.Version && usedDirectives.includes('auth')
-  && resources.length > 0) {
+
+  if (showPrompt && usedDirectives.includes('auth') && resources.length > 0) {
     if (context.exeInfo &&
       context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       context.print.warning(`\n${versionChangeMessage}\n`);
@@ -70,7 +67,7 @@ async function transformerVersionCheck(
       const response = await inquirer.prompt({
         name: 'transformerConfig',
         type: 'confirm',
-        message: `\n${versionChangeMessage} \n Do you wish to continue?`,
+        message: `${versionChangeMessage}\nDo you wish to continue?`,
         default: false,
       });
       if (!response.transformerConfig) {
@@ -78,8 +75,12 @@ async function transformerVersionCheck(
       }
     }
   }
-  transformerConfig.Version = 4.0;
-  await writeTransformerConfiguration(resourceDir, transformerConfig);
+
+  // Only touch the file if it misses the Version property
+  if (!localTransformerConfig.Version) {
+    localTransformerConfig.Version = 4.0;
+    await writeTransformerConfiguration(resourceDir, localTransformerConfig);
+  }
 }
 
 function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
@@ -142,12 +143,11 @@ async function migrateProject(context, options) {
 
 async function transformGraphQLSchema(context, options) {
   const flags = context.parameters.options;
-  if ('gql-override' in flags && !flags['gql-override']) {
+  if (flags['no-gql-override']) {
     return;
   }
 
   let { resourceDir, parameters } = options;
-  // const { noConfig } = options;
   const { forceCompile } = options;
 
   // Compilation during the push step
@@ -247,6 +247,27 @@ async function transformGraphQLSchema(context, options) {
     return await migrateProject(context, migrateOptions);
   }
 
+  let { authConfig } = options;
+
+  //
+  // If we don't have an authConfig from the caller, use it from the
+  // already read resources[0], which is an AppSync API.
+  //
+
+  if (!authConfig) {
+    if (resources[0].output.securityType) {
+      // Convert to multi-auth format if needed.
+      authConfig = {
+        defaultAuthentication: {
+          authenticationType: resources[0].output.securityType,
+        },
+        additionalAuthenticationProviders: [],
+      };
+    } else {
+      ({ authConfig } = resources[0].output);
+    }
+  }
+
   const buildDir = `${resourceDir}/build`;
   const schemaFilePath = `${resourceDir}/${schemaFileName}`;
   const schemaDirPath = `${resourceDir}/${schemaDirName}`;
@@ -258,10 +279,6 @@ async function transformGraphQLSchema(context, options) {
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  failOnInvalidAuthType(
-    directiveMap.directives,
-    { isUserPoolEnabled: Boolean(parameters.AuthCognitoUserPoolId) },
-  );
   warnOnAuth(
     context,
     directiveMap.types,
@@ -275,54 +292,64 @@ async function transformGraphQLSchema(context, options) {
     directiveMap.directives,
   );
 
-  const authMode = parameters.AuthCognitoUserPoolId ? 'AMAZON_COGNITO_USER_POOLS' : 'API_KEY';
-  const transformerList = [
-    // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
-    new DynamoDBModelTransformer(),
-    new ModelConnectionTransformer(),
-    new VersionedModelTransformer(),
-    new FunctionTransformer(),
-    new HTTPTransformer(),
-    new KeyTransformer(),
-    // TODO: Build dependency mechanism into transformers. Auth runs last
-    // so any resolvers that need to be protected will already be created.
-    new ModelAuthTransformer({ authMode }),
-  ];
+  const transformerListFactory = async (addSearchableTransformer) => {
+    const transformerList = [
+      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
+      new DynamoDBModelTransformer(),
+      new VersionedModelTransformer(),
+      new FunctionTransformer(),
+      new HTTPTransformer(),
+      new KeyTransformer(),
+      new ModelConnectionTransformer(),
+      // TODO: Build dependency mechanism into transformers. Auth runs last
+      // so any resolvers that need to be protected will already be created.
+      new ModelAuthTransformer({ authConfig }),
+    ];
+
+    if (addSearchableTransformer) {
+      transformerList.push(new SearchableModelTransformer());
+    }
+
+    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
+    const customTransformers =
+      (customTransformersConfig && customTransformersConfig.transformers
+        ? customTransformersConfig.transformers
+        : [])
+        .map((transformer) => {
+          const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
+          const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
+          // handle 'cannot find module'
+          try {
+            return require(modulePath);
+          } catch (error) {
+            context.print.error(`Unable to import custom transformer module(${modulePath}).`);
+            context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
+            throw error;
+          }
+        })
+        .map((imported) => {
+          const CustomTransformer = imported.default;
+          return CustomTransformer.call({});
+        })
+        .filter(customTransformer => customTransformer);
+
+    if (customTransformers.length > 0) {
+      transformerList.push(...customTransformers);
+    }
+
+    return transformerList;
+  };
+
+  let searchableTransformerFlag = false;
 
   if (directiveMap.directives.includes('searchable')) {
-    transformerList.push(new SearchableModelTransformer());
-  }
-
-  const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-  const customTransformers =
-    (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : [])
-      .map((transformer) => {
-        const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
-        const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
-        // handle 'cannot find module'
-        try {
-          return require(modulePath);
-        } catch (error) {
-          context.print.error(`Unable to import custom transformer module(${modulePath}).`);
-          context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
-          throw error;
-        }
-      })
-      .map((imported) => {
-        const CustomTransformer = imported.default;
-        return CustomTransformer.call({});
-      })
-      .filter(customTransformer => customTransformer);
-
-  if (customTransformers.length > 0) {
-    transformerList.push(...customTransformers);
+    searchableTransformerFlag = true;
   }
 
   const buildConfig = {
     projectDirectory: options.dryrun ? false : resourceDir,
-    transformers: transformerList,
+    transformersFactory: transformerListFactory,
+    transformersFactoryArgs: [searchableTransformerFlag],
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     disableResolverOverrides: options.disableResolverOverrides,

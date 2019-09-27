@@ -1,10 +1,8 @@
-import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
 import ModelTransformer from 'graphql-dynamodb-transformer';
 import KeyTransformer from 'graphql-key-transformer';
-
+import GraphQLTransform from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
 jest.setTimeout(2000000);
 
@@ -59,7 +57,7 @@ beforeAll(async () => {
   server = result.simulator;
 
   GRAPHQL_ENDPOINT = server.url + '/graphql';
-  console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+  logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
   const apiKey = result.config.appSync.apiKey;
   logDebug(apiKey);

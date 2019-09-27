@@ -34,7 +34,6 @@ async function run(context, resourceDefinition) {
 
   return packageResources(context, resources)
     .then(() => transformGraphQLSchema(context, {
-      noConfig: true,
       handleMigration: opts =>
         updateStackForAPIMigration(context, 'api', undefined, opts),
     }))
@@ -114,7 +113,17 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
 
   return packageResources(context, resources)
     .then(() => uploadAppSyncFiles(context, resources, allResources, {
-      useDeprecatedParameters: isReverting, defaultParams: { APIKeyExpirationEpoch: -1 },
+      useDeprecatedParameters: isReverting,
+      defaultParams: {
+        CreateAPIKey: 0,
+        APIKeyExpirationEpoch: -1,
+        authRoleName: {
+          Ref: 'AuthRoleName',
+        },
+        unauthRoleName: {
+          Ref: 'UnauthRoleName',
+        },
+      },
     }))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {

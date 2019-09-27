@@ -12,7 +12,7 @@ import {
     makeNonNullType, makeNamedType, getBaseType,
     makeConnectionField,
     makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey,
-    makeCompositeKeyConditionInputForKey, makeCompositeKeyInputForKey, toCamelCase, graphqlName
+    makeCompositeKeyConditionInputForKey, makeCompositeKeyInputForKey, toCamelCase, graphqlName, toUpper
 } from 'graphql-transformer-common';
 import {
     ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode,
@@ -20,7 +20,6 @@ import {
 } from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
-import * as Case from 'case';
 
 interface KeyArguments {
     name?: string;
@@ -28,7 +27,7 @@ interface KeyArguments {
     queryField?: string;
 }
 
-export default class FunctionTransformer extends Transformer {
+export default class KeyTransformer extends Transformer {
 
     constructor() {
         super(
@@ -168,10 +167,10 @@ export default class FunctionTransformer extends Transformer {
                 if (!field) {
                     throw new InvalidDirectiveError(`Can't find field: ${compositeKeyFieldName} in ${definition.name.value}, but it was specified in the @key definition.`);
                 } else {
-                    compositeKeyFields.push (field);
+                    compositeKeyFields.push(field);
                 }
             }
-            const keyName = Case.pascal(args.name || 'Primary');
+            const keyName = toUpper(args.name || 'Primary');
             const keyConditionInput = makeCompositeKeyConditionInputForKey(definition.name.value, keyName, compositeKeyFields);
             if (!ctx.getType(keyConditionInput.name.value)) {
                 ctx.addInput(keyConditionInput);
@@ -778,7 +777,7 @@ function addSimpleSortKey(ctx: TransformerContext, definition: ObjectTypeDefinit
 function addCompositeSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]): InputValueDefinitionNode[] {
     let sortKeyNames = args.fields.slice(1);
     const compositeSortKeyName = toCamelCase(sortKeyNames);
-    const hashKey = makeInputValueDefinition(compositeSortKeyName, makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(definition.name.value, args.name || 'Primary')));
+    const hashKey = makeInputValueDefinition(compositeSortKeyName, makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(definition.name.value, toUpper(args.name || 'Primary'))));
     return [hashKey, ...elems];
 }
 function joinSnippets(lines: string[]): string {

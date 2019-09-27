@@ -1,8 +1,7 @@
 const fs = require('fs-extra');
 import * as path from 'path';
-import { CloudFormation, Fn, Template, Cognito } from "cloudform-types";
+import { CloudFormation, Fn, Template } from "cloudform-types";
 import GraphQLTransform from '..';
-import Transformer from '../Transformer';
 import DeploymentResources from '../DeploymentResources';
 import { StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -16,7 +15,8 @@ const PARAMETERS_FILE_NAME = 'parameters.json';
 
 export interface ProjectOptions {
     projectDirectory?: string
-    transformers: Transformer[]
+    transformersFactory: Function,
+    transformersFactoryArgs: object[],
     currentCloudBackendDirectory: string
     rootStackFileName?: string
     dryRun?: boolean,
@@ -24,7 +24,9 @@ export interface ProjectOptions {
 }
 export async function buildProject(opts: ProjectOptions) {
     await ensureMissingStackMappings(opts);
+
     const builtProject = await _buildProject(opts);
+
     if (opts.projectDirectory && !opts.dryRun) {
         await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
         if (opts.currentCloudBackendDirectory) {
@@ -39,8 +41,11 @@ export async function buildProject(opts: ProjectOptions) {
 async function _buildProject(opts: ProjectOptions) {
     const userProjectConfig = await loadProject(opts.projectDirectory, opts)
     const stackMapping = getStackMappingFromProjectConfig(userProjectConfig.config);
+    // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
+    // because the StackMapping feature already builds the project once.
+    const transformers = await opts.transformersFactory(...opts.transformersFactoryArgs);
     const transform = new GraphQLTransform({
-        transformers: opts.transformers,
+        transformers,
         stackMapping
     });
     let transformOutput = transform.transform(userProjectConfig.schema.toString());
@@ -111,16 +116,21 @@ function adjustBuildForMigration(resources: DeploymentResources, migrationConfig
  * This allows APIs that were deployed with the bug to continue
  * working without changes.
  */
-export async function ensureMissingStackMappings(config: ProjectOptions) {
+async function ensureMissingStackMappings(config: ProjectOptions) {
     const { currentCloudBackendDirectory } = config;
+    let transformOutput = undefined;
 
     if (currentCloudBackendDirectory) {
         const missingStackMappings = {};
-        const transformOutput = await _buildProject(config);
+        transformOutput = await _buildProject(config);
         const copyOfCloudBackend = await readFromPath(currentCloudBackendDirectory);
         const stackMapping = transformOutput.stackMapping;
-        if (copyOfCloudBackend && copyOfCloudBackend.build) {
-            const stackNames = Object.keys(copyOfCloudBackend.build.stacks);
+        if (copyOfCloudBackend && copyOfCloudBackend.build && copyOfCloudBackend.build.stacks) {
+            // leave the custom stack alone. Don't split them into separate stacks
+            const customStacks = Object.keys(copyOfCloudBackend.stacks || {});
+            const stackNames = Object.keys(copyOfCloudBackend.build.stacks).filter(
+                stack => !customStacks.includes(stack)
+            );
 
             // We walk through each of the stacks that were deployed in the most recent deployment.
             // If we find a resource that was deployed into a different stack than it should have
@@ -166,6 +176,8 @@ export async function ensureMissingStackMappings(config: ProjectOptions) {
             }
         }
     }
+
+    return transformOutput;
 }
 
 /**
@@ -245,7 +257,7 @@ function mergeUserConfigWithTransformOutput(
             }
         }
         // Providing a parameter value when the parameters is not explicitly defined
-        // in the template causes CloudFormation to throw and error. This will only
+        // in the template causes CloudFormation to throw an error. This will only
         // provide the value to the nested stack if the user has specified it.
         const parametersForStack = Object.keys(userDefinedStack.Parameters).reduce((acc, k) => ({
             ...acc,

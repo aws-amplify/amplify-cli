@@ -63,7 +63,13 @@ function transpileAndCheck(schema: string) {
             new ElasticsearchTransformer(),
             new ConnectionTransformer(),
             new FunctionTransformer,
-            new AuthTransformer(),
+            new AuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }}),
         ]
     });
 

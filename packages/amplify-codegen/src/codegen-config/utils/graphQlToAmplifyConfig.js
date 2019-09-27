@@ -23,8 +23,8 @@ function getAmplifyConfig(config = {}) {
     }
     return {
       schema: config.schemaPath,
-      includes: config.includes,
-      excludes: config.excludes || null,
+      includes: Array.isArray(config.includes) ? config.includes : [config.includes],
+      excludes: Array.isArray(config.excludes) ? config.excludes : [config.excludes],
       amplifyExtension: {
         ...config.extensions.amplify,
       },

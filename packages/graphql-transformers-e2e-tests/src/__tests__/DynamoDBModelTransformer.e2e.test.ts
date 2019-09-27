@@ -78,7 +78,13 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer()
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema);
@@ -93,21 +99,21 @@ beforeAll(async () => {
     try {
         console.log('Creating Stack ' + STACK_NAME)
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, { DynamoDBEnablePointInTimeRecovery: "true" }, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1', DynamoDBEnablePointInTimeRecovery: 'true' }, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
             BUILD_TIMESTAMP
         )
         expect(finishedStack).toBeDefined()
         console.log(JSON.stringify(finishedStack, null, 4))
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
+        const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
         GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
         console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-        const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
-        const endpoint = getApiEndpoint(finishedStack.Outputs)
         const apiKey = getApiKey(finishedStack.Outputs)
+        console.log(`API KEY: ${apiKey}`);
         expect(apiKey).toBeTruthy()
-        expect(endpoint).toBeTruthy()
-        GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
+        expect(GRAPHQL_ENDPOINT).toBeTruthy()
+        GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, { 'x-api-key': apiKey })
     } catch (e) {
         console.log(e)
         expect(true).toEqual(false)
@@ -138,7 +144,7 @@ afterAll(async () => {
 
 afterEach(async () => {
   try {
-    // delete all the records 
+    // delete all the records
     console.log('deleting posts');
     const response = await GRAPHQL_CLIENT.query(`
     query {

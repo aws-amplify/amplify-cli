@@ -1,9 +1,8 @@
 import ModelTransformer from 'graphql-dynamodb-transformer';
 import FunctionTransformer from 'graphql-function-transformer';
 import GraphQLTransform from 'graphql-transformer-core';
-import * as moment from 'moment';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy } from './utils/index';
+import { deploy, logDebug } from './utils/index';
 
 jest.setTimeout(2000000);
 
@@ -44,12 +43,12 @@ beforeAll(async () => {
     server = result.simulator;
 
     const endpoint = server.url + '/graphql';
-    console.log(`Using graphql url: ${endpoint}`);
+    logDebug(`Using graphql url: ${endpoint}`);
 
     const apiKey = result.config.appSync.apiKey;
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     console.warn(`Could not setup function: ${e}`);
   }
 });
@@ -81,7 +80,7 @@ test('Test simple echo function', async () => {
     }`,
     {}
   );
-  console.log(JSON.stringify(response, null, 4));
+  logDebug(JSON.stringify(response, null, 4));
   expect(response.data.echo.arguments.msg).toEqual('Hello');
   expect(response.data.echo.typeName).toEqual('Query');
   expect(response.data.echo.fieldName).toEqual('echo');
@@ -100,7 +99,7 @@ test('Test simple duplicate function', async () => {
     }`,
     {}
   );
-  console.log(JSON.stringify(response, null, 4));
+  logDebug(JSON.stringify(response, null, 4));
   expect(response.data.duplicate.arguments.msg).toEqual('Hello');
   expect(response.data.duplicate.typeName).toEqual('Query');
   expect(response.data.duplicate.fieldName).toEqual('duplicate');
@@ -113,7 +112,7 @@ test('Test pipeline of @function(s)', async () => {
     }`,
     {}
   );
-  console.log(JSON.stringify(response, null, 4));
+  logDebug(JSON.stringify(response, null, 4));
   expect(response.data.pipeline).toEqual('Hello, world!');
 });
 
@@ -130,7 +129,7 @@ test('Test pipelineReverse of @function(s)', async () => {
     }`,
     {}
   );
-  console.log(JSON.stringify(response, null, 4));
+  logDebug(JSON.stringify(response, null, 4));
   expect(response.data.pipelineReverse.arguments.msg).toEqual('Hello');
   expect(response.data.pipelineReverse.typeName).toEqual('Query');
   expect(response.data.pipelineReverse.fieldName).toEqual('pipelineReverse');

@@ -6,7 +6,8 @@ export function invoke(options) {
         try {
             // XXX: Make the path work in both e2e and
             const lambdaFn = fork(path.join(__dirname, '../../../lib/utils/lambda', 'execute.js'), [], {
-                execArgv: []
+                execArgv: [],
+                env: options.environment || {}
             });
             lambdaFn.on('message', msg => {
                 const result = JSON.parse(msg);

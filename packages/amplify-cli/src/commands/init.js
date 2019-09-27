@@ -9,7 +9,7 @@ module.exports = {
   name: 'init',
   run: async (context) => {
     constructExeInfo(context);
-    analyzeProject.run(context)
+    await analyzeProject.run(context)
       .then(initFrontendHandler.run)
       .then(initProviders.run)
       .then(onSuccess.run)

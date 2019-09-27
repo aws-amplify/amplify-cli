@@ -1,13 +1,18 @@
 function getPluginInstance(context, pluginName) {
-  const { plugins } = context.runtime;
-  const pluginObj = plugins.find((plugin) => {
-    // TODO: Change the way plugins are detected
-    const nameSplit = plugin.name.split('-');
-    return (nameSplit[nameSplit.length - 1] === pluginName);
-  });
-  if (pluginObj) {
-    return require(pluginObj.directory);
+  let result;
+  let pluginInfo;
+  if (context.pluginPlatform.plugins[pluginName] &&
+    context.pluginPlatform.plugins[pluginName].length > 0) {
+    /* eslint-disable */
+    pluginInfo = context.pluginPlatform.plugins[pluginName][0];
+    /* eslint-enable */
   }
+
+  if (pluginInfo) {
+    result = require(pluginInfo.packageLocation);
+  }
+
+  return result;
 }
 
 module.exports = {

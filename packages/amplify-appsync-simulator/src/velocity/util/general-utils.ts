@@ -34,17 +34,17 @@ export const generalUtils = {
     return autoId();
   },
   unauthorized() {
-    const err = new Unauthorized('Unauthorized');
+    const err = new Unauthorized('Unauthorized', this.info);
     this.errors.push(err);
     throw err;
   },
   error(message, type = null, data = null, errorInfo = null) {
-    const err = new TemplateSentError(message, type, data, errorInfo);
+    const err = new TemplateSentError(message, type, data, errorInfo, this.info);
     this.errors.push(err);
     throw err;
   },
   appendError(message, type = null, data = null, errorInfo = null) {
-    this.errors.push(new TemplateSentError(message, type, data, errorInfo));
+    this.errors.push(new TemplateSentError(message, type, data, errorInfo, this.info));
     return '';
   },
   getErrors() {

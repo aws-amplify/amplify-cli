@@ -1,0 +1,17 @@
+{
+    "name": "codegen",
+    "type": "util",
+    "commands": [
+        "add",
+        "codegen",
+        "configure",
+        "remove",
+        "statements",
+        "types"
+    ],
+    "commandAliases":{
+        "update": "configure",
+        "statement": "statements"
+    },
+    "eventHandlers": []
+}

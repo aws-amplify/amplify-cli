@@ -1,7 +1,7 @@
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
 
 export class NoneDataLoader implements AmplifyAppSyncSimulatorDataLoader {
-  load(payload): any {
-    return payload;
+  load(request): any {
+    return request.payload || null;
   }
 }

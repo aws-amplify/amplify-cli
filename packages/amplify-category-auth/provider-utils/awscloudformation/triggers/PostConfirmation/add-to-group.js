@@ -13,17 +13,16 @@ exports.handler = async (event, context, callback) => {
     Username: event.userName,
   };
 
-  await cognitoidentityserviceprovider.getGroup(groupParams, async (err) => {
-    if (err) {
-      await cognitoidentityserviceprovider.createGroup(groupParams).promise();
-    }
-  }).promise();
+  try {
+    await cognitoidentityserviceprovider.getGroup(groupParams).promise();
+  } catch (e) {
+    await cognitoidentityserviceprovider.createGroup(groupParams).promise();
+  }
 
-
-  cognitoidentityserviceprovider.adminAddUserToGroup(addUserParams, (err) => {
-    if (err) {
-      callback(err);
-    }
+  try {
+    await cognitoidentityserviceprovider.adminAddUserToGroup(addUserParams).promise();
     callback(null, event);
-  });
+  } catch (e) {
+    callback(e);
+  }
 };

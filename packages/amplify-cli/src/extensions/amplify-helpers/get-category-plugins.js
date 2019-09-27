@@ -1,10 +1,8 @@
 function getCategoryPlugins(context) {
   const categoryPlugins = {};
   context.runtime.plugins.forEach((plugin) => {
-    if (plugin.name.includes('category')) {
-      const strs = plugin.name.split('-');
-      const categoryName = strs[strs.length - 1];
-      categoryPlugins[categoryName] = plugin.directory;
+    if (plugin.pluginType === 'category') {
+      categoryPlugins[plugin.pluginName] = plugin.directory;
     }
   });
   return categoryPlugins;

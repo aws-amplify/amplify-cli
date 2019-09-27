@@ -1,24 +1,43 @@
+import { GraphQLResolveInfo } from 'graphql';
+
 export class TemplateSentError extends Error {
-  constructor(gqlMessage, errorType, data, errorInfo) {
-    super(gqlMessage);
-    Object.assign(this, { gqlMessage, errorType, data, errorInfo });
+  extensions: any;
+  constructor(public message:string, public errorType:string , public data: any, public errorInfo: any, info: GraphQLResolveInfo) {
+    super(message);
+    const fieldName = info.fieldName;
+    let path = info.path;
+    const pathArray = []
+    do {
+      pathArray.splice(0, 0, path.key);
+      path = path.prev
+    } while(path);
+
+    const fieldNode = info.fieldNodes.find(f => f.name.value === fieldName);
+    const filedLocation = fieldNode && fieldNode.loc.startToken || null;
+    this.extensions = {
+      message: message,
+      errorType,
+      data,
+      errorInfo,
+      path: pathArray,
+      locations: [
+        filedLocation ? {
+          line: filedLocation.line,
+          column: filedLocation.column,
+          sourceName: fieldNode.loc.source.name,
+        } : [],
+      ],
+    };
   }
 }
 
 export class Unauthorized extends TemplateSentError {
-  extensions: any;
-  errorType: string;
-  constructor(gqlMessage) {
-    super(gqlMessage, 'Unauthorized', {}, {});
-    this.extensions = {
-      errorType: 'Unauthorized',
-    };
-    this.errorType = 'Unauthorized';
+  constructor(gqlMessage, info) {
+    super(gqlMessage, 'Unauthorized', {}, {}, info);
   }
 }
 export class ValidateError extends Error {
-  constructor(gqlMessage, type, data) {
-    super(gqlMessage);
-    Object.assign(this, { gqlMessage, type, data });
+  constructor(public message: string, public type: string, public data: any) {
+    super(message);
   }
 }

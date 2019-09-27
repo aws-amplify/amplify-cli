@@ -29,8 +29,8 @@ export default interface ITransformer {
     before?: (acc: TransformerContext) => void
 
     /**
-     * An initializer that is called once at the beginning of a transformation.
-     * Initializers are called in the order they are declared.
+     * A finalizer that is called once after a transformation.
+     * Finalizers are called in reverse order as they are declared.
      */
     after?: (acc: TransformerContext) => void
 

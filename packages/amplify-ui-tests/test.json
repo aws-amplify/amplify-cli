@@ -1,0 +1,44 @@
+{
+    "gitRepo": "https://github.com/aws-amplify/amplify-js-samples-staging.git",
+    "Auth": {
+        "port": "3001",
+        "simpleAuth": {
+            "apps": [
+                {
+                    "name": "Auth in React",
+                    "path": "samples/react/auth/with-authenticator",
+                    "testFiles": "auth/authenticator.spec.js"
+                },
+                {
+                    "name": "Auth in Vue",
+                    "path": "samples/vue/auth/amplify-authenticator",
+                    "testFiles": "auth/authenticator.spec.js"
+                }
+            ]
+        }
+    },
+    "Storage": {
+        "port": "3002",
+        "simpleStorageWithGraphQL": {
+            "apps": [
+                {
+                    "name": "Photo Album",
+                    "path": "samples/react/multi-category/photo-albums",
+                    "testFiles": "multi-category/photo-albums.spec.js"
+                }
+            ]
+        }
+    },
+    "Predictions": {
+        "port": "3003",
+        "simplePredictions": {
+            "apps": [
+                {
+                    "name": "Multi-translator",
+                    "path": "samples/react/predictions/multi-user-translation",
+                    "testFiles": "predictions/multiuser-translation.spec.js"
+                }
+            ]
+        }
+    }
+}

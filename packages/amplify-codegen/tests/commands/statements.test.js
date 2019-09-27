@@ -18,6 +18,7 @@ const MOCK_CONTEXT = {
   },
   amplify: {
     getEnvInfo: jest.fn(),
+    getProjectMeta: jest.fn(),
   },
 };
 
@@ -70,7 +71,7 @@ describe('command - statements', () => {
     const forceDownload = false;
     await generateStatements(MOCK_CONTEXT, forceDownload);
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
+    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT, false);
 
     expect(generate).toHaveBeenCalledWith(
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
