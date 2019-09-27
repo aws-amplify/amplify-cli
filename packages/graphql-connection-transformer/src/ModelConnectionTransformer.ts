@@ -196,12 +196,12 @@ export class ModelConnectionTransformer extends Transformer {
 
         // Checks if "fields" argument is provided which indicates use of the new parameterization
         // hence dive straight to new logic and return.
-        if (getDirectiveArgument(directive)("fields")) {
+        if (getDirectiveArgument(directive, 'fields')) {
             this.connectionWithKey(parent, field, directive, ctx)
             return
         }
 
-        let connectionName = getDirectiveArgument(directive)("name")
+        let connectionName = getDirectiveArgument(directive, 'name');
         let associatedSortFieldName = null
         let sortType = null
         // Find the associated connection field if one exists.
@@ -213,9 +213,9 @@ export class ModelConnectionTransformer extends Transformer {
                 }
                 const relatedDirective = f.directives.find((dir: DirectiveNode) => dir.name.value === 'connection');
                 if (relatedDirective) {
-                    const relatedDirectiveName = getDirectiveArgument(relatedDirective)("name")
+                    const relatedDirectiveName = getDirectiveArgument(relatedDirective, 'name');
                     if (connectionName && relatedDirectiveName && relatedDirectiveName === connectionName) {
-                        associatedSortFieldName = getDirectiveArgument(relatedDirective)('sortField')
+                        associatedSortFieldName = getDirectiveArgument(relatedDirective, 'sortField');
                         return true
                     }
                 }
@@ -235,7 +235,7 @@ export class ModelConnectionTransformer extends Transformer {
         const rightConnectionIsList = associatedConnectionField ? isListType(associatedConnectionField.type) : undefined
         const rightConnectionIsNonNull = associatedConnectionField ? isNonNullType(associatedConnectionField.type) : undefined
 
-        let connectionAttributeName = getDirectiveArgument(directive)("keyField")
+        let connectionAttributeName = getDirectiveArgument(directive, 'keyField')
         const associatedSortField = associatedSortFieldName &&
             parent.fields.find((f: FieldDefinitionNode) => f.name.value === associatedSortFieldName)
 
@@ -280,6 +280,13 @@ export class ModelConnectionTransformer extends Transformer {
             // 2. [] to {} when the association exists. Note: false and undefined are not equal.
             // Store a foreign key on the related table and wire up a Query resolver.
             // This is the inverse of 3.
+            let idFieldName = 'id';
+            const primaryKeyField = this.getPrimaryKeyField(ctx, parent);
+
+            if (primaryKeyField !== undefined) {
+                idFieldName = primaryKeyField.name.value;
+            }
+
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(relatedTypeName, associatedConnectionField.name.value)
             }
@@ -293,6 +300,7 @@ export class ModelConnectionTransformer extends Transformer {
                 relatedTypeName,
                 connectionAttributeName,
                 connectionName,
+                idFieldName,
                 // If there is a sort field for this connection query then use
                 sortKeyInfo
             )
@@ -310,6 +318,13 @@ export class ModelConnectionTransformer extends Transformer {
                 throw new InvalidDirectiveError(
                     `sortField "${associatedSortFieldName}" not found on type "${parent.name.value}", other half of connection "${connectionName}".`
                 )
+            }
+
+            let idFieldName = 'id';
+            const primaryKeyField = this.getPrimaryKeyField(ctx, relatedType);
+
+            if (primaryKeyField !== undefined) {
+                idFieldName = primaryKeyField.name.value;
             }
 
             if (!connectionAttributeName) {
@@ -330,7 +345,8 @@ export class ModelConnectionTransformer extends Transformer {
                 parentTypeName,
                 fieldName,
                 relatedTypeName,
-                connectionAttributeName
+                connectionAttributeName,
+                idFieldName
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver)
 
@@ -352,6 +368,13 @@ export class ModelConnectionTransformer extends Transformer {
             // 4. [] to ?
             // Store foreign key on the related table and wire up a Query resolver.
             // This has no inverse and has limited knowlege of the connection.
+            let idFieldName = 'id';
+            const primaryKeyField = this.getPrimaryKeyField(ctx, parent);
+
+            if (primaryKeyField !== undefined) {
+                idFieldName = primaryKeyField.name.value;
+            }
+
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
             }
@@ -371,6 +394,7 @@ export class ModelConnectionTransformer extends Transformer {
                 relatedTypeName,
                 connectionAttributeName,
                 connectionName,
+                idFieldName,
                 sortKeyInfo
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver)
@@ -394,8 +418,36 @@ export class ModelConnectionTransformer extends Transformer {
             // 5. {} to ?
             // Store foreign key on this table and wire up a GetItem resolver.
             // This has no inverse and has limited knowlege of the connection.
+            let idFieldName = 'id';
+            const primaryKeyField = this.getPrimaryKeyField(ctx, relatedType);
+
+            if (primaryKeyField !== undefined) {
+                idFieldName = primaryKeyField.name.value;
+            }
+
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
+            }
+
+            // Issue #2100 - in a 1:1 mapping that's based on sortField, we need to validate both sides
+            // and getItemResolver has to be aware of the soft field.
+            let sortFieldInfo;
+            const sortFieldName = getDirectiveArgument(directive, 'sortField');
+            if (sortFieldName) {
+                // Related type has to have a primary key directive and has to have a soft key
+                // defined
+                const relatedSortField = this.getSortField(relatedType);
+
+                if (!relatedSortField) {
+                    throw new InvalidDirectiveError(
+                        `sortField "${sortFieldName}" requires a primary @key on type "${relatedTypeName}" with a sort key that was not found.`
+                    );
+                }
+
+                sortFieldInfo = {
+                    primarySortFieldName: relatedSortField.name.value,
+                    sortFieldName
+                };
             }
 
             // Validate the provided key field is legit.
@@ -406,7 +458,9 @@ export class ModelConnectionTransformer extends Transformer {
                 parentTypeName,
                 fieldName,
                 relatedTypeName,
-                connectionAttributeName
+                connectionAttributeName,
+                idFieldName,
+                sortFieldInfo
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver)
 
@@ -650,5 +704,46 @@ export class ModelConnectionTransformer extends Transformer {
                 ctx.addInput(sortKeyConditionInput);
             }
         }
+    }
+
+    private getPrimaryKeyField(ctx: TransformerContext, type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode):
+        FieldDefinitionNode {
+        let field: FieldDefinitionNode;
+
+        for (const keyDirective of type.directives.filter(d => d.name.value === 'key')) {
+            if (getDirectiveArgument(keyDirective, 'name') === undefined) {
+                const fieldsArg = getDirectiveArgument(keyDirective, 'fields');
+
+                if (fieldsArg && fieldsArg.length && fieldsArg.length >= 1 && fieldsArg.length <= 2) {
+                    field = type.fields.find(f => f.name.value === fieldsArg[0]);
+                }
+
+                // Exit the loop even if field was not set above, @key will throw validation
+                // error anyway
+                break;
+            }
+        }
+
+        return field;
+    }
+
+    private getSortField(type: ObjectTypeDefinitionNode) {
+        let field: FieldDefinitionNode;
+
+        for (const keyDirective of type.directives.filter(d => d.name.value === 'key')) {
+            if (getDirectiveArgument(keyDirective, 'name') === undefined) {
+                const fieldsArg = getDirectiveArgument(keyDirective, 'fields');
+
+                if (fieldsArg && fieldsArg.length && fieldsArg.length === 2) {
+                    field = type.fields.find(f => f.name.value === fieldsArg[1]);
+                }
+
+                // Exit the loop even if field was not set above, @key will throw validation
+                // error anyway
+                break;
+            }
+        }
+
+        return field;
     }
 }

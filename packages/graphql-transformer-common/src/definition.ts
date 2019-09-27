@@ -125,10 +125,9 @@ export function isNonNullType(type: TypeNode): boolean {
     return type.kind === Kind.NON_NULL_TYPE;
 }
 
-export const getDirectiveArgument = (directive: DirectiveNode) => (arg: string, dflt?: any) => {
-    const get = (s: string) => (arg: ArgumentNode) => arg.name.value === s
-    const argument = directive.arguments.find(get(arg))
-    return argument ? valueFromASTUntyped(argument.value) : dflt
+export function getDirectiveArgument(directive: DirectiveNode, arg: string, dflt?: any) {
+    const argument = directive.arguments.find(a => a.name.value === arg);
+    return argument ? valueFromASTUntyped(argument.value) : dflt;
 }
 
 export function unwrapNonNull(type: TypeNode) {

@@ -1,7 +1,3 @@
-import {
-    ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
-    Kind
-} from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
@@ -15,7 +11,6 @@ import emptyBucket from '../emptyBucket';
 import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3'
 import * as moment from 'moment';
-import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 
@@ -85,7 +80,7 @@ beforeAll(async () => {
         ]
     })
     const out = transformer.transform(validSchema);
-    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+
     try {
         await awsS3Client.createBucket({
             Bucket: BUCKET_NAME,

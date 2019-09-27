@@ -105,17 +105,28 @@ export class ResourceFactory {
      * @param relatedType The name of the related type to fetch from.
      * @param connectionAttribute The name of the underlying attribute containing the id.
      */
-    public makeGetItemConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string): Resolver {
-        return new Resolver({
+    public makeGetItemConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string,
+        idFieldName: string, sortFieldInfo?: {primarySortFieldName: string, sortFieldName: string}): Resolver {
+            let keyObj : ObjectNode = obj({
+                [`${idFieldName}`]:
+                    ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`)
+                })
+
+            if (sortFieldInfo) {
+                keyObj.attributes.push([
+                    sortFieldInfo.primarySortFieldName,
+                    ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_VALUE}"))`)
+                ]);
+            }
+
+            return new Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
             FieldName: field,
             TypeName: type,
             RequestMappingTemplate: print(
                 DynamoDBMappingTemplate.getItem({
-                    key: obj({
-                        id: ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`)
-                    })
+                    key: keyObj
                 })
             ),
             ResponseMappingTemplate: print(
@@ -131,6 +142,7 @@ export class ResourceFactory {
     public makeQueryConnectionResolver(
         type: string, field: string, relatedType: string,
         connectionAttribute: string, connectionName: string,
+        idFieldName: string,
         sortKeyInfo?: { fieldName: string, attributeType: 'S' | 'B' | 'N' }
     ) {
         const defaultPageLimit = 10
@@ -143,7 +155,7 @@ export class ResourceFactory {
                 }),
                 'expressionValues': obj({
                     ':connectionAttribute': obj({
-                        'S': str('$context.source.id')
+                        'S': str(`$context.source.${idFieldName}`)
                     })
                 })
             }))
