@@ -4,6 +4,8 @@ import {
     EnumTypeDefinitionNode, ObjectTypeExtensionNode,
     TypeDefinitionNode,
     NamedTypeNode,
+    DirectiveNode,
+    InterfaceTypeDefinitionNode,
 } from 'graphql'
 import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
@@ -251,7 +253,7 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
 }
 
 export function makeModelXFilterInputObject(
-    obj: ObjectTypeDefinitionNode,
+    obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     ctx: TransformerContext
 ): InputObjectTypeDefinitionNode {
     const name = ModelResourceIDs.ModelFilterInputTypeName(obj.name.value)
@@ -539,7 +541,7 @@ export interface SortKeyFieldInfo {
     keyName?: string;
 }
 
-export function makeModelConnectionField(fieldName: string, returnTypeName: string, sortKeyInfo?: SortKeyFieldInfo): FieldDefinitionNode {
+export function makeModelConnectionField(fieldName: string, returnTypeName: string, sortKeyInfo?: SortKeyFieldInfo, directives?: DirectiveNode[]): FieldDefinitionNode {
     const args = [
         makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
         makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')),
@@ -561,7 +563,8 @@ export function makeModelConnectionField(fieldName: string, returnTypeName: stri
     return makeField(
         fieldName,
         args,
-        makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
+        makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName)),
+        directives
     );
 }
 

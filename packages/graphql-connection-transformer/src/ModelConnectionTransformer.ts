@@ -600,8 +600,7 @@ export class ModelConnectionTransformer extends Transformer {
             const newFields = type.fields.map(
                 (f: FieldDefinitionNode) => {
                     if (f.name.value === field.name.value) {
-                        const updated = makeModelConnectionField(field.name.value, returnType.name.value, sortKeyInfo)
-                        updated.directives = f.directives
+                        const updated = makeModelConnectionField(field.name.value, returnType.name.value, sortKeyInfo, [...f.directives])
                         return updated
                     }
                     return f;
