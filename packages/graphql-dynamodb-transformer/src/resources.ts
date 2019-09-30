@@ -145,6 +145,13 @@ export class ResourceFactory {
         }
     }
 
+    public makeOutputFromNestedStack(resourceId: string, stackName: string): Output {
+        return {
+            Description: `Your ${stackName} nested stack ${resourceId} output.`,
+            Value: Fn.GetAtt(stackName, `Outputs.${resourceId}`)
+        }
+    }
+
     /**
      * Create a DynamoDB table for a specific type.
      */
