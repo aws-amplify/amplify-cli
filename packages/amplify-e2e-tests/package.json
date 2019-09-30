@@ -24,7 +24,8 @@
     "rimraf": "^3.0.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "jest-junit": "^8.0.0"
   },
   "jest": {
     "transform": {
@@ -35,6 +36,16 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "src"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!__tests__/**"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
     ],
     "moduleFileExtensions": [
       "ts",
@@ -50,5 +61,11 @@
     "esm": "^3.2.25",
     "mime-types": "^2.1.24",
     "ora": "^3.4.0"
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
   }
 }

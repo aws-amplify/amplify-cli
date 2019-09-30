@@ -27,7 +27,8 @@
     "rimraf": "2.6.2",
     "ts-jest": "22.4.6",
     "tslint": "5.10.0",
-    "typescript": "2.8.3"
+    "typescript": "3.5.3",
+    "jest-junit": "^8.0.0"
   },
   "jest": {
     "transform": {
@@ -39,6 +40,10 @@
       "/node_modules/",
       "src"
     ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -47,6 +52,12 @@
       "json",
       "node"
     ]
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
   },
   "dependencies": {
     "esm": "^3.2.25"
