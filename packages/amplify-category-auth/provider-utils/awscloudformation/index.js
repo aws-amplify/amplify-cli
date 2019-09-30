@@ -801,8 +801,6 @@ async function createAdminAuthFunction(context, authResourceName, functionName) 
     },
   ];
 
-  context.print.info(functionProps);
-
   // copy over the files
   await context.amplify.copyBatch(context, copyJobs, functionProps);
 
@@ -859,8 +857,6 @@ async function createAdminAuthAPI(context, authResourceName, functionName) {
       target: `${targetDir}/api/${apiName}/parameters.json`,
     },
   ];
-
-  context.print.info(apiProps);
 
   // copy over the files
   await context.amplify.copyBatch(context, copyJobs, apiProps);
