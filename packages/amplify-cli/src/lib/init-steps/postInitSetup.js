@@ -27,8 +27,8 @@ async function run(context) {
  * @param packageManager either npm or yarn
  */
 async function runPackage() {
-  const packageManager = getPackageManager();
-  const normalizedPackageManager = normalizePackageManagerForOS(packageManager);
+  const packageManager = await getPackageManager();
+  const normalizedPackageManager = await normalizePackageManagerForOS(packageManager);
   if (packageManager === 'yarn') {
     await execSync(`${normalizedPackageManager} start`, { stdio: 'inherit' });
   } else if (packageManager === 'npm') {
