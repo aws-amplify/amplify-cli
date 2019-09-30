@@ -84,7 +84,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       });
     }
     allDefaultValues.dependsOn = dependsOn;
-  } else if(answers.functionTemplate === 'lambdaTrigger'){
+  } else if (answers.functionTemplate === 'lambdaTrigger') {
     const eventSourceAnswers = await askEventSourceQuestions(context, inputs);
     Object.assign(allDefaultValues, eventSourceAnswers);
   }
@@ -565,142 +565,150 @@ async function getTableParameters(context, dynamoAnswers) {
 }
 
 async function askEventSourceQuestions(context, inputs) {
-  const eventSourceTypeInput = inputs.find(input => input.key === "eventSourceType")
-  if(eventSourceTypeInput === undefined){
+  const eventSourceTypeInput = inputs.find(input => input.key === 'eventSourceType');
+  if (eventSourceTypeInput === undefined) {
     context.print.error('Unable to find eventSourceType question data. (this is likely an amplify error, please report)');
-    return {}
+    return {};
   }
 
   const selectEventSourceQuestion = {
     type: eventSourceTypeInput.type,
     name: eventSourceTypeInput.key,
     message: eventSourceTypeInput.question,
-    choices: eventSourceTypeInput.options
+    choices: eventSourceTypeInput.options,
   };
 
   const eventSourceTypeAnswer = await inquirer.prompt([selectEventSourceQuestion]);
-  switch (eventSourceTypeAnswer[eventSourceTypeInput.key]){
+
+  let arnInput;
+  let arnQuestion;
+  let arnAnswer;
+  let eventSourceArn;
+  let dynamoDBStreamKindInput;
+  let dynamoDbStreamKindQuestion;
+  let dynamoDbStreamKindAnswer;
+  let dynamoDbStreamKind;
+  switch (eventSourceTypeAnswer[eventSourceTypeInput.key]) {
     case 'kinesis':
-      const kinesisArnInput = inputs.find(input => input.key === "amazonKinesisStreamARN")
-      if(kinesisArnInput === undefined){
+      arnInput = inputs.find(input => input.key === 'amazonKinesisStreamARN');
+      if (arnInput === undefined) {
         context.print.error('Unable to find amazonKinesisStreamARN question data. (this is likely an amplify error, please report)');
-        return {}
+        return {};
       }
-      const kinesisArnQuestion = {
-        name: kinesisArnInput.key,
-        message: kinesisArnInput.question,
-        validate: context.amplify.inputValidation(kinesisArnInput),
+      arnQuestion = {
+        name: arnInput.key,
+        message: arnInput.question,
+        validate: context.amplify.inputValidation(arnInput),
       };
-      const kinesisStreamArnAnswer = await inquirer.prompt([kinesisArnQuestion]);
-      const kinesisStreamArn = kinesisStreamArnAnswer[kinesisArnInput.key];
+      arnAnswer = await inquirer.prompt([arnQuestion]);
+      eventSourceArn = arnAnswer[arnInput.key];
       return {
         triggerEventSourceMapping: {
           batchSize: 100,
-          startingPosition: "LATEST",
-          eventSourceArn: kinesisStreamArn,
+          startingPosition: 'LATEST',
+          eventSourceArn,
           triggerPolicies: [{
-            Effect: "Allow",
+            Effect: 'Allow',
             Action: [
-              "kinesis:DescribeStream",,
-              "kinesis:DescribeStreamSummary",
-              "kinesis:GetRecords",
-              "kinesis:GetShardIterator",
-              "kinesis:ListShards",
-              "kinesis:ListStreams",
-              "kinesis:SubscribeToShard"
+              'kinesis:DescribeStream',
+              'kinesis:DescribeStreamSummary',
+              'kinesis:GetRecords',
+              'kinesis:GetShardIterator',
+              'kinesis:ListShards',
+              'kinesis:ListStreams',
+              'kinesis:SubscribeToShard',
             ],
-            Resource: kinesisStreamArn
-          }]
-        }
+            Resource: eventSourceArn,
+          }],
+        },
       };
 
     case 'sqs':
-      const sqsArnInput = inputs.find(input => input.key === "amazonSQSQueueARN")
-      if(sqsArnInput === undefined){
+      arnInput = inputs.find(input => input.key === 'amazonSQSQueueARN');
+      if (arnInput === undefined) {
         context.print.error('Unable to find amazonSQSQueueARN question data. (this is likely an amplify error, please report)');
-        return {}
+        return {};
       }
-      const sqsArnQuestion = {
-        name: sqsArnInput.key,
-        message: sqsArnInput.question,
-        validate: context.amplify.inputValidation(sqsArnInput),
+      arnQuestion = {
+        name: arnInput.key,
+        message: arnInput.question,
+        validate: context.amplify.inputValidation(arnInput),
       };
-      const sqsStreamArnAnswer = await inquirer.prompt([sqsArnQuestion]);
-      const sqsStreamArn = sqsStreamArnAnswer[sqsArnQuestion.key];
+      arnAnswer = await inquirer.prompt([arnQuestion]);
+      eventSourceArn = arnAnswer[arnQuestion.key];
       return {
         triggerEventSourceMapping: {
           batchSize: 10,
-          startingPosition: "LATEST",
-          eventSourceArn: sqsStreamArn,
+          startingPosition: 'LATEST',
+          eventSourceArn,
           triggerPolicies: [{
-            Effect: "Allow",
+            Effect: 'Allow',
             Action: [
-              "sqs:ReceiveMessage",
-              "sqs:DeleteMessage",
-              "sqs:GetQueueAttributes"
+              'sqs:ReceiveMessage',
+              'sqs:DeleteMessage',
+              'sqs:GetQueueAttributes',
             ],
-            Resource: sqsStreamArn
-          }]
-        }
+            Resource: eventSourceArn,
+          }],
+        },
       };
 
     case 'dynamoDB':
-      const dynamoDBStreamKindInput = inputs.find(input => input.key === "dynamoDbStreamKind")
-      if(dynamoDBStreamKindInput === undefined){
+      dynamoDBStreamKindInput = inputs.find(input => input.key === 'dynamoDbStreamKind');
+      if (dynamoDBStreamKindInput === undefined) {
         context.print.error('Unable to find dynamoDBStreamKindInput question data. (this is likely an amplify error, please report)');
-        return {}
+        return {};
       }
-      const dynamoDbStreamKindQuestion = {
+      dynamoDbStreamKindQuestion = {
         type: dynamoDBStreamKindInput.type,
         name: dynamoDBStreamKindInput.key,
         message: dynamoDBStreamKindInput.question,
-        choices: dynamoDBStreamKindInput.options
+        choices: dynamoDBStreamKindInput.options,
       };
-      const dynamoDbStreamKindAnswer = await inquirer.prompt([dynamoDbStreamKindQuestion]);
-      const dynamoDbStreamKind = dynamoDbStreamKindAnswer[dynamoDBStreamKindInput.key];
-
-      switch(dynamoDbStreamKind){
+      dynamoDbStreamKindAnswer = await inquirer.prompt([dynamoDbStreamKindQuestion]);
+      dynamoDbStreamKind = dynamoDbStreamKindAnswer[dynamoDBStreamKindInput.key];
+      switch (dynamoDbStreamKind) {
         case 'dynamoDbStreamRawARN':
-          const dynamoDbArnInput = inputs.find(input => input.key === "dynamoDbARN")
-          if(dynamoDbArnInput === undefined){
+          arnInput = inputs.find(input => input.key === 'dynamoDbARN');
+          if (arnInput === undefined) {
             context.print.error('Unable to find dynamoDbARN question data. (this is likely an amplify error, please report)');
-            return {}
+            return {};
           }
-          const dynamoDbArnQuestion = {
-            name: dynamoDbArnInput.key,
-            message: dynamoDbArnInput.question,
-            validate: context.amplify.inputValidation(dynamoDbArnInput),
+          arnQuestion = {
+            name: arnInput.key,
+            message: arnInput.question,
+            validate: context.amplify.inputValidation(arnInput),
           };
-          const dynamoDbArnAnswer = await inquirer.prompt([dynamoDbArnQuestion]);
-          const dynamoDbStreamArn = dynamoDbArnAnswer[dynamoDbArnInput.key];
+          arnAnswer = await inquirer.prompt([arnQuestion]);
+          eventSourceArn = arnAnswer[arnInput.key];
           return {
             triggerEventSourceMapping: {
               batchSize: 100,
-              startingPosition: "LATEST",
-              eventSourceArn: dynamoDbStreamArn,
+              startingPosition: 'LATEST',
+              eventSourceArn,
               triggerPolicies: [{
-                Effect: "Allow",
+                Effect: 'Allow',
                 Action: [
-                  "dynamodb:DescribeStream",
-                  "dynamodb:GetRecords",
-                  "dynamodb:GetShardIterator",
-                  "dynamodb:ListStreams"
+                  'dynamodb:DescribeStream',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                  'dynamodb:ListStreams',
                 ],
-                Resource: dynamoDbStreamArn
-              }]
-            }
+                Resource: eventSourceArn,
+              }],
+            },
           };
         case 'graphqlModelTable':
-          //TODO: ask graphql model table questions.
-          return {}
+          // TODO: ask graphql model table questions.
+          return {};
         case 'storageDynamoDBTable':
-          return {}
-        default: 
-          return {}
+          return {};
+        default:
+          return {};
       }
     default:
       context.print.error('Unrecognized option selected. (this is likely an amplify error, please report)');
-      return {}
+      return {};
   }
 }
 
