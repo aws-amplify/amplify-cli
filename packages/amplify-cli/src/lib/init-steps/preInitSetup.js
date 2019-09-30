@@ -65,8 +65,8 @@ async function cloneRepo(repoUrl) {
  * @param packageManager either npm or yarn
  */
 async function installPackage() {
-  const packageManager = getPackageManager();
-  const normalizedPackageManager = normalizePackageManagerForOS(packageManager);
+  const packageManager = await getPackageManager();
+  const normalizedPackageManager = await normalizePackageManagerForOS(packageManager);
   if (packageManager === 'yarn') {
     await execSync(`${normalizedPackageManager} install`, { stdio: 'inherit' });
   } else if (packageManager === 'npm') {
