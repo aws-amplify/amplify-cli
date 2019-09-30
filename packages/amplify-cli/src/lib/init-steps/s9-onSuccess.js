@@ -50,7 +50,9 @@ async function run(context) {
 
   await initializeEnv(context, currentAmplifyMeta);
 
-  printWelcomeMessage(context);
+  if (!context.parameters.options.app) {
+    printWelcomeMessage(context);
+  }
   // Exit the process with a success code
   // process.exit(0);
 }

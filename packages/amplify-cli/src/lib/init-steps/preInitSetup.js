@@ -5,12 +5,11 @@ const path = require('path');
 async function run(context) {
   if (context.parameters.options.app) {
     // Setting up a sample app
-    context.print.warning('Note: Amplify does not have knowledge or necessarily approve of url provided');
+    context.print.warning('Note: Amplify does not have knowledge of the url provided');
     const repoUrl = context.parameters.options.app;
     await validateGithubRepo(repoUrl);
     await cloneRepo(repoUrl);
-    const packageManager = await getPackageManager();
-    await installPackage(packageManager);
+    await installPackage();
     await setLocalEnvDefaults(context);
   }
   return context;
@@ -62,27 +61,56 @@ async function cloneRepo(repoUrl) {
 /**
  * Determine the package manager of the current project
  *
- * @return 'yarn' if yarn.lock exists, 'npm' otherwise
+ * @return {string} 'yarn' if yarn.lock exists, 'npm' if package.json exists, undefined otherwise
 */
 async function getPackageManager() {
   const yarnLock = './yarn.lock';
   const yarnLockDir = path.join(process.cwd(), yarnLock);
+  const packageJson = './package.json';
+  const packageJsonDir = path.join(process.cwd(), packageJson);
   if (fs.existsSync(yarnLockDir)) {
     return 'yarn';
+  } else if (fs.existsSync(packageJsonDir)) {
+    return 'npm';
+  } else {
+    return undefined;
   }
-  return 'npm';
 }
 
 /**
- * Install package using the correct package manager
+ * Determines the OS and returns the corresponding command given a package manager
+ * 
+ * @param {string} packageManager the type of package manager detected
+ * @return {string} the package manager command for the correct OS 
+ */
+async function normalizePackageManagerForOS(packageManager) {
+  const isOnWindows = /^win/.test(process.platform);
+  if (isOnWindows) {
+    if (packageManager === 'yarn') {
+      return 'npm.cmd';
+    } else if (packageManager === 'npm') {
+      return 'yarn.cmd';
+    } else {
+      return undefined;
+    }
+  } 
+  return packageManager;
+}
+
+/**
+ * Install package using the correct package manager if package handling file exists
  *
  * @param packageManager either npm or yarn
  */
-async function installPackage(packageManager) {
+async function installPackage() {
+  const packageManager = getPackageManager();
+  const normalizedPackageManager = normalizePackageManagerForOS(packageManager);
   if (packageManager === 'yarn') {
-    await execSync('yarn install', { stdio: 'inherit' });
+    await execSync(`${normalizedPackageManager} install`, { stdio: 'inherit' });
+  } else if (packageManager === 'npm'){
+    await execSync(`${normalizedPackageManager} install`, { stdio: 'inherit' });
   } else {
-    await execSync('npm install', { stdio: 'inherit' });
+    return;
   }
 }
 
@@ -95,6 +123,8 @@ async function setLocalEnvDefaults(context) {
   const projectPath = process.cwd();
   const defaultEditor = 'vscode';
   const envName = 'sampledev';
+  context.print.warning(`Setting default editor to ${defaultEditor}`);
+  context.print.warning(`Setting environment to ${envName}`)
   context.exeInfo.localEnvInfo = {
     projectPath,
     defaultEditor,
