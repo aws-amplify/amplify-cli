@@ -1,8 +1,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
-const { getPackageManager }= require('../packageManagerHelpers')
-const { normalizePackageManagerForOS } = require('../packageManagerHelpers')
+const { getPackageManager } = require('../packageManagerHelpers');
+const { normalizePackageManagerForOS } = require('../packageManagerHelpers');
 
 async function run(context) {
   if (context.parameters.options.app) {
