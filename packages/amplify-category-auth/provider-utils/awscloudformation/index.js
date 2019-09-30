@@ -3,7 +3,14 @@ const open = require('open');
 const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
+<<<<<<< HEAD
 const { existsSync } = require('fs');
+=======
+const uuid = require('uuid');
+const {
+  existsSync,
+} = require('fs');
+>>>>>>> feat: add cfn and lambda function code on auth add flow
 const { copySync } = require('fs-extra');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 
@@ -140,6 +147,13 @@ async function addResource(context, category, service) {
 
       await copyCfnTemplate(context, category, props, cfnFilename);
 
+<<<<<<< HEAD
+=======
+      if ((await context.amplify.confirmPrompt.run('Do you want to add an admin queries API?'))) {
+        await addAdminAuth(context, result.resourceName);
+      }
+
+>>>>>>> feat: add cfn and lambda function code on auth add flow
       saveResourceParameters(
         context,
         provider,
@@ -730,6 +744,140 @@ function removeDeprecatedProps(props) {
     }
   });
   return props;
+}
+
+async function addAdminAuth(context, authResourceName) {
+  const [shortId] = uuid().split('-');
+  const functionName = `AdminQueries${shortId}`;
+
+  await createAdminAuthFunction(context, authResourceName, functionName);
+  await createAdminAuthAPI(context, authResourceName, functionName);
+}
+
+async function createAdminAuthFunction(context, authResourceName, functionName) {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+  const pluginDir = __dirname;
+
+  const dependsOn = [];
+
+  dependsOn.push({
+    category: 'auth',
+    resourceName: authResourceName,
+    attributes: ['UserPoolId'],
+  });
+
+
+  const functionProps = {
+    functionName: `${functionName}`,
+    roleName: `${functionName}LambdaRole`,
+    dependsOn,
+  };
+
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-auth-app.js',
+      target: `${targetDir}/function/${functionName}/src/admin-auth-app-app.js`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-auth-cognitoActions.js',
+      target: `${targetDir}/function/${functionName}/src/admin-auth-cognitoActions.js`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-auth-index.js',
+      target: `${targetDir}/function/${functionName}/src/index.js`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-auth-package.json',
+      target: `${targetDir}/function/${functionName}/src/package.json`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-queries-function-template.json.ejs',
+      target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
+    },
+  ];
+
+  context.print.info(functionProps);
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, functionProps);
+
+  // Update amplify-meta and backend-config
+  const backendConfigs = {
+    service: 'Lambda',
+    providerPlugin: 'awscloudformation',
+    build: true,
+    dependsOn,
+  };
+
+  await context.amplify.updateamplifyMetaAfterResourceAdd(
+    'function',
+    functionName,
+    backendConfigs,
+  );
+  context.print.success(`Successfully added ${functionName} function locally`);
+}
+
+async function createAdminAuthAPI(context, authResourceName, functionName) {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+  const pluginDir = __dirname;
+  const apiName = 'AdminQueries';
+  const dependsOn = [];
+
+  dependsOn.push(
+    {
+      category: 'auth',
+      resourceName: authResourceName,
+      attributes: ['UserPoolId'],
+    },
+    {
+      category: 'function',
+      resourceName: functionName,
+      attributes: ['Arn'],
+    },
+  );
+
+  const apiProps = {
+    functionName,
+    authResourceName,
+    dependsOn,
+  };
+
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-queries-api-template.json.ejs',
+      target: `${targetDir}/api/${apiName}/cloudformation-template.json`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-queries-api-params.json',
+      target: `${targetDir}/api/${apiName}/parameters.json`,
+    },
+  ];
+
+  context.print.info(apiProps);
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, apiProps);
+
+  // Update amplify-meta and backend-config
+  const backendConfigs = {
+    service: 'API Gateway',
+    providerPlugin: 'awscloudformation',
+    dependsOn,
+  };
+
+  await context.amplify.updateamplifyMetaAfterResourceAdd(
+    'api',
+    apiName,
+    backendConfigs,
+  );
+  context.print.success(`Successfully added ${apiName} API locally`);
 }
 
 module.exports = {
