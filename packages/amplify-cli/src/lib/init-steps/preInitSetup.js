@@ -72,16 +72,15 @@ async function getPackageManager() {
     return 'yarn';
   } else if (fs.existsSync(packageJsonDir)) {
     return 'npm';
-  } else {
-    return undefined;
   }
+  return undefined;
 }
 
 /**
  * Determines the OS and returns the corresponding command given a package manager
- * 
+ *
  * @param {string} packageManager the type of package manager detected
- * @return {string} the package manager command for the correct OS 
+ * @return {string} the package manager command for the correct OS
  */
 async function normalizePackageManagerForOS(packageManager) {
   const isOnWindows = /^win/.test(process.platform);
@@ -90,10 +89,9 @@ async function normalizePackageManagerForOS(packageManager) {
       return 'npm.cmd';
     } else if (packageManager === 'npm') {
       return 'yarn.cmd';
-    } else {
-      return undefined;
     }
-  } 
+    return undefined;
+  }
   return packageManager;
 }
 
@@ -107,10 +105,8 @@ async function installPackage() {
   const normalizedPackageManager = normalizePackageManagerForOS(packageManager);
   if (packageManager === 'yarn') {
     await execSync(`${normalizedPackageManager} install`, { stdio: 'inherit' });
-  } else if (packageManager === 'npm'){
+  } else if (packageManager === 'npm') {
     await execSync(`${normalizedPackageManager} install`, { stdio: 'inherit' });
-  } else {
-    return;
   }
 }
 
@@ -124,7 +120,7 @@ async function setLocalEnvDefaults(context) {
   const defaultEditor = 'vscode';
   const envName = 'sampledev';
   context.print.warning(`Setting default editor to ${defaultEditor}`);
-  context.print.warning(`Setting environment to ${envName}`)
+  context.print.warning(`Setting environment to ${envName}`);
   context.exeInfo.localEnvInfo = {
     projectPath,
     defaultEditor,

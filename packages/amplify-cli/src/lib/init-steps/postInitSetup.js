@@ -36,9 +36,8 @@ async function getPackageManager() {
     return 'yarn';
   } else if (fs.existsSync(packageJsonDir)) {
     return 'npm';
-  } else {
-    return undefined;
   }
+  return undefined;
 }
 
 /**
@@ -50,10 +49,8 @@ async function runPackage() {
   const packageManager = getPackageManager();
   if (packageManager === 'yarn') {
     await execSync('yarn start', { stdio: 'inherit' });
-  } else if (packageManager === 'npm'){
+  } else if (packageManager === 'npm') {
     await execSync('npm start', { stdio: 'inherit' });
-  } else {
-    return;
   }
 }
 
