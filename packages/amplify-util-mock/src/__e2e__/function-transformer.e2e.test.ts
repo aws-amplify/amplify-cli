@@ -1,7 +1,6 @@
 import ModelTransformer from 'graphql-dynamodb-transformer';
 import FunctionTransformer from 'graphql-function-transformer';
 import GraphQLTransform from 'graphql-transformer-core';
-import * as moment from 'moment';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, logDebug } from './utils/index';
 
