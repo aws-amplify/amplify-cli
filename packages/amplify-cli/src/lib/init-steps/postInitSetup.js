@@ -11,7 +11,7 @@ async function run(context) {
       context.amplify.constructExeInfo(context);
       await context.amplify.pushResources(context);
       const packageManager = await getPackageManager();
-      await runPackage(packageManager);
+      runPackage(packageManager);
     } catch (e) {
       if (e.name !== 'InvalidDirectiveError') {
         context.print.error(`An error occured during the push operation: ${e.message}`);
