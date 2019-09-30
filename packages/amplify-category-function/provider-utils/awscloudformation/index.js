@@ -85,6 +85,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   } else {
     switch (options.functionTemplate) {
       case 'helloWorld':
+      case 'lambdaTrigger':
         copyJobs.push(...[
           {
             dir: pluginDir,

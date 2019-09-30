@@ -173,6 +173,39 @@
             }
         }
         <% } %>
+        <% if (props.triggerEventSourceMapping) { %>
+        ,"LambdaTriggerPolicy": {
+            "DependsOn": ["LambdaExecutionRole"],
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "amplify-lambda-execution-policy",
+                "Roles": [{ "Ref": "LambdaExecutionRole" }],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": <%- JSON.stringify(props.triggerEventSourceMapping.triggerPolicies) %>
+                }
+            }
+        }
+        ,"LambdaEventSourceMapping": {
+            "Type": "AWS::Lambda::EventSourceMapping",
+            "DependsOn": [
+                "LambdaTriggerPolicy",
+                "LambdaExecutionRole"
+            ],
+            "Properties": {
+                "BatchSize": <%= props.triggerEventSourceMapping.batchSize %>,
+                "Enabled": true,
+                "EventSourceArn": <%- JSON.stringify(props.triggerEventSourceMapping.eventSourceArn) %>,
+                "FunctionName": {
+                    "Fn::GetAtt": [
+                        "LambdaFunction",
+                        "Arn"
+                    ]
+                },
+                "StartingPosition": "<%= props.triggerEventSourceMapping.startingPosition %>"
+            }
+        }
+        <% } %>
     },
     "Outputs": {
         "Name": {
