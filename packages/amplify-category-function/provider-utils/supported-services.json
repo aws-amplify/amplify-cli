@@ -115,14 +115,14 @@
 				"question": "What event source do you want to associate with Lambda trigger",
 				"type": "list",
 				"options": [{
+					"name": "Amazon DynamoDB Stream",
+					"value": "dynamoDB"
+				},{
 					"name": "Amazon Kinesis",
 					"value": "kinesis"
 				}, {
 					"name": "Amazon Simple Queue Service",
 					"value": "sqs"
-				}, {
-					"name": "Amazon DynamoDB Stream",
-					"value": "dynamoDB"
 				}],
 				"required": true
 			},
@@ -131,7 +131,7 @@
 				"question": "Choose a DynamoDB event source option",
 				"type": "list",
 				"options": [{
-					"name": "Use API category graphql @model backed DynamoDB table configured in the current Amplify project",
+					"name": "Use API category graphql @model backed DynamoDB table configured(and deployed) in the current Amplify project",
 					"value": "graphqlModelTable"
 				}, 
 				{
@@ -175,18 +175,14 @@
 				"required": true
 			},
 			{
-				"key": "dynamoDbAPICategoryName",
+				"key": "dynamoDbAPIResourceName",
 				"type": "list",
-				"question": "Please choose an API to associate with?"
+				"question": "Please choose an API resource to associate with?"
 			},
 			{
-				"key": "Please type in name of a @model to associate with",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9._-]+$",
-					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
-				},
-				"required": true
+				"key": "graphqlAPIModelName",
+				"type": "list",
+				"question": "Please choose a graphql @model"
 			}
 		],
 		"defaultValuesFilename": "lambda-defaults.js",

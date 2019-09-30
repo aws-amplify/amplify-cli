@@ -87,6 +87,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   } else if (answers.functionTemplate === 'lambdaTrigger') {
     const eventSourceAnswers = await askEventSourceQuestions(context, inputs);
     Object.assign(allDefaultValues, eventSourceAnswers);
+    if (eventSourceAnswers.dependsOn) {
+      dependsOn.push(...eventSourceAnswers.dependsOn);
+    }
+    allDefaultValues.dependsOn = dependsOn;
   }
 
   let topLevelComment;
@@ -567,8 +571,7 @@ async function getTableParameters(context, dynamoAnswers) {
 async function askEventSourceQuestions(context, inputs) {
   const eventSourceTypeInput = inputs.find(input => input.key === 'eventSourceType');
   if (eventSourceTypeInput === undefined) {
-    context.print.error('Unable to find eventSourceType question data. (this is likely an amplify error, please report)');
-    return {};
+    throw Error('Unable to find eventSourceType question data. (this is likely an amplify error, please report)');
   }
 
   const selectEventSourceQuestion = {
@@ -588,12 +591,13 @@ async function askEventSourceQuestions(context, inputs) {
   let dynamoDbStreamKindQuestion;
   let dynamoDbStreamKindAnswer;
   let dynamoDbStreamKind;
+  let dynamoDBCategoryStorageRes;
+  let dynamoDBCategoryStorageStreamArnRef;
   switch (eventSourceTypeAnswer[eventSourceTypeInput.key]) {
     case 'kinesis':
       arnInput = inputs.find(input => input.key === 'amazonKinesisStreamARN');
       if (arnInput === undefined) {
-        context.print.error('Unable to find amazonKinesisStreamARN question data. (this is likely an amplify error, please report)');
-        return {};
+        throw Error('Unable to find amazonKinesisStreamARN question data. (this is likely an amplify error, please report)');
       }
       arnQuestion = {
         name: arnInput.key,
@@ -607,6 +611,7 @@ async function askEventSourceQuestions(context, inputs) {
           batchSize: 100,
           startingPosition: 'LATEST',
           eventSourceArn,
+          functionTemplateName: 'trigger-custom.js',
           triggerPolicies: [{
             Effect: 'Allow',
             Action: [
@@ -626,8 +631,7 @@ async function askEventSourceQuestions(context, inputs) {
     case 'sqs':
       arnInput = inputs.find(input => input.key === 'amazonSQSQueueARN');
       if (arnInput === undefined) {
-        context.print.error('Unable to find amazonSQSQueueARN question data. (this is likely an amplify error, please report)');
-        return {};
+        throw Error('Unable to find amazonSQSQueueARN question data. (this is likely an amplify error, please report)');
       }
       arnQuestion = {
         name: arnInput.key,
@@ -641,6 +645,7 @@ async function askEventSourceQuestions(context, inputs) {
           batchSize: 10,
           startingPosition: 'LATEST',
           eventSourceArn,
+          functionTemplateName: 'trigger-custom.js',
           triggerPolicies: [{
             Effect: 'Allow',
             Action: [
@@ -656,8 +661,7 @@ async function askEventSourceQuestions(context, inputs) {
     case 'dynamoDB':
       dynamoDBStreamKindInput = inputs.find(input => input.key === 'dynamoDbStreamKind');
       if (dynamoDBStreamKindInput === undefined) {
-        context.print.error('Unable to find dynamoDBStreamKindInput question data. (this is likely an amplify error, please report)');
-        return {};
+        throw Error('Unable to find dynamoDBStreamKindInput question data. (this is likely an amplify error, please report)');
       }
       dynamoDbStreamKindQuestion = {
         type: dynamoDBStreamKindInput.type,
@@ -671,8 +675,7 @@ async function askEventSourceQuestions(context, inputs) {
         case 'dynamoDbStreamRawARN':
           arnInput = inputs.find(input => input.key === 'dynamoDbARN');
           if (arnInput === undefined) {
-            context.print.error('Unable to find dynamoDbARN question data. (this is likely an amplify error, please report)');
-            return {};
+            throw Error('Unable to find dynamoDbARN question data. (this is likely an amplify error, please report)');
           }
           arnQuestion = {
             name: arnInput.key,
@@ -686,6 +689,7 @@ async function askEventSourceQuestions(context, inputs) {
               batchSize: 100,
               startingPosition: 'LATEST',
               eventSourceArn,
+              functionTemplateName: 'trigger-dynamodb.js',
               triggerPolicies: [{
                 Effect: 'Allow',
                 Action: [
@@ -699,10 +703,36 @@ async function askEventSourceQuestions(context, inputs) {
             },
           };
         case 'graphqlModelTable':
-          // TODO: ask graphql model table questions.
-          return {};
+          return await askAPICategoryDynamoDBQuestions(context, inputs);
         case 'storageDynamoDBTable':
-          return {};
+          dynamoDBCategoryStorageRes = await askDynamoDBQuestions(context, inputs, true);
+          dynamoDBCategoryStorageStreamArnRef = {
+            Ref: `storage${dynamoDBCategoryStorageRes.resourceName}StreamArn`,
+          };
+
+          return {
+            triggerEventSourceMapping: {
+              batchSize: 100,
+              startingPosition: 'LATEST',
+              eventSourceArn: dynamoDBCategoryStorageStreamArnRef,
+              functionTemplateName: 'trigger-dynamodb.js',
+              triggerPolicies: [{
+                Effect: 'Allow',
+                Action: [
+                  'dynamodb:DescribeStream',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                  'dynamodb:ListStreams',
+                ],
+                Resource: dynamoDBCategoryStorageStreamArnRef,
+              }],
+            },
+            dependsOn: [{
+              category: 'storage',
+              resourceName: dynamoDBCategoryStorageRes.resourceName,
+              attributes: ['StreamArn'],
+            }],
+          };
         default:
           return {};
       }
@@ -712,7 +742,115 @@ async function askEventSourceQuestions(context, inputs) {
   }
 }
 
-async function askDynamoDBQuestions(context, inputs) {
+async function askAPICategoryDynamoDBQuestions(context, inputs) {
+  const outputs = context.amplify.getResourceOutputs().outputsByCategory;
+  if (!('api' in outputs) || Object.keys(outputs.api).length === 0) {
+    throw Error('No resources have been configured in API category');
+  }
+
+  // let resourceNameInput, resourceNameQuestion, resourceNameAnswer, resourceName;
+  const apiOutput = outputs.api;
+  const resourceNames = Object.keys(apiOutput);
+  const resourceNameInput = inputs.find(input => input.key === 'dynamoDbAPIResourceName');
+  if (resourceNameInput === undefined) {
+    throw Error('Unable to find dynamoDbAPIResourceName question data. (this is likely an amplify error, please report)');
+  }
+
+  const resourceNameQuestion = {
+    type: resourceNameInput.type,
+    name: resourceNameInput.key,
+    message: resourceNameInput.question,
+    choices: resourceNames,
+  };
+
+  const resourceNameAnswer = await inquirer.prompt([resourceNameQuestion]);
+  const resourceName = resourceNameAnswer[resourceNameInput.key];
+  const resourceOutput = apiOutput[resourceName];
+
+  const tableInfos = Object.keys(resourceOutput)
+    .map(outputName => outputName.match(/^NGetAtt(.*)(TableName|DataSourceName|TableStreamArn)$/))
+    .filter(match => match)
+    .map(([, tableName, outputType]) => ({
+      tableName,
+      outputType,
+      value: resourceOutput[`NGetAtt${tableName}${outputType}`],
+    }))
+    .reduce((infos, parsedOutput) => {
+      let partial;
+      switch (parsedOutput.outputType) {
+        case 'TableName':
+          partial = { name: parsedOutput.value };
+          break;
+        case 'DatasourceName':
+          partial = { datasourceName: parsedOutput.value };
+          break;
+        case 'TableStreamArn':
+          partial = { streamArn: parsedOutput.value };
+          break;
+        default:
+          partial = {};
+      }
+
+      return ({
+        ...infos,
+        [parsedOutput.tableName]: {
+          ...infos[parsedOutput.tableName] || {},
+          ...partial,
+        },
+      });
+    }, {});
+
+  const modelNameInput = inputs.find(input => input.key === 'graphqlAPIModelName');
+  if (modelNameInput === undefined) {
+    throw Error('Unable to find graphqlAPIModelName question data. (this is likely an amplify error, please report)');
+  }
+  if (Object.keys(tableInfos).length === 0) {
+    throw Error('Unable to find graphql model info.');
+  }
+
+  const modelNameQuestion = {
+    type: modelNameInput.type,
+    name: modelNameInput.key,
+    message: modelNameInput.question,
+    choices: Object.keys(tableInfos),
+  };
+  const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
+  const modelName = modelNameAnswer[modelNameInput.key];
+  const tableInfo = tableInfos[modelName];
+  if (!(('streamArn') in tableInfo)) {
+    throw Error(`Unable to find associated streamArn for ${tableInfo} model dynamoDb table.`);
+  }
+
+  const streamArnParamRef = {
+    Ref: `api${resourceName}NGetAtt${modelName}TableStreamArn`,
+  };
+
+  return {
+    triggerEventSourceMapping: {
+      batchSize: 100,
+      startingPosition: 'LATEST',
+      eventSourceArn: streamArnParamRef,
+      functionTemplateName: 'trigger-dynamodb.js',
+      triggerPolicies: [{
+        Effect: 'Allow',
+        Action: [
+          'dynamodb:DescribeStream',
+          'dynamodb:GetRecords',
+          'dynamodb:GetShardIterator',
+          'dynamodb:ListStreams',
+        ],
+        Resource: streamArnParamRef,
+      }],
+    },
+    dependsOn: [{
+      category: 'api',
+      resourceName,
+      attributes: [`NGetAtt${modelName}TableStreamArn`],
+    }],
+  };
+}
+
+async function askDynamoDBQuestions(context, inputs, currentProjectOnly = false) {
   const dynamoDbTypeQuestion = {
     type: inputs[5].type,
     name: inputs[5].key,
@@ -720,7 +858,9 @@ async function askDynamoDBQuestions(context, inputs) {
     choices: inputs[5].options,
   };
   while (true) { //eslint-disable-line
-    const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
+    const dynamoDbTypeAnswer = currentProjectOnly
+      ? { [inputs[5].key]: 'currentProject' }
+      : (await inquirer.prompt([dynamoDbTypeQuestion]));
     switch (dynamoDbTypeAnswer[inputs[5].key]) {
       case 'currentProject': {
         const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;

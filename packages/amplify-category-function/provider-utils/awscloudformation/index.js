@@ -85,7 +85,6 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   } else {
     switch (options.functionTemplate) {
       case 'helloWorld':
-      case 'lambdaTrigger':
         copyJobs.push(...[
           {
             dir: pluginDir,
@@ -125,6 +124,25 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
             dir: pluginDir,
             template: 'function-template-dir/serverless-event.json',
             target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+          },
+        ]);
+        break;
+      case 'lambdaTrigger':
+        copyJobs.push(...[
+          {
+            dir: pluginDir,
+            template: `function-template-dir/${options.triggerEventSourceMapping.functionTemplateName}`,
+            target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/event.json',
+            target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/package.json.ejs',
+            target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
           },
         ]);
         break;
