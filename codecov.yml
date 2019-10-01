@@ -1,0 +1,12 @@
+codecov:
+  notify:
+    after_n_builds: 1
+
+coverage:
+  status:
+    project: off
+    patch: off
+    changes:
+      default:
+        target: 80%
+        if_not_found: success
