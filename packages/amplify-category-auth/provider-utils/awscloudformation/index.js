@@ -835,7 +835,7 @@ async function createAdminAuthAPI(context, authResourceName, functionName) {
     {
       category: 'function',
       resourceName: functionName,
-      attributes: ['Arn'],
+      attributes: ['Arn', 'Name'],
     },
   );
 
