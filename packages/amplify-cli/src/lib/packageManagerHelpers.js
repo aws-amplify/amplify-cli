@@ -35,10 +35,10 @@ async function normalizePackageManagerForOS(packageManager) {
   if (isOnWindows) {
     if (packageManager === 'yarn') {
       return 'yarn.cmd';
-    } else if (packageManager === 'npm') {
-      return 'npm.cmd';
+    } else if (!packageManager) {
+      return undefined;
     }
-    return undefined;
+    return 'npm.cmd';
   }
   return packageManager;
 }

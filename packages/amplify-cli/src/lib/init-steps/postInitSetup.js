@@ -29,10 +29,8 @@ async function run(context) {
 async function runPackage() {
   const packageManager = await getPackageManager();
   const normalizedPackageManager = await normalizePackageManagerForOS(packageManager);
-  if (packageManager === 'yarn') {
-    await execSync(`${normalizedPackageManager} start`, { stdio: 'inherit' });
-  } else if (packageManager === 'npm') {
-    await execSync(`${normalizedPackageManager} start`, { stdio: 'inherit' });
+  if (normalizedPackageManager) {
+    execSync(`${normalizedPackageManager} start`, { stdio: 'inherit' });
   }
 }
 
