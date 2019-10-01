@@ -40,6 +40,9 @@ jobs:
       - run:
           name: Run tests
           command: yarn test-ci
+      - run:
+          name: Collect code coverage
+          command: yarn coverage
   graphql_e2e_tests:
     <<: *defaults
     steps:
