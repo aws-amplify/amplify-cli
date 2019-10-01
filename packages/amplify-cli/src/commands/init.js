@@ -17,7 +17,8 @@ module.exports = {
       .then(initProviders.run)
       .then(onSuccess.run)
       .catch(onFailure.run);
-    await postInitSetup.run(context);
+    await postInitSetup.run(context)
+      .catch(onFailure.run);
   },
 };
 

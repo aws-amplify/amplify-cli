@@ -1,35 +1,20 @@
 const { execSync } = require('child_process');
-const fs = require('fs');
 const { getPackageManager } = require('../packageManagerHelpers');
 const { normalizePackageManagerForOS } = require('../packageManagerHelpers');
+const { generateLocalEnvInfoFile } = require('./s9-onSuccess');
+const url = require('url');
 
 async function run(context) {
   if (context.parameters.options.app) {
     // Setting up a sample app
     context.print.warning('Note: Amplify does not have knowledge of the url provided');
     const repoUrl = context.parameters.options.app;
-    await validateGithubRepo(repoUrl);
-    await cloneRepo(repoUrl);
+    await validateGithubRepo(context, repoUrl);
+    await cloneRepo(context, repoUrl);
     await installPackage();
     await setLocalEnvDefaults(context);
   }
   return context;
-}
-
-/**
- * Checks whether a url is a valid address
- *
- * @param str the url to validated
- * @return true if str is a valid address, false otherwise
- */
-async function isURL(str) {
-  const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-    '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-  return pattern.test(str);
 }
 
 /**
@@ -38,15 +23,13 @@ async function isURL(str) {
  * @param repoUrl the url to validated
  * @throws error if url is not a valid remote github url
  */
-async function validateGithubRepo(repoUrl) {
-  if (await isURL(repoUrl)) {
-    try {
-      execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
-    } catch (e) {
-      throw Error('Invalid remote github url');
-    }
-  } else {
-    throw Error('Invalid url');
+async function validateGithubRepo(context, repoUrl) {
+  try {
+    url.parse(repoUrl);
+    execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
+  } catch (e) {
+    context.print.error('Invalid remote github url');
+    process.exit(1);
   }
 }
 
@@ -55,8 +38,13 @@ async function validateGithubRepo(repoUrl) {
  *
  * @param repoUrl the url to be cloned
  */
-async function cloneRepo(repoUrl) {
-  execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
+async function cloneRepo(context, repoUrl) {
+  try {
+    execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
+  } catch (e) {
+    context.print.error('Please ensure you run this command in an empty directory');
+    process.exit(1);
+  }
 }
 
 /**
@@ -92,18 +80,6 @@ async function setLocalEnvDefaults(context) {
   };
   context.exeInfo.inputParams.amplify.envName = envName;
   await generateLocalEnvInfoFile(context);
-}
-
-/**
- * Generate local-env-info.json file from context
- *
- * @param context
- */
-async function generateLocalEnvInfoFile(context) {
-  const { projectPath } = context.exeInfo.localEnvInfo;
-  const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
-  const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
-  fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
 }
 
 module.exports = {

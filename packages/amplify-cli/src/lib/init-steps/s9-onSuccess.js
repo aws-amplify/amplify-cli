@@ -148,4 +148,5 @@ function printWelcomeMessage(context) {
 
 module.exports = {
   run,
+  generateLocalEnvInfoFile,
 };

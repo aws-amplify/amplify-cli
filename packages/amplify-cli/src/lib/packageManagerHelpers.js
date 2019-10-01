@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const which = require('which');
 
 /**
  * Determine the package manager of the current project
@@ -12,7 +13,11 @@ async function getPackageManager() {
   const packageJson = './package.json';
   const packageJsonDir = path.join(process.cwd(), packageJson);
   if (fs.existsSync(yarnLockDir)) {
-    return 'yarn';
+    // Check that yarn is installed for the user
+    if (which.sync('yarn', { nothrow: true }) || which.sync('yarn.cmd', { nothrow: true })) {
+      return 'yarn';
+    }
+    return 'npm';
   } else if (fs.existsSync(packageJsonDir)) {
     return 'npm';
   }
@@ -29,9 +34,9 @@ async function normalizePackageManagerForOS(packageManager) {
   const isOnWindows = /^win/.test(process.platform);
   if (isOnWindows) {
     if (packageManager === 'yarn') {
-      return 'npm.cmd';
-    } else if (packageManager === 'npm') {
       return 'yarn.cmd';
+    } else if (packageManager === 'npm') {
+      return 'npm.cmd';
     }
     return undefined;
   }
