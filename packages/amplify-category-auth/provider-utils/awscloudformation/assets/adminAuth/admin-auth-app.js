@@ -44,7 +44,7 @@ app.use((req, res, next) => {
 
 
 // Only perform tasks if the user is in a specific group
-const allowedGroup = process.env.Group;
+const allowedGroup = process.env.GROUP;
 
 const checkGroup = function (req, res, next) {
   if (req.path == '/signUserOut') { return next(); }

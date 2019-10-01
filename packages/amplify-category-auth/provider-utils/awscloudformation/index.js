@@ -771,6 +771,7 @@ async function createAdminAuthFunction(context, authResourceName, functionName) 
     functionName: `${functionName}`,
     roleName: `${functionName}LambdaRole`,
     dependsOn,
+    authResourceName
   };
 
   const copyJobs = [

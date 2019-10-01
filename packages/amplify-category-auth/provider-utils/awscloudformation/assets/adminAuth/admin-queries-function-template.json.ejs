@@ -57,6 +57,10 @@
                 "Variables" : {
                     "ENV": {
                         "Ref": "env"
+                    },
+                    "GROUP": "Admins",
+                    "USERPOOL" : {
+                        "Ref": "auth<%= props.authResourceName %>UserPoolId" 
                     }
                 }
             },
@@ -120,7 +124,41 @@
                             "logs:CreateLogStream",
                             "logs:PutLogEvents"],
                             "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
-                        }
+                        },
+                        {
+							"Effect": "Allow",
+							"Action": [
+								"cognito-idp:ListUsersInGroup",
+								"cognito-idp:AdminUserGlobalSignOut",
+								"cognito-idp:AdminEnableUser",
+								"cognito-idp:AdminDisableUser",
+								"cognito-idp:AdminRemoveUserFromGroup",
+								"cognito-idp:AdminAddUserToGroup",
+								"cognito-idp:AdminListGroupsForUser",
+								"cognito-idp:AdminGetUser",
+								"cognito-idp:AdminConfirmSignUp",
+								"cognito-idp:ListUsers"
+							],
+							"Resource": {
+								"Fn::Join": [
+									"",
+									[
+										"arn:aws:cognito-idp:",
+										{
+											"Ref": "AWS::Region"
+										},
+										":",
+										{
+											"Ref": "AWS::AccountId"
+										},
+										":userpool/",
+										{
+											"Ref": "auth<%= props.authResourceName %>UserPoolId"
+										}
+									]
+								]
+							}
+						}
                     ]
                 }
             }
