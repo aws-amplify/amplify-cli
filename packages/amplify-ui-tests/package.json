@@ -1,6 +1,6 @@
 {
   "name": "amplify-ui-tests",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -22,13 +22,13 @@
     "aws-sdk": "2.259.1",
     "dotenv": "6.2.0",
     "jest": "23.1.0",
+    "jest-junit": "^8.0.0",
     "nexpect": "0.6.0",
     "node-fetch": "2.2.0",
     "rimraf": "2.6.2",
     "ts-jest": "22.4.6",
     "tslint": "5.10.0",
-    "typescript": "3.5.3",
-    "jest-junit": "^8.0.0"
+    "typescript": "3.5.3"
   },
   "jest": {
     "transform": {
