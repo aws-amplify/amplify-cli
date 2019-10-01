@@ -777,12 +777,12 @@ async function createAdminAuthFunction(context, authResourceName, functionName) 
     {
       dir: pluginDir,
       template: './assets/adminAuth/admin-auth-app.js',
-      target: `${targetDir}/function/${functionName}/src/admin-auth-app-app.js`,
+      target: `${targetDir}/function/${functionName}/src/app.js`,
     },
     {
       dir: pluginDir,
       template: './assets/adminAuth/admin-auth-cognitoActions.js',
-      target: `${targetDir}/function/${functionName}/src/admin-auth-cognitoActions.js`,
+      target: `${targetDir}/function/${functionName}/src/cognitoActions.js`,
     },
     {
       dir: pluginDir,
