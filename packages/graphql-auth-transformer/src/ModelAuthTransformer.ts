@@ -115,7 +115,8 @@ const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
 }
 
 export type ModelAuthTransformerConfig = {
-    authConfig?: AppSyncAuthConfiguration
+    authConfig?: AppSyncAuthConfiguration,
+    searchableFlag?: boolean
 };
 
 export type ConfiguredAuthProviders = {
@@ -310,6 +311,10 @@ export class ModelAuthTransformer extends Transformer {
             throw new InvalidDirectiveError('Types annotated with @auth must also be annotated with @model.')
         }
 
+        // check if searchable is enabled on the type
+        const searchableDirective = def.directives.find((dir) => dir.name.value === 'searchable')
+        this.config.searchableFlag =  searchableDirective ? true : false
+
         // Get and validate the auth rules.
         const rules = this.getAuthRulesFromDirective(directive);
         // Assign default providers to rules where no provider was explicitly defined
@@ -344,6 +349,12 @@ export class ModelAuthTransformer extends Transformer {
         this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list, def, modelConfiguration);
         this.protectConnections(ctx, def, operationRules.read, modelConfiguration);
         this.protectQueries(ctx, def, operationRules.read, modelConfiguration);
+
+        // protect search query if @searchable is enabled
+        if (searchableDirective) {
+            this.protectSearchQuery(ctx, def,
+                ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), operationRules.read)
+        }
 
         // Check if subscriptions is enabled
         if (modelConfiguration.getName('level') !== "off") {
@@ -999,8 +1010,10 @@ All @auth directives used on field definitions are performed when the field is r
     /**
      * Returns a VTL expression that will authorize a list of results based on a set of auth rules.
      * @param rules The auth rules.
+     *
+     * If an itemList is specifed in @param itemList it will use this ref to filter out items in this list that are not authorized
      */
-    private authorizationExpressionForListResult(rules: AuthRule[]) {
+    private authorizationExpressionForListResult(rules: AuthRule[], itemList: string = 'ctx.result.items') {
         // Break the rules out by strategy.
         const staticGroupAuthorizationRules = this.getStaticGroupRules(rules)
         const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules)
@@ -1036,7 +1049,7 @@ All @auth directives used on field definitions are performed when the field is r
                     set(ref('items'), list([])),
                     forEach(
                         ref('item'),
-                        ref('ctx.result.items'),
+                        ref(itemList),
                         [
                             dynamicGroupAuthorizationExpression,
                             newline(),
@@ -1045,7 +1058,7 @@ All @auth directives used on field definitions are performed when the field is r
                             appendIfLocallyAuthorized
                         ]
                     ),
-                    set(ref('ctx.result.items'), ref('items'))
+                    set(ref(itemList), ref('items'))
                 ])
             )
 
@@ -1468,6 +1481,33 @@ All @auth directives used on field definitions are performed when the field is r
             this.protectListQuery(ctx, resolverResourceId, rules, null, modelConfiguration, args.queryField)
         }
     }
+
+    private protectSearchQuery(ctx: TransformerContext, def: ObjectTypeDefinitionNode,
+        resolverResourceId: string, rules: AuthRule[]) {
+            const resolver = ctx.getResource(resolverResourceId);
+            if (!rules || rules.length === 0 || !resolver) {
+                return
+            } else {
+                const operationName = resolver.Properties.FieldName;
+                const includeDefault = def !== null ? this.isTypeHasRulesForOperation(def, 'list') : false;
+                const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
+                if (operationDirectives.length > 0) {
+                    this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
+                }
+                this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
+                // create auth expression
+                const authExpression = this.authorizationExpressionForListResult(rules, 'es_items');
+                if (authExpression) {
+                    const templateParts = [
+                        print(this.resources.makeESItemsExpression()),
+                        print(authExpression),
+                        print(this.resources.makeESToGQLExpression())
+                    ]
+                    resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
+                    ctx.setResource(resolverResourceId, resolver)
+                }
+            }
+        }
 
     // OnCreate Subscription
     private protectOnCreateSubscription(ctx: TransformerContext, rules: AuthRule[],
