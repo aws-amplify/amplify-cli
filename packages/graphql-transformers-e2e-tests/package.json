@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "5.10.0",
+  "version": "5.12.0",
   "description": "End to end functional tests for appsync supported transformers.",
   "main": "lib/index.js",
   "private": true,
@@ -21,9 +21,9 @@
     "axios": "^0.19.0",
     "cloudform": "^3.5.0",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "3.17.0",
-    "graphql-transformer-common": "3.24.0",
-    "graphql-transformer-core": "5.10.0",
+    "graphql-mapping-template": "3.19.0",
+    "graphql-transformer-common": "3.26.0",
+    "graphql-transformer-core": "5.12.0",
     "moment": "^2.24.0"
   },
   "devDependencies": {
@@ -33,15 +33,16 @@
     "aws-amplify": "^1.1.36",
     "aws-appsync": "^1.8.1",
     "aws-sdk": "^2.510.0",
-    "graphql-auth-transformer": "5.10.0",
-    "graphql-connection-transformer": "3.21.0",
-    "graphql-dynamodb-transformer": "5.10.0",
-    "graphql-elasticsearch-transformer": "3.22.0",
-    "graphql-function-transformer": "1.17.0",
-    "graphql-key-transformer": "1.17.0",
+    "graphql-auth-transformer": "5.12.0",
+    "graphql-connection-transformer": "3.23.0",
+    "graphql-dynamodb-transformer": "5.12.0",
+    "graphql-elasticsearch-transformer": "3.24.0",
+    "graphql-function-transformer": "1.19.0",
+    "graphql-key-transformer": "1.19.0",
     "graphql-tag": "^2.10.1",
-    "graphql-versioned-transformer": "3.20.0",
+    "graphql-versioned-transformer": "3.22.0",
     "jest": "^23.1.0",
+    "jest-junit": "^8.0.0",
     "node-fetch": "^2.6.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
@@ -51,6 +52,16 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!src/__tests__/**"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test.*)$",
     "testPathIgnorePatterns": [
@@ -64,7 +75,12 @@
       "jsx",
       "json",
       "node"
-    ],
-    "collectCoverage": true
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
   }
 }

@@ -1,31 +1,17 @@
-import Amplify from 'aws-amplify';
-import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
+import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import ModelAuthTransformer from 'graphql-auth-transformer';
 import ModelConnectionTransformer from 'graphql-connection-transformer';
-import * as fs from 'fs';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import * as moment from 'moment';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
-import {
-  addUserToGroup,
-  configureAmplify,
-  createGroup,
-  createUserPool,
-  createUserPoolClient,
-  deleteUserPool,
-  signupAndAuthenticateUser,
-} from './utils/cognito-utils';
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
+import GraphQLTransform from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
 jest.setTimeout(2000000);
 
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `PerFieldAuthTests-${BUILD_TIMESTAMP}`;
 
 let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;
@@ -47,24 +33,17 @@ let GRAPHQL_CLIENT_2 = undefined;
  */
 let GRAPHQL_CLIENT_3 = undefined;
 
-let USER_POOL_ID = undefined;
+const USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
 const USERNAME3 = 'user3@test.com';
-const TMP_PASSWORD = 'Password123!';
-const REAL_PASSWORD = 'Password1234!';
 
 const ADMIN_GROUP_NAME = 'Admin';
 const DEVS_GROUP_NAME = 'Devs';
 const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 const INSTRUCTOR_GROUP_NAME = 'Instructor';
-
-const cognitoClient = new CognitoClient({
-  apiVersion: '2016-04-19',
-  region: 'us-west-2',
-});
 
 beforeAll(async () => {
   const validSchema = `# Owners may update their owned records.
@@ -141,14 +120,7 @@ beforeAll(async () => {
       }),
     ],
   });
-  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
-  const userPoolClientResponse = await createUserPoolClient(
-    cognitoClient,
-    USER_POOL_ID,
-    `UserPool${STACK_NAME}`
-  );
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
+
   try {
     const out = transformer.transform(validSchema);
 
@@ -161,69 +133,27 @@ beforeAll(async () => {
     GRAPHQL_ENDPOINT = server.url + '/graphql';
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
-    expect(USER_POOL_ID).toBeTruthy();
-    expect(userPoolClientId).toBeTruthy();
-
     // Configure Amplify, create users, and sign in.
-    configureAmplify(USER_POOL_ID, userPoolClientId);
 
-    const authRes: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME1,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-    const authRes2: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME2,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-    const authRes3: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME3,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-
-    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
-    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
-    await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
-    await createGroup(USER_POOL_ID, PARTICIPANT_GROUP_NAME);
-    await createGroup(USER_POOL_ID, WATCHER_GROUP_NAME);
-    await createGroup(USER_POOL_ID, DEVS_GROUP_NAME);
-    await createGroup(USER_POOL_ID, INSTRUCTOR_GROUP_NAME);
-    await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, USER_POOL_ID);
-    await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, USER_POOL_ID);
-    await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, USER_POOL_ID);
-    await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, USER_POOL_ID);
-    await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME1, USER_POOL_ID);
-    await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME2, USER_POOL_ID);
-
-    const authResAfterGroup: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME1,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-
-    const idToken = authResAfterGroup.getIdToken().getJwtToken();
+    const idToken = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [
+      ADMIN_GROUP_NAME,
+      PARTICIPANT_GROUP_NAME,
+      WATCHER_GROUP_NAME,
+      INSTRUCTOR_GROUP_NAME,
+    ]);
     GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken,
     });
 
-    const authRes2AfterGroup: any = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME2,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-    const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [
+      DEVS_GROUP_NAME,
+      INSTRUCTOR_GROUP_NAME,
+    ]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
 
-    const idToken3 = authRes3.getIdToken().getJwtToken();
+    const idToken3 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME3, USERNAME3, []);
     GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken3,
     });
@@ -239,7 +169,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    await deleteUserPool(cognitoClient, USER_POOL_ID);
     if (server) {
       await server.stop();
     }

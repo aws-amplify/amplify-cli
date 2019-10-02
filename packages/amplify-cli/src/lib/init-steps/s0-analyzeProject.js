@@ -8,8 +8,9 @@ const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/con
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
 async function run(context) {
-  context.print.warning('Note: It is recommended to run this command from the root of your app directory');
-
+  if (!context.parameters.options.app) {
+    context.print.warning('Note: It is recommended to run this command from the root of your app directory');
+  }
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
   const projectName = await getProjectName(context);
