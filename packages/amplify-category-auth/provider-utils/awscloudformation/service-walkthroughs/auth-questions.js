@@ -296,8 +296,15 @@ async function updateUserPoolGroups(context) {
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     const sortPrompt = new Sort({
       name: 'sortUserPools',
+      hint: `(Use ${chalk.green.bold('<shift>+<right/left>')} to change the order)`,
       message: 'Sort the user pool groups in order of preference',
       choices: userPoolGroupList,
+      shiftLeft(...args) {
+        return this.shiftUp(...args);
+      },
+      shiftRight(...args) {
+        return this.shiftDown(...args);
+      },
     });
 
     sortedUserPoolGroupList = await sortPrompt.run();
