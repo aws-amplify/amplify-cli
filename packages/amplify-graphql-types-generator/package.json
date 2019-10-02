@@ -68,6 +68,7 @@
     "setupFiles": [
       "<rootDir>/src/polyfills.js"
     ],
+    "collectCoverage": true,
     "testURL": "http://localhost",
     "setupTestFrameworkScriptFile": "<rootDir>/test/test-utils/matchers.ts",
     "testMatch": [

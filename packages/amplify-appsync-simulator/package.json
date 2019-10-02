@@ -65,6 +65,10 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
     "testURL": "http://localhost/",
     "testRegex": "(src/__tests__/.*.test.*)$",
     "moduleFileExtensions": [
