@@ -3,14 +3,10 @@ const open = require('open');
 const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
-<<<<<<< HEAD
-const { existsSync } = require('fs');
-=======
 const uuid = require('uuid');
 const {
   existsSync,
 } = require('fs');
->>>>>>> feat: add cfn and lambda function code on auth add flow
 const { copySync } = require('fs-extra');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 
@@ -145,68 +141,63 @@ async function addResource(context, category, service) {
 
       await createUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
 
-      await copyCfnTemplate(context, category, props, cfnFilename);     
+      await copyCfnTemplate(context, category, props, cfnFilename);
 
-<<<<<<< HEAD
-=======
+      let lambdaGroupVar;
       if ((await context.amplify.confirmPrompt.run('Do you want to add an admin queries API?'))) {
-        if (await context.amplify.confirmPrompt.run('Do you want to restrict access to a specific Group')){
+        if (await context.amplify.confirmPrompt.run('Do you want to restrict access to a specific Group')) {
+          let userPoolGroupList = [];
+          let existingGroups;
 
-        let userPoolGroupList = [];
-        let existingGroups;
-      
-        const userGroupParamsPath = path.join(
-          context.amplify.pathManager.getBackendDirPath(),
-          'auth',
-          'userPoolGroups',
-          'user-pool-group-precedence.json',
-        );
-      
-        try {
-          existingGroups = context.amplify.readJsonFile(userGroupParamsPath);
-          userPoolGroupList = existingGroups.map(e => e.groupName);
-          userPoolGroupList.push('Enter a custom group');
-        } catch (e) {
-          userPoolGroupList = ['Enter a custom group'];
-          existingGroups = null;
-        }
+          const userGroupParamsPath = path.join(
+            context.amplify.pathManager.getBackendDirPath(),
+            'auth',
+            'userPoolGroups',
+            'user-pool-group-precedence.json',
+          );
 
-        const adminGroupAnswer = await inquirer.prompt([
-          {
-            name: 'adminGroup',
-            type: 'list',
-            message: 'Select the group to restrict access with:',
-            choices: userPoolGroupList,
-          },
-        ]);
+          try {
+            existingGroups = context.amplify.readJsonFile(userGroupParamsPath);
+            userPoolGroupList = existingGroups.map(e => e.groupName);
+            userPoolGroupList.push('Enter a custom group');
+          } catch (e) {
+            userPoolGroupList = ['Enter a custom group'];
+            existingGroups = null;
+          }
 
-        let lambdaGroupVar;
-        if (adminGroupAnswer.adminGroup === 'Enter a custom group'){
-          let temp = await inquirer.prompt([
+          const adminGroupAnswer = await inquirer.prompt([
             {
-              name: 'userPoolGroupName',
-              type: 'input',
-              message: 'Provide a group name:',
-              validate: context.amplify.inputValidation({
-                validation: {
-                  operator: 'regex',
-                  value: '^[a-zA-Z0-9]+$',
-                  onErrorMsg: 'Resource name should be alphanumeric',
-                },
-                required: true,
-              }),
+              name: 'adminGroup',
+              type: 'list',
+              message: 'Select the group to restrict access with:',
+              choices: userPoolGroupList,
             },
           ]);
-          lambdaGroupVar = temp.userPoolGroupName;
-        } else {
-          lambdaGroupVar = adminGroupAnswer.adminGroup
-        }
 
-      }
+          if (adminGroupAnswer.adminGroup === 'Enter a custom group') {
+            const temp = await inquirer.prompt([
+              {
+                name: 'userPoolGroupName',
+                type: 'input',
+                message: 'Provide a group name:',
+                validate: context.amplify.inputValidation({
+                  validation: {
+                    operator: 'regex',
+                    value: '^[a-zA-Z0-9]+$',
+                    onErrorMsg: 'Resource name should be alphanumeric',
+                  },
+                  required: true,
+                }),
+              },
+            ]);
+            lambdaGroupVar = temp.userPoolGroupName;
+          } else {
+            lambdaGroupVar = adminGroupAnswer.adminGroup;
+          }
+        }
         await addAdminAuth(context, result.resourceName, lambdaGroupVar);
       }
-
->>>>>>> feat: add cfn and lambda function code on auth add flow
+      
       saveResourceParameters(
         context,
         provider,
@@ -819,7 +810,7 @@ async function createAdminAuthFunction(context, authResourceName, functionName, 
     attributes: ['UserPoolId'],
   });
 
-  if (!lambdaGroupVar){
+  if (!lambdaGroupVar) {
     lambdaGroupVar = 'NONE';
   }
 
@@ -828,7 +819,7 @@ async function createAdminAuthFunction(context, authResourceName, functionName, 
     roleName: `${functionName}LambdaRole`,
     dependsOn,
     authResourceName,
-    lambdaGroupVar
+    lambdaGroupVar,
   };
 
   const copyJobs = [
