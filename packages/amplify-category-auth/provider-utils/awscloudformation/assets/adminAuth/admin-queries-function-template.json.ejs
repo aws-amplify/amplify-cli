@@ -58,7 +58,7 @@
                     "ENV": {
                         "Ref": "env"
                     },
-                    "GROUP": "Admins",
+                    "GROUP": "<%= props.lambdaGroupVar %>",
                     "USERPOOL" : {
                         "Ref": "auth<%= props.authResourceName %>UserPoolId" 
                     }

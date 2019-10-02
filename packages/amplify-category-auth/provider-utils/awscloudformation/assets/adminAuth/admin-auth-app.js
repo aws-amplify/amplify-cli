@@ -49,7 +49,7 @@ const allowedGroup = process.env.GROUP;
 const checkGroup = function (req, res, next) {
   if (req.path == '/signUserOut') { return next(); }
 
-  if (typeof allowedGroup === 'undefined') { return next(); }
+  if (typeof allowedGroup === 'undefined' || allowedGroup === 'NONE') { return next(); }
 
   // Fail if group enforcement is being used
   const groups = req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'].split(',');
