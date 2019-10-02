@@ -2,7 +2,6 @@ import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import ModelAuthTransformer from 'graphql-auth-transformer'
-import ModelConnectionTransformer from 'graphql-connection-transformer'
 import * as fs from 'fs'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
@@ -203,7 +202,6 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelConnectionTransformer(),
             new ModelAuthTransformer({
                 authConfig: {
                     defaultAuthentication: {
@@ -572,7 +570,16 @@ afterAll(async () => {
 // tests using cognito
 test('Test that only authorized members are allowed to view subscriptions', async done => {
     // subscribe to create students as user 2
-    const observer = onCreateStudent(GRAPHQL_CLIENT_2)
+    const observer = GRAPHQL_CLIENT_2.subscribe({ query: gql`
+        subscription OnCreateStudent {
+            onCreateStudent {
+                id
+                name
+                email
+                ssn
+                owner
+            }
+        }`})
     let subscription = observer.subscribe( (event: any) => {
         console.log('subscription event: ', event)
         const student = event.data.onCreateStudent;
@@ -595,7 +602,17 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
 
 test('Test that an user not in the group is not allowed to view the subscription', async done => {
     // suscribe to create students as user 3
-    const observer = onCreateStudent(GRAPHQL_CLIENT_3)
+    // const observer = onCreateStudent(GRAPHQL_CLIENT_3)
+    const observer = GRAPHQL_CLIENT_3.subscribe({ query: gql`
+        subscription OnCreateStudent {
+            onCreateStudent {
+                id
+                name
+                email
+                ssn
+                owner
+            }
+        }`})
     observer.subscribe({
         error: (err: any) => {
             console.log(err.graphQLErrors[0])
@@ -616,7 +633,16 @@ test('Test that an user not in the group is not allowed to view the subscription
 
 test('Test a subscription on update', async done => {
     // susbcribe to update students as user 2
-    const observer = onUpdateStudent(GRAPHQL_CLIENT_2)
+    const observer = GRAPHQL_CLIENT_2.subscribe({ query: gql`
+        subscription OnUpdateStudent {
+            onUpdateStudent {
+                id
+                name
+                email
+                ssn
+                owner
+            }
+        }` })
     let subscription = observer.subscribe( (event: any) => {
         const student = event.data.onUpdateStudent;
         subscription.unsubscribe()
@@ -649,7 +675,16 @@ test('Test a subscription on update', async done => {
 
 test('Test a subscription on delete', async done => {
     // subscribe to onDelete as user 2
-    const observer = onDeleteStudent(GRAPHQL_CLIENT_2)
+    const observer = GRAPHQL_CLIENT_2.subscribe({ query: gql `
+        subscription OnDeleteStudent {
+            onDeleteStudent {
+                id
+                name
+                email
+                ssn
+                owner
+            }
+        }`})
     let subscription = observer.subscribe( (event: any) => {
         const student = event.data.onDeleteStudent;
         subscription.unsubscribe()
@@ -876,44 +911,4 @@ async function deleteTodo(client: AWSAppSyncClient<any>, input: DeleteTypeInput)
         }
     }`
     return await client.mutate({ mutation: request, variables: { input }});
-}
-
-// subscriptions
-function onCreateStudent(client: AWSAppSyncClient<any>) {
-    const request = gql`subscription OnCreateStudent {
-        onCreateStudent {
-            id
-            name
-            email
-            ssn
-            owner
-        }
-    }`;
-    return client.subscribe({ query: request });
-}
-
-function onUpdateStudent(client: AWSAppSyncClient<any> ) {
-    const request = gql`subscription OnUpdateStudent {
-        onUpdateStudent {
-            id
-            name
-            email
-            ssn
-            owner
-        }
-    }`
-    return client.subscribe({ query: request });
-}
-
-function onDeleteStudent(client: AWSAppSyncClient<any> ) {
-    const request = gql`subscription OnDeleteStudent {
-        onDeleteStudent {
-            id
-            name
-            email
-            ssn
-            owner
-        }
-    }`
-    return client.subscribe({ query: request });
 }
