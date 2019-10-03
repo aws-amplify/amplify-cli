@@ -9,8 +9,7 @@ function console(context) {
   }
   if (pinpointApp) {
     const { Id, Region } = pinpointApp;
-    const consoleUrl =
-          `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
+    const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
     open(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither analytics nor notifications is enabled in the cloud.');
@@ -23,9 +22,7 @@ function scanCategoryMetaForPinpoint(categoryMeta) {
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === 'Pinpoint' &&
-        serviceMeta.output &&
-        serviceMeta.output.Id) {
+      if (serviceMeta.service === 'Pinpoint' && serviceMeta.output && serviceMeta.output.Id) {
         result = {
           Id: serviceMeta.output.Id,
         };

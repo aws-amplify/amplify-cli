@@ -1,7 +1,7 @@
 module.exports = {
   name: 'awscloudformation',
   alias: ['awscfn', 'aws'],
-  run: async (context) => {
+  run: async context => {
     if (/^win/.test(process.platform)) {
       try {
         const { run } = require(`./awscloudformation/${context.parameters.first}`);

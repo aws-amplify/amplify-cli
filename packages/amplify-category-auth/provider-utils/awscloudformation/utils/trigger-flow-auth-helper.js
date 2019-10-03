@@ -1,5 +1,3 @@
-
-
 /**
  * @function
  * @param {object} context CLI context
@@ -16,19 +14,14 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   let triggerKeyValues = {};
 
   // get the resource name, either from user answer during creation or previous value
-  const authResourceName = context.updatingAuth ?
-    context.updatingAuth.resourceName :
-    coreAnswers.resourceName;
-
+  const authResourceName = context.updatingAuth ? context.updatingAuth.resourceName : coreAnswers.resourceName;
 
   // double check to make sure triggers have not been serialized already
-  const triggers = typeof coreAnswers.triggers === 'string' ?
-    JSON.parse(coreAnswers.triggers) :
-    coreAnswers.triggers;
+  const triggers = typeof coreAnswers.triggers === 'string' ? JSON.parse(coreAnswers.triggers) : coreAnswers.triggers;
 
   // getting static trigger env variables that do not change based on direct user input
   const triggerEnvs = {};
-  Object.keys(triggers).forEach((r) => {
+  Object.keys(triggers).forEach(r => {
     triggerEnvs[r] = context.amplify.getTriggerEnvVariables(context, { key: r, modules: triggers[r] }, 'auth');
   });
 
@@ -95,19 +88,12 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   if (previouslySaved) {
     const previousTriggers = Object.keys(previouslySaved).map(i => `${authResourceName}${i}`);
     const currentTriggers = Object.keys(triggers).map(i => `${authResourceName}${i}`);
-    await context.amplify.deleteDeselectedTriggers(
-      currentTriggers,
-      previousTriggers,
-      authResourceName,
-      targetDir,
-      context,
-    );
+    await context.amplify.deleteDeselectedTriggers(currentTriggers, previousTriggers, authResourceName, targetDir, context);
   }
 
   if (coreAnswers.triggers) {
     coreAnswers.parentStack = { Ref: 'AWS::StackId' };
   }
-
 
   return parameters.triggers;
 }
@@ -115,8 +101,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
 // saving input-based trigger env variables to the team-provider
 const triggerEnvParams = async (context, key, value, functionName, currentEnvVars) => {
   const triggerPath = `${__dirname}/../triggers/${key}`;
-  const envs = await context
-    .amplify.getTriggerEnvInputs(context, triggerPath, key, value, currentEnvVars);
+  const envs = await context.amplify.getTriggerEnvInputs(context, triggerPath, key, value, currentEnvVars);
   context.amplify.saveEnvResourceParameters(context, 'function', functionName, envs);
 };
 

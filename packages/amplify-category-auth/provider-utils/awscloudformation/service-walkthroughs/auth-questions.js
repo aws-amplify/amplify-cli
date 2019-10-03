@@ -7,14 +7,7 @@ const { authProviders, attributeProviderMap, capabilities } = require('../assets
 
 const category = 'auth';
 
-
-async function serviceWalkthrough(
-  context,
-  defaultValuesFilename,
-  stringMapsFilename,
-  serviceMetadata,
-  coreAnswers = {},
-) {
+async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata, coreAnswers = {}) {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
@@ -29,35 +22,23 @@ async function serviceWalkthrough(
   while (j < inputs.length) {
     const questionObj = inputs[j];
 
-    if (context.updatingAuth &&
-      coreAnswers.updateFlow &&
-      filterInput(inputs[j], coreAnswers.updateFlow)
-    ) {
+    if (context.updatingAuth && coreAnswers.updateFlow && filterInput(inputs[j], coreAnswers.updateFlow)) {
       j += 1;
     }
 
     // CREATE QUESTION OBJECT
-    const q = await parseInputs(
-      questionObj,
-      amplify,
-      defaultValuesFilename,
-      stringMapsFilename,
-      coreAnswers,
-      context,
-    );
+    const q = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
 
     // ASK QUESTION
     const answer = await inquirer.prompt(q);
 
     if (answer.triggers && answer.triggers !== '{}') {
-      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ?
-        JSON.parse(context.updatingAuth.triggers) :
-        {};
+      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
       const selectionMetadata = capabilities;
 
       /* eslint-disable no-loop-func */
-      selectionMetadata.forEach((s) => {
-        Object.keys(s.triggers).forEach((t) => {
+      selectionMetadata.forEach(s => {
+        Object.keys(s.triggers).forEach(t => {
           if (!tempTriggers[t] && answer.triggers.includes(s.value)) {
             tempTriggers[t] = s.triggers[t];
           } else if (tempTriggers[t] && answer.triggers.includes(s.value)) {
@@ -80,7 +61,7 @@ async function serviceWalkthrough(
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
       questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
-    // ITERATOR BLOCK
+      // ITERATOR BLOCK
     } else if (
       /*
         if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
@@ -98,14 +79,10 @@ async function serviceWalkthrough(
           message: `Update ${answer[questionObj.key][t]}`,
           validate: amplify.inputValidation(questionObj),
         });
-        replacementArray.splice(
-          replacementArray.indexOf(answer[questionObj.key][t]),
-          1,
-          newValue.updated,
-        );
+        replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue.updated);
       }
       j += 1;
-    // ADD-ANOTHER BLOCK
+      // ADD-ANOTHER BLOCK
     } else if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
       /*
         if the input has an 'addAnotherLoop' value, we first make sure that the answer
@@ -177,7 +154,6 @@ async function serviceWalkthrough(
     identityPoolProviders(coreAnswers, projectType);
   }
 
-
   // ask manual trigger flow question
   if (coreAnswers.authSelections !== 'identityPoolOnly' && !['init', 'checkout'].includes(context.commandName)) {
     if (coreAnswers.useDefault === 'manual') {
@@ -214,7 +190,7 @@ async function serviceWalkthrough(
 */
 function identityPoolProviders(coreAnswers, projectType) {
   coreAnswers.selectedParties = {};
-  authProviders.forEach((e) => {
+  authProviders.forEach(e => {
     // don't send google value in cf if native project, since we need to make an openid provider
     if (projectType === 'javascript' || e.answerHashKey !== 'googleClientId') {
       if (coreAnswers[e.answerHashKey]) {
@@ -226,7 +202,7 @@ function identityPoolProviders(coreAnswers, projectType) {
         so here we build the string using 'concatKeys' defined in the thirdPartyMap
       */
       if (coreAnswers[e.answerHashKey] && e.concatKeys) {
-        e.concatKeys.forEach((i) => {
+        e.concatKeys.forEach(i => {
           coreAnswers.selectedParties[e.value] = coreAnswers.selectedParties[e.value].concat(';', coreAnswers[i]);
         });
       }
@@ -253,15 +229,17 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     return null;
   }
   const answers = Object.assign(prevAnswers || {}, coreAnswers);
-  const attributesForMapping = answers.requiredAttributes ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username') : ['email', 'username'];
+  const attributesForMapping = answers.requiredAttributes
+    ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username')
+    : ['email', 'username'];
   const res = {};
   if (oAuthProviders) {
-    res.hostedUIProviderMeta = JSON.stringify(oAuthProviders
-      .map((el) => {
+    res.hostedUIProviderMeta = JSON.stringify(
+      oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
         const scopes = [];
         const maps = {};
-        attributesForMapping.forEach((a) => {
+        attributesForMapping.forEach(a => {
           const attributeKey = attributeProviderMap[a];
           if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
             if (scopes.indexOf(attributeKey[`${el.toLowerCase()}`].scope) === -1) {
@@ -280,9 +258,15 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
           authorize_scopes: scopes.join(delimmiter),
           AttributeMapping: maps,
         };
-      }));
-    res.hostedUIProviderCreds = JSON.stringify(oAuthProviders
-      .map(el => ({ ProviderName: el, client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`], client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`] })));
+      })
+    );
+    res.hostedUIProviderCreds = JSON.stringify(
+      oAuthProviders.map(el => ({
+        ProviderName: el,
+        client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`],
+        client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`],
+      }))
+    );
   }
   return res;
 }
@@ -297,12 +281,7 @@ function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
   }
   const prev = context.updatingAuth ? context.updatingAuth : {};
   const answers = Object.assign(prev, coreAnswers);
-  let {
-    AllowedOAuthFlows,
-    AllowedOAuthScopes,
-    CallbackURLs,
-    LogoutURLs,
-  } = answers;
+  let { AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs } = answers;
   if (CallbackURLs && coreAnswers.newCallbackURLs) {
     CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
   } else if (coreAnswers.newCallbackURLs) {
@@ -323,9 +302,7 @@ function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
       AllowedOAuthFlows = defaults(amplify.getProjectDetails(amplify)).AllowedOAuthFlows;
       /* eslint-enable */
     } else {
-      AllowedOAuthFlows = Array.isArray(AllowedOAuthFlows) ?
-        AllowedOAuthFlows :
-        [AllowedOAuthFlows];
+      AllowedOAuthFlows = Array.isArray(AllowedOAuthFlows) ? AllowedOAuthFlows : [AllowedOAuthFlows];
     }
   }
 
@@ -359,7 +336,7 @@ function parseOAuthCreds(providers, metadata, envCreds) {
   try {
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
-    providers.forEach((el) => {
+    providers.forEach(el => {
       try {
         const provider = parsedMetaData.find(i => i.ProviderName === el);
         const creds = parsedCreds.find(i => i.ProviderName === el);
@@ -375,7 +352,6 @@ function parseOAuthCreds(providers, metadata, envCreds) {
   }
   return providerKeys;
 }
-
 
 /*
   Filter inputs for update flow
@@ -409,9 +385,7 @@ function handleUpdates(context, coreAnswers) {
     context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
 
-  if (context.updatingAuth &&
-    context.updatingAuth.authSelections === 'identityPoolOnly'
-  ) {
+  if (context.updatingAuth && context.updatingAuth.authSelections === 'identityPoolOnly') {
     coreAnswers.authSelections = 'identityPoolAndUserPool';
   }
 }
@@ -420,8 +394,7 @@ function handleUpdates(context, coreAnswers) {
   Adding lambda triggers
 */
 async function lambdaFlow(context, answers) {
-  const triggers = await context.amplify
-    .triggerFlow(context, 'cognito', 'auth', answers);
+  const triggers = await context.amplify.triggerFlow(context, 'cognito', 'auth', answers);
   return triggers || answers;
 }
 
@@ -429,105 +402,109 @@ function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create': actions.push(
-        'cognito-idp:ConfirmSignUp',
-        'cognito-idp:AdminCreateUser',
-        'cognito-idp:CreateUserImportJob',
-        'cognito-idp:AdminSetUserSettings',
-        'cognito-idp:AdminLinkProviderForUser',
-        'cognito-idp:CreateIdentityProvider',
-        'cognito-idp:AdminConfirmSignUp',
-        'cognito-idp:AdminDisableUser',
-        'cognito-idp:AdminRemoveUserFromGroup',
-        'cognito-idp:SetUserMFAPreference',
-        'cognito-idp:SetUICustomization',
-        'cognito-idp:SignUp',
-        'cognito-idp:VerifyUserAttribute',
-        'cognito-idp:SetRiskConfiguration',
-        'cognito-idp:StartUserImportJob',
-        'cognito-idp:AdminSetUserPassword',
-        'cognito-idp:AssociateSoftwareToken',
-        'cognito-idp:CreateResourceServer',
-        'cognito-idp:RespondToAuthChallenge',
-        'cognito-idp:CreateUserPoolClient',
-        'cognito-idp:AdminUserGlobalSignOut',
-        'cognito-idp:GlobalSignOut',
-        'cognito-idp:AddCustomAttributes',
-        'cognito-idp:CreateGroup',
-        'cognito-idp:CreateUserPool',
-        'cognito-idp:AdminForgetDevice',
-        'cognito-idp:AdminAddUserToGroup',
-        'cognito-idp:AdminRespondToAuthChallenge',
-        'cognito-idp:ForgetDevice',
-        'cognito-idp:CreateUserPoolDomain',
-        'cognito-idp:AdminEnableUser',
-        'cognito-idp:AdminUpdateDeviceStatus',
-        'cognito-idp:StopUserImportJob',
-        'cognito-idp:InitiateAuth',
-        'cognito-idp:AdminInitiateAuth',
-        'cognito-idp:AdminSetUserMFAPreference',
-        'cognito-idp:ConfirmForgotPassword',
-        'cognito-idp:SetUserSettings',
-        'cognito-idp:VerifySoftwareToken',
-        'cognito-idp:AdminDisableProviderForUser',
-        'cognito-idp:SetUserPoolMfaConfig',
-        'cognito-idp:ChangePassword',
-        'cognito-idp:ConfirmDevice',
-        'cognito-idp:AdminResetUserPassword',
-        'cognito-idp:ResendConfirmationCode',
-      );
+      case 'create':
+        actions.push(
+          'cognito-idp:ConfirmSignUp',
+          'cognito-idp:AdminCreateUser',
+          'cognito-idp:CreateUserImportJob',
+          'cognito-idp:AdminSetUserSettings',
+          'cognito-idp:AdminLinkProviderForUser',
+          'cognito-idp:CreateIdentityProvider',
+          'cognito-idp:AdminConfirmSignUp',
+          'cognito-idp:AdminDisableUser',
+          'cognito-idp:AdminRemoveUserFromGroup',
+          'cognito-idp:SetUserMFAPreference',
+          'cognito-idp:SetUICustomization',
+          'cognito-idp:SignUp',
+          'cognito-idp:VerifyUserAttribute',
+          'cognito-idp:SetRiskConfiguration',
+          'cognito-idp:StartUserImportJob',
+          'cognito-idp:AdminSetUserPassword',
+          'cognito-idp:AssociateSoftwareToken',
+          'cognito-idp:CreateResourceServer',
+          'cognito-idp:RespondToAuthChallenge',
+          'cognito-idp:CreateUserPoolClient',
+          'cognito-idp:AdminUserGlobalSignOut',
+          'cognito-idp:GlobalSignOut',
+          'cognito-idp:AddCustomAttributes',
+          'cognito-idp:CreateGroup',
+          'cognito-idp:CreateUserPool',
+          'cognito-idp:AdminForgetDevice',
+          'cognito-idp:AdminAddUserToGroup',
+          'cognito-idp:AdminRespondToAuthChallenge',
+          'cognito-idp:ForgetDevice',
+          'cognito-idp:CreateUserPoolDomain',
+          'cognito-idp:AdminEnableUser',
+          'cognito-idp:AdminUpdateDeviceStatus',
+          'cognito-idp:StopUserImportJob',
+          'cognito-idp:InitiateAuth',
+          'cognito-idp:AdminInitiateAuth',
+          'cognito-idp:AdminSetUserMFAPreference',
+          'cognito-idp:ConfirmForgotPassword',
+          'cognito-idp:SetUserSettings',
+          'cognito-idp:VerifySoftwareToken',
+          'cognito-idp:AdminDisableProviderForUser',
+          'cognito-idp:SetUserPoolMfaConfig',
+          'cognito-idp:ChangePassword',
+          'cognito-idp:ConfirmDevice',
+          'cognito-idp:AdminResetUserPassword',
+          'cognito-idp:ResendConfirmationCode'
+        );
         break;
-      case 'update': actions.push(
-        'cognito-idp:ForgotPassword',
-        'cognito-idp:UpdateAuthEventFeedback',
-        'cognito-idp:UpdateResourceServer',
-        'cognito-idp:UpdateUserPoolClient',
-        'cognito-idp:AdminUpdateUserAttributes',
-        'cognito-idp:UpdateUserAttributes',
-        'cognito-idp:UpdateUserPoolDomain',
-        'cognito-idp:UpdateIdentityProvider',
-        'cognito-idp:UpdateGroup',
-        'cognito-idp:AdminUpdateAuthEventFeedback',
-        'cognito-idp:UpdateDeviceStatus',
-        'cognito-idp:UpdateUserPool',
-      );
+      case 'update':
+        actions.push(
+          'cognito-idp:ForgotPassword',
+          'cognito-idp:UpdateAuthEventFeedback',
+          'cognito-idp:UpdateResourceServer',
+          'cognito-idp:UpdateUserPoolClient',
+          'cognito-idp:AdminUpdateUserAttributes',
+          'cognito-idp:UpdateUserAttributes',
+          'cognito-idp:UpdateUserPoolDomain',
+          'cognito-idp:UpdateIdentityProvider',
+          'cognito-idp:UpdateGroup',
+          'cognito-idp:AdminUpdateAuthEventFeedback',
+          'cognito-idp:UpdateDeviceStatus',
+          'cognito-idp:UpdateUserPool'
+        );
         break;
-      case 'read': actions.push(
-        'cognito-identity:Describe*',
-        'cognito-identity:Get*',
-        'cognito-identity:List*',
-        'cognito-idp:Describe*',
-        'cognito-idp:AdminGetDevice',
-        'cognito-idp:AdminGetUser',
-        'cognito-idp:AdminList*',
-        'cognito-idp:List*',
-        'cognito-sync:Describe*',
-        'cognito-sync:Get*',
-        'cognito-sync:List*',
-        'iam:ListOpenIdConnectProviders',
-        'iam:ListRoles',
-        'sns:ListPlatformApplications',
-      );
+      case 'read':
+        actions.push(
+          'cognito-identity:Describe*',
+          'cognito-identity:Get*',
+          'cognito-identity:List*',
+          'cognito-idp:Describe*',
+          'cognito-idp:AdminGetDevice',
+          'cognito-idp:AdminGetUser',
+          'cognito-idp:AdminList*',
+          'cognito-idp:List*',
+          'cognito-sync:Describe*',
+          'cognito-sync:Get*',
+          'cognito-sync:List*',
+          'iam:ListOpenIdConnectProviders',
+          'iam:ListRoles',
+          'sns:ListPlatformApplications'
+        );
         break;
-      case 'delete': actions.push(
-        'cognito-idp:DeleteUserPoolDomain',
-        'cognito-idp:DeleteResourceServer',
-        'cognito-idp:DeleteGroup',
-        'cognito-idp:AdminDeleteUserAttributes',
-        'cognito-idp:DeleteUserPoolClient',
-        'cognito-idp:DeleteUserAttributes',
-        'cognito-idp:DeleteUserPool',
-        'cognito-idp:AdminDeleteUser',
-        'cognito-idp:DeleteIdentityProvider',
-        'cognito-idp:DeleteUser',
-      );
+      case 'delete':
+        actions.push(
+          'cognito-idp:DeleteUserPoolDomain',
+          'cognito-idp:DeleteResourceServer',
+          'cognito-idp:DeleteGroup',
+          'cognito-idp:AdminDeleteUserAttributes',
+          'cognito-idp:DeleteUserPoolClient',
+          'cognito-idp:DeleteUserAttributes',
+          'cognito-idp:DeleteUserPool',
+          'cognito-idp:AdminDeleteUser',
+          'cognito-idp:DeleteIdentityProvider',
+          'cognito-idp:DeleteUser'
+        );
         break;
-      default: console.log(`${crudOption} not supported`);
+      default:
+        console.log(`${crudOption} not supported`);
     }
   });
-
 
   policy = {
     Effect: 'Allow',
@@ -555,7 +532,6 @@ function getIAMPolicies(resourceName, crudOptions) {
 
   return { policy, attributes };
 }
-
 
 module.exports = {
   serviceWalkthrough,

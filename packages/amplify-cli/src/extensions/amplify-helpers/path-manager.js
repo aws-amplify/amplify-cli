@@ -11,8 +11,7 @@ function projectPathValidate(projectPath) {
     const amplifyDirPath = getAmplifyDirPath(projectPath);
     const infoSubDirPath = getDotConfigDirPath(projectPath);
 
-    isGood = fs.existsSync(amplifyDirPath) &&
-            fs.existsSync(infoSubDirPath);
+    isGood = fs.existsSync(amplifyDirPath) && fs.existsSync(infoSubDirPath);
   }
   return isGood;
 }
@@ -49,34 +48,24 @@ function getAmplifyDirPath(projectPath) {
     projectPath = searchProjectRootPath();
   }
   if (projectPath) {
-    return path.normalize(path.join(
-      projectPath,
-      amplifyCLIConstants.AmplifyCLIDirName,
-    ));
+    return path.normalize(path.join(projectPath, amplifyCLIConstants.AmplifyCLIDirName));
   }
-  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+  throw new Error(
+    "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
+  );
 }
 
 // ///////////////////level 1
 function getDotConfigDirPath(projectPath) {
-  return path.normalize(path.join(
-    getAmplifyDirPath(projectPath),
-    amplifyCLIConstants.DotConfigamplifyCLISubDirName,
-  ));
+  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.DotConfigamplifyCLISubDirName));
 }
 
 function getBackendDirPath(projectPath) {
-  return path.normalize(path.join(
-    getAmplifyDirPath(projectPath),
-    amplifyCLIConstants.BackendamplifyCLISubDirName,
-  ));
+  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.BackendamplifyCLISubDirName));
 }
 
 function getCurrentCloudBackendDirPath(projectPath) {
-  return path.normalize(path.join(
-    getAmplifyDirPath(projectPath),
-    amplifyCLIConstants.CurrentCloudBackendamplifyCLISubDirName,
-  ));
+  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.CurrentCloudBackendamplifyCLISubDirName));
 }
 
 function getAmplifyRcFilePath(projectPath) {
@@ -84,12 +73,11 @@ function getAmplifyRcFilePath(projectPath) {
     projectPath = searchProjectRootPath();
   }
   if (projectPath) {
-    return path.normalize(path.join(
-      projectPath,
-      '.amplifyrc',
-    ));
+    return path.normalize(path.join(projectPath, '.amplifyrc'));
   }
-  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+  throw new Error(
+    "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
+  );
 }
 
 function getGitIgnoreFilePath(projectPath) {
@@ -97,72 +85,46 @@ function getGitIgnoreFilePath(projectPath) {
     projectPath = searchProjectRootPath();
   }
   if (projectPath) {
-    return path.normalize(path.join(
-      projectPath,
-      '.gitignore',
-    ));
+    return path.normalize(path.join(projectPath, '.gitignore'));
   }
-  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+  throw new Error(
+    "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
+  );
 }
 
 // ///////////////////level 2
 
 function getProjectConfigFilePath(projectPath) {
-  return path.normalize(path.join(
-    getDotConfigDirPath(projectPath),
-    amplifyCLIConstants.ProjectConfigFileName,
-  ));
+  return path.normalize(path.join(getDotConfigDirPath(projectPath), amplifyCLIConstants.ProjectConfigFileName));
 }
 
 function getLocalEnvFilePath(projectPath) {
-  return path.normalize(path.join(
-    getDotConfigDirPath(projectPath),
-    amplifyCLIConstants.LocalEnvFileName,
-  ));
+  return path.normalize(path.join(getDotConfigDirPath(projectPath), amplifyCLIConstants.LocalEnvFileName));
 }
 
 function getProviderInfoFilePath(projectPath) {
-  return path.normalize(path.join(
-    getAmplifyDirPath(projectPath),
-    amplifyCLIConstants.ProviderInfoFileName,
-  ));
+  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.ProviderInfoFileName));
 }
 
 function getBackendConfigFilePath(projectPath) {
-  return path.normalize(path.join(
-    getBackendDirPath(projectPath),
-    amplifyCLIConstants.BackendConfigFileName,
-  ));
+  return path.normalize(path.join(getBackendDirPath(projectPath), amplifyCLIConstants.BackendConfigFileName));
 }
 
 function getCurrentBackendConfigFilePath(projectPath) {
-  return path.normalize(path.join(
-    getCurrentCloudBackendDirPath(projectPath),
-    amplifyCLIConstants.BackendConfigFileName,
-  ));
+  return path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.BackendConfigFileName));
 }
 
 function getPluginConfigFilePath(projectPath) {
-  return path.normalize(path.join(
-    getDotConfigDirPath(projectPath),
-    amplifyCLIConstants.PluginConfigFileName,
-  ));
+  return path.normalize(path.join(getDotConfigDirPath(projectPath), amplifyCLIConstants.PluginConfigFileName));
 }
 
 function getAmplifyMetaFilePath(projectPath) {
-  return path.normalize(path.join(
-    getBackendDirPath(projectPath),
-    amplifyCLIConstants.amplifyMetaFileName,
-  ));
+  return path.normalize(path.join(getBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));
 }
 
 function getCurentAmplifyMetaFilePath(projectPath) {
-  return path.normalize(path.join(
-    getCurrentCloudBackendDirPath(projectPath),
-    amplifyCLIConstants.amplifyMetaFileName,
-  ));
+  return path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));
 }
-
 
 module.exports = {
   searchProjectRootPath,

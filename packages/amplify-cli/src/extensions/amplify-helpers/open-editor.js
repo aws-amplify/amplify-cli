@@ -12,18 +12,19 @@ async function openEditor(context, filePath) {
     message: 'Press enter to continue',
   };
 
-
   // Check if default editor is chosen in init step
   const { defaultEditor } = getEnvInfo();
 
-  const editorSelected = defaultEditor || await editorSelection();
+  const editorSelected = defaultEditor || (await editorSelection());
 
   if (editorSelected !== 'none') {
     const editorArguments = [];
     const editor = envEditor.getEditor(editorSelected);
 
     if (!editor) {
-      console.error(`Selected editor '${editorSelected}' was not found in your machine. Please open your favorite editor and modify the file if needed.`);
+      console.error(
+        `Selected editor '${editorSelected}' was not found in your machine. Please open your favorite editor and modify the file if needed.`
+      );
     }
     const editorPath = editor.paths.find(p => fs.existsSync(p));
 
@@ -41,7 +42,9 @@ async function openEditor(context, filePath) {
         });
 
         subProcess.on('error', () => {
-          context.print.error(`Selected  editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`);
+          context.print.error(
+            `Selected  editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`
+          );
         });
 
         subProcess.unref();

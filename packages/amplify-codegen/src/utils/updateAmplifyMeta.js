@@ -1,4 +1,3 @@
-
 module.exports = async (context, apiDetails) => {
   const fs = context.filesystem;
 
@@ -27,7 +26,6 @@ module.exports = async (context, apiDetails) => {
   }
 
   amplifyMeta.api[apiDetails.name] = appsyncMetadata;
-
 
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   fs.write(amplifyMetaFilePath, JSON.stringify(amplifyMeta, null, 4));

@@ -6,7 +6,7 @@ const multiEnvManager = require('../../lib/multi-env-manager');
 module.exports = {
   name: 'configure',
   alias: 'update',
-  run: async (context) => {
+  run: async context => {
     context.exeInfo = context.amplify.getProjectDetails();
     const availableChannels = notificationManager.getAvailableChannels(context);
     let channelName = context.parameters.first;

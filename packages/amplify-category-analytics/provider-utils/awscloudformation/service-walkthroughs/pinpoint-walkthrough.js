@@ -62,7 +62,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
           type: 'list',
           choices: inputs[i].options,
         },
-        question,
+        question
       );
     } else if (inputs[i].type && inputs[i].type === 'multiselect') {
       question = Object.assign(
@@ -70,20 +70,20 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
           type: 'checkbox',
           choices: inputs[i].options,
         },
-        question,
+        question
       );
     } else {
       question = Object.assign(
         {
           type: 'input',
         },
-        question,
+        question
       );
     }
     questions.push(question);
   }
 
-  return inquirer.prompt(questions).then(async (answers) => {
+  return inquirer.prompt(questions).then(async answers => {
     answers[inputs[0].key] = answers[inputs[1].key];
     Object.assign(defaultValues, answers);
     const resource = defaultValues.resourceName;
@@ -97,19 +97,16 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       allowUnauthenticatedIdentities: true,
     };
     // getting requirement satisfaction map
-    const satisfiedRequirements = await checkRequirements(
-      apiRequirements,
-      context,
-      'api',
-      answers.resourceName,
-    );
+    const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
     // checking to see if any requirements are unsatisfied
     const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
     if (foundUnmetRequirements) {
       context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
       if (
-        await amplify.confirmPrompt.run('Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)')
+        await amplify.confirmPrompt.run(
+          'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)'
+        )
       ) {
         try {
           await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
@@ -119,7 +116,9 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
         }
       } else {
         try {
-          context.print.warning('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
+          context.print.warning(
+            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.'
+          );
           apiRequirements.allowUnauthenticatedIdentities = false;
           await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
         } catch (e) {
@@ -144,9 +143,8 @@ function checkIfNotificationsCategoryExists(context) {
 
   if (amplifyMeta.notifications) {
     const categoryResources = amplifyMeta.notifications;
-    Object.keys(categoryResources).forEach((resource) => {
-      if (categoryResources[resource].service === serviceName &&
-        categoryResources[resource].output.Id) {
+    Object.keys(categoryResources).forEach(resource => {
+      if (categoryResources[resource].service === serviceName && categoryResources[resource].output.Id) {
         pinpointApp = {};
         pinpointApp.appId = categoryResources[resource].output.Id;
         pinpointApp.appName = resource;
@@ -164,7 +162,7 @@ function resourceAlreadyExists(context) {
 
   if (amplifyMeta[category]) {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === serviceName) {
         resourceName = resource;
       }
@@ -188,13 +186,12 @@ function writeCfnFile(context, resourceDirPath, force = false) {
 
 function getTemplateMappings(context) {
   const Mappings = {
-    RegionMapping: {
-    },
+    RegionMapping: {},
   };
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   const regionMapping = provider.getPinpointRegionMapping(context);
-  Object.keys(regionMapping).forEach((region) => {
+  Object.keys(regionMapping).forEach(region => {
     Mappings.RegionMapping[region] = {
       pinpointRegion: regionMapping[region],
     };
@@ -213,7 +210,7 @@ function migrate(context) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const { amplifyMeta } = context.migrationInfo;
   const { analytics = {} } = amplifyMeta;
-  Object.keys(analytics).forEach((resourceName) => {
+  Object.keys(analytics).forEach(resourceName => {
     const resourcePath = path.join(projectBackendDirPath, category, resourceName);
     const cfn = context.amplify.readJsonFile(path.join(resourcePath, 'pinpoint-cloudformation-template.json'));
     const updatedCfn = migrateCFN(cfn);
@@ -331,7 +328,7 @@ function replaceRef(node, refName, refReplacement) {
       Object.assign(node, refReplacement);
       return;
     }
-    Object.values(node).forEach((n) => {
+    Object.values(node).forEach(n => {
       replaceRef(n, refName, refReplacement);
     });
   }
@@ -348,21 +345,22 @@ function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create': actions.push(
-        'mobiletargeting:Put*',
-        'mobiletargeting:Create*',
-        'mobiletargeting:Send*',
-      );
+      case 'create':
+        actions.push('mobiletargeting:Put*', 'mobiletargeting:Create*', 'mobiletargeting:Send*');
         break;
-      case 'update': actions.push('mobiletargeting:Update*');
+      case 'update':
+        actions.push('mobiletargeting:Update*');
         break;
-      case 'read': actions.push('mobiletargeting:Get*', 'mobiletargeting:List*');
+      case 'read':
+        actions.push('mobiletargeting:Get*', 'mobiletargeting:List*');
         break;
-      case 'delete': actions.push('mobiletargeting:Delete*');
+      case 'delete':
+        actions.push('mobiletargeting:Delete*');
         break;
-      default: console.log(`${crudOption} not supported`);
+      default:
+        console.log(`${crudOption} not supported`);
     }
   });
 
@@ -394,6 +392,5 @@ function getIAMPolicies(resourceName, crudOptions) {
 
   return { policy, attributes };
 }
-
 
 module.exports = { addWalkthrough, migrate, getIAMPolicies };

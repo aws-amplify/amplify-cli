@@ -13,7 +13,7 @@ function run(context) {
     const serveExecution = spawn(command, args, { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
-    serveExecution.on('exit', (code) => {
+    serveExecution.on('exit', code => {
       context.print.info(`frontend start command exited with code ${code.toString()}`);
       if (code === 0) {
         resolve(context);
@@ -22,7 +22,7 @@ function run(context) {
         reject(code);
       }
     });
-    serveExecution.on('error', (err) => {
+    serveExecution.on('error', err => {
       context.print.error(chalk.red('frontend start command execution error'));
       context.print.info(err);
       if (!rejectFlag) {

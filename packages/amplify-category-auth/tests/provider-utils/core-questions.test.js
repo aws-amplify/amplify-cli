@@ -4,29 +4,27 @@ const coreQuestions = require('../../provider-utils/awscloudformation/question-f
 const defaults = require('../../provider-utils/awscloudformation/assets/cognito-defaults');
 const maps = require('../../provider-utils/awscloudformation/assets/string-maps');
 
-
 const defaultFileName = 'cognito-defaults';
 const stringMapFileName = 'string-maps';
 const mockContext = {};
 let mockAmplify = {};
 const mappedOptions1 = [{ name: 'name1', value: 'value1' }];
 const mappedOptions2 = [{ name: 'name1', value: 'value1' }];
-const mappedOptions3 = [
-  { name: 'name1', value: 'value1' },
-  { name: 'name2', value: 'value2' },
+const mappedOptions3 = [{ name: 'name1', value: 'value1' }, { name: 'name2', value: 'value2' }];
+const hostedUIProviders = [
+  {
+    name: 'prov1',
+    value: 'prov1',
+  },
+  {
+    name: 'prov2',
+    value: 'prov2',
+  },
+  {
+    name: 'Loginwithamazon',
+    value: 'Loginwithamazon',
+  },
 ];
-const hostedUIProviders = [{
-  name: 'prov1',
-  value: 'prov1',
-},
-{
-  name: 'prov2',
-  value: 'prov2',
-},
-{
-  name: 'Loginwithamazon',
-  value: 'Loginwithamazon',
-}];
 const attributeProviderMap = {
   email: {
     prov1: {
@@ -101,7 +99,6 @@ describe('When generating auth questions...', () => {
     delete mockContext.updatingAuth;
     currentAnswers = {};
   });
-
 
   const key = 'Q1';
   const question = 'What is your name?';
@@ -242,10 +239,7 @@ describe('When generating auth questions...', () => {
       Object.assign(mockContext, { updatingAuth: { iteratorkey: ['val1', 'val2'] } });
       input.type = 'list';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      const requiredChoices = res.choices &&
-        res.choices.length === 2 &&
-        res.choices[0].name === 'val1' &&
-        res.choices[0].value === 'val1';
+      const requiredChoices = res.choices && res.choices.length === 2 && res.choices[0].name === 'val1' && res.choices[0].value === 'val1';
       expect(requiredChoices).toBe(true);
     });
 
@@ -256,9 +250,7 @@ describe('When generating auth questions...', () => {
       input.type = 'multiselect';
       input.map = 'hostedUIProviders';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      const correctChoices = res.choices &&
-        res.choices.length === 3 &&
-        res.choices.filter(i => i.disabled).length === 1;
+      const correctChoices = res.choices && res.choices.length === 3 && res.choices.filter(i => i.disabled).length === 1;
       expect(correctChoices).toBe(true);
     });
 
@@ -285,7 +277,7 @@ describe('When generating auth questions...', () => {
       input.type = 'multiselect';
       input.filter = 'updateOptions';
       input.map = 'updateFlowMap';
-      Object.assign(mockContext, { updatingAuth: { } });
+      Object.assign(mockContext, { updatingAuth: {} });
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
       expect(res.choices.length).toEqual(3);
       expect(res.choices[0].value).toEqual('default');

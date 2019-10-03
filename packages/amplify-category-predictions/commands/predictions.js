@@ -3,7 +3,7 @@ const categoryName = 'predictions';
 module.exports = {
   name: categoryName,
   alias: ['Predictions'],
-  run: async (context) => {
+  run: async context => {
     const header = `amplify ${categoryName} <subcommand>`;
 
     const commands = [

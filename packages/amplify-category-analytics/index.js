@@ -1,8 +1,6 @@
 const path = require('path');
 const pinpointHelper = require('./lib/pinpoint-helper');
-const {
-  migrate,
-} = require('./provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough');
+const { migrate } = require('./provider-utils/awscloudformation/service-walkthroughs/pinpoint-walkthrough');
 
 const category = 'analytics';
 
@@ -16,7 +14,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach((resourceName) => {
+  Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
       const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
       if (providerController) {
@@ -24,7 +22,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName],
+          resourceOpsMapping[resourceName]
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });

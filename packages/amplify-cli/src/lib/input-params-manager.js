@@ -1,6 +1,6 @@
 function normalizeInputParams(context) {
   const inputParams = {};
-  Object.keys(context.parameters.options).forEach((key) => {
+  Object.keys(context.parameters.options).forEach(key => {
     const normalizedKey = normalizeKey(key);
     const normalizedValue = normalizeValue(normalizedKey, context.parameters.options[key]);
     inputParams[normalizedKey] = normalizedValue;
@@ -47,7 +47,7 @@ function transform(inputParams) {
     inputParams[inputParams.amplify.frontend] = inputParams.frontend;
   }
   if (inputParams.amplify.providers.length > 0) {
-    inputParams.amplify.providers.forEach((provider) => {
+    inputParams.amplify.providers.forEach(provider => {
       inputParams[provider] = inputParams.providers[provider];
     });
   }

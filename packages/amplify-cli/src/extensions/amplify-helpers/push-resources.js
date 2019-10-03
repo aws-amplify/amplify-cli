@@ -30,10 +30,7 @@ async function pushResources(context, category, resourceName, filteredResources)
       if (context.exeInfo.localEnvInfo.envName !== envName) {
         context.exeInfo.localEnvInfo.envName = envName;
         const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
-        const localEnvFilePath = context
-          .amplify
-          .pathManager
-          .getLocalEnvFilePath(context.exeInfo.localEnvInfo.projectPath);
+        const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(context.exeInfo.localEnvInfo.projectPath);
         fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
       }
 
@@ -52,8 +49,7 @@ async function pushResources(context, category, resourceName, filteredResources)
     return context;
   }
 
-  let continueToPush =
-    context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
+  let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
   if (!continueToPush) {
     continueToPush = await context.amplify.confirmPrompt.run('Are you sure you want to continue?');
   }
@@ -83,12 +79,7 @@ async function providersPush(context, category, resourceName, filteredResources)
 
   for (let i = 0; i < providers.length; i += 1) {
     const providerModule = require(providerPlugins[providers[i]]);
-    const resourceDefiniton = await context.amplify.getResourceStatus(
-      category,
-      resourceName,
-      providers[i],
-      filteredResources,
-    );
+    const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, providers[i], filteredResources);
     providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
   }
 

@@ -9,7 +9,7 @@ const Cancel = 'Cancel';
 module.exports = {
   name: 'remove',
   alias: ['disable', 'delete'],
-  run: async (context) => {
+  run: async context => {
     context.exeInfo = context.amplify.getProjectDetails();
     const pinpointApp = pinpointHelper.getPinpointApp(context);
     if (pinpointApp) {
