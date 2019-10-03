@@ -1,7 +1,7 @@
 function getCategoryPlugins(context) {
   const categoryPlugins = [];
 
-  context.runtime.plugins.forEach((plugin) => {
+  context.runtime.plugins.forEach(plugin => {
     if (plugin.pluginType === 'category') {
       categoryPlugins.push(plugin.pluginName);
     }
@@ -16,10 +16,7 @@ function listCategories(context) {
   for (let i = 0; i < categoryPlugins.length; i += 1) {
     tableOptions.push([categoryPlugins[i]]);
   }
-  table(
-    tableOptions,
-    { format: 'markdown' },
-  );
+  table(tableOptions, { format: 'markdown' });
 }
 
 module.exports = {

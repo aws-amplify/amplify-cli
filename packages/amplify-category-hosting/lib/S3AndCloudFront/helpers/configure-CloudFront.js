@@ -27,11 +27,7 @@ async function configure(context) {
       default: false,
     });
     if (answer.AddCloudFront) {
-      const {
-        CloudFrontDistribution,
-        OriginAccessIdentity,
-        PrivateBucketPolicy,
-      } = originalTemplate.Resources;
+      const { CloudFrontDistribution, OriginAccessIdentity, PrivateBucketPolicy } = originalTemplate.Resources;
       const { Outputs } = originalTemplate;
       context.exeInfo.template.Resources.OriginAccessIdentity = OriginAccessIdentity;
       context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
@@ -67,8 +63,7 @@ async function configure(context) {
   }
 
   if (context.exeInfo.template.Resources.CloudFrontDistribution) {
-    const { DistributionConfig } =
-                context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
+    const { DistributionConfig } = context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
 
     const questions = [
       {
@@ -272,7 +267,7 @@ async function removeCER(context, CustomErrorResponses) {
 function getConfiguredErrorCodes(CustomErrorResponses) {
   const result = [];
   for (let i = 0; i < CustomErrorResponses.length; i++) {
-    result.push((CustomErrorResponses[i].ErrorCode).toString());
+    result.push(CustomErrorResponses[i].ErrorCode.toString());
   }
   return result;
 }

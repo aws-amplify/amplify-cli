@@ -10,11 +10,12 @@ const s3CloudFormationTemplateFile = 's3-cloudformation-template.json';
 
 module.exports = {
   name: subcommand,
-  run: async (context) => {
+  run: async context => {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
 
-    return amplify.removeResource(context, category, resourceName)
+    return amplify
+      .removeResource(context, category, resourceName)
       .then(() => {
         const projectDetails = context.amplify.getProjectDetails();
         const projectStorage = projectDetails.amplifyMeta.storage;
@@ -24,7 +25,7 @@ module.exports = {
         }
         const keys = Object.keys(projectStorage);
         let s3ResourceName = '';
-        keys.forEach((resource) => {
+        keys.forEach(resource => {
           if (projectStorage[resource].service === 'S3') {
             s3ResourceName = resource;
           }
@@ -52,7 +53,7 @@ module.exports = {
           const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
           const s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn;
           const s3Resources = [];
-          s3DependsOnResources.forEach((resource) => {
+          s3DependsOnResources.forEach(resource => {
             if (resource.resourceName !== adminTriggerFunction) {
               s3Resources.push(resource);
             }
@@ -63,15 +64,10 @@ module.exports = {
 
           const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
           fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
-          context.amplify.updateamplifyMetaAfterResourceUpdate(
-            storageCategory,
-            s3ResourceName,
-            'dependsOn',
-            s3Resources,
-          );
+          context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3ResourceName, 'dependsOn', s3Resources);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         context.print.info(err.stack);
         context.print.error('An error occurred when removing the predictions resource');
       });

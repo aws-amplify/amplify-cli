@@ -5,9 +5,7 @@ const channelName = 'Email';
 const spinner = ora('');
 
 async function configure(context) {
-  const isChannelEnabled =
-    context.exeInfo.serviceMeta.output[channelName] &&
-    context.exeInfo.serviceMeta.output[channelName].Enabled;
+  const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName] && context.exeInfo.serviceMeta.output[channelName].Enabled;
 
   if (isChannelEnabled) {
     context.print.info(`The ${channelName} channel is currently enabled`);
@@ -129,13 +127,15 @@ function pull(context, pinpointApp) {
   };
 
   spinner.start(`Retrieving channel information for ${channelName}.`);
-  return context.exeInfo.pinpointClient.getEmailChannel(params).promise()
-    .then((data) => {
+  return context.exeInfo.pinpointClient
+    .getEmailChannel(params)
+    .promise()
+    .then(data => {
       spinner.succeed(`Channel information retrieved for ${channelName}`);
       pinpointApp[channelName] = data.EmailChannelResponse;
       return data.EmailChannelResponse;
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
         return err;

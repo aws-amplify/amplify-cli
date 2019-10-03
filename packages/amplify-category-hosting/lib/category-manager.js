@@ -9,7 +9,7 @@ const category = 'hosting';
 function getAvailableServices(context) {
   const availableServices = [];
   const projectConfig = context.amplify.getProjectConfig();
-  Object.keys(supportedServices).forEach((service) => {
+  Object.keys(supportedServices).forEach(service => {
     if (projectConfig.providers.includes(supportedServices[service].provider)) {
       availableServices.push(service);
     }
@@ -37,7 +37,7 @@ function getCategoryStatus(context) {
         }
       }
     }
-    availableServices.forEach((service) => {
+    availableServices.forEach(service => {
       if (!enabledServices.includes(service)) {
         disabledServices.push(service);
       }
@@ -68,7 +68,7 @@ async function migrate(context) {
   const { migrationInfo } = context;
   const categoryMeta = migrationInfo.amplifyMeta[constants.CategoryName];
   if (categoryMeta) {
-    Object.keys(categoryMeta).forEach((service) => {
+    Object.keys(categoryMeta).forEach(service => {
       const serviceModule = require(path.join(__dirname, `${service}/index.js`));
       migrationTasks.push(() => serviceModule.migrate(context));
     });
@@ -76,22 +76,27 @@ async function migrate(context) {
   await sequential(migrationTasks);
 }
 
-
 function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   let actions = new Set();
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create': actions.add('s3:PutObject');
+      case 'create':
+        actions.add('s3:PutObject');
         break;
-      case 'update': actions.add('s3:PutObject');
+      case 'update':
+        actions.add('s3:PutObject');
         break;
-      case 'read': actions.add('s3:GetObject'); actions.add('s3:ListBucket');
+      case 'read':
+        actions.add('s3:GetObject');
+        actions.add('s3:ListBucket');
         break;
-      case 'delete': actions.add('s3:DeleteObject');
+      case 'delete':
+        actions.add('s3:DeleteObject');
         break;
-      default: console.log(`${crudOption} not supported`);
+      default:
+        console.log(`${crudOption} not supported`);
     }
   });
 
@@ -119,7 +124,6 @@ function getIAMPolicies(resourceName, crudOptions) {
 
   return { policy, attributes };
 }
-
 
 module.exports = {
   getCategoryStatus,

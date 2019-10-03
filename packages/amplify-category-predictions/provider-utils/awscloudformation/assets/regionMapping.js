@@ -1,4 +1,3 @@
-
 const Translate = {
   'us-east-1': 'us-east-1',
   'us-east-2': 'us-east-1',
@@ -12,7 +11,6 @@ const Translate = {
   'ap-southeast-2': 'ap-southeast-1',
   'ap-south-1': 'ap-south-1',
 };
-
 
 const Polly = {
   'us-east-1': 'us-east-1',
@@ -113,7 +111,7 @@ function getRegionMapping(service, type) {
     RegionMapping: {},
   };
   const regionMapping = regionMap[service];
-  Object.keys(regionMapping).forEach((region) => {
+  Object.keys(regionMapping).forEach(region => {
     Mappings.RegionMapping[region] = {
       [type]: regionMapping[region],
     };

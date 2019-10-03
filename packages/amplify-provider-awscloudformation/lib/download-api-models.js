@@ -30,39 +30,40 @@ function downloadAPIModels(context, allResources) {
 }
 
 function extractAPIModel(context, resource, framework) {
-  return new APIGateway(context)
-    .then((apigw) => {
-      const apigwParams = getAPIGWRequestParams(context, resource, framework);
+  return new APIGateway(context).then(apigw => {
+    const apigwParams = getAPIGWRequestParams(context, resource, framework);
 
-      const apiName = resource.output.ApiName;
+    const apiName = resource.output.ApiName;
 
-      return apigw.apigw.getSdk(apigwParams).promise()
-        .then((data) => {
-          const backendDir = context.amplify.pathManager.getBackendDirPath();
+    return apigw.apigw
+      .getSdk(apigwParams)
+      .promise()
+      .then(data => {
+        const backendDir = context.amplify.pathManager.getBackendDirPath();
 
-          const tempDir = `${backendDir}/.temp`;
+        const tempDir = `${backendDir}/.temp`;
 
-          fs.ensureDirSync(tempDir);
+        fs.ensureDirSync(tempDir);
 
-          const buff = Buffer.from(data.body);
-          return new Promise((resolve, reject) => {
-            fs.writeFile(`${tempDir}/${apiName}.zip`, buff, (err) => {
+        const buff = Buffer.from(data.body);
+        return new Promise((resolve, reject) => {
+          fs.writeFile(`${tempDir}/${apiName}.zip`, buff, err => {
+            if (err) {
+              reject(err);
+            }
+            extract(`${tempDir}/${apiName}.zip`, { dir: tempDir }, err => {
               if (err) {
                 reject(err);
               }
-              extract(`${tempDir}/${apiName}.zip`, { dir: tempDir }, (err) => {
-                if (err) {
-                  reject(err);
-                }
-                // Copy files to src
-                copyFilesToSrc(context, apiName, framework);
-                fs.removeSync(tempDir);
-                resolve();
-              });
+              // Copy files to src
+              copyFilesToSrc(context, apiName, framework);
+              fs.removeSync(tempDir);
+              resolve();
             });
           });
         });
-    });
+      });
+  });
 }
 
 function copyFilesToSrc(context, apiName, framework) {
@@ -70,27 +71,30 @@ function copyFilesToSrc(context, apiName, framework) {
   const tempDir = `${backendDir}/.temp`;
 
   switch (framework) {
-    case 'android': {
-      const generatedSrc = `${tempDir}/${apiName}-Artifact-1.0/src/main/java`;
+    case 'android':
+      {
+        const generatedSrc = `${tempDir}/${apiName}-Artifact-1.0/src/main/java`;
 
-      const target = `${context.amplify.getEnvInfo().projectPath}/app/src/main/java`;
+        const target = `${context.amplify.getEnvInfo().projectPath}/app/src/main/java`;
 
-      fs.ensureDirSync(target);
+        fs.ensureDirSync(target);
 
-      fs.copySync(generatedSrc, target);
-    }
+        fs.copySync(generatedSrc, target);
+      }
       break;
-    case 'ios': {
-      const generatedSrc = `${tempDir}/aws-apigateway-ios-swift/generated-src`;
+    case 'ios':
+      {
+        const generatedSrc = `${tempDir}/aws-apigateway-ios-swift/generated-src`;
 
-      const target = `${context.amplify.getEnvInfo().projectPath}/generated-src`;
+        const target = `${context.amplify.getEnvInfo().projectPath}/generated-src`;
 
-      fs.ensureDirSync(target);
+        fs.ensureDirSync(target);
 
-      fs.copySync(generatedSrc, target);
-    }
+        fs.copySync(generatedSrc, target);
+      }
       break;
-    default: throw new Error(`Unsupported framework. ${framework}`);
+    default:
+      throw new Error(`Unsupported framework. ${framework}`);
   }
 }
 
@@ -102,7 +106,6 @@ function getAPIGWRequestParams(context, resource, framework) {
 
   const secondSplit = firstSplit[2].split('.');
   const apiId = secondSplit[0];
-
 
   switch (framework) {
     case 'android':
@@ -128,7 +131,8 @@ function getAPIGWRequestParams(context, resource, framework) {
         },
       };
 
-    default: throw new Error(`Unsupported framework. ${framework}`);
+    default:
+      throw new Error(`Unsupported framework. ${framework}`);
   }
 }
 

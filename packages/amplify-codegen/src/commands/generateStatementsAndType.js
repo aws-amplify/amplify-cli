@@ -1,7 +1,5 @@
 const { join } = require('path');
-const {
-  AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
-} = require('../errors');
+const { AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError } = require('../errors');
 const generateTypes = require('./types');
 const generateStatements = require('./statements');
 const loadConfig = require('../codegen-config');
@@ -10,8 +8,7 @@ const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../utils');
 const path = require('path');
 const fs = require('fs-extra');
 
-async function generateStatementsAndTypes(context, forceDownloadSchema,
-  maxDepth) {
+async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
   let withoutInit = false;
   // Determine if working in an amplify project
   try {
@@ -23,7 +20,9 @@ async function generateStatementsAndTypes(context, forceDownloadSchema,
   // Check if introspection schema exists
   const schemaPath = ['schema.graphql', 'schema.json'].map(p => path.join(process.cwd(), p)).find(p => fs.existsSync(p));
   if (withoutInit && !schemaPath) {
-    throw Error(`Please download the schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`);
+    throw Error(
+      `Please download the schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`
+    );
   }
 
   if (withoutInit) {
@@ -48,17 +47,11 @@ async function generateStatementsAndTypes(context, forceDownloadSchema,
     ({ projectPath } = context.amplify.getEnvInfo());
   }
 
-
   let downloadPromises;
   if (!withoutInit) {
-    downloadPromises = projects.map(async cfg =>
-      await ensureIntrospectionSchema(
-        context,
-        join(projectPath, cfg.schema),
-        apis[0],
-        cfg.amplifyExtension.region,
-        forceDownloadSchema,
-      ),
+    downloadPromises = projects.map(
+      async cfg =>
+        await ensureIntrospectionSchema(context, join(projectPath, cfg.schema), apis[0], cfg.amplifyExtension.region, forceDownloadSchema)
     );
     await Promise.all(downloadPromises);
   }

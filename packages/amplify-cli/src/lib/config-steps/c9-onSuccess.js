@@ -17,7 +17,6 @@ async function run(context) {
   printWelcomeMessage(context);
 }
 
-
 function printWelcomeMessage(context) {
   context.print.info('');
   context.print.success('Successfully made configuration changes to your project.');

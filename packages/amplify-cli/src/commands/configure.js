@@ -8,14 +8,15 @@ const { normalizeInputParams } = require('../lib/input-params-manager');
 
 module.exports = {
   name: 'configure',
-  run: async (context) => {
+  run: async context => {
     if (!context.parameters.first) {
       await configureNewUser.run(context);
     }
 
     if (context.parameters.first === 'project') {
       constructExeInfo(context);
-      await analyzeProject.run(context)
+      await analyzeProject
+        .run(context)
         .then(configFrontendHandler.run)
         .then(configProviders.run)
         .then(onSuccess.run)
@@ -28,4 +29,3 @@ function constructExeInfo(context) {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = normalizeInputParams(context);
 }
-

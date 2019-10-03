@@ -3,7 +3,7 @@ const notificationManager = require('../../lib/notifications-manager');
 module.exports = {
   name: 'status',
   alias: ['list', 'ls'],
-  run: async (context) => {
+  run: async context => {
     context.exeInfo = context.amplify.getProjectDetails();
     const enabledChannels = notificationManager.getEnabledChannels(context);
     const disableChannels = notificationManager.getDisabledChannels(context);
@@ -16,9 +16,6 @@ module.exports = {
       tableOptions.push([disableChannels[i], 'Disabled']);
     }
 
-    context.print.table(
-      tableOptions,
-      { format: 'markdown' },
-    );
+    context.print.table(tableOptions, { format: 'markdown' });
   },
 };

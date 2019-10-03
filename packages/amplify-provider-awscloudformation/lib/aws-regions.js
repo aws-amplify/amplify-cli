@@ -16,4 +16,3 @@ module.exports = {
   regions: Object.keys(regionMappings),
   regionMappings,
 };
-

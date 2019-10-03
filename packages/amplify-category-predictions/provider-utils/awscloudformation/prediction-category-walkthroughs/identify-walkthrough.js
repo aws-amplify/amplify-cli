@@ -2,9 +2,12 @@ import identifyAssets from '../assets/identifyQuestions';
 import getAllDefaults from '../default-values/identify-defaults';
 import regionMapper from '../assets/regionMapping';
 import {
-  generateStorageCFNForLambda, generateStorageCFNForAdditionalLambda,
-  generateLambdaAccessForRekognition, generateStorageAccessForRekognition,
-  removeTextractPolicies, addTextractPolicies,
+  generateStorageCFNForLambda,
+  generateStorageCFNForAdditionalLambda,
+  generateLambdaAccessForRekognition,
+  generateStorageAccessForRekognition,
+  removeTextractPolicies,
+  addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
 
 const inquirer = require('inquirer');
@@ -30,7 +33,11 @@ const prefixForAdminTrigger = 'protected/predictions/index-faces/';
 
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
-    if (await context.amplify.confirmPrompt.run('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
+    if (
+      await context.amplify.confirmPrompt.run(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      )
+    ) {
       try {
         const { add } = require('amplify-category-auth');
         await add(context);
@@ -53,9 +60,12 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+  Object.keys(amplifyMeta[category]).forEach(resourceName => {
     if (identifyTypes.includes(amplifyMeta[category][resourceName].identifyType)) {
-      predictionsResources.push({ name: resourceName, value: { name: resourceName, identifyType: amplifyMeta[category][resourceName].identifyType } });
+      predictionsResources.push({
+        name: resourceName,
+        value: { name: resourceName, identifyType: amplifyMeta[category][resourceName].identifyType },
+      });
     }
   });
   if (predictionsResources.length === 0) {
@@ -109,16 +119,12 @@ async function configure(context, resourceObj) {
       process.exit(0);
     }
 
-    Object.assign(answers, await inquirer.prompt(identifyAssets
-      .setup.name(`${answers.identifyType}${defaultValues.resourceName}`)));
+    Object.assign(answers, await inquirer.prompt(identifyAssets.setup.name(`${answers.identifyType}${defaultValues.resourceName}`)));
     identifyType = answers.identifyType;
   }
 
   // category specific questions
-  Object.assign(answers, await followUpQuestions(
-    identifyAssets[identifyType],
-    identifyType, parameters,
-  ));
+  Object.assign(answers, await followUpQuestions(identifyAssets[identifyType], identifyType, parameters));
   delete answers.setup;
   Object.assign(defaultValues, answers);
 
@@ -217,7 +223,10 @@ async function configure(context, resourceObj) {
 
   const { dependsOn } = defaultValues;
   const amplifyMetaValues = {
-    resourceName, service, dependsOn, identifyType,
+    resourceName,
+    service,
+    dependsOn,
+    identifyType,
   };
   if (parameters.resourceName) {
     // update CFN template
@@ -254,12 +263,7 @@ function updateCFN(context, resourceName, identifyType) {
       identifyCFNFileJSON = removeTextractPolicies(identifyCFNFile);
     }
     fs.writeFileSync(identifyCFNFilePath, identifyCFNFileJSON, 'utf8');
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      category,
-      resourceName,
-      'service',
-      service,
-    );
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'service', service);
   }
 }
 
@@ -318,7 +322,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -354,7 +358,7 @@ function resourceAlreadyExists(context, identifyType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].identifyType === identifyType) {
         type = identifyType;
       }
@@ -384,10 +388,9 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
     const question = {
       name: identifyAssets.s3bucket.key,
       message: identifyAssets.s3bucket.question,
-      validate: (value) => {
+      validate: value => {
         const regex = new RegExp('^[a-zA-Z0-9-]+$');
-        return regex.test(value) ?
-          true : 'Bucket name can only use the following characters: a-z 0-9 -';
+        return regex.test(value) ? true : 'Bucket name can only use the following characters: a-z 0-9 -';
       },
       default: () => {
         const defaultValue = defaultValues.bucketName;
@@ -439,7 +442,6 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   const jsonString = JSON.stringify(defaultValues, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
-
   if (!bucketName) {
     if (options) {
       Object.assign(defaultValues, options);
@@ -447,11 +449,7 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
     // Generate CFN file on add
     await s3CopyCfnTemplate(context, storageCategory, resource, defaultValues);
 
-    context.amplify.updateamplifyMetaAfterResourceAdd(
-      storageCategory,
-      resource,
-      options,
-    );
+    context.amplify.updateamplifyMetaAfterResourceAdd(storageCategory, resource, options);
     const { print } = context;
     print.success('Successfully added storage resource locally');
   }
@@ -483,7 +481,6 @@ async function s3CopyCfnTemplate(context, categoryName, resourceName, options) {
 async function addTrigger(context, s3Resource, options, predictionsResourceName) {
   const functionName = await createNewFunction(context, predictionsResourceName, s3Resource.resourceName);
 
-
   if (s3Resource.bucketName) {
     // Update Cloudformtion file
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -496,16 +493,13 @@ async function addTrigger(context, s3Resource, options, predictionsResourceName)
     fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
 
     // Update DependsOn
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      storageCategory,
-      s3Resource.resourceName,
-      'dependsOn',
-      [{
+    context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3Resource.resourceName, 'dependsOn', [
+      {
         category: functionCategory,
         resourceName: functionName,
         attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-      }],
-    );
+      },
+    ]);
   } else {
     options.dependsOn = [];
     options.dependsOn.push({
@@ -530,7 +524,6 @@ async function addAdditionalLambdaTrigger(context, s3Resource, predictionsResour
   const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
   fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
 
-
   const dependsOnResources = amplifyMetaFile.storage[s3Resource.resourceName].dependsOn;
   dependsOnResources.push({
     category: functionCategory,
@@ -539,12 +532,7 @@ async function addAdditionalLambdaTrigger(context, s3Resource, predictionsResour
   });
 
   // Update DependsOn
-  context.amplify.updateamplifyMetaAfterResourceUpdate(
-    storageCategory,
-    s3Resource.resourceName,
-    'dependsOn',
-    dependsOnResources,
-  );
+  context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3Resource.resourceName, 'dependsOn', dependsOnResources);
 
   return functionName;
 }
@@ -556,7 +544,7 @@ function s3ResourceAlreadyExists(context) {
 
   if (amplifyMeta[storageCategory]) {
     const categoryResources = amplifyMeta[storageCategory];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === s3ServiceName) {
         resourceName = resource;
       }
@@ -576,7 +564,6 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
     functionName: `${functionName}`,
     roleName: `${functionName}LambdaRole${shortId}`,
   };
-
 
   const copyJobs = [
     {
@@ -606,7 +593,12 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
 
   if (predictionsResourceName) {
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-    const identifyCFNFilePath = path.join(projectBackendDirPath, category, predictionsResourceName, `${predictionsResourceName}-template.json`);
+    const identifyCFNFilePath = path.join(
+      projectBackendDirPath,
+      category,
+      predictionsResourceName,
+      `${predictionsResourceName}-template.json`
+    );
     let identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
     identifyCFNFile = generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3ResourceName);
     const identifyCFNString = JSON.stringify(identifyCFNFile, null, 4);
@@ -627,12 +619,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
     });
 
     // Update DependsOn
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      category,
-      predictionsResourceName,
-      'dependsOn',
-      dependsOnResources,
-    );
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, predictionsResourceName, 'dependsOn', dependsOnResources);
   }
   // Update amplify-meta and backend-config
 
@@ -642,11 +629,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
     build: true,
   };
 
-  await context.amplify.updateamplifyMetaAfterResourceAdd(
-    functionCategory,
-    functionName,
-    backendConfigs,
-  );
+  await context.amplify.updateamplifyMetaAfterResourceAdd(functionCategory, functionName, backendConfigs);
 
   context.print.success(`Successfully added resource ${functionName} locally`);
   return functionName;
@@ -654,7 +637,12 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
 
 function addStorageIAMResourcestoIdentifyCFNFile(context, predictionsResourceName, s3ResourceName) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const identifyCFNFilePath = path.join(projectBackendDirPath, category, predictionsResourceName, `${predictionsResourceName}-template.json`);
+  const identifyCFNFilePath = path.join(
+    projectBackendDirPath,
+    category,
+    predictionsResourceName,
+    `${predictionsResourceName}-template.json`
+  );
   let identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
   identifyCFNFile = generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, prefixForAdminTrigger);
   const identifyCFNString = JSON.stringify(identifyCFNFile, null, 4);
@@ -697,7 +685,7 @@ function removeAdminLambdaTrigger(context, resourceName, s3ResourceName) {
     const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
     const s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn;
     const s3Resources = [];
-    s3DependsOnResources.forEach((resource) => {
+    s3DependsOnResources.forEach(resource => {
       if (resource.resourceName !== adminTriggerFunction) {
         s3Resources.push(resource);
       }
@@ -712,27 +700,23 @@ function removeAdminLambdaTrigger(context, resourceName, s3ResourceName) {
     const identifyCFNString = JSON.stringify(identifyCFNFile, null, 4);
     fs.writeFileSync(identifyCFNFilePath, identifyCFNString, 'utf8');
 
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      category,
-      resourceName,
-      'dependsOn',
-      [],
-    );
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'dependsOn', []);
 
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      storageCategory,
-      s3ResourceName,
-      'dependsOn',
-      s3Resources,
-    );
+    context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3ResourceName, 'dependsOn', s3Resources);
   }
 }
 
 function removeS3AdminLambdaTrigger(storageCFNFile, adminTriggerFunction) {
   let modifyOnlyFilters = false;
   const lambdaConfigurations = [];
-  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((triggers) => {
-    if (!(triggers.Filter && (typeof (triggers.Filter.S3Key.Rules[0].Value) === 'string') && triggers.Filter.S3Key.Rules[0].Value.includes('index-faces'))) {
+  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach(triggers => {
+    if (
+      !(
+        triggers.Filter &&
+        typeof triggers.Filter.S3Key.Rules[0].Value === 'string' &&
+        triggers.Filter.S3Key.Rules[0].Value.includes('index-faces')
+      )
+    ) {
       modifyOnlyFilters = true;
       lambdaConfigurations.push(triggers);
     }
@@ -749,7 +733,7 @@ function removeS3AdminLambdaTrigger(storageCFNFile, adminTriggerFunction) {
     storageCFNFile.Resources.S3Bucket.DependsOn.splice(index, 1);
   }
   const roles = [];
-  storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.forEach((role) => {
+  storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.forEach(role => {
     if (!role.Ref.includes(adminTriggerFunction)) {
       roles.push(role);
     }

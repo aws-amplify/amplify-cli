@@ -32,7 +32,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const projectBucket = getProjectBucket(context);
 
-  const getDeploymentRootKey = async (resourceDir) => {
+  const getDeploymentRootKey = async resourceDir => {
     let deploymentSubKey;
     if (useDeprecatedParameters) {
       deploymentSubKey = new Date().getTime();
@@ -53,9 +53,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
       return acc;
     }, []);
 
-    const appSyncApi = (appSyncAPIs && appSyncAPIs.length && appSyncAPIs.length > 0)
-      ? appSyncAPIs[0]
-      : undefined;
+    const appSyncApi = appSyncAPIs && appSyncAPIs.length && appSyncAPIs.length > 0 ? appSyncAPIs[0] : undefined;
 
     let hasApiKey = false;
 
@@ -68,8 +66,10 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
       } else if (authConfig) {
         if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
           hasApiKey = true;
-        } else if (authConfig.additionalAuthenticationProviders &&
-          authConfig.additionalAuthenticationProviders.find(p => p.authenticationType === 'API_KEY')) {
+        } else if (
+          authConfig.additionalAuthenticationProviders &&
+          authConfig.additionalAuthenticationProviders.find(p => p.authenticationType === 'API_KEY')
+        ) {
           hasApiKey = true;
         }
       }
@@ -113,8 +113,10 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
 
             delete currentParameters.APIKeyExpirationEpoch;
 
-            context.print.warning('APIKeyExpirationEpoch parameter\'s -1 value is deprecated to disable ' +
-              'the API Key creation. In the future CreateAPIKey parameter replaces this behavior.');
+            context.print.warning(
+              "APIKeyExpirationEpoch parameter's -1 value is deprecated to disable " +
+                'the API Key creation. In the future CreateAPIKey parameter replaces this behavior.'
+            );
           } else {
             currentParameters.CreateAPIKey = 1;
           }
@@ -173,7 +175,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     }
     await TransformPackage.uploadAPIProject({
       directory: resourceBuildDir,
-      upload: async (blob) => {
+      upload: async blob => {
         const { Key, Body } = blob;
         const fullKey = `${deploymentRootKey}/${Key}`;
 
@@ -210,7 +212,7 @@ async function hashDirectory(directory) {
     },
   };
 
-  return hashElement(directory, options).then(result => (result.hash));
+  return hashElement(directory, options).then(result => result.hash);
 }
 
 module.exports = {

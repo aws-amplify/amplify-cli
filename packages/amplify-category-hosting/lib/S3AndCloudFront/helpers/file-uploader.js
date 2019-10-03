@@ -11,15 +11,13 @@ const providerName = 'awscloudformation';
 
 async function run(context, distributionDirPath) {
   const { WebsiteConfiguration } = context.exeInfo.template.Resources.S3Bucket.Properties;
-  const fileList =
-    fileScanner.scan(context, distributionDirPath, WebsiteConfiguration.IndexDocument);
+  const fileList = fileScanner.scan(context, distributionDirPath, WebsiteConfiguration.IndexDocument);
 
   const uploadFileTasks = [];
   const s3Client = await getS3Client(context, 'update');
   const hostingBucketName = getHostingBucketName(context);
-  fileList.forEach((filePath) => {
-    uploadFileTasks.push(() =>
-      uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath));
+  fileList.forEach(filePath => {
+    uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath));
   });
 
   const spinner = new Ora('Uploading files...');

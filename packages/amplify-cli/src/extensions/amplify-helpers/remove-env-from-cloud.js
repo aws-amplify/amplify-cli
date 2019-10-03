@@ -9,7 +9,7 @@ async function removeEnvFromCloud(context, envName) {
   context.print.info('');
   context.print.info(`Deleting env:${envName}`);
 
-  providers.forEach((providerName) => {
+  providers.forEach(providerName => {
     const pluginModule = require(providerPlugins[providerName]);
     providerPromises.push(pluginModule.deleteEnv(context, envName));
   });

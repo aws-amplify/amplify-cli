@@ -8,9 +8,7 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
     if (result.Faces[i].ExternalImageId === externalImageID) {
       const params1 = {
         CollectionId: process.env.collectionId,
-        FaceIds: [
-          result.Faces[i].FaceId,
-        ],
+        FaceIds: [result.Faces[i].FaceId],
       };
 
       const result1 = await rekognition.deleteFaces(params1).promise();
@@ -29,7 +27,7 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
   return resultDeleted;
 }
 
-exports.handler = async (event) => {
+exports.handler = async event => {
   AWS.config.update({
     region: event.Records[0].awsRegion,
   });

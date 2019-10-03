@@ -5,10 +5,7 @@ const generateStatementsAndTypes = require('../../src/commands/generateStatement
 const { AmplifyCodeGenNoAppSyncAPIAvailableError } = require('../../src/errors');
 const path = require('path');
 
-const {
-  ensureIntrospectionSchema,
-  getAppSyncAPIDetails,
-} = require('../../src/utils');
+const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../../src/utils');
 
 const MOCK_CONTEXT = {
   print: {
@@ -65,8 +62,7 @@ describe('command - generateStatementsAndTypes', () => {
     const forceDownload = false;
     await generateStatementsAndTypes(MOCK_CONTEXT, forceDownload);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT, false);
-    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false, undefined,
-      false, undefined);
+    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false, undefined, false, undefined);
     expect(generateTypes).toHaveBeenCalledWith(MOCK_CONTEXT, false, false, undefined);
   });
 
@@ -78,7 +74,7 @@ describe('command - generateStatementsAndTypes', () => {
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_APIS[0],
       MOCK_REGION,
-      forceDownload,
+      forceDownload
     );
   });
 
@@ -86,8 +82,6 @@ describe('command - generateStatementsAndTypes', () => {
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([]),
     });
-    await expect(generateStatementsAndTypes(MOCK_CONTEXT, false)).rejects.toBeInstanceOf(
-      AmplifyCodeGenNoAppSyncAPIAvailableError,
-    );
+    await expect(generateStatementsAndTypes(MOCK_CONTEXT, false)).rejects.toBeInstanceOf(AmplifyCodeGenNoAppSyncAPIAvailableError);
   });
 });

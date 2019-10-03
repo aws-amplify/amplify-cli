@@ -3,10 +3,14 @@ const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 
 async function deleteProject(context) {
-  if (await context.amplify.confirmPrompt.run('Are you sure you want to continue? (This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)')) {
+  if (
+    await context.amplify.confirmPrompt.run(
+      'Are you sure you want to continue? (This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)'
+    )
+  ) {
     const removeEnvPromises = [];
     const allEnvs = context.amplify.getEnvDetails();
-    Object.keys(allEnvs).forEach((env) => {
+    Object.keys(allEnvs).forEach(env => {
       removeEnvPromises.push(removeEnvFromCloud(context, env));
     });
     const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');

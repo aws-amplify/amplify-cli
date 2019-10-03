@@ -1,8 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const { normalizeEditor, editorSelection } =
-  require('../../extensions/amplify-helpers/editor-selection');
+const { normalizeEditor, editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
 const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/constants');
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
@@ -24,8 +23,7 @@ async function run(context) {
 
   context.exeInfo.isNewEnv = isNewEnv(context, envName);
 
-  if ((context.exeInfo.inputParams && context.exeInfo.inputParams.yes) ||
-    context.parameters.options.forcePush) {
+  if ((context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || context.parameters.options.forcePush) {
     context.exeInfo.forcePush = true;
   } else {
     context.exeInfo.forcePush = false;
@@ -42,11 +40,9 @@ async function run(context) {
     envName,
   };
 
-  context.exeInfo.teamProviderInfo = {
-  };
+  context.exeInfo.teamProviderInfo = {};
 
-  context.exeInfo.metaData = {
-  };
+  context.exeInfo.metaData = {};
 
   return context;
 }
@@ -71,8 +67,7 @@ async function getProjectName(context) {
         name: 'inputProjectName',
         message: 'Enter a name for the project',
         default: projectName,
-        validate: input => isProjectNameValid(input) ||
-            'Project name should be between 3 and 20 characters and alphanumeric',
+        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
       };
       const answer = await inquirer.prompt(projectNameQuestion);
       projectName = answer.inputProjectName;
@@ -83,10 +78,7 @@ async function getProjectName(context) {
 }
 
 function isProjectNameValid(projectName) {
-  return projectName &&
-          projectName.length >= 3 &&
-          projectName.length <= 20 &&
-          /[a-zA-Z0-9]/g.test(projectName);
+  return projectName && projectName.length >= 3 && projectName.length <= 20 && /[a-zA-Z0-9]/g.test(projectName);
 }
 
 function normalizeProjectName(projectName) {
@@ -121,7 +113,7 @@ async function getEditor(context) {
 async function getEnvName(context) {
   let envName;
 
-  const isEnvNameValid = (inputEnvName) => {
+  const isEnvNameValid = inputEnvName => {
     let valid = true;
 
     if (inputEnvName.length > 10 || inputEnvName.length < 2 || /[^a-z]/g.test(inputEnvName)) {
@@ -148,9 +140,7 @@ async function getEnvName(context) {
       name: 'envName',
       message: 'Enter a name for the environment',
       validate: input =>
-        (!isEnvNameValid(input)
-          ? 'Environment name should be between 2 and 10 characters (only lowercase alphabets).'
-          : true),
+        !isEnvNameValid(input) ? 'Environment name should be between 2 and 10 characters (only lowercase alphabets).' : true,
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));
@@ -217,7 +207,6 @@ function getDefaultEditor(context) {
 
   return defaultEditor;
 }
-
 
 module.exports = {
   run,

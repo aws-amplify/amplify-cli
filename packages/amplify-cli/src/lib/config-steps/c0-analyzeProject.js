@@ -1,8 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const { normalizeEditor, editorSelection } =
-  require('../../extensions/amplify-helpers/editor-selection');
+const { normalizeEditor, editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
 const { getEnvInfo } = require('../../extensions/amplify-helpers/get-env-info');
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
@@ -39,8 +38,7 @@ async function configureProjectName(context) {
         name: 'inputProjectName',
         message: 'Enter a name for the project',
         default: projectName,
-        validate: input => isProjectNameValid(input) ||
-            'Project name should be between 3 and 20 characters and alphanumeric',
+        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
       };
       const answer = await inquirer.prompt(projectNameQuestion);
       projectName = answer.inputProjectName;
@@ -51,10 +49,7 @@ async function configureProjectName(context) {
 }
 
 function isProjectNameValid(projectName) {
-  return projectName &&
-          projectName.length >= 3 &&
-          projectName.length <= 20 &&
-          /[a-zA-Z0-9]/g.test(projectName);
+  return projectName && projectName.length >= 3 && projectName.length <= 20 && /[a-zA-Z0-9]/g.test(projectName);
 }
 
 function normalizeProjectName(projectName) {

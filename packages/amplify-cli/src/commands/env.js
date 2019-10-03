@@ -3,7 +3,7 @@ const path = require('path');
 const featureName = 'env';
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     const { subCommands } = context.input;
     let subcommand = 'help';
     if (subCommands && subCommands.length > 0) {
@@ -38,13 +38,13 @@ function shiftParams(context) {
   /* eslint-disable */
   if (subCommands && subCommands.length > 1) {
     if (subCommands.length > 1) {
-      context.parameters.first = (subCommands)[1];
+      context.parameters.first = subCommands[1];
     }
     if (subCommands.length > 2) {
-      context.parameters.second = (subCommands)[2];
+      context.parameters.second = subCommands[2];
     }
     if (subCommands.length > 3) {
-      context.parameters.third = (subCommands)[3];
+      context.parameters.third = subCommands[3];
     }
   }
   /* eslint-enable */
@@ -60,11 +60,13 @@ function displayHelp(context) {
     },
     {
       name: 'pull [--restore]',
-      description: 'Pulls your environment with the current cloud environment. Use the restore flag to overwrite your local backend configs with that of the cloud.',
+      description:
+        'Pulls your environment with the current cloud environment. Use the restore flag to overwrite your local backend configs with that of the cloud.',
     },
     {
       name: 'checkout <env-name> [--restore]',
-      description: 'Moves your environment to the environment specified in the command. Use the restore flag to overwrite your local backend configs with the backend configs of the environment specified.',
+      description:
+        'Moves your environment to the environment specified in the command. Use the restore flag to overwrite your local backend configs with the backend configs of the environment specified.',
     },
     {
       name: 'list [--details] [--json]',
