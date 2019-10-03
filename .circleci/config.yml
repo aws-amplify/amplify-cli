@@ -38,6 +38,9 @@ jobs:
           name: Install Java
           command: sudo apt-get install default-jdk
       - run:
+         name: lint
+         command: yarn lint
+      - run:
           name: Run tests
           command: yarn test-ci
       - run:
