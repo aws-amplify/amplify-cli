@@ -26,12 +26,10 @@ function normalizeKey(key) {
 }
 
 function normalizeValue(key, value) {
-  let normalizedValue = value;
-  try {
-    normalizedValue = JSON.parse(value);
-  } catch (e) {
-    // do nothing
+  if (key === 'app') {
+    return value;
   }
+  const normalizedValue = JSON.parse(value);
   return normalizedValue;
 }
 
