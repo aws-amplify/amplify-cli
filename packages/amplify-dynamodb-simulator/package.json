@@ -1,6 +1,6 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "0.14.0",
+  "version": "0.17.0",
   "description": "DynamoDB emulator nodejs wrapper",
   "main": "index.js",
   "license": "Apache-2.0",
@@ -27,6 +27,7 @@
     "jest-environment-node": "^24.8.0"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "collectCoverage": true
   }
 }

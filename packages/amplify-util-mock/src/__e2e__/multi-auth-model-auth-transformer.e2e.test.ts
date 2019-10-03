@@ -1,19 +1,11 @@
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import ModelAuthTransformer from 'graphql-auth-transformer';
 import ModelConnectionTransformer from 'graphql-connection-transformer';
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
 import gql from 'graphql-tag';
 import GraphQLTransform from 'graphql-transformer-core';
-import * as moment from 'moment';
-import {
-  configureAmplify,
-  createUserPool,
-  createUserPoolClient,
-  deleteUserPool,
-  signupAndAuthenticateUser,
-} from './utils/cognito-utils';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -26,22 +18,14 @@ let ddbEmulator = null;
 let dbPath = null;
 let server;
 
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `MultiAuthModelAuthTransformerTest-${BUILD_TIMESTAMP}`;
-
 let GRAPHQL_ENDPOINT = undefined;
 
 let APIKEY_GRAPHQL_CLIENT: AWSAppSyncClient<any> = undefined;
 let USER_POOL_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
 
-let USER_POOL_ID = undefined;
+let USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
-
-const TMP_PASSWORD = 'Password123!';
-const REAL_PASSWORD = 'Password1234!';
-
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
 
 beforeAll(async () => {
   // Create a stack for the post model with auth enabled.
@@ -146,21 +130,9 @@ beforeAll(async () => {
     ],
   });
 
-  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
-
   try {
     // Clean the bucket
     const out = transformer.transform(validSchema);
-
-    const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-    USER_POOL_ID = userPoolResponse.UserPool.Id;
-    const userPoolClientResponse = await createUserPoolClient(
-      cognitoClient,
-      USER_POOL_ID,
-      `UserPool${STACK_NAME}`
-    );
-    const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
 
     let ddbClient;
     ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
@@ -178,18 +150,8 @@ beforeAll(async () => {
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
     expect(USER_POOL_ID).toBeTruthy();
-    expect(userPoolClientId).toBeTruthy();
 
-    // Configure Amplify, create users, and sign in.
-    configureAmplify(USER_POOL_ID, userPoolClientId);
-
-    const authRes = await signupAndAuthenticateUser(
-      USER_POOL_ID,
-      USERNAME1,
-      TMP_PASSWORD,
-      REAL_PASSWORD
-    );
-    const idToken = authRes.getIdToken().getJwtToken();
+    const idToken = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, []);
 
     USER_POOL_AUTH_CLIENT = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
@@ -228,12 +190,10 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    await deleteUserPool(cognitoClient, USER_POOL_ID);
     if (server) {
       await server.stop();
     }
     await terminateDDB(ddbEmulator, dbPath);
-    logDebug('Successfully deleted stack ' + STACK_NAME);
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);

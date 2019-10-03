@@ -1,3 +1,5 @@
+const preInitSetup = require('../lib/init-steps/preInitSetup');
+const postInitSetup = require('../lib/init-steps/postInitSetup');
 const analyzeProject = require('../lib/init-steps/s0-analyzeProject');
 const initFrontendHandler = require('../lib/init-steps/s1-initFrontend');
 const initProviders = require('../lib/init-steps/s2-initProviders');
@@ -9,10 +11,13 @@ module.exports = {
   name: 'init',
   run: async (context) => {
     constructExeInfo(context);
-    await analyzeProject.run(context)
+    await preInitSetup.run(context)
+      .then(analyzeProject.run)
       .then(initFrontendHandler.run)
       .then(initProviders.run)
       .then(onSuccess.run)
+      .catch(onFailure.run);
+    await postInitSetup.run(context)
       .catch(onFailure.run);
   },
 };

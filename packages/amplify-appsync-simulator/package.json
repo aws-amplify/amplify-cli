@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "0.14.0",
+  "version": "0.17.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "main": "lib/index.js",
   "scripts": {
@@ -23,9 +23,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@conduitvc/mosca": "^2.8.3",
-    "amplify-velocity-template": "0.13.0",
+    "amplify-velocity-template": "0.16.0",
     "cors": "^2.8.5",
-    "dateformat": "^3.0.3",
     "event-to-promise": "^0.8.0",
     "express": "^4.17.1",
     "fs-extra": "^8.1.0",
@@ -40,6 +39,9 @@
     "jwt-decode": "^2.2.0",
     "libphonenumber-js": "^1.7.18",
     "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "moment-jdateformatparser": "^1.2.1",
+    "moment-timezone": "0.5.26",
     "portfinder": "^1.0.21",
     "uuid": "^3.3.2"
   },
@@ -48,9 +50,10 @@
     "@types/express": "^4.17.0",
     "@types/graphql": "^0.13.4",
     "@types/jest": "^24.0.16",
+    "@types/moment-timezone": "0.5.12",
     "@types/mosca": "^2.8.1",
     "@types/node": "^8.10.51",
-    "amplify-graphiql-explorer": "0.14.0",
+    "amplify-graphiql-explorer": "0.17.0",
     "aws-sdk": "^2.510.0",
     "jest": "^24.8.0",
     "prettier": "^1.18.2",
@@ -62,6 +65,10 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
     "testURL": "http://localhost/",
     "testRegex": "(src/__tests__/.*.test.*)$",
     "moduleFileExtensions": [
