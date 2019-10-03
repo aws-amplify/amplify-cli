@@ -41,6 +41,7 @@
     "graphql-key-transformer": "1.19.0",
     "graphql-tag": "^2.10.1",
     "graphql-versioned-transformer": "3.22.0",
+    "isomorphic-fetch": "^2.2.1",
     "jest": "^23.1.0",
     "jest-junit": "^8.0.0",
     "node-fetch": "^2.6.0",
