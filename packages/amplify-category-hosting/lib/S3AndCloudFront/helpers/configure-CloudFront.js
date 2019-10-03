@@ -75,8 +75,8 @@ async function configure(context) {
       context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration =
         WebsiteConfiguration;
 
-      context.print.warning('Static webhosting will be enabled for the hosting bucket once your remove CloudFront Distribution.');
-      context.print.info('Set it configuration:');
+      context.print.warning('Static webhosting will be enabled for the hosting bucket once you remove CloudFront Distribution.');
+      context.print.info('Set its configuration:');
       await configureWebsite.configure(context);
     }
   }
