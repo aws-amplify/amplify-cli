@@ -50,6 +50,7 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "collectCoverage": true
   }
 }
