@@ -115,8 +115,7 @@ const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
 }
 
 export type ModelAuthTransformerConfig = {
-    authConfig?: AppSyncAuthConfiguration,
-    searchableFlag?: boolean
+    authConfig?: AppSyncAuthConfiguration
 };
 
 export type ConfiguredAuthProviders = {
@@ -313,7 +312,6 @@ export class ModelAuthTransformer extends Transformer {
 
         // check if searchable is enabled on the type
         const searchableDirective = def.directives.find((dir) => dir.name.value === 'searchable')
-        this.config.searchableFlag =  searchableDirective ? true : false
 
         // Get and validate the auth rules.
         const rules = this.getAuthRulesFromDirective(directive);
