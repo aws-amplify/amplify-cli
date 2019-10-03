@@ -17,6 +17,9 @@
         "plugin",
         "version"
     ],
-    "eventHandlers":[
-    ]
+    "commandAliases":{
+        "h": "help",
+        "serve": "run",
+        "ls": "status"
+    }
 }
