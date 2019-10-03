@@ -1,4 +1,4 @@
-import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction } from 'cloudform-types'
+import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction, DeletionPolicy } from 'cloudform-types'
 import Output from 'cloudform-types/types/output';
 import {
     DynamoDBMappingTemplate, printBlock, str, print,
@@ -11,16 +11,6 @@ export class ResourceFactory {
 
     public makeParams() {
         return {
-            [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
-                Description: 'The name of the AppSync API',
-                Default: 'AppSyncSimpleTransform'
-            }),
-            [ResourceConstants.PARAMETERS.APIKeyExpirationEpoch]: new NumberParameter({
-                Description: 'The epoch time in seconds when the API Key should expire.' +
-                    ' Setting this to 0 will default to 1 week from the deployment date.' +
-                    ' Setting this to -1 will not create an API Key.',
-                Default: 0
-            }),
             [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
                 Description: 'The number of read IOPS the table should support.',
                 Default: 5
@@ -45,6 +35,14 @@ export class ResourceFactory {
                     'false'
                 ]
             }),
+            [ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption]: new StringParameter({
+                Description: 'Enable server side encryption powered by KMS.',
+                Default: 'true',
+                AllowedValues: [
+                    'true',
+                    'false'
+                ]
+            })
         }
     }
 
@@ -66,7 +64,9 @@ export class ResourceFactory {
                     Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode), 'PAY_PER_REQUEST'),
 
                 [ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery]:
-                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery), 'true')
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery), 'true'),
+                [ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption]:
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption), 'true'),
             }
         }
     }
@@ -148,7 +148,7 @@ export class ResourceFactory {
     /**
      * Create a DynamoDB table for a specific type.
      */
-    public makeModelTable(typeName: string, hashKey: string = 'id', rangeKey?: string) {
+    public makeModelTable(typeName: string, hashKey: string = 'id', rangeKey?: string, deletionPolicy: DeletionPolicy = DeletionPolicy.Delete) {
         const keySchema = hashKey && rangeKey ? [
             {
                 AttributeName: hashKey,
@@ -186,7 +186,11 @@ export class ResourceFactory {
                 }
             ) as any,
             SSESpecification: {
-                SSEEnabled: true
+                SSEEnabled: Fn.If(
+                    ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption,
+                    true,
+                    false
+                )
             },
             PointInTimeRecoverySpecification: Fn.If(
                 ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery,
@@ -195,7 +199,7 @@ export class ResourceFactory {
                 },
                 Refs.NoValue
             ) as any,
-        })
+        }).deletionPolicy(deletionPolicy)
     }
 
     private dynamoDBTableName(typeName: string): IntrinsicFunction {
@@ -356,7 +360,8 @@ export class ResourceFactory {
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
                             ifElse(
                                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),[
+                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),
+                                [
                                     qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ]),
@@ -378,7 +383,8 @@ export class ResourceFactory {
                                     ifElse(
                                         raw('$velocityCount == 1'),
                                         qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
-                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
+                                        qref('$condition.put(\
+"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     ),
                                     qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ])
@@ -554,10 +560,16 @@ export class ResourceFactory {
                         ),
                     ),
                     ifElse(
-                        raw(`!$util.isNull($${ResourceConstants.SNIPPETS.ModelQueryExpression}) && !$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.ModelQueryExpression}.expression)`),
+                        raw(`!$util.isNull($${ResourceConstants.SNIPPETS.ModelQueryExpression})
+                        && !$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.ModelQueryExpression}.expression)`),
                         compoundExpression([
                             qref(`$${requestVariable}.put("operation", "Query")`),
-                            qref(`$${requestVariable}.put("query", $${ResourceConstants.SNIPPETS.ModelQueryExpression})`)
+                            qref(`$${requestVariable}.put("query", $${ResourceConstants.SNIPPETS.ModelQueryExpression})`),
+                            ifElse(
+                                raw(`!$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == "DESC"`),
+                                set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
+                                set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
+                            )
                         ]),
                         qref(`$${requestVariable}.put("operation", "Scan")`)
                     ),
@@ -590,7 +602,8 @@ export class ResourceFactory {
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
                             ifElse(
                                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),[
+                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),
+                                [
                                     qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ]),
@@ -611,7 +624,8 @@ export class ResourceFactory {
                                     ifElse(
                                         raw('$velocityCount == 1'),
                                         qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
-                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
+                                        qref('$condition.put(\
+"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     ),
                                     qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ])

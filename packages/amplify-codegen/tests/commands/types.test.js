@@ -1,13 +1,13 @@
 const { sync } = require('glob-all');
 const path = require('path');
 const { generate } = require('amplify-graphql-types-generator');
-const jetpack = require('fs-jetpack');
+const fs = require('fs-extra');
 
 const loadConfig = require('../../src/codegen-config');
 const generateTypes = require('../../src/commands/types');
 const constants = require('../../src/constants');
 const {
-  downloadIntrospectionSchemaWithProgress,
+  ensureIntrospectionSchema,
   getFrontEndHandler,
   getAppSyncAPIDetails,
 } = require('../../src/utils');
@@ -18,6 +18,7 @@ const MOCK_CONTEXT = {
   },
   amplify: {
     getEnvInfo: jest.fn(),
+    getProjectMeta: jest.fn(),
   },
 };
 
@@ -25,7 +26,7 @@ jest.mock('glob-all');
 jest.mock('amplify-graphql-types-generator');
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/utils');
-jest.mock('fs-jetpack');
+jest.mock('fs-extra');
 
 const MOCK_INCLUDE_PATH = 'MOCK_INCLUDE';
 const MOCK_EXCLUDE_PATH = 'MOCK_EXCLUDE';
@@ -60,7 +61,7 @@ getFrontEndHandler.mockReturnValue('javascript');
 describe('command - types', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jetpack.exists.mockReturnValue(true);
+    fs.existsSync.mockReturnValue(true);
     getFrontEndHandler.mockReturnValue('javascript');
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
@@ -73,9 +74,8 @@ describe('command - types', () => {
     const forceDownload = false;
     await generateTypes(MOCK_CONTEXT, forceDownload);
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
+    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT, false);
     expect(sync).toHaveBeenCalledWith([MOCK_INCLUDE_PATH, `!${MOCK_EXCLUDE_PATH}`], { cwd: MOCK_PROJECT_ROOT, absolute: true });
-    expect(jetpack.exists).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA));
     expect(generate).toHaveBeenCalledWith(
       MOCK_QUERIES,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
@@ -97,23 +97,25 @@ describe('command - types', () => {
   it('should download the schema if forceDownload flag is passed', async () => {
     const forceDownload = true;
     await generateTypes(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 
   it('should download the schema if the schema file is missing', async () => {
-    jetpack.exists.mockReturnValue(false);
+    fs.existsSync.mockReturnValue(false);
     const forceDownload = false;
     await generateTypes(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 
@@ -123,5 +125,19 @@ describe('command - types', () => {
     });
     await generateTypes(MOCK_CONTEXT, false);
     expect(MOCK_CONTEXT.print.info).toHaveBeenCalledWith(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+  });
+
+  it('should not generate types when includePattern is empty', async () => {
+    MOCK_PROJECT.includes = [];
+    await generateTypes(MOCK_CONTEXT, true);
+    expect(generate).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
+  });
+
+  it('should not generate type when generatedFileName is missing', async () => {
+    MOCK_PROJECT.amplifyExtension.generatedFileName = '';
+    await generateTypes(MOCK_CONTEXT, true);
+    expect(generate).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
   });
 });

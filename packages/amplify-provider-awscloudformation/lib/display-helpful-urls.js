@@ -1,4 +1,5 @@
 const chalk = require('chalk');
+const { predictionsConsole } = require('amplify-category-predictions');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
@@ -6,6 +7,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showGraphQLURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
+  showRekognitionURLS(context, resourcesToBeCreated);
   context.print.info('');
 }
 
@@ -37,15 +39,29 @@ function showGraphQLURL(context, resourcesToBeCreated) {
     if (!amplifyMeta[category][resourceName].output) {
       return;
     }
-    const { GraphQLAPIEndpointOutput, securityType, GraphQLAPIKeyOutput } =
-        amplifyMeta[category][resourceName].output;
+    const {
+      GraphQLAPIEndpointOutput, securityType, authConfig, GraphQLAPIKeyOutput,
+    }
+      = amplifyMeta[category][resourceName].output;
 
     if (!GraphQLAPIEndpointOutput) {
       return;
     }
 
+    let hasApiKey = false;
+
+    if (securityType) {
+      hasApiKey = securityType === 'API_KEY';
+    } else {
+      const apiKeyProvider = [...(authConfig.additionalAuthenticationProviders || []),
+        authConfig.defaultAuthentication]
+        .find(provider => provider.authenticationType === 'API_KEY');
+
+      hasApiKey = !!apiKeyProvider;
+    }
+
     context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
-    if (securityType === 'API_KEY') {
+    if (hasApiKey) {
       context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
     }
   }
@@ -99,6 +115,22 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
   }
 }
 
+async function showRekognitionURLS(context, resourcesToBeCreated) {
+  const resource = resourcesToBeCreated.find((resource) => {
+    if (resource.identifyType && resource.identifyType === 'identifyEntities') {
+      return true;
+    }
+    return false;
+  });
+  if (resource) {
+    const { category, resourceName } = resource;
+    const amplifyMeta = context.amplify.getProjectMeta();
+    if (!amplifyMeta[category][resourceName].output) {
+      return;
+    }
+    await predictionsConsole.printRekognitionUploadUrl(context, resourceName, amplifyMeta, true);
+  }
+}
 
 module.exports = {
   displayHelpfulURLs,

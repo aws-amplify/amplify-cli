@@ -16,11 +16,11 @@ You should open an issue to discuss your pull request, unless it's a trivial cha
 
 Pull requests should generally be opened against **master**.
 
-Only include ***src*** files in your PR. Don't include any build files i.e. dist/ or lib/. These will be built upon publish to npm and when a release is created on GitHub.
+Only include ***src*** files in your PR. Don't include any build files i.e. dist/. These will be built upon publish to npm and when a release is created on GitHub.
 
-Before submmitting PR make sure to run `npm install` on the root of monorepo to ensure that commit lint and husky are installed.
+Before submitting PR make sure to run `yarn` on the root of monorepo to ensure that commit lint and husky are installed.
 
-Make sure you follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/) commit message structure. You can automatically generate conventional commit message by running `npm run commit` in the root of the amplify mono repo. This will run through series of question shown below
+Make sure you follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/) commit message structure. You can automatically generate conventional commit message by running `yarn commit` in the root of the amplify mono repo. This will run through series of question shown below
 ```
 ? Select the type of change that you're committing: <type of commit (if its a feature, bug fix etc.,>
 ? What is the scope of this change (e.g. component or file name)? <package name if change is only in one package>
@@ -38,7 +38,7 @@ Please ensure that your change still passes unit tests, and ideally integration/
 
 ## Code Style
 
-Generally, match the style of the surrounding code. Please ensure your changes don't wildly deviate from those rules. You can run `npm run lint-fix` to identify and automatically fix most style issues.
+Generally, match the style of the surrounding code. Please ensure your changes don't wildly deviate from those rules. You can run `yarn lint-fix` to identify and automatically fix most style issues.
 
 ## Licensing
 

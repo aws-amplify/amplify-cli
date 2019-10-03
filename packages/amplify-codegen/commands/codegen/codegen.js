@@ -8,7 +8,7 @@ module.exports = {
   run: async (context) => {
     if (context.parameters.options.help) {
       const header = `amplify ${featureName} [subcommand] [[--nodownload] [--max-depth <number>]]\nDescriptions:
-      Generates GraphQL statements(queries, mutations and subscriptions) and type annotations. \nSub Commands:`;
+      Generates GraphQL statements (queries, mutations and subscriptions) and type annotations. \nSub Commands:`;
 
       const commands = [
         {
@@ -37,8 +37,8 @@ module.exports = {
     }
     
     try {
-      const forceDownloadSchema = !context.parameters.options.nodownload;
-      const { maxDepth } = context.parameters.options;
+      let forceDownloadSchema = !context.parameters.options.nodownload;
+      let { maxDepth } = context.parameters.options;
       await codeGen.generate(context, forceDownloadSchema, maxDepth);
     } catch (e) {
       context.print.info(e.message);

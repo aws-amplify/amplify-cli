@@ -1,5 +1,4 @@
 const fs = require('fs-extra');
-const { filesystem } = require('gluegun/filesystem');
 const path = require('path');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
@@ -58,7 +57,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
     ));
 
     if (fs.pathExistsSync(targetDir)) {
-      filesystem.remove(targetDir);
+      fs.removeSync(targetDir);
     }
 
     fs.ensureDirSync(targetDir);
@@ -70,7 +69,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
 }
 
-function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
+function updateamplifyMetaAfterResourceAdd(category, resourceName, options = {}) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = readJsonFile(amplifyMetaFilePath);
   if (options.dependsOn) {
@@ -80,12 +79,13 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
   }
-  if (!amplifyMeta[category][resourceName]) {
-    amplifyMeta[category][resourceName] = {};
-    amplifyMeta[category][resourceName] = options;
-    const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  if (amplifyMeta[category][resourceName]) {
+    throw new Error(`${resourceName} is present in amplify-meta.json`);
   }
+  amplifyMeta[category][resourceName] = {};
+  amplifyMeta[category][resourceName] = options;
+  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
   updateBackendConfigAfterResourceAdd(category, resourceName, options);
 }
@@ -125,8 +125,8 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
     value,
     currentTimestamp,
   );
-  if (attribute === 'dependsOn') {
-    updateBackendConfigDependsOn(category, resourceName, value);
+  if (['dependsOn', 'service'].includes(attribute)) {
+    updateBackendConfigDependsOn(category, resourceName, attribute, value);
   }
 }
 
@@ -209,7 +209,7 @@ function updateamplifyMetaAfterResourceDelete(category, resourceName) {
 
   const jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
-  filesystem.remove(resourceDir);
+  fs.removeSync(resourceDir);
 }
 
 function checkForCyclicDependencies(category, resourceName, dependsOn) {
@@ -222,15 +222,18 @@ function checkForCyclicDependencies(category, resourceName, dependsOn) {
       if (resource.category === category && resource.resourceName === resourceName) {
         cyclicDependency = true;
       }
-      const dependsOnResourceDependency =
-        amplifyMeta[resource.category][resource.resourceName].dependsOn;
-      if (dependsOnResourceDependency) {
-        dependsOnResourceDependency.forEach((dependsOnResource) => {
-          if (dependsOnResource.category === category &&
-            dependsOnResource.resourceName === resourceName) {
-            cyclicDependency = true;
-          }
-        });
+      if (amplifyMeta[resource.category] &&
+          amplifyMeta[resource.category][resource.resourceName]) {
+        const dependsOnResourceDependency =
+          amplifyMeta[resource.category][resource.resourceName].dependsOn;
+        if (dependsOnResourceDependency) {
+          dependsOnResourceDependency.forEach((dependsOnResource) => {
+            if (dependsOnResource.category === category &&
+              dependsOnResource.resourceName === resourceName) {
+              cyclicDependency = true;
+            }
+          });
+        }
       }
     });
   }

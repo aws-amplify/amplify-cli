@@ -22,7 +22,7 @@ async function run(context) {
     const unauthRoleName = `${stackName}-unauthRole`;
     const params = {
       StackName: stackName,
-      Capabilities: ['CAPABILITY_NAMED_IAM'],
+      Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
       TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
       Parameters: [
         {
@@ -41,8 +41,8 @@ async function run(context) {
     };
 
     const spinner = ora();
-    spinner.start('Initializing project in the cloud...');
     const awsConfig = await getAwsConfig(context);
+    spinner.start('Initializing project in the cloud...');
     return new Cloudformation(context, 'init', awsConfig)
       .then(cfnItem => cfnItem.createResourceStack(params))
       .then((waitData) => {

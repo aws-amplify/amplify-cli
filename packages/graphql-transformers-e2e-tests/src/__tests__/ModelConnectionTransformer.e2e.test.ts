@@ -53,18 +53,35 @@ beforeAll(async () => {
         content: String!
         post: Post @connection(name: "PostComments", keyField: "postId")
     }
-    type SortedComment @model{
+    type SortedComment @model {
         id: ID!
         content: String!
         when: String!
         post: Post @connection(name: "SortedPostComments", keyField: "postId", sortField: "when")
     }
+    type Album @model {
+        id: ID!
+        title: String!
+        parent: Album @connection(name: "AlbumAlbums", keyField: "parentId")
+        children: [Album] @connection(name: "AlbumAlbums", keyField: "parentId")
+        photos: [Photo] @connection(name: "AlbumPhotos", keyField: "albumId")
+    }
+    type Photo @model {
+        id: ID!
+        album: Album @connection (name: "AlbumPhotos", keyField: "albumId")
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer(),
-            new ModelConnectionTransformer()
+            new ModelConnectionTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }}),
         ]
     })
     const out = transformer.transform(validSchema);
@@ -79,7 +96,7 @@ beforeAll(async () => {
     try {
         console.log('Creating Stack ' + STACK_NAME)
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+            customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
             BUILD_TIMESTAMP
         )
 
@@ -426,4 +443,39 @@ test('Test create comment without a post and then querying the comment.', async 
         // fail
         expect(e).toBeUndefined()
     }
+})
+
+test('Test album self connection.', async () => {
+    const createAlbum = await GRAPHQL_CLIENT.query(`mutation {
+        createAlbum(input: { title: "Test Album" }) {
+            id
+            title
+        }
+    }`, {})
+    expect(createAlbum.data.createAlbum.id).toBeDefined()
+    expect(createAlbum.data.createAlbum.title).toEqual('Test Album')
+
+    const createSelfAlbum = await GRAPHQL_CLIENT.query(`mutation {
+        createAlbum(input: { title: "A Album!", parentId: "${createAlbum.data.createAlbum.id}" }) {
+            id
+            title
+            parent {
+                id
+                title
+            }
+        }
+    }`, {})
+    expect(createSelfAlbum.data.createAlbum.id).toBeDefined()
+    expect(createSelfAlbum.data.createAlbum.title).toEqual('A Album!')
+    expect(createSelfAlbum.data.createAlbum.parent.id).toEqual(createAlbum.data.createAlbum.id)
+    expect(createSelfAlbum.data.createAlbum.parent.title).toEqual(createAlbum.data.createAlbum.title)
+
+    const queryAlbum = await GRAPHQL_CLIENT.query(`query {
+        getAlbum(id: "${createAlbum.data.createAlbum.id}") {
+            id
+            title
+        }
+    }`, {})
+    expect(queryAlbum.data.getAlbum).toBeDefined()
+    expect(queryAlbum.data.getAlbum.title).toEqual('Test Album')
 })

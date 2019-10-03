@@ -1,0 +1,12 @@
+.graphiql-container {
+  height: 100vh;
+  width: 100vw;
+  box-sizing: content-box;
+}
+
+.graphiql-container ::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.graphiql-container ::-webkit-scrollbar-track {
+  background: transparent;
+}

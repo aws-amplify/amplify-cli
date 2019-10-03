@@ -19,7 +19,8 @@ const {
 
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
-async function addWalkThrough(context, skip = []) {
+async function addWalkThrough(context, skip = [], withoutInit,
+  decoupleFrontend, decoupleFramework) {
   let inputParams;
   let yesFlag = false;
   if (context.exeInfo && context.exeInfo.inputParams) {
@@ -28,8 +29,23 @@ async function addWalkThrough(context, skip = []) {
     yesFlag = context.exeInfo.inputParams.yes;
   }
 
-  const frontend = getFrontEndHandler(context);
-  const schemaLocation = getSchemaDownloadLocation(context);
+  let frontend = decoupleFrontend;
+  let schemaLocation = '';
+
+  if (frontend === 'android') {
+    schemaLocation = './app/src/main/graphql/schema.json';
+  } else if (frontend === 'ios') {
+    schemaLocation = './graphql/schema.json';
+  } else if (frontend === 'javascript') {
+    schemaLocation = './src/graphql/schema.json';
+  } else {
+    schemaLocation = './src/graphql/schema.json';
+  }
+
+  if (!withoutInit) {
+    frontend = getFrontEndHandler(context);
+    schemaLocation = getSchemaDownloadLocation(context);
+  }
   const answers = {
     excludePattern: DEFAULT_EXCLUDE_PATTERNS,
     schemaLocation,
@@ -39,7 +55,7 @@ async function addWalkThrough(context, skip = []) {
 
   if (frontend !== 'android') {
     if (!skip.includes('targetLanguage')) {
-      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', () => askCodeGenTargetLanguage(context));
+      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', () => askCodeGenTargetLanguage(context, undefined, withoutInit, decoupleFrontend, decoupleFramework));
       targetLanguage = answers.target;
     }
   }
@@ -53,7 +69,7 @@ async function addWalkThrough(context, skip = []) {
 
   if (!skip.includes('includePattern')) {
     answers.includePattern =
-    await determineValue(inputParams, yesFlag, 'includePattern', includePathGlob, () => askCodeGenQueryFilePattern([includePathGlob]));
+    await determineValue(inputParams, yesFlag, 'includePattern', [includePathGlob], () => askCodeGenQueryFilePattern([includePathGlob]));
   }
   if (!skip.includes('shouldGenerateDocs')) {
     answers.shouldGenerateDocs =

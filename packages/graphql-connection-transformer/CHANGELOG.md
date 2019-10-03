@@ -3,6 +3,119 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@3.11.0) (2019-08-30)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** fix self connection bug ([#1944](https://github.com/aws-amplify/amplify-cli/issues/1944)) ([1a6affc](https://github.com/aws-amplify/amplify-cli/commit/1a6affc)), closes [#1799](https://github.com/aws-amplify/amplify-cli/issues/1799)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [3.10.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@3.10.0) (2019-08-28)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** fix self connection bug ([#1944](https://github.com/aws-amplify/amplify-cli/issues/1944)) ([1a6affc](https://github.com/aws-amplify/amplify-cli/commit/1a6affc)), closes [#1799](https://github.com/aws-amplify/amplify-cli/issues/1799)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [3.9.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@3.9.0) (2019-08-13)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** fix self connection bug ([#1944](https://github.com/aws-amplify/amplify-cli/issues/1944)) ([1a6affc](https://github.com/aws-amplify/amplify-cli/commit/1a6affc)), closes [#1799](https://github.com/aws-amplify/amplify-cli/issues/1799)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [3.8.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@3.8.0) (2019-08-07)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@3.7.0) (2019-08-02)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [3.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@3.6.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+## [3.5.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.4...graphql-connection-transformer@3.5.5) (2019-07-24)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [3.5.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.2...graphql-connection-transformer@3.5.4) (2019-06-30)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [3.5.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.1...graphql-connection-transformer@3.5.2) (2019-06-26)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [3.5.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.0...graphql-connection-transformer@3.5.1) (2019-06-12)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
 # [3.5.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.4.6...graphql-connection-transformer@3.5.0) (2019-05-29)
 
 

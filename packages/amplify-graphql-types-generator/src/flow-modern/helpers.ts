@@ -27,7 +27,7 @@ export function createTypeAnnotationFromGraphQLTypeFunction(
 ): Function {
   return function typeAnnotationFromGraphQLType(type: GraphQLType, {
     nullable
-  } = {
+  }: { nullable: boolean } = {
     nullable: true
   }): t.FlowTypeAnnotation {
     if (isNonNullType(type)) {

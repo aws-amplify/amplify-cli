@@ -1,0 +1,39 @@
+{
+  "verification-link": {
+    "name": "Send Account Confirmation Link w/ Redirect",
+    "description": "This template sends a confirmation link to a user which provides a url utilizing an S3 static site.  The static site will confirm the user's account and redirect the user back to a specified url.",
+    "env": [
+      {
+        "key": "RESOURCENAME",
+        "value": "resourceName"
+      },
+      {
+        "key": "REDIRECTURL",
+        "value": "askUser",
+        "question": {
+          "name" : "REDIRECTURL",
+          "type": "input",
+          "message": "Enter the URL that your users will be redirected to upon account confirmation:"
+        }
+      },
+      {
+        "key": "EMAILSUBJECT",
+        "value": "askUser",
+        "question": {
+          "name" : "EMAILSUBJECT",
+          "type": "input",
+          "message": "Enter the subject for your custom account confirmation email:"
+        }
+      },
+      {
+        "key": "EMAILMESSAGE",
+        "value": "askUser",
+        "question": {
+          "name" : "EMAILMESSAGE",
+          "type": "input",
+          "message": "Enter the body text for your custom account confirmation email (this will appear before the link URL):"
+        }
+      }
+    ]
+  }
+}

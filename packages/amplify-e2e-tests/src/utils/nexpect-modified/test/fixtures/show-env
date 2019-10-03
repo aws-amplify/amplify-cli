@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+for (var k in process.env) {
+  console.log('%s=%s', k, process.env[k]);
+}

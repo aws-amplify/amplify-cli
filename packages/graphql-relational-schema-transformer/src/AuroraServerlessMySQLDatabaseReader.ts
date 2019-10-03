@@ -3,6 +3,7 @@ import { getNamedType, getNonNullType, getInputValueDefinition, getGraphQLTypeFr
     getTypeDefinition, getFieldDefinition, getInputTypeDefinition } from './RelationalDBSchemaTransformerUtils'
 import { AuroraDataAPIClient } from "./AuroraDataAPIClient";
 import { IRelationalDBReader } from "./IRelationalDBReader";
+import { toUpper } from 'graphql-transformer-common'
 
 /**
  * A class to manage interactions with a Aurora Serverless MySQL Relational Databse
@@ -101,6 +102,8 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
         const intFieldList = new Array()
         const stringFieldList = new Array()
 
+        const formattedTableName = toUpper(tableName)
+
         for (const columnDescription of columnDescriptions) {
             // If a field is the primary key, save it.
             if (columnDescription.Key == 'PRI') {
@@ -154,7 +157,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
         //     }
         // }
 
-        return new TableContext(getTypeDefinition(fields, tableName), getInputTypeDefinition(createFields, `Create${tableName}Input`),
-                getInputTypeDefinition(updateFields, `Update${tableName}Input`), primaryKey, primaryKeyType, stringFieldList, intFieldList)
+        return new TableContext(getTypeDefinition(fields, tableName), getInputTypeDefinition(createFields, `Create${formattedTableName}Input`),
+                getInputTypeDefinition(updateFields, `Update${formattedTableName}Input`), primaryKey, primaryKeyType, stringFieldList, intFieldList)
     }
 }

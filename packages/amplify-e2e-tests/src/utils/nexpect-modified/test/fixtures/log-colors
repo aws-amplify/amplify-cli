@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+var colors = require('colors');
+
+console.log('first has no colors');
+console.log('second has colors'.green);
+console.log('third has colors'.yellow);

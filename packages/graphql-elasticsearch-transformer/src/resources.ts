@@ -7,9 +7,10 @@ import {
     ElasticsearchMappingTemplate,
     print, str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, toJson, ifElse,
-    int
+    int, Expression
 } from 'graphql-mapping-template'
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
+import { MappingParameters } from 'graphql-transformer-core/src/TransformerContext'
 
 export class ResourceFactory {
 
@@ -44,13 +45,6 @@ export class ResourceFactory {
             [ResourceConstants.PARAMETERS.ElasticsearchInstanceCount]: new NumberParameter({
                 Description: 'The number of instances to launch into the Elasticsearch domain.',
                 Default: 1
-            }),
-            [ResourceConstants.PARAMETERS.ElasticsearchDomainName]: new StringParameter({
-                Description: 'The name of the Elasticsearch domain.',
-                Default: 'appsync-elasticsearch-domain',
-                AllowedPattern: '^[a-z][a-z0-9-]*$',
-                MinLength: 1,
-                MaxLength: 28
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchInstanceType]: new StringParameter({
                 Description: 'The type of instance to launch into the Elasticsearch domain.',
@@ -90,6 +84,7 @@ export class ResourceFactory {
                 [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
                 [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction()
             },
+            Mappings: this.getLayerMapping(),
             Outputs: {
                 [ResourceConstants.OUTPUTS.ElasticsearchDomainArn]: this.makeDomainArnOutput(),
                 [ResourceConstants.OUTPUTS.ElasticsearchDomainEndpoint]: this.makeDomainEndpointOutput()
@@ -121,6 +116,79 @@ export class ResourceFactory {
         }).dependsOn(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID)
     }
 
+    public getLayerMapping(): MappingParameters {
+        return {
+            "LayerResourceMapping":{
+                "ap-northeast-1": {
+                    "layerRegion": "arn:aws:lambda:ap-northeast-1:249908578461:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "us-east-1": {
+                    "layerRegion": "arn:aws:lambda:us-east-1:668099181075:layer:AWSLambda-Python-AWS-SDK:1"
+                }, 
+                "ap-southeast-1": {
+                    "layerRegion": "arn:aws:lambda:ap-southeast-1:468957933125:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "eu-west-1": {
+                    "layerRegion": "arn:aws:lambda:eu-west-1:399891621064:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "us-west-1": {
+                    "layerRegion": "arn:aws:lambda:us-west-1:325793726646:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "ap-east-1": {
+                    "layerRegion": "arn:aws:lambda:ap-east-1:118857876118:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "ap-northeast-2": {
+                    "layerRegion": "arn:aws:lambda:ap-northeast-2:296580773974:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "ap-northeast-3": {
+                    "layerRegion": "arn:aws:lambda:ap-northeast-3:961244031340:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "ap-south-1": {
+                    "layerRegion": "arn:aws:lambda:ap-south-1:631267018583:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "ap-southeast-2": {
+                    "layerRegion": "arn:aws:lambda:ap-southeast-2:817496625479:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "ca-central-1": {
+                    "layerRegion": "arn:aws:lambda:ca-central-1:778625758767:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "eu-central-1": {
+                    "layerRegion": "arn:aws:lambda:eu-central-1:292169987271:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "eu-north-1": {
+                    "layerRegion": "arn:aws:lambda:eu-north-1:642425348156:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "eu-west-2": {
+                    "layerRegion": "arn:aws:lambda:eu-west-2:142628438157:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "eu-west-3": {
+                    "layerRegion": "arn:aws:lambda:eu-west-3:959311844005:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "sa-east-1": {
+                    "layerRegion": "arn:aws:lambda:sa-east-1:640010853179:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "us-east-2": {
+                    "layerRegion": "arn:aws:lambda:us-east-2:259788987135:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "us-west-2": {
+                    "layerRegion": "arn:aws:lambda:us-west-2:420165488524:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "cn-north-1": {
+                    "layerRegion": "arn:aws-cn:lambda:cn-north-1:683298794825:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "cn-northwest-1": {
+                    "layerRegion": "arn:aws-cn:lambda:cn-northwest-1:382066503313:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "us-gov-west-1": {
+                    "layerRegion": "arn:aws-us-gov:lambda:us-gov-west-1:556739011827:layer:AWSLambda-Python-AWS-SDK:1"
+                },
+                "us-gov-east-1": {
+                    "layerRegion": "arn:aws-us-gov:lambda:us-gov-east-1:138526772879:layer:AWSLambda-Python-AWS-SDK:1"
+                }
+            }
+        }
+    }
+
     /**
      * Deploy a lambda function that will stream data from our DynamoDB table
      * to our elasticsearch index.
@@ -145,6 +213,7 @@ export class ResourceFactory {
             Handler: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaHandlerName),
             Role: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID, 'Arn'),
             Runtime: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaRuntime),
+            Layers: [Fn.FindInMap('LayerResourceMapping', Fn.Ref("AWS::Region"), "layerRegion")],
             Environment: {
                 Variables: {
                     ES_ENDPOINT: Fn.Join('', [
@@ -389,8 +458,9 @@ export class ResourceFactory {
     /**
      * Create the Elasticsearch search resolver.
      */
-    public makeSearchResolver(type: string, nameOverride?: string, queryTypeName: string = 'Query') {
-        const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)))
+    public makeSearchResolver(type: string, nonKeywordFields: Expression[],
+        primaryKey: string, queryTypeName: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)));
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID, 'Name'),
@@ -399,6 +469,18 @@ export class ResourceFactory {
             RequestMappingTemplate: print(
                 compoundExpression([
                     set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
+                    set(ref('nonKeywordFields'), list(nonKeywordFields)),
+                    ifElse(
+                        ref('util.isNullOrEmpty($context.args.sort)'),
+                        compoundExpression([
+                            set(ref('sortDirection'), str('desc')),
+                            set(ref('sortField'), str(primaryKey))
+                        ]),
+                        compoundExpression([
+                            set(ref('sortDirection'), raw('$util.defaultIfNull($context.args.sort.direction, "desc")')),
+                            set(ref('sortField'), raw(`$util.defaultIfNull($context.args.sort.field, "${primaryKey}")`))
+                        ]),
+                    ),
                     ElasticsearchMappingTemplate.searchItem({
                         path: str('$indexPath'),
                         size: ifElse(
@@ -406,30 +488,18 @@ export class ResourceFactory {
                             ref('context.args.limit'),
                             int(10),
                             true),
-                        from: ifElse(
-                            ref('context.args.nextToken'),
-                            ref('context.args.nextToken'),
-                            int(0),
-                            true),
+                        search_after: list([str('$context.args.nextToken')]),
                         query: ifElse(
                             ref('context.args.filter'),
                             ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
                             obj({
                                 'match_all': obj({})
                             })),
-                        sort: ifElse(
-                            ref('context.args.sort'),
-                            list([
-                                iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
-                                    obj({
-                                        "$context.args.sort.field": obj({
-                                            "order": str('$context.args.sort.direction')
-                                        })
-                                    })
-                                ),
-                                str('_doc')
-                            ]),
-                            list([]))
+                        sort: list([
+                            raw('{ #if($nonKeywordFields.contains($sortField))\
+ "$sortField" #else "${sortField}.keyword" #end : {\
+ "order" : "$sortDirection"\
+} }')]),
                     })
                 ])
             ),
@@ -442,7 +512,7 @@ export class ResourceFactory {
                         [
                             iff(
                                 raw('!$foreach.hasNext'),
-                                set(ref('nextToken'), str('$entry.sort.get(0)'))
+                                set(ref('nextToken'), ref('entry.sort.get(0)'))
                             ),
                             qref('$items.add($entry.get("_source"))')
                         ]

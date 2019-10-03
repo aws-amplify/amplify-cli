@@ -251,7 +251,7 @@ class CloudFormation {
             const cfnParentStackParams = {
               StackName: stackName,
               TemplateURL: templateURL,
-              Capabilities: ['CAPABILITY_NAMED_IAM'],
+              Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
               Parameters: [
                 {
                   ParameterKey: 'DeploymentBucketName',
@@ -310,7 +310,12 @@ class CloudFormation {
       .then((result) => {
         let resources = result.StackResources;
         resources = resources.filter(resource =>
-          !['DeploymentBucket', 'AuthRole', 'UnauthRole'].includes(resource.LogicalResourceId));
+          !['DeploymentBucket',
+            'AuthRole',
+            'UnauthRole',
+            'UpdateRolesWithIDPFunction',
+            'UpdateRolesWithIDPFunctionOutputs',
+            'UpdateRolesWithIDPFunctionRole'].includes(resource.LogicalResourceId));
 
         const promises = [];
 

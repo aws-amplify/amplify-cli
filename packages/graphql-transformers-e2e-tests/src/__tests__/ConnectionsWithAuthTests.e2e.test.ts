@@ -12,7 +12,6 @@ import { CreateBucketRequest } from 'aws-sdk/clients/s3'
 import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import { GraphQLClient } from '../GraphQLClient'
 import { S3Client } from '../S3Client';
-import * as path from 'path'
 import { deploy } from '../deployNestedStacks'
 import * as moment from 'moment';
 import emptyBucket from '../emptyBucket';
@@ -101,28 +100,45 @@ beforeAll(async () => {
     }
     await createBucket(BUCKET_NAME)
     const validSchema = `
-    type Post @model @auth(rules: [{ allow: owner }]) {
+    type Post @model(
+        subscriptions: {
+            level: public
+    })@auth(rules: [{ allow: owner }]) {
         id: ID!
         title: String!
         author: User @connection(name: "UserPosts", keyField: "owner")
         owner: String
     }
-    type User @model @auth(rules: [{ allow: owner }]) {
+    type User @model(
+        subscriptions: {
+            level: public
+        }) @auth(rules: [{ allow: owner }]) {
         id: ID!
         posts: [Post!]! @connection(name: "UserPosts", keyField: "owner")
     }
-    type FieldProtected @model {
+    type FieldProtected @model(
+        subscriptions: {
+            level: public
+    }){
         id: ID!
         owner: String
         ownerOnly: String @auth(rules: [{ allow: owner }])
     }
-    type OpenTopLevel @model {
+    type OpenTopLevel @model(
+        subscriptions: {
+            level: public
+    }) {
         id: ID!
         name: String
         owner: String
         protected: [ConnectionProtected] @connection(name: "ProtectedConnection")
     }
-    type ConnectionProtected @model(queries: null) @auth(rules: [{ allow: owner }]) {
+    type ConnectionProtected @model(
+        subscriptions: {
+            level: public
+        }
+        queries: null
+    )@auth(rules: [{ allow: owner }]) {
         id: ID!
         name: String
         owner: String
@@ -133,7 +149,13 @@ beforeAll(async () => {
         transformers: [
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer(),
-            new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' }),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }}),
         ]
     })
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);

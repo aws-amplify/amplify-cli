@@ -7,12 +7,6 @@ const {
 const [sharedId] = uuid().split('-');
 
 const roles = {
-  authRoleName: {
-    Ref: 'AuthRoleName',
-  },
-  unauthRoleName: {
-    Ref: 'UnauthRoleName',
-  },
   authRoleArn: {
     'Fn::GetAtt': [
       'AuthRole',
@@ -29,6 +23,7 @@ const roles = {
 
 const generalDefaults = projectName => ({
   resourceName: `${projectName}${sharedId}`,
+  resourceNameTruncated: `${projectName.substring(0, 6)}${sharedId}`,
   authSelections: 'identityPoolAndUserPool',
   ...roles,
 });
@@ -36,13 +31,11 @@ const generalDefaults = projectName => ({
 const userPoolDefaults = (projectName) => {
   const projectNameTruncated = `${projectName.substring(0, 6)}${sharedId}`;
   return ({
+    resourceNameTruncated: `${projectName.substring(0, 6)}${sharedId}`,
     userPoolName: `${projectName}_userpool_${sharedId}`,
     autoVerifiedAttributes: ['email'],
     mfaConfiguration: 'OFF',
     mfaTypes: ['SMS Text Message'],
-    roleName: `${projectNameTruncated}_sns-role`,
-    roleExternalId: `${projectNameTruncated}_role_external_id`,
-    policyName: `${projectNameTruncated}-sns-policy`,
     smsAuthenticationMessage: 'Your authentication code is {####}',
     smsVerificationMessage: 'Your verification code is {####}',
     emailVerificationSubject: 'Your verification code',
@@ -52,18 +45,11 @@ const userPoolDefaults = (projectName) => {
     passwordPolicyCharacters: [
     ],
     requiredAttributes: ['email'],
-    userpoolClientName: `${projectNameTruncated}_app_client`,
     userpoolClientGenerateSecret: true,
     userpoolClientRefreshTokenValidity: 30,
     userpoolClientWriteAttributes: ['email'],
     userpoolClientReadAttributes: ['email'],
-    mfaLambdaRole: `${projectNameTruncated}_totp_lambda_role`,
-    mfaLambdaLogPolicy: `${projectNameTruncated}_totp_lambda_log_policy`,
-    mfaPassRolePolicy: `${projectNameTruncated}_totp_pass_role_policy`,
-    mfaLambdaIAMPolicy: `${projectNameTruncated}_totp_lambda_iam_policy`,
     userpoolClientLambdaRole: `${projectNameTruncated}_userpoolclient_lambda_role`,
-    userpoolClientLogPolicy: `${projectNameTruncated}_userpoolclient_lambda_log_policy`,
-    userpoolClientLambdaPolicy: `${projectNameTruncated}_userpoolclient_lambda_iam_policy`,
     userpoolClientSetAttributes: false,
   });
 };
@@ -75,16 +61,10 @@ const withSocialDefaults = projectName => ({
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
 
-const identityPoolDefaults = (projectName) => {
-  const projectNameTruncated = `${projectName.substring(0, 6)}_${sharedId}`;
+const identityPoolDefaults = (projectName) => {// eslint-disable-line
   return ({
     identityPoolName: `${projectName}_identitypool_${sharedId}`,
     allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
-    lambdaLogPolicy: `${projectNameTruncated}_lambda_log_policy`,
-    openIdLambdaRoleName: `${projectNameTruncated}_openid_lambda_role`,
-    openIdRolePolicy: `${projectNameTruncated}_openid_pass_role_policy`,
-    openIdLambdaIAMPolicy: `${projectNameTruncated}_openid_lambda_iam_policy`,
-    openIdLogPolicy: `${projectNameTruncated}_openid_lambda_log_policy`,
   });
 };
 

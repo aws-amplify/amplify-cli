@@ -2,6 +2,10 @@ const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
 
+const CUSTOM_CONFIG_BLACK_LIST = [
+  'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
+  'aws_appsync_dangerously_connect_to_http_endpoint_for_testing',
+];
 
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify } = context;
@@ -46,17 +50,22 @@ async function createAWSExports(context, amplifyResources, cloudAmplifyResources
 
 function getCustomConfigs(cloudAWSExports, currentAWSExports) {
   const customConfigs = {};
-  Object.keys(currentAWSExports).forEach((key) => {
-    if (!cloudAWSExports[key]) {
-      customConfigs[key] = currentAWSExports[key];
-    }
-  });
+  if (currentAWSExports) {
+    Object.keys(currentAWSExports)
+      .filter(key => !CUSTOM_CONFIG_BLACK_LIST.includes(key))
+      .forEach((key) => {
+        if (!cloudAWSExports[key]) {
+          customConfigs[key] = currentAWSExports[key];
+        }
+      });
+  }
   return customConfigs;
 }
 
 function getAWSExportsObject(resources) {
   const { serviceResourceMapping } = resources;
   const configOutput = {};
+  const predictionsConfig = {};
 
   const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
@@ -81,9 +90,42 @@ function getAWSExportsObject(resources) {
         break;
       case 'Sumerian': Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
         break;
+      // predictions config generation
+      case 'Translate':
+      case 'Polly':
+      case 'Transcribe':
+        predictionsConfig.convert = {
+          ...predictionsConfig.convert,
+          ...getConvertConfig(serviceResourceMapping[service]),
+        };
+        break;
+      case 'Rekognition':
+      case 'RekognitionAndTextract':
+        predictionsConfig.identify = {
+          ...predictionsConfig.identify,
+          ...getIdentifyConfig(serviceResourceMapping[service]),
+        };
+        break;
+      case 'Comprehend':
+        predictionsConfig.interpret = {
+          ...predictionsConfig.interpret,
+          ...getInterpretConfig(serviceResourceMapping[service]),
+        };
+        break;
+      case 'SageMaker':
+        predictionsConfig.infer = {
+          ...predictionsConfig.infer,
+          ...getInferConfig(serviceResourceMapping[service]),
+        };
+        break;
       default: break;
     }
   });
+
+  // add predictions config if predictions resources exist
+  if (Object.entries(predictionsConfig).length > 0) {
+    Object.assign(configOutput, { predictions: predictionsConfig });
+  }
 
   return configOutput;
 }
@@ -101,9 +143,7 @@ async function getCurrentAWSExports(context) {
   let awsExports = {};
 
   if (fs.existsSync(targetFilePath)) {
-    await context.patching.replace(targetFilePath, 'export default awsmobile;\n', 'module.exports = {awsmobile};\n');
-    awsExports = require(targetFilePath).awsmobile;
-    await context.patching.replace(targetFilePath, 'module.exports = {awsmobile};\n', 'export default awsmobile;\n');
+    awsExports = require(targetFilePath).default;
   }
 
   return awsExports;
@@ -160,6 +200,9 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     redirectSignIn = oAuthMetadata.CallbackURLs.join(',');
     redirectSignOut = oAuthMetadata.LogoutURLs.join(',');
     [responseType] = oAuthMetadata.AllowedOAuthFlows;
+    if (responseType === 'implicit') {
+      responseType = 'token';
+    }
     userPoolFederation = true;
   }
 
@@ -201,22 +244,38 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 function getS3Config(s3Resources) {
   // There can only be one s3 resource - user files
   const s3Resource = s3Resources[0];
-
-  return {
+  const config = {
     aws_user_files_s3_bucket: s3Resource.output.BucketName,
     aws_user_files_s3_bucket_region: s3Resource.output.Region,
   };
+
+  if (s3Resource.testMode) {
+    config.aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing = true;
+  }
+  return config;
 }
 
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
-  return {
+  const { authConfig, securityType } = appsyncResource.output;
+  let authMode = '';
+
+  if (securityType) {
+    authMode = securityType;
+  } else if (authConfig) {
+    authMode = authConfig.defaultAuthentication.authenticationType;
+  }
+  const config = {
     aws_appsync_graphqlEndpoint: appsyncResource.output.GraphQLAPIEndpointOutput,
     aws_appsync_region: projectRegion,
-    aws_appsync_authenticationType: appsyncResource.output.securityType,
+    aws_appsync_authenticationType: authMode,
     aws_appsync_apiKey: appsyncResource.output.GraphQLAPIKeyOutput || undefined,
   };
+  if (appsyncResource.testMode) {
+    config.aws_appsync_dangerously_connect_to_http_endpoint_for_testing = true;
+  }
+  return config;
 }
 
 function getAPIGWConfig(apigwResources, projectRegion) {
@@ -234,6 +293,110 @@ function getAPIGWConfig(apigwResources, projectRegion) {
     });
   }
   return apigwConfig;
+}
+
+// get the predictions-convert config resource
+function getConvertConfig(convertResources) {
+  const convertResource = convertResources[0];
+
+  // return speechGenerator config
+  if (convertResource.convertType === 'speechGenerator') {
+    return {
+      speechGenerator: {
+        region: convertResource.output.region,
+        proxy: false,
+        defaults: {
+          VoiceId: convertResource.output.voice,
+          LanguageCode: convertResource.output.language,
+        },
+      },
+    };
+  }
+  if (convertResource.convertType === 'transcription') {
+    return {
+      transcription: {
+        region: convertResource.output.region,
+        proxy: false,
+        defaults: {
+          language: convertResource.output.language,
+        },
+      },
+    };
+  }
+  // return translate convert config
+  return {
+    translateText: {
+      region: convertResource.output.region,
+      proxy: false,
+      defaults: {
+        sourceLanguage: convertResource.output.sourceLang,
+        targetLanguage: convertResource.output.targetLang,
+      },
+    },
+  };
+}
+
+function getIdentifyConfig(identifyResources) {
+  const resultConfig = {};
+  const baseConfig = {
+    proxy: false,
+  };
+  identifyResources.forEach((identifyResource) => {
+    if (identifyResource.identifyType === 'identifyText') {
+      resultConfig.identifyText = {
+        ...baseConfig,
+        region: identifyResource.output.region,
+        defaults: {
+          format: identifyResource.output.format,
+        },
+      };
+    }
+    if (identifyResource.identifyType === 'identifyEntities') {
+      resultConfig.identifyEntities = {
+        ...baseConfig,
+        region: identifyResource.output.region,
+        celebrityDetectionEnabled: Boolean(identifyResource.output.celebrityDetectionEnabled),
+      };
+      if (identifyResource.output.collectionId) {
+        resultConfig.identifyEntities.defaults = {
+          collectionId: identifyResource.output.collectionId,
+          maxEntities: parseInt(identifyResource.output.maxEntities, 10),
+        };
+      }
+    }
+    if (identifyResource.identifyType === 'identifyLabels') {
+      resultConfig.identifyLabels = {
+        ...baseConfig,
+        region: identifyResource.output.region,
+        defaults: {
+          type: identifyResource.output.type,
+        },
+      };
+    }
+  });
+  return resultConfig;
+}
+
+function getInterpretConfig(interpretResources) {
+  return {
+    interpretText: {
+      region: interpretResources[0].output.region,
+      proxy: false,
+      defaults: {
+        type: interpretResources[0].output.type,
+      },
+    },
+  };
+}
+
+function getInferConfig(inferResources) {
+  return {
+    inferModel: {
+      region: inferResources[0].output.region,
+      proxy: false,
+      endpoint: inferResources[0].output.endpointName,
+    },
+  };
 }
 
 function getPinpointConfig(pinpointResources) {

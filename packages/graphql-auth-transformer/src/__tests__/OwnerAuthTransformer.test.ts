@@ -19,7 +19,13 @@ test('Test ModelAuthTransformer validation happy case', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -28,3 +34,53 @@ test('Test ModelAuthTransformer validation happy case', () => {
         out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType
     ).toEqual('AMAZON_COGNITO_USER_POOLS')
 });
+
+
+test('Test OwnerField with Subscriptions', () => {
+    const validSchema = `
+        type Post @model
+            @auth(rules: [
+                {allow: owner, ownerField: "postOwner"}
+            ])
+        {
+            id: ID!
+            title: String
+            postOwner: String
+        }`
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
+        ]
+    })
+    const out = transformer.transform(validSchema)
+    expect(out).toBeDefined()
+
+    // expect 'postOwner' as an argument for subscription operations
+    expect(out.schema).toContain(
+        'onCreatePost(postOwner: String!)'
+    )
+    expect(out.schema).toContain(
+        'onUpdatePost(postOwner: String!)'
+    )
+    expect(out.schema).toContain(
+        'onDeletePost(postOwner: String!)'
+    )
+
+    // expect logic in the resolvers to check for postOwner args as an allowerOwner
+    expect(
+        out.resolvers['Subscription.onCreatePost.res.vtl']
+    ).toContain('#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.postOwner, null) )')
+    expect(
+        out.resolvers['Subscription.onUpdatePost.res.vtl']
+    ).toContain('#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.postOwner, null) )')
+    expect(
+        out.resolvers['Subscription.onDeletePost.res.vtl']
+    ).toContain('#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.postOwner, null) )')
+})

@@ -1,8 +1,11 @@
 const { run } = require('./commands/api/console');
 const fs = require('fs-extra');
+const path = require('path');
 
 const category = 'api';
+
 const categories = 'categories';
+
 
 async function console(context) {
   await run(context);
@@ -58,6 +61,10 @@ async function initEnv(context) {
    */
   const backendConfigFilePath = amplify.pathManager.getBackendConfigFilePath();
   const backendConfig = amplify.readJsonFile(backendConfigFilePath);
+
+  if (!backendConfig[category]) {
+    return;
+  }
 
   let resourceName;
   const apis = Object.keys(backendConfig[category]);
@@ -129,7 +136,7 @@ async function initEnv(context) {
       fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
     })
     .then(() => {
-      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true });
+      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
     });
 }
 
@@ -162,9 +169,28 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   return { permissionPolicies, resourceAttributes };
 }
 
+async function executeAmplifyCommand(context) {
+  let commandPath = path.normalize(path.join(__dirname, 'commands'));
+  if (context.input.command === 'help') {
+    commandPath = path.join(commandPath, category);
+  } else {
+    commandPath = path.join(commandPath, category, context.input.command);
+  }
+
+  const commandModule = require(commandPath);
+  await commandModule.run(context);
+}
+
+async function handleAmplifyEvent(context, args) {
+  context.print.info(`${category} handleAmplifyEvent to be implemented`);
+  context.print.info(`Received event args ${args}`);
+}
+
 module.exports = {
   console,
   migrate,
   initEnv,
   getPermissionPolicies,
+  executeAmplifyCommand,
+  handleAmplifyEvent,
 };

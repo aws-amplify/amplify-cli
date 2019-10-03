@@ -1,0 +1,153 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Convert resource(s) stack creation using Amplify CLI",
+    "Parameters": {
+        "authRoleName": {
+            "Type": "String"
+        },
+        "unauthRoleName": {
+            "Type": "String"
+        },
+        "convertPolicyName": {
+            "Type": "String"
+        },
+        "convertType": {
+            "Type": "String"
+        },
+        "access": {
+            "Type": "String"
+        },
+        "resourceName": {
+            "Type": "String"
+        },<% if (props.convertType === "translateText") { %>
+        "sourceLang": {
+            "Type": "String"
+        },
+        "targetLang": {
+            "Type": "String"
+        },<% } %><% if (props.convertType === "speechGenerator") { %>
+        "language": {
+            "Type": "String"
+        },
+        "voice": {
+            "Type": "String"
+        },<% } %><% if (props.convertType === "transcription") { %>
+        "language": {
+            "Type": "String"
+        },<% } %>
+        "env": {
+            "Type": "String"
+        }
+    },
+    "Conditions": {
+        "AuthGuestRoleAccess":{
+            "Fn::Equals": [{"Ref":"access"}, "authAndGuest"]
+        }
+    },
+    "Outputs": {
+        "region": {
+            "Value": { 
+                "Fn::FindInMap": [
+                    "RegionMapping",
+                    { "Ref" : "AWS::Region" },
+                    { "Ref": "convertType" }
+                ]
+            }
+        },<% if (props.convertType === "translateText") { %>
+        "sourceLang": {
+            "Value": {"Ref": "sourceLang"}
+        }, 
+        "targetLang" : {
+            "Value" : {"Ref": "targetLang"}
+        }<% } %><% if (props.convertType === "speechGenerator") { %>
+        "language": {
+            "Value" : {"Ref": "language"}
+        },
+        "voice": {
+            "Value" : {"Ref": "voice"}
+        }<% } %><% if (props.convertType === "transcription") { %>
+        "language": {
+            "Value": {"Ref": "language"}
+        }<% } %>
+    },
+    "Resources": {<% if (props.convertType === "translateText") { %>
+        "TranslatePolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": { "Ref":"convertPolicyName" },
+                "Roles": {
+                    "Fn::If": [
+                        "AuthGuestRoleAccess",
+                        [{"Ref": "authRoleName"}, {"Ref": "unauthRoleName"}],
+                        [{"Ref": "authRoleName"}]
+                    ]
+                },
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "translate:TranslateText"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            }
+        }<% } %><% if (props.convertType === "speechGenerator") { %> 
+        "PollyPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": { "Ref":"convertPolicyName" },
+                "Roles": {
+                    "Fn::If": [
+                        "AuthGuestRoleAccess",
+                        [{"Ref": "authRoleName"}, {"Ref": "unauthRoleName"}],
+                        [{"Ref": "authRoleName"}]
+                    ]
+                },
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "polly:SynthesizeSpeech"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            }
+        }<% } %><% if (props.convertType === "transcription") { %> 
+            "PollyPolicy": {
+                "Type": "AWS::IAM::Policy",
+                "Properties": {
+                    "PolicyName": { "Ref":"convertPolicyName" },
+                    "Roles": {
+                        "Fn::If": [
+                            "AuthGuestRoleAccess",
+                            [{"Ref": "authRoleName"}, {"Ref": "unauthRoleName"}],
+                            [{"Ref": "authRoleName"}]
+                        ]
+                    },
+                    "PolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "transcribe:GetTranscriptionJob",
+                                    "transcribe:StartStreamTranscription",
+                                    "transcribe:StartStreamTranscriptionWebSocket",
+                                    "transcribe:StartTranscriptionJob"
+                                ],
+                                "Resource": "*"
+                            }
+                        ]
+                    }
+                }
+            }<% } %>
+    }
+}

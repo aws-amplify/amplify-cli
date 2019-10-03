@@ -7,6 +7,8 @@ export class ResourceConstants {
         GraphQLAPILogicalID: 'GraphQLAPI',
         GraphQLSchemaLogicalID: 'GraphQLSchema',
         APIKeyLogicalID: 'GraphQLAPIKey',
+        AuthRolePolicy: 'AuthRolePolicy',
+        UnauthRolePolicy: 'UnauthRolePolicy',
 
         // Elasticsearch
         ElasticsearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
@@ -32,6 +34,9 @@ export class ResourceConstants {
         // AppSync
         AppSyncApiName: 'AppSyncApiName',
         AppSyncApiId: 'AppSyncApiId',
+        CreateAPIKey: 'CreateAPIKey',
+        AuthRoleName: 'authRoleName',
+        UnauthRoleName: 'unauthRoleName',
         APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
         // DynamoDB
@@ -39,9 +44,9 @@ export class ResourceConstants {
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
         DynamoDBEnablePointInTimeRecovery: 'DynamoDBEnablePointInTimeRecovery',
+        DynamoDBEnableServerSideEncryption: 'DynamoDBEnableServerSideEncryption',
 
         // Elasticsearch
-        ElasticsearchDomainName: 'ElasticSearchDomainName',
         ElasticsearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
         ElasticsearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
         ElasticsearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
@@ -63,6 +68,7 @@ export class ResourceConstants {
         // DynamoDB
         ShouldUsePayPerRequestBilling: 'ShouldUsePayPerRequestBilling',
         ShouldUsePointInTimeRecovery: 'ShouldUsePointInTimeRecovery',
+        ShouldUseServerSideEncryption: 'ShouldUseServerSideEncryption',
 
         // Auth
         ShouldCreateAPIKey: 'ShouldCreateAPIKey',
@@ -90,6 +96,7 @@ export class ResourceConstants {
 
     public static readonly SNIPPETS = {
         AuthCondition: "authCondition",
+        AuthMode: "authMode",
         VersionedCondition: "versionedCondition",
         ModelObjectKey: "modelObjectKey",
         DynamoDBNameOverrideMap: "dynamodbNameOverrideMap",

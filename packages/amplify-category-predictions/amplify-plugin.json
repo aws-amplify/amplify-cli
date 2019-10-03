@@ -1,0 +1,16 @@
+{
+    "name": "predictions",
+    "aliases": ["Predictions"],
+    "type": "category",
+    "commands": [
+        "add",
+        "console",
+        "remove",
+        "update",
+        "help"
+    ],
+    "commandAliases":{
+        "configure": "update"
+    },
+    "eventHandlers": []
+}

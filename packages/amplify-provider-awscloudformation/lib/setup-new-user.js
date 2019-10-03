@@ -1,4 +1,4 @@
-const opn = require('opn');
+const open = require('open');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 
@@ -18,7 +18,7 @@ function run(context) {
   context.print.info('');
   context.print.info('Sign in to your AWS administrator account:');
   context.print.info(chalk.green(constants.AWSAmazonConsoleUrl));
-  opn(constants.AWSAmazonConsoleUrl, { wait: false });
+  open(constants.AWSAmazonConsoleUrl, { wait: false }).catch(() => {});
 
   return context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' })
     .then(() => {
@@ -45,7 +45,7 @@ function run(context) {
       const deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', answers.userName).replace('{region}', answers.region);
       context.print.info('Complete the user creation using the AWS console');
       context.print.info(chalk.green(deepLinkURL));
-      opn(deepLinkURL, { wait: false });
+      open(deepLinkURL, { wait: false }).catch(() => {});
       return context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
     })
     .then(() => {

@@ -1,4 +1,6 @@
-import { Transformer, TransformerContext, getDirectiveArguments, gql } from "graphql-transformer-core";
+import {
+    Transformer, TransformerContext, getDirectiveArguments,
+    gql, InvalidDirectiveError } from "graphql-transformer-core";
 import {
     DirectiveNode,
     ObjectTypeDefinitionNode
@@ -16,20 +18,21 @@ import {
     extensionWithFields,
     blankObject,
     makeListType,
-    makeInputValueDefinition,
-    makeNonNullType
+    makeInputValueDefinition
 } from "graphql-transformer-common";
-import { ResolverResourceIDs, SearchableResourceIDs } from 'graphql-transformer-common'
+import { Expression, str } from 'graphql-mapping-template';
+import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType } from 'graphql-transformer-common'
 import path = require('path');
 
 const STACK_NAME = 'SearchableStack';
+const nonKeywordTypes = ["Int", "Float", "Boolean", "AWSTimestamp", "AWSDate", "AWSDateTime"];
 
-interface QueryNameMap {
+interface SearchableQueryMap {
     search?: string;
 }
 
-interface ModelDirectiveArgs {
-    queries?: QueryNameMap
+interface SearchableDirectiveArgs {
+    queries?: SearchableQueryMap
 }
 
 /**
@@ -54,16 +57,17 @@ export class SearchableModelTransformer extends Transformer {
         ctx.mergeResources(template.Resources);
         ctx.mergeParameters(template.Parameters);
         ctx.mergeOutputs(template.Outputs);
+        ctx.mergeMappings(template.Mappings);
         ctx.metadata.set('ElasticsearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`))
-        ctx.putStackMapping(STACK_NAME, [
-            'ElasticsearchDomain',
-            '^ElasticsearchAccess.*',
-            '^ElasticsearchStreaming.*',
-            '^ElasticsearchDataSource$',
-            '^Searchable.*LambdaMapping$',
-            '^ElasticsearchDomainArn$',
-            '^ElasticsearchDomainEndpoint$'
-        ])
+        for (const resourceId of Object.keys(template.Resources)) {
+            ctx.mapResourceToStack(STACK_NAME, resourceId);
+        }
+        for (const outputId of Object.keys(template.Outputs)) {
+            ctx.mapResourceToStack(STACK_NAME, outputId);
+        }
+        for (const mappingId of Object.keys(template.Mappings)) {
+            ctx.mapResourceToStack(STACK_NAME, mappingId);
+        }
     };
 
     /**
@@ -76,11 +80,11 @@ export class SearchableModelTransformer extends Transformer {
         directive: DirectiveNode,
         ctx: TransformerContext
     ): void => {
-        ctx.addToStackMapping(
-            STACK_NAME,
-            "^Search" + def.name.value + "Resolver$"
-        )
-        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
+        const modelDirective = def.directives.find((dir) => dir.name.value === 'model')
+        if (!modelDirective) {
+            throw new InvalidDirectiveError('Types annotated with @searchable must also be annotated with @model.')
+        }
+        const directiveArguments: SearchableDirectiveArgs = getDirectiveArguments(directive)
         let shouldMakeSearch = true;
         let searchFieldNameOverride = undefined;
 
@@ -98,24 +102,43 @@ export class SearchableModelTransformer extends Transformer {
             SearchableResourceIDs.SearchableEventSourceMappingID(typeName),
             this.resources.makeDynamoDBStreamEventSourceMapping(typeName)
         )
+        ctx.mapResourceToStack(
+            STACK_NAME,
+            SearchableResourceIDs.SearchableEventSourceMappingID(typeName)
+        )
 
-        //SearchablePostSortableFields
+        // SearchablePostSortableFields
         const queryFields = [];
+        const nonKeywordFields: Expression[] = [];
+        def.fields.forEach( field => {
+            if (nonKeywordTypes.includes(getBaseType(field.type))) {
+                nonKeywordFields.push(str(field.name.value));
+            }
+        });
 
-        // Create listX
+        // Get primary key to use as the default sort field
+        const primaryKey = this.getPrimaryKey(ctx, typeName)
+
+        // Create list
         if (shouldMakeSearch) {
             this.generateSearchableInputs(ctx, def)
             this.generateSearchableXConnectionType(ctx, def)
 
-            const searchResolver = this.resources.makeSearchResolver(def.name.value, searchFieldNameOverride)
+            const searchResolver = this.resources.makeSearchResolver(def.name.value, nonKeywordFields,
+                primaryKey, ctx.getQueryTypeName(),
+                searchFieldNameOverride);
             ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver)
+            ctx.mapResourceToStack(
+                STACK_NAME,
+                ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value)
+            )
             queryFields.push(makeField(
                 searchResolver.Properties.FieldName,
                 [
                     makeInputValueDefinition('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
                     makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
                     makeInputValueDefinition('limit', makeNamedType('Int')),
-                    makeInputValueDefinition('nextToken', makeNamedType('Int'))
+                    makeInputValueDefinition('nextToken', makeNamedType('String'))
                 ],
                 makeNamedType(`Searchable${def.name.value}Connection`)
             ))
@@ -206,5 +229,12 @@ export class SearchableModelTransformer extends Transformer {
             const searchableXSortableInputDirection = makeSearchableXSortInputObject(def)
             ctx.addInput(searchableXSortableInputDirection)
         }
+    }
+
+    private getPrimaryKey(ctx: TransformerContext, typeName: string) : string {
+        const tableResourceID = ModelResourceIDs.ModelTableResourceID(typeName);
+        const tableResource = ctx.getResource(tableResourceID)
+        const primaryKeySchemaElement = tableResource.Properties.KeySchema.find( (keyElement: any) => keyElement.KeyType === 'HASH')
+        return primaryKeySchemaElement.AttributeName
     }
 }

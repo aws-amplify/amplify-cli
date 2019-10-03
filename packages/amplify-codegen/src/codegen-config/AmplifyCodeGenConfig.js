@@ -1,17 +1,22 @@
 const graphQLConfig = require('graphql-config');
 const { join, isAbsolute, relative } = require('path');
-
+const upath = require('upath');
 const { graphQlToAmplifyConfig } = require('./utils');
 
 class AmplifyCodeGenConfig {
-  constructor(context) {
+  constructor(context, withoutInit = false) {
     try {
       this.gqlConfig = graphQLConfig.getGraphQLConfig();
       this.fixOldConfig();
     } catch (e) {
       if (e instanceof graphQLConfig.ConfigNotFoundError) {
         const { amplify } = context;
-        const projectRoot = amplify.getEnvInfo().projectPath || process.cwd();
+        let projectRoot;
+        if (!withoutInit) {
+          projectRoot = amplify.getEnvInfo().projectPath || process.cwd();
+        } else {
+          projectRoot = process.cwd();
+        }
         const configPath = join(projectRoot, '.graphqlconfig.yml');
         this.gqlConfig = new graphQLConfig.GraphQLConfig(null, configPath);
         this.gqlConfig.config = {};
@@ -54,8 +59,9 @@ class AmplifyCodeGenConfig {
     if (Object.keys(extensions).length) {
       newProject.extensions = extensions;
     }
+
     const projects = this.gqlConfig.projects || {};
-    projects[project.projectName] = newProject;
+    projects[project.projectName] = this.constructor.normalizePath(newProject);
     this.gqlConfig.config.projects = projects;
   }
   removeProject(projectName) {
@@ -65,15 +71,42 @@ class AmplifyCodeGenConfig {
     }
     return false;
   }
+
+  static normalizePath(proj) {
+    if (!proj.schemaPath || !proj.extensions || !proj.extensions.amplify) {
+      return proj;
+    }
+    const updatedProj = {};
+    updatedProj.schemaPath = upath.toUnix(proj.schemaPath);
+    updatedProj.includes = (proj.includes || []).map(p => upath.toUnix(p));
+    updatedProj.excludes = (proj.excludes || []).map(p => upath.toUnix(p));
+    const amplifyExtension = {
+      ...proj.extensions.amplify,
+    };
+    amplifyExtension.generatedFileName = amplifyExtension.generatedFileName
+      ? upath.toUnix(amplifyExtension.generatedFileName)
+      : amplifyExtension.generatedFileName;
+    amplifyExtension.docsFilePath = amplifyExtension.docsFilePath
+      ? upath.toUnix(amplifyExtension.docsFilePath)
+      : amplifyExtension.docsFilePath;
+
+    updatedProj.extensions = {
+      amplify: amplifyExtension,
+    };
+
+    return updatedProj;
+  }
+
   fixOldConfig() {
     // Older version of config is not a valid graphqlconfig, fix it when loading
     const { config: cfg } = this.gqlConfig;
-    let needsFix = false;
+    if (cfg.extensions && cfg.extensions.amplify && cfg.extensions.amplify.version >= 3) {
+      return;
+    }
     cfg.projects = cfg.projects || {};
     Object.keys(cfg).forEach((key) => {
       const proj = cfg[key];
       if (proj.extensions && proj.extensions.amplify) {
-        needsFix = true;
         delete cfg[key];
         if (proj.extensions.endPoints) {
           proj.extensions.endpoints = {
@@ -84,9 +117,18 @@ class AmplifyCodeGenConfig {
         cfg.projects[key] = proj;
       }
     });
-    if (needsFix) {
-      this.save();
-    }
+
+    Object.keys(cfg.projects || {}).forEach((projName) => {
+      cfg.projects[projName] = this.constructor.normalizePath(cfg.projects[projName]);
+    });
+    cfg.extensions = {
+      ...cfg.extensions,
+      amplify: {
+        ...((cfg.extensions && cfg.extensions.amplify) || {}),
+        version: 3,
+      },
+    };
+    this.save();
   }
 }
 module.exports = AmplifyCodeGenConfig;

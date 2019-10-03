@@ -14,11 +14,6 @@ async function initEnv(context) {
   return pinpointNotificationsMeta;
 }
 
-// this function will be called after init and init-push are separated.
-async function initEnvPush(context, pinpointNotificationsMeta) {//eslint-disable-line
-  // await pushChanges(context, pinpointNotificationsMeta);//eslint-disable-line
-}
-
 async function constructPinpointNotificationsMeta(context) {
   let pinpointApp;
   let serviceBackendConfig;
@@ -47,11 +42,11 @@ async function constructPinpointNotificationsMeta(context) {
   const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
   if (backendConfig[constants.CategoryName]) {
     const categoryConfig = backendConfig[constants.CategoryName];
-    const services = Object.keys(categoryConfig);
-    for (let i = 0; i < services.length; i++) {
-      serviceBackendConfig = categoryConfig[services[i]];
+    const resources = Object.keys(categoryConfig);
+    for (let i = 0; i < resources.length; i++) {
+      serviceBackendConfig = categoryConfig[resources[i]];
       if (serviceBackendConfig.service === constants.PinpointName) {
-        serviceBackendConfig.Name = services[i];
+        serviceBackendConfig.resourceName = resources[i];
         break;
       }
     }
@@ -157,14 +152,9 @@ async function pushChanges(context, pinpointNotificationsMeta) {
     }
   });
 
-  const { amplifyMeta } = context.exeInfo;
-  amplifyMeta[constants.CategoryName] = {};
-  amplifyMeta[constants.CategoryName][pinpointNotificationsMeta.Name] = pinpointNotificationsMeta;
-  delete pinpointNotificationsMeta.channels;
-  delete pinpointNotificationsMeta.Name;
+  await pinpointHelper.ensurePinpointApp(context, pinpointNotificationsMeta.resourceName);
 
   const tasks = [];
-  tasks.push(() => pinpointHelper.ensurePinpointApp(context));
   channelsToEnable.forEach((channel) => {
     tasks.push(() => notificationManager.enableChannel(context, channel));
   });
@@ -184,9 +174,9 @@ async function writeData(context) {
   if (categoryMeta) {
     const availableChannels = notificationManager.getAvailableChannels();
     const enabledChannels = [];
-    const services = Object.keys(categoryMeta);
-    for (let i = 0; i < services.length; i++) {
-      const serviceMeta = categoryMeta[services[i]];
+    const resources = Object.keys(categoryMeta);
+    for (let i = 0; i < resources.length; i++) {
+      const serviceMeta = categoryMeta[resources[i]];
       if (serviceMeta.service === constants.PinpointName &&
                                   serviceMeta.output &&
                                   serviceMeta.output.Id) {
@@ -196,7 +186,7 @@ async function writeData(context) {
           }
         });
         pinpointMeta = {
-          serviceName: services[i],
+          serviceName: resources[i],
           service: serviceMeta.service,
           channels: enabledChannels,
           Name: serviceMeta.output.Name,
@@ -249,11 +239,11 @@ function writeBackendConfig(context, pinpointMeta, backendConfigFilePath) {
     const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
     backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {};
 
-    const services = Object.keys(backendConfig[constants.CategoryName]);
-    for (let i = 0; i < services.length; i++) {
-      const serviceMeta = backendConfig[constants.CategoryName][services[i]];
+    const resources = Object.keys(backendConfig[constants.CategoryName]);
+    for (let i = 0; i < resources.length; i++) {
+      const serviceMeta = backendConfig[constants.CategoryName][resources[i]];
       if (serviceMeta.service === constants.PinpointName) {
-        delete backendConfig[constants.CategoryName][services[i]];
+        delete backendConfig[constants.CategoryName][resources[i]];
       }
     }
 
@@ -289,9 +279,9 @@ function extractMigrationInfo(context) {
   const { amplifyMeta, localEnvInfo } = context.migrationInfo;
   if (amplifyMeta[constants.CategoryName]) {
     const categoryMeta = amplifyMeta[constants.CategoryName];
-    const services = Object.keys(categoryMeta);
-    for (let i = 0; i < services.length; i++) {
-      const service = services[i];
+    const resources = Object.keys(categoryMeta);
+    for (let i = 0; i < resources.length; i++) {
+      const service = resources[i];
       const serviceMeta = amplifyMeta[constants.CategoryName][service];
       if (serviceMeta.service === constants.PinpointName) {
         migrationInfo = {};
@@ -356,7 +346,6 @@ function fillTeamProviderInfo(context, migrationInfo) {
 
 module.exports = {
   initEnv,
-  initEnvPush,
   deletePinpointAppForEnv,
   writeData,
   migrate,

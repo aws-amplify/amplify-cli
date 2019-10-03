@@ -1,8 +1,12 @@
+const path = require('path');
+
 const initializer = require('./lib/initializer');
 const configManager = require('./lib/configuration-manager');
 const projectScanner = require('./lib/project-scanner');
 const constants = require('./lib/constants');
 const { createAWSConfig } = require('./lib/frontend-config-creator');
+
+const pluginName = 'android';
 
 function scanProject(projectPath) {
   return projectScanner.run(projectPath);
@@ -36,6 +40,23 @@ function run(context) {
   return context;
 }
 
+async function executeAmplifyCommand(context) {
+  let commandPath = path.normalize(path.join(__dirname, 'commands'));
+  if (context.input.command === 'help') {
+    commandPath = path.join(commandPath, pluginName);
+  } else {
+    commandPath = path.join(commandPath, pluginName, context.input.command);
+  }
+
+  const commandModule = require(commandPath);
+  await commandModule.run(context);
+}
+
+async function handleAmplifyEvent(context, args) {
+  context.print.info(`${pluginName} handleAmplifyEvent to be implemented`);
+  context.print.info(`Received event args ${args}`);
+}
+
 module.exports = {
   constants,
   scanProject,
@@ -45,4 +66,6 @@ module.exports = {
   publish,
   run,
   createFrontendConfigs,
+  executeAmplifyCommand,
+  handleAmplifyEvent,
 };

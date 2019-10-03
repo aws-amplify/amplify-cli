@@ -1,0 +1,32 @@
+{
+  "email-filter-whitelist": {
+    "name": "Sign-Up email filtering (whitelist)",
+    "description": "This template only allows signup with emails from specified domains.",
+    "env": [
+      {
+        "key": "DOMAINWHITELIST",
+        "value": "askUser",
+        "question": {
+          "name" : "DOMAINWHITELIST",
+          "type": "input",
+          "message": "Enter a comma-delimited list of allowed email domains (example: 'mydomain.com, myotherdomain.com')."
+        }
+      }
+    ]
+  },
+  "email-filter-blacklist": {
+    "name": "Sign-Up email filtering (blacklist)",
+    "description": "This template prevents signup with emails from specified domains.",
+    "env": [
+      {
+        "key": "DOMAINBLACKLIST",
+        "value": "askUser",
+        "question": {
+          "name" : "DOMAINBLACKLIST",
+          "type": "input",
+          "message": "Enter a comma-delimited list of disallowed email domains (example: 'mydomain.com, myotherdomain.com')."
+        }
+      }
+    ]
+  }
+}

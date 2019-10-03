@@ -1,12 +1,12 @@
 const path = require('path');
 const { default: generate } = require('amplify-graphql-docs-generator');
-const jetpack = require('fs-jetpack');
+const fs = require('fs-extra');
 
 const loadConfig = require('../../src/codegen-config');
 const generateStatements = require('../../src/commands/statements');
 const constants = require('../../src/constants');
 const {
-  downloadIntrospectionSchemaWithProgress,
+  ensureIntrospectionSchema,
   getFrontEndHandler,
   getAppSyncAPIDetails,
 } = require('../../src/utils');
@@ -18,13 +18,14 @@ const MOCK_CONTEXT = {
   },
   amplify: {
     getEnvInfo: jest.fn(),
+    getProjectMeta: jest.fn(),
   },
 };
 
 jest.mock('amplify-graphql-docs-generator');
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/utils');
-jest.mock('fs-jetpack');
+jest.mock('fs-extra');
 
 const MOCK_INCLUDE_PATH = 'MOCK_INCLUDE';
 const MOCK_STATEMENTS_PATH = 'MOCK_STATEMENTS_PATH';
@@ -57,7 +58,7 @@ getFrontEndHandler.mockReturnValue('javascript');
 describe('command - statements', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jetpack.exists.mockReturnValue(true);
+    fs.existsSync.mockReturnValue(true);
     getFrontEndHandler.mockReturnValue('javascript');
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
@@ -70,9 +71,8 @@ describe('command - statements', () => {
     const forceDownload = false;
     await generateStatements(MOCK_CONTEXT, forceDownload);
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
+    expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT, false);
 
-    expect(jetpack.exists).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA));
     expect(generate).toHaveBeenCalledWith(
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH),
@@ -94,23 +94,25 @@ describe('command - statements', () => {
   it('should download the schema if forceDownload flag is passed', async () => {
     const forceDownload = true;
     await generateStatements(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 
   it('should download the schema if the schema file is missing', async () => {
-    jetpack.exists.mockReturnValue(false);
+    fs.existsSync.mockReturnValue(false);
     const forceDownload = false;
     await generateStatements(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 

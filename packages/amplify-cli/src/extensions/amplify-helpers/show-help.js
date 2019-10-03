@@ -1,6 +1,7 @@
-const { print } = require('gluegun/print');
+const print = require('./print');
 const figlet = require('figlet');
 const cliConstants = require('./constants');
+
 
 function showHelp(header, commands) {
   figlet.text(

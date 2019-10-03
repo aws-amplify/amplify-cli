@@ -95,6 +95,16 @@
 				"key": "dynamoRegion",
 				"type": "list",
 				"question": "Specify a Region:"
+			},
+			{
+				"key": "eventName",
+				"question": "Provide the relative path to the event:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9/._-]+?\\.json$",
+					"onErrorMsg": "You should provide correct unix-like path to .json file"
+				},
+				"required": true
 			}
 		],
 		"defaultValuesFilename": "lambda-defaults.js",

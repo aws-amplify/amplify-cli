@@ -1,5 +1,5 @@
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, Kind, TypeNode, FieldDefinitionNode } from 'graphql';
-import { makeListType, makeNamedType, getBaseType, makeInputValueDefinition, DEFAULT_SCALARS, makeInputObjectDefinition } from './definition';
+import { makeListType, makeNamedType, getBaseType, makeInputValueDefinition, DEFAULT_SCALARS, makeInputObjectDefinition, isScalar } from './definition';
 import { ModelResourceIDs } from './ModelResourceIDs';
 import { compoundExpression, block, iff, raw, set, ref, qref, obj, str, printBlock, list, forEach, Expression, newline, ReferenceNode, ifElse } from 'graphql-mapping-template';
 import { toCamelCase } from './util';
@@ -45,8 +45,17 @@ const SCALAR_KEY_CONDITIONS = [STRING_KEY_CONDITION, ID_KEY_CONDITION, INT_KEY_C
 export function makeScalarKeyConditionInputs(): InputObjectTypeDefinitionNode[] {
     return SCALAR_KEY_CONDITIONS;
 }
-export function makeScalarKeyConditionForType(type: TypeNode): InputObjectTypeDefinitionNode {
-    const inputName = ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(type));
+export function makeScalarKeyConditionForType(type: TypeNode,
+    nonScalarTypeResolver: (baseType: string) => string = undefined): InputObjectTypeDefinitionNode {
+    const baseType = getBaseType(type);
+    let resolvedScalarName: string;
+    if (isScalar(type)) {
+        resolvedScalarName = baseType;
+    } else if (nonScalarTypeResolver) {
+        resolvedScalarName = nonScalarTypeResolver(baseType);
+    }
+
+    const inputName = ModelResourceIDs.ModelKeyConditionInputTypeName(resolvedScalarName);
     for (const key of SCALAR_KEY_CONDITIONS) {
         if (key.name.value === inputName) {
             return key;

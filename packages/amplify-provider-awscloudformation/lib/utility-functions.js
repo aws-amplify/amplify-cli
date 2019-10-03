@@ -4,6 +4,8 @@ const Lambda = require('../src/aws-utils/aws-lambda');
 const DynamoDB = require('../src/aws-utils/aws-dynamodb');
 const AppSync = require('../src/aws-utils/aws-appsync');
 const Lex = require('../src/aws-utils/aws-lex');
+const Polly = require('../src/aws-utils/aws-polly');
+const SageMaker = require('../src/aws-utils/aws-sagemaker');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
 
@@ -79,6 +81,18 @@ module.exports = {
       throw err;
     }
     return lambdafunctions;
+  },
+  getPollyVoices: async (context) => {
+    const pollyModel = await new Polly(context);
+    let listOfVoices = [];
+    try {
+      listOfVoices = await pollyModel.polly.describeVoices()
+        .promise();
+    } catch (err) {
+      context.print.error('Failed to load voices');
+      throw err;
+    }
+    return listOfVoices;
   },
   getDynamoDBTables: async (context) => {
     const dynamodbModel = await new DynamoDB(context);
@@ -183,5 +197,17 @@ module.exports = {
       const appSyncModel = result;
       return appSyncModel.appSync.listApiKeys({ apiId: options.apiId }).promise();
     });
+  },
+  getEndpoints: async (context) => {
+    const sagemakerModel = await new SageMaker(context);
+    let listOfEndpoints;
+    try {
+      listOfEndpoints = await sagemakerModel.sageMaker.listEndpoints()
+        .promise();
+    } catch (err) {
+      context.print.error('Failed to load endpoints');
+      throw err;
+    }
+    return listOfEndpoints;
   },
 };

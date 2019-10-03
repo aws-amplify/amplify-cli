@@ -13,20 +13,21 @@ import splitStack, { StackRules } from './util/splitStack'
 import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
 import { ResourceConstants } from "graphql-transformer-common";
 
-interface TransformFormatterOptions {
-    stackRules: StackRules
-}
 export class TransformFormatter {
 
-    private opts: TransformFormatterOptions;
     private schemaResourceUtil = new SchemaResourceUtil()
-
-    constructor(opts: TransformFormatterOptions) {
-        this.opts = opts;
-    }
 
     /**
      * Formats the ctx into a set of deployment resources.
+     *
+     * At this point, all resources that were created by scanning/reading
+     * GraphQL schema and cloudformation template files have been collected into
+     * a singular ctx.template object. Doing this allows the CLI to perform
+     * sophisticated mapping, de-duplication, stack references with correct
+     * import/export values, and other nice cleanup routines. Once this is
+     * complete, the singular object can be split into the necessary stacks
+     * (splitStack) for each GraphQL resource.
+     *
      * @param ctx the transformer context.
      * Returns all the deployment resources for the transformation.
      */
@@ -39,7 +40,7 @@ export class TransformFormatter {
         }
         const nestedStacks = splitStack({
             stack: ctx.template,
-            stackRules: this.opts.stackRules,
+            stackRules: ctx.getStackMapping(),
             defaultParameterValues: {
                 [ResourceConstants.PARAMETERS.AppSyncApiId]: Fn.GetAtt(
                     ResourceConstants.RESOURCES.GraphQLAPILogicalID,
@@ -101,7 +102,7 @@ export class TransformFormatter {
         const astSansDirectives = stripDirectives({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))
-        }, ['aws_subscribe', 'aws_auth', 'deprecated'])
+        }, ['aws_subscribe', 'aws_auth', 'aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools', 'deprecated'])
         const SDL = print(astSansDirectives)
         return SDL;
     }

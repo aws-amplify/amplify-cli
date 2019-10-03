@@ -16,7 +16,7 @@ function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
   }
 }
 
-function updateBackendConfigDependsOn(category, resourceName, value) {
+function updateBackendConfigDependsOn(category, resourceName, attribute, value) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfig = readJsonFile(backendConfigFilePath);
 
@@ -26,7 +26,7 @@ function updateBackendConfigDependsOn(category, resourceName, value) {
   } else if (!backendConfig[category][resourceName]) {
     backendConfig[category][resourceName] = {};
   }
-  backendConfig[category][resourceName].dependsOn = value;
+  backendConfig[category][resourceName][attribute] = value;
 
   const jsonString = JSON.stringify(backendConfig, null, 4);
 
@@ -37,7 +37,8 @@ function updateBackendConfigAfterResourceRemove(category, resourceName) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfig = readJsonFile(backendConfigFilePath);
 
-  if (backendConfig[category][resourceName] !== undefined) {
+  if (backendConfig[category]
+    && backendConfig[category][resourceName] !== undefined) {
     delete backendConfig[category][resourceName];
   }
 

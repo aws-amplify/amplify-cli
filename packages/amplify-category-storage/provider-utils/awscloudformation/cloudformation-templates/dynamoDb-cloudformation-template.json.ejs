@@ -57,6 +57,9 @@
                     "ReadCapacityUnits": "5",
                     "WriteCapacityUnits": "5"
                 },
+                "StreamSpecification": {
+                    "StreamViewType": "NEW_IMAGE"
+                },
                 "TableName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
@@ -77,7 +80,7 @@
                                   }
                                 ]
                             ]
-                        },       
+                        }
                     ]
                 }
                 <%if (props.GlobalSecondaryIndexes) { %>
@@ -118,6 +121,14 @@
                 "Fn::GetAtt": [
                     "DynamoDBTable",
                     "Arn"
+                ]
+            }
+        },
+        "StreamArn": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "DynamoDBTable",
+                    "StreamArn"
                 ]
             }
         },

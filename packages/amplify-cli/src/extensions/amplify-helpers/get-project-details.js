@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const pathManager = require('./path-manager');
+const { getEnvInfo } = require('./get-env-info');
 const { readJsonFile } = require('./read-json-file');
 
 function getProjectDetails() {
@@ -12,11 +13,7 @@ function getProjectDetails() {
     amplifyMeta = readJsonFile(amplifyMetaFilePath);
   }
 
-  let localEnvInfo = {};
-  const envFilePath = pathManager.getLocalEnvFilePath();
-  if (fs.existsSync(envFilePath)) {
-    localEnvInfo = readJsonFile(envFilePath);
-  }
+  const localEnvInfo = getEnvInfo();
 
   let teamProviderInfo = {};
   const teamProviderFilePath = pathManager.getProviderInfoFilePath();

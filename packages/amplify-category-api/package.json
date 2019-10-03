@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "1.6.1",
+  "version": "1.24.0",
   "description": "amplify-cli api plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -10,22 +10,23 @@
     "lint-fix": "eslint . --fix"
   },
   "dependencies": {
-    "amplify-category-auth": "1.6.1",
-    "amplify-category-function": "1.5.1",
-    "amplify-category-storage": "1.7.1",
-    "aws-sdk": "^2.391.0",
-    "eslint": "^4.9.0",
-    "fs-extra": "^7.0.0",
+    "amplify-category-auth": "1.24.0",
+    "amplify-category-function": "1.24.0",
+    "amplify-category-storage": "1.25.0",
+    "aws-sdk": "^2.510.0",
+    "fs-extra": "^8.1.0",
     "graphql": "^0.13.2",
-    "graphql-relational-schema-transformer": "1.0.8",
-    "inquirer": "^6.0.0",
-    "merge-graphql-schemas": "^1.5.8",
-    "moment": "^2.22.2",
-    "opn": "^5.3.0",
-    "ora": "^3.0.0",
-    "uuid": "^2.0.3"
+    "graphql-relational-schema-transformer": "1.18.0",
+    "graphql-tag-pluck": "^0.8.4",
+    "inquirer": "^6.5.1",
+    "merge-graphql-schemas": "^1.7.0",
+    "moment": "^2.24.0",
+    "open": "^6.4.0",
+    "ora": "^3.4.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0"
   }

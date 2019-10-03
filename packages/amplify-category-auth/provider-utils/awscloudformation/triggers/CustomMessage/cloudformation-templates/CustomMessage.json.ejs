@@ -1,0 +1,217 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Lambda resource stack creation using Amplify CLI",
+    "Parameters": {
+        "REDIRECTURL": {
+          "Type": "String",
+          "Default": ""
+        },
+        "EMAILMESSAGE": {
+          "Type": "String",
+          "Default": ""
+        },
+        "EMAILSUBJECT": {
+          "Type": "String",
+          "Default": ""
+        },
+        "modules": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Comma-delimmited list of modules to be executed by a lambda trigger. Sent to resource as an env variable."
+        },
+        "resourceName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "trigger": {
+            "Type": "String",
+            "Default": "true"
+        },
+        "functionName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "roleName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "parentResource": {
+            "Type": "String",
+            "Default": ""
+        },
+        "parentStack": {
+			"Type": "String",
+			"Default": ""
+		},
+        "env": {
+            "Type": "String"
+        }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
+    <% if (props.dependsOn) { %>
+    <% for(var i=0; i < props.dependsOn.length; i++) { %>
+    <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+        "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>": {
+            "Type": "String",
+            "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
+            }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
+        <% } %>
+        <% } %>
+    <% } %>
+    },
+    "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                {
+                    "Ref": "env"
+                },
+                "NONE"
+            ]
+        }
+    },
+    "Resources": {
+        "LambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Metadata": {
+            "aws:asset:path": "./src",
+            "aws:asset:property": "Code"
+          },
+          "Properties": {
+            "Handler": "index.handler",
+            "FunctionName": {
+                "Fn::If": [
+                    "ShouldNotCreateEnvResources",
+                    "<%= props.functionName %>", 
+                    {
+
+                        "Fn::Join": [
+                            "",
+                            [
+                                "<%= props.functionName %>",
+                                "-",
+                                {
+                                    "Ref": "env"
+                                }
+                            ]
+                        ]
+                    }      
+                ]
+            },
+            "Environment": {
+                "Variables" : {
+                    "ENV": {
+                        "Ref": "env"
+                    },
+                    "MODULES": {
+                        "Ref": "modules"
+                    },
+                    "REGION": { 
+                        "Ref": "AWS::Region"
+                    },
+                    "REDIRECTURL": {
+                        "Ref": "REDIRECTURL"
+                    },
+                    "EMAILSUBJECT": {
+                        "Ref": "EMAILSUBJECT"
+                    },
+                    "EMAILMESSAGE": {
+                        "Ref": "EMAILMESSAGE"
+                    },
+                    "RESOURCENAME": {
+                        "Ref": "resourceName"
+                    }
+                }
+            },
+            "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
+            "Runtime": "nodejs8.10",
+            "Timeout": "25"
+          }
+        },
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": {
+                    "Fn::If": [
+                        "ShouldNotCreateEnvResources",
+                        "<%=props.roleName %>", 
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "<%=props.roleName %>",
+                                    "-",
+                                    {
+                                        "Ref": "env"
+                                    }
+                                ]
+                            ]
+                        } 
+                    ]
+                },
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+        ,"lambdaexecutionpolicy": {
+            "DependsOn": ["LambdaExecutionRole"],
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "lambda-execution-policy",
+                "Roles": [{ "Ref": "LambdaExecutionRole" }],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action":["logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"],
+                            "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
+                        }
+                    ]
+                }
+            }
+        }<% if (props.categoryPolicies && props.categoryPolicies.length > 0 ) { %>
+        ,"AmplifyResourcesPolicy": {
+            "DependsOn": ["LambdaExecutionRole"],
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "amplify-lambda-execution-policy",
+                "Roles": [{ "Ref": "LambdaExecutionRole" }],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": <%- JSON.stringify(props.categoryPolicies) %>
+                }
+            }
+        }
+        <% } %>
+    },
+    "Outputs": {
+        "Name": {
+            "Value": {
+                "Ref": "LambdaFunction"
+            }
+        },
+        "Arn": {
+            "Value": {"Fn::GetAtt": ["LambdaFunction", "Arn"]}
+        },
+        "Region": {
+            "Value": {
+                "Ref": "AWS::Region"
+            }
+        }
+    }
+}

@@ -16,18 +16,25 @@ import {
     parse,
     EnumTypeDefinitionNode,
     TypeDefinitionNode,
-    DefinitionNode,
     OperationTypeDefinitionNode,
     InterfaceTypeDefinitionNode
 } from 'graphql'
 import blankTemplate from './util/blankTemplate'
 import DefaultSchemaDefinition from './defaultSchema'
-import { 
+import {
     InterfaceTypeExtensionNode, UnionTypeExtensionNode,
     UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode,
     InputObjectTypeExtensionNode, InputValueDefinitionNode
 } from 'graphql/language/ast';
-import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
+import { _Kind } from 'graphql/language/kinds';
+
+export interface MappingParameters {
+    [key: string]: {
+        [key: string]: {
+            [key: string]: string | number | string[];
+        };
+    };
+}
 
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
@@ -75,7 +82,13 @@ export class TransformerContextMetadata {
     }
 }
 
-// export interface StackMapping { [k: RegExp]: string }
+/**
+ * The stack mapping defines a full mapping from resource id
+ * to the stack that it belongs to. When transformers add
+ * resources to the context, they add an entry to the
+ * stack mapping and that resource will be pulled into the related stack
+ * automatically.
+ */
 export type StackMapping = Map<string, string>;
 
 /**
@@ -175,6 +188,22 @@ export default class TransformerContext {
         }
     }
 
+    /**
+     * Scans through the context nodeMap and returns all type definition nodes
+     * that are of the given kind.
+     * @param kind Kind value of type definition nodes expected.
+     */
+    public getTypeDefinitionsOfKind(kind: string) {
+        const typeDefs: TypeDefinitionNode[] = [];
+        for (const key of Object.keys(this.nodeMap)) {
+            const definition = this.nodeMap[key];
+            if (definition.kind === kind) {
+                typeDefs.push(definition as TypeDefinitionNode);
+            }
+        }
+        return typeDefs
+    }
+
     public mergeResources(resources: { [key: string]: Resource }) {
         for (const resourceId of Object.keys(resources)) {
             if (this.template.Resources[resourceId]) {
@@ -228,6 +257,15 @@ export default class TransformerContext {
             }
         }
         this.template.Outputs = { ...this.template.Outputs, ...outputs }
+    }
+
+    public mergeMappings(mapping: MappingParameters ) {
+        for (const mappingName of Object.keys(mapping)) {
+            if (this.template.Mappings[mappingName]) {
+                throw new Error(`Conflicting CloudFormation mapping name: ${mappingName}`)
+            }
+        }
+        this.template.Mappings = {...this.template.Mappings, ...mapping }
     }
 
     /**
@@ -396,8 +434,18 @@ export default class TransformerContext {
         }
         // AppSync does not yet understand type extensions so fold the types in.
         const oldNode = this.getObject(obj.name.value)
-        const newDirs = obj.directives || []
+        const newDirs = []
         const oldDirs = oldNode.directives || []
+
+        // Filter out duplicate directives, do not add them
+        if (obj.directives) {
+            for (const newDir of obj.directives) {
+                if (Boolean(oldDirs.find((d) => d.name.value === newDir.name.value)) === false) {
+                    newDirs.push(newDir);
+                }
+            }
+        }
+
         const mergedDirs = [...oldDirs, ...newDirs]
 
         // An extension cannot redeclare fields.
@@ -625,14 +673,13 @@ export default class TransformerContext {
         this.nodeMap[en.name.value] = en
     }
 
-    public putStackMapping(stackName: string, listOfRegex: string[]) {
-        for (const reg of listOfRegex) {
-            this.stackMapping.set(reg.toLowerCase(), stackName);
-        }
-    }
-
-    public addToStackMapping(stackName: string, regex: string) {
-        this.stackMapping.set(regex.toLowerCase(), stackName);
+    /**
+     * Add an item to the stack mapping.
+     * @param stackName The destination stack name.
+     * @param resource The resource id that should be put into the stack.
+     */
+    public mapResourceToStack(stackName: string, resource: string) {
+        this.stackMapping.set(resource, stackName);
     }
 
     public getStackMapping(): StackMapping {

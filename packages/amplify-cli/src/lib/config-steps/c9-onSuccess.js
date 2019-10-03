@@ -1,13 +1,12 @@
 const fs = require('fs-extra');
-const { print } = require('gluegun/print');
 
 async function run(context) {
   const { projectPath } = context.exeInfo;
   const { amplify } = context;
 
   let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
-  const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
-  fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
+  const projectConfigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
+  fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
 
   jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
   const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
@@ -15,14 +14,14 @@ async function run(context) {
 
   await context.amplify.onCategoryOutputsChange(context);
 
-  printWelcomeMessage();
+  printWelcomeMessage(context);
 }
 
 
-function printWelcomeMessage() {
-  print.info('');
-  print.success('Successfully made configuration changes to your project.');
-  print.info('');
+function printWelcomeMessage(context) {
+  context.print.info('');
+  context.print.success('Successfully made configuration changes to your project.');
+  context.print.info('');
 }
 
 module.exports = {

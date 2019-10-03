@@ -1,4 +1,3 @@
-import Amplify, { Auth } from 'aws-amplify';
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
@@ -114,7 +113,7 @@ beforeAll(async () => {
     }
     type AdminNote @model @auth(
         rules: [
-            {allow: groups, groups: ["Admin"]}
+            {allow: groups, groups: ["Admin"], groupClaim: "cognito:groups"}
         ]
     ) {
         id: ID!
@@ -179,7 +178,13 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' })
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     try {
@@ -976,6 +981,51 @@ test(`Test listPWProtecteds when the user is authorized.`, async () => {
     `)
     console.log(JSON.stringify(dReq, null, 4))
     expect(dReq.data.deletePWProtected).toBeTruthy()
+})
+
+test(`Test listPWProtecteds when groups is null in dynamodb.`, async () => {
+    const req = await GRAPHQL_CLIENT_1.query(`
+    mutation {
+        createPWProtected(input: { content: "Foobie" }) {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(req, null, 4))
+    expect(req.data.createPWProtected).toBeTruthy()
+
+    const req2 = await GRAPHQL_CLIENT_1.query(`
+    query {
+        listPWProtecteds {
+            items {
+                id
+                content
+                participants
+                watchers
+            }
+            nextToken
+        }
+    }
+    `)
+    expect(req2.data.listPWProtecteds.items.length).toEqual(0)
+
+    const req3 = await GRAPHQL_CLIENT_1.query(`
+    query {
+        getPWProtected(id: "${req.data.createPWProtected.id}") {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(req3, null, 4))
+    expect(req3.data.getPWProtected).toEqual(null)
+    expect(req3.errors.length).toEqual(1)
+    expect((req3.errors[0] as any).errorType).toEqual('Unauthorized')
 })
 
 test(`Test Protecteds when the user is not authorized.`, async () => {

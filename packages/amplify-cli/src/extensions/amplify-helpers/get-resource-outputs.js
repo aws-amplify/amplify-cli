@@ -65,7 +65,9 @@ function getResourceOutputs(amplifyMeta) {
   if (outputsByProvider.awscloudformation) {
     outputsForFrontend.metadata = outputsByProvider.awscloudformation.metadata;
   }
-
+  if (amplifyMeta && amplifyMeta.testMode) {
+    outputsForFrontend.testMode = true;
+  }
   return { outputsByProvider, outputsByCategory, outputsForFrontend };
 }
 

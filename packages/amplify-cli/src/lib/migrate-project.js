@@ -8,7 +8,6 @@ const gitManager = require('../extensions/amplify-helpers/git-manager');
 const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
 
 const spinner = ora('');
-const { prompt } = require('gluegun/prompt');
 const { run } = require('../commands/push');
 
 const pushRun = run;
@@ -47,7 +46,7 @@ async function migrateProject(context) {
     return;
   }
   if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
-    if (await prompt.confirm(confirmMigrateMessage)) {
+    if (await context.prompt.confirm(confirmMigrateMessage)) {
       const infoMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
       '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
       'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
@@ -62,7 +61,7 @@ async function migrateProject(context) {
       context.print.info(infoMessage);
       context.print.info(chalk.red('IF YOU\'VE MODIFIED ANY CLOUDFORMATION FILES MANUALLY, PLEASE CHECK AND DIFF YOUR CLOUDFORMATION FILES BEFORE PUSHING YOUR RESOURCES IN THE CLOUD IN THE LAST STEP OF THIS MIGRATION.'));
 
-      if (await prompt.confirm(secondConfirmMessage)) {
+      if (await context.prompt.confirm(secondConfirmMessage)) {
         // Currently there are only two project configuration versions, so call this method directly
         // If more versions are involved, switch to apropriate migration method
         await migrateFrom0To1(context, projectPath, projectConfig);

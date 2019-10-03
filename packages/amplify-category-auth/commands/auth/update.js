@@ -1,5 +1,5 @@
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
-
+const path = require('path');
 
 const subcommand = 'update';
 const category = 'auth';
@@ -49,7 +49,16 @@ module.exports = {
         return providerController.updateResource(context, category, options);
       })
       .then((resourceName) => { // eslint-disable-line no-shadow
-        amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, options);
+        const resourceDirPath = path.join(
+          amplify.pathManager.getBackendDirPath(),
+          '/auth/',
+          resourceName,
+          'parameters.json',
+        );
+        const authParameters = amplify.readJsonFile(resourceDirPath);
+        if (authParameters.dependsOn) {
+          amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'dependsOn', authParameters.dependsOn);
+        }
         const { print } = context;
         print.success(`Successfully updated resource ${resourceName} locally`);
         print.info('');

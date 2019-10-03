@@ -1,9 +1,10 @@
 const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const { normalizeEditorCode, editorSelection } =
+const { normalizeEditor, editorSelection } =
   require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
+const { getEnvInfo } = require('../../extensions/amplify-helpers/get-env-info');
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
 async function run(context) {
@@ -11,8 +12,7 @@ async function run(context) {
   if (fs.existsSync(projectConfigFilePath)) {
     context.exeInfo.projectConfig = readJsonFile(projectConfigFilePath);
   }
-  const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-  context.exeInfo.localEnvInfo = readJsonFile(envFilePath);
+  context.exeInfo.localEnvInfo = getEnvInfo();
 
   const projectPath = process.cwd();
   Object.assign(context.exeInfo.localEnvInfo, { projectPath });
@@ -77,7 +77,7 @@ function normalizeProjectName(projectName) {
 async function configureEditor(context) {
   let { defaultEditor } = context.exeInfo.localEnvInfo;
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
-    defaultEditor = normalizeEditorCode(context.exeInfo.inputParams.amplify.editor);
+    defaultEditor = normalizeEditor(context.exeInfo.inputParams.amplify.editor);
   } else if (!context.exeInfo.inputParams.yes) {
     defaultEditor = await editorSelection(defaultEditor);
   }

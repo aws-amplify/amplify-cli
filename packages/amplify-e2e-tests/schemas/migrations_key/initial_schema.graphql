@@ -1,0 +1,11 @@
+type Todo @model
+  @key(fields: ["id", "version"])
+  @key(name: "SomeLSI", fields: ["id", "name"])
+  @key(name: "SomeGSI", fields: ["name", "id"])
+{
+  id: ID!
+  id2: ID!
+  name: String!
+  name2: String!
+  version: String!
+}

@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+var prompt = require('prompt');
+
+console.log('Starting prompt');
+
+prompt.start();
+prompt.get(['first'], function (err, result) {
+  console.log(result.first);
+
+  prompt.get(['second'], function (err, result) {
+    console.log(result.second);
+    process.exit(0);
+  });
+});

@@ -23,6 +23,27 @@ function amplifyPush(
   });
 }
 
+function amplifyPushUpdate(
+  cwd: string,
+  waitForText?: RegExp,
+  verbose: Boolean = isCI() ? false : true,
+) {
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
+      .wait('Are you sure you want to continue?')
+      .sendline('y')
+      .wait(waitForText || /.*/)
+      .run(function(err: Error) {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 function amplifyPushAuth(
   cwd: string,
   verbose: Boolean = isCI() ? false : true
@@ -43,4 +64,4 @@ function amplifyPushAuth(
   });
 }
 
-export { amplifyPush, amplifyPushAuth };
+export { amplifyPush, amplifyPushUpdate, amplifyPushAuth };

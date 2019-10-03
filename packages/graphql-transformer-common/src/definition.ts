@@ -86,20 +86,18 @@ export function isScalar(type: TypeNode) {
     }
 }
 
-export function isScalarOrEnum(enums: EnumTypeDefinitionNode[]) {
-    return (type: TypeNode) => {
-        if (type.kind === Kind.NON_NULL_TYPE) {
-            return isScalar(type.type)
-        } else if (type.kind === Kind.LIST_TYPE) {
-            return isScalar(type.type)
-        } else {
-            for (const e of enums) {
-                if (e.name.value === type.name.value) {
-                    return true
-                }
+export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]) {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+        return isScalarOrEnum(type.type, enums)
+    } else if (type.kind === Kind.LIST_TYPE) {
+        return isScalarOrEnum(type.type, enums)
+    } else {
+        for (const e of enums) {
+            if (e.name.value === type.name.value) {
+                return true
             }
-            return Boolean(DEFAULT_SCALARS[type.name.value])
         }
+        return Boolean(DEFAULT_SCALARS[type.name.value])
     }
 }
 
@@ -203,6 +201,48 @@ export function extensionWithFields(object: ObjectTypeExtensionNode, fields: Fie
         ...object,
         fields: [...object.fields, ...fields]
     }
+}
+
+export function extensionWithDirectives(object: ObjectTypeExtensionNode, directives: DirectiveNode[]): ObjectTypeExtensionNode {
+    if (directives && directives.length > 0) {
+        const newDirectives = [];
+
+        for (const directive of directives) {
+            if (!object.directives.find((d) => d.name.value === directive.name.value)) {
+                newDirectives.push(directive);
+            }
+        }
+
+        if (newDirectives.length > 0) {
+            return {
+                ...object,
+                directives: [...object.directives, ...newDirectives]
+            }
+        }
+    }
+
+    return object;
+}
+
+export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode {
+    if (directives && directives.length > 0) {
+        const newDirectives = [];
+
+        for (const directive of directives) {
+            if (!field.directives.find((d) => d.name.value === directive.name.value)) {
+                newDirectives.push(directive);
+            }
+        }
+
+        if (newDirectives.length > 0) {
+            return {
+                ...field,
+                directives: [...field.directives, ...newDirectives]
+            }
+        }
+    }
+
+    return field;
 }
 
 export function makeInputObjectDefinition(name: string, inputs: InputValueDefinitionNode[]): InputObjectTypeDefinitionNode {

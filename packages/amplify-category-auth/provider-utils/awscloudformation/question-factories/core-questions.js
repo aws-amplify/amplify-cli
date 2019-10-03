@@ -1,8 +1,7 @@
 const inquirer = require('inquirer');
-const _ = require('lodash');
+const { uniq, flatten } = require('lodash');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-
 
 function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) { // eslint-disable-line max-len
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
@@ -26,6 +25,9 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
     default: (answers) => { // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is always the default
       if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
+        if (input.key === 'triggers') {
+          return triggerDefaults(context, input, getAllMaps(context.updatingAuth)[input.map]);
+        }
         return context.updatingAuth[input.key];
       }
       // if not editing or no previous value, get defaults (either w/ or w/out social provider flow)
@@ -88,7 +90,7 @@ function iteratorQuestion(input, question, context) {
 function getRequiredOptions(input, question, getAllMaps, context, currentAnswers) {
   const sourceValues = Object
     .assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
-  const sourceArray = _.uniq(_.flatten(input.requiredOptions.map((i => sourceValues[i] || []))));
+  const sourceArray = uniq(flatten(input.requiredOptions.map((i => sourceValues[i] || []))));
   const requiredOptions =
     getAllMaps()[input.map] ? getAllMaps()[input.map]
       .filter(x => sourceArray
@@ -180,6 +182,36 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
     question = Object.assign({ choices: newChoices }, question);
   }
   return question;
+}
+
+function triggerDefaults(context, input, availableOptions) {
+  const capabilityDefaults = [];
+  if (context.updatingAuth.triggers) {
+    const current = typeof context.updatingAuth[input.key] === 'string' ? JSON.parse(context.updatingAuth[input.key]) : context.updatingAuth[input.key];
+    try {
+      if (current) {
+        availableOptions.forEach((a) => {
+          let match = true;
+          Object.keys(a.triggers).forEach((t) => {
+            if (current[t]) {
+              const test = a.triggers[t].every(c => current[t].includes(c));
+              if (!test) {
+                match = false;
+              }
+            } else {
+              match = false;
+            }
+          });
+          if (match) {
+            capabilityDefaults.push(a.value);
+          }
+        });
+      }
+    } catch (e) {
+      throw new Error('Error parsing capability defaults');
+    }
+  }
+  return capabilityDefaults;
 }
 
 module.exports = { parseInputs };

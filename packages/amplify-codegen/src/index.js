@@ -4,10 +4,11 @@ const generate = require('./commands/generateStatementsAndType');
 const add = require('./commands/add');
 const remove = require('./commands/remove');
 const configure = require('./commands/configure');
-
+const { isCodegenConfigured, switchToSDLSchema } = require('./utils');
 const prePushAddGraphQLCodegenHook = require('./callbacks/prePushAddCallback');
 const prePushUpdateGraphQLCodegenHook = require('./callbacks/prePushUpdateCallback');
 const postPushGraphQLCodegenHook = require('./callbacks/postPushCallback');
+const { executeAmplifyCommand, handleAmplifyEvent } = require('./amplify-plugin-index');
 
 module.exports = {
   configure,
@@ -19,4 +20,8 @@ module.exports = {
   prePushAddGraphQLCodegenHook,
   prePushUpdateGraphQLCodegenHook,
   postPushGraphQLCodegenHook,
+  isCodegenConfigured,
+  switchToSDLSchema,
+  executeAmplifyCommand,
+  handleAmplifyEvent,
 };

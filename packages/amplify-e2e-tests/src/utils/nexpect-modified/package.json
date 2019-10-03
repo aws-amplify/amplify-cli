@@ -1,0 +1,29 @@
+{
+  "name": "nexpect",
+  "description": "Spawns and interacts with child processes using spawn / expect commands",
+  "version": "0.5.0",
+  "author": "Nodejitsu Inc. <info@nodejitsu.com>",
+  "maintainers": [
+    "indexzero <charlie@nodejitsu.com>",
+    "AvianFlu <avianflu@nodejitsu.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/nodejitsu/nexpect.git"
+  },
+  "keywords": [
+    "nexpect",
+    "spawn",
+    "child process",
+    "terminal"
+  ],
+  "devDependencies": {
+    "colors": "0.x.x",
+    "prompt": "~0.2.11",
+    "vows": "~0.5.x"
+  },
+  "main": "./lib/nexpect",
+  "scripts": {
+    "test": "vows --spec"
+  }
+}

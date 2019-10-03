@@ -1,9 +1,8 @@
-const { print } = require('gluegun/print');
 const { showHelp } = require('./show-help');
 const { listCategories } = require('./list-categories');
 
 function showAllHelp(context) {
-  print.info('');
+  context.print.info('');
 
   const header = 'amplify <command> <subcommand>';
 
@@ -57,8 +56,12 @@ function showAllHelp(context) {
       description: 'Displays subcommands of the specified Amplify category.',
     },
     {
+      name: 'mock',
+      description: 'Run mock server for testing categories locally.',
+    },
+    {
       name: 'codegen',
-      description: 'Generates GraphQL statements(queries, mutations and subscriptions) and type annotations.',
+      description: 'Generates GraphQL statements(queries, mutations and eventHandlers) and type annotations.',
     },
     {
       name: 'env',
@@ -67,9 +70,9 @@ function showAllHelp(context) {
   ];
 
   showHelp(header, commands);
-  print.info('');
+  context.print.info('');
   listCategories(context);
-  print.info('');
+  context.print.info('');
 }
 
 module.exports = {

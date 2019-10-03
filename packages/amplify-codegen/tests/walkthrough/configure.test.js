@@ -75,7 +75,7 @@ describe('configure walk-through', () => {
     expect(selectProject).toHaveBeenCalledWith(mockContext, mockProjectSelect);
     expect(askCodegenTargetLanguage).toHaveBeenCalledWith(
       mockContext,
-      mockConfigs[1].amplifyExtension.codeGenTarget,
+      mockConfigs[1].amplifyExtension.codeGenTarget, false, undefined, undefined,
     );
     expect(askCodegneQueryFilePattern).toHaveBeenCalledWith([
       join(mockGraphQLDirectory, '**', mockGraphQLExtension),

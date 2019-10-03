@@ -26,7 +26,6 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 * [Contributing](#contributing)
 * [Start building your app](https://aws-amplify.github.io/docs)
 
-> If you're using Windows, the CLI currently supports [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 ## Install the CLI
 
@@ -69,6 +68,7 @@ The Amplify CLI supports the commands shown in the following table.
 - [hosting (Amazon S3 and Amazon CloudFront distribution)](packages/amplify-category-hosting/Readme.md)
 - [notifications (Amazon Pinpoint)](packages/amplify-category-notifications/Readme.md)
 - [interactions (Amazon Lex)](packages/amplify-category-interactions/Readme.md)
+- [predictions (Amazon Rekognition, Amazon Textract, Amazon Translate, Amazon Polly, Amazon Transcribe, Amazon Comprehend, and Amazon SageMaker)](packages/amplify-category-predictions/Readme.md)
 
 ## Tutorials
 

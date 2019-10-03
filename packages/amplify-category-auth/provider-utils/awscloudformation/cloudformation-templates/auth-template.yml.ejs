@@ -3,17 +3,23 @@ AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   env:
     Type: String
-  authRoleName:
-    Type: String
-  unauthRoleName:
-    Type: String
   authRoleArn:
     Type: String
   unauthRoleArn:
     Type: String
+  
+  <% if (props.dependsOn && props.dependsOn.length > 0) { %>
+  <% for(var i=0; i < props.dependsOn.length; i++) { %>
+  <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+  <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>: 
+    Type: String
+    Default: <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>
+  <% } %>
+  <% } %>
+  <% } %>
 
   <% for(var i=0; i < Object.keys(props).length; i++) { -%>
-  <% if (typeof Object.values(props)[i] === 'string' || Object.values(props)[i].value) { %>
+  <% if (typeof Object.values(props)[i] === 'string' || (Object.values(props)[i] && Object.values(props)[i].value)) { %>
   <%=Object.keys(props)[i]%>:
     Type: String
   <% } -%>
@@ -25,6 +31,10 @@ Parameters:
   <%=Object.keys(props)[i]%>:
     Type: Number
   <% } -%>
+  <% if (Object.keys(props)[i] === 'parentStack') { %>
+  <%=Object.keys(props)[i]%>:
+    Type: String
+  <% } -%>
   <% if (Array.isArray(Object.values(props)[i])) { %>
   <%=Object.keys(props)[i]%>:
     Type: CommaDelimitedList
@@ -35,13 +45,35 @@ Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
 
 Resources:
+  <%if (props.verificationBucketName) { %>
+  CustomMessageConfirmationBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: "Retain"
+    Properties:
+      BucketName:  !If [ShouldNotCreateEnvResources, !Ref verificationBucketName, !Join ['',[!Ref verificationBucketName, '-', !Ref env]]]
+      AccessControl: "Private"
+      WebsiteConfiguration:
+        IndexDocument: "index.html"
+        ErrorDocument: "index.html"
+      CorsConfiguration:
+        CorsRules:
+          - 
+            AllowedHeaders:
+              - "Authorization" 
+              - "Content-Length"
+            AllowedMethods:
+              - "GET"
+            AllowedOrigins:
+              - "*"
+            MaxAge: 3000
+  <% } %>
   <%if (props.authSelections !== 'identityPoolOnly') { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref roleName, !Join ['',[!Ref roleName, '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_sns-role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_sns-role`%>', '-', !Ref env]]]
       AssumeRolePolicyDocument: 
         Version: "2012-10-17"
         Statement: 
@@ -53,10 +85,10 @@ Resources:
               - "sts:AssumeRole"
             Condition: 
               StringEquals:
-                sts:ExternalId: !Ref roleExternalId
+                sts:ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
       Policies: 
         - 
-          PolicyName: !Ref policyName
+          PolicyName: <%=`${props.resourceNameTruncated}-sns-policy`%>
           PolicyDocument: 
             Version: "2012-10-17"
             Statement: 
@@ -82,6 +114,36 @@ Resources:
           Mutable: true
         <% } %>
       <% } %>
+      <%if (props.triggers && props.triggers !== '{}' && props.dependsOn) { %>
+      LambdaConfig:
+        <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
+          CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('CustomMessage'))) { %>
+          CustomMessage: !Ref function<%=props.resourceName%>CustomMessageArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('DefineAuthChallenge'))) { %>
+          DefineAuthChallenge: !Ref function<%=props.resourceName%>DefineAuthChallengeArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PostAuthentication'))) { %>
+          PostAuthentication: !Ref function<%=props.resourceName%>PostAuthenticationArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PostConfirmation'))) { %>
+          PostConfirmation: !Ref function<%=props.resourceName%>PostConfirmationArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PreAuthentication'))) { %>
+          PreAuthentication: !Ref function<%=props.resourceName%>PreAuthenticationArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { %>
+          PreSignUp: !Ref function<%=props.resourceName%>PreSignupArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
+          PreTokenGeneration: !Ref function<%=props.resourceName%>PreTokenGenerationArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
+          VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
+        <% } %>
+      <% } %>
       <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
       AutoVerifiedAttributes: !Ref autoVerifiedAttributes
       <% } %>
@@ -103,16 +165,140 @@ Resources:
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
-        ExternalId: !Ref roleExternalId 
+        ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
+  <%if (props.triggers && props.dependsOn) { %>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
+  UserPoolCreateAuthChallengeLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>CreateAuthChallengeName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <%if (props.dependsOn.find(i => i.resourceName.includes('CustomMessage'))) { %>
+  UserPoolCustomMessageLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>CustomMessageName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <%if (props.dependsOn.find(i => i.resourceName.includes('DefineAuthChallenge'))) { %>
+  UserPoolDefineAuthChallengeLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>DefineAuthChallengeName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PostAuthentication'))) { %>
+  UserPoolPostAuthenticationLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PostAuthenticationName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PostConfirmation'))) { %>
+  UserPoolPostConfirmationLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PostConfirmationName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PreAuthentication'))) { %>
+  UserPoolPreAuthenticationLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PreAuthenticationName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { %>
+  UserPoolPreSignupLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PreSignupName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
+  UserPoolPreTokenGenerationLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PreTokenGenerationName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %> 
+  <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
+  UserPoolVerifyAuthChallengeResponseLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  # Updating lambda role with permissions to Cognito
+  <% if (props.permissions && props.permissions.length > 0) { %>
+  <% for(var i=0; i < props.permissions.length; i++) { %>
+  <%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}${JSON.parse(props.permissions[i]).policyName}:`%>
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: <%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}${JSON.parse(props.permissions[i]).policyName}`%>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: <%= JSON.parse(props.permissions[i]).effect %>
+            Action:
+            <% for(let x = 0; x < JSON.parse(props.permissions[i]).actions.length; x++) { %>
+              - <%=JSON.parse(props.permissions[i]).actions[x]%>
+            <% } %>
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === 'string') { %>
+            Resource: "<%=JSON.parse(props.permissions[i]).resource.keys %>"
+            <% } %>
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!GetAtt') { %>
+            Resource: !GetAtt
+            <% for(let z = 0; z < JSON.parse(props.permissions[i]).resource.keys.length; z++) { %>
+              - <%= JSON.parse(props.permissions[i]).resource.keys[z] %>
+            <% } %>
+            <% } %>
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!Ref') { %>
+            Resource: !Ref <%=JSON.parse(props.permissions[i]).resource.keys %>
+            <% } %>
+
+      Roles:
+        - !Join ['',["<%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}`%>", '-', !Ref env]]
+  <% } %>
+  <% } %>
+  <% } %>
   UserPoolClientWeb:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: <%= props.userpoolClientName %>Web
+      ClientName: <%= props.resourceNameTruncated %>_app_clientWeb
       <%if (props.userpoolClientSetAttributes) { %>
       ReadAttributes: !Ref userpoolClientReadAttributes
       WriteAttributes: !Ref userpoolClientWriteAttributes
@@ -125,7 +311,7 @@ Resources:
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: !Ref userpoolClientName
+      ClientName: <%= props.resourceNameTruncated %>_app_client
       <%if (props.userpoolClientSetAttributes) { %>
       ReadAttributes: !Ref userpoolClientReadAttributes
       WriteAttributes: !Ref userpoolClientWriteAttributes
@@ -193,7 +379,7 @@ Resources:
   # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref userpoolClientLambdaPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_userpoolclient_lambda_iam_policy`%>
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       PolicyDocument:
@@ -210,7 +396,7 @@ Resources:
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref userpoolClientLogPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_userpoolclient_lambda_log_policy`%>
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       PolicyDocument:
@@ -594,7 +780,7 @@ Resources:
   # Created to execute Lambda which sets MFA config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole     , '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -605,14 +791,14 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-      - PolicyName: !Ref mfaPassRolePolicy
+      - PolicyName: <%=`${props.resourceNameTruncated}_totp_pass_role_policy`%>
         PolicyDocument:
           Version: 2012-10-17
           Statement:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>', '-', !Ref env]]]
+              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role` %>', '-', !Ref env]]]
   MFALambda:
   # Lambda which sets MFA config values
   # Depends on MFALambdaRole for role ARN
@@ -668,9 +854,9 @@ Resources:
   # Marked as depending on MFALambda for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref mfaLambdaIAMPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_totp_lambda_iam_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
+        - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -684,9 +870,9 @@ Resources:
   # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref mfaLambdaLogPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_totp_lambda_log_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
+        - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -712,7 +898,7 @@ Resources:
       totpEnabled: <%= props.mfaTypes.includes('TOTP') %>
       smsConfigCaller: !GetAtt SNSRole.Arn
       smsAuthenticationMessage: !Ref smsAuthenticationMessage
-      smsConfigExternalId: !Ref roleExternalId 
+      smsConfigExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
     DependsOn: MFALogPolicy
   <% } %>
   <% } -%>
@@ -724,7 +910,7 @@ Resources:
   # Depends on UserPoolClientInputs to prevent further identity pool resources from being created before userpool is ready
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -735,14 +921,14 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-      - PolicyName: !Ref openIdRolePolicy
+      - PolicyName: <%=`${props.resourceNameTruncated}_openid_pass_role_policy`%>
         PolicyDocument:
           Version: 2012-10-17
           Statement:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', '-', !Ref env]]]
+              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_openid_lambda_role` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_openid_lambda_role` %>', '-', !Ref env]]]
     DependsOn: UserPoolClientInputs
   OpenIdLambda:
   # Lambda which sets OpenId Values
@@ -828,9 +1014,9 @@ Resources:
   # Marked as depending on MFALambda for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref openIdLambdaIAMPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_openid_lambda_iam_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+        - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -855,9 +1041,9 @@ Resources:
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref openIdLogPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_openid_lambda_log_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+        - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -881,7 +1067,7 @@ Resources:
       url: 'https://accounts.google.com'
     DependsOn: OpenIdLogPolicy
   <% } %>
-  
+ 
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool

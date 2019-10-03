@@ -6,7 +6,7 @@ import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import SearchableModelTransformer from 'graphql-elasticsearch-transformer'
-import ModelAuthTransformer from 'graphql-versioned-transformer'
+import ModelAuthTransformer from 'graphql-auth-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { S3Client } from '../S3Client'
 import { Output } from 'aws-sdk/clients/cloudformation'
@@ -32,7 +32,7 @@ const customS3Client = new S3Client('us-west-2')
 const awsS3Client = new S3({ region: 'us-west-2' })
 
 const fragments = [
-    `fragment FullPost on Post { id author title ups downs percentageUp isPublished }`
+    `fragment FullPost on Post { id author title ups downs percentageUp isPublished createdAt }`
 ]
 
 const createPosts = async () => {
@@ -95,6 +95,7 @@ beforeAll(async () => {
         version: Int
         relatedPosts: [Post]
         postedAt: String
+        createdAt: AWSDateTime
         comments: [String!]
         ratings: [Int!]
         percentageUp: Float
@@ -105,7 +106,13 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }}),
             new SearchableModelTransformer()
         ]
     })
@@ -121,7 +128,7 @@ beforeAll(async () => {
         // const additionalParams = generateParams()
         console.log('Creating Stack ' + STACK_NAME)
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+            customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
             BUILD_TIMESTAMP
         )
         // Arbitrary wait to make sure everything is ready.
@@ -166,6 +173,75 @@ afterAll(async () => {
         console.error(`Failed to empty S3 bucket: ${e}`)
     }
 });
+
+test('Test searchPosts with sort field on a string field', async () => {
+    const firstQuery = await runQuery(`query {
+        searchPosts(sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`, 'Test searchPosts with filter ')
+    expect(firstQuery).toBeDefined()
+    expect(firstQuery.data.searchPosts).toBeDefined()
+    const fourthItemOfFirstQuery = firstQuery.data.searchPosts.items[3]
+    const secondQuery = await runQuery(`query {
+        searchPosts(limit: 3, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`, 'Test searchPosts with limit ')
+    expect(secondQuery).toBeDefined()
+    expect(secondQuery.data.searchPosts).toBeDefined()
+    const nextToken = secondQuery.data.searchPosts.nextToken
+    expect(nextToken).toBeDefined()
+    const thirdQuery = await runQuery(`query {
+        searchPosts(nextToken: "${nextToken}", limit: 3, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`, 'Test searchPosts with sort limit and nextToken  ')
+    expect(thirdQuery).toBeDefined()
+    expect(thirdQuery.data.searchPosts).toBeDefined()
+    const firstItemOfThirdQuery = thirdQuery.data.searchPosts.items[0]
+    expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery)
+})
+
+test('Test searchPosts with sort on date type', async () => {
+    const query  = await runQuery(`query {
+        searchPosts(
+            sort: {
+                field: createdAt
+                direction: desc
+            }) {
+            items {
+                ...FullPost
+            }
+        }
+    }`, 'Test search posts with date type response: ')
+    expect(query).toBeDefined()
+    expect(query.data.searchPosts).toBeDefined()
+    const recentItem = new Date(query.data.searchPosts.items[0].createdAt)
+    const oldestItem = new Date(query.data.searchPosts.items[
+        query.data.searchPosts.items.length - 1
+    ].createdAt)
+    expect(recentItem > oldestItem)
+
+})
 
 test('Test searchPosts query without filter', async () => {
     const response = await runQuery(`query {

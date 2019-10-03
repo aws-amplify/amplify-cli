@@ -38,7 +38,6 @@ function getAWSConfigObject(amplifyResources) {
       Default: {},
     },
   };
-
   const projectRegion = amplifyResources.metadata.Region;
 
   Object.keys(serviceResourceMapping).forEach((service) => {
@@ -216,8 +215,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
 function getS3Config(s3Resources) {
   const s3Resource = s3Resources[0];
-
-  return {
+  const testMode = s3Resource.testMode || false;
+  const result = {
     S3TransferUtility: {
       Default: {
         Bucket: s3Resource.output.BucketName,
@@ -225,6 +224,10 @@ function getS3Config(s3Resources) {
       },
     },
   };
+  if (testMode) {
+    result.S3TransferUtility.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
+  }
+  return result;
 }
 
 function getPinpointConfig(pinpointResources) {
@@ -257,30 +260,51 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
+  const testMode = appsyncResource.testMode || false;
+  const { authConfig, securityType } = appsyncResource.output;
+  let authMode = '';
+
+  if (securityType) {
+    authMode = securityType;
+  } else if (authConfig) {
+    authMode = authConfig.defaultAuthentication.authenticationType;
+  }
+
+  const apiKey = authMode === 'API_KEY'
+    ? appsyncResource.output.GraphQLAPIKeyOutput
+    : undefined;
+
   const result = {
     AppSync: {
       Default: {
         ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
         Region: appsyncResource.output.region || projectRegion,
-        AuthMode: appsyncResource.output.securityType,
-        ApiKey:
-          appsyncResource.output.securityType === 'API_KEY'
-            ? appsyncResource.output.GraphQLAPIKeyOutput
-            : undefined,
-        ClientDatabasePrefix: `${appsyncResource.resourceName}_${appsyncResource.output.securityType}`,
+        AuthMode: authMode,
+        ApiKey: apiKey,
+        ClientDatabasePrefix: `${appsyncResource.resourceName}_${authMode}`,
       },
     },
   };
-  const additionalAuths = appsyncResource.output.additionalAuthenticationProviders || [];
-  additionalAuths.forEach((authType) => {
-    const apiName = `${appsyncResource.resourceName}_${authType}`;
+
+  if (testMode) {
+    result.AppSync.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
+  }
+
+  const additionalAuths = appsyncResource.output.authConfig.additionalAuthenticationProviders || [];
+  additionalAuths.forEach((auth) => {
+    const apiName = `${appsyncResource.resourceName}_${auth.authenticationType}`;
     const config = {
       ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
       Region: appsyncResource.output.region || projectRegion,
-      AuthMode: authType,
-      ApiKey: authType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
+      AuthMode: auth.authenticationType,
+      ApiKey: auth.authenticationType === 'API_KEY'
+        ? appsyncResource.output.GraphQLAPIKeyOutput
+        : undefined,
       ClientDatabasePrefix: apiName,
     };
+    if (testMode) {
+      config.DangerouslyConnectToHTTPEndpointForTesting = true;
+    }
     result.AppSync[apiName] = config;
   });
 

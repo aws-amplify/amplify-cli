@@ -4,7 +4,7 @@ function addResource(context, category, service, options) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { addWalkthrough } = require(serviceWalkthroughSrc);
 
-  return addWalkthrough(context, defaultValuesFilename, serviceMetadata)
+  return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options)
     .then(async (resourceName) => {
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,

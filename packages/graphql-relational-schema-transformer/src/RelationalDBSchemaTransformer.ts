@@ -43,6 +43,7 @@ export class TableContext {
 export default class TemplateContext {
     schemaDoc: DocumentNode
     typePrimaryKeyMap: Map<string, string>
+    typePrimaryKeyTypeMap: Map<string, string>
     stringFieldMap: Map<string, string[]>
     intFieldMap: Map<string, string[]>
     secretStoreArn: string
@@ -52,11 +53,13 @@ export default class TemplateContext {
     region: string
 
     constructor(schemaDoc: DocumentNode, typePrimaryKeyMap: Map<string, string>,
-        stringFieldMap: Map<string, string[]>, intFieldMap: Map<string, string[]>) {
+        stringFieldMap: Map<string, string[]>, intFieldMap: Map<string, string[]>,
+        typePrimaryKeyTypeMap?: Map<string, string>) {
         this.schemaDoc = schemaDoc
         this.typePrimaryKeyMap  = typePrimaryKeyMap
         this.stringFieldMap = stringFieldMap
         this.intFieldMap = intFieldMap
+        this.typePrimaryKeyTypeMap = typePrimaryKeyTypeMap
     }
 }
 
@@ -83,6 +86,7 @@ export class RelationalDBSchemaTransformer {
         let typeContexts = new Array()
         let types = new Array()
         let pkeyMap = new Map<string, string>()
+        let pkeyTypeMap = new Map<string, string>()
         let stringFieldMap = new Map<string, string[]>()
         let intFieldMap = new Map<string, string[]>()
 
@@ -113,6 +117,7 @@ export class RelationalDBSchemaTransformer {
                 stringFieldMap.set(tableName, type.stringFieldList)
                 intFieldMap.set(tableName, type.intFieldList)
                 pkeyMap.set(tableName, type.tableKeyField)
+                pkeyTypeMap.set(tableName, type.tableKeyFieldType)
             } else {
                 console.warn(`Skipping table ${type.tableTypeDefinition.name.value} because it does not have a single PRIMARY KEY.`)
             }
@@ -125,8 +130,7 @@ export class RelationalDBSchemaTransformer {
         types.push(this.getSchemaType())
 
         let context =  this.dbReader.hydrateTemplateContext(new TemplateContext({kind: Kind.DOCUMENT,
-            definitions: types}, pkeyMap, stringFieldMap, intFieldMap))
-
+            definitions: types}, pkeyMap, stringFieldMap, intFieldMap, pkeyTypeMap))
          return context
     }
 
@@ -138,6 +142,7 @@ export class RelationalDBSchemaTransformer {
     getSchemaType(): SchemaDefinitionNode {
         return {
             kind: Kind.SCHEMA_DEFINITION,
+            directives: [],
             operationTypes: [
                 getOperationTypeDefinition('query', getNamedType('Query')),
                 getOperationTypeDefinition('mutation', getNamedType('Mutation')),
@@ -157,22 +162,23 @@ export class RelationalDBSchemaTransformer {
         const fields = []
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
+            const formattedTypeValue = toUpper(type.name.value)
             fields.push(
-                getOperationFieldDefinition(`delete${toUpper(type.name.value)}`,
+                getOperationFieldDefinition(`delete${formattedTypeValue}`,
                     [getInputValueDefinition(getNonNullType(getNamedType(typeContext.tableKeyFieldType)),
                         typeContext.tableKeyField)],
                     getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`create${toUpper(type.name.value)}`,
-                    [getInputValueDefinition(getNonNullType(getNamedType(`Create${type.name.value}Input`)),
-                        `create${type.name.value}Input`)],
+                getOperationFieldDefinition(`create${formattedTypeValue}`,
+                    [getInputValueDefinition(getNonNullType(getNamedType(`Create${formattedTypeValue}Input`)),
+                        `create${formattedTypeValue}Input`)],
                     getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`update${toUpper(type.name.value)}`,
-                    [getInputValueDefinition(getNonNullType(getNamedType(`Update${type.name.value}Input`)),
-                        `update${type.name.value}Input`)],
+                getOperationFieldDefinition(`update${formattedTypeValue}`,
+                    [getInputValueDefinition(getNonNullType(getNamedType(`Update${formattedTypeValue}Input`)),
+                        `update${formattedTypeValue}Input`)],
                     getNamedType(`${type.name.value}`), null)
             )
         }
@@ -190,10 +196,11 @@ export class RelationalDBSchemaTransformer {
         const fields = []
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
+            const formattedTypeValue = toUpper(type.name.value)
             fields.push(
-                getOperationFieldDefinition(`onCreate${toUpper(type.name.value)}`, [],
+                getOperationFieldDefinition(`onCreate${formattedTypeValue}`, [],
                     getNamedType(`${type.name.value}`),
-                    [getDirectiveNode(`create${toUpper(type.name.value)}`)])
+                    [getDirectiveNode(`create${formattedTypeValue}`)])
             )
         }
         return getTypeDefinition(fields, 'Subscription')
@@ -210,14 +217,15 @@ export class RelationalDBSchemaTransformer {
         const fields = []
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
+            const formattedTypeValue = toUpper(type.name.value)
             fields.push(
-                getOperationFieldDefinition(`get${toUpper(type.name.value)}`,
+                getOperationFieldDefinition(`get${formattedTypeValue}`,
                 [getInputValueDefinition(getNonNullType(getNamedType(typeContext.tableKeyFieldType)),
                     typeContext.tableKeyField)],
                 getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`list${toUpper(type.name.value)}s`,
+                getOperationFieldDefinition(`list${formattedTypeValue}s`,
                 [],
                 getNamedType(`[${type.name.value}]`), null)
             )
