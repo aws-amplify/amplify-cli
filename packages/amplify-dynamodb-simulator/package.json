@@ -27,6 +27,7 @@
     "jest-environment-node": "^24.8.0"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "collectCoverage": true
   }
 }
