@@ -6,7 +6,7 @@ import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } fro
 import {
     ElasticsearchMappingTemplate,
     print, str, ref, obj, set, iff, list, raw,
-    forEach, compoundExpression, CompoundExpressionNode, qref, toJson, ifElse,
+    forEach, compoundExpression, qref, toJson, ifElse,
     int, Expression,
 } from 'graphql-mapping-template'
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
