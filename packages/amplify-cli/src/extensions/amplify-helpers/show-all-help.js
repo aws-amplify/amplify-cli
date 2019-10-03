@@ -67,6 +67,10 @@ function showAllHelp(context) {
       name: 'env',
       description: 'Displays and manages environment related information for your Amplify project.',
     },
+    {
+      name: 'console',
+      description: 'Opens the web console for selected cloud resource.',
+    },
   ];
 
   showHelp(header, commands);
