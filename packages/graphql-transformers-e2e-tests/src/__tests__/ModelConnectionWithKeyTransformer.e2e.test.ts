@@ -401,8 +401,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
     expect(items[0].teams.items[1].project.projectId).toEqual('P1')
 })
 
-//TODO: Skip this test until further investigation about numeric Id fields
-test.skip('Unnamed connection with sortField parameter only #2100', async () => {
+test('Unnamed connection with sortField parameter only #2100', async () => {
     await GRAPHQL_CLIENT.query(`
     mutation M11 {
         createModel1(input: {id: "M11", sort: 10, name: "M1-1"}) {

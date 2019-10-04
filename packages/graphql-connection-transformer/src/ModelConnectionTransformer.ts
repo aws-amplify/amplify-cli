@@ -19,12 +19,10 @@ import {
     getBaseType, isListType, getDirectiveArgument, blankObject,
     isScalar, isScalarOrEnum, STANDARD_SCALARS,
     toCamelCase, isNonNullType, attributeTypeFromScalar,
-    makeScalarKeyConditionInputs, makeScalarKeyConditionForType,
-    makeNamedType,
+    makeScalarKeyConditionForType, makeNamedType,
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
-import Resource from 'cloudform-types/types/resource';
 import { KeySchema, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
 const CONNECTION_STACK_NAME = 'ConnectionStack'
@@ -444,9 +442,31 @@ export class ModelConnectionTransformer extends Transformer {
                     );
                 }
 
+                const sortField = parent.fields.find(f => f.name.value === sortFieldName);
+
+                if (!sortField) {
+                    throw new InvalidDirectiveError(`sortField with name "${sortFieldName} cannot be found on tyoe: ${parent.name.value}`);
+                }
+
+                const relatedSortFieldType = getBaseType(relatedSortField.type);
+                const sortFieldType = getBaseType(sortField.type);
+
+                if (relatedSortFieldType !== sortFieldType) {
+                    throw new InvalidDirectiveError(`sortField "${relatedSortField.name.value}" on type "${relatedTypeName}" is not matching the ` +
+                                                    `type of field "${sortFieldName}" on type "${parentTypeName}"`);
+                }
+
+                let sortFieldIsStringLike = true;
+
+                // We cannot use $util.defaultIfNullOrBlank on non-string types
+                if (sortFieldType === STANDARD_SCALARS.Int || sortFieldType === STANDARD_SCALARS.Float || sortFieldType === STANDARD_SCALARS.Bolean) {
+                    sortFieldIsStringLike = false;
+                }
+
                 sortFieldInfo = {
                     primarySortFieldName: relatedSortField.name.value,
-                    sortFieldName
+                    sortFieldName,
+                    sortFieldIsStringLike
                 };
             }
 

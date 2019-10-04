@@ -106,17 +106,25 @@ export class ResourceFactory {
      * @param connectionAttribute The name of the underlying attribute containing the id.
      */
     public makeGetItemConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string,
-        idFieldName: string, sortFieldInfo?: {primarySortFieldName: string, sortFieldName: string}): Resolver {
+        idFieldName: string, sortFieldInfo?: {primarySortFieldName: string, sortFieldName: string, sortFieldIsStringLike: boolean}): Resolver {
             let keyObj : ObjectNode = obj({
                 [`${idFieldName}`]:
                     ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`)
                 })
 
             if (sortFieldInfo) {
-                keyObj.attributes.push([
-                    sortFieldInfo.primarySortFieldName,
-                    ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_VALUE}"))`)
-                ]);
+                if (sortFieldInfo.sortFieldIsStringLike) {
+                    keyObj.attributes.push([
+                        sortFieldInfo.primarySortFieldName,
+                        ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_VALUE}"))`)
+                    ]);
+                } else {
+                    keyObj.attributes.push([
+                        sortFieldInfo.primarySortFieldName,
+                        ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNull($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_VALUE}"))`)
+                    ]);
+                }
+
             }
 
             return new Resolver({
