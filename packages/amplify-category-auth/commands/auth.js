@@ -30,6 +30,10 @@ module.exports = {
         name: 'update',
         description: `Updates the ${featureName} resource from your local backend.`,
       },
+      {
+        name: 'console',
+        description: `Opens the web console for the  ${featureName} category`,
+      },
     ];
 
     context.amplify.showHelp(header, commands);
