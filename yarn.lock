@@ -2703,11 +2703,6 @@
   dependencies:
     moment ">=2.14.0"
 
-"@types/mosca@^2.8.1":
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/@types/mosca/-/mosca-2.8.1.tgz#b24c7e082d2799d84e710c5f813a0d83dd70a4c9"
-  integrity sha512-nAdE2/ixg25clVx+3u3ZlpJFg2VyR/+8Zcy+REOrbobfhOFxeeH5kflyPP1UAgboYymCfv5SY/T4Cx6qge3Csw==
-
 "@types/mysql@^2.15.5":
   version "2.15.7"
   resolved "https://registry.yarnpkg.com/@types/mysql/-/mysql-2.15.7.tgz#7b803d0d8f418ee7edbdaceb1e7a43b322b346dc"

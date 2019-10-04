@@ -26,14 +26,14 @@ export class Client {
   }
 
   private setup() {
-    const client = this.connection;
+    const connection = this.connection;
 
-    client.on('error', () => {});
+    connection.on('error', () => {});
 
     const completeConnection = () => {
-      this.setUpTimer();
+      this.setupTimer();
 
-      client.connack({
+      connection.connack({
         returnCode: 0,
         // maybe session_present is null, custom old persistence engine
         // or not persistence defined
@@ -43,32 +43,32 @@ export class Client {
       this.logger.info('client connected');
       this.server.emit('clientConnected', this);
 
-      client.on('puback', packet => {
-        this.setUpTimer();
+      connection.on('puback', packet => {
+        this.setupTimer();
         this.handlePubAck(packet);
       });
 
-      client.on('pingreq', () => {
+      connection.on('pingreq', () => {
         this.logger.debug('pingreq');
-        this.setUpTimer();
+        this.setupTimer();
         this.handlePingReq();
         this.connection.pingresp();
       });
 
-      client.on('subscribe', packet => {
-        this.setUpTimer();
+      connection.on('subscribe', packet => {
+        this.setupTimer();
         this.handleSubscribe(packet);
       });
 
-      client.on('publish', packet => {
-        this.setUpTimer();
+      connection.on('publish', packet => {
+        this.setupTimer();
 
         this.handlePublish(packet);
       });
 
-      client.on('unsubscribe', packet => {
-        this.setUpTimer();
-        this.logger.info({ packet: packet }, 'unsubscribe received');
+      connection.on('unsubscribe', packet => {
+        this.setupTimer();
+        this.logger.info({ packet }, 'unsubscribe received');
         steed().map(this, packet.unsubscriptions, this.unsubscribeMapTo, err => {
           if (err) {
             this.logger.warn(err);
@@ -76,26 +76,26 @@ export class Client {
             return;
           }
 
-          client.unsuback({
+          connection.unsuback({
             messageId: packet.messageId,
           });
         });
       });
 
-      client.on('disconnect', () => {
+      connection.on('disconnect', () => {
         this.logger.debug('disconnect requested');
         this.close(null, 'disconnect request');
       });
 
-      client.on('error', this.handleError.bind(this));
-      client.removeListener('error', () => {});
+      connection.on('error', this.handleError.bind(this));
+      connection.removeListener('error', () => {});
 
-      client.on('close', () => {
+      connection.on('close', () => {
         this.onNonDisconnectClose('close');
       });
     };
 
-    client.once('connect', packet => {
+    connection.once('connect', packet => {
       this.handleConnect(packet, completeConnection);
     });
   }
@@ -105,13 +105,12 @@ export class Client {
     this.onNonDisconnectClose(err.message);
   }
 
-  private setUpTimer() {
+  private setupTimer() {
     if (this.keepAlive <= 0) {
       return;
     }
 
     const timeout = (this.keepAlive * 1000 * 3) / 2;
-    const that = this;
 
     this.logger.debug({ timeout: timeout }, 'setting keepAlive timeout');
 
@@ -119,8 +118,8 @@ export class Client {
       this.timer.reschedule(timeout);
     } else {
       this.timer = retimer(() => {
-        that.logger.info('keepAlive timeout');
-        that.onNonDisconnectClose('keepAlive timeout');
+        this.logger.info('keepAlive timeout');
+        this.onNonDisconnectClose('keepAlive timeout');
       }, timeout);
     }
   }
@@ -136,7 +135,7 @@ export class Client {
     }
   }
 
-  private forward(topic, payload, options, subTopic, qos, cb = () => {}) {
+  private forward(topic, payload, options, subTopic, qos, cb?: Function) {
     if (options._dedupId <= this._lastDedupId) {
       return;
     }
@@ -286,7 +285,7 @@ export class Client {
           return;
         }
         this.logger.info({ topic: s.topic, qos: s.qos }, 'subscribed to topic');
-        //that.subscriptions[s.topic] = { qos: s.qos, handler: handler };
+        this.subscriptions[s.topic] = { qos: s.qos, handler: handler };
         cb(null, true);
       });
     } else {

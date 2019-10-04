@@ -124,7 +124,7 @@ export class MQTTServer extends EventEmitter {
     this.on('clientConnected', client => {
       if (this.options.publishNewClient) {
         this.publish({
-          topic: '$SYS/' + this.id + '/new/clients',
+          topic: `$SYS/${this.id}/new/clients`,
           payload: client.id,
         });
       }
@@ -150,7 +150,7 @@ export class MQTTServer extends EventEmitter {
     if (this.options.publishSubscriptions) {
       this.on('subscribed', (topic, client) => {
         this.publish({
-          topic: '$SYS/' + this.id + '/new/subscribes',
+          topic: `$SYS/${this.id}/new/subscribes`,
           payload: JSON.stringify({
             clientId: client.id,
             topic: topic,
@@ -205,7 +205,7 @@ export class MQTTServer extends EventEmitter {
     const newPacket = {
       topic: packet.topic,
       payload: packet.payload,
-      messageId: this.generateUniqueId(),
+      messageId: nanoid(7),
       qos: packet.qos,
       retain: packet.retain,
     };
@@ -251,7 +251,9 @@ export class MQTTServer extends EventEmitter {
     steed.each(
       stuffToClose,
       (toClose, cb) => {
-        toClose.close(cb, 'server closed');
+        try {
+          toClose.close(cb, 'server closed');
+        } catch (e) {}
       },
       () => {
         this.listener.close(() => {
@@ -263,9 +265,6 @@ export class MQTTServer extends EventEmitter {
     );
   }
 
-  generateUniqueId() {
-    return nanoid(7);
-  }
   updateOfflinePacket(client, originMessageId, packet, callback) {
     if (callback) {
       callback(null, packet);
