@@ -32,14 +32,19 @@ export class AppSyncPipelineResolver {
     let result = {};
     let stash = {};
     let templateErrors;
+    let isReturn;
 
     // Pipeline request mapping template
-    ({ result, stash, errors: templateErrors } = requestMappingTemplate.render(
+    ({ result, stash, errors: templateErrors, isReturn } = requestMappingTemplate.render(
       { source, arguments: args, stash },
       context,
       info
     ));
     context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
+
+    if (isReturn) { //Request mapping template called #return, don't process further
+      return result;
+    }
 
     // Pipeline functions
     await this.config.functions
