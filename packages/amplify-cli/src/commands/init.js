@@ -9,16 +9,16 @@ const { normalizeInputParams } = require('../lib/input-params-manager');
 
 module.exports = {
   name: 'init',
-  run: async (context) => {
+  run: async context => {
     constructExeInfo(context);
-    await preInitSetup.run(context)
+    await preInitSetup
+      .run(context)
       .then(analyzeProject.run)
       .then(initFrontendHandler.run)
       .then(initProviders.run)
       .then(onSuccess.run)
       .catch(onFailure.run);
-    await postInitSetup.run(context)
-      .catch(onFailure.run);
+    await postInitSetup.run(context).catch(onFailure.run);
   },
 };
 

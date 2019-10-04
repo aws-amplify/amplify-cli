@@ -20,7 +20,8 @@ function run(context) {
   context.print.info(chalk.green(constants.AWSAmazonConsoleUrl));
   open(constants.AWSAmazonConsoleUrl, { wait: false }).catch(() => {});
 
-  return context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' })
+  return context.amplify.pressEnterToContinue
+    .run({ message: 'Press Enter to continue' })
     .then(() => {
       context.print.info('Specify the AWS Region');
       return inquirer.prompt([
@@ -30,8 +31,10 @@ function run(context) {
           message: 'region: ',
           choices: awsRegions,
           default: awsConfig.region,
-        }]);
-    }).then((answers) => {
+        },
+      ]);
+    })
+    .then(answers => {
       awsConfig.region = answers.region;
       context.print.info('Specify the username of the new IAM user:');
       return inquirer.prompt([
@@ -40,8 +43,10 @@ function run(context) {
           name: 'userName',
           message: 'user name: ',
           default: `amplify-${context.amplify.makeId()}`,
-        }]);
-    }).then((answers) => {
+        },
+      ]);
+    })
+    .then(answers => {
       const deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', answers.userName).replace('{region}', answers.region);
       context.print.info('Complete the user creation using the AWS console');
       context.print.info(chalk.green(deepLinkURL));
@@ -67,7 +72,7 @@ function run(context) {
         },
       ]);
     })
-    .then((answers) => {
+    .then(answers => {
       if (answers.accessKeyId) {
         awsConfig.accessKeyId = answers.accessKeyId.trim();
       }
@@ -76,10 +81,10 @@ function run(context) {
       }
       return awsConfig;
     })
-    .then(async (awsConfig) => {
+    .then(async awsConfig => {
       if (validateAWSConfig(awsConfig)) {
         let profileName = 'default';
-        context.print.warning(('This would update/create the AWS Profile in your local machine'));
+        context.print.warning('This would update/create the AWS Profile in your local machine');
         const answer = await inquirer.prompt([
           {
             type: 'input',
@@ -103,10 +108,8 @@ function run(context) {
 }
 
 function validateAWSConfig(awsConfig) {
-  return awsConfig.accessKeyId !== constants.DefaultAWSAccessKeyId &&
-    awsConfig.secretAccessKey !== constants.DefaultAWSSecretAccessKey;
+  return awsConfig.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfig.secretAccessKey !== constants.DefaultAWSSecretAccessKey;
 }
-
 
 module.exports = {
   run,

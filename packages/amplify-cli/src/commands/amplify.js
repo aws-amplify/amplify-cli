@@ -3,7 +3,7 @@ const { showAllHelp } = require('../extensions/amplify-helpers/show-all-help');
 
 module.exports = {
   name: cliConstants.CliName,
-  run: async (context) => {
+  run: async context => {
     showAllHelp(context);
   },
 };

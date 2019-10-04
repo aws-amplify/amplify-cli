@@ -1,23 +1,14 @@
 const uuid = require('uuid');
-const {
-  booleanOptions,
-  oAuthScopes,
-} = require('./string-maps');
+const { booleanOptions, oAuthScopes } = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
 const roles = {
   authRoleArn: {
-    'Fn::GetAtt': [
-      'AuthRole',
-      'Arn',
-    ],
+    'Fn::GetAtt': ['AuthRole', 'Arn'],
   },
   unauthRoleArn: {
-    'Fn::GetAtt': [
-      'UnauthRole',
-      'Arn',
-    ],
+    'Fn::GetAtt': ['UnauthRole', 'Arn'],
   },
 };
 
@@ -28,9 +19,9 @@ const generalDefaults = projectName => ({
   ...roles,
 });
 
-const userPoolDefaults = (projectName) => {
+const userPoolDefaults = projectName => {
   const projectNameTruncated = `${projectName.substring(0, 6)}${sharedId}`;
-  return ({
+  return {
     resourceNameTruncated: `${projectName.substring(0, 6)}${sharedId}`,
     userPoolName: `${projectName}_userpool_${sharedId}`,
     autoVerifiedAttributes: ['email'],
@@ -42,8 +33,7 @@ const userPoolDefaults = (projectName) => {
     emailVerificationMessage: 'Your verification code is {####}',
     defaultPasswordPolicy: booleanOptions.find(b => b.value === false).value,
     passwordPolicyMinLength: 8,
-    passwordPolicyCharacters: [
-    ],
+    passwordPolicyCharacters: [],
     requiredAttributes: ['email'],
     userpoolClientGenerateSecret: true,
     userpoolClientRefreshTokenValidity: 30,
@@ -51,7 +41,7 @@ const userPoolDefaults = (projectName) => {
     userpoolClientReadAttributes: ['email'],
     userpoolClientLambdaRole: `${projectNameTruncated}_userpoolclient_lambda_role`,
     userpoolClientSetAttributes: false,
-  });
+  };
 };
 
 const withSocialDefaults = projectName => ({
@@ -61,11 +51,12 @@ const withSocialDefaults = projectName => ({
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
 
-const identityPoolDefaults = (projectName) => {// eslint-disable-line
-  return ({
+const identityPoolDefaults = projectName => {
+  // eslint-disable-line
+  return {
     identityPoolName: `${projectName}_identitypool_${sharedId}`,
     allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
-  });
+  };
 };
 
 const identityAndUserPoolDefaults = projectName => ({
@@ -85,16 +76,14 @@ const entityKeys = {
   userPoolKeys: Object.keys(userPoolDefaults('')),
 };
 
-const getAllDefaults = (name) => {
+const getAllDefaults = name => {
   const disallowedChars = /[^A-Za-z0-9_]+/g;
-  let projectName = name.projectConfig ? `${name.projectConfig.projectName.toLowerCase().substring(0, 100)}${sharedId}` : name.substring(0, 100);
+  let projectName = name.projectConfig
+    ? `${name.projectConfig.projectName.toLowerCase().substring(0, 100)}${sharedId}`
+    : name.substring(0, 100);
   projectName = projectName.replace(disallowedChars, '_');
   const target = generalDefaults(projectName);
-  const sources = [
-    userPoolDefaults(projectName),
-    identityAndUserPoolDefaults(projectName),
-    withSocialDefaults(projectName),
-  ];
+  const sources = [userPoolDefaults(projectName), identityAndUserPoolDefaults(projectName), withSocialDefaults(projectName)];
 
   return Object.assign(target, ...sources);
 };

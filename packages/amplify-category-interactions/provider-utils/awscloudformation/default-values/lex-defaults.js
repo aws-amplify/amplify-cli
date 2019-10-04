@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-const getAllDefaults = (project) => {
+const getAllDefaults = project => {
   const name = project.projectConfig.projectName.toLowerCase().replace('-', '_');
   const [shortId] = uuid().split('-');
   const botName = `${name}_bot`;
@@ -13,10 +13,7 @@ const getAllDefaults = (project) => {
   };
 
   const authRoleArn = {
-    'Fn::GetAtt': [
-      'AuthRole',
-      'Arn',
-    ],
+    'Fn::GetAtt': ['AuthRole', 'Arn'],
   };
 
   const defaults = {

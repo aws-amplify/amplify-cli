@@ -54,7 +54,7 @@ describe('auth update: ', () => {
   });
 
   describe('case: resources may rely on auth', () => {
-    dependencies.forEach((d) => {
+    dependencies.forEach(d => {
       beforeEach(() => {
         const amplifyMeta = { auth: { foo: { bar: 'bar', Cognito: { provider: 'provider' } } } };
         amplifyMeta[d] = {};

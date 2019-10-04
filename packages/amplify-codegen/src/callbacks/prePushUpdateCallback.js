@@ -6,9 +6,7 @@ const askShouldUpdateDocs = require('../walkthrough/questions/updateDocs');
 
 async function prePushUpdateCallback(context, resourceName) {
   const config = loadConfig(context);
-  const project = config
-    .getProjects()
-    .find(projectItem => projectItem.projectName === resourceName);
+  const project = config.getProjects().find(projectItem => projectItem.projectName === resourceName);
   if (project) {
     let shouldGenerateCode = false;
     let shouldGenerateDocs = false;

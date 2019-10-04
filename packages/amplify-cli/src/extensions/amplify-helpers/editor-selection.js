@@ -32,8 +32,7 @@ const editors = [
 ];
 
 async function editorSelection(defaultEditor) {
-  defaultEditor = editors.findIndex(editor => editor.value === defaultEditor) > -1 ?
-    defaultEditor : undefined;
+  defaultEditor = editors.findIndex(editor => editor.value === defaultEditor) > -1 ? defaultEditor : undefined;
 
   const editorQuestion = {
     type: 'list',
@@ -60,8 +59,7 @@ function normalizeEditor(editor) {
       editor = 'vscode';
     }
 
-    editor = editors.findIndex(editorEntry => editorEntry.value === editor) > -1 ?
-      editor : undefined;
+    editor = editors.findIndex(editorEntry => editorEntry.value === editor) > -1 ? editor : undefined;
   }
 
   return editor;

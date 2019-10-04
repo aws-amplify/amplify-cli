@@ -8,7 +8,7 @@ let options;
 module.exports = {
   name: subcommand,
   alias: ['add'],
-  run: async (context) => {
+  run: async context => {
     const { amplify } = context;
     const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
 
@@ -18,8 +18,9 @@ module.exports = {
       return context.print.warning(messages.authExists);
     }
 
-    return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
-      .then((result) => {
+    return amplify
+      .serviceSelectionPrompt(context, category, servicesMetadata)
+      .then(result => {
         options = {
           service: result.service,
           providerPlugin: result.providerName,
@@ -31,13 +32,8 @@ module.exports = {
         }
         return providerController.addResource(context, category, result.service);
       })
-      .then((resourceName) => {
-        const resourceDirPath = path.join(
-          amplify.pathManager.getBackendDirPath(),
-          '/auth/',
-          resourceName,
-          'parameters.json',
-        );
+      .then(resourceName => {
+        const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', resourceName, 'parameters.json');
         const authParameters = amplify.readJsonFile(resourceDirPath);
 
         if (authParameters.dependsOn) {
@@ -49,10 +45,12 @@ module.exports = {
         print.info('');
         print.success('Some next steps:');
         print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
-        print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
+        print.info(
+          '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+        );
         print.info('');
       })
-      .catch((err) => {
+      .catch(err => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the auth resource');
       });

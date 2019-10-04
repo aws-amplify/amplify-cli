@@ -11,6 +11,7 @@ packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 .vscode
 packages/graphql*/lib
+packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
 packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib

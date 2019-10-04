@@ -13,23 +13,20 @@ function run(context) {
     choices: providerPluginNames,
   };
 
-  const selectProviders = providerPluginNames.length === 1 ?
-    Promise.resolve({ selectedProviders: providerPluginNames }) :
-    inquirer.prompt(providerSelection);
+  const selectProviders =
+    providerPluginNames.length === 1 ? Promise.resolve({ selectedProviders: providerPluginNames }) : inquirer.prompt(providerSelection);
 
-  return selectProviders
-    .then((answers) => {
-      const configTasks = [];
+  return selectProviders.then(answers => {
+    const configTasks = [];
 
-      answers.selectedProviders.forEach((providerKey) => {
-        const provider = require(providerPlugins[providerKey]);
-        configTasks.push(() => provider.configureNewUser(context));
-      });
-      return sequential(configTasks)
-        .catch((err) => {
-          throw err;
-        });
+    answers.selectedProviders.forEach(providerKey => {
+      const provider = require(providerPlugins[providerKey]);
+      configTasks.push(() => provider.configureNewUser(context));
     });
+    return sequential(configTasks).catch(err => {
+      throw err;
+    });
+  });
 }
 
 module.exports = {

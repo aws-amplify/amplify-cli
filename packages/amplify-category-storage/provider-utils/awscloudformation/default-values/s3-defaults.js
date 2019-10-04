@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-const getAllDefaults = (project) => {
+const getAllDefaults = project => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
 
@@ -17,7 +17,6 @@ const getAllDefaults = (project) => {
     bucketName: `${name}${uuid().replace(/-/g, '')}`,
     authPolicyName: `s3_amplify_${shortId}`,
     unauthPolicyName: `s3_amplify_${shortId}`,
-
 
     authRoleName,
     unauthRoleName,

@@ -13,11 +13,7 @@ const KeyTransformer = require('graphql-key-transformer').default;
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 
-const {
-  collectDirectivesByTypeNames,
-  readTransformerConfiguration,
-  writeTransformerConfiguration,
-} = TransformPackage;
+const { collectDirectivesByTypeNames, readTransformerConfiguration, writeTransformerConfiguration } = TransformPackage;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
@@ -25,9 +21,9 @@ const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 
 function warnOnAuth(context, map) {
-  const unAuthModelTypes = Object.keys(map).filter(type => (!map[type].includes('auth') && map[type].includes('model')));
+  const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
-    context.print.warning('\nThe following types do not have \'@auth\' enabled. Consider using @auth with @model');
+    context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
     context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth \n');
   }
@@ -36,12 +32,10 @@ function warnOnAuth(context, map) {
 /**
  * @TODO Include a map of versions to keep track
  */
-async function transformerVersionCheck(
-  context, resourceDir, cloudBackendDirectory,
-  updatedResources, usedDirectives,
-) {
-  const versionChangeMessage = 'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
-  const checkVersionExist = config => (config && config.Version);
+async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
+  const versionChangeMessage =
+    'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+  const checkVersionExist = config => config && config.Version;
 
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
@@ -59,8 +53,7 @@ async function transformerVersionCheck(
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
 
   if (showPrompt && usedDirectives.includes('auth') && resources.length > 0) {
-    if (context.exeInfo &&
-      context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
+    if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       context.print.warning(`\n${versionChangeMessage}\n`);
     } else {
       const response = await inquirer.prompt({
@@ -150,11 +143,7 @@ async function transformGraphQLSchema(context, options) {
   const { forceCompile } = options;
 
   // Compilation during the push step
-  const {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    allResources,
-  } = await context.amplify.getResourceStatus(category);
+  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   if (forceCompile) {
     resources = resources.concat(allResources);
@@ -203,10 +192,7 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const isCLIMigration = options.migrate;
-  const isOldApiVersion = apiProjectIsFromOldVersion(
-    previouslyDeployedBackendDir,
-    resourcesToBeCreated,
-  );
+  const isOldApiVersion = apiProjectIsFromOldVersion(previouslyDeployedBackendDir, resourcesToBeCreated);
   const migrateOptions = {
     ...options,
     resourceDir,
@@ -222,17 +208,18 @@ async function transformGraphQLSchema(context, options) {
     if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       IsOldApiProject = context.exeInfo.inputParams.yes;
     } else {
-      const migrateMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
-      '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
-      'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
-      '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n' +
-      '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
-      '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
-      `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
-      '\n1. Make sure to have an internet connection through the migration process\n' +
-      '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
-      '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n' +
-      '\nDo you want to continue?\n';
+      const migrateMessage =
+        `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
+        '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
+        'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
+        '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n' +
+        '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
+        '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
+        `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
+        '\n1. Make sure to have an internet connection through the migration process\n' +
+        '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
+        '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n' +
+        '\nDo you want to continue?\n';
       ({ IsOldApiProject } = await inquirer.prompt({
         name: 'IsOldApiProject',
         type: 'confirm',
@@ -278,20 +265,11 @@ async function transformGraphQLSchema(context, options) {
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  warnOnAuth(
-    context,
-    directiveMap.types,
-  );
+  warnOnAuth(context, directiveMap.types);
 
-  await transformerVersionCheck(
-    context,
-    resourceDir,
-    previouslyDeployedBackendDir,
-    resourcesToBeUpdated,
-    directiveMap.directives,
-  );
+  await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = (addSearchableTransformer) => {
+  const transformerListFactory = addSearchableTransformer => {
     const transformerList = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),

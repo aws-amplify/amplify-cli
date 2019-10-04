@@ -441,6 +441,7 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - integration_test_js
             - mock_e2e_tests
       - mock_e2e_tests:
           requires:
@@ -454,6 +455,7 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - integration_test_js
             - mock_e2e_tests
       - amplify_e2e_tests:
           filters:
@@ -463,6 +465,7 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - integration_test_js
             - mock_e2e_tests
       - deploy:
           requires:

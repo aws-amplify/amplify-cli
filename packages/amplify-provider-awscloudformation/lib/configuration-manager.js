@@ -26,16 +26,17 @@ async function init(context) {
   printInfo(context);
   context.exeInfo.awsConfigInfo.action = 'init';
 
-  return (await carryOutConfigAction(context));
+  return await carryOutConfigAction(context);
 }
 
 async function configure(context) {
+  context.exeInfo = context.exeInfo || context.amplify.getProjectDetails();
   normalizeInputParams(context);
   context.exeInfo.awsConfigInfo = getCurrentConfig(context);
   await newUserCheck(context);
   printInfo(context);
   await setProjectConfigAction(context);
-  return (await carryOutConfigAction(context));
+  return await carryOutConfigAction(context);
 }
 
 function doesAwsConfigExists(context) {
@@ -93,9 +94,11 @@ function normalizeInputParams(context) {
           if (!normalizedInputParams.config.profileName) {
             errorMessage = 'project level config set useProfile to true, but profile name is missing.';
           }
-        } else if (!normalizedInputParams.config.accessKeyId ||
-            !normalizedInputParams.config.secretAccessKey ||
-            !normalizedInputParams.config.region) {
+        } else if (
+          !normalizedInputParams.config.accessKeyId ||
+          !normalizedInputParams.config.secretAccessKey ||
+          !normalizedInputParams.config.region
+        ) {
           errorMessage = 'project level config set useProfile to false, but access key or region is missing.';
         }
       }
@@ -105,9 +108,10 @@ function normalizeInputParams(context) {
       }
     }
     context.exeInfo.inputParams[constants.Label] = normalizedInputParams;
+  } else {
+    context.exeInfo.inputParams = {};
   }
 }
-
 
 async function carryOutConfigAction(context) {
   let result;
@@ -136,8 +140,7 @@ async function initialize(context) {
   if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
     const inputParams = context.exeInfo.inputParams[constants.Label];
     Object.assign(awsConfigInfo, inputParams);
-  } else if (awsConfigInfo.configLevel === 'project' &&
-          (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes)) {
+  } else if (awsConfigInfo.configLevel === 'project' && (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes)) {
     await promptForProjectConfigConfirmation(context);
   }
 
@@ -201,8 +204,7 @@ async function remove(context) {
 }
 
 function printInfo(context) {
-  const url =
-  'https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html';
+  const url = 'https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html';
   context.print.info('');
   context.print.info('For more information on AWS Profiles, see:');
   context.print.info(chalk.green(url));
@@ -304,16 +306,17 @@ async function promptForProjectConfigConfirmation(context) {
       type: 'input',
       name: 'accessKeyId',
       message: 'accessKeyId: ',
-      default: awsConfigInfo.config.accessKeyId ?
-        obfuscateUtil.obfuscate(awsConfigInfo.config.accessKeyId) : constants.DefaultAWSAccessKeyId,
+      default: awsConfigInfo.config.accessKeyId
+        ? obfuscateUtil.obfuscate(awsConfigInfo.config.accessKeyId)
+        : constants.DefaultAWSAccessKeyId,
       transformer: obfuscateUtil.transform,
     },
     {
       type: 'input',
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
-      default: awsConfigInfo.config.secretAccessKey ?
-        obfuscateUtil.obfuscate(awsConfigInfo.config.secretAccessKey)
+      default: awsConfigInfo.config.secretAccessKey
+        ? obfuscateUtil.obfuscate(awsConfigInfo.config.secretAccessKey)
         : constants.DefaultAWSSecretAccessKey,
       transformer: obfuscateUtil.transform,
     },
@@ -322,8 +325,7 @@ async function promptForProjectConfigConfirmation(context) {
       name: 'region',
       message: 'region: ',
       choices: awsRegions.regions,
-      default: awsConfigInfo.config.region ?
-        awsConfigInfo.config.region : constants.DefaultAWSRegion,
+      default: awsConfigInfo.config.region ? awsConfigInfo.config.region : constants.DefaultAWSRegion,
     },
   ];
 
@@ -364,11 +366,13 @@ function validateConfig(context) {
         awsConfigInfo.configValidated = true;
       }
     } else {
-      awsConfigInfo.configValidated = awsConfigInfo.config.accessKeyId &&
+      awsConfigInfo.configValidated =
+        awsConfigInfo.config.accessKeyId &&
         awsConfigInfo.config.accessKeyId !== constants.DefaultAWSAccessKeyId &&
         awsConfigInfo.config.secretAccessKey &&
         awsConfigInfo.config.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
-        awsConfigInfo.config.region && awsRegions.regions.includes(awsConfigInfo.config.region);
+        awsConfigInfo.config.region &&
+        awsRegions.regions.includes(awsConfigInfo.config.region);
     }
   }
   return context;
@@ -395,8 +399,7 @@ function persistLocalEnvConfig(context) {
         secretAccessKey: awsConfigInfo.config.secretAccessKey,
         region: awsConfigInfo.config.region,
       };
-      const sharedConfigDirPath =
-        path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
+      const sharedConfigDirPath = path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
       fs.ensureDirSync(sharedConfigDirPath);
       const awsSecretsFileName = context.amplify.makeId(10);
       const awsSecretsFilePath = path.join(sharedConfigDirPath, awsSecretsFileName);
@@ -475,8 +478,7 @@ function removeProjectConfig(context) {
     const { envName } = context.amplify.getEnvInfo();
     const configInfo = context.amplify.readJsonFile(configInfoFilePath, 'utf8');
     if (configInfo[envName]) {
-      if (configInfo[envName].awsConfigFilePath &&
-        fs.existsSync(configInfo[envName].awsConfigFilePath)) {
+      if (configInfo[envName].awsConfigFilePath && fs.existsSync(configInfo[envName].awsConfigFilePath)) {
         fs.removeSync(configInfo[envName].awsConfigFilePath);
       }
       configInfo[envName] = {
@@ -550,8 +552,8 @@ async function newUserCheck(context) {
     let needToSetupNewUser = true;
     if (context.exeInfo.inputParams[constants.Label]) {
       const inputParams = context.exeInfo.inputParams[constants.Label];
-      const inputConfigSufficient = (inputParams.configLevel === 'general') ||
-        (inputParams.configLevel === 'project' && !inputParams.config.useProfile);
+      const inputConfigSufficient =
+        inputParams.configLevel === 'general' || (inputParams.configLevel === 'project' && !inputParams.config.useProfile);
       if (inputConfigSufficient) {
         needToSetupNewUser = false;
       }
@@ -561,12 +563,14 @@ async function newUserCheck(context) {
         throw new Error('AWS access credentials can not be found.');
       } else {
         context.print.info('AWS access credentials can not be found.');
-        const answer = await inquirer.prompt([{
-          type: 'confirm',
-          name: 'setupNewUser',
-          message: 'Setup new user',
-          default: true,
-        }]);
+        const answer = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'setupNewUser',
+            message: 'Setup new user',
+            default: true,
+          },
+        ]);
         if (answer.setupNewUser) {
           context.newUserInfo = await setupNewUser.run(context);
         }
@@ -585,13 +589,10 @@ function scanConfig(context) {
     if (namedProfiles && namedProfiles.default) {
       configSource = 'system';
     }
-    if (process.env.AWS_ACCESS_KEY_ID &&
-        process.env.AWS_SECRET_ACCESS_KEY &&
-        (process.env.AWS_REGION || process.env.AMAZON_REGION)) {
+    if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && (process.env.AWS_REGION || process.env.AMAZON_REGION)) {
       configSource = 'envVar';
     }
-    if ((process.env.AWS_PROFILE && namedProfiles &&
-          namedProfiles[process.env.AWS_PROFILE.trim()])) {
+    if (process.env.AWS_PROFILE && namedProfiles && namedProfiles[process.env.AWS_PROFILE.trim()]) {
       configSource = 'envVar-profile';
     }
   }
@@ -612,11 +613,9 @@ function getConfigLevel(context) {
         // configLevel is 'general' only when it's explicitly set so
         if (envConfigInfo.configLevel === 'general') {
           configLevel = 'general';
-        } else if (envConfigInfo.useProfile && envConfigInfo.profileName &&
-                namedProfiles && namedProfiles[envConfigInfo.profileName]) {
+        } else if (envConfigInfo.useProfile && envConfigInfo.profileName && namedProfiles && namedProfiles[envConfigInfo.profileName]) {
           configLevel = 'project';
-        } else if (envConfigInfo.awsConfigFilePath &&
-          fs.existsSync(envConfigInfo.awsConfigFilePath)) {
+        } else if (envConfigInfo.awsConfigFilePath && fs.existsSync(envConfigInfo.awsConfigFilePath)) {
           configLevel = 'project';
         }
       }

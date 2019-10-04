@@ -13,7 +13,8 @@ function showAllHelp(context) {
     },
     {
       name: 'configure',
-      description: 'Configures the attributes of your project for amplify-cli, such as switching front-end framework and adding/removing cloud-provider plugins.',
+      description:
+        'Configures the attributes of your project for amplify-cli, such as switching front-end framework and adding/removing cloud-provider plugins.',
     },
     {
       name: 'push',

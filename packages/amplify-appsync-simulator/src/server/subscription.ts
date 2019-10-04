@@ -7,7 +7,7 @@ import * as portfinder from 'portfinder';
 
 import { Server as CoreHTTPServer } from 'net';
 import { AddressInfo } from 'dgram';
-import { Server as MQTTServer } from '@conduitvc/mosca';
+import { Server as MQTTServer } from '../mqtt-server';
 import { readFileSync } from 'fs-extra';
 import { join } from 'path';
 import { address as getLocalIpAddress } from 'ip';
@@ -40,8 +40,6 @@ export class SubscriptionServer {
     this.webSocketServer = createHTTPServer();
 
     this.mqttServer = new MQTTServer({
-      backend: { type: 'memory' },
-      interfaces: [],
       logger: {
         level: process.env.DEBUG ? 'debug' : 'error',
       },

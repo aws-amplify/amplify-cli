@@ -27,7 +27,7 @@ describe('auth remove: ', () => {
   });
 
   describe('case: resources may rely on auth', () => {
-    dependencies.forEach((d) => {
+    dependencies.forEach(d => {
       beforeEach(() => {
         const amplifyMeta = {};
         amplifyMeta[d] = {};
@@ -70,4 +70,3 @@ describe('auth remove: ', () => {
     });
   });
 });
-

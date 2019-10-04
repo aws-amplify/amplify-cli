@@ -1,19 +1,19 @@
 {
-    "extends": "airbnb-base",
-    "rules": {
-    	"no-param-reassign": "off",
-    	"no-return-await" : "off",
-    	"no-continue": "off",
-    	"no-await-in-loop": "off",
-    	"no-use-before-define": "off",
-    	"no-console": "off",
-		"no-plusplus": "off",
-		"no-prototype-builtins": "off",
-    	"global-require": "off",
-    	"import/no-dynamic-require": "off",
-    	"consistent-return": "off"
-	},
-	"env": {
-		"jest": true
-	}
+  "extends": ["airbnb-base", "plugin:prettier/recommended"],
+  "rules": {
+    "no-param-reassign": "off",
+    "no-return-await": "off",
+    "no-continue": "off",
+    "no-await-in-loop": "off",
+    "no-use-before-define": "off",
+    "no-console": "off",
+    "no-plusplus": "off",
+    "no-prototype-builtins": "off",
+    "global-require": "off",
+    "import/no-dynamic-require": "off",
+    "consistent-return": "off"
+  },
+  "env": {
+    "jest": true
+  }
 }

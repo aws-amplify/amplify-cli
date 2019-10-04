@@ -7,20 +7,14 @@ function getResourceDirPath(context, category, resource) {
   return path.join(backendDirPath, category, resource);
 }
 
-function saveResourceParameters(
-  context,
-  category,
-  resource,
-  parameters,
-  envSpecificParamsName = [],
-) {
+function saveResourceParameters(context, category, resource, parameters, envSpecificParamsName = []) {
   const resourceDirPath = getResourceDirPath(context, category, resource);
   const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
   const envSpecificParams = {};
   const sharedParams = { ...parameters };
 
   // extracting env-specific params from parameters object
-  envSpecificParamsName.forEach((paramName) => {
+  envSpecificParamsName.forEach(paramName => {
     if (paramName in parameters) {
       envSpecificParams[paramName] = parameters[paramName];
       delete sharedParams[paramName];
