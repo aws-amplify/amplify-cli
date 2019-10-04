@@ -22,7 +22,7 @@ module.exports = {
       },
       {
         name: 'reset-cache',
-        description: `Resets the cached temporary aws access credentials for IAM roles.`,
+        description: `Resets the cached temporary aws access credentials for the project.`,
       },
       {
         name: 'setup-new-user',
