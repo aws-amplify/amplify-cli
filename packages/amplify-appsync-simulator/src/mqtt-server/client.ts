@@ -151,9 +151,9 @@ export class Client {
     this.nextId %= 65536;
 
     const packet = {
-      topic: topic,
-      payload: payload,
-      qos: qos,
+      topic,
+      payload,
+      qos,
       messageId: newId,
     };
 
@@ -278,7 +278,7 @@ export class Client {
 
     if (this.subscriptions[s.topic] === undefined) {
       this.subscriptions[s.topic] = { qos: s.qos, handler: handler };
-      this.server.listener.subscribe(s.topic, handler, (err) => {
+      this.server.listener.subscribe(s.topic, handler, err => {
         if (err) {
           delete this.subscriptions[s.topic];
           cb(err);
