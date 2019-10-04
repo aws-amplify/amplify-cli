@@ -1,7 +1,12 @@
 const path = require('path');
 
 function loadFunction(fileName) {
-  return require(path.resolve(fileName));
+  const functionPath = require.resolve(path.resolve(fileName));
+
+  // Prevent re-using previous instance of lambda from cache
+  delete require.cache[functionPath];
+
+  return require(functionPath);
 }
 /*
 var options = this.options({
