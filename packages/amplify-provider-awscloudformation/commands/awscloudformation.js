@@ -18,15 +18,15 @@ module.exports = {
     const commands = [
       {
         name: 'configure',
-        description: `configure`,
+        description: `Configures the aws access credentials for the project.`,
       },
       {
         name: 'resetCache',
-        description: `resetCache`,
+        description: `Resets the cached temporary aws access credentials for IAM roles.`,
       },
       {
         name: 'setup-new-user',
-        description: `setup-new-user`,
+        description: `Starts a step by step guidance to set up a new IAM user.`,
       },
       {
         name: 'console',
