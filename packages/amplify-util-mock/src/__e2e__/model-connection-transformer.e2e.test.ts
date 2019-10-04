@@ -19,7 +19,7 @@ beforeAll(async () => {
         title: String!
         createdAt: String
         updatedAt: String
-        comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+        comments: [Comment] @connection(name: "PostComments", keyField: "postId", limit: 50)
         sortedComments: [SortedComment] @connection(name: "SortedPostComments", keyField: "postId", sortField: "when")
     }
     type Comment @model {
@@ -472,4 +472,54 @@ test('Test create comment without a post and then querying the comment.', async 
     // fail
     expect(e).toBeUndefined();
   }
+});
+
+test('Test default limit is 50', async () => {
+  // create Auth logic around this
+  const postID = 'e2eConnectionPost'
+  const postTitle = 'samplePost'
+  const createPost = await GRAPHQL_CLIENT.query(
+    `mutation CreatePost {
+      createPost(input: {title: "${postTitle}", id: "${postID}"}) {
+        id
+        title
+      }
+    }
+    `, {});
+    expect(createPost.data.createPost).toBeDefined()
+    expect(createPost.data.createPost.id).toEqual(postID)
+    expect(createPost.data.createPost.title).toEqual(postTitle)
+
+    for (let i = 0; i < 52; i++) {
+      await GRAPHQL_CLIENT.query(`
+        mutation CreateComment {
+          createComment(input: {postId: "${postID}", content: "content_${i}"}) {
+            content
+            id
+            post {
+              title
+            }
+          }
+        }      
+      `, {})
+    }
+
+    const getPost = await GRAPHQL_CLIENT.query(`
+      query GetPost($id: ID!) {
+        getPost(id: $id) {
+          id
+          title
+          createdAt
+          updatedAt
+          comments {
+            items {
+              id
+              content
+            }
+            nextToken
+          }
+        }
+      }`, {id: postID})
+
+    expect(getPost.data.getPost.comments.items.length).toEqual(50)
 });
