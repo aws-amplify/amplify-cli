@@ -30,10 +30,6 @@ module.exports = {
         name: 'remove',
         description: `Removes ${featureName} resource from your local backend. The resource is removed from the cloud on the next push command.`,
       },
-      {
-        name: 'console',
-        description: `Opens the web console for the  ${featureName} category`,
-      },
     ];
 
     context.amplify.showHelp(header, commands);

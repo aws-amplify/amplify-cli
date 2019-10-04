@@ -38,10 +38,6 @@ module.exports = {
         name: 'invoke <resourcename>',
         description: 'Invokes a function locally for testing',
       },
-      {
-        name: 'console',
-        description: `Opens the web console for the  ${featureName} category`,
-      },
     ];
 
     context.amplify.showHelp(header, commands);
