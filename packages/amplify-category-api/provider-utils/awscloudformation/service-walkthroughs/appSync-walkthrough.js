@@ -496,7 +496,7 @@ async function askApiKeyQuestions() {
       type: 'input',
       name: 'apiKeyExpirationDays',
       message: 'After how many days from now the API key should expire (1-365):',
-      default: 180,
+      default: 7,
       validate: validateDays,
     },
   ];

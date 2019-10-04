@@ -38,7 +38,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.APIKeyExpirationEpoch]: new NumberParameter({
                 Description: 'The epoch time in seconds when the API Key should expire.' +
-                    ' Setting this to 0 will default to 180 days from the deployment date.' +
+                    ' Setting this to 0 will default to 7 days from the deployment date.' +
                     ' Setting this to -1 will not create an API Key.',
                 Default: 0,
                 MinValue: -1
@@ -83,7 +83,7 @@ export class ResourceFactory {
     }
 
     public makeAppSyncApiKey(apiKeyConfig: Transformer.ApiKeyConfig) {
-        let expirationDays = 180;
+        let expirationDays = 7;
         if (apiKeyConfig && apiKeyConfig.apiKeyExpirationDays) {
             expirationDays = apiKeyConfig.apiKeyExpirationDays;
         }
