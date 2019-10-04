@@ -8,8 +8,8 @@ import {
     ref, obj, set, nul, ObjectNode,
     ifElse, compoundExpression, bool, equals, iff, raw, comment, qref, Expression, block
 } from 'graphql-mapping-template'
-import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS, NONE_VALUE, applyKeyConditionExpression,
-         attributeTypeFromScalar, toCamelCase, applyCompositeKeyConditionExpression } from 'graphql-transformer-common'
+import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS, NONE_VALUE, NONE_INT_VALUE, applyKeyConditionExpression,
+    attributeTypeFromScalar, toCamelCase, applyCompositeKeyConditionExpression } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 
@@ -119,9 +119,10 @@ export class ResourceFactory {
                         ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_VALUE}"))`)
                     ]);
                 } else {
+                    // Use Int minvalue as default
                     keyObj.attributes.push([
                         sortFieldInfo.primarySortFieldName,
-                        ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNull($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_VALUE}"))`)
+                        ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNull($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_INT_VALUE}"))`)
                     ]);
                 }
 
