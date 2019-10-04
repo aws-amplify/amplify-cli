@@ -139,12 +139,11 @@ async function getSecretStoreArn(context, inputs, clusterResourceId, AWS) {
   if (!selectedSecretArn) {
     if (secrets.size > 0) {
       // Kick off questions flow
-      const selectedSecretName
-         = await promptWalkthroughQuestion(inputs, 2, Array.from(secrets.keys()));
+      const selectedSecretName = await promptWalkthroughQuestion(inputs, 2, Array.from(secrets.keys()));
       selectedSecretArn = secrets.get(selectedSecretName);
     } else {
       context.print.error('No RDS access credentials found in the AWS Secrect Manager.');
-      process.exit(0);      
+      process.exit(0);
     }
   }
 
