@@ -34,9 +34,13 @@ const translateOptions = [
 
   { name: 'German', value: 'de' },
 
+  { name: 'Greek', value: 'el' },
+
   { name: 'Hebrew', value: 'he' },
 
   { name: 'Hindi', value: 'hi' },
+
+  { name: 'Hungarian', value: 'hu' },
 
   { name: 'Indonesian', value: 'id' },
 
@@ -56,13 +60,23 @@ const translateOptions = [
 
   { name: 'Portuguese', value: 'pt' },
 
+  { name: 'Romanian', value: 'ro' },
+
   { name: 'Russian', value: 'ru' },
 
   { name: 'Spanish', value: 'es' },
 
   { name: 'Swedish', value: 'sv' },
 
+  { name: 'Thai', value: 'th' },
+
   { name: 'Turkish', value: 'tr' },
+
+  { name: 'Ukrainian', value: 'uk' },
+
+  { name: 'Urdu', value: 'ur' },
+
+  { name: 'Vietnamese', value: 'vi' },
 ];
 
 const deniedCombos = {
