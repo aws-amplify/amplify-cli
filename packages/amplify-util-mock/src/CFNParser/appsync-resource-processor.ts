@@ -271,8 +271,7 @@ export function processResources(
     appSync: {
       name: '',
       defaultAuthenticationType: {
-        authenticationType: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT, 
-        openIDConnectConfig: {}
+        authenticationType: AmplifyAppSyncSimulatorAuthenticationType.API_KEY
       },
       apiKey: null,
       additionalAuthenticationProviders: []
