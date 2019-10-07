@@ -1,6 +1,6 @@
 module.exports = {
   name: 'publish',
-  run: async (context) => {
+  run: async context => {
     context.amplify.constructExeInfo(context);
     const { amplifyMeta } = context.exeInfo;
     const isHostingAdded = amplifyMeta.hosting && Object.keys(amplifyMeta.hosting).length > 0;
@@ -14,7 +14,7 @@ module.exports = {
     }
 
     let isHostingAlreadyPushed = false;
-    Object.keys(amplifyMeta.hosting).every((hostingService) => {
+    Object.keys(amplifyMeta.hosting).every(hostingService => {
       let continueToCheckNext = true;
       if (amplifyMeta.hosting[hostingService].lastPushTimeStamp) {
         const lastPushTime = new Date(amplifyMeta.hosting[hostingService].lastPushTimeStamp);
@@ -36,10 +36,8 @@ module.exports = {
 
     if (continueToPublish) {
       const frontendPlugins = context.amplify.getFrontendPlugins(context);
-      const frontendHandlerModule =
-        require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+      const frontendHandlerModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
       await frontendHandlerModule.publish(context);
     }
   },
 };
-

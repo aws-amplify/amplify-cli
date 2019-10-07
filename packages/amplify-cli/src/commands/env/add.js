@@ -4,7 +4,7 @@ const initRun = run;
 
 module.exports = {
   name: 'add',
-  run: async (context) => {
+  run: async context => {
     initRun(context);
   },
 };

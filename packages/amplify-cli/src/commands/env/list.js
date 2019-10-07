@@ -2,7 +2,7 @@ const chalk = require('chalk');
 
 module.exports = {
   name: 'list',
-  run: async (context) => {
+  run: async context => {
     const { envName } = context.amplify.getEnvInfo();
 
     if (context.parameters.options.details) {
@@ -11,7 +11,7 @@ module.exports = {
         context.print.fancy(JSON.stringify(allEnvs, null, 4));
         return;
       }
-      Object.keys(allEnvs).forEach((env) => {
+      Object.keys(allEnvs).forEach(env => {
         context.print.info('');
         if (envName === env) {
           context.print.info(chalk.red(`*${env}*`));
@@ -20,10 +20,10 @@ module.exports = {
         }
         context.print.info('--------------');
 
-        Object.keys(allEnvs[env]).forEach((provider) => {
+        Object.keys(allEnvs[env]).forEach(provider => {
           context.print.info(`Provider: ${provider}`);
 
-          Object.keys(allEnvs[env][provider]).forEach((providerAttr) => {
+          Object.keys(allEnvs[env][provider]).forEach(providerAttr => {
             context.print.info(`${providerAttr}: ${allEnvs[env][provider][providerAttr]}`);
           });
 
@@ -49,10 +49,7 @@ module.exports = {
         }
       }
       context.print.info('');
-      table(
-        tableOptions,
-        { format: 'markdown' },
-      );
+      table(tableOptions, { format: 'markdown' });
       context.print.info('');
     }
   },

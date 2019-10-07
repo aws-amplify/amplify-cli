@@ -38,8 +38,14 @@ jobs:
           name: Install Java
           command: sudo apt-get install default-jdk
       - run:
+         name: lint
+         command: yarn lint
+      - run:
           name: Run tests
           command: yarn test-ci
+      - run:
+          name: Collect code coverage
+          command: yarn coverage
   graphql_e2e_tests:
     <<: *defaults
     steps:
@@ -51,6 +57,8 @@ jobs:
           name: Run GraphQL end-to-end tests
           command: cd packages/graphql-transformers-e2e-tests/ && yarn e2e --maxWorkers=3
           no_output_timeout: 90m
+      - store_test_results:
+          path: packages/graphql-transformers-e2e-tests/
   mock_e2e_tests:
     <<: *defaults
     steps:
@@ -81,6 +89,8 @@ jobs:
           command: "cd packages/amplify-e2e-tests && yarn run e2e --maxWorkers=3"
           name: "Run Amplify end-to-end tests"
           no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
     working_directory: ~/repo
 
   integration_test:
@@ -240,6 +250,8 @@ jobs:
           path: /root/videos
       - store_artifacts:
           path: /root/screenshots
+      - store_test_results:
+          path: packages/amplify-ui-tests/
   integration_test_ios:
     macos:
       xcode: "10.3.0"
@@ -294,6 +306,8 @@ jobs:
             npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum
           when: always
       - store_artifacts:
+          path: ../uitest_logs
+      - store_test_results:
           path: ../uitest_logs
   integration_test_android:
     docker:
@@ -427,6 +441,7 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - integration_test_js
             - mock_e2e_tests
       - mock_e2e_tests:
           requires:
@@ -440,6 +455,7 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - integration_test_js
             - mock_e2e_tests
       - amplify_e2e_tests:
           filters:
@@ -449,6 +465,7 @@ workflows:
           requires:
             - build
             - integration_test_ios
+            - integration_test_js
             - mock_e2e_tests
       - deploy:
           requires:

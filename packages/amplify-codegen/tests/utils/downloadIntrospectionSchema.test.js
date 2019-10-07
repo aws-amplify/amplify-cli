@@ -15,7 +15,6 @@ describe('downloadIntrospectionSchema', () => {
     amplify: {
       executeProviderUtils: mockExecuteProviderUtils,
       getEnvInfo: mockGetEnvInfo,
-
     },
   };
   const mockApiId = 'mock-api-123';
@@ -29,17 +28,8 @@ describe('downloadIntrospectionSchema', () => {
     });
   });
   it('should download the schema', async () => {
-    const introSchemaPath = await downloadIntrospectionSchema(
-      mockContext,
-      mockApiId,
-      path.join(mockDownloadDirectory, 'schema.json'),
-    );
-    expect(mockExecuteProviderUtils).toHaveBeenCalledWith(
-      mockContext,
-      'awscloudformation',
-      'getIntrospectionSchema',
-      { apiId: mockApiId },
-    );
+    const introSchemaPath = await downloadIntrospectionSchema(mockContext, mockApiId, path.join(mockDownloadDirectory, 'schema.json'));
+    expect(mockExecuteProviderUtils).toHaveBeenCalledWith(mockContext, 'awscloudformation', 'getIntrospectionSchema', { apiId: mockApiId });
     expect(fs.ensureDirSync).toHaveBeenCalledWith(mockDownloadDirectory);
     const expectedIntrospectionFileName = path.join(mockDownloadDirectory, 'schema.json');
     expect(fs.writeFileSync).toHaveBeenCalledWith(expectedIntrospectionFileName, mockIntroSchema, 'utf8');

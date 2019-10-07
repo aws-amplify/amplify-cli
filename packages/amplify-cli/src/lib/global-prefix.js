@@ -63,9 +63,7 @@ function getNpmPrefix() {
 function fallback() {
   let result;
   if (/^win/.test(process.platform)) {
-    result = process.env.APPDATA
-      ? path.join(process.env.APPDATA, 'npm')
-      : path.dirname(process.execPath);
+    result = process.env.APPDATA ? path.join(process.env.APPDATA, 'npm') : path.dirname(process.execPath);
   } else {
     result = path.dirname(path.dirname(process.execPath));
     if (process.env.DESTDIR) {

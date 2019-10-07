@@ -37,23 +37,25 @@ async function initEnv(context) {
         }
       });
 
-      await inquirer.prompt({
-        name: 'envToUse',
-        message: 'Choose the environment configuration to use:',
-        type: 'list',
-        choices: envsWithXR,
-      }).then((envAnswer) => {
-        const xrResources = allEnvs[envAnswer.envToUse].categories[XR_CATEGORY_NAME];
-        Object.entries(xrResources).forEach(([resource, config]) => {
-          const options = {
-            service: SUMERIAN_SERVICE_NAME,
-            output: config,
-          };
-          context.amplify.saveEnvResourceParameters(context, XR_CATEGORY_NAME, resource, config);
-          context.amplify.updateamplifyMetaAfterResourceAdd(XR_CATEGORY_NAME, resource, options);
+      await inquirer
+        .prompt({
+          name: 'envToUse',
+          message: 'Choose the environment configuration to use:',
+          type: 'list',
+          choices: envsWithXR,
+        })
+        .then(envAnswer => {
+          const xrResources = allEnvs[envAnswer.envToUse].categories[XR_CATEGORY_NAME];
+          Object.entries(xrResources).forEach(([resource, config]) => {
+            const options = {
+              service: SUMERIAN_SERVICE_NAME,
+              output: config,
+            };
+            context.amplify.saveEnvResourceParameters(context, XR_CATEGORY_NAME, resource, config);
+            context.amplify.updateamplifyMetaAfterResourceAdd(XR_CATEGORY_NAME, resource, options);
+          });
+          context.print.info(`XR configuration from ${envAnswer.envToUse} saved for ${thisEnvName}`);
         });
-        context.print.info(`XR configuration from ${envAnswer.envToUse} saved for ${thisEnvName}`);
-      });
       return;
     }
   }
@@ -76,12 +78,8 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach((resourceName) => {
-    const { policy, attributes } = xrManager.getIAMPolicies(
-      context,
-      resourceName,
-      resourceOpsMapping[resourceName],
-    );
+  Object.keys(resourceOpsMapping).forEach(resourceName => {
+    const { policy, attributes } = xrManager.getIAMPolicies(context, resourceName, resourceOpsMapping[resourceName]);
     permissionPolicies.push(policy);
     resourceAttributes.push({ resourceName, attributes, category: XR_CATEGORY_NAME });
   });

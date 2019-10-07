@@ -14,7 +14,7 @@ async function run(context) {
   let suitableFrontend;
   let fitToHandleScore = -1;
 
-  Object.keys(frontendPlugins).forEach((key) => {
+  Object.keys(frontendPlugins).forEach(key => {
     const { scanProject } = require(frontendPlugins[key]);
     const newScore = scanProject(context.exeInfo.localEnvInfo.projectPath);
     if (newScore > fitToHandleScore) {

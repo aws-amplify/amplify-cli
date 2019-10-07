@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 
-module.exports = (filepath) => {
+module.exports = filepath => {
   let result = false;
   if (filepath) {
     result = fs.existsSync(filepath);

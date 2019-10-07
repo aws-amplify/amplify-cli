@@ -1,4 +1,3 @@
-
 const { readdirSync, existsSync } = require('fs');
 const { createReadStream } = require('fs-extra');
 const Ora = require('ora');
@@ -31,9 +30,8 @@ async function uploadFiles(context) {
     }
     const fileList = readdirSync(assetPath);
     const uploadFileTasks = [];
-    fileList.forEach((file) => {
-      uploadFileTasks.push(async () =>
-        await uploadFile(s3Client, bucketName, `${assetPath}/${file}`, file));
+    fileList.forEach(file => {
+      uploadFileTasks.push(async () => await uploadFile(s3Client, bucketName, `${assetPath}/${file}`, file));
     });
 
     const spinner = new Ora('Uploading files...');
@@ -61,8 +59,10 @@ async function uploadFile(s3Client, hostingBucketName, filePath, file) {
     ACL: 'public-read',
   };
 
-  const data = await s3Client.upload(uploadParams).promise()
-    .catch((e) => {
+  const data = await s3Client
+    .upload(uploadParams)
+    .promise()
+    .catch(e => {
       console.log('e', e);
     });
 

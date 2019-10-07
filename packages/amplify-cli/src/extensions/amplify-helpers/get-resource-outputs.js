@@ -16,7 +16,7 @@ function getResourceOutputs(amplifyMeta) {
   };
 
   if (amplifyMeta.providers) {
-    Object.keys(amplifyMeta.providers).forEach((provider) => {
+    Object.keys(amplifyMeta.providers).forEach(provider => {
       outputsByProvider[provider] = {};
       outputsByProvider[provider].metadata = amplifyMeta.providers[provider] || {};
       outputsByProvider[provider].serviceResourceMapping = {};
@@ -24,9 +24,9 @@ function getResourceOutputs(amplifyMeta) {
   }
 
   if (amplifyMeta) {
-    Object.keys(amplifyMeta).forEach((category) => {
+    Object.keys(amplifyMeta).forEach(category => {
       const categoryMeta = amplifyMeta[category];
-      Object.keys(categoryMeta).forEach((resourceName) => {
+      Object.keys(categoryMeta).forEach(resourceName => {
         const resourceMeta = categoryMeta[resourceName];
         if (resourceMeta.output && resourceMeta.lastPushTimeStamp) {
           const { providerPlugin } = resourceMeta;
@@ -41,7 +41,7 @@ function getResourceOutputs(amplifyMeta) {
           }
           /*eslint-disable*/
           outputsByProvider[providerPlugin].serviceResourceMapping[resourceMeta.service].push(resourceMeta);
-           /* eslint-enable */
+          /* eslint-enable */
           if (!outputsByCategory[category]) {
             outputsByCategory[category] = {};
           }

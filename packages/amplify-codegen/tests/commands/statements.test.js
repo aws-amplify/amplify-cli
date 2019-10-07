@@ -5,12 +5,7 @@ const fs = require('fs-extra');
 const loadConfig = require('../../src/codegen-config');
 const generateStatements = require('../../src/commands/statements');
 const constants = require('../../src/constants');
-const {
-  ensureIntrospectionSchema,
-  getFrontEndHandler,
-  getAppSyncAPIDetails,
-} = require('../../src/utils');
-
+const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../../src/utils');
 
 const MOCK_CONTEXT = {
   print: {
@@ -73,22 +68,20 @@ describe('command - statements', () => {
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT, false);
 
-    expect(generate).toHaveBeenCalledWith(
-      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
-      path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH),
-      { separateFiles: true, language: MOCK_TARGET_LANGUAGE },
-    );
+    expect(generate).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA), path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH), {
+      separateFiles: true,
+      language: MOCK_TARGET_LANGUAGE,
+    });
   });
 
   it('should generate graphql statements for non JS projects', async () => {
     getFrontEndHandler.mockReturnValue('ios');
     const forceDownload = false;
     await generateStatements(MOCK_CONTEXT, forceDownload);
-    expect(generate).toHaveBeenCalledWith(
-      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
-      path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH),
-      { separateFiles: true, language: 'graphql' },
-    );
+    expect(generate).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA), path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH), {
+      separateFiles: true,
+      language: 'graphql',
+    });
   });
 
   it('should download the schema if forceDownload flag is passed', async () => {
@@ -99,7 +92,7 @@ describe('command - statements', () => {
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_APIS[0],
       MOCK_REGION,
-      forceDownload,
+      forceDownload
     );
   });
 
@@ -112,7 +105,7 @@ describe('command - statements', () => {
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_APIS[0],
       MOCK_REGION,
-      forceDownload,
+      forceDownload
     );
   });
 

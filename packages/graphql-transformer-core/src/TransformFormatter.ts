@@ -102,7 +102,7 @@ export class TransformFormatter {
         const astSansDirectives = stripDirectives({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))
-        }, ['aws_subscribe', 'aws_auth', 'aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools'])
+        }, ['aws_subscribe', 'aws_auth', 'aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools', 'deprecated'])
         const SDL = print(astSansDirectives)
         return SDL;
     }

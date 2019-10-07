@@ -70,13 +70,15 @@ async function setBucketName(context, bucketName) {
 
   bucketName = bucketName.replace(/[^-a-z0-9]/g, '');
 
-  const questions = [{
-    name: 'HostingBucketName',
-    type: 'input',
-    message: 'hosting bucket name',
-    default: bucketName,
-    validate: validateBucketName,
-  }];
+  const questions = [
+    {
+      name: 'HostingBucketName',
+      type: 'input',
+      message: 'hosting bucket name',
+      default: bucketName,
+      validate: validateBucketName,
+    },
+  ];
 
   const answers = await inquirer.prompt(questions);
 

@@ -4,8 +4,7 @@ const userAgent = 'aws-amplify-cli/0.1.0';
 
 function formUserAgentParam(context, userAgentAction) {
   const { amplify } = context;
-  const projectConfig = context.exeInfo ?
-    context.exeInfo.projectConfig : amplify.getProjectConfig();
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig : amplify.getProjectConfig();
 
   let framework = projectConfig.frontend;
 

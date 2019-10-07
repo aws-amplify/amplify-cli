@@ -39,7 +39,7 @@ function scan(context, distributionDirPath, indexDoc) {
 function recursiveScan(dir, filelist, amplifyIgnore, ignoreRoot) {
   const files = fs.readdirSync(dir);
   filelist = filelist || [];
-  files.forEach((file) => {
+  files.forEach(file => {
     const filePath = path.join(dir, file);
     if (fs.statSync(filePath).isDirectory()) {
       if (!publishConfig.isIgnored(filePath, amplifyIgnore, ignoreRoot)) {
@@ -55,4 +55,3 @@ function recursiveScan(dir, filelist, amplifyIgnore, ignoreRoot) {
 module.exports = {
   scan,
 };
-

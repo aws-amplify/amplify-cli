@@ -10,13 +10,13 @@ const frontEndToTargetMappings = {
   angular: ['angular', 'typescript'],
 };
 
-async function askCodeGenTargetLanguage(context, target, withoutInit = false,
-  decoupleFrontend = '', decoupleFramework = '') {
+async function askCodeGenTargetLanguage(context, target, withoutInit = false, decoupleFrontend = '', decoupleFramework = '') {
   let frontend = decoupleFrontend;
   if (!withoutInit) {
     frontend = getFrontEndHandler(context);
   }
-  const isAngular = frontend === 'javascript' && getFrontEndFramework(context, withoutInit, decoupleFrontend, decoupleFramework) === 'angular';
+  const isAngular =
+    frontend === 'javascript' && getFrontEndFramework(context, withoutInit, decoupleFrontend, decoupleFramework) === 'angular';
   const isIonic = frontend === 'javascript' && getFrontEndFramework(context, withoutInit, decoupleFrontend, decoupleFramework) === 'ionic';
   const targetLanguage = isAngular || isIonic ? 'angular' : frontend;
   const targetMapping = frontEndToTargetMappings[targetLanguage];

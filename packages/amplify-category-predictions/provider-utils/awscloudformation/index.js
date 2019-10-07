@@ -10,17 +10,12 @@ function addResource(context, category, predictionsCategoryFilename, options) {
   const predictionCtgWalkthroughSrc = `${__dirname}/prediction-category-walkthroughs/${predictionsCategoryFilename}`;
   const { addWalkthrough } = require(predictionCtgWalkthroughSrc);
 
-  return addWalkthrough(context)
-    .then(async (resources) => {
-      options = Object.assign(options, resources);
-      delete options.resourceName;
-      context.amplify.updateamplifyMetaAfterResourceAdd(
-        category,
-        resources.resourceName,
-        options,
-      );
-      return resources.resourceName;
-    });
+  return addWalkthrough(context).then(async resources => {
+    options = Object.assign(options, resources);
+    delete options.resourceName;
+    context.amplify.updateamplifyMetaAfterResourceAdd(category, resources.resourceName, options);
+    return resources.resourceName;
+  });
 }
 
 function updateResource(context, predictionsCategoryFilename) {
@@ -32,8 +27,7 @@ function updateResource(context, predictionsCategoryFilename) {
     process.exit(0);
   }
 
-  return updateWalkthrough(context)
-    .then(resource => resource.resourceName);
+  return updateWalkthrough(context).then(resource => resource.resourceName);
 }
 
 // currently only supports sagemaker and rekognition
@@ -60,8 +54,7 @@ async function console(context, resourceObj, amplifyMeta) {
 }
 
 async function openEndpointDetails(context, region, endpointName) {
-  const endpointConsoleUrl =
-    `https://${region}.console.aws.amazon.com/sagemaker/home?region=${region}#/endpoints/${endpointName}`;
+  const endpointConsoleUrl = `https://${region}.console.aws.amazon.com/sagemaker/home?region=${region}#/endpoints/${endpointName}`;
   await open(endpointConsoleUrl, { wait: false });
   context.print.info('Endpoint Console:');
   context.print.success(endpointConsoleUrl);
@@ -73,9 +66,7 @@ function getSageMaker(amplifyMeta) {
   const services = Object.keys(categoryMeta);
   for (let i = 0; i < services.length; i += 1) {
     const serviceMeta = categoryMeta[services[i]];
-    if (serviceMeta.service === 'SageMaker' &&
-      serviceMeta.output &&
-      serviceMeta.output.endpointName) {
+    if (serviceMeta.service === 'SageMaker' && serviceMeta.output && serviceMeta.output.endpointName) {
       sagemakerOutput = serviceMeta.output;
       break;
     }
@@ -92,7 +83,7 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
     const projectStorage = amplifyMeta.storage;
     const keys = Object.keys(projectStorage);
     let bucketName = '';
-    keys.forEach((resource) => {
+    keys.forEach(resource => {
       if (projectStorage[resource].service === 'S3') {
         if (projectStorage[resource].output) {
           bucketName = projectStorage[resource].output.BucketName;
@@ -112,20 +103,29 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
     await openRekognitionUploadUrl(context, bucketName, region, parameters.folderPolicies, showOnAmplifyStatus);
   } else if (!showOnAmplifyStatus) {
     // !showOnAmplifyStatus is used so that this message is not shown in amplify status scenario.
-    context.print.error('Console command not supported for your configuration in the project. Use ‘amplify update predictions’ to modify your configurations.');
+    context.print.error(
+      'Console command not supported for your configuration in the project. Use ‘amplify update predictions’ to modify your configurations.'
+    );
     process.exit(0);
   }
 }
 
 async function openRekognitionUploadUrl(context, bucketName, region, folderPolicies, printOnlyURL) {
-  const URL = folderPolicies === 'admin' ? `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/${prefixForAdminTrigger}/admin/?region=${region}`
-    : `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/${prefixForAdminTrigger}/?region=${region}`;
+  const URL =
+    folderPolicies === 'admin'
+      ? `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/${prefixForAdminTrigger}/admin/?region=${region}`
+      : `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/${prefixForAdminTrigger}/?region=${region}`;
   if (!printOnlyURL) {
     await open(URL, { wait: false });
   }
-  context.print.info(chalk`Rekognition endpoint to upload Images: {blue.underline ${URL}} (Amazon Rekognition only supports uploading PNG and JPEG files)`);
+  context.print.info(
+    chalk`Rekognition endpoint to upload Images: {blue.underline ${URL}} (Amazon Rekognition only supports uploading PNG and JPEG files)`
+  );
 }
 
 module.exports = {
-  addResource, updateResource, console, printRekognitionUploadUrl,
+  addResource,
+  updateResource,
+  console,
+  printRekognitionUploadUrl,
 };

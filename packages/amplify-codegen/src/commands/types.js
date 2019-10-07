@@ -37,7 +37,7 @@ async function generateTypes(context, forceDownloadSchema, withoutInit = false, 
     }
 
     try {
-      projects.forEach(async (cfg) => {
+      projects.forEach(async cfg => {
         const { generatedFileName } = cfg.amplifyExtension || {};
         const includeFiles = cfg.includes;
         if (!generatedFileName || generatedFileName === '' || includeFiles.length === 0) {
@@ -56,8 +56,7 @@ async function generateTypes(context, forceDownloadSchema, withoutInit = false, 
         let region;
         if (!withoutInit) {
           ({ region } = cfg.amplifyExtension);
-          await ensureIntrospectionSchema(context, schemaPath,
-            apis[0], region, forceDownloadSchema);
+          await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
         }
         const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
         codeGenSpinner.start();
@@ -66,12 +65,7 @@ async function generateTypes(context, forceDownloadSchema, withoutInit = false, 
             addTypename: true,
             complexObjectSupport: 'auto',
           });
-          codeGenSpinner.succeed(
-            `${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(
-              path.resolve('.'),
-              outputPath,
-            )}`,
-          );
+          codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(path.resolve('.'), outputPath)}`);
         } catch (err) {
           codeGenSpinner.fail(err.message);
         }

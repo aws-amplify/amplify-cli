@@ -1,9 +1,5 @@
 const loadConfig = require('../../src/codegen-config');
-const {
-  downloadIntrospectionSchema,
-  getAppSyncAPIDetails,
-  getSchemaDownloadLocation,
-} = require('../../src/utils');
+const { downloadIntrospectionSchema, getAppSyncAPIDetails, getSchemaDownloadLocation } = require('../../src/utils');
 const generateStatements = require('../../src/commands/statements');
 const generateTypes = require('../../src/commands/types');
 const postPushCallback = require('../../src/callbacks/postPushCallback');
@@ -56,11 +52,7 @@ describe('Callback - Post Push update AppSync API', () => {
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(getAppSyncAPIDetails).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(getSchemaDownloadLocation).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(downloadIntrospectionSchema).toHaveBeenCalledWith(
-      MOCK_CONTEXT,
-      MOCK_API_ID,
-      MOCK_SCHEMA_DOWNLOAD_LOCATION,
-    );
+    expect(downloadIntrospectionSchema).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_API_ID, MOCK_SCHEMA_DOWNLOAD_LOCATION);
     expect(LOAD_CONFIG_METHODS.addProject).toHaveBeenCalled();
     const newProject = LOAD_CONFIG_METHODS.addProject.mock.calls[0][0];
     expect(newProject).toEqual({
@@ -85,11 +77,7 @@ describe('Callback - Post Push update AppSync API', () => {
     expect(loadConfig).not.toHaveBeenCalledWith();
     expect(getAppSyncAPIDetails).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(getSchemaDownloadLocation).not.toHaveBeenCalled();
-    expect(downloadIntrospectionSchema).toHaveBeenCalledWith(
-      MOCK_CONTEXT,
-      MOCK_API_ID,
-      PREV_DOWNLOAD_LOCATION,
-    );
+    expect(downloadIntrospectionSchema).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_API_ID, PREV_DOWNLOAD_LOCATION);
     expect(LOAD_CONFIG_METHODS.addProject).not.toHaveBeenCalled();
   });
 

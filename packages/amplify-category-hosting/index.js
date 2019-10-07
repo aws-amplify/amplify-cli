@@ -6,10 +6,7 @@ const categoryManager = require('./lib/category-manager');
 const category = 'hosting';
 
 async function add(context) {
-  const {
-    availableServices,
-    disabledServices,
-  } = categoryManager.getCategoryStatus(context);
+  const { availableServices, disabledServices } = categoryManager.getCategoryStatus(context);
 
   if (availableServices.length > 0) {
     if (disabledServices.length > 1) {
@@ -21,7 +18,7 @@ async function add(context) {
         default: disabledServices[0],
       });
       const tasks = [];
-      answers.selectedServices.forEach((service) => {
+      answers.selectedServices.forEach(service => {
         tasks.push(() => categoryManager.runServiceAction(context, service, 'enable'));
       });
       return sequential(tasks);
@@ -39,10 +36,7 @@ async function add(context) {
 }
 
 async function configure(context) {
-  const {
-    availableServices,
-    enabledServices,
-  } = categoryManager.getCategoryStatus(context);
+  const { availableServices, enabledServices } = categoryManager.getCategoryStatus(context);
 
   if (availableServices.length > 0) {
     if (enabledServices.length > 1) {
@@ -54,7 +48,7 @@ async function configure(context) {
         default: enabledServices[0],
       });
       const tasks = [];
-      answers.selectedServices.forEach((service) => {
+      answers.selectedServices.forEach(service => {
         tasks.push(() => categoryManager.runServiceAction(context, service, 'configure'));
       });
       return sequential(tasks);
@@ -68,9 +62,7 @@ async function configure(context) {
 }
 
 function publish(context, service, args) {
-  const {
-    enabledServices,
-  } = categoryManager.getCategoryStatus(context);
+  const { enabledServices } = categoryManager.getCategoryStatus(context);
 
   if (enabledServices.length > 0) {
     if (enabledServices.includes(service)) {
@@ -83,10 +75,7 @@ function publish(context, service, args) {
 }
 
 async function console(context) {
-  const {
-    availableServices,
-    enabledServices,
-  } = categoryManager.getCategoryStatus(context);
+  const { availableServices, enabledServices } = categoryManager.getCategoryStatus(context);
 
   if (availableServices.length > 0) {
     if (enabledServices.length > 1) {
@@ -115,11 +104,8 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach((resourceName) => {
-    const { policy, attributes } = categoryManager.getIAMPolicies(
-      resourceName,
-      resourceOpsMapping[resourceName],
-    );
+  Object.keys(resourceOpsMapping).forEach(resourceName => {
+    const { policy, attributes } = categoryManager.getIAMPolicies(resourceName, resourceOpsMapping[resourceName]);
     permissionPolicies.push(policy);
     resourceAttributes.push({ resourceName, attributes, category });
   });

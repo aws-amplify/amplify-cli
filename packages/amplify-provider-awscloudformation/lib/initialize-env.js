@@ -15,22 +15,22 @@ function run(context, providerMetadata) {
   const backendDir = context.amplify.pathManager.getBackendDirPath();
 
   return new S3(context)
-    .then((s3) => {
+    .then(s3 => {
       const s3Params = {
         Key: zipFilename,
       };
       return s3.getFile(s3Params);
     })
-    .then((data) => {
+    .then(data => {
       fs.ensureDirSync(tempDir);
       const buff = Buffer.from(data);
 
       return new Promise((resolve, reject) => {
-        fs.writeFile(`${tempDir}/${zipFilename}`, buff, (err) => {
+        fs.writeFile(`${tempDir}/${zipFilename}`, buff, err => {
           if (err) {
             reject(err);
           }
-          extract(`${tempDir}/${zipFilename}`, { dir: `${tempDir}/#current-cloud-backend` }, (err) => {
+          extract(`${tempDir}/${zipFilename}`, { dir: `${tempDir}/#current-cloud-backend` }, err => {
             if (err) {
               reject(err);
             }
@@ -58,11 +58,10 @@ function run(context, providerMetadata) {
 
       // Copy providerMetadata for each resource - from what is there in the cloud
 
-      Object.keys(amplifyMeta).forEach((category) => {
-        Object.keys(amplifyMeta[category]).forEach((resource) => {
+      Object.keys(amplifyMeta).forEach(category => {
+        Object.keys(amplifyMeta[category]).forEach(resource => {
           if (currentAmplifyMeta[category] && currentAmplifyMeta[category][resource]) {
-            amplifyMeta[category][resource].providerMetadata =
-            currentAmplifyMeta[category][resource].providerMetadata;
+            amplifyMeta[category][resource].providerMetadata = currentAmplifyMeta[category][resource].providerMetadata;
           }
         });
       });

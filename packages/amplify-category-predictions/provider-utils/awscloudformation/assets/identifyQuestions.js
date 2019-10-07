@@ -3,7 +3,6 @@
 
 // defaults for text, entity, and label categories
 
-
 function identifyAccess(options) {
   return [
     {
@@ -20,7 +19,7 @@ function identifyAccess(options) {
           value: 'authAndGuest',
         },
       ],
-      default: (options.access) ? options.access : 'auth',
+      default: options.access ? options.access : 'auth',
     },
   ];
 }
@@ -54,17 +53,15 @@ const setup = {
       {
         name: 'resourceName',
         message: 'Provide a friendly name for your resource',
-        validate: (value) => {
+        validate: value => {
           const regex = new RegExp('^[a-zA-Z0-9]+$');
-          return regex.test(value) ?
-            true : 'Resource name should be alphanumeric!';
+          return regex.test(value) ? true : 'Resource name should be alphanumeric!';
         },
         default: defaultName,
       },
     ];
   },
 };
-
 
 const identifyText = {
   questions(options) {
@@ -73,7 +70,7 @@ const identifyText = {
         type: 'confirm',
         name: 'identifyDoc',
         message: 'Would you also like to identify documents?',
-        default: (options.identifyDoc) ? options.identifyDoc : false,
+        default: options.identifyDoc ? options.identifyDoc : false,
       },
     ];
   },
@@ -106,22 +103,22 @@ const identifyEntities = {
         type: 'confirm',
         name: 'celebrityDetectionEnabled',
         message: 'Would you like to enable celebrity detection?',
-        default: (options.celebrityDetectionEnabled) ? options.celebrityDetectionEnabled : true,
-        when: answers => (answers.setup === 'advanced'),
+        default: options.celebrityDetectionEnabled ? options.celebrityDetectionEnabled : true,
+        when: answers => answers.setup === 'advanced',
       },
       {
         type: 'confirm',
         name: 'adminTask',
         message: 'Would you like to identify entities from a collection of images?',
-        default: (options.adminTask) ? options.adminTask : false,
-        when: answers => (answers.setup === 'advanced'),
+        default: options.adminTask ? options.adminTask : false,
+        when: answers => answers.setup === 'advanced',
       },
       {
         type: 'number',
         name: 'maxEntities',
         message: 'How many entities would you like to identify?',
-        default: (options.maxEntities) ? options.maxEntities : 50,
-        when: answers => (answers.setup === 'advanced' && answers.adminTask),
+        default: options.maxEntities ? options.maxEntities : 50,
+        when: answers => answers.setup === 'advanced' && answers.adminTask,
         validate: value => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
       },
       {
@@ -138,8 +135,8 @@ const identifyEntities = {
             value: 'admin',
           },
         ],
-        when: answers => (answers.setup === 'advanced' && answers.adminTask),
-        default: (options.folderPolicies) ? options.folderPolicies : 'app',
+        when: answers => answers.setup === 'advanced' && answers.adminTask,
+        default: options.folderPolicies ? options.folderPolicies : 'app',
       },
     ];
   },
@@ -148,7 +145,6 @@ const identifyEntities = {
     celebrityDetectionEnabled: true,
   },
 };
-
 
 const identifyLabels = {
   questions(options) {
@@ -186,7 +182,7 @@ const identifyLabels = {
             value: 'ALL',
           },
         ],
-        when: answers => (answers.setup === 'advanced'),
+        when: answers => answers.setup === 'advanced',
         default: [options.type ? options.type : 'LABELS'],
       },
     ];
@@ -196,7 +192,6 @@ const identifyLabels = {
     type: 'LABELS',
   },
 };
-
 
 const adminTask = [
   {
@@ -229,7 +224,7 @@ const adminTask = [
         value: 'app',
       },
     ],
-    when: answers => (answers.adminTask),
+    when: answers => answers.adminTask,
     default: 'admin',
   },
 ];

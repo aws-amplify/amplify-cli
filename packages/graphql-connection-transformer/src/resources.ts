@@ -151,14 +151,16 @@ export class ResourceFactory {
      * @param type
      */
     public makeQueryConnectionResolver(
-        type: string, field: string, relatedType: string,
-        connectionAttribute: string, connectionName: string,
+        type: string, field: string, relatedType: string, 
+        connectionAttribute: string, connectionName: string, 
         idFieldName: string,
-        sortKeyInfo?: { fieldName: string, attributeType: 'S' | 'B' | 'N' }
+        sortKeyInfo?: { fieldName: string, attributeType: 'S' | 'B' | 'N' },
+        limit?: number
     ) {
         const defaultPageLimit = 10
+        const pageLimit = limit || defaultPageLimit
         const setup: Expression[] = [
-            set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+            set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${pageLimit})`)),
             set(ref('query'), obj({
                 'expression': str('#connectionAttribute = :connectionAttribute'),
                 'expressionNames': obj({
@@ -227,11 +229,12 @@ export class ResourceFactory {
      * @param connectionAttributes The names of the underlying attributes containing the fields to query by.
      * @param keySchema Key schema of the index or table being queried.
      */
-    public makeGetItemConnectionWithKeyResolver(type: string,
-                                           field: string,
-                                           relatedType: string,
-                                           connectionAttributes: string[],
-                                           keySchema: KeySchema[]): Resolver {
+    public makeGetItemConnectionWithKeyResolver(
+        type: string,
+        field: string,
+        relatedType: string,
+        connectionAttributes: string[],
+        keySchema: KeySchema[]): Resolver {
 
         const partitionKeyName = keySchema[0].AttributeName as string
 

@@ -71,9 +71,8 @@ export function runCypressTest(
     return new Promise((resolve) => {
         nexpect
             .spawn('yarn', options, {cwd, stripColors: true, verbose})
-            .wait('All specs passed!')
-            .run(function(err: Error) {
-                if (err) {
+            .run(function(err: Error, outputs: string[], exitCode: string|number) {
+                if (err || exitCode) {
                     isPassed = false;
                 }
                 resolve(isPassed);

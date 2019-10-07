@@ -5,9 +5,7 @@ const channelName = 'SMS';
 const spinner = ora('');
 
 async function configure(context) {
-  const isChannelEnabled =
-    context.exeInfo.serviceMeta.output[channelName] &&
-    context.exeInfo.serviceMeta.output[channelName].Enabled;
+  const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName] && context.exeInfo.serviceMeta.output[channelName].Enabled;
 
   if (isChannelEnabled) {
     context.print.info(`The ${channelName} channel is currently enabled`);
@@ -84,13 +82,15 @@ async function pull(context, pinpointApp) {
     ApplicationId: pinpointApp.Id,
   };
   spinner.start(`Retrieving channel information for ${channelName}.`);
-  return context.exeInfo.pinpointClient.getSmsChannel(params).promise()
-    .then((data) => {
+  return context.exeInfo.pinpointClient
+    .getSmsChannel(params)
+    .promise()
+    .then(data => {
       spinner.succeed(`Channel information retrieved for ${channelName}`);
       pinpointApp[channelName] = data.SMSChannelResponse;
       return data.SMSChannelResponse;
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.code === 'NotFoundException') {
         spinner.succeed(`Channel is not setup for ${channelName} `);
         return err;

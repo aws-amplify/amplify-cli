@@ -6,7 +6,7 @@ const { getEnvInfo } = require('../../extensions/amplify-helpers/get-env-info');
 
 module.exports = {
   name: 'checkout',
-  run: async (context) => {
+  run: async context => {
     const envName = context.parameters.first;
 
     // Check if environment exists
@@ -35,23 +35,17 @@ module.exports = {
     // Setup Provider creds/info
     const initializationTasks = [];
     const providerPlugins = getProviderPlugins(context);
-    context.exeInfo.projectConfig.providers.forEach((provider) => {
+    context.exeInfo.projectConfig.providers.forEach(provider => {
       const providerModule = require(providerPlugins[provider]);
-      initializationTasks.push(() => providerModule.init(
-        context,
-        allEnvs[envName][provider],
-      ));
+      initializationTasks.push(() => providerModule.init(context, allEnvs[envName][provider]));
     });
 
     await sequential(initializationTasks);
 
     const onInitSuccessfulTasks = [];
-    context.exeInfo.projectConfig.providers.forEach((provider) => {
+    context.exeInfo.projectConfig.providers.forEach(provider => {
       const providerModule = require(providerPlugins[provider]);
-      onInitSuccessfulTasks.push(() => providerModule.onInitSuccessful(
-        context,
-        allEnvs[envName][provider],
-      ));
+      onInitSuccessfulTasks.push(() => providerModule.onInitSuccessful(context, allEnvs[envName][provider]));
     });
 
     await sequential(onInitSuccessfulTasks);

@@ -10,9 +10,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
   const amplifyMeta = context.amplify.getProjectMeta();
 
   // Verify that an API exists in the project before proceeding.
-  if (amplifyMeta == null || amplifyMeta[category] == null
-   || Object.keys(amplifyMeta[category]).length === 0) {
-    context.print.error('You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.');
+  if (amplifyMeta == null || amplifyMeta[category] == null || Object.keys(amplifyMeta[category]).length === 0) {
+    context.print.error(
+      'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.'
+    );
     process.exit(0);
   }
 
@@ -29,7 +30,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
 
   // If an AppSync API does not exist, inform the user to create the AppSync API
   if (!appSyncApi) {
-    context.print.error('You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.');
+    context.print.error(
+      'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.'
+    );
     process.exit(0);
   }
 
@@ -46,13 +49,13 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
   });
 
   // RDS Cluster Question
-  const { selectedClusterArn, clusterResourceId } = await selectCluster(inputs, AWS);
+  const { selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, AWS);
 
   // Secret Store Question
-  const selectedSecretArn = await getSecretStoreArn(inputs, clusterResourceId, AWS);
+  const selectedSecretArn = await getSecretStoreArn(context, inputs, clusterResourceId, AWS);
 
   // Database Name Question
-  const selectedDatabase = await selectDatabase(inputs, selectedClusterArn, selectedSecretArn, AWS);
+  const selectedDatabase = await selectDatabase(context, inputs, selectedClusterArn, selectedSecretArn, AWS);
 
   return {
     region: selectedRegion,
@@ -67,7 +70,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
  *
  * @param {*} inputs
  */
-async function selectCluster(inputs, AWS) {
+async function selectCluster(context, inputs, AWS) {
   const RDS = new AWS.RDS();
 
   const describeDBClustersResult = await RDS.describeDBClusters().promise();
@@ -80,13 +83,17 @@ async function selectCluster(inputs, AWS) {
     }
   }
 
-  const clusterIdentifier = await promptWalkthroughQuestion(inputs, 1, Array.from(clusters.keys()));
-  const selectedCluster = clusters.get(clusterIdentifier);
+  if (clusters.size > 0) {
+    const clusterIdentifier = await promptWalkthroughQuestion(inputs, 1, Array.from(clusters.keys()));
+    const selectedCluster = clusters.get(clusterIdentifier);
 
-  return {
-    selectedClusterArn: selectedCluster.DBClusterArn,
-    clusterResourceId: selectedCluster.DbClusterResourceId,
-  };
+    return {
+      selectedClusterArn: selectedCluster.DBClusterArn,
+      clusterResourceId: selectedCluster.DbClusterResourceId,
+    };
+  }
+  context.print.error('No properly configured Aurora Serverless clusters found.');
+  process.exit(0);
 }
 
 /**
@@ -94,7 +101,7 @@ async function selectCluster(inputs, AWS) {
  * @param {*} inputs
  * @param {*} clusterResourceId
  */
-async function getSecretStoreArn(inputs, clusterResourceId, AWS) {
+async function getSecretStoreArn(context, inputs, clusterResourceId, AWS) {
   const SecretsManager = new AWS.SecretsManager();
   const NextToken = 'NextToken';
   let rawSecrets = [];
@@ -103,6 +110,7 @@ async function getSecretStoreArn(inputs, clusterResourceId, AWS) {
   };
 
   const listSecretsResult = await SecretsManager.listSecrets(params).promise();
+
   rawSecrets = listSecretsResult.SecretList;
   let token = listSecretsResult.NextToken;
   while (token) {
@@ -128,11 +136,13 @@ async function getSecretStoreArn(inputs, clusterResourceId, AWS) {
     secrets.set(rawSecrets[i].Name, rawSecrets[i].ARN);
   }
 
-  if (!selectedSecretArn) {
+  if (!selectedSecretArn && secrets.size > 0) {
     // Kick off questions flow
-    const selectedSecretName
-     = await promptWalkthroughQuestion(inputs, 2, Array.from(secrets.keys()));
+    const selectedSecretName = await promptWalkthroughQuestion(inputs, 2, Array.from(secrets.keys()));
     selectedSecretArn = secrets.get(selectedSecretName);
+  } else {
+    context.print.error('No RDS access credentials found in the AWS Secrect Manager.');
+    process.exit(0);
   }
 
   return selectedSecretArn;
@@ -144,7 +154,7 @@ async function getSecretStoreArn(inputs, clusterResourceId, AWS) {
  * @param {*} clusterArn
  * @param {*} secretArn
  */
-async function selectDatabase(inputs, clusterArn, secretArn, AWS) {
+async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
   // Database Name Question
   const DataApi = new AWS.RDSDataService();
   const params = new DataApiParams();
@@ -156,8 +166,7 @@ async function selectDatabase(inputs, clusterArn, secretArn, AWS) {
   const dataApiResult = await DataApi.executeStatement(params).promise();
 
   // eslint-disable-next-line prefer-destructuring
-  const records
-   = dataApiResult.records;
+  const records = dataApiResult.records;
   const databaseList = [];
 
   for (let i = 0; i < records.length; i += 1) {
@@ -170,7 +179,12 @@ async function selectDatabase(inputs, clusterArn, secretArn, AWS) {
 
   spinner.succeed('Fetched Aurora Serverless cluster.');
 
-  return await promptWalkthroughQuestion(inputs, 3, databaseList);
+  if (databaseList.length > 0) {
+    return await promptWalkthroughQuestion(inputs, 3, databaseList);
+  }
+
+  context.print.error('No properly configured databases found.');
+  process.exit(0);
 }
 
 /**
