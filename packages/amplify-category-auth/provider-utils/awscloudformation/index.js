@@ -146,24 +146,8 @@ async function addResource(context, category, service) {
       let lambdaGroupVar;
       if ((await context.amplify.confirmPrompt.run('Do you want to add an admin queries API?'))) {
         if (await context.amplify.confirmPrompt.run('Do you want to restrict access to a specific Group')) {
-          let userPoolGroupList = [];
-          let existingGroups;
-
-          const userGroupParamsPath = path.join(
-            context.amplify.pathManager.getBackendDirPath(),
-            'auth',
-            'userPoolGroups',
-            'user-pool-group-precedence.json',
-          );
-
-          try {
-            existingGroups = context.amplify.readJsonFile(userGroupParamsPath);
-            userPoolGroupList = existingGroups.map(e => e.groupName);
-            userPoolGroupList.push('Enter a custom group');
-          } catch (e) {
-            userPoolGroupList = ['Enter a custom group'];
-            existingGroups = null;
-          }
+          const userPoolGroupList = context.amplify.getUserPoolGroupList(context);
+          userPoolGroupList.push('Enter a custom group');
 
           const adminGroupAnswer = await inquirer.prompt([
             {

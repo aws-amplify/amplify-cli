@@ -81,7 +81,9 @@
                             "Action": "sts:AssumeRoleWithWebIdentity"
                         }
                     ]
-                }
+                }<% if(props.groups[i].customPolicies && props.groups[i].customPolicies.length > 0) { %>,
+                "Policies": <%- JSON.stringify(props.groups[i].customPolicies, null, 4) %>
+                <% } %>
             }
         },
     <% } %>

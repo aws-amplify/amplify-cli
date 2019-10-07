@@ -22,6 +22,22 @@ async function transformUserPoolGroupSchema(context) {
 
   const groups = context.amplify.readJsonFile(resourceDirPath);
 
+  // Replace env vars with subs
+
+  groups.forEach((group) => {
+    if (group.customPolicies) {
+      group.customPolicies.forEach((policy) => {
+        if (policy.PolicyDocument && policy.PolicyDocument.Statement) {
+          policy.PolicyDocument.Statement.forEach((statement) => {
+            if (statement.Resource.includes('${env}')) { //eslint-disable-line
+              statement.Resource = { 'Fn::Sub': [statement.Resource, { env: { Ref: 'env' } }] };
+            }
+          });
+        }
+      });
+    }
+  });
+
   const copyJobs = [
     {
       dir: __dirname,
