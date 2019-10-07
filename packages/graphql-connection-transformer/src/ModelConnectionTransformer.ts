@@ -278,12 +278,8 @@ export class ModelConnectionTransformer extends Transformer {
             // 2. [] to {} when the association exists. Note: false and undefined are not equal.
             // Store a foreign key on the related table and wire up a Query resolver.
             // This is the inverse of 3.
-            let idFieldName = 'id';
             const primaryKeyField = this.getPrimaryKeyField(ctx, parent);
-
-            if (primaryKeyField !== undefined) {
-                idFieldName = primaryKeyField.name.value;
-            }
+            const idFieldName = primaryKeyField ? primaryKeyField.name.value : 'id';
 
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(relatedTypeName, associatedConnectionField.name.value)
@@ -318,12 +314,8 @@ export class ModelConnectionTransformer extends Transformer {
                 )
             }
 
-            let idFieldName = 'id';
             const primaryKeyField = this.getPrimaryKeyField(ctx, relatedType);
-
-            if (primaryKeyField !== undefined) {
-                idFieldName = primaryKeyField.name.value;
-            }
+            const idFieldName = primaryKeyField ? primaryKeyField.name.value : 'id';
 
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
@@ -366,12 +358,8 @@ export class ModelConnectionTransformer extends Transformer {
             // 4. [] to ?
             // Store foreign key on the related table and wire up a Query resolver.
             // This has no inverse and has limited knowlege of the connection.
-            let idFieldName = 'id';
             const primaryKeyField = this.getPrimaryKeyField(ctx, parent);
-
-            if (primaryKeyField !== undefined) {
-                idFieldName = primaryKeyField.name.value;
-            }
+            const idFieldName = primaryKeyField ? primaryKeyField.name.value : 'id';
 
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
@@ -416,12 +404,8 @@ export class ModelConnectionTransformer extends Transformer {
             // 5. {} to ?
             // Store foreign key on this table and wire up a GetItem resolver.
             // This has no inverse and has limited knowlege of the connection.
-            let idFieldName = 'id';
             const primaryKeyField = this.getPrimaryKeyField(ctx, relatedType);
-
-            if (primaryKeyField !== undefined) {
-                idFieldName = primaryKeyField.name.value;
-            }
+            const idFieldName = primaryKeyField ? primaryKeyField.name.value : 'id';
 
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)

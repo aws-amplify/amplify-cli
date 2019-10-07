@@ -104,6 +104,8 @@ export class ResourceFactory {
      * @param field The connection field name.
      * @param relatedType The name of the related type to fetch from.
      * @param connectionAttribute The name of the underlying attribute containing the id.
+     * @param idFieldName The name of the field within the type that serve as the id.
+     * @param sortFieldInfo The info about the sort field if specified.
      */
     public makeGetItemConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string,
         idFieldName: string, sortFieldInfo?: {primarySortFieldName: string, sortFieldName: string, sortFieldIsStringLike: boolean}): Resolver {
