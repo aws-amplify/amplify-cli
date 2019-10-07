@@ -490,7 +490,7 @@ test('Test default limit is 50', async () => {
     expect(createPost.data.createPost.id).toEqual(postID)
     expect(createPost.data.createPost.title).toEqual(postTitle)
 
-    for (let i = 0; i < 52; i++) {
+    for (let i = 0; i < 51; i++) {
       await GRAPHQL_CLIENT.query(`
         mutation CreateComment {
           createComment(input: {postId: "${postID}", content: "content_${i}"}) {
