@@ -259,8 +259,12 @@ async function transformGraphQLSchema(context, options) {
   const buildDir = path.normalize(path.join(resourceDir, 'build'));
   const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
   const schemaDirPath = path.normalize(path.join(resourceDir, schemaDirName));
-  const deploymentSubKey = await hashDirectory(resourceDir);
-  const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
+  let deploymentRootKey = await getPreviousDeploymentRootKey(previouslyDeployedBackendDir);
+  if (!deploymentRootKey) {
+    // logic to update flag
+    const deploymentSubKey = await hashDirectory(resourceDir);
+    deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
+  }
   const projectBucket = getProjectBucket(context);
   const buildParameters = {
     ...parameters,
@@ -343,6 +347,22 @@ async function hashDirectory(directory) {
   };
 
   return hashElement(directory, options).then(result => result.hash);
+}
+
+async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
+  // this is the function
+  let parameters;
+  try {
+    const parametersPath = path.join(previouslyDeployedBackendDir, `build/${parametersFileName}`);
+    const parametersExists = await fs.exists(parametersPath);
+    if (parametersExists) {
+      const parametersString = await fs.readFile(parametersPath);
+      parameters = JSON.parse(parametersString.toString());
+    }
+    return parameters.S3DeploymentRootKey;
+  } catch (err) {
+    return undefined;
+  }
 }
 
 // TODO: Remove until further discussion
