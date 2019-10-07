@@ -1,5 +1,4 @@
 import * as nexpect from 'nexpect';
-import * as path from 'path';
 import { getCLIPath, isCI } from '../utils';
 
 export function addAnalytics(cwd: string, settings: any, verbose: boolean = !isCI()) {
