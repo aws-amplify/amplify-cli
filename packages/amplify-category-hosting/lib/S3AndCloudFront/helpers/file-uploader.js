@@ -13,29 +13,22 @@ const providerName = 'awscloudformation';
 async function run(context, distributionDirPath) {
   const { WebsiteConfiguration } = context.exeInfo.template.Resources.S3Bucket.Properties;
   const { output } = context.exeInfo.amplifyMeta[category][serviceName];
-  const fileList =
-    fileScanner.scan(context, distributionDirPath, WebsiteConfiguration);
+  const fileList = fileScanner.scan(context, distributionDirPath, WebsiteConfiguration);
 
   const uploadFileTasks = [];
   const s3Client = await getS3Client(context, 'update');
   const hostingBucketName = getHostingBucketName(context);
 
   let cloudFrontS3CanonicalUserId;
-  if (context.exeInfo.template.Resources.OriginAccessIdentity &&
-    output.CloudFrontOriginAccessIdentity) {
+  if (context.exeInfo.template.Resources.OriginAccessIdentity && output.CloudFrontOriginAccessIdentity) {
     const cloudFrontClient = await getCloudFrontClient(context, 'retrieve');
     const params = { Id: output.CloudFrontOriginAccessIdentity };
-    const originAccessIdentity =
-      await cloudFrontClient.getCloudFrontOriginAccessIdentity(params).promise();
+    const originAccessIdentity = await cloudFrontClient.getCloudFrontOriginAccessIdentity(params).promise();
     cloudFrontS3CanonicalUserId = originAccessIdentity.S3CanonicalUserId;
   }
 
-  fileList.forEach((filePath) => {
-    uploadFileTasks.push(() =>
-      uploadFile(
-        s3Client, hostingBucketName, distributionDirPath, filePath,
-        cloudFrontS3CanonicalUserId,
-      ));
+  fileList.forEach(filePath => {
+    uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, cloudFrontS3CanonicalUserId));
   });
 
   const spinner = new Ora('Uploading files...');
@@ -68,10 +61,7 @@ function getHostingBucketName(context) {
   return amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
 }
 
-async function uploadFile(
-  s3Client, hostingBucketName, distributionDirPath, filePath,
-  cloudFrontS3CanonicalUserId,
-) {
+async function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, cloudFrontS3CanonicalUserId) {
   let relativeFilePath = path.relative(distributionDirPath, filePath);
   // make Windows-style relative paths compatible to S3
   relativeFilePath = relativeFilePath.replace(/\\/g, '/');

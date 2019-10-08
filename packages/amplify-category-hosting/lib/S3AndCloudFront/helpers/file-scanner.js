@@ -15,8 +15,11 @@ function scan(context, distributionDirPath, WebsiteConfiguration) {
       context.print.info(`  ${distributionDirPath}`);
       context.print.info('');
       throw new Error(message);
-    } else if (WebsiteConfiguration && WebsiteConfiguration.IndexDocument &&
-      !fs.existsSync(path.join(distributionDirPath, WebsiteConfiguration.IndexDocument))) {
+    } else if (
+      WebsiteConfiguration &&
+      WebsiteConfiguration.IndexDocument &&
+      !fs.existsSync(path.join(distributionDirPath, WebsiteConfiguration.IndexDocument))
+    ) {
       context.print.info('');
       context.print.warning('Index doc is missing in the distribution folder');
       context.print.info('Distribution folder is currently set as:');

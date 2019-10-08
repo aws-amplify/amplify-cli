@@ -36,8 +36,7 @@ async function configure(context) {
       context.exeInfo.template.Outputs.CloudFrontDistributionID = Outputs.CloudFrontDistributionID;
       context.exeInfo.template.Outputs.CloudFrontDomainName = Outputs.CloudFrontDomainName;
       context.exeInfo.template.Outputs.CloudFrontSecureURL = Outputs.CloudFrontSecureURL;
-      context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity =
-        Outputs.CloudFrontOriginAccessIdentity;
+      context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity = Outputs.CloudFrontOriginAccessIdentity;
       delete context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration;
       // Don't remove the following line,
       // customer projects setup by the CLI prior to 2/22/2019 has this resource
@@ -63,13 +62,9 @@ async function configure(context) {
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
       delete context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity;
 
-      const {
-        AccessControl,
-        WebsiteConfiguration,
-      } = originalTemplate.Resources.S3Bucket.Properties;
+      const { AccessControl, WebsiteConfiguration } = originalTemplate.Resources.S3Bucket.Properties;
       context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
-      context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration =
-        WebsiteConfiguration;
+      context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration = WebsiteConfiguration;
 
       context.print.warning('Static webhosting will be enabled for the hosting bucket once you remove CloudFront Distribution.');
       context.print.info('Set its configuration:');
