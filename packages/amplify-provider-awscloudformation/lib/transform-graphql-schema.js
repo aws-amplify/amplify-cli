@@ -291,14 +291,15 @@ async function transformGraphQLSchema(context, options) {
       new HTTPTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
-      // TODO: Build dependency mechanism into transformers. Auth runs last
-      // so any resolvers that need to be protected will already be created.
-      new ModelAuthTransformer({ authConfig }),
     ];
 
     if (addSearchableTransformer) {
       transformerList.push(new SearchableModelTransformer());
     }
+
+    // TODO: Build dependency mechanism into transformers. Auth runs last
+    // so any resolvers that need to be protected will already be created.
+    transformerList.push(new ModelAuthTransformer({ authConfig }));
 
     return transformerList;
   };
