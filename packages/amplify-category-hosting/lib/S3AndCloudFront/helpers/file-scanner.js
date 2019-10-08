@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const publishConfig = require('./configure-Publish');
 
-function scan(context, distributionDirPath, indexDoc) {
+function scan(context, distributionDirPath, WebsiteConfiguration) {
   let fileList = [];
   if (fs.existsSync(distributionDirPath)) {
     const ignored = publishConfig.getIgnore(context);
@@ -15,13 +15,17 @@ function scan(context, distributionDirPath, indexDoc) {
       context.print.info(`  ${distributionDirPath}`);
       context.print.info('');
       throw new Error(message);
-    } else if (!fs.existsSync(path.join(distributionDirPath, indexDoc))) {
+    } else if (
+      WebsiteConfiguration &&
+      WebsiteConfiguration.IndexDocument &&
+      !fs.existsSync(path.join(distributionDirPath, WebsiteConfiguration.IndexDocument))
+    ) {
       context.print.info('');
       context.print.warning('Index doc is missing in the distribution folder');
       context.print.info('Distribution folder is currently set as:');
       context.print.info(`  ${distributionDirPath}`);
       context.print.info('Index document is currently set as:');
-      context.print.info(`  ${indexDoc}`);
+      context.print.info(`  ${WebsiteConfiguration.IndexDocument}`);
       context.print.info('');
     }
   } else {
