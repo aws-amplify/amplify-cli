@@ -3,7 +3,7 @@ const path = require('path');
 const sequential = require('promise-sequential');
 const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
 
-const { invokeFunction } = require('./provider-utils/awscloudformation/utils/invoke');
+const { invoke } = require('amplify-util-mock/lib/utils/lambda/invoke');
 
 const { run } = require('./commands/function/invoke');
 
@@ -110,10 +110,6 @@ async function initEnv(context) {
   });
 
   await sequential(functionTasks);
-}
-
-function invoke(options) {
-  invokeFunction(options);
 }
 
 function invokeWalkthroughRun(context) {
