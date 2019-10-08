@@ -37,6 +37,10 @@ module.exports = {
         name: 'add-graphql-datasource',
         description: 'Provisions the AppSync resources and its dependencies for the provided Aurora Serverless data source',
       },
+      {
+        name: 'console',
+        description: 'Opens the web console for the selected api service',
+      },
     ];
 
     context.amplify.showHelp(header, commands);
