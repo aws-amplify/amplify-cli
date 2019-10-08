@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
-const { invokeFunction } = require('./utils/invoke');
+const { invoke: invokeFunction } = require('amplify-util-mock/lib/utils/lambda/invoke');
 
 const categoryName = 'function';
 
