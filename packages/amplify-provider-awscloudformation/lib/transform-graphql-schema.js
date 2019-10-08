@@ -261,7 +261,6 @@ async function transformGraphQLSchema(context, options) {
   const schemaDirPath = path.normalize(path.join(resourceDir, schemaDirName));
   let deploymentRootKey = await getPreviousDeploymentRootKey(previouslyDeployedBackendDir);
   if (!deploymentRootKey) {
-    // logic to update flag
     const deploymentSubKey = await hashDirectory(resourceDir);
     deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
   }
