@@ -40,11 +40,10 @@ async function run(context) {
   generateLocalRuntimeFiles(context);
   generateNonRuntimeFiles(context);
 
-  context.exeInfo.projectConfig.providers.forEach((provider) => {
+  context.exeInfo.projectConfig.providers.forEach(provider => {
     const providerModule = require(providerPlugins[provider]);
     providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
-
 
   await sequential(providerOnSuccessTasks);
 
@@ -73,8 +72,7 @@ function generateAmplifyMetaFile(context) {
   if (context.exeInfo.isNewEnv) {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, 4);
-    const currentBackendMetaFilePath =
-              context.amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
+    const currentBackendMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
     const backendMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
@@ -136,10 +134,12 @@ function printWelcomeMessage(context) {
   context.print.success('Your project has been successfully initialized and connected to the cloud!');
   context.print.info('');
   context.print.success('Some next steps:');
-  context.print.info("\"amplify status\" will show you what you've added already and if it's locally configured or deployed");
+  context.print.info('"amplify status" will show you what you\'ve added already and if it\'s locally configured or deployed');
   context.print.info('"amplify <category> add" will allow you to add features like user login or a backend API');
   context.print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
-  context.print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
+  context.print.info(
+    '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+  );
   context.print.info('');
   context.print.success('Pro tip:');
   context.print.info('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything');

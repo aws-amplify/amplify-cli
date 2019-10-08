@@ -9,7 +9,7 @@ async function run(context) {
   context.exeInfo.projectConfig.providers = providers;
   const initializationTasks = [];
 
-  providers.forEach((provider) => {
+  providers.forEach(provider => {
     const providerModule = require(providerPlugins[provider]);
     initializationTasks.push(() => providerModule.init(context));
   });
@@ -19,13 +19,12 @@ async function run(context) {
   return context;
 }
 
-
 async function getProviders(context, providerPlugins) {
   let providers = [];
   const providerPluginList = Object.keys(providerPlugins);
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify && inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach((provider) => {
+    inputParams.amplify.providers.forEach(provider => {
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
         providers.push(provider);

@@ -297,8 +297,8 @@ export class ModelAuthTransformer extends Transformer {
 
         const apiKeyAuthProvider = authProviders.find(p => p.authenticationType === 'API_KEY');
 
-        // Return the found instance or a default instance with 180 days of API key expiration
-        return apiKeyAuthProvider ? apiKeyAuthProvider.apiKeyConfig : { apiKeyExpirationDays: 180 };
+        // Return the found instance or a default instance with 7 days of API key expiration
+        return apiKeyAuthProvider ? apiKeyAuthProvider.apiKeyConfig : { apiKeyExpirationDays: 7 };
     }
 
     /**

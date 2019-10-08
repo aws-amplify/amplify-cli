@@ -3,7 +3,7 @@ const featureName = 'xr';
 module.exports = {
   name: featureName,
   alias: ['XR'],
-  run: async (context) => {
+  run: async context => {
     const header = `amplify ${featureName} <subcommand>`;
 
     const commands = [

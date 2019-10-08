@@ -88,10 +88,11 @@ function getFieldType(fields: ReadonlyArray<FieldDefinitionNode>, fieldName: str
  * @param inputFieldNames: The fields passed in to the @connection directive.
  * @param keySchema: The key schema for the index being used.
  */
-function checkFieldsAgainstIndex(parentFields: ReadonlyArray<FieldDefinitionNode>,
-                                 relatedTypeFields: ReadonlyArray<FieldDefinitionNode>,
-                                 inputFieldNames: string[],
-                                 keySchema: KeySchema[]): void {
+function checkFieldsAgainstIndex(
+        parentFields: ReadonlyArray<FieldDefinitionNode>,
+        relatedTypeFields: ReadonlyArray<FieldDefinitionNode>,
+        inputFieldNames: string[],
+        keySchema: KeySchema[]): void {
     const hashAttributeName = keySchema[0].AttributeName;
     const tablePKType = getFieldType(relatedTypeFields, String(hashAttributeName));
     const queryPKType = getFieldType(parentFields, inputFieldNames[0]);
@@ -144,10 +145,11 @@ export class ModelConnectionTransformer extends Transformer {
         super(
             'ModelConnectionTransformer',
             gql`directive @connection(name: String,
-                                      keyField: String,
-                                      sortField: String,
-                                      keyName: String,
-                                      fields: [String!]) on FIELD_DEFINITION`
+                                        keyField: String,
+                                        sortField: String,
+                                        keyName: String,
+                                        limit: Int,
+                                        fields: [String!]) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();
     }
@@ -234,6 +236,7 @@ export class ModelConnectionTransformer extends Transformer {
         const leftConnectionIsNonNull = isNonNullType(field.type)
         const rightConnectionIsList = associatedConnectionField ? isListType(associatedConnectionField.type) : undefined
         const rightConnectionIsNonNull = associatedConnectionField ? isNonNullType(associatedConnectionField.type) : undefined
+        const limit = getDirectiveArgument(directive)("limit")
 
         let connectionAttributeName = getDirectiveArgument(directive)("keyField")
         const associatedSortField = associatedSortFieldName &&
@@ -294,7 +297,8 @@ export class ModelConnectionTransformer extends Transformer {
                 connectionAttributeName,
                 connectionName,
                 // If there is a sort field for this connection query then use
-                sortKeyInfo
+                sortKeyInfo,
+                limit
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver)
 
@@ -371,7 +375,8 @@ export class ModelConnectionTransformer extends Transformer {
                 relatedTypeName,
                 connectionAttributeName,
                 connectionName,
-                sortKeyInfo
+                sortKeyInfo,
+                limit
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver)
 

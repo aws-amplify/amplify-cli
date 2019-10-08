@@ -23,14 +23,15 @@ async function constructPinpointNotificationsMeta(context) {
 
   const { envName } = localEnvInfo;
 
-  if (teamProviderInfo &&
-      teamProviderInfo[envName] &&
-      teamProviderInfo[envName].categories &&
-      teamProviderInfo[envName].categories[constants.CategoryName] &&
-      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] &&
-      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName].Id) {
-    pinpointApp =
-      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
+  if (
+    teamProviderInfo &&
+    teamProviderInfo[envName] &&
+    teamProviderInfo[envName].categories &&
+    teamProviderInfo[envName].categories[constants.CategoryName] &&
+    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] &&
+    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName].Id
+  ) {
+    pinpointApp = teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
   }
 
   if (!pinpointApp) {
@@ -76,13 +77,14 @@ async function deletePinpointAppForEnv(context, envName) {
   let pinpointApp;
   const teamProviderInfo = context.amplify.getEnvDetails();
 
-  if (teamProviderInfo &&
-      teamProviderInfo[envName] &&
-      teamProviderInfo[envName].categories &&
-      teamProviderInfo[envName].categories[constants.CategoryName] &&
-      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName]) {
-    pinpointApp =
-      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
+  if (
+    teamProviderInfo &&
+    teamProviderInfo[envName] &&
+    teamProviderInfo[envName].categories &&
+    teamProviderInfo[envName].categories[constants.CategoryName] &&
+    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName]
+  ) {
+    pinpointApp = teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
   }
 
   if (pinpointApp) {
@@ -91,11 +93,13 @@ async function deletePinpointAppForEnv(context, envName) {
     };
     const pinpointClient = await pinpointHelper.getPinpointClient(context, 'delete');
 
-    return pinpointClient.deleteApp(params).promise()
+    return pinpointClient
+      .deleteApp(params)
+      .promise()
       .then(() => {
         context.print.success(`Successfully deleted Pinpoint project: ${pinpointApp.Id}`);
       })
-      .catch((err) => {
+      .catch(err => {
         // awscloudformation might have already removed the pinpoint project
         if (err.code === 'NotFoundException') {
           context.print.warning(`${pinpointApp.Id}: not found`);
@@ -110,35 +114,37 @@ async function deletePinpointAppForEnv(context, envName) {
 async function pushChanges(context, pinpointNotificationsMeta) {
   const availableChannels = notificationManager.getAvailableChannels();
   let pinpointInputParams;
-  if (context.exeInfo &&
+  if (
+    context.exeInfo &&
     context.exeInfo.inputParams &&
     context.exeInfo.inputParams.categories &&
     context.exeInfo.inputParams.categories[constants.CategoryName] &&
-    context.exeInfo.inputParams.categories[constants.CategoryName][constants.PinpointName]) {
-    pinpointInputParams =
-        context.exeInfo.inputParams.categories[constants.CategoryName][constants.PinpointName];
+    context.exeInfo.inputParams.categories[constants.CategoryName][constants.PinpointName]
+  ) {
+    pinpointInputParams = context.exeInfo.inputParams.categories[constants.CategoryName][constants.PinpointName];
     context.exeInfo.pinpointInputParams = pinpointInputParams;
   }
   const channelsToEnable = [];
   const channelsToDisable = [];
   // const channelsToUpdate = [];
 
-  availableChannels.forEach((channel) => {
+  availableChannels.forEach(channel => {
     let isCurrentlyEnabled = false;
     let needToBeEnabled = false;
     if (pinpointNotificationsMeta.output && pinpointNotificationsMeta.output.Id) {
-      if (pinpointNotificationsMeta.output[channel] &&
-        pinpointNotificationsMeta.output[channel].Enabled) {
+      if (pinpointNotificationsMeta.output[channel] && pinpointNotificationsMeta.output[channel].Enabled) {
         isCurrentlyEnabled = true;
       }
     }
 
-    if (pinpointNotificationsMeta.channels &&
-      pinpointNotificationsMeta.channels.includes(channel)) {
+    if (pinpointNotificationsMeta.channels && pinpointNotificationsMeta.channels.includes(channel)) {
       needToBeEnabled = true;
     }
-    if (pinpointInputParams && pinpointInputParams[channel] &&
-      Object.prototype.hasOwnProperty.call(pinpointInputParams[channel], 'Enabled')) {
+    if (
+      pinpointInputParams &&
+      pinpointInputParams[channel] &&
+      Object.prototype.hasOwnProperty.call(pinpointInputParams[channel], 'Enabled')
+    ) {
       needToBeEnabled = pinpointInputParams[channel].Enabled;
     }
 
@@ -155,10 +161,10 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   await pinpointHelper.ensurePinpointApp(context, pinpointNotificationsMeta.resourceName);
 
   const tasks = [];
-  channelsToEnable.forEach((channel) => {
+  channelsToEnable.forEach(channel => {
     tasks.push(() => notificationManager.enableChannel(context, channel));
   });
-  channelsToDisable.forEach((channel) => {
+  channelsToDisable.forEach(channel => {
     tasks.push(() => notificationManager.disableChannel(context, channel));
   });
   // channelsToUpdate.forEach((channel) => {
@@ -177,10 +183,8 @@ async function writeData(context) {
     const resources = Object.keys(categoryMeta);
     for (let i = 0; i < resources.length; i++) {
       const serviceMeta = categoryMeta[resources[i]];
-      if (serviceMeta.service === constants.PinpointName &&
-                                  serviceMeta.output &&
-                                  serviceMeta.output.Id) {
-        availableChannels.forEach((channel) => {
+      if (serviceMeta.service === constants.PinpointName && serviceMeta.output && serviceMeta.output.Id) {
+        availableChannels.forEach(channel => {
           if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
             enabledChannels.push(channel);
           }
@@ -200,17 +204,9 @@ async function writeData(context) {
   // TODO: move writing to files logic to the cli core when those are ready
   writeTeamProviderInfo(pinpointMeta, context);
   writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
-  writeBackendConfig(
-    context,
-    pinpointMeta,
-    context.amplify.pathManager.getCurrentBackendConfigFilePath(),
-  );
+  writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
   writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
-  writeAmplifyMeta(
-    context,
-    categoryMeta,
-    context.amplify.pathManager.getCurentAmplifyMetaFilePath(),
-  );
+  writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getCurentAmplifyMetaFilePath());
   await context.amplify.onCategoryOutputsChange(context);
 }
 
@@ -221,14 +217,14 @@ function writeTeamProviderInfo(pinpointMeta, context) {
     const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoFilepath);
     teamProviderInfo[envName] = teamProviderInfo[envName] || {};
     teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
-    teamProviderInfo[envName].categories[constants.CategoryName] =
-              teamProviderInfo[envName].categories[constants.CategoryName] || {};
-    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] =
-    pinpointMeta ? {
-      Name: pinpointMeta.Name,
-      Id: pinpointMeta.Id,
-      Region: pinpointMeta.Region,
-    } : undefined;
+    teamProviderInfo[envName].categories[constants.CategoryName] = teamProviderInfo[envName].categories[constants.CategoryName] || {};
+    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] = pinpointMeta
+      ? {
+          Name: pinpointMeta.Name,
+          Id: pinpointMeta.Id,
+          Region: pinpointMeta.Region,
+        }
+      : undefined;
     const jsonString = JSON.stringify(teamProviderInfo, null, 4);
     fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
   }
@@ -294,15 +290,13 @@ function extractMigrationInfo(context) {
     }
   }
 
-  if (migrationInfo &&
-    migrationInfo.output &&
-    migrationInfo.output.Id) {
+  if (migrationInfo && migrationInfo.output && migrationInfo.output.Id) {
     migrationInfo.Id = migrationInfo.output.Id;
     migrationInfo.Name = migrationInfo.output.Name;
     migrationInfo.Region = migrationInfo.output.Region;
     migrationInfo.channels = [];
     const availableChannels = notificationManager.getAvailableChannels();
-    availableChannels.forEach((channel) => {
+    availableChannels.forEach(channel => {
       if (migrationInfo.output[channel] && migrationInfo.output[channel].Enabled) {
         migrationInfo.channels.push(channel);
       }
@@ -334,11 +328,9 @@ function fillTeamProviderInfo(context, migrationInfo) {
     };
 
     const { teamProviderInfo } = context.migrationInfo;
-    teamProviderInfo[migrationInfo.envName] =
-      teamProviderInfo[migrationInfo.envName] || {};
+    teamProviderInfo[migrationInfo.envName] = teamProviderInfo[migrationInfo.envName] || {};
 
-    teamProviderInfo[migrationInfo.envName].categories =
-      teamProviderInfo[migrationInfo.envName].categories || {};
+    teamProviderInfo[migrationInfo.envName].categories = teamProviderInfo[migrationInfo.envName].categories || {};
 
     Object.assign(teamProviderInfo[migrationInfo.envName].categories, categoryTeamInfo);
   }
@@ -350,4 +342,3 @@ module.exports = {
   writeData,
   migrate,
 };
-

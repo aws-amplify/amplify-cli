@@ -2,7 +2,6 @@ const fs = require('fs');
 const add = require('../../commands/auth/enable');
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
-
 describe('auth enable: ', () => {
   const mockExecuteProviderUtils = jest.fn();
   const mockGetProjectDetails = jest.fn();
@@ -61,4 +60,3 @@ describe('auth enable: ', () => {
     });
   });
 });
-

@@ -5,7 +5,7 @@ const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-fil
 
 module.exports = {
   name: 'remove',
-  run: async (context) => {
+  run: async context => {
     const envName = context.parameters.first;
     const currentEnv = context.amplify.getEnvInfo().envName;
 
@@ -16,8 +16,7 @@ module.exports = {
     let envFound = false;
     const allEnvs = context.amplify.getEnvDetails();
 
-
-    Object.keys(allEnvs).forEach((env) => {
+    Object.keys(allEnvs).forEach(env => {
       if (env === envName) {
         envFound = true;
         delete allEnvs[env];
@@ -28,7 +27,9 @@ module.exports = {
       context.print.error('No environment found with the corresponding name provided');
     } else {
       if (currentEnv === envName) {
-        context.print.error('You cannot delete your current environment. Please switch to another environment to delete your current environment');
+        context.print.error(
+          'You cannot delete your current environment. Please switch to another environment to delete your current environment'
+        );
         context.print.error("If this is your only environment you can use the 'amplify delete' command to delete your project");
         process.exit(1);
       }

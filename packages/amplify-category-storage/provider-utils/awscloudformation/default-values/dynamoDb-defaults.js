@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-const getAllDefaults = (project) => {
+const getAllDefaults = project => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
   const defaults = {

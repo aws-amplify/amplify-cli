@@ -1,4 +1,3 @@
-
 exports.handler = (event, context, callback) => {
   // Define the URL that you want the user to be directed to after verification is complete
   if (event.triggerSource === 'CustomMessage_SignUp') {
@@ -21,12 +20,14 @@ exports.handler = (event, context, callback) => {
 
     const seperator = hyphenRegions.includes(region) ? '-' : '.';
 
-    const payload = Buffer.from(JSON.stringify({
-      userName,
-      redirectUrl,
-      region,
-      clientId,
-    })).toString('base64');
+    const payload = Buffer.from(
+      JSON.stringify({
+        userName,
+        redirectUrl,
+        region,
+        clientId,
+      })
+    ).toString('base64');
     const bucketUrl = `http://${resourcePrefix}verificationbucket-${process.env.ENV}.s3-website${seperator}${region}.amazonaws.com`;
     const url = `${bucketUrl}/?data=${payload}&code=${codeParameter}`;
     const message = `${process.env.EMAILMESSAGE}. \n ${url}`;

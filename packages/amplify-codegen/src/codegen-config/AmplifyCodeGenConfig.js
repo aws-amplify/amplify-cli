@@ -43,9 +43,7 @@ class AmplifyCodeGenConfig {
     if (!this.constructor.isValidAmplifyProject(project)) {
       return false;
     }
-    const schemaPath = isAbsolute(project.schema)
-      ? relative(this.gqlConfig.configDir, project.schema)
-      : project.schema;
+    const schemaPath = isAbsolute(project.schema) ? relative(this.gqlConfig.configDir, project.schema) : project.schema;
     const newProject = {
       schemaPath,
       includes: project.includes,
@@ -104,7 +102,7 @@ class AmplifyCodeGenConfig {
       return;
     }
     cfg.projects = cfg.projects || {};
-    Object.keys(cfg).forEach((key) => {
+    Object.keys(cfg).forEach(key => {
       const proj = cfg[key];
       if (proj.extensions && proj.extensions.amplify) {
         delete cfg[key];
@@ -118,7 +116,7 @@ class AmplifyCodeGenConfig {
       }
     });
 
-    Object.keys(cfg.projects || {}).forEach((projName) => {
+    Object.keys(cfg.projects || {}).forEach(projName => {
       cfg.projects[projName] = this.constructor.normalizePath(cfg.projects[projName]);
     });
     cfg.extensions = {

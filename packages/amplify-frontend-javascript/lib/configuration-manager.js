@@ -37,8 +37,7 @@ async function configure(context) {
 
 function normalizeInputParams(context) {
   let inputParams;
-  if (context.exeInfo.inputParams &&
-    context.exeInfo.inputParams[constants.Label]) {
+  if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
     inputParams = context.exeInfo.inputParams[constants.Label];
   }
   if (inputParams && inputParams.framework) {
@@ -50,10 +49,12 @@ function normalizeInputParams(context) {
     }
   }
   if (inputParams && inputParams.config) {
-    if (!inputParams.config.SourceDir ||
-       !inputParams.config.DistributionDir ||
-       !inputParams.config.BuildCommand ||
-       !inputParams.config.StartCommand) {
+    if (
+      !inputParams.config.SourceDir ||
+      !inputParams.config.DistributionDir ||
+      !inputParams.config.BuildCommand ||
+      !inputParams.config.StartCommand
+    ) {
       throw new Error('The command line parameter for javascript frontend configuration is incomplete.');
     }
   }
@@ -73,8 +74,7 @@ async function confirmFramework(context) {
   if (inputParams && inputParams.framework) {
     if (context.exeInfo.projectConfig[constants.Label].framework !== inputParams.framework) {
       context.exeInfo.projectConfig[constants.Label].framework = inputParams.framework;
-      context.exeInfo.projectConfig[constants.Label].config =
-          frameworkConfigMapping[inputParams.framework];
+      context.exeInfo.projectConfig[constants.Label].config = frameworkConfigMapping[inputParams.framework];
     }
   } else if (!context.exeInfo.inputParams.yes) {
     context.print.info('Please tell us about your project');
@@ -88,8 +88,7 @@ async function confirmFramework(context) {
     const answers = await inquirer.prompt(frameworkComfirmation);
     if (context.exeInfo.projectConfig[constants.Label].framework !== answers.framework) {
       context.exeInfo.projectConfig[constants.Label].framework = answers.framework;
-      context.exeInfo.projectConfig[constants.Label].config =
-          frameworkConfigMapping[answers.framework];
+      context.exeInfo.projectConfig[constants.Label].config = frameworkConfigMapping[answers.framework];
     }
   }
 }
@@ -101,7 +100,7 @@ async function confirmFrameworkConfiguration(context) {
   } else if (!context.exeInfo.inputParams.yes) {
     if (!context.exeInfo.projectConfig[constants.Label].config) {
       context.exeInfo.projectConfig[constants.Label].config =
-          frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label].framework];
+        frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label].framework];
     }
     const { config } = context.exeInfo.projectConfig[constants.Label];
     const configurationSettings = [

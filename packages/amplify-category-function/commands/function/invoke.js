@@ -3,12 +3,13 @@ const category = 'function';
 
 module.exports = {
   name: subcommand,
-  run: async (context) => {
+  run: async context => {
     const servicesMetadata = context.amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
     const { amplify } = context;
 
-    return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
-      .then((result) => {
+    return amplify
+      .serviceSelectionPrompt(context, category, servicesMetadata)
+      .then(result => {
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
           context.print.error('Provider not confgiured for this category');
@@ -27,7 +28,7 @@ module.exports = {
 
         return providerController.invoke(context, category, result.service, resourceName);
       })
-      .catch((err) => {
+      .catch(err => {
         context.print.info(err.stack);
         context.print.error('An error occurred when adding the function resource');
       });

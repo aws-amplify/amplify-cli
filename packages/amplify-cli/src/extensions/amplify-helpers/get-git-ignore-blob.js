@@ -10,10 +10,10 @@ function getGitIgnoreBlob() {
     'dist/',
     'node_modules/',
     'aws-exports.js',
-    'awsconfiguration.json'];
+    'awsconfiguration.json',
+  ];
 
-  const toAppend = `${os.EOL + os.EOL
-  }${ignoreList.join(os.EOL)}`;
+  const toAppend = `${os.EOL + os.EOL}${ignoreList.join(os.EOL)}`;
 
   return toAppend;
 }

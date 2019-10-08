@@ -115,14 +115,7 @@ export class OperationServer {
       switch (queryType) {
         case 'query':
         case 'mutation':
-          const results: any = await execute(
-            this.simulatorContext.schema,
-            doc,
-            null,
-            context,
-            variables,
-            operationName
-          );
+          const results: any = await execute(this.simulatorContext.schema, doc, null, context, variables, operationName);
           const errors = [...(results.errors || []), ...context.appsyncErrors];
           if (errors.length > 0) {
             results.errors = exposeGraphQLErrors(errors);
@@ -130,14 +123,7 @@ export class OperationServer {
           return response.send({ data: null, ...results });
 
         case 'subscription':
-          const result = await execute(
-            this.simulatorContext.schema,
-            doc,
-            null,
-            context,
-            variables,
-            operationName
-          );
+          const result = await execute(this.simulatorContext.schema, doc, null, context, variables, operationName);
           if (context.appsyncErrors.length) {
             const errors = exposeGraphQLErrors(context.appsyncErrors);
             return response.send({
@@ -164,33 +150,36 @@ export class OperationServer {
     const appSyncConfig = this.simulatorContext.appSyncConfig;
     const { headers } = request;
     const apiKey = headers['x-api-key'];
-
-    const authorization = headers.Authorization || headers.authorization;
-    const jwtToken = authorization ? jwtDecode(authorization) : null;
     const allowedAuthTypes = this.getAllowedAuthTypes();
     if (apiKey && allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.API_KEY)) {
       if (appSyncConfig.apiKey === apiKey) {
         return AmplifyAppSyncSimulatorAuthenticationType.API_KEY;
       }
       throw new Error('UnauthorizedException');
-    } else if (jwtToken) {
+    } else {
+      const authorization = headers.Authorization || headers.authorization;
+      if (!authorization) {
+        throw new Error('UnauthorizedException:Missing authorization header');
+      }
+      let jwtToken;
+      try {
+        jwtToken = jwtDecode(authorization);
+      } catch (e) {
+        throw new Error('UnauthorizedException:Invalid JWT Token');
+      }
       if (this.isCognitoUserPoolToken(jwtToken)) {
         return AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS;
       } else if (this.isOidcToken(jwtToken)) {
         return AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT;
       }
+
       throw new Error('UnauthorizedException');
-    } else {
-      throw new Error('Missing authorization header');
     }
   }
 
   private getAllowedAuthTypes(): AmplifyAppSyncSimulatorAuthenticationType[] {
     const appSyncConfig = this.simulatorContext.appSyncConfig;
-    const allAuthTypes = [
-      appSyncConfig.defaultAuthenticationType,
-      ...appSyncConfig.additionalAuthenticationProviders,
-    ];
+    const allAuthTypes = [appSyncConfig.defaultAuthenticationType, ...appSyncConfig.additionalAuthenticationProviders];
     return allAuthTypes.map(c => c.authenticationType).filter(c => c);
   }
 
@@ -199,9 +188,7 @@ export class OperationServer {
     const allowedAuthTypes = this.getAllowedAuthTypes();
 
     if (
-      allowedAuthTypes.includes(
-        AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS
-      ) &&
+      allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS) &&
       token.iss.startsWith('https://cognito-idp.')
     ) {
       cupToken = true;
@@ -214,16 +201,10 @@ export class OperationServer {
     let oidcToken: boolean = false;
     const allowedAuthTypes = this.getAllowedAuthTypes();
     const appSyncConfig = this.simulatorContext.appSyncConfig;
-    const allAuthTypes = [
-      appSyncConfig.defaultAuthenticationType,
-      ...appSyncConfig.additionalAuthenticationProviders,
-    ];
+    const allAuthTypes = [appSyncConfig.defaultAuthenticationType, ...appSyncConfig.additionalAuthenticationProviders];
 
     const oidcIssuers = allAuthTypes
-      .filter(
-        authType =>
-          authType.authenticationType === AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT
-      )
+      .filter(authType => authType.authenticationType === AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT)
       .map((auth: AmplifyAppSyncAuthenticationProviderOIDCConfig) => {
         return auth.openIDConnectConfig.Issuer;
       });

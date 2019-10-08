@@ -4,12 +4,7 @@ const sharedQuestions = {
     type: 'list',
     message: `Choose the level of access required to access this ${entity}:`,
     required: true,
-    choices: [
-      'Public',
-      'Private',
-      'Protected',
-      'None',
-    ],
+    choices: ['Public', 'Private', 'Protected', 'None'],
   }),
 };
 

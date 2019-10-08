@@ -23,10 +23,8 @@ function getEnabledChannels(context) {
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === 'Pinpoint' &&
-                                serviceMeta.output &&
-                                serviceMeta.output.Id) {
-        availableChannels.forEach((channel) => {
+      if (serviceMeta.service === 'Pinpoint' && serviceMeta.output && serviceMeta.output.Id) {
+        availableChannels.forEach(channel => {
           if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
             result.push(channel);
           }
@@ -42,7 +40,7 @@ function getDisabledChannels(context) {
   const result = [];
   const availableChannels = getAvailableChannels(context);
   const enabledChannels = getEnabledChannels(context);
-  availableChannels.forEach((channel) => {
+  availableChannels.forEach(channel => {
     if (!enabledChannels.includes(channel)) {
       result.push(channel);
     }
@@ -78,7 +76,7 @@ async function configureChannel(context, channelName) {
 async function pullAllChannels(context, pinpointApp) {
   const pullTasks = [];
   context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
-  Object.keys(channelWorkers).forEach((channelName) => {
+  Object.keys(channelWorkers).forEach(channelName => {
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     pullTasks.push(() => channelWorker.pull(context, pinpointApp));
   });
