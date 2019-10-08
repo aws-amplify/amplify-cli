@@ -30,7 +30,7 @@ module.exports = {
       },
       {
         name: 'console',
-        description: `Opens the web console for the  ${featureName}`,
+        description: `Opens the web console for the ${featureName}`,
       },
     ];
 

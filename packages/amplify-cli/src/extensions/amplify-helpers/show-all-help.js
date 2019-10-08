@@ -70,7 +70,7 @@ function showAllHelp(context) {
     },
     {
       name: 'console',
-      description: 'Opens the web console for selected cloud resource.',
+      description: 'Opens the web console for the selected cloud resource.',
     },
   ];
 

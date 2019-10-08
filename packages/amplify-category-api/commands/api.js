@@ -39,7 +39,7 @@ module.exports = {
       },
       {
         name: 'console',
-        description: 'Opens the web console for selected api service',
+        description: 'Opens the web console for the selected api service',
       },
     ];
 

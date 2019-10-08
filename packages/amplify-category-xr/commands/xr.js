@@ -25,7 +25,7 @@ module.exports = {
       },
       {
         name: 'console',
-        description: `Opens the web console for the  ${featureName} category`,
+        description: `Opens the web console for the ${featureName} category`,
       },
     ];
 
