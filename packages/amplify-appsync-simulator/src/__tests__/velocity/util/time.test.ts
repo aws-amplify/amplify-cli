@@ -37,46 +37,24 @@ describe('Velocity $context.util.time', () => {
   });
 
   it('parseFormattedToEpochMilliSeconds', () => {
-    expect(
-      time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_UTC, FORMAT_CUSTOM_ZONED)
-    ).toEqual(TEST_TIMESTAMP_MILLIS);
-    expect(
-      time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_PLUS8, FORMAT_CUSTOM_ZONED)
-    ).toEqual(TEST_TIMESTAMP_MILLIS);
-    expect(
-      time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_UTC, FORMAT_CUSTOM_ZONED)
-    ).toEqual(TEST_TIMESTAMP_MILLIS);
-    expect(
-      time.parseFormattedToEpochMilliSeconds(
-        TEST_TIMESTAMP_CUSTOM_PLUS8,
-        FORMAT_CUSTOM_ZONED,
-        'Australia/Perth'
-      )
-    ).toEqual(TEST_TIMESTAMP_MILLIS);
-    expect(
-      time.parseFormattedToEpochMilliSeconds(
-        TEST_TIMESTAMP_CUSTOM_UTC_UNZONED,
-        FORMAT_CUSTOM_UNZONED,
-        'UTC'
-      )
-    ).toEqual(TEST_TIMESTAMP_MILLIS);
+    expect(time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_UTC, FORMAT_CUSTOM_ZONED)).toEqual(TEST_TIMESTAMP_MILLIS);
+    expect(time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_PLUS8, FORMAT_CUSTOM_ZONED)).toEqual(TEST_TIMESTAMP_MILLIS);
+    expect(time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_UTC, FORMAT_CUSTOM_ZONED)).toEqual(TEST_TIMESTAMP_MILLIS);
+    expect(time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_PLUS8, FORMAT_CUSTOM_ZONED, 'Australia/Perth')).toEqual(
+      TEST_TIMESTAMP_MILLIS
+    );
+    expect(time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_UTC_UNZONED, FORMAT_CUSTOM_UNZONED, 'UTC')).toEqual(
+      TEST_TIMESTAMP_MILLIS
+    );
 
-    expect(
-      time.parseFormattedToEpochMilliSeconds(
-        TEST_TIMESTAMP_CUSTOM_PLUS8_UNZONED,
-        FORMAT_CUSTOM_UNZONED,
-        'Australia/Perth'
-      )
-    ).toEqual(TEST_TIMESTAMP_MILLIS);
+    expect(time.parseFormattedToEpochMilliSeconds(TEST_TIMESTAMP_CUSTOM_PLUS8_UNZONED, FORMAT_CUSTOM_UNZONED, 'Australia/Perth')).toEqual(
+      TEST_TIMESTAMP_MILLIS
+    );
   });
 
   it('parseISO8601ToEpochMilliSeconds', () => {
-    expect(time.parseISO8601ToEpochMilliSeconds(TEST_TIMESTAMP_ZULU)).toEqual(
-      TEST_TIMESTAMP_MILLIS
-    );
-    expect(time.parseISO8601ToEpochMilliSeconds(TEST_TIMESTAMP_PLUS8)).toEqual(
-      TEST_TIMESTAMP_MILLIS
-    );
+    expect(time.parseISO8601ToEpochMilliSeconds(TEST_TIMESTAMP_ZULU)).toEqual(TEST_TIMESTAMP_MILLIS);
+    expect(time.parseISO8601ToEpochMilliSeconds(TEST_TIMESTAMP_PLUS8)).toEqual(TEST_TIMESTAMP_MILLIS);
   });
   it('epochMilliSecondsToSeconds', () => {
     expect(time.epochMilliSecondsToSeconds(TEST_TIMESTAMP_MILLIS)).toEqual(TEST_TIMESTAMP_SECS);
@@ -86,16 +64,10 @@ describe('Velocity $context.util.time', () => {
   });
 
   it('epochMilliSecondsToFormatted', () => {
-    expect(time.epochMilliSecondsToFormatted(TEST_TIMESTAMP_MILLIS, FORMAT_CUSTOM_ZONED)).toEqual(
-      TEST_TIMESTAMP_CUSTOM_UTC
-    );
+    expect(time.epochMilliSecondsToFormatted(TEST_TIMESTAMP_MILLIS, FORMAT_CUSTOM_ZONED)).toEqual(TEST_TIMESTAMP_CUSTOM_UTC);
 
-    expect(
-      time.epochMilliSecondsToFormatted(
-        TEST_TIMESTAMP_MILLIS,
-        FORMAT_CUSTOM_ZONED,
-        'Australia/Perth'
-      )
-    ).toEqual(TEST_TIMESTAMP_CUSTOM_PLUS8);
+    expect(time.epochMilliSecondsToFormatted(TEST_TIMESTAMP_MILLIS, FORMAT_CUSTOM_ZONED, 'Australia/Perth')).toEqual(
+      TEST_TIMESTAMP_CUSTOM_PLUS8
+    );
   });
 });

@@ -4,14 +4,14 @@ module.exports = {
   run: async function(context) {
     if (context.parameters.options.help) {
       const header = `amplify mock ${this.name} \nDescription:
-      Mock GraphQL API locally`
+      Mock GraphQL API locally`;
       context.amplify.showHelp(header, []);
       return;
     }
     try {
       await testUtil.api.start(context);
-    } catch(e) {
+    } catch (e) {
       context.print.error(e.message);
     }
-  }
-}
+  },
+};

@@ -41,7 +41,7 @@ export class AmplifyAppSyncSimulator {
     serverConfig: AppSyncSimulatorServerConfig = {
       port: 0,
       wsPort: 0,
-    },
+    }
   ) {
     this._serverConfig = serverConfig;
     this._pubsub = new PubSub();
@@ -77,11 +77,7 @@ export class AmplifyAppSyncSimulator {
       }, new Map());
 
       this.functions = (config.functions || []).reduce((map, fn) => {
-        const {
-          dataSourceName,
-          requestMappingTemplateLocation,
-          responseMappingTemplateLocation,
-        } = fn;
+        const { dataSourceName, requestMappingTemplateLocation, responseMappingTemplateLocation } = fn;
         map.set(
           fn.name,
           new AmplifySimulatorFunction(
@@ -90,8 +86,8 @@ export class AmplifyAppSyncSimulator {
               requestMappingTemplateLocation: requestMappingTemplateLocation,
               responseMappingTemplateLocation: responseMappingTemplateLocation,
             },
-            this,
-          ),
+            this
+          )
         );
         return map;
       }, new Map());
@@ -109,11 +105,7 @@ export class AmplifyAppSyncSimulator {
         return map;
       }, new Map());
 
-      this._schema = generateResolvers(
-        new Source(config.schema.content, config.schema.path),
-        config.resolvers,
-        this,
-      );
+      this._schema = generateResolvers(new Source(config.schema.content, config.schema.path), config.resolvers, this);
       this._config = config;
     } catch (e) {
       this._schema = lastSchema;

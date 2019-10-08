@@ -1,17 +1,7 @@
-import {
-  defaultFieldResolver,
-  DirectiveNode,
-  GraphQLObjectType,
-  GraphQLSchema,
-  valueFromASTUntyped,
-  GraphQLResolveInfo,
-} from 'graphql';
+import { defaultFieldResolver, DirectiveNode, GraphQLObjectType, GraphQLSchema, valueFromASTUntyped, GraphQLResolveInfo } from 'graphql';
 import { buildSchemaFromTypeDefinitions, forEachField } from 'graphql-tools';
 import { AmplifyAppSyncSimulator } from '../..';
-import {
-  AmplifyAppSyncSimulatorAuthenticationType,
-  AmplifyAppSyncSimulatorRequestContext,
-} from '../../type-definition';
+import { AmplifyAppSyncSimulatorAuthenticationType, AmplifyAppSyncSimulatorRequestContext } from '../../type-definition';
 import { Unauthorized } from '../../velocity/util';
 import AppSyncSimulatorDirectiveBase from './directive-base';
 
@@ -19,8 +9,7 @@ const AUTH_DIRECTIVES = {
   aws_api_key: 'directive @aws_api_key on FIELD_DEFINITION | OBJECT',
   aws_iam: 'directive @aws_iam on FIELD_DEFINITION | OBJECT',
   aws_oidc: 'directive @aws_oidc on FIELD_DEFINITION | OBJECT',
-  aws_cognito_user_pools:
-    'directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT',
+  aws_cognito_user_pools: 'directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT',
   aws_auth: 'directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION',
 };
 
@@ -61,21 +50,10 @@ function getAuthDirectiveForField(
   const parentField = schema.getType(typeName);
   const fieldAuthDirectives = getAuthDirective(fieldDirectives);
   const parentAuthDirectives = getAuthDirective(parentField.astNode.directives);
-  const allowedDirectives = fieldAuthDirectives.length
-    ? fieldAuthDirectives
-    : parentAuthDirectives.length
-    ? parentAuthDirectives
-    : [];
+  const allowedDirectives = fieldAuthDirectives.length ? fieldAuthDirectives : parentAuthDirectives.length ? parentAuthDirectives : [];
   const allowedAuthModes: Set<AmplifyAppSyncSimulatorAuthenticationType> = new Set();
   return allowedDirectives.length
-    ? Array.from(
-        allowedDirectives
-          .reduce(
-            (acc, directive) => acc.add(AUTH_TYPE_TO_DIRECTIVE_MAP[directive]),
-            allowedAuthModes
-          )
-          .values()
-      )
+    ? Array.from(allowedDirectives.reduce((acc, directive) => acc.add(AUTH_TYPE_TO_DIRECTIVE_MAP[directive]), allowedAuthModes).values())
     : [simulator.appSyncConfig.defaultAuthenticationType.authenticationType];
 }
 
@@ -110,11 +88,7 @@ function getDirectiveArgumentValues(directives: DirectiveNode, argName: string) 
     .reduce((acc, arg) => [...acc, ...valueFromASTUntyped(arg.value)], []);
 }
 
-export function protectResolversWithAuthRules(
-  typeDef,
-  existingResolvers,
-  simulator: AmplifyAppSyncSimulator
-) {
+export function protectResolversWithAuthRules(typeDef, existingResolvers, simulator: AmplifyAppSyncSimulator) {
   const schema = buildSchemaFromTypeDefinitions(typeDef);
   const newResolverMap = {};
   forEachField(schema, (field, typeName, fieldName) => {
@@ -129,8 +103,7 @@ export function protectResolversWithAuthRules(
         throw err;
       }
       if (
-        ctx.requestAuthorizationMode ===
-          AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS &&
+        ctx.requestAuthorizationMode === AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS &&
         allowedCognitoGroups.length
       ) {
         const groups = getCognitoGroups(ctx.jwt || {});
@@ -145,7 +118,7 @@ export function protectResolversWithAuthRules(
     if (!newResolverMap[typeName]) {
       newResolverMap[typeName] = {};
     }
-    newResolverMap[typeName][fieldName] = {...fieldResolver, resolve: newResolver };
+    newResolverMap[typeName][fieldName] = { ...fieldResolver, resolve: newResolver };
   });
   return newResolverMap;
 }

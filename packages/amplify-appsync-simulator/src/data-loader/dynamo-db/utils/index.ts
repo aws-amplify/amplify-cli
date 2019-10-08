@@ -26,7 +26,7 @@ export function unmarshall(raw, isRaw: boolean = true) {
         ...sum,
         [key]: unmarshall(value, false),
       }),
-      {},
+      {}
     );
   }
 

@@ -1,3 +1,3 @@
-import { VersionedModelTransformer } from './VersionedModelTransformer'
-export * from './VersionedModelTransformer'
-export default VersionedModelTransformer
+import { VersionedModelTransformer } from './VersionedModelTransformer';
+export * from './VersionedModelTransformer';
+export default VersionedModelTransformer;

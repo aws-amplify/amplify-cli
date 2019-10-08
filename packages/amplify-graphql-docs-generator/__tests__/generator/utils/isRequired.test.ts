@@ -1,4 +1,4 @@
-import isRequired from "../../../src/generator/utils/isRequired";
+import isRequired from '../../../src/generator/utils/isRequired';
 import {
   GraphQLScalarType,
   Kind,
@@ -7,22 +7,22 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
-  GraphQLInputObjectType
-} from "graphql";
-describe("isRequired", () => {
+  GraphQLInputObjectType,
+} from 'graphql';
+describe('isRequired', () => {
   const testObj = new GraphQLInputObjectType({
-    name: "Address",
+    name: 'Address',
     fields: {
       street: { type: GraphQLString },
-      requiredInt: { type: new GraphQLNonNull(GraphQLInt) }
-    }
+      requiredInt: { type: new GraphQLNonNull(GraphQLInt) },
+    },
   });
 
-  it("should return false for null types", () => {
+  it('should return false for null types', () => {
     expect(isRequired(testObj.getFields().street.type)).toEqual(false);
   });
 
-  it("should return true for non null types", () => {
+  it('should return true for non null types', () => {
     expect(isRequired(testObj.getFields().requiredInt.type)).toEqual(true);
   });
 });

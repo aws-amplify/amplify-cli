@@ -1,14 +1,14 @@
 /* tslint:disable */
 //  This file was automatically generated and should not be edited.
-import { Injectable } from "@angular/core";
-import API, { graphqlOperation } from "@aws-amplify/api";
-import { GraphQLResult } from "@aws-amplify/api/lib/types";
-import * as Observable from "zen-observable";
+import { Injectable } from '@angular/core';
+import API, { graphqlOperation } from '@aws-amplify/api';
+import { GraphQLResult } from '@aws-amplify/api/lib/types';
+import * as Observable from 'zen-observable';
 
 export enum Episode {
-  NEWHOPE = "NEWHOPE",
-  EMPIRE = "EMPIRE",
-  JEDI = "JEDI"
+  NEWHOPE = 'NEWHOPE',
+  EMPIRE = 'EMPIRE',
+  JEDI = 'JEDI',
 }
 
 export type ReviewInput = {
@@ -1549,7 +1549,7 @@ export type ReviewAddedSubscription = {
 };
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class APIService {
   async Hero(episode?: Episode): Promise<HeroQuery> {
@@ -1669,9 +1669,7 @@ export class APIService {
     if (episode) {
       gqlAPIServiceArguments.episode = episode;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await API.graphql(graphqlOperation(statement, gqlAPIServiceArguments))) as any;
     return <HeroQuery>response.data.hero;
   }
   async Reviews(episode: Episode): Promise<ReviewsQuery> {
@@ -1683,11 +1681,9 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      episode
+      episode,
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await API.graphql(graphqlOperation(statement, gqlAPIServiceArguments))) as any;
     return <ReviewsQuery>response.data.reviews;
   }
   async Search(text?: string): Promise<SearchQuery> {
@@ -1833,9 +1829,7 @@ export class APIService {
     if (text) {
       gqlAPIServiceArguments.text = text;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await API.graphql(graphqlOperation(statement, gqlAPIServiceArguments))) as any;
     return <SearchQuery>response.data.search;
   }
   async Character(id: string): Promise<CharacterQuery> {
@@ -1952,11 +1946,9 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      id
+      id,
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await API.graphql(graphqlOperation(statement, gqlAPIServiceArguments))) as any;
     return <CharacterQuery>response.data.character;
   }
   async Droid(id: string): Promise<DroidQuery> {
@@ -2109,11 +2101,9 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      id
+      id,
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await API.graphql(graphqlOperation(statement, gqlAPIServiceArguments))) as any;
     return <DroidQuery>response.data.droid;
   }
   async Human(id: string): Promise<HumanQuery> {
@@ -2274,11 +2264,9 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      id
+      id,
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await API.graphql(graphqlOperation(statement, gqlAPIServiceArguments))) as any;
     return <HumanQuery>response.data.human;
   }
   async Starship(id: string): Promise<StarshipQuery> {
@@ -2291,17 +2279,12 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      id
+      id,
     };
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await API.graphql(graphqlOperation(statement, gqlAPIServiceArguments))) as any;
     return <StarshipQuery>response.data.starship;
   }
-  async CreateReview(
-    review: ReviewInput,
-    episode?: Episode
-  ): Promise<CreateReviewMutation> {
+  async CreateReview(review: ReviewInput, episode?: Episode): Promise<CreateReviewMutation> {
     const statement = `mutation CreateReview($episode: Episode, $review: ReviewInput!) {
         createReview(episode: $episode, review: $review) {
           episode
@@ -2310,14 +2293,12 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {
-      review
+      review,
     };
     if (episode) {
       gqlAPIServiceArguments.episode = episode;
     }
-    const response = (await API.graphql(
-      graphqlOperation(statement, gqlAPIServiceArguments)
-    )) as any;
+    const response = (await API.graphql(graphqlOperation(statement, gqlAPIServiceArguments))) as any;
     return <CreateReviewMutation>response.data.createReview;
   }
   ReviewAddedListener: Observable<ReviewAddedSubscription> = API.graphql(

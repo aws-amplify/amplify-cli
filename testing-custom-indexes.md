@@ -7,7 +7,7 @@ DynamoDB is a distributed hash table that can execute efficient range queries on
 
 1. Secondary Indexes - Create new data structures to store information in a different way to enable new access patterns. Incurs extra cost.
 1. Composite Keys - Store two logical fields in a single field such that more than two logical fields can be used in a range query.
-2. Index overloading - Store more than 1 logical entity in a single index. Different logical entities may contains entirely different types of data. Allows a single index to power more than 1 access patterns for one or more logical entities.
+1. Index overloading - Store more than 1 logical entity in a single index. Different logical entities may contains entirely different types of data. Allows a single index to power more than 1 access patterns for one or more logical entities.
 
 The `@key` directive, in addition to allowing you to define custom primary index structures, helps with parts 1 and 2 above. The `@key` directive does not automatically overload indexes although this may be a possibility going forward. This is the definition of `@key`:
 
@@ -26,7 +26,7 @@ For example, let's say we are building some kind of e-commerce application and n
 3. Get items by order by status by createdAt.
 4. Get items by status by createdAt.
 
-When thinking about your access patterns, it is useful to lay them out using the same "by X by Y" structure I have here. 
+When thinking about your access patterns, it is useful to lay them out using the same "by X by Y" structure I have here.
 Once you have them laid out like this you can translate them directily into a `@key` by including the "X" and "Y" values as `fields`.
 For example to **Get orders by customer by date**, I would create a `@key`:
 
@@ -55,7 +55,7 @@ amplify init
 # ...
 amplify add api
 # ...
-# Say you don't have a schema, use the guided schema creation, 
+# Say you don't have a schema, use the guided schema creation,
 # and open the simplest model in your editor. Replace the schema with the one below.
 ```
 
@@ -63,14 +63,14 @@ amplify add api
 # A @key without a 'name' specifies the primary key. You may only provide 1 per @model type.
 # The @key creates a primary key where the HASHKEY = "customerEmail" and the SORTKEY = "createdAt".
 type Order @model @key(fields: ["customerEmail", "createdAt"]) {
-    customerEmail: String!
-    createdAt: String!
-    orderId: ID!
+  customerEmail: String!
+  createdAt: String!
+  orderId: ID!
 }
 # A @key with one field creates a primary key with a HASHKEY = "email"
 type Customer @model @key(fields: ["email"]) {
-    email: String!
-    username: String
+  email: String!
+  username: String
 }
 # The primary @key with 3 fields does something a little special.
 # The first field "orderId" will be the HASH KEY as expected BUT the SORT KEY will be
@@ -78,17 +78,20 @@ type Customer @model @key(fields: ["email"]) {
 # The AppSync resolvers will automatically stitch together the new composite key so the client does not need to worry about that detail.
 # The @key with name = "ByStatus" specifies a secondary index where the HASH KEY = "status" (an enum) and the SORT KEY = "createdAt".
 # The second @key directive also specifies that a top level query field named "itemsByStatus" should be created to query this index in AppSync.
-type Item @model
-    @key(fields: ["orderId", "status", "createdAt"])
-    @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
-{
-    orderId: ID!
-    status: Status!
-    createdAt: AWSDateTime!
-    name: String!
+type Item
+  @model
+  @key(fields: ["orderId", "status", "createdAt"])
+  @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus") {
+  orderId: ID!
+  status: Status!
+  createdAt: AWSDateTime!
+  name: String!
 }
 enum Status {
-    DELIVERED IN_TRANSIT PENDING UNKNOWN
+  DELIVERED
+  IN_TRANSIT
+  PENDING
+  UNKNOWN
 }
 ```
 

@@ -1,8 +1,6 @@
 import { stripIndent } from 'common-tags';
 
-import {
-  SwiftGenerator
-} from '../../src/swift/language';
+import { SwiftGenerator } from '../../src/swift/language';
 
 describe('Swift code generation: Basic language constructs', () => {
   let generator: SwiftGenerator<any>;
@@ -91,7 +89,11 @@ describe('Swift code generation: Basic language constructs', () => {
 
   it(`should handle multi-line descriptions`, () => {
     generator.structDeclaration({ structName: 'Hero', description: 'A hero' }, () => {
-      generator.propertyDeclaration({ propertyName: 'name', typeName: 'String', description: `A multiline comment \n on the hero's name.` });
+      generator.propertyDeclaration({
+        propertyName: 'name',
+        typeName: 'String',
+        description: `A multiline comment \n on the hero's name.`,
+      });
       generator.propertyDeclaration({ propertyName: 'age', typeName: 'String', description: `A multiline comment \n on the hero's age.` });
     });
 

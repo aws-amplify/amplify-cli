@@ -1,10 +1,5 @@
 require('../../src/aws-matchers/'); // custom matcher for assertion
-import {
-  initProjectWithProfile,
-  deleteProject,
-  amplifyPush,
-  amplifyPushUpdate
-} from '../../src/init';
+import { initProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../src/init';
 import { addApiWithSchema, updateApiSchema } from '../../src/categories/api';
 import { createNewProjectDir, deleteProjectDir } from '../../src/utils';
 
@@ -29,8 +24,8 @@ describe('amplify add api', () => {
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(
-        projRoot,
-        /Attempting to add a local secondary index to the TodoTable table in the Todo stack. Local secondary indexes must be created when the table is created.*/
+      projRoot,
+      /Attempting to add a local secondary index to the TodoTable table in the Todo stack. Local secondary indexes must be created when the table is created.*/
     );
   });
 
@@ -42,10 +37,7 @@ describe('amplify add api', () => {
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(
-        projRoot,
-        /Attempting to edit the global secondary index SomeGSI on the TodoTable table in the Todo stack.*/
-    );
+    await amplifyPushUpdate(projRoot, /Attempting to edit the global secondary index SomeGSI on the TodoTable table in the Todo stack.*/);
   });
 
   it('init project, run invalid migration trying to change the key schema, and check for error', async () => {
@@ -56,10 +48,7 @@ describe('amplify add api', () => {
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(
-        projRoot,
-        /Attempting to edit the key schema of the TodoTable table in the Todo stack.*/
-    );
+    await amplifyPushUpdate(projRoot, /Attempting to edit the key schema of the TodoTable table in the Todo stack.*/);
   });
 
   it('init project, run invalid migration trying to change an lsi, and check for error', async () => {
@@ -70,10 +59,7 @@ describe('amplify add api', () => {
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(
-        projRoot,
-        /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/
-    );
+    await amplifyPushUpdate(projRoot, /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/);
   });
 
   it('init project, run valid migration adding a GSI', async () => {

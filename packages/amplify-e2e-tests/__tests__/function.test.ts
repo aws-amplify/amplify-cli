@@ -21,9 +21,7 @@ describe('amplify add function', () => {
     await functionBuild(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(
-      meta.function
-    ).map(key => meta.function[key])[0].output;
+    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();

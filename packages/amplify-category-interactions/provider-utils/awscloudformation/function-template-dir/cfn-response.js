@@ -8,7 +8,7 @@ See the License for the specific language governing permissions and limitations 
 exports.SUCCESS = 'SUCCESS';
 exports.FAILED = 'FAILED';
 
-exports.send = function (event, context, responseStatus, responseData, physicalResourceId, noEcho) {
+exports.send = function(event, context, responseStatus, responseData, physicalResourceId, noEcho) {
   const responseBody = JSON.stringify({
     Status: responseStatus,
     Reason: `See the details in CloudWatch Log Stream: ${context.logStreamName}`,
@@ -37,13 +37,13 @@ exports.send = function (event, context, responseStatus, responseData, physicalR
     },
   };
 
-  const request = https.request(options, (response) => {
+  const request = https.request(options, response => {
     console.log(`Status code: ${response.statusCode}`);
     console.log(`Status message: ${response.statusMessage}`);
     context.done();
   });
 
-  request.on('error', (error) => {
+  request.on('error', error => {
     console.log(`send(..) failed executing https.request(..): ${error}`);
     context.done();
   });

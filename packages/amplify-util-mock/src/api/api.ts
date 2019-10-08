@@ -82,24 +82,14 @@ export class APITest {
     await this.ensureDDBTables(config);
     config = this.configureDDBDataSource(config);
     this.transformerResult = this.configureLambdaDataSource(context, config);
-    const overriddenTemplates = await this.resolverOverrideManager.sync(
-      this.transformerResult.mappingTemplates
-    );
+    const overriddenTemplates = await this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates);
     return { ...this.transformerResult, mappingTemplates: overriddenTemplates };
   }
   private async generateCode(context, transformerOutput = null) {
     try {
       context.print.info('Running GraphQL codegen');
       const { projectPath } = context.amplify.getEnvInfo();
-      const schemaPath = path.join(
-        projectPath,
-        'amplify',
-        'backend',
-        'api',
-        this.apiName,
-        'build',
-        'schema.graphql'
-      );
+      const schemaPath = path.join(projectPath, 'amplify', 'backend', 'api', this.apiName, 'build', 'schema.graphql');
       if (transformerOutput) {
         fs.writeFileSync(schemaPath, transformerOutput.schema);
       }
@@ -119,9 +109,7 @@ export class APITest {
     const inputSchemaPath = path.join(apiDir, 'schema');
     try {
       let shouldReload;
-      if (
-        this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink' ? true : false)
-      ) {
+      if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink' ? true : false)) {
         switch (action) {
           case 'add':
             shouldReload = this.resolverOverrideManager.onAdd(filePath);
@@ -136,9 +124,7 @@ export class APITest {
 
         if (shouldReload) {
           context.print.info('Mapping template change detected. Reloading...');
-          const mappingTemplates = this.resolverOverrideManager.sync(
-            this.transformerResult.mappingTemplates
-          );
+          const mappingTemplates = this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates);
           await this.appSyncSimulator.reload({
             ...this.transformerResult,
             mappingTemplates,
@@ -175,10 +161,7 @@ export class APITest {
     if (lambdaDataSources.length === 0) {
       return config;
     }
-    const provisionedLambdas = getAllLambdaFunctions(
-      context,
-      path.join(this.projectRoot, 'amplify', 'backend')
-    );
+    const provisionedLambdas = getAllLambdaFunctions(context, path.join(this.projectRoot, 'amplify', 'backend'));
 
     return {
       ...config,
@@ -193,17 +176,13 @@ export class APITest {
           functionName = functionName.replace('-${env}', '');
           const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
           if (!lambdaConfig) {
-            throw new Error(
-              `Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`
-            );
+            throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
           }
           const [fileName, handlerFn] = lambdaConfig.handler.split('.');
 
           const lambdaPath = path.join(lambdaConfig.basePath, `${fileName}.js`);
           if (!fs.existsSync(lambdaPath)) {
-            throw new Error(
-              `Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`
-            );
+            throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
           }
           return {
             ...d,

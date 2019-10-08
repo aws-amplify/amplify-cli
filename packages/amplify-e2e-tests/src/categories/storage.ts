@@ -1,4 +1,3 @@
-
 import * as nexpect from 'nexpect';
 import { join } from 'path';
 import * as fs from 'fs';
@@ -8,12 +7,7 @@ const defaultSettings = {
   projectName: 'CLI Storage test',
 };
 
-
-export function addSimpleDDB(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function addSimpleDDB(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
@@ -52,15 +46,11 @@ export function addSimpleDDB(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function addDDBWithTrigger(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function addDDBWithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
@@ -106,19 +96,15 @@ export function addDDBWithTrigger(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function updateDDBWithTrigger(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function updateDDBWithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true, verbose })
-       .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services')
       // j = down arrow
       .sendline('j')
       .sendline('\r')
@@ -130,7 +116,7 @@ export function updateDDBWithTrigger(
       .wait('Do you want to add global secondary indexes to your table')
       .sendline('n')
       .sendline('\r')
-       .wait('Do you want to add a Lambda Trigger for your Table')
+      .wait('Do you want to add a Lambda Trigger for your Table')
       .sendline('y')
       .sendline('\r')
       .wait('Select from the following options')
@@ -148,16 +134,11 @@ export function updateDDBWithTrigger(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-
-export function addS3WithTrigger(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function addS3WithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
@@ -189,7 +170,6 @@ export function addS3WithTrigger(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
-

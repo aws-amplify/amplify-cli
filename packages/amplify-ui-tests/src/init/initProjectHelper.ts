@@ -12,14 +12,10 @@ const defaultSettings = {
   buildCmd: '\r',
   startCmd: '\r',
   useProfile: '\r',
-  profileName: '\r'
+  profileName: '\r',
 };
 
-export default function initProjectWithProfile(
-  cwd: string,
-  settings: any = {},
-  verbose: Boolean = isCI() ? false : true
-) {
+export default function initProjectWithProfile(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     nexpect
@@ -47,9 +43,7 @@ export default function initProjectWithProfile(
       .sendline('y')
       .wait('Please choose the profile you want to use')
       .sendline(s.profileName)
-      .wait(
-        'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
-      )
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run(function(err: Error) {
         if (!err) {
           resolve();
@@ -60,14 +54,10 @@ export default function initProjectWithProfile(
   });
 }
 
-export function initAndroidProject(
-  cwd: string,
-  settings: any = {},
-  verbose: Boolean = isCI() ? false : true
-) {
+export function initAndroidProject(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
     nexpect
-      .spawn(getCLIPath(), ['init'], {cwd, stripColors: true, verbose})
+      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
       .wait('Enter a name for the project')
       .sendline('\r')
       .wait('Enter a name for the environment')
@@ -82,9 +72,7 @@ export function initAndroidProject(
       .sendline('y')
       .wait('Please choose the profile you want to use')
       .sendline('\r')
-      .wait(
-        'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
-      )
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run(function(err: Error) {
         if (!err) {
           resolve();
@@ -92,17 +80,13 @@ export function initAndroidProject(
           reject(err);
         }
       });
-  })
+  });
 }
 
-export function initIosProject(
-  cwd: string,
-  settings: any = {},
-  verbose: Boolean = isCI() ? false : true
-) {
+export function initIosProject(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
     nexpect
-      .spawn(getCLIPath(), ['init'], {cwd, stripColors: true, verbose})
+      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
       .wait('Enter a name for the project')
       .sendline('\r')
       .wait('Enter a name for the environment')
@@ -116,9 +100,7 @@ export function initIosProject(
       .sendline('y')
       .wait('Please choose the profile you want to use')
       .sendline('\r')
-      .wait(
-        'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
-      )
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run(function(err: Error) {
         if (!err) {
           resolve();
@@ -126,5 +108,5 @@ export function initIosProject(
           reject(err);
         }
       });
-  })
+  });
 }

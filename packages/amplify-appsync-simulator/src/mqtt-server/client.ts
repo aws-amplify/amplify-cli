@@ -175,12 +175,7 @@ export class Client {
     }
 
     // skip delivery of messages in $SYS for wildcards
-    forward =
-      forward &&
-      !(
-        topic.indexOf('$SYS') >= 0 &&
-        ((indexWildcard >= 0 && indexWildcard < 2) || (indexPlus >= 0 && indexPlus < 2))
-      );
+    forward = forward && !(topic.indexOf('$SYS') >= 0 && ((indexWildcard >= 0 && indexWildcard < 2) || (indexPlus >= 0 && indexPlus < 2)));
 
     if (forward) {
       if (options._dedupId === undefined) {

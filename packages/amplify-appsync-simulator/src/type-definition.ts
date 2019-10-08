@@ -132,8 +132,8 @@ export type AppSyncSimulatorServerConfig = {
 };
 
 export type AmplifyAppSyncSimulatorRequestContext = {
-  jwt?: object,
-  requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType,
-  request: Request,
-  appsyncErrors: {}
-}
+  jwt?: object;
+  requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType;
+  request: Request;
+  appsyncErrors: {};
+};

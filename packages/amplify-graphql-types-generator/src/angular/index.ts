@@ -1,11 +1,6 @@
 import { GraphQLNonNull, GraphQLType, isScalarType } from 'graphql';
 import * as prettier from 'prettier';
-import {
-  LegacyCompilerContext,
-  LegacyOperation,
-  LegacyInlineFragment,
-  LegacyField
-} from '../compiler/legacyIR';
+import { LegacyCompilerContext, LegacyOperation, LegacyInlineFragment, LegacyField } from '../compiler/legacyIR';
 
 import CodeGenerator from '../utilities/CodeGenerator';
 import {
@@ -14,7 +9,7 @@ import {
   propertiesFromFields,
   updateTypeNameField,
   propertyDeclarations,
-  interfaceNameFromOperation
+  interfaceNameFromOperation,
 } from '../typescript/codeGeneration';
 import { typeNameFromGraphQLType } from '../typescript/types';
 import { Property, interfaceDeclaration } from '../typescript/language';
@@ -46,15 +41,10 @@ function generateTypes(generator: CodeGenerator, context: LegacyCompilerContext)
     interfaceDeclarationForOperation(generator, operation);
   });
 
-  Object.values(context.fragments).forEach(operation =>
-    interfaceDeclarationForFragment(generator, operation)
-  );
+  Object.values(context.fragments).forEach(operation => interfaceDeclarationForFragment(generator, operation));
 }
 
-function interfaceDeclarationForOperation(
-  generator: CodeGenerator,
-  { operationName, operationType, fields }: LegacyOperation
-) {
+function interfaceDeclarationForOperation(generator: CodeGenerator, { operationName, operationType, fields }: LegacyOperation) {
   const interfaceName = interfaceNameFromOperation({ operationName, operationType });
   fields = fields.map(field => updateTypeNameField(field));
 
@@ -74,19 +64,19 @@ function interfaceDeclarationForOperation(
   //   }
   // }
   // but the interface is needed only for the result value of getAudioAlbum
-  if (fields[0].fields) { // execute only if there are sub fields
+  if (fields[0].fields) {
+    // execute only if there are sub fields
     const properties = propertiesFromFields(generator.context, fields[0].fields as LegacyField[]);
     interfaceDeclaration(
       generator,
       {
-        interfaceName
+        interfaceName,
       },
       () => {
         propertyDeclarations(generator, properties);
       }
     );
   }
-
 }
 
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
@@ -98,7 +88,7 @@ function getOperationResultField(operation: LegacyOperation): LegacyField | void
 function getReturnTypeName(generator: CodeGenerator, op: LegacyOperation): String {
   const { operationName, operationType } = op;
   if (isScalarType(op.fields[0].type)) {
-    return typeNameFromGraphQLType(generator.context, op.fields[0].type)
+    return typeNameFromGraphQLType(generator.context, op.fields[0].type);
   } else {
     return interfaceNameFromOperation({ operationName, operationType });
   }
@@ -155,9 +145,7 @@ function generateQueryOrMutationOperation(generator: CodeGenerator, op: LegacyOp
       variableAssignmentToInput(generator, vars);
       params.push('gqlAPIServiceArguments');
     }
-    generator.printOnNewline(
-      `const response = await API.graphql(graphqlOperation(${params.join(', ')})) as any;`
-    );
+    generator.printOnNewline(`const response = await API.graphql(graphqlOperation(${params.join(', ')})) as any;`);
     generator.printOnNewline(`return (<${returnType}>response.data${resultProp})`);
   });
   generator.printOnNewline('}');
@@ -267,9 +255,7 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
 }
 
 function formatTemplateString(generator: CodeGenerator, str: string): string {
-  const indentation = ' '.repeat(
-    generator.currentFile.indentWidth * (generator.currentFile.indentLevel + 2)
-  );
+  const indentation = ' '.repeat(generator.currentFile.indentWidth * (generator.currentFile.indentLevel + 2));
   return str
     .split('\n')
     .map((line, idx) => (idx > 0 ? indentation + line : line))

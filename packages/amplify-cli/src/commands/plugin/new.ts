@@ -22,9 +22,11 @@ async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string):
   } else {
     context.print.error('Failed to add the plugin package to the local Amplify CLI.');
     context.print.info(`Error code: ${addPluginResult.error}`);
-    if (addPluginResult.error === AddPluginError.FailedVerification &&
-                addPluginResult.pluginVerificationResult &&
-                addPluginResult.pluginVerificationResult.error) {
+    if (
+      addPluginResult.error === AddPluginError.FailedVerification &&
+      addPluginResult.pluginVerificationResult &&
+      addPluginResult.pluginVerificationResult.error
+    ) {
       const { error } = addPluginResult.pluginVerificationResult;
       context.print.info(`Plugin verification error code: \ ${error}`);
     }
@@ -83,8 +85,7 @@ function printInfo(context: Context, pluginDirPath: string, isPluggedInLocalAmpl
     context.print.info(`$ amplify plugin add: add the plugin into the local Amplify CLI for testing.`);
   }
 
-  const amplifyPluginJsonFilePath =
-        path.normalize(path.join(pluginDirPath, constants.MANIFEST_FILE_NAME));
+  const amplifyPluginJsonFilePath = path.normalize(path.join(pluginDirPath, constants.MANIFEST_FILE_NAME));
   const commandsDirPath = path.normalize(path.join(pluginDirPath, 'commands'));
   const eventHandlerDirPath = path.normalize(path.join(pluginDirPath, 'event-handlers'));
 

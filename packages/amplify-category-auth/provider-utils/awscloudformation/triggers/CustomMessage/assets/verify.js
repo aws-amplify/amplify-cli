@@ -1,6 +1,5 @@
 /* eslint-disable */
 
-
 var opts = {
   lines: 13, // The number of lines to draw
   length: 38, // The length of each line
@@ -19,43 +18,36 @@ var opts = {
   top: '50%', // Top position relative to parent
   left: '50%', // Left position relative to parent
   shadow: '0 0 1px transparent', // Box-shadow for the lines
-  position: 'absolute' // Element positioning
+  position: 'absolute', // Element positioning
 };
 
 var target = document.getElementById('myspinner');
 var spinner = new Spinner().spin(target);
 
-
 function confirm() {
   const urlParams = new URLSearchParams(window.location.search);
   const encoded = urlParams.get('data');
   const code = urlParams.get('code');
-  const decoded = JSON.parse(atob(encoded))
-  const {
-    userName,
-    redirectUrl,
-    clientId,
-    region
-  } = decoded;
+  const decoded = JSON.parse(atob(encoded));
+  const { userName, redirectUrl, clientId, region } = decoded;
 
   var params = {
-    ClientId: clientId, 
-    ConfirmationCode: code, 
+    ClientId: clientId,
+    ConfirmationCode: code,
     Username: userName,
   };
 
-  AWS.config.region = region; 
+  AWS.config.region = region;
 
   var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
 
   cognitoidentityserviceprovider.confirmSignUp(params, function(err, data) {
     if (err) {
-      if (err.message === "User cannot be confirm. Current status is CONFIRMED") {
+      if (err.message === 'User cannot be confirm. Current status is CONFIRMED') {
         window.location.replace(redirectUrl);
       }
     } else {
       window.location.replace(redirectUrl);
     }
   });
-
 }

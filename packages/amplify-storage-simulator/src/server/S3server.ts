@@ -208,17 +208,14 @@ export class StorageServer extends EventEmitter {
   }
 
   private async handleRequestPut(request, response) {
-    const directoryPath = normalize(
-      join(String(this.localDirectoryPath), String(request.params.path))
-    );
+    const directoryPath = normalize(join(String(this.localDirectoryPath), String(request.params.path)));
     ensureFileSync(directoryPath);
     // strip signature in android , returns same buffer for other clients
     var new_data = util.stripChunkSignature(request.body);
     // loading data in map for each part
     if (request.query.partNumber !== undefined) {
       this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
-    }
-    else {
+    } else {
       writeFileSync(directoryPath, new_data);
       // event trigger  to differentitiate between multipart and normal put
       let eventObj = this.createEvent(request);
@@ -228,9 +225,7 @@ export class StorageServer extends EventEmitter {
   }
 
   private async handleRequestPost(request, response) {
-    const directoryPath = normalize(
-      join(String(this.localDirectoryPath), String(request.params.path))
-    );
+    const directoryPath = normalize(join(String(this.localDirectoryPath), String(request.params.path)));
     if (request.query.uploads !== undefined) {
       let id = uuid();
       this.uploadIds.push(id);
@@ -241,7 +236,7 @@ export class StorageServer extends EventEmitter {
           InitiateMultipartUploadResult: {
             Bucket: this.route,
             Key: request.params.path,
-            UploadId: id
+            UploadId: id,
           },
         })
       );
@@ -266,14 +261,12 @@ export class StorageServer extends EventEmitter {
       );
       let buf = Buffer.concat(arr);
       writeFileSync(directoryPath, buf);
-      
+
       // event trigger for multipart post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
     } else {
-      const directoryPath = normalize(
-        join(String(this.localDirectoryPath), String(request.params.path))
-      );
+      const directoryPath = normalize(join(String(this.localDirectoryPath), String(request.params.path)));
       ensureFileSync(directoryPath);
       var new_data = util.stripChunkSignature(request.body);
       writeFileSync(directoryPath, new_data);

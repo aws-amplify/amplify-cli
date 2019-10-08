@@ -13,9 +13,7 @@ export function join(maybeArray?: any[], separator?: string) {
  * indented "{ }" block.
  */
 export function block(array: any[]) {
-  return array && array.length !== 0 ?
-    indent('{\n' + join(array, '\n')) + '\n}' :
-    '{}';
+  return array && array.length !== 0 ? indent('{\n' + join(array, '\n')) + '\n}' : '{}';
 }
 
 /**
@@ -23,9 +21,7 @@ export function block(array: any[]) {
  * print an empty string.
  */
 export function wrap(start: string, maybeString?: string, end?: string) {
-  return maybeString ?
-    start + maybeString + (end || '') :
-    '';
+  return maybeString ? start + maybeString + (end || '') : '';
 }
 
 export function indent(maybeString?: string) {

@@ -3,11 +3,7 @@ import * as nexpect from 'nexpect';
 
 import { getCLIPath, isCI } from '../utils';
 import { getProjectMeta } from '../utils';
-export default function deleteProject(
-  cwd: string,
-  deleteDeploymentBucket: Boolean = true,
-  verbose: Boolean = isCI() ? false : true
-) {
+export default function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true, verbose: Boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
     const meta = getProjectMeta(cwd).providers.awscloudformation;
     nexpect
@@ -20,9 +16,7 @@ export default function deleteProject(
           const { DeploymentBucketName } = meta;
           if (deleteDeploymentBucket) {
             const s3 = new AWS.S3();
-            const { Contents: items } = await s3
-              .listObjects({ Bucket: DeploymentBucketName })
-              .promise();
+            const { Contents: items } = await s3.listObjects({ Bucket: DeploymentBucketName }).promise();
             const promises = [];
             items.forEach(item => {
               promises.push(s3.deleteObject({ Bucket: DeploymentBucketName, Key: item.Key }).promise());

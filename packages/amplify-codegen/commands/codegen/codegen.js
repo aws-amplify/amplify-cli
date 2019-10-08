@@ -5,7 +5,7 @@ const featureName = 'codegen';
 
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     if (context.parameters.options.help) {
       const header = `amplify ${featureName} [subcommand] [[--nodownload] [--max-depth <number>]]\nDescriptions:
       Generates GraphQL statements (queries, mutations and subscriptions) and type annotations. \nSub Commands:`;
@@ -35,7 +35,7 @@ module.exports = {
       context.print.info(constants.CMD_DESCRIPTION_NOT_SUPPORTED);
       process.exit(1);
     }
-    
+
     try {
       let forceDownloadSchema = !context.parameters.options.nodownload;
       let { maxDepth } = context.parameters.options;

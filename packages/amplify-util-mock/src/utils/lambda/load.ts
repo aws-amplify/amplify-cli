@@ -17,14 +17,8 @@ export function getAllLambdaFunctions(context, backendPath: string): LambdaFunct
         const cfnParams = path.join(lambdaDir, 'function-parameters.json');
         try {
           const lambdaCfn = JSON.parse(fs.readFileSync(cfnPath, 'utf-8'));
-          const lambdaCfnParams = fs.existsSync(cfnParams)
-            ? JSON.parse(fs.readFileSync(cfnParams, 'utf-8'))
-            : {};
-          const lambdaConfig = processResources(
-            lambdaCfn.Resources,
-            {},
-            { ...lambdaCfnParams, env: 'NONE' }
-          );
+          const lambdaCfnParams = fs.existsSync(cfnParams) ? JSON.parse(fs.readFileSync(cfnParams, 'utf-8')) : {};
+          const lambdaConfig = processResources(lambdaCfn.Resources, {}, { ...lambdaCfnParams, env: 'NONE' });
           lambdaConfig.basePath = path.join(lambdaDir, 'src');
           lambdas.push(lambdaConfig);
         } catch (e) {

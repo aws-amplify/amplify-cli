@@ -2,25 +2,25 @@
 
 Bug reports and feature suggestions are welcome. When filing a bug, try to include as much information as you can. Details like these are incredibly useful:
 
-* A reproducible test case or series of steps
-* The date/commit of the code you're running
-* Any modifications you've made relevant to the bug
-* Anything unusual about your environment or deployment
+- A reproducible test case or series of steps
+- The date/commit of the code you're running
+- Any modifications you've made relevant to the bug
+- Anything unusual about your environment or deployment
 
 # Pull Requests
 
-
 Pull requests are welcome!
 
-You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort. 
+You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort.
 
 Pull requests should generally be opened against **master**.
 
-Only include ***src*** files in your PR. Don't include any build files i.e. dist/. These will be built upon publish to npm and when a release is created on GitHub.
+Only include **_src_** files in your PR. Don't include any build files i.e. dist/. These will be built upon publish to npm and when a release is created on GitHub.
 
 Before submitting PR make sure to run `yarn` on the root of monorepo to ensure that commit lint and husky are installed.
 
 Make sure you follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/) commit message structure. You can automatically generate conventional commit message by running `yarn commit` in the root of the amplify mono repo. This will run through series of question shown below
+
 ```
 ? Select the type of change that you're committing: <type of commit (if its a feature, bug fix etc.,>
 ? What is the scope of this change (e.g. component or file name)? <package name if change is only in one package>

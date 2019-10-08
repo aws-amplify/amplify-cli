@@ -1,6 +1,5 @@
 const fs = jest.genMockFromModule('fs');
 
-
 function readdirSync() {
   return ['file1', 'file2'];
 }
@@ -16,7 +15,6 @@ function readFileSync() {
 function statSync() {
   return { isDirectory: () => {} };
 }
-
 
 fs.readdirSync = readdirSync;
 fs.readFileSync = readFileSync;

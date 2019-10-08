@@ -93,7 +93,8 @@ const AWSDateTime = new GraphQLScalarType({
 
 const AWSTimestamp = new GraphQLScalarType({
   name: 'AWSTimestamp',
-  description: 'The AWSTimestamp scalar type represents the number of seconds that have elapsed \
+  description:
+    'The AWSTimestamp scalar type represents the number of seconds that have elapsed \
 since 1970-01-01T00:00Z. Timestamps are serialized and deserialized as numbers. Negative values \
 are also accepted and these represent the number of seconds till 1970-01-01T00:00Z.',
   serialize(value) {
@@ -108,14 +109,14 @@ are also accepted and these represent the number of seconds till 1970-01-01T00:0
 });
 
 // Unified the code for both types from graphql-scalars library.
-const validateIPAddress = (value) => {
+const validateIPAddress = value => {
   if (typeof value !== 'string') {
     throw new TypeError(`Value is not string: ${value}`);
   }
-  if (!(IPV4_REGEX.test(value))) {
+  if (!IPV4_REGEX.test(value)) {
     throw new TypeError(`Value is not a valid IPv4 address: ${value}`);
   }
-  if (!(IPV6_REGEX.test(value))) {
+  if (!IPV6_REGEX.test(value)) {
     throw new TypeError(`Value is not a valid IPv6 address: ${value}`);
   }
   return value;
@@ -132,10 +133,10 @@ const AWSIPAddress = new GraphQLScalarType({
   },
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
-        throw new GraphQLError(`Can only validate strings as IPv4 or IPv6 addresses but got a: ${ast.kind}`);
+      throw new GraphQLError(`Can only validate strings as IPv4 or IPv6 addresses but got a: ${ast.kind}`);
     }
     return validateIPAddress(ast.value);
-  }
+  },
 });
 
 export const scalars = {
@@ -147,7 +148,7 @@ export const scalars = {
   AWSEmail: EmailAddressResolver,
   AWSURL: URLResolver,
   AWSTimestamp,
-  AWSIPAddress
+  AWSIPAddress,
 };
 
 export function wrapSchema(schemaString) {

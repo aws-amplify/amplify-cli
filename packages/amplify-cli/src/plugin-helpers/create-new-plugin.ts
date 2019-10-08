@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import inquirer from '../domain/inquirer-helper';
 import Context from '../domain/context';
-import Constant from '../domain/constants'
+import Constant from '../domain/constants';
 import { AmplifyEvent } from '../domain/amplify-event';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
 import { readJsonFileSync } from '../utils/readJsonFile';
@@ -12,8 +12,7 @@ import { createIndentation } from './display-plugin-platform';
 
 const INDENTATIONSPACE = 4;
 
-export default async function createNewPlugin(context: Context, pluginParentDirPath: string):
-Promise<string | undefined> {
+export default async function createNewPlugin(context: Context, pluginParentDirPath: string): Promise<string | undefined> {
   const pluginName = await getPluginName(context, pluginParentDirPath);
   if (pluginName) {
     return await copyAndUpdateTemplateFiles(context, pluginParentDirPath, pluginName!);
@@ -21,12 +20,12 @@ Promise<string | undefined> {
   return undefined;
 }
 
-async function getPluginName(context: Context, pluginParentDirPath: string):
-Promise<string | undefined> {
+async function getPluginName(context: Context, pluginParentDirPath: string): Promise<string | undefined> {
   let pluginName = 'my-amplify-plugin';
   const yesFlag = context.input.options && context.input.options[Constant.YES];
 
-  if (context.input.subCommands!.length > 1) { // subcommands: ['new', 'name']
+  if (context.input.subCommands!.length > 1) {
+    // subcommands: ['new', 'name']
     pluginName = context.input.subCommands![1];
   } else if (!yesFlag) {
     const pluginNameQuestion = {
@@ -34,10 +33,10 @@ Promise<string | undefined> {
       name: 'pluginName',
       message: 'What should be the name of the plugin:',
       default: pluginName,
-      validate: (input : string) => {
+      validate: (input: string) => {
         const pluginNameValidationResult = validPluginNameSync(input);
         if (!pluginNameValidationResult.isValid) {
-          return pluginNameValidationResult.message || 'Invalid plugin name'
+          return pluginNameValidationResult.message || 'Invalid plugin name';
         }
         return true;
       },
@@ -65,9 +64,7 @@ Promise<string | undefined> {
   return pluginName;
 }
 
-
-async function copyAndUpdateTemplateFiles(context: Context,
-  pluginParentDirPath: string, pluginName: string) {
+async function copyAndUpdateTemplateFiles(context: Context, pluginParentDirPath: string, pluginName: string) {
   const pluginDirPath = path.join(pluginParentDirPath, pluginName);
   fs.emptyDirSync(pluginDirPath);
 
@@ -94,18 +91,18 @@ async function promptForPluginType(context: Context): Promise<string> {
 
   if (yesFlag) {
     return AmplifyPluginType.util;
-  }{
+  }
+  {
     const pluginTypes = Object.keys(AmplifyPluginType);
     const LEARNMORE = 'Learn more';
     const choices = pluginTypes.concat([LEARNMORE]);
-    const answer = await inquirer.prompt(
-      {
-        type: 'list',
-        name: 'selection',
-        message: 'Specify the plugin type',
-        choices,
-        default: AmplifyPluginType.util,
-      });
+    const answer = await inquirer.prompt({
+      type: 'list',
+      name: 'selection',
+      message: 'Specify the plugin type',
+      choices,
+      default: AmplifyPluginType.util,
+    });
     if (answer.selection === LEARNMORE) {
       displayAmplifyPluginTypesLearnMore(context);
       return await promptForPluginType(context);
@@ -143,17 +140,17 @@ async function promptForEventSubscription(context: Context): Promise<string[]> {
 
   if (yesFlag) {
     return eventHandlers;
-  }{
+  }
+  {
     const LEARNMORE = 'Learn more';
     const choices = eventHandlers.concat([LEARNMORE]);
-    const answer = await inquirer.prompt(
-      {
-        type: 'checkbox',
-        name: 'selections',
-        message: 'What Amplify CLI events do you want the plugin to handle?',
-        choices,
-        default: eventHandlers,
-      });
+    const answer = await inquirer.prompt({
+      type: 'checkbox',
+      name: 'selections',
+      message: 'What Amplify CLI events do you want the plugin to handle?',
+      choices,
+      default: eventHandlers,
+    });
     if (answer.selections.includes(LEARNMORE)) {
       displayAmplifyEventsLearnMore(context);
       return await promptForEventSubscription(context);
@@ -196,12 +193,7 @@ function updatePackageJson(pluginDirPath: string, pluginName: string): void {
   fs.writeFileSync(filePath, jsonString, 'utf8');
 }
 
-function updateAmplifyPluginJson(
-  pluginDirPath: string,
-  pluginName: string,
-  pluginType: string,
-  eventHandlers: string[],
-): void {
+function updateAmplifyPluginJson(pluginDirPath: string, pluginName: string, pluginType: string, eventHandlers: string[]): void {
   const filePath = path.join(pluginDirPath, constants.MANIFEST_FILE_NAME);
   const amplifyPluginJson = readJsonFileSync(filePath);
   amplifyPluginJson.name = pluginName;
@@ -211,17 +203,14 @@ function updateAmplifyPluginJson(
   fs.writeFileSync(filePath, jsonString, 'utf8');
 }
 
-function updateEventHandlersFolder(
-  pluginDirPath: string,
-  eventHandlers: string[],
-): void {
+function updateEventHandlersFolder(pluginDirPath: string, eventHandlers: string[]): void {
   const dirPath = path.join(pluginDirPath, 'event-handlers');
   const fileNames = fs.readdirSync(dirPath);
 
-  fileNames.forEach((fileName) => {
+  fileNames.forEach(fileName => {
     const eventName = fileName.replace('handle-', '').split('.')[0];
     if (!eventHandlers.includes(eventName)) {
       fs.removeSync(path.join(dirPath, fileName));
     }
-  })
+  });
 }
