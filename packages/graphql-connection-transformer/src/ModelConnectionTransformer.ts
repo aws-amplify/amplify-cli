@@ -650,45 +650,6 @@ export class ModelConnectionTransformer extends Transformer {
     ctx.addObjectExtension(makeModelConnectionType(typeDef.name.value));
   }
 
-  private extendTypeWithConnection(
-    ctx: TransformerContext,
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-    field: FieldDefinitionNode,
-    returnType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-    sortKeyInfo?: { fieldName: string; typeName: SortKeyFieldInfoTypeName; model?: string; keyName?: string }
-  ) {
-    this.generateModelXConnectionType(ctx, returnType);
-
-    // Extensions are not allowed to redeclare fields so we must replace
-    // it in place.
-    const type = ctx.getType(parent.name.value) as ObjectTypeDefinitionNode;
-    if (type && (type.kind === Kind.OBJECT_TYPE_DEFINITION || type.kind === Kind.INTERFACE_TYPE_DEFINITION)) {
-      // Find the field and replace it in place.
-      const newFields = type.fields.map((f: FieldDefinitionNode) => {
-        if (f.name.value === field.name.value) {
-          const updated = makeModelConnectionField(field.name.value, returnType.name.value, sortKeyInfo);
-          updated.directives = f.directives;
-          return updated;
-        }
-        return f;
-      });
-      const updatedType = {
-        ...type,
-        fields: newFields,
-      };
-      ctx.putType(updatedType);
-
-      if (!this.typeExist('ModelSortDirection', ctx)) {
-        const modelSortDirection = makeModelSortDirectionEnumObject();
-        ctx.addEnum(modelSortDirection);
-      }
-
-      this.generateFilterAndKeyConditionInputs(ctx, returnType, sortKeyInfo);
-    } else {
-      throw new InvalidDirectiveError(`Could not find a object or interface type named ${parent.name.value}.`);
-    }
-  }
-
   private generateFilterAndKeyConditionInputs(
     ctx: TransformerContext,
     field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
@@ -719,46 +680,41 @@ export class ModelConnectionTransformer extends Transformer {
   }
 
   private extendTypeWithConnection(
-        ctx: TransformerContext,
-        parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-        field: FieldDefinitionNode,
-        returnType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-        sortKeyInfo?: { fieldName: string, typeName: SortKeyFieldInfoTypeName, model?: string, keyName?: string }
+    ctx: TransformerContext,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    field: FieldDefinitionNode,
+    returnType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    sortKeyInfo?: { fieldName: string; typeName: SortKeyFieldInfoTypeName; model?: string; keyName?: string }
   ) {
-        this.generateModelXConnectionType(ctx, returnType)
+    this.generateModelXConnectionType(ctx, returnType);
 
-        // Extensions are not allowed to redeclare fields so we must replace
-        // it in place.
-        const type = ctx.getType(parent.name.value) as ObjectTypeDefinitionNode
-        if (
-            type &&
-            (type.kind === Kind.OBJECT_TYPE_DEFINITION || type.kind === Kind.INTERFACE_TYPE_DEFINITION)
-        ) {
-            // Find the field and replace it in place.
-            const newFields = type.fields.map(
-                (f: FieldDefinitionNode) => {
-                    if (f.name.value === field.name.value) {
-                        const updated = makeModelConnectionField(field.name.value, returnType.name.value, sortKeyInfo, [...f.directives])
-                        return updated
-                    }
-                    return f;
-                }
-            )
-            const updatedType = {
-                ...type,
-                fields: newFields
-            }
-            ctx.putType(updatedType)
-
-            if (!this.typeExist('ModelSortDirection', ctx)) {
-                const modelSortDirection = makeModelSortDirectionEnumObject()
-                ctx.addEnum(modelSortDirection)
-            }
-
-            this.generateFilterAndKeyConditionInputs(ctx, returnType, sortKeyInfo)
-        } else {
-            throw new InvalidDirectiveError(`Could not find a object or interface type named ${parent.name.value}.`)
+    // Extensions are not allowed to redeclare fields so we must replace
+    // it in place.
+    const type = ctx.getType(parent.name.value) as ObjectTypeDefinitionNode;
+    if (type && (type.kind === Kind.OBJECT_TYPE_DEFINITION || type.kind === Kind.INTERFACE_TYPE_DEFINITION)) {
+      // Find the field and replace it in place.
+      const newFields = type.fields.map((f: FieldDefinitionNode) => {
+        if (f.name.value === field.name.value) {
+          const updated = makeModelConnectionField(field.name.value, returnType.name.value, sortKeyInfo, [...f.directives]);
+          return updated;
         }
+        return f;
+      });
+      const updatedType = {
+        ...type,
+        fields: newFields,
+      };
+      ctx.putType(updatedType);
+
+      if (!this.typeExist('ModelSortDirection', ctx)) {
+        const modelSortDirection = makeModelSortDirectionEnumObject();
+        ctx.addEnum(modelSortDirection);
+      }
+
+      this.generateFilterAndKeyConditionInputs(ctx, returnType, sortKeyInfo);
+    } else {
+      throw new InvalidDirectiveError(`Could not find a object or interface type named ${parent.name.value}.`);
+    }
   }
 
   private getPrimaryKeyField(ctx: TransformerContext, type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): FieldDefinitionNode {
