@@ -1,9 +1,6 @@
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
 import GraphQLTransform from 'graphql-transformer-core';
-import {
-  default as ModelAuthTransformer,
-  default as VersionedModelTransformer,
-} from 'graphql-versioned-transformer';
+import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
 
@@ -29,14 +26,6 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [
         new DynamoDBModelTransformer(),
-        new ModelAuthTransformer({
-          authConfig: {
-            defaultAuthentication: {
-              authenticationType: 'API_KEY',
-            },
-            additionalAuthenticationProviders: [],
-          },
-        }),
         new VersionedModelTransformer(),
       ],
     });

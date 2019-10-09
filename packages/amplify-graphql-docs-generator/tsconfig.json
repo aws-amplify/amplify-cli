@@ -13,6 +13,7 @@
             "esnext.asynciterable",
             "dom"
         ],
+        "declaration": true
     },
     "exclude": [
         "node_modules",
