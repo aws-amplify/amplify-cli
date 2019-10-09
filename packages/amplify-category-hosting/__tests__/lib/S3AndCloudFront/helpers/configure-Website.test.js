@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const mockirer = require('mockirer'); 
 
-const mockTemplate = require('../../../../__mocks__/mockTemplate');
+const mockTemplate = require('../../../../__mocks__/mockTemplate-noCloudFront');
 
 const configureWebsite = require('../../../../lib/S3AndCloudFront/helpers/configure-Website'); 
 
@@ -9,6 +9,9 @@ describe('configure-Website', ()=>{
     const mockContext = {
         exeInfo: {
             template: mockTemplate
+        },
+        print: {
+            warning: jest.fn()
         }
     }; 
 

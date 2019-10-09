@@ -85,7 +85,7 @@ export class HttpTransformer extends Transformer {
 
         // create all the datasources we will need for this schema
         directiveList.forEach((value: DirectiveNode) => {
-            const url = getDirectiveArgument(value)("url")
+            const url = getDirectiveArgument(value, 'url')
             // require a protocol in the url
             const protocolMatcher = /^http(s)?:\/\//
             if (!protocolMatcher.test(url)) {
@@ -119,7 +119,7 @@ export class HttpTransformer extends Transformer {
             HTTP_STACK_NAME,
             ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)
         )
-        const url: string = getDirectiveArgument(directive)("url")
+        const url: string = getDirectiveArgument(directive, 'url')
         const baseURL: string = url.replace(HttpTransformer.urlRegex, '$1')
         // split the url into pieces, and get the path part off the end
         let path: string = url.split(/(http(s)?:\/\/|www\.)|(\/.*)/g).slice(-2, -1)[0]
@@ -151,12 +151,12 @@ export class HttpTransformer extends Transformer {
             newFieldArgsArray.push(makeHttpArgument('params', urlParamInputObject, true))
         }
 
-        let method: HttpMethod = getDirectiveArgument(directive)("method")
+        let method: HttpMethod = getDirectiveArgument(directive, 'method')
         if (!method) {
             method = 'GET'
         }
 
-        let headers : HttpHeader[] = getDirectiveArgument(directive)("headers")
+        let headers : HttpHeader[] = getDirectiveArgument(directive, 'headers')
 
         if (!headers || !Array.isArray(headers)) {
             headers = [];

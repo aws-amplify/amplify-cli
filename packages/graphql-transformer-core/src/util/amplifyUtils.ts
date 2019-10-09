@@ -20,6 +20,7 @@ export interface ProjectOptions {
     rootStackFileName?: string
     dryRun?: boolean,
     disableResolverOverrides?: boolean,
+    buildParameters?: Object,
 }
 export async function buildProject(opts: ProjectOptions) {
     await ensureMissingStackMappings(opts);
@@ -27,7 +28,8 @@ export async function buildProject(opts: ProjectOptions) {
     const builtProject = await _buildProject(opts);
 
     if (opts.projectDirectory && !opts.dryRun) {
-        await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
+        await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'),
+        opts.rootStackFileName, opts.buildParameters);
         if (opts.currentCloudBackendDirectory) {
             const lastBuildPath = path.join(opts.currentCloudBackendDirectory, 'build');
             const thisBuildPath = path.join(opts.projectDirectory, 'build');
@@ -318,7 +320,8 @@ export async function uploadDeployment(opts: UploadOptions) {
 /**
  * Writes a deployment to disk at a path.
  */
-async function writeDeploymentToDisk(deployment: DeploymentResources, directory: string, rootStackFileName: string = 'rootStack.json') {
+async function writeDeploymentToDisk(deployment: DeploymentResources, directory: string,
+    rootStackFileName: string = 'rootStack.json', buildParameters: Object) {
 
     // Delete the last deployments resources.
     await emptyDirectory(directory)
@@ -377,6 +380,11 @@ async function writeDeploymentToDisk(deployment: DeploymentResources, directory:
     const rootStack = deployment.rootStack;
     const rootStackPath = path.normalize(directory + `/${rootStackFileName}`);
     fs.writeFileSync(rootStackPath, JSON.stringify(rootStack, null, 4));
+
+    // Write params to disk
+    const jsonString = JSON.stringify(buildParameters, null, 4);
+    const parametersOutputFilePath = path.join(directory, PARAMETERS_FILE_NAME);
+    fs.writeFileSync(parametersOutputFilePath, jsonString);
 }
 
 interface MigrationOptions {

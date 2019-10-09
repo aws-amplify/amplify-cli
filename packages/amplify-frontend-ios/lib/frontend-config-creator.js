@@ -266,7 +266,9 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
     result.AppSync.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
   }
 
-  const additionalAuths = appsyncResource.output.authConfig.additionalAuthenticationProviders || [];
+  const additionalAuths =
+    (appsyncResource.output && appsyncResource.output.authConfig && appsyncResource.output.authConfig.additionalAuthenticationProviders) ||
+    [];
   additionalAuths.forEach(auth => {
     const apiName = `${appsyncResource.resourceName}_${auth.authenticationType}`;
     const config = {

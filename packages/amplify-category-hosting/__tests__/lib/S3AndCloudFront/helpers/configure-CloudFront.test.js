@@ -87,6 +87,10 @@ describe('configure-CloudFront', ()=>{
         inquirer.prompt.mockResolvedValueOnce({
             RemoveCloudFront: true
         }); 
+        inquirer.prompt.mockResolvedValueOnce({
+            IndexDocument: 'index.html',
+            ErrorDocument: 'error.html'
+        }); 
         let result = await configureCloudFront.configure(mockContext); 
         expect(result).toEqual(mockContext); 
         expect(mockContext.exeInfo.template.Resources.OriginAccessIdentity).not.toBeDefined();

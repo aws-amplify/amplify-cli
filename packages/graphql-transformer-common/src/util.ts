@@ -29,3 +29,4 @@ export function toPascalCase(words: string[]): string {
 }
 
 export const NONE_VALUE = '___xamznone____'
+export const NONE_INT_VALUE = -2147483648;

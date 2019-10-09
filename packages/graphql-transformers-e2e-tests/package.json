@@ -47,7 +47,8 @@
     "node-fetch": "^2.6.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "ws": "4.0.0"
   },
   "jest": {
     "transform": {
