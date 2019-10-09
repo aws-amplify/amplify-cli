@@ -9091,6 +9091,18 @@ graphql-config@^1.0.5:
     lodash "^4.17.4"
     minimatch "^3.0.4"
 
+graphql-elasticsearch-transformer@3.23.0:
+  version "3.23.0"
+  resolved "https://registry.yarnpkg.com/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-3.23.0.tgz#bdf22c7c309c7f1610d76debe7f2ff4cff008594"
+  integrity sha512-JI+4VCbmFHJZY+ClpEY+KlCsVt5UB/3nGlIjGDe797GsUQIaSiLqz1/oVj+9nZId0nKSMPM/aXL041DDThvoIg==
+  dependencies:
+    cloudform "^3.5.0"
+    cloudform-types "^3.7.0"
+    graphql "^0.13.2"
+    graphql-mapping-template "3.18.0"
+    graphql-transformer-common "3.25.0"
+    graphql-transformer-core "5.11.0"
+
 graphql-import@0.7.1, graphql-import@^0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/graphql-import/-/graphql-import-0.7.1.tgz#4add8d91a5f752d764b0a4a7a461fcd93136f223"
@@ -9143,6 +9155,13 @@ graphql-language-service-utils@^1.2.2:
   dependencies:
     graphql-config "2.0.1"
     graphql-language-service-types "^1.2.2"
+
+graphql-mapping-template@3.18.0:
+  version "3.18.0"
+  resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-3.18.0.tgz#f641fdd2e442d802ef7174be7a61bad9ba70704f"
+  integrity sha512-p5aBvTegklB/zNUd78qsiRAhiz3aUkdAEBB+Aq9N7MbW6T/DvCtcWjc7ndw28kc5s5D9Lum27PwNPC0ltj/2nw==
+  dependencies:
+    cloudform "^3.5.0"
 
 graphql-mapping-template@3.9.0:
   version "3.9.0"
@@ -9216,6 +9235,27 @@ graphql-tools@^4.0.4:
     deprecated-decorator "^0.1.6"
     iterall "^1.1.3"
     uuid "^3.1.0"
+
+graphql-transformer-common@3.25.0:
+  version "3.25.0"
+  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-3.25.0.tgz#3a257b1d8fbb906aae31eb14b3a5e1487b08aa05"
+  integrity sha512-NAe7ykKFP/EZPqztWJ4uFdmqQnX/jnvFZzXT8ts+dvNZi4I/+FhAUmMA1dsnLc9bOEciLanaNMjTM5VD1SN6uA==
+  dependencies:
+    cloudform "^3.5.0"
+    graphql "^0.13.2"
+    graphql-mapping-template "3.18.0"
+
+graphql-transformer-core@5.11.0:
+  version "5.11.0"
+  resolved "https://registry.yarnpkg.com/graphql-transformer-core/-/graphql-transformer-core-5.11.0.tgz#4edad5ba5904e865e3165332881269190c94a860"
+  integrity sha512-to54uJaSwJDEjEkkuuX5I/g/Y+kNLjsvgrmfF9ozI/HhAN/JJU0LvD846n5+iXUZkD1heVJUVjhzTZVWrkqDLA==
+  dependencies:
+    cloudform "^3.5.0"
+    cloudform-types "^3.7.0"
+    deep-diff "^1.0.2"
+    fs-extra "^8.1.0"
+    graphql "^0.13.2"
+    graphql-transformer-common "3.25.0"
 
 graphql-type-json@0.3.0, graphql-type-json@^0.3.0:
   version "0.3.0"

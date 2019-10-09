@@ -24,6 +24,7 @@ import {
   print,
   ifElse,
   newline,
+  toJson,
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
 import GraphQLApi, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, AdditionalAuthenticationProvider } from './graphQlApi';
@@ -1015,39 +1016,32 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     });
   }
 
-    /**
-     * ES EXPRESSIONS
-     */
+  /**
+   * ES EXPRESSIONS
+   */
 
-    public makeESItemsExpression() {
-        // generate es expresion to appsync
-        return compoundExpression([
-            set(ref('es_items'), list([])),
-            forEach(
-                ref('entry'),
-                ref('context.result.hits.hits'),
-                [
-                    iff(
-                        raw('!$foreach.hasNext'),
-                        set(ref('nextToken'), ref('entry.sort.get(0)'))
-                    ),
-                    qref('$es_items.add($entry.get("_source"))')
-                ]
-            ),
-        ])
-    }
+  public makeESItemsExpression() {
+    // generate es expresion to appsync
+    return compoundExpression([
+      set(ref('es_items'), list([])),
+      forEach(ref('entry'), ref('context.result.hits.hits'), [
+        iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('entry.sort.get(0)'))),
+        qref('$es_items.add($entry.get("_source"))'),
+      ]),
+    ]);
+  }
 
-    public makeESToGQLExpression() {
-        return compoundExpression([
-            set(ref('es_response'), obj({
-                "items": ref('es_items'),
-                "total": ref('ctx.result.hits.total')
-            })),
-            iff(
-                raw('$es_items.size() > 0'),
-                qref('$es_response.put("nextToken", $nextToken)')
-            ),
-            toJson(ref('es_response'))
-        ])
-    }
+  public makeESToGQLExpression() {
+    return compoundExpression([
+      set(
+        ref('es_response'),
+        obj({
+          items: ref('es_items'),
+          total: ref('ctx.result.hits.total'),
+        })
+      ),
+      iff(raw('$es_items.size() > 0'), qref('$es_response.put("nextToken", $nextToken)')),
+      toJson(ref('es_response')),
+    ]);
+  }
 }

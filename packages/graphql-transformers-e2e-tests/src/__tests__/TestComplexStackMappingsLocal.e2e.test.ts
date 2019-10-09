@@ -1,9 +1,9 @@
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { ElasticsearchTransformer } from 'graphql-elasticsearch-transformer';
-import { ConnectionTransformer } from 'graphql-connection-transformer';
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
-import { AuthTransformer } from 'graphql-auth-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
 import { expectExactKeys } from '../testUtil';
 
@@ -54,10 +54,10 @@ function transpileAndCheck(schema: string) {
     transformers: [
       new DynamoDBModelTransformer(),
       new HttpTransformer(),
-      new ElasticsearchTransformer(),
-      new ConnectionTransformer(),
+      new ModelConnectionTransformer(),
       new FunctionTransformer(),
-      new AuthTransformer({
+      new SearchableModelTransformer(),
+      new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
             authenticationType: 'AMAZON_COGNITO_USER_POOLS',
