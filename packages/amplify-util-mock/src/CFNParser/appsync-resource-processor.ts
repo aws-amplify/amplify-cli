@@ -1,7 +1,7 @@
 import { CloudFormationParseContext } from './types';
 import { isPlainObject } from 'lodash';
 import { parseValue } from './field-parser';
-import { AmplifyAppSyncSimulatorConfig, AmplifyAppSyncAPIConfig } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulatorConfig, AmplifyAppSyncAPIConfig, AmplifyAppSyncSimulatorAuthenticationType } from 'amplify-appsync-simulator';
 const CFN_DEFAULT_PARAMS = {
   'AWS::Region': 'us-east-1-fake',
   'AWS::AccountId': '12345678910',
@@ -120,7 +120,9 @@ export function graphQLAPIResourceHandler(
             }
           ),
         }
-      : {}),
+      : {
+        additionalAuthenticationProviders: []
+      }),
   };
   return processedResource;
 }
@@ -257,8 +259,10 @@ export function processResources(
     resources: {},
     exports: {},
   };
-  const processedResources = {
-    schema: {},
+  const processedResources: AmplifyAppSyncSimulatorConfig = {
+    schema: {
+      content: ''
+    },
     resolvers: [],
     functions: [],
     dataSources: [],
@@ -266,7 +270,9 @@ export function processResources(
     tables: [],
     appSync: {
       name: '',
-      defaultAuthenticationType: {},
+      defaultAuthenticationType: {
+        authenticationType: AmplifyAppSyncSimulatorAuthenticationType.API_KEY
+      },
       apiKey: null,
       additionalAuthenticationProviders: []
     },
@@ -313,13 +319,13 @@ export function processResources(
   Object.entries(transformResult.resolvers).forEach(([path, content]) => {
     processedResources.mappingTemplates.push({
       path: `resolvers/${path}`,
-      content,
+      content: content as string,
     });
   });
   Object.entries(transformResult.pipelineFunctions).forEach(([path, content]) => {
     processedResources.mappingTemplates.push({
       path: `pipelineFunctions/${path}`,
-      content,
+      content: content as string,
     });
   });
 

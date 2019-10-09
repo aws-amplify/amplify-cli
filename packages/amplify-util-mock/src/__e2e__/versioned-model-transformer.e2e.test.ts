@@ -26,14 +26,6 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [
         new DynamoDBModelTransformer(),
-        // new ModelAuthTransformer({
-        //   authConfig: {
-        //     defaultAuthentication: {
-        //       authenticationType: 'API_KEY',
-        //     },
-        //     additionalAuthenticationProviders: [],
-        //   },
-        // }),
         new VersionedModelTransformer(),
       ],
     });

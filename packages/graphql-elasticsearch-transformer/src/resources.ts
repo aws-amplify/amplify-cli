@@ -7,7 +7,7 @@ import {
     ElasticsearchMappingTemplate,
     print, str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, toJson, ifElse,
-    int, Expression
+    int, Expression,
 } from 'graphql-mapping-template'
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
 import { MappingParameters } from 'graphql-transformer-core/src/TransformerContext'
@@ -118,13 +118,13 @@ export class ResourceFactory {
 
     public getLayerMapping(): MappingParameters {
         return {
-            "LayerResourceMapping":{
+            "LayerResourceMapping": {
                 "ap-northeast-1": {
                     "layerRegion": "arn:aws:lambda:ap-northeast-1:249908578461:layer:AWSLambda-Python-AWS-SDK:1"
                 },
                 "us-east-1": {
                     "layerRegion": "arn:aws:lambda:us-east-1:668099181075:layer:AWSLambda-Python-AWS-SDK:1"
-                }, 
+                },
                 "ap-southeast-1": {
                     "layerRegion": "arn:aws:lambda:ap-southeast-1:468957933125:layer:AWSLambda-Python-AWS-SDK:1"
                 },
@@ -497,15 +497,15 @@ export class ResourceFactory {
                             })),
                         sort: list([
                             raw('{ #if($nonKeywordFields.contains($sortField))\
- "$sortField" #else "${sortField}.keyword" #end : {\
- "order" : "$sortDirection"\
+    "$sortField" #else "${sortField}.keyword" #end : {\
+    "order" : "$sortDirection"\
 } }')]),
                     })
                 ])
             ),
             ResponseMappingTemplate: print(
                 compoundExpression([
-                    set(ref('items'), list([])),
+                    set(ref('es_items'), list([])),
                     forEach(
                         ref('entry'),
                         ref('context.result.hits.hits'),
@@ -514,11 +514,11 @@ export class ResourceFactory {
                                 raw('!$foreach.hasNext'),
                                 set(ref('nextToken'), ref('entry.sort.get(0)'))
                             ),
-                            qref('$items.add($entry.get("_source"))')
+                            qref('$es_items.add($entry.get("_source"))')
                         ]
                     ),
                     toJson(obj({
-                        "items": ref('items'),
+                        "items": ref('es_items'),
                         "total": ref('ctx.result.hits.total'),
                         "nextToken": ref('nextToken')
                     }))

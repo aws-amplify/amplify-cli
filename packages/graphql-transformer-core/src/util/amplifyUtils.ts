@@ -13,25 +13,28 @@ const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
 
 export interface ProjectOptions {
-  projectDirectory?: string;
-  transformersFactory: Function;
-  transformersFactoryArgs: object[];
-  currentCloudBackendDirectory: string;
-  rootStackFileName?: string;
-  dryRun?: boolean;
-  disableResolverOverrides?: boolean;
+  projectDirectory?: string
+  transformersFactory: Function,
+  transformersFactoryArgs: object[],
+  currentCloudBackendDirectory: string
+  rootStackFileName?: string
+  dryRun?: boolean,
+  disableResolverOverrides?: boolean,
+  buildParameters?: Object,
 }
 export async function buildProject(opts: ProjectOptions) {
   await ensureMissingStackMappings(opts);
 
   const builtProject = await _buildProject(opts);
 
-  if (opts.projectDirectory && !opts.dryRun) {
-    await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName);
-    if (opts.currentCloudBackendDirectory) {
-      const lastBuildPath = path.join(opts.currentCloudBackendDirectory, 'build');
-      const thisBuildPath = path.join(opts.projectDirectory, 'build');
-      await Sanity.check(lastBuildPath, thisBuildPath, opts.rootStackFileName);
+    if (opts.projectDirectory && !opts.dryRun) {
+        await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'),
+        opts.rootStackFileName, opts.buildParameters);
+        if (opts.currentCloudBackendDirectory) {
+            const lastBuildPath = path.join(opts.currentCloudBackendDirectory, 'build');
+            const thisBuildPath = path.join(opts.projectDirectory, 'build');
+            await Sanity.check(lastBuildPath, thisBuildPath, opts.rootStackFileName);
+        }
     }
   }
   return builtProject;
@@ -311,65 +314,71 @@ export async function uploadDeployment(opts: UploadOptions) {
 /**
  * Writes a deployment to disk at a path.
  */
-async function writeDeploymentToDisk(deployment: DeploymentResources, directory: string, rootStackFileName: string = 'rootStack.json') {
-  // Delete the last deployments resources.
-  await emptyDirectory(directory);
+async function writeDeploymentToDisk(deployment: DeploymentResources, directory: string,
+    rootStackFileName: string = 'rootStack.json', buildParameters: Object) {
 
-  // Write the schema to disk
-  const schema = deployment.schema;
-  const fullSchemaPath = path.normalize(directory + `/schema.graphql`);
-  fs.writeFileSync(fullSchemaPath, schema);
+    // Delete the last deployments resources.
+    await emptyDirectory(directory)
 
-  // Setup the directories if they do not exist.
-  initStacksAndResolversDirectories(directory);
+    // Write the schema to disk
+    const schema = deployment.schema;
+    const fullSchemaPath = path.normalize(directory + `/schema.graphql`)
+    fs.writeFileSync(fullSchemaPath, schema)
 
-  // Write resolvers to disk
-  const resolverFileNames = Object.keys(deployment.resolvers);
-  const resolverRootPath = resolverDirectoryPath(directory);
-  for (const resolverFileName of resolverFileNames) {
-    const fullResolverPath = path.normalize(resolverRootPath + '/' + resolverFileName);
-    fs.writeFileSync(fullResolverPath, deployment.resolvers[resolverFileName]);
-  }
+    // Setup the directories if they do not exist.
+    initStacksAndResolversDirectories(directory);
 
-  // Write pipeline resolvers to disk
-  const pipelineFunctions = Object.keys(deployment.pipelineFunctions);
-  const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory);
-  for (const functionFileName of pipelineFunctions) {
-    const fullTemplatePath = path.normalize(pipelineFunctionRootPath + '/' + functionFileName);
-    fs.writeFileSync(fullTemplatePath, deployment.pipelineFunctions[functionFileName]);
-  }
-
-  // Write the stacks to disk
-  const stackNames = Object.keys(deployment.stacks);
-  const stackRootPath = stacksDirectoryPath(directory);
-  for (const stackFileName of stackNames) {
-    const fileNameParts = stackFileName.split('.');
-    if (fileNameParts.length === 1) {
-      fileNameParts.push('json');
+    // Write resolvers to disk
+    const resolverFileNames = Object.keys(deployment.resolvers);
+    const resolverRootPath = resolverDirectoryPath(directory)
+    for (const resolverFileName of resolverFileNames) {
+        const fullResolverPath = path.normalize(resolverRootPath + '/' + resolverFileName);
+        fs.writeFileSync(fullResolverPath, deployment.resolvers[resolverFileName]);
     }
-    const fullFileName = fileNameParts.join('.');
-    throwIfNotJSONExt(fullFileName);
-    const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
-    let stackString: any = deployment.stacks[stackFileName];
-    stackString =
-      typeof stackString === 'string' ? deployment.stacks[stackFileName] : JSON.stringify(deployment.stacks[stackFileName], null, 4);
-    fs.writeFileSync(fullStackPath, stackString);
-  }
 
-  // Write any functions to disk
-  const functionNames = Object.keys(deployment.functions);
-  const functionRootPath = path.normalize(directory + `/functions`);
-  if (!fs.existsSync(functionRootPath)) {
-    fs.mkdirSync(functionRootPath);
-  }
-  for (const functionName of functionNames) {
-    const fullFunctionPath = path.normalize(functionRootPath + '/' + functionName);
-    const zipContents = fs.readFileSync(deployment.functions[functionName]);
-    fs.writeFileSync(fullFunctionPath, zipContents);
-  }
-  const rootStack = deployment.rootStack;
-  const rootStackPath = path.normalize(directory + `/${rootStackFileName}`);
-  fs.writeFileSync(rootStackPath, JSON.stringify(rootStack, null, 4));
+    // Write pipeline resolvers to disk
+    const pipelineFunctions = Object.keys(deployment.pipelineFunctions);
+    const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory)
+    for (const functionFileName of pipelineFunctions) {
+        const fullTemplatePath = path.normalize(pipelineFunctionRootPath + '/' + functionFileName);
+        fs.writeFileSync(fullTemplatePath, deployment.pipelineFunctions[functionFileName]);
+    }
+
+    // Write the stacks to disk
+    const stackNames = Object.keys(deployment.stacks);
+    const stackRootPath = stacksDirectoryPath(directory)
+    for (const stackFileName of stackNames) {
+        const fileNameParts = stackFileName.split('.');
+        if (fileNameParts.length === 1) {
+            fileNameParts.push('json')
+        }
+        const fullFileName = fileNameParts.join('.');
+        throwIfNotJSONExt(fullFileName);
+        const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
+        let stackString: any = deployment.stacks[stackFileName];
+        stackString = typeof stackString === 'string' ? deployment.stacks[stackFileName] : JSON.stringify(deployment.stacks[stackFileName], null, 4);
+        fs.writeFileSync(fullStackPath, stackString);
+    }
+
+    // Write any functions to disk
+    const functionNames = Object.keys(deployment.functions);
+    const functionRootPath = path.normalize(directory + `/functions`)
+    if (!fs.existsSync(functionRootPath)) {
+        fs.mkdirSync(functionRootPath);
+    }
+    for (const functionName of functionNames) {
+        const fullFunctionPath = path.normalize(functionRootPath + '/' + functionName);
+        const zipContents = fs.readFileSync(deployment.functions[functionName])
+        fs.writeFileSync(fullFunctionPath, zipContents);
+    }
+    const rootStack = deployment.rootStack;
+    const rootStackPath = path.normalize(directory + `/${rootStackFileName}`);
+    fs.writeFileSync(rootStackPath, JSON.stringify(rootStack, null, 4));
+
+    // Write params to disk
+    const jsonString = JSON.stringify(buildParameters, null, 4);
+    const parametersOutputFilePath = path.join(directory, PARAMETERS_FILE_NAME);
+    fs.writeFileSync(parametersOutputFilePath, jsonString);
 }
 
 interface MigrationOptions {

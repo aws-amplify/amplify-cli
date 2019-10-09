@@ -12,7 +12,6 @@ import emptyBucket from '../emptyBucket';
 import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3';
 import * as moment from 'moment';
-import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 
@@ -42,7 +41,7 @@ beforeAll(async () => {
         title: String!
         createdAt: String
         updatedAt: String
-        comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+        comments: [Comment] @connection(name: "PostComments", keyField: "postId", limit:50)
         sortedComments: [SortedComment] @connection(name: "SortedPostComments", keyField: "postId", sortField: "when")
     }
     type Comment @model {
@@ -68,6 +67,7 @@ beforeAll(async () => {
         album: Album @connection (name: "AlbumPhotos", keyField: "albumId")
     }
     `;
+
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
@@ -83,7 +83,7 @@ beforeAll(async () => {
     ],
   });
   const out = transformer.transform(validSchema);
-  // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+
   try {
     await awsS3Client
       .createBucket({
@@ -545,4 +545,62 @@ test('Test album self connection.', async () => {
   );
   expect(queryAlbum.data.getAlbum).toBeDefined();
   expect(queryAlbum.data.getAlbum.title).toEqual('Test Album');
+});
+
+test('Test default limit is 50', async () => {
+  // create Auth logic around this
+  const postID = 'e2eConnectionPost';
+  const postTitle = 'samplePost';
+  const createPost = await GRAPHQL_CLIENT.query(
+    `mutation CreatePost {
+        createPost(input: {title: "${postTitle}", id: "${postID}"}) {
+        id
+          title
+        }
+      }
+      `,
+    {}
+  );
+  expect(createPost.data.createPost).toBeDefined();
+  expect(createPost.data.createPost.id).toEqual(postID);
+  expect(createPost.data.createPost.title).toEqual(postTitle);
+
+  for (let i = 0; i < 51; i++) {
+    await GRAPHQL_CLIENT.query(
+      `
+          mutation CreateComment {
+            createComment(input: {postId: "${postID}", content: "content_${i}"}) {
+              content
+              id
+              post {
+                title
+              }
+            }
+          }
+        `,
+      {}
+    );
+  }
+
+  const getPost = await GRAPHQL_CLIENT.query(
+    `
+        query GetPost($id: ID!) {
+          getPost(id: $id) {
+            id
+            title
+            createdAt
+            updatedAt
+            comments {
+              items {
+                id
+                content
+              }
+              nextToken
+            }
+          }
+        }`,
+    { id: postID }
+  );
+
+  expect(getPost.data.getPost.comments.items.length).toEqual(50);
 });

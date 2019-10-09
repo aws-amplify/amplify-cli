@@ -498,6 +498,38 @@ test('Test ModelConnectionTransformer does not throw with valid key fields', () 
   expect(() => transformer.transform(validSchema3)).toBeTruthy();
 });
 
+test('Test ModelConnectionTransformer sortField with missing @key should fail', () => {
+    const validSchema = `
+    type Model1 @model(subscriptions: null)
+    {
+        id: ID!
+        sort: Int!
+        name: String!
+    }
+    type Model2 @model(subscriptions: null)
+    {
+        id: ID!
+        connection: Model1 @connection(sortField: "modelOneSort")
+        modelOneSort: Int!
+    }
+        `
+    
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+
+    try {
+        transformer.transform(validSchema);
+        expect(true).toEqual(false)
+    } catch (e) {
+        expect(e).toBeTruthy()
+        expect(e.name).toEqual('InvalidDirectiveError')
+    }
+});
+
 test('Test ModelConnectionTransformer overrides the default limit', () => {
   const validSchema = `
     type Post @model {
@@ -510,15 +542,20 @@ test('Test ModelConnectionTransformer overrides the default limit', () => {
         content: String
     }
     `;
-  const transformer = new GraphQLTransform({
-    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-  });
-  const out = transformer.transform(validSchema);
-  expect(out).toBeDefined();
-  expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
 
-  // Post.comments field
-  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+
+    // Post.comments field
+    expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
 });
 
 test('Test ModelConnectionTransformer uses the default limit', () => {
