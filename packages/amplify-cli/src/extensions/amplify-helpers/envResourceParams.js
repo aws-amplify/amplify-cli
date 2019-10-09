@@ -32,7 +32,7 @@ function loadAllResourceParameters(context) {
 
 function getOrCreateSubObject(data, keys) {
   let currentObj = data;
-  keys.forEach((key) => {
+  keys.forEach(key => {
     if (!(key in currentObj)) {
       currentObj[key] = {};
     }

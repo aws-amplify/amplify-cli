@@ -7,7 +7,6 @@ const inquirer = require('inquirer');
 const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
 
-
 const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
 const credentialsFilePath = path.join(dotAWSDirPath, 'credentials');
 const configFilePath = path.join(dotAWSDirPath, 'config');
@@ -25,7 +24,7 @@ function setProfile(awsConfig, profileName) {
   }
 
   let isCredSet = false;
-  Object.keys(credentials).forEach((key) => {
+  Object.keys(credentials).forEach(key => {
     const keyName = key.trim();
     if (profileName === keyName) {
       credentials[key].aws_access_key_id = awsConfig.accessKeyId;
@@ -41,7 +40,7 @@ function setProfile(awsConfig, profileName) {
   }
 
   let isConfigSet = false;
-  Object.keys(config).forEach((key) => {
+  Object.keys(config).forEach(key => {
     const keyName = key.replace('profile', '').trim();
     if (profileName === keyName) {
       config[key].region = awsConfig.region;
@@ -140,7 +139,7 @@ async function getMfaTokenCode() {
     type: 'input',
     name: 'tokenCode',
     message: 'Enter the MFA token code:',
-    validate: (value) => {
+    validate: value => {
       let isValid = value.length === 6;
       if (!isValid) {
         return 'Must have length equal to 6';
@@ -232,10 +231,7 @@ async function resetCache(context, profileName) {
 }
 
 function getCacheFilePath(context) {
-  const sharedConfigDirPath = path.join(
-    context.amplify.pathManager.getHomeDotAmplifyDirPath(),
-    constants.Label,
-  );
+  const sharedConfigDirPath = path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
   fs.ensureDirSync(sharedConfigDirPath);
   return path.join(sharedConfigDirPath, constants.CacheFileName);
 }
@@ -244,7 +240,7 @@ function getProfileConfig(profileName) {
   let profileConfig;
   if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
-    Object.keys(config).forEach((key) => {
+    Object.keys(config).forEach(key => {
       const keyName = key.replace('profile', '').trim();
       if (profileName === keyName) {
         profileConfig = config[key];
@@ -259,7 +255,7 @@ function getProfileCredentials(profileName) {
   if (fs.existsSync(credentialsFilePath)) {
     const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
 
-    Object.keys(credentials).forEach((key) => {
+    Object.keys(credentials).forEach(key => {
       const keyName = key.trim();
       if (profileName === keyName) {
         profileCredentials = credentials[key];
@@ -297,7 +293,7 @@ function getNamedProfiles() {
   if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
     namedProfiles = {};
-    Object.keys(config).forEach((key) => {
+    Object.keys(config).forEach(key => {
       const profileName = key.replace('profile', '').trim();
       if (!namedProfiles[profileName]) {
         namedProfiles[profileName] = config[key];

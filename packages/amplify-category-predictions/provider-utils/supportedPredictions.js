@@ -35,7 +35,8 @@ function categories(info) {
     },
   ];
   if (info) {
-    let helpText = 'Identify allows you to identify text (words, tables, pages from a book), entities (faces and/or celebrities) from images. You can also identify real world objects such as chairs, desks, etc. which are referred to as “labels” from images.\n\
+    let helpText =
+      'Identify allows you to identify text (words, tables, pages from a book), entities (faces and/or celebrities) from images. You can also identify real world objects such as chairs, desks, etc. which are referred to as “labels” from images.\n\
 Convert allows you to translate text from one source language to a target language, using Amazon Translate. You can also generate speech audio from text input, using Amazon Polly. Lastly, you can take an audio input and transcribe it, using Amazon Transcribe.\n\
 Interpret allows you to analyze text for language, entities (places, people), key phrases, sentiment (postive, neutral, negative), and syntax (pronouns, verbs, adjectives).\n\
 Infer allows you to perform inference against a cloud endpoint. It’s an advanced feature using Amazon SageMaker, where you have more control over your models.\n\
@@ -90,4 +91,4 @@ export async function promptConsoleSupportedCategory() {
   return await inquirer.prompt(consoleSupportedCategories());
 }
 
-export default { };
+export default {};

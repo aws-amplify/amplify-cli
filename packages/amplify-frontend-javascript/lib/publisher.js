@@ -6,7 +6,8 @@ const hostingPlugin = 'amplify-category-hosting';
 const publishService = 'S3AndCloudFront';
 
 function run(context) {
-  return builder.run(context)
+  return builder
+    .run(context)
     .then(publishToHostingBucket)
     .then(onSuccess)
     .catch(onFailure);
@@ -21,8 +22,7 @@ function publishToHostingBucket(context) {
   return hostingPluginModule.publish(context, publishService, { distributionDirPath });
 }
 
-function onSuccess() {
-}
+function onSuccess() {}
 
 function onFailure(e) {
   throw e;

@@ -69,7 +69,7 @@ function columnHeaderDivider(cliTable) {
 }
 
 function findWidths(cliTable) {
-  return [(cliTable).options.head]
+  return [cliTable.options.head]
     .concat(getRows(cliTable))
     .reduce((colWidths, row) => row.map((str, i) => Math.max(`${str}`.length + 1, colWidths[i] || 1)), []);
 }
@@ -106,7 +106,6 @@ const CLI_TABLE_MARKDOWN = {
   right: '|',
   middle: '|',
 };
-
 
 module.exports = {
   info,

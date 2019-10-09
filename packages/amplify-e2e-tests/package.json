@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -19,6 +19,7 @@
     "aws-amplify": "^1.1.36",
     "dotenv": "6.2.0",
     "jest": "23.1.0",
+    "jest-junit": "^8.0.0",
     "nexpect": "file:./src/utils/nexpect-modified",
     "node-fetch": "^2.6.0",
     "rimraf": "^3.0.0",
@@ -36,6 +37,16 @@
       "/node_modules/",
       "src"
     ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!__tests__/**"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -50,5 +61,11 @@
     "esm": "^3.2.25",
     "mime-types": "^2.1.24",
     "ora": "^3.4.0"
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
   }
 }

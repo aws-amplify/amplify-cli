@@ -26,21 +26,14 @@ async function buildResource(context, resource) {
   let zipFilename = resource.distZipFilename;
   let zipFilePath = zipFilename ? path.normalize(path.join(distDir, 'latest-build.zip')) : '';
 
-  if (
-    !resource.lastBuildTimeStamp ||
-    new Date(packageJsonMeta.mtime) > new Date(resource.lastBuildTimeStamp)
-  ) {
+  if (!resource.lastBuildTimeStamp || new Date(packageJsonMeta.mtime) > new Date(resource.lastBuildTimeStamp)) {
     installDependencies(resourceDir);
     context.amplify.updateamplifyMetaAfterBuild(resource);
   }
 
   runBuildScriptHook(resourceName, projectRoot);
 
-  if (
-    !resource.lastPackageTimeStamp ||
-    !resource.distZipFilename ||
-    isPackageOutdated(resourceDir, resource.lastPackageTimeStamp)
-  ) {
+  if (!resource.lastPackageTimeStamp || !resource.distZipFilename || isPackageOutdated(resourceDir, resource.lastPackageTimeStamp)) {
     // generating hash, ignoring node_modules as this can take long time to hash
     // the content inside node_modules change only when content of package-lock.json changes
     const { hash: folderHash } = await hashElement(resourceDir, {

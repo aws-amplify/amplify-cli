@@ -3,10 +3,7 @@ const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const generateStatements = require('./statements');
 const generateTypes = require('./types');
-const {
-  AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
-  AmplifyCodeGenAPINotFoundError,
-} = require('../errors');
+const { AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError, AmplifyCodeGenAPINotFoundError } = require('../errors');
 const {
   downloadIntrospectionSchemaWithProgress,
   getAppSyncAPIDetails,
@@ -41,7 +38,9 @@ async function add(context, apiId = null) {
 
   const schemaPath = ['schema.graphql', 'schema.json'].map(p => path.join(process.cwd(), p)).find(p => fs.existsSync(p));
   if (withoutInit && !schemaPath) {
-    throw Error(`Please download schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`);
+    throw Error(
+      `Please download schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`
+    );
   }
   // Grab the frontend
   let frontend;
@@ -115,16 +114,10 @@ async function add(context, apiId = null) {
   }
   const answer = await addWalkThrough(context, undefined, withoutInit, frontend, framework);
 
-
   let schema;
   if (!withoutInit) {
     if (!apiDetails.isLocal) {
-      schema = await downloadIntrospectionSchemaWithProgress(
-        context,
-        apiDetails.id,
-        answer.schemaLocation,
-        region,
-      );
+      schema = await downloadIntrospectionSchemaWithProgress(context, apiDetails.id, answer.schemaLocation, region);
     } else if (getFrontEndHandler(context) === 'android') {
       schema = answer.schemaLocation;
     } else {
@@ -146,7 +139,7 @@ async function add(context, apiId = null) {
       region,
       apiId,
       ...(withoutInit ? { frontend } : {}),
-      ...((withoutInit && frontend === 'javascript') ? { framework } : {}),
+      ...(withoutInit && frontend === 'javascript' ? { framework } : {}),
     },
   };
 

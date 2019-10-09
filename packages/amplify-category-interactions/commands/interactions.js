@@ -2,7 +2,7 @@ const featureName = 'interactions';
 
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     const header = `amplify ${featureName} <subcommand>`;
 
     const commands = [

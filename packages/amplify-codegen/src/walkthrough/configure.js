@@ -22,13 +22,9 @@ async function configureProjectWalkThrough(context, amplifyConfig, withoutInit =
 
   let selectedProjectConfig;
   if (!withoutInit) {
-    selectedProjectConfig = deepCopy(
-      amplifyConfig.find(project => project.amplifyExtension.graphQLApiId === apiId),
-    );
+    selectedProjectConfig = deepCopy(amplifyConfig.find(project => project.amplifyExtension.graphQLApiId === apiId));
   } else {
-    selectedProjectConfig = deepCopy(
-      amplifyConfig.find(project => project.projectName === 'Codegen Project'),
-    );
+    selectedProjectConfig = deepCopy(amplifyConfig.find(project => project.projectName === 'Codegen Project'));
   }
 
   let frontend;
@@ -44,41 +40,23 @@ async function configureProjectWalkThrough(context, amplifyConfig, withoutInit =
   let targetLanguage = 'android';
 
   if (frontend !== 'android') {
-    targetLanguage = await askCodeGenTargetLanguage(
-      context,
-      amplifyExtension.codeGenTarget,
-      withoutInit,
-      frontend,
-      framework,
-    );
+    targetLanguage = await askCodeGenTargetLanguage(context, amplifyExtension.codeGenTarget, withoutInit, frontend, framework);
   }
 
   const includePatternDefault = getIncludePattern(targetLanguage, selectedProjectConfig.schema);
-  const includePathGlob = join(
-    includePatternDefault.graphQLDirectory,
-    '**',
-    includePatternDefault.graphQLExtension,
-  );
-  const includePattern =
-    targetLanguage === amplifyExtension.codeGenTarget
-      ? selectedProjectConfig.includes
-      : [includePathGlob];
+  const includePathGlob = join(includePatternDefault.graphQLDirectory, '**', includePatternDefault.graphQLExtension);
+  const includePattern = targetLanguage === amplifyExtension.codeGenTarget ? selectedProjectConfig.includes : [includePathGlob];
 
   selectedProjectConfig.includes = await askCodeGeneQueryFilePattern(includePattern);
 
   if (!(frontend === 'android' || targetLanguage === 'javascript')) {
-    amplifyExtension.generatedFileName = await askTargetFileName(
-      amplifyExtension.generatedFileName || 'API',
-      targetLanguage,
-    );
+    amplifyExtension.generatedFileName = await askTargetFileName(amplifyExtension.generatedFileName || 'API', targetLanguage);
   } else {
     amplifyExtension.generatedFileName = '';
   }
   amplifyExtension.codeGenTarget = targetLanguage;
 
-  amplifyExtension.maxDepth = await askMaxDepth(
-    amplifyExtension.maxDepth,
-  );
+  amplifyExtension.maxDepth = await askMaxDepth(amplifyExtension.maxDepth);
 
   return selectedProjectConfig;
 }

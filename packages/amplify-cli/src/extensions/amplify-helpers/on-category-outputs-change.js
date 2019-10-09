@@ -19,17 +19,13 @@ async function onCategoryOutputsChange(context, cloudAmplifyMeta, localMeta) {
   const projectConfig = readJsonFile(projectConfigFilePath);
   if (projectConfig.frontend) {
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    const frontendHandlerModule =
-      require(frontendPlugins[projectConfig.frontend]);
-    await frontendHandlerModule.createFrontendConfigs(
-      context,
-      getResourceOutputs(localMeta), getResourceOutputs(cloudAmplifyMeta),
-    );
+    const frontendHandlerModule = require(frontendPlugins[projectConfig.frontend]);
+    await frontendHandlerModule.createFrontendConfigs(context, getResourceOutputs(localMeta), getResourceOutputs(cloudAmplifyMeta));
   }
 
   const outputChangedEventTasks = [];
   const categoryPlugins = context.amplify.getCategoryPlugins(context);
-  Object.keys(categoryPlugins).forEach((pluginName) => {
+  Object.keys(categoryPlugins).forEach(pluginName => {
     const packageLocation = categoryPlugins[pluginName];
     const pluginModule = require(packageLocation);
     if (pluginModule && typeof pluginModule.onAmplifyCategoryOutputChange === 'function') {
@@ -54,7 +50,7 @@ function attachContextExtensions(context, packageLocation) {
     const stats = fs.statSync(extensionsDirPath);
     if (stats.isDirectory()) {
       const itemNames = fs.readdirSync(extensionsDirPath);
-      itemNames.forEach((itemName) => {
+      itemNames.forEach(itemName => {
         const itemPath = path.join(extensionsDirPath, itemName);
         let itemModule;
         try {

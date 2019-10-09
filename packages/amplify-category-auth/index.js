@@ -29,28 +29,21 @@ async function add(context) {
 
   return amplify
     .serviceSelectionPrompt(context, category, servicesMetadata)
-    .then((result) => {
+    .then(result => {
       resultMetadata = result;
-      const providerController = require(`${__dirname}/provider-utils/${
-        result.providerName
-      }/index`);
+      const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
       if (!providerController) {
         context.print.error('Provider not configured for this category');
         return;
       }
       return providerController.addResource(context, category, result.service);
     })
-    .then((resourceName) => {
+    .then(resourceName => {
       const options = {
         service: resultMetadata.service,
         providerPlugin: resultMetadata.providerName,
       };
-      const resourceDirPath = path.join(
-        amplify.pathManager.getBackendDirPath(),
-        '/auth/',
-        resourceName,
-        'parameters.json',
-      );
+      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', resourceName, 'parameters.json');
       const authParameters = amplify.readJsonFile(resourceDirPath);
 
       if (authParameters.dependsOn) {
@@ -60,7 +53,7 @@ async function add(context) {
       context.print.success('Successfully added auth resource');
       return resourceName;
     })
-    .catch((err) => {
+    .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
     });
@@ -70,11 +63,12 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const { amplify } = context;
   const serviceMetadata = amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
   const { cfnFilename, provider } = serviceMetadata.Cognito;
-  const authExists =
-    amplify.getProjectDetails().amplifyMeta.auth &&
-    Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
+  const authExists = amplify.getProjectDetails().amplifyMeta.auth && Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;
-  const projectName = context.amplify.getProjectConfig().projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
+  const projectName = context.amplify
+    .getProjectConfig()
+    .projectName.toLowerCase()
+    .replace(/[^A-Za-z0-9_]+/g, '_');
   let currentAuthParams;
   const [sharedId] = uuid().split('-');
 
@@ -85,22 +79,16 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     currentAuthName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0]; //eslint-disable-line
     currentAuthParams = providerPlugin.loadResourceParameters(context, 'auth', currentAuthName);
 
-    if (
-      requirements.authSelections.includes('identityPoolOnly') &&
-      currentAuthParams.userPoolName
-    ) {
+    if (requirements.authSelections.includes('identityPoolOnly') && currentAuthParams.userPoolName) {
       requirements.authSelections = 'identityPoolAndUserPool';
     }
-    if (
-      requirements.authSelections.includes('userPoolOnly') &&
-      currentAuthParams.identityPoolName
-    ) {
+    if (requirements.authSelections.includes('userPoolOnly') && currentAuthParams.identityPoolName) {
       requirements.authSelections = 'identityPoolAndUserPool';
     }
 
     const defaultVals = defaults.getAllDefaults(currentAuthName);
     // loop through service questions
-    serviceMetadata.Cognito.inputs.forEach((s) => {
+    serviceMetadata.Cognito.inputs.forEach(s => {
       // find those that would not be displayed if user was entering values manually
       if (!context.amplify.getWhen(s, defaultVals, currentAuthParams, context.amplify)()) {
         // if a value wouldn't be displayed,
@@ -116,17 +104,10 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
   /* eslint-disable */
   const authPropsValues = authExists
-    ? Object.assign(
-        defaults.functionMap[requirements.authSelections](currentAuthName),
-        currentAuthParams,
-        immutables,
-        requirements,
-      )
-    : Object.assign(
-        defaults.functionMap[requirements.authSelections](currentAuthName),
-        requirements,
-        { resourceName: `cognito${sharedId}` },
-      ); //eslint-disable-line
+    ? Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements)
+    : Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, {
+        resourceName: `cognito${sharedId}`,
+      }); //eslint-disable-line
   /* eslint-enable */
   const { roles } = defaults;
   const authProps = {
@@ -136,25 +117,13 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
   try {
     await copyCfnTemplate(context, category, authProps, cfnFilename);
-    saveResourceParameters(
-      context,
-      provider,
-      category,
-      authProps.resourceName,
-      authProps,
-      ENV_SPECIFIC_PARAMS,
-    );
+    saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
     if (!authExists) {
       const options = {
         service: 'Cognito',
         providerPlugin: 'awscloudformation',
       };
-      const resourceDirPath = path.join(
-        amplify.pathManager.getBackendDirPath(),
-        '/auth/',
-        authProps.resourceName,
-        'parameters.json',
-      );
+      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', authProps.resourceName, 'parameters.json');
       const authParameters = amplify.readJsonFile(resourceDirPath);
 
       if (authParameters.dependsOn) {
@@ -189,12 +158,7 @@ async function checkRequirements(requirements, context) {
   let authParameters;
 
   if (existingAuth && Object.keys(existingAuth).length > 0) {
-    const resourceDirPath = path.join(
-      amplify.pathManager.getBackendDirPath(),
-      '/auth/',
-      Object.keys(existingAuth)[0],
-      'parameters.json',
-    );
+    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', Object.keys(existingAuth)[0], 'parameters.json');
     authParameters = amplify.readJsonFile(resourceDirPath);
   } else {
     return { authEnabled: false };
@@ -231,13 +195,13 @@ async function initEnv(context) {
     toBeUpdated = resourcesToBeUpdated.filter(c => c.category === 'auth');
   }
 
-  toBeDeleted.forEach((authResource) => {
+  toBeDeleted.forEach(authResource => {
     amplify.removeResourceParameters(context, 'auth', authResource.resourceName);
   });
 
   const tasks = toBeCreated.concat(toBeUpdated);
 
-  const authTasks = tasks.map((authResource) => {
+  const authTasks = tasks.map(authResource => {
     const { resourceName } = authResource;
     return async () => {
       const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
@@ -248,7 +212,6 @@ async function initEnv(context) {
   await sequential(authTasks);
 }
 
-
 async function console(context) {
   const { amplify } = context;
   const supportedServices = amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
@@ -258,8 +221,9 @@ async function console(context) {
     return context.print.error('Auth has NOT been added to this project.');
   }
 
-  return amplify.serviceSelectionPrompt(context, category, supportedServices)
-    .then((result) => {
+  return amplify
+    .serviceSelectionPrompt(context, category, supportedServices)
+    .then(result => {
       const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
       if (!providerController) {
         context.print.error('Provider not configured for this category');
@@ -267,7 +231,7 @@ async function console(context) {
       }
       return providerController.console(context, amplifyMeta);
     })
-    .catch((err) => {
+    .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error trying to open the auth web console.');
     });
@@ -279,7 +243,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach((resourceName) => {
+  Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
       const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
       if (providerController) {
@@ -287,7 +251,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName],
+          resourceOpsMapping[resourceName]
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });

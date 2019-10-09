@@ -18,7 +18,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const parameters = {};
   // Ask resource and Lambda function name
 
-
   const resourceQuestions = [
     {
       type: inputs[0].type,
@@ -69,11 +68,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     const dynamoAnswers = await askDynamoDBQuestions(context, inputs);
 
     const tableParameters = await getTableParameters(context, dynamoAnswers);
-    Object.assign(
-      dynamoAnswers,
-      { category: 'storage' },
-      { tableDefinition: { ...tableParameters } },
-    );
+    Object.assign(dynamoAnswers, { category: 'storage' }, { tableDefinition: { ...tableParameters } });
     Object.assign(allDefaultValues, { database: dynamoAnswers });
 
     if (!dynamoAnswers.Arn) {
@@ -88,11 +83,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   let topLevelComment;
   if (await context.amplify.confirmPrompt.run('Do you want to access other resources created in this project from your Lambda function?')) {
-    ({ topLevelComment } = await askExecRolePermissionsQuestions(
-      context,
-      allDefaultValues,
-      parameters,
-    ));
+    ({ topLevelComment } = await askExecRolePermissionsQuestions(context, allDefaultValues, parameters));
   }
   allDefaultValues.parameters = parameters;
   allDefaultValues.topLevelComment = topLevelComment;
@@ -102,9 +93,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
 async function updateWalkthrough(context, lambdaToUpdate) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const resources = allResources
-    .filter(resource => resource.service === serviceName)
-    .map(resource => resource.resourceName);
+  const resources = allResources.filter(resource => resource.service === serviceName).map(resource => resource.resourceName);
 
   if (resources.length === 0) {
     context.print.error('No Lambda Functions resource to update. Please use "amplify add function" command to create a new Function');
@@ -112,28 +101,25 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     return;
   }
 
-  const resourceQuestion = [{
-    name: 'resourceName',
-    message: 'Please select the Lambda Function you would want to update',
-    type: 'list',
-    choices: resources,
-  }];
+  const resourceQuestion = [
+    {
+      name: 'resourceName',
+      message: 'Please select the Lambda Function you would want to update',
+      type: 'list',
+      choices: resources,
+    },
+  ];
 
   const newParams = {};
   const answers = {};
   const currentDefaults = {};
   let dependsOn;
 
-  const resourceAnswer = !lambdaToUpdate ?
-    await inquirer.prompt(resourceQuestion) :
-    { resourceName: lambdaToUpdate };
+  const resourceAnswer = !lambdaToUpdate ? await inquirer.prompt(resourceQuestion) : { resourceName: lambdaToUpdate };
   answers.resourceName = resourceAnswer.resourceName;
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(
-    projectBackendDirPath, categoryName,
-    resourceAnswer.resourceName,
-  );
+  const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceAnswer.resourceName);
   const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
   let currentParameters;
   try {
@@ -146,7 +132,11 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     currentDefaults.categoryPermissionMap = currentParameters.permissions;
   }
 
-  if (await context.amplify.confirmPrompt.run('Do you want to update permissions granted to this Lambda function to perform on other resources in your project?')) {
+  if (
+    await context.amplify.confirmPrompt.run(
+      'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?'
+    )
+  ) {
     // Get current dependsOn for the resource
 
     const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
@@ -154,39 +144,27 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     const resourceDependsOn = amplifyMeta.function[answers.resourceName].dependsOn || [];
     answers.dependsOn = resourceDependsOn;
 
-    const { topLevelComment } = await askExecRolePermissionsQuestions(
-      context,
-      answers, newParams,
-      currentDefaults,
-    );
+    const { topLevelComment } = await askExecRolePermissionsQuestions(context, answers, newParams, currentDefaults);
 
     const cfnFileName = `${resourceAnswer.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
     const cfnContent = JSON.parse(fs.readFileSync(cfnFilePath));
     const dependsOnParams = { env: { Type: 'String' } };
 
-    Object.keys(answers.resourcePropertiesJSON).forEach((resourceProperty) => {
+    Object.keys(answers.resourcePropertiesJSON).forEach(resourceProperty => {
       dependsOnParams[answers.resourcePropertiesJSON[resourceProperty].Ref] = {
         Type: 'String',
         Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
       };
     });
 
-
-    cfnContent.Parameters = getNewCFNParameters(
-      cfnContent.Parameters,
-      currentParameters,
-      dependsOnParams,
-      newParams,
-    );
+    cfnContent.Parameters = getNewCFNParameters(cfnContent.Parameters, currentParameters, dependsOnParams, newParams);
 
     Object.assign(answers.resourcePropertiesJSON, { ENV: { Ref: 'env' }, REGION: { Ref: 'AWS::Region' } });
 
     if (!cfnContent.Resources.AmplifyResourcesPolicy) {
       cfnContent.Resources.AmplifyResourcesPolicy = {
-        DependsOn: [
-          'LambdaExecutionRole',
-        ],
+        DependsOn: ['LambdaExecutionRole'],
         Type: 'AWS::IAM::Policy',
         Properties: {
           PolicyName: 'amplify-lambda-execution-policy',
@@ -206,20 +184,18 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     if (answers.categoryPolicies.length === 0) {
       delete cfnContent.Resources.AmplifyResourcesPolicy;
     } else {
-      cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement =
-      answers.categoryPolicies;
+      cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement = answers.categoryPolicies;
     }
 
-    cfnContent.Resources.LambdaFunction.Properties.Environment.Variables =
-      getNewCFNEnvVariables(
-        cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
-        currentParameters,
-        answers.resourcePropertiesJSON,
-        newParams,
-      ); // Need to update
+    cfnContent.Resources.LambdaFunction.Properties.Environment.Variables = getNewCFNEnvVariables(
+      cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
+      currentParameters,
+      answers.resourcePropertiesJSON,
+      newParams
+    ); // Need to update
     // Update top level comment in app.js or index.js file
 
-    const updateTopLevelComment = (filePath) => {
+    const updateTopLevelComment = filePath => {
       const commentRegex = /\/\* Amplify Params - DO NOT EDIT[a-zA-Z0-9\-\s._=]+Amplify Params - DO NOT EDIT \*\//;
       let fileContents = fs.readFileSync(filePath).toString();
       const commentMatches = fileContents.match(commentRegex);
@@ -248,33 +224,28 @@ async function updateWalkthrough(context, lambdaToUpdate) {
   return { answers, dependsOn };
 }
 
-function getNewCFNEnvVariables(
-  oldCFNEnvVariables,
-  currentDefaults,
-  newCFNEnvVariables,
-  newDefaults,
-) {
+function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults) {
   const currentResources = [];
   const newResources = [];
   const deletedResources = [];
 
   if (currentDefaults.permissions) {
-    Object.keys(currentDefaults.permissions).forEach((category) => {
-      Object.keys(currentDefaults.permissions[category]).forEach((resourceName) => {
+    Object.keys(currentDefaults.permissions).forEach(category => {
+      Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
         currentResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
     });
   }
 
   if (newDefaults.permissions) {
-    Object.keys(newDefaults.permissions).forEach((category) => {
-      Object.keys(newDefaults.permissions[category]).forEach((resourceName) => {
+    Object.keys(newDefaults.permissions).forEach(category => {
+      Object.keys(newDefaults.permissions[category]).forEach(resourceName => {
         newResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
     });
   }
 
-  currentResources.forEach((resourceName) => {
+  currentResources.forEach(resourceName => {
     if (newResources.indexOf(resourceName) === -1) {
       deletedResources.push(resourceName);
     }
@@ -282,7 +253,7 @@ function getNewCFNEnvVariables(
 
   const toBeDeletedEnvVariables = [];
 
-  Object.keys(oldCFNEnvVariables).forEach((envVar) => {
+  Object.keys(oldCFNEnvVariables).forEach(envVar => {
     for (let i = 0; i < deletedResources.length; i += 1) {
       if (envVar.includes(deletedResources[i])) {
         toBeDeletedEnvVariables.push(envVar);
@@ -291,7 +262,7 @@ function getNewCFNEnvVariables(
     }
   });
 
-  toBeDeletedEnvVariables.forEach((envVar) => {
+  toBeDeletedEnvVariables.forEach(envVar => {
     delete oldCFNEnvVariables[envVar];
   });
 
@@ -300,34 +271,28 @@ function getNewCFNEnvVariables(
   return oldCFNEnvVariables;
 }
 
-function getNewCFNParameters(
-  oldCFNParameters,
-  currentDefaults,
-  newCFNResourceParameters,
-  newDefaults,
-) {
+function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNResourceParameters, newDefaults) {
   const currentResources = [];
   const newResources = [];
   const deletedResources = [];
 
-
   if (currentDefaults.permissions) {
-    Object.keys(currentDefaults.permissions).forEach((category) => {
-      Object.keys(currentDefaults.permissions[category]).forEach((resourceName) => {
+    Object.keys(currentDefaults.permissions).forEach(category => {
+      Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
         currentResources.push(`${category}${resourceName}`);
       });
     });
   }
 
   if (newDefaults.permissions) {
-    Object.keys(newDefaults.permissions).forEach((category) => {
-      Object.keys(newDefaults.permissions[category]).forEach((resourceName) => {
+    Object.keys(newDefaults.permissions).forEach(category => {
+      Object.keys(newDefaults.permissions[category]).forEach(resourceName => {
         newResources.push(`${category}${resourceName}`);
       });
     });
   }
 
-  currentResources.forEach((resourceName) => {
+  currentResources.forEach(resourceName => {
     if (newResources.indexOf(resourceName) === -1) {
       deletedResources.push(resourceName);
     }
@@ -335,7 +300,7 @@ function getNewCFNParameters(
 
   const toBeDeletedParameters = [];
 
-  Object.keys(oldCFNParameters).forEach((parameter) => {
+  Object.keys(oldCFNParameters).forEach(parameter => {
     for (let i = 0; i < deletedResources.length; i += 1) {
       if (parameter.includes(deletedResources[i])) {
         toBeDeletedParameters.push(parameter);
@@ -343,7 +308,7 @@ function getNewCFNParameters(
       }
     }
   });
-  toBeDeletedParameters.forEach((parameter) => {
+  toBeDeletedParameters.forEach(parameter => {
     delete oldCFNParameters[parameter];
   });
 
@@ -352,12 +317,7 @@ function getNewCFNParameters(
   return oldCFNParameters;
 }
 
-
-async function askExecRolePermissionsQuestions(
-  context,
-  allDefaultValues,
-  parameters, currentDefaults,
-) {
+async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
@@ -369,7 +329,7 @@ async function askExecRolePermissionsQuestions(
     name: 'categories',
     message: 'Select the category',
     choices: categories,
-    default: (currentDefaults ? currentDefaults.categories : undefined),
+    default: currentDefaults ? currentDefaults.categories : undefined,
   };
   const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
   const categoryPermissionAnswer = await inquirer.prompt([categoryPermissionQuestion]);
@@ -390,7 +350,6 @@ async function askExecRolePermissionsQuestions(
       continue;
     }
 
-
     try {
       const { getPermissionPolicies } = require(categoryPlugins[category]);
       if (!getPermissionPolicies) {
@@ -406,17 +365,18 @@ async function askExecRolePermissionsQuestions(
           const resourceQuestion = {
             type: 'checkbox',
             name: 'resources',
-            message: `${capitalizeFirstLetter(category)} has ${resourcesList.length} resources in this project. Select the one you would like your Lambda to access`,
+            message: `${capitalizeFirstLetter(category)} has ${
+              resourcesList.length
+            } resources in this project. Select the one you would like your Lambda to access`,
             choices: resourcesList,
-            validate: (value) => {
+            validate: value => {
               if (value.length === 0) {
                 return 'You must select at least resource';
               }
               return true;
             },
             default: () => {
-              if (currentDefaults && currentDefaults.categoryPermissionMap &&
-               currentDefaults.categoryPermissionMap[category]) {
+              if (currentDefaults && currentDefaults.categoryPermissionMap && currentDefaults.categoryPermissionMap[category]) {
                 return Object.keys(currentDefaults.categoryPermissionMap[category]);
               }
             },
@@ -433,7 +393,7 @@ async function askExecRolePermissionsQuestions(
             name: 'crudOptions',
             message: `Select the operations you want to permit for ${resourceName}`,
             choices: crudOptions,
-            validate: (value) => {
+            validate: value => {
               if (value.length === 0) {
                 return 'You must select at least one operation';
               }
@@ -441,9 +401,12 @@ async function askExecRolePermissionsQuestions(
               return true;
             },
             default: () => {
-              if (currentDefaults && currentDefaults.categoryPermissionMap
-                && currentDefaults.categoryPermissionMap[category]
-                && currentDefaults.categoryPermissionMap[category][resourceName]) {
+              if (
+                currentDefaults &&
+                currentDefaults.categoryPermissionMap &&
+                currentDefaults.categoryPermissionMap[category] &&
+                currentDefaults.categoryPermissionMap[category][resourceName]
+              ) {
                 return currentDefaults.categoryPermissionMap[category][resourceName];
               }
             },
@@ -456,8 +419,7 @@ async function askExecRolePermissionsQuestions(
           parameters.permissions[category][resourceName] = crudPermissionAnswer.crudOptions;
         }
         if (selectedResources.length > 0) {
-          const { permissionPolicies, resourceAttributes } =
-          await getPermissionPolicies(context, parameters.permissions[category]);
+          const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, parameters.permissions[category]);
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
           resources = resources.concat(resourceAttributes);
         }
@@ -472,9 +434,9 @@ async function askExecRolePermissionsQuestions(
   const resourceProperties = [];
   const resourcePropertiesJSON = {};
   const categoryMapping = {};
-  resources.forEach((resource) => {
+  resources.forEach(resource => {
     const { category, resourceName, attributes } = resource;
-    attributes.forEach((attribute) => {
+    attributes.forEach(attribute => {
       const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
       const varName = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(attribute)}`;
       const refName = `${category}${resourceName}${attribute}`;
@@ -491,9 +453,8 @@ async function askExecRolePermissionsQuestions(
       allDefaultValues.dependsOn = [];
     }
 
-
     let resourceExists = false;
-    allDefaultValues.dependsOn.forEach((amplifyResource) => {
+    allDefaultValues.dependsOn.forEach(amplifyResource => {
       if (amplifyResource.resourceName === resourceName) {
         resourceExists = true;
       }
@@ -517,9 +478,9 @@ async function askExecRolePermissionsQuestions(
   terminalOutput += 'var environment = process.env.ENV\n';
   terminalOutput += 'var region = process.env.REGION\n';
 
-  Object.keys(categoryMapping).forEach((category) => {
+  Object.keys(categoryMapping).forEach(category => {
     if (categoryMapping[category].length > 0) {
-      categoryMapping[category].forEach((args) => {
+      categoryMapping[category].forEach(args => {
         terminalOutput += `var ${args.varName} = process.env.${args.envName}\n`;
       });
     }
@@ -532,14 +493,12 @@ async function askExecRolePermissionsQuestions(
 }
 
 async function getTableParameters(context, dynamoAnswers) {
-  if (dynamoAnswers.Arn) { // Looking for table parameters on DynamoDB public API
+  if (dynamoAnswers.Arn) {
+    // Looking for table parameters on DynamoDB public API
     const hashKey = dynamoAnswers.KeySchema.find(attr => attr.KeyType === 'HASH') || {};
-    const hashType = dynamoAnswers.AttributeDefinitions.find(attr =>
-      attr.AttributeName === hashKey.AttributeName) || {};
-    const rangeKey = dynamoAnswers.KeySchema.find(attr =>
-      attr.KeyType === 'RANGE') || {};
-    const rangeType = dynamoAnswers.AttributeDefinitions.find(attr =>
-      attr.AttributeName === rangeKey.AttributeName) || {};
+    const hashType = dynamoAnswers.AttributeDefinitions.find(attr => attr.AttributeName === hashKey.AttributeName) || {};
+    const rangeKey = dynamoAnswers.KeySchema.find(attr => attr.KeyType === 'RANGE') || {};
+    const rangeType = dynamoAnswers.AttributeDefinitions.find(attr => attr.AttributeName === rangeKey.AttributeName) || {};
     return {
       tableName: dynamoAnswers.TableName,
       partitionKeyName: hashKey.AttributeName,
@@ -568,7 +527,8 @@ async function askDynamoDBQuestions(context, inputs) {
     message: inputs[5].question,
     choices: inputs[5].options,
   };
-  while (true) { //eslint-disable-line
+  while (true) {
+    //eslint-disable-line
     const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
     switch (dynamoDbTypeAnswer[inputs[5].key]) {
       case 'currentProject': {
@@ -578,7 +538,7 @@ async function askDynamoDBQuestions(context, inputs) {
           context.print.error('There are no DynamoDB resources configured in your project currently');
           break;
         }
-        Object.keys(storageResources).forEach((resourceName) => {
+        Object.keys(storageResources).forEach(resourceName => {
           if (storageResources[resourceName].service === 'DynamoDB') {
             dynamoDbProjectResources.push(resourceName);
           }
@@ -606,11 +566,10 @@ async function askDynamoDBQuestions(context, inputs) {
           context.print.error('Storage plugin is not installed in the CLI. You must install it to use this feature.');
           break;
         }
-        return add(context, 'awscloudformation', 'DynamoDB')
-          .then((resourceName) => {
-            context.print.success('Succesfully added DynamoDb table locally');
-            return { resourceName };
-          });
+        return add(context, 'awscloudformation', 'DynamoDB').then(resourceName => {
+          context.print.success('Succesfully added DynamoDb table locally');
+          return { resourceName };
+        });
       }
       /* eslint-disable */
 
@@ -649,7 +608,8 @@ async function askDynamoDBQuestions(context, inputs) {
       } */
 
       /* eslint-enable */
-      default: context.print.error('Invalid option selected');
+      default:
+        context.print.error('Invalid option selected');
     }
   }
 }
@@ -690,7 +650,6 @@ function migrate(context, projectPath, resourceName) {
       'ShouldNotCreateEnvResources',
       oldFunctionName,
       {
-
         'Fn::Join': [
           '',
           [
@@ -714,7 +673,6 @@ function migrate(context, projectPath, resourceName) {
       'ShouldNotCreateEnvResources',
       oldRoleName,
       {
-
         'Fn::Join': [
           '',
           [
@@ -737,21 +695,22 @@ function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create': actions.push(
-        'lambda:Create*',
-        'lambda:Put*',
-        'lambda:Add*',
-      );
+      case 'create':
+        actions.push('lambda:Create*', 'lambda:Put*', 'lambda:Add*');
         break;
-      case 'update': actions.push('lambda:Update*');
+      case 'update':
+        actions.push('lambda:Update*');
         break;
-      case 'read': actions.push('lambda:Get*', 'lambda:List*', 'lambda:Invoke*');
+      case 'read':
+        actions.push('lambda:Get*', 'lambda:List*', 'lambda:Invoke*');
         break;
-      case 'delete': actions.push('lambda:Delete*', 'lambda:Remove*');
+      case 'delete':
+        actions.push('lambda:Delete*', 'lambda:Remove*');
         break;
-      default: console.log(`${crudOption} not supported`);
+      default:
+        console.log(`${crudOption} not supported`);
     }
   });
 
@@ -785,5 +744,9 @@ function getIAMPolicies(resourceName, crudOptions) {
 }
 
 module.exports = {
-  serviceWalkthrough, updateWalkthrough, migrate, getIAMPolicies, askExecRolePermissionsQuestions,
+  serviceWalkthrough,
+  updateWalkthrough,
+  migrate,
+  getIAMPolicies,
+  askExecRolePermissionsQuestions,
 };

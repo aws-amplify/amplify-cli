@@ -49,7 +49,8 @@ function getGitIgnoreAppendString() {
     'dist/',
     'node_modules/',
     'aws-exports.js',
-    'awsconfiguration.json'];
+    'awsconfiguration.json',
+  ];
 
   const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}`;
 

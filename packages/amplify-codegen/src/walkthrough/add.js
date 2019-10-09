@@ -9,18 +9,11 @@ const { normalizeInputParams } = require('../utils/input-params-manager');
 const constants = require('../constants');
 const { getOutputFileName } = require('../utils');
 
-
-const {
-  getFrontEndHandler,
-  getSchemaDownloadLocation,
-  getIncludePattern,
-  getGraphQLDocPath,
-} = require('../utils');
+const { getFrontEndHandler, getSchemaDownloadLocation, getIncludePattern, getGraphQLDocPath } = require('../utils');
 
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
-async function addWalkThrough(context, skip = [], withoutInit,
-  decoupleFrontend, decoupleFramework) {
+async function addWalkThrough(context, skip = [], withoutInit, decoupleFrontend, decoupleFramework) {
   let inputParams;
   let yesFlag = false;
   if (context.exeInfo && context.exeInfo.inputParams) {
@@ -55,42 +48,39 @@ async function addWalkThrough(context, skip = [], withoutInit,
 
   if (frontend !== 'android') {
     if (!skip.includes('targetLanguage')) {
-      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', () => askCodeGenTargetLanguage(context, undefined, withoutInit, decoupleFrontend, decoupleFramework));
+      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', () =>
+        askCodeGenTargetLanguage(context, undefined, withoutInit, decoupleFrontend, decoupleFramework)
+      );
       targetLanguage = answers.target;
     }
   }
 
   const includePatternDefault = getIncludePattern(targetLanguage, schemaLocation);
-  const includePathGlob = join(
-    includePatternDefault.graphQLDirectory,
-    '**',
-    includePatternDefault.graphQLExtension,
-  );
+  const includePathGlob = join(includePatternDefault.graphQLDirectory, '**', includePatternDefault.graphQLExtension);
 
   if (!skip.includes('includePattern')) {
-    answers.includePattern =
-    await determineValue(inputParams, yesFlag, 'includePattern', includePathGlob, () => askCodeGenQueryFilePattern([includePathGlob]));
+    answers.includePattern = await determineValue(inputParams, yesFlag, 'includePattern', includePathGlob, () =>
+      askCodeGenQueryFilePattern([includePathGlob])
+    );
   }
   if (!skip.includes('shouldGenerateDocs')) {
-    answers.shouldGenerateDocs =
-    await determineValue(inputParams, yesFlag, 'generateDocs', true, () => askShouldGenerateDocs());
+    answers.shouldGenerateDocs = await determineValue(inputParams, yesFlag, 'generateDocs', true, () => askShouldGenerateDocs());
     answers.docsFilePath = getGraphQLDocPath(frontend, schemaLocation);
   }
 
   if (answers.shouldGenerateDocs && !skip.includes('maxDepth')) {
-    answers.maxDepth =
-    await determineValue(inputParams, yesFlag, 'maxDepth', true, askMaxDepth);
+    answers.maxDepth = await determineValue(inputParams, yesFlag, 'maxDepth', true, askMaxDepth);
   }
 
   if (!(frontend === 'android' || answers.target === 'javascript')) {
     if (!skip.includes('generatedFileName')) {
       const defaultValue = getOutputFileName('API', answers.target || '');
-      answers.generatedFileName =
-      await determineValue(inputParams, yesFlag, 'generatedFileName', defaultValue, () => askTargetFileName('API', answers.target || ''));
+      answers.generatedFileName = await determineValue(inputParams, yesFlag, 'generatedFileName', defaultValue, () =>
+        askTargetFileName('API', answers.target || '')
+      );
     }
     if (!skip.includes('shouldGenerateCode')) {
-      answers.shouldGenerateCode =
-      await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
+      answers.shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
     }
   }
 

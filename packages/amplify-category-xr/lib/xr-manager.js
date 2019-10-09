@@ -100,24 +100,26 @@ async function addScene(context) {
   context.print.warning('Note the following scene name is used to identify the scene in the Amplify framework');
   context.print.warning('It does NOT have to match the scene name in the Sumerian console');
   let sceneName;
-  await inquirer.prompt({
-    name: 'sceneName',
-    type: 'input',
-    message: 'Provide a name for the scene:',
-    validate: (name) => {
-      const existingScenes = getExistingScenes(context);
-      if (existingScenes.includes(name)) {
-        return `${name} already exists. The scene name must be unique within the project`;
-      }
+  await inquirer
+    .prompt({
+      name: 'sceneName',
+      type: 'input',
+      message: 'Provide a name for the scene:',
+      validate: name => {
+        const existingScenes = getExistingScenes(context);
+        if (existingScenes.includes(name)) {
+          return `${name} already exists. The scene name must be unique within the project`;
+        }
 
-      if (!isSceneNameValid(name)) {
-        return 'Project name should be between 3 and 20 characters and alphanumeric';
-      }
-      return true;
-    },
-  }).then((answer) => {
-    sceneName = answer.sceneName;
-  });
+        if (!isSceneNameValid(name)) {
+          return 'Project name should be between 3 and 20 characters and alphanumeric';
+        }
+        return true;
+      },
+    })
+    .then(answer => {
+      sceneName = answer.sceneName;
+    });
 
   await addSceneConfig(context, sceneName);
 
@@ -125,9 +127,13 @@ async function addScene(context) {
   context.print.info('');
   context.print.success('Some next steps:');
   context.print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
-  context.print.info('"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud');
+  context.print.info(
+    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud'
+  );
   context.print.info('');
-  context.print.warning('Only the IAM policy for this scene resource will be provisioned in the cloud. This will not change the scene in the Sumerian console.');
+  context.print.warning(
+    'Only the IAM policy for this scene resource will be provisioned in the cloud. This will not change the scene in the Sumerian console.'
+  );
 }
 
 async function addSceneConfig(context, sceneName) {
@@ -136,7 +142,7 @@ async function addSceneConfig(context, sceneName) {
     name: 'configFilePath',
     type: 'input',
     message: `Enter the path to the downloaded JSON configuration file for ${sceneName}:`,
-    validate: (configFilePath) => {
+    validate: configFilePath => {
       try {
         if (fs.existsSync(configFilePath)) {
           sumerianConfig = context.amplify.readJsonFile(configFilePath);
@@ -199,23 +205,26 @@ async function updateScene(context) {
     return;
   }
 
-  await inquirer.prompt({
-    name: 'sceneToUpdate',
-    message: 'Choose the scene you would like to update',
-    type: 'list',
-    choices: existingScenes,
-  }).then(async (answer) => {
-    await addSceneConfig(context, answer.sceneToUpdate);
-    context.print.info(`${chalk.green(answer.sceneToUpdate)} has been updated.`);
-  });
+  await inquirer
+    .prompt({
+      name: 'sceneToUpdate',
+      message: 'Choose the scene you would like to update',
+      type: 'list',
+      choices: existingScenes,
+    })
+    .then(async answer => {
+      await addSceneConfig(context, answer.sceneToUpdate);
+      context.print.info(`${chalk.green(answer.sceneToUpdate)} has been updated.`);
+    });
 }
 
 async function remove(context) {
-  return context.amplify.removeResource(context, constants.CategoryName)
-    .then((resource) => {
+  return context.amplify
+    .removeResource(context, constants.CategoryName)
+    .then(resource => {
       context.amplify.removeResourceParameters(context, constants.CategoryName, resource.resourceName);
     })
-    .catch((err) => {
+    .catch(err => {
       context.print.info(err.stack);
     });
 }
@@ -252,23 +261,23 @@ function getRegionFromHost(host) {
 }
 
 function isSceneNameValid(sceneName) {
-  return sceneName &&
-          sceneName.length >= 3 &&
-          sceneName.length <= 20 &&
-          /^[a-zA-Z0-9]+$/i.test(sceneName);
+  return sceneName && sceneName.length >= 3 && sceneName.length <= 20 && /^[a-zA-Z0-9]+$/i.test(sceneName);
 }
 
 function getIAMPolicies(context, resourceName, crudOptions) {
   let policy = {};
   let actions = new Set();
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create': actions.add('sumerian:Login');
+      case 'create':
+        actions.add('sumerian:Login');
         break;
-      case 'read': actions.add('sumerian:ViewRelease');
+      case 'read':
+        actions.add('sumerian:ViewRelease');
         break;
-      default: context.print.warning(`${crudOption} operation is not supported for ${resourceName}`);
+      default:
+        context.print.warning(`${crudOption} operation is not supported for ${resourceName}`);
     }
   });
 

@@ -27,7 +27,6 @@ function createFrontendConfigs(context, amplifyResources, amplifyCloudResources)
   return createAWSConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
 }
 
-
 function configure(context) {
   return configManager.configure(context);
 }

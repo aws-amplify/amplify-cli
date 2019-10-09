@@ -33,9 +33,8 @@
                             "        promises.push(iam.updateAssumeRolePolicy(unauthParams).promise());",
                             "        Promise.all(promises)",
                             "         .then((res) => {",
-                            "            console.log(\"delete\" + res);",
-                            "            console.log(\"response data\" + JSON.stringify(res));",
-                            "            response.send(event, context, response.SUCCESS, res);",
+                            "            console.log(\"delete response data\" + JSON.stringify(res));",
+                            "            response.send(event, context, response.SUCCESS, {});",
                             "         });",
                             "    }",
                             "    if (event.RequestType == 'Update' || event.RequestType == 'Create') {",
@@ -87,7 +86,7 @@
             },
             "idpId": {
                 "Fn::GetAtt": [
-                    
+
                     "Outputs.IdentityPoolId"
                 ]
             },
@@ -111,7 +110,7 @@
                         },
                         "-idp"
                     ]
-                ]   
+                ]
             },
             "AssumeRolePolicyDocument": {
                 "Version": "2012-10-17",

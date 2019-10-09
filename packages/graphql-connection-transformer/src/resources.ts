@@ -8,8 +8,8 @@ import {
     ref, obj, set, nul, ObjectNode,
     ifElse, compoundExpression, bool, equals, iff, raw, comment, qref, Expression, block
 } from 'graphql-mapping-template'
-import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS, NONE_VALUE, applyKeyConditionExpression,
-         attributeTypeFromScalar, toCamelCase, applyCompositeKeyConditionExpression } from 'graphql-transformer-common'
+import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS, NONE_VALUE, NONE_INT_VALUE, applyKeyConditionExpression,
+    attributeTypeFromScalar, toCamelCase, applyCompositeKeyConditionExpression } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 
@@ -104,18 +104,40 @@ export class ResourceFactory {
      * @param field The connection field name.
      * @param relatedType The name of the related type to fetch from.
      * @param connectionAttribute The name of the underlying attribute containing the id.
+     * @param idFieldName The name of the field within the type that serve as the id.
+     * @param sortFieldInfo The info about the sort field if specified.
      */
-    public makeGetItemConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string): Resolver {
-        return new Resolver({
+    public makeGetItemConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string,
+        idFieldName: string, sortFieldInfo?: {primarySortFieldName: string, sortFieldName: string, sortFieldIsStringLike: boolean}): Resolver {
+            let keyObj : ObjectNode = obj({
+                [`${idFieldName}`]:
+                    ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`)
+                })
+
+            if (sortFieldInfo) {
+                if (sortFieldInfo.sortFieldIsStringLike) {
+                    keyObj.attributes.push([
+                        sortFieldInfo.primarySortFieldName,
+                        ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_VALUE}"))`)
+                    ]);
+                } else {
+                    // Use Int minvalue as default
+                    keyObj.attributes.push([
+                        sortFieldInfo.primarySortFieldName,
+                        ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNull($ctx.source.${sortFieldInfo.sortFieldName}, "${NONE_INT_VALUE}"))`)
+                    ]);
+                }
+
+            }
+
+            return new Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
             FieldName: field,
             TypeName: type,
             RequestMappingTemplate: print(
                 DynamoDBMappingTemplate.getItem({
-                    key: obj({
-                        id: ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`)
-                    })
+                    key: keyObj
                 })
             ),
             ResponseMappingTemplate: print(
@@ -129,13 +151,16 @@ export class ResourceFactory {
      * @param type
      */
     public makeQueryConnectionResolver(
-        type: string, field: string, relatedType: string,
-        connectionAttribute: string, connectionName: string,
-        sortKeyInfo?: { fieldName: string, attributeType: 'S' | 'B' | 'N' }
+        type: string, field: string, relatedType: string, 
+        connectionAttribute: string, connectionName: string, 
+        idFieldName: string,
+        sortKeyInfo?: { fieldName: string, attributeType: 'S' | 'B' | 'N' },
+        limit?: number
     ) {
         const defaultPageLimit = 10
+        const pageLimit = limit || defaultPageLimit
         const setup: Expression[] = [
-            set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+            set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${pageLimit})`)),
             set(ref('query'), obj({
                 'expression': str('#connectionAttribute = :connectionAttribute'),
                 'expressionNames': obj({
@@ -143,7 +168,7 @@ export class ResourceFactory {
                 }),
                 'expressionValues': obj({
                     ':connectionAttribute': obj({
-                        'S': str('$context.source.id')
+                        'S': str(`$context.source.${idFieldName}`)
                     })
                 })
             }))
@@ -204,11 +229,12 @@ export class ResourceFactory {
      * @param connectionAttributes The names of the underlying attributes containing the fields to query by.
      * @param keySchema Key schema of the index or table being queried.
      */
-    public makeGetItemConnectionWithKeyResolver(type: string,
-                                           field: string,
-                                           relatedType: string,
-                                           connectionAttributes: string[],
-                                           keySchema: KeySchema[]): Resolver {
+    public makeGetItemConnectionWithKeyResolver(
+        type: string,
+        field: string,
+        relatedType: string,
+        connectionAttributes: string[],
+        keySchema: KeySchema[]): Resolver {
 
         const partitionKeyName = keySchema[0].AttributeName as string
 

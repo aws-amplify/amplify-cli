@@ -15,7 +15,11 @@ const service = 'Comprehend';
 
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
-    if (await context.amplify.confirmPrompt.run('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
+    if (
+      await context.amplify.confirmPrompt.run(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      )
+    ) {
       try {
         const { add } = require('amplify-category-auth');
         await add(context);
@@ -38,9 +42,12 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+  Object.keys(amplifyMeta[category]).forEach(resourceName => {
     if (interpretTypes.includes(amplifyMeta[category][resourceName].interpretType)) {
-      predictionsResources.push({ name: resourceName, value: { name: resourceName, interpretType: amplifyMeta[category][resourceName].interpretType } });
+      predictionsResources.push({
+        name: resourceName,
+        value: { name: resourceName, interpretType: amplifyMeta[category][resourceName].interpretType },
+      });
     }
   });
   if (predictionsResources.length === 0) {
@@ -113,7 +120,9 @@ async function configure(context, resourceObj) {
   defaultValues.interpretType = interpretType;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
   const amplifyMetaValues = {
-    resourceName, service, interpretType,
+    resourceName,
+    service,
+    interpretType,
   };
   // write to file
   fs.ensureDirSync(resourceDirPath);
@@ -168,7 +177,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -204,7 +213,7 @@ function resourceAlreadyExists(context, interpretType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].interpretType === interpretType) {
         type = interpretType;
       }
@@ -212,6 +221,5 @@ function resourceAlreadyExists(context, interpretType) {
   }
   return type;
 }
-
 
 module.exports = { addWalkthrough, updateWalkthrough };

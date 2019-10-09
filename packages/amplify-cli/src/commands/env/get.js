@@ -2,7 +2,7 @@ const chalk = require('chalk');
 
 module.exports = {
   name: 'get',
-  run: async (context) => {
+  run: async context => {
     const envName = context.parameters.options.name;
     if (!envName) {
       context.print.error('You must pass in the name of the environment using the --name flag');
@@ -20,17 +20,17 @@ module.exports = {
       return;
     }
 
-    Object.keys(allEnvs).forEach((env) => {
+    Object.keys(allEnvs).forEach(env => {
       if (env === envName) {
         envFound = true;
         context.print.info('');
         context.print.info(chalk.red(env));
         context.print.info('--------------');
 
-        Object.keys(allEnvs[env]).forEach((provider) => {
+        Object.keys(allEnvs[env]).forEach(provider => {
           context.print.info(`Provider: ${provider}`);
 
-          Object.keys(allEnvs[env][provider]).forEach((providerAttr) => {
+          Object.keys(allEnvs[env][provider]).forEach(providerAttr => {
             context.print.info(`${providerAttr}: ${allEnvs[env][provider][providerAttr]}`);
           });
 

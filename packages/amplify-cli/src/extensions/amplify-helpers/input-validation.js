@@ -1,5 +1,5 @@
 function inputValidation(question) {
-  const validator = (input) => {
+  const validator = input => {
     if (!question.validation) {
       if (question.required) {
         return input ? true : 'A response is required for this field';
@@ -15,8 +15,7 @@ function inputValidation(question) {
       return regex.test(input) ? true : question.validation.onErrorMsg;
     }
     if (question.validation.operator === 'range') {
-      const isGood =
-        input >= question.validation.value.min && input <= question.validation.value.max;
+      const isGood = input >= question.validation.value.min && input <= question.validation.value.max;
       return isGood ? true : question.validation.onErrorMsg;
     }
     if (question.validation.operator === 'noEmptyArray') {
