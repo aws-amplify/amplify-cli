@@ -358,10 +358,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const existingGSIs = context.amplify.getExistingStorageGSIs(context.amplify.pathManager.getBackendDirPath(), resourceName);
     if (!!existingGSIs.length && (await amplify.confirmPrompt.run('Do you want to keep existing global seconday indexes to your table?'))) {
       answers.GlobalSecondaryIndexes = [...existingGSIs, ...gsiList];
-    } else {
-      if (gsiList.length > 0) {
-        answers.GlobalSecondaryIndexes = gsiList;
-      }
+    } else if (gsiList.length > 0) {
+      answers.GlobalSecondaryIndexes = gsiList;
     }
   }
   usedAttributeDefinitions = Array.from(usedAttributeDefinitions);
