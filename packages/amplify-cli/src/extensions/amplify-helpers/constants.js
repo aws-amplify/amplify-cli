@@ -18,4 +18,9 @@ module.exports = {
   ProviderInfoFileName: 'team-provider-info.json',
   BackendConfigFileName: 'backend-config.json',
   PROJECT_CONFIG_VERSION: '2.0',
+  StorageCategory: 'storage',
+  Resources: 'Resources',
+  DynamoDBTable: 'DynamoDBTable',
+  Properties: 'Properties',
+  GlobalSecondaryIndexes: 'GlobalSecondaryIndexes',
 };
