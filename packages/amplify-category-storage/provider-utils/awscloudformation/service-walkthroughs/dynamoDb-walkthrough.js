@@ -355,11 +355,18 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         break;
       }
     }
-    const existingGSIs = context.amplify.getExistingStorageGSIs(context.amplify.pathManager.getBackendDirPath(), resourceName);
-    if (!!existingGSIs.length && (await amplify.confirmPrompt.run('Do you want to keep existing global seconday indexes to your table?'))) {
-      answers.GlobalSecondaryIndexes = [...existingGSIs, ...gsiList];
-    } else if (gsiList.length > 0) {
-      answers.GlobalSecondaryIndexes = gsiList;
+
+    // if resource name is undefined then it's an 'add storage' we want to check on update
+    if (resourceName) {
+      const existingGSIs = context.amplify.getExistingStorageGSIs(context.amplify.pathManager.getBackendDirPath(), resourceName);
+      if (
+        !!existingGSIs.length &&
+        (await amplify.confirmPrompt.run('Do you want to keep existing global seconday indexes created on your table?'))
+      ) {
+        answers.GlobalSecondaryIndexes = [...existingGSIs, ...gsiList];
+      } else if (gsiList.length > 0) {
+        answers.GlobalSecondaryIndexes = gsiList;
+      }
     }
   }
   usedAttributeDefinitions = Array.from(usedAttributeDefinitions);
