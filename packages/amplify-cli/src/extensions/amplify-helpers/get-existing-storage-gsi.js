@@ -2,7 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const { readJsonFile } = require('./read-json-file');
 const { StorageCategory, Resources, DynamoDBTable, Properties, GlobalSecondaryIndexes } = require('./constants');
-export function getExistingStorageGSIs(currentCloudBackendDirPath, resourceName) {
+
+function getExistingStorageGSIs(currentCloudBackendDirPath, resourceName) {
   const jsonTemplateFile = path.join(
     currentCloudBackendDirPath,
     StorageCategory,
@@ -16,3 +17,7 @@ export function getExistingStorageGSIs(currentCloudBackendDirPath, resourceName)
 
   return [];
 }
+
+module.exports = {
+  getExistingStorageGSIs,
+};
