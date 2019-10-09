@@ -21,6 +21,7 @@
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
     "graphql-dynamodb-transformer": "5.12.0",
+    "graphql-key-transformer": "1.19.0",
     "graphql-mapping-template": "3.19.0",
     "graphql-transformer-common": "3.26.0",
     "graphql-transformer-core": "5.12.0"
