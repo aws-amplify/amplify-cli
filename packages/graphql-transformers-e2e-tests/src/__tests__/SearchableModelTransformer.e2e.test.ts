@@ -1,7 +1,3 @@
-import {
-    ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
-    Kind
-} from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
@@ -15,7 +11,6 @@ import { deploy } from '../deployNestedStacks'
 import * as moment from 'moment';
 import * as S3 from 'aws-sdk/clients/s3'
 import emptyBucket from '../emptyBucket'
-import * as fs from 'fs'
 
 jest.setTimeout(60000 * 60);
 

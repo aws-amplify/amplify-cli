@@ -5,7 +5,7 @@ import { AuthRule, AuthProvider } from './AuthRule'
 import {
     str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, equals, comment,
-    or, Expression, and, not, parens,
+    or, Expression, and, not, parens, toJson,
     block, print, ifElse, newline
 } from 'graphql-mapping-template'
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
@@ -1062,5 +1062,41 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
                 }],
             },
         });
+    }
+
+    /**
+     * ES EXPRESSIONS
+     */
+
+    public makeESItemsExpression() {
+        // generate es expresion to appsync
+        return compoundExpression([
+            set(ref('es_items'), list([])),
+            forEach(
+                ref('entry'),
+                ref('context.result.hits.hits'),
+                [
+                    iff(
+                        raw('!$foreach.hasNext'),
+                        set(ref('nextToken'), ref('entry.sort.get(0)'))
+                    ),
+                    qref('$es_items.add($entry.get("_source"))')
+                ]
+            ),
+        ])
+    }
+
+    public makeESToGQLExpression() {
+        return compoundExpression([
+            set(ref('es_response'), obj({
+                "items": ref('es_items'),
+                "total": ref('ctx.result.hits.total')
+            })),
+            iff(
+                raw('$es_items.size() > 0'),
+                qref('$es_response.put("nextToken", $nextToken)')
+            ),
+            toJson(ref('es_response'))
+        ])
     }
 }
