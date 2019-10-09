@@ -2,14 +2,14 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
-const DynamoDBModelTransformer = require('graphql-dynamodb-transformer').default;
-const ModelAuthTransformer = require('graphql-auth-transformer').default;
-const ModelConnectionTransformer = require('graphql-connection-transformer').default;
-const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
-const VersionedModelTransformer = require('graphql-versioned-transformer').default;
-const FunctionTransformer = require('graphql-function-transformer').default;
-const HTTPTransformer = require('graphql-http-transformer').default;
-const KeyTransformer = require('graphql-key-transformer').default;
+const { DynamoDBModelTransformer } = require('graphql-dynamodb-transformer');
+const { ModelAuthTransformer } = require('graphql-auth-transformer');
+const { ModelConnectionTransformer } = require('graphql-connection-transformer');
+const { SearchableModelTransformer } = require('graphql-elasticsearch-transformer');
+const { VersionedModelTransformer } = require('graphql-versioned-transformer');
+const { FunctionTransformer } = require('graphql-function-transformer');
+const { HttpTransformer } = require('graphql-http-transformer');
+const { KeyTransformer } = require('graphql-key-transformer');
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 
@@ -275,7 +275,7 @@ async function transformGraphQLSchema(context, options) {
       new DynamoDBModelTransformer(),
       new VersionedModelTransformer(),
       new FunctionTransformer(),
-      new HTTPTransformer(),
+      new HttpTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
       // TODO: Build dependency mechanism into transformers. Auth runs last

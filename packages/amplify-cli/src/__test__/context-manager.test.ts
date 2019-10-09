@@ -1,5 +1,5 @@
-import Input from '../domain/input';
-import PluginPlatform from '../domain/plugin-platform';
+import { Input } from '../domain/input';
+import { PluginPlatform } from '../domain/plugin-platform';
 
 import { constructContext } from '../context-manager';
 
@@ -16,4 +16,4 @@ test('constructContext', () => {
   expect(context.amplify).toBeDefined();
   expect(context.pluginPlatform).toEqual(mockPluginPlatform);
   expect(context.input).toEqual(mockInput);
-})
+});

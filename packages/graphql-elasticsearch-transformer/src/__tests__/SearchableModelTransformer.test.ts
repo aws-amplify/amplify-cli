@@ -2,9 +2,9 @@
 //     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
 //     DefinitionNode, Kind, InputObjectTypeDefinitionNode
 // } from 'graphql'
-// import GraphQLTransform from 'graphql-transformer-core'
+// import { GraphQLTransform } from 'graphql-transformer-core';
 // import { ResourceConstants } from 'graphql-transformer-common'
-// import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+// import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer'
 // import { SearchableModelTransformer } from '../SearchableModelTransformer'
 // import AppSyncTransformer from 'graphql-appsync-transformer'
 
@@ -56,7 +56,7 @@
 // });
 
 // test('Test SearchableModelTransformer with only create mutations', () => {
-//     const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) @searchable { 
+//     const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) @searchable {
 //         id: ID!
 //         title: String!
 //         createdAt: String
@@ -191,7 +191,6 @@
 //     expect(postInputType).toBeDefined()
 //     const sortInputType = getInputType(parsed, 'SearchablePostSortInput')
 //     expect(sortInputType).toBeDefined()
-
 
 //     expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy;
