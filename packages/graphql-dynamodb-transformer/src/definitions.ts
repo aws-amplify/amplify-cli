@@ -75,9 +75,6 @@ export function makeNonModelInputObject(
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
-      if (field.name.value === 'id') {
-        return false;
-      }
       if (
         isScalar(field.type) ||
         nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
