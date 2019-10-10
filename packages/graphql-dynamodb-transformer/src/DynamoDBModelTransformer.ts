@@ -1,23 +1,31 @@
-import { Transformer, TransformerContext, getDirectiveArguments, gql } from 'graphql-transformer-core';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, print } from 'graphql';
-import { ResourceFactory } from './resources';
+import { DeletionPolicy } from 'cloudform-types';
+import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
+  blankObject,
+  makeConnectionField,
+  makeField,
+  makeInputValueDefinition,
+  makeNamedType,
+  makeNonNullType,
+  ModelResourceIDs,
+  ResolverResourceIDs,
+} from 'graphql-transformer-common';
+import { getDirectiveArguments, gql, Transformer, TransformerContext } from 'graphql-transformer-core';
+import {
+  getNonModelObjectArray,
   makeCreateInputObject,
-  makeUpdateInputObject,
   makeDeleteInputObject,
-  makeModelXFilterInputObject,
-  makeModelSortDirectionEnumObject,
+  makeEnumFilterInputObjects,
   makeModelConnectionType,
+  makeModelSortDirectionEnumObject,
+  makeModelXFilterInputObject,
+  makeNonModelInputObject,
   makeScalarFilterInputs,
   makeSubscriptionField,
-  getNonModelObjectArray,
-  makeNonModelInputObject,
-  makeEnumFilterInputObjects,
+  makeUpdateInputObject,
 } from './definitions';
-import { blankObject, makeField, makeInputValueDefinition, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
-import { ResolverResourceIDs, ModelResourceIDs, makeConnectionField } from 'graphql-transformer-common';
-import { DeletionPolicy } from 'cloudform-types';
 import { ModelDirectiveArgs } from './ModelDirectiveArgs';
+import { ResourceFactory } from './resources';
 
 export interface DynamoDBModelTransformerOptions {
   EnableDeletionProtection?: boolean;
@@ -92,10 +100,10 @@ export class DynamoDBModelTransformer extends Transformer {
     // into their own stack at the end of the transformation.
     const stackName = def.name.value;
 
-    let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(def, ctx, new Map<string, ObjectTypeDefinitionNode>());
+    const nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(def, ctx, new Map<string, ObjectTypeDefinitionNode>());
 
     nonModelArray.forEach((value: ObjectTypeDefinitionNode) => {
-      let nonModelObject = makeNonModelInputObject(value, nonModelArray, ctx);
+      const nonModelObject = makeNonModelInputObject(value, nonModelArray, ctx);
       if (!this.typeExist(nonModelObject.name.value, ctx)) {
         ctx.addInput(nonModelObject);
       }
@@ -349,12 +357,11 @@ export class DynamoDBModelTransformer extends Transformer {
 
     if (subscriptionsArgument === null) {
       return;
-    } else if (subscriptionsArgument && subscriptionsArgument.level === 'off') {
+    }
+    if (subscriptionsArgument && subscriptionsArgument.level === 'off') {
       return;
-    } else if (
-      subscriptionsArgument &&
-      (subscriptionsArgument.onCreate || subscriptionsArgument.onUpdate || subscriptionsArgument.onDelete)
-    ) {
+    }
+    if (subscriptionsArgument && (subscriptionsArgument.onCreate || subscriptionsArgument.onUpdate || subscriptionsArgument.onDelete)) {
       // Add the custom subscriptions
       const subscriptionToMutationsMap: { [subField: string]: string[] } = {};
       const onCreate = subscriptionsArgument.onCreate || [];
