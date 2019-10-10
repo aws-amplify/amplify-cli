@@ -19767,6 +19767,15 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
+ws@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-4.0.0.tgz#bfe1da4c08eeb9780b986e0e4d10eccd7345999f"
+  integrity sha512-QYslsH44bH8O7/W2815u5DpnCpXWpEK44FmaHffNwgJI4JMaSZONgPBTOfrxJ29mXKbXak+LsJ2uAkDTYq2ptQ==
+  dependencies:
+    async-limiter "~1.0.0"
+    safe-buffer "~5.1.0"
+    ultron "~1.1.0"
+
 ws@^3.2.0:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/ws/-/ws-3.3.3.tgz#f1cf84fe2d5e901ebce94efaece785f187a228f2"
