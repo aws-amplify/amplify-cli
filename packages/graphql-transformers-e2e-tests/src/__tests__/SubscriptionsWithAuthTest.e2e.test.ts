@@ -824,7 +824,7 @@ test('test that subscription with apiKey onUpdate', async done => {
   expect(todo2.data.createTodo.id).toBeDefined();
   const todo2ID = todo2.data.createTodo.id;
   expect(todo2.data.createTodo.description).toEqual('updateTodoDesc');
-  expect(todo2.data.createTodo.name).toEqual('todo2');
+  expect(todo2.data.createTodo.name).toBeNull();
 
   // update the description on todo
   updateTodo(GRAPHQL_IAM_AUTH_CLIENT, {
@@ -861,7 +861,7 @@ test('test that subscription with apiKey onDelete', async done => {
   expect(todo3.data.createTodo.id).toBeDefined();
   const todo3ID = todo3.data.createTodo.id;
   expect(todo3.data.createTodo.description).toEqual('deleteTodoDesc');
-  expect(todo3.data.createTodo.name).toEqual('todo3');
+  expect(todo3.data.createTodo.name).toBeNull();
 
   // delete todo3
   deleteTodo(GRAPHQL_IAM_AUTH_CLIENT, {
