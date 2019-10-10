@@ -75,6 +75,7 @@ function removeCDN(context) {
   delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
   delete context.exeInfo.template.Outputs.CloudFrontDomainName;
   delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+  delete context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity;
 }
 
 function makeBucketPrivate(context) {
