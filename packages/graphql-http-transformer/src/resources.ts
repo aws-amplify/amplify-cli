@@ -1,39 +1,23 @@
-import Table, {
-  GlobalSecondaryIndex,
-  KeySchema,
-  Projection,
-  ProvisionedThroughput,
-  AttributeDefinition,
-} from 'cloudform-types/types/dynamoDb/table';
-import Resolver from 'cloudform-types/types/appSync/resolver';
-import Template from 'cloudform-types/types/template';
-import { Fn, AppSync } from 'cloudform-types';
+import { AppSync, Fn } from 'cloudform-types';
 import { Value } from 'cloudform-types/types/dataTypes';
+import Template from 'cloudform-types/types/template';
 import {
-  HttpMappingTemplate,
-  str,
-  print,
-  printBlock,
-  qref,
-  ref,
-  obj,
-  set,
-  nul,
-  ifElse,
-  compoundExpression,
-  bool,
-  equals,
-  iff,
-  raw,
-  Expression,
-  comment,
-  or,
   and,
+  comment,
+  compoundExpression,
+  HttpMappingTemplate,
+  ifElse,
+  iff,
+  obj,
+  or,
   parens,
+  print,
+  qref,
+  raw,
+  ref,
+  set,
 } from 'graphql-mapping-template';
-import { InputValueDefinitionNode } from 'graphql';
-import { ResourceConstants, ModelResourceIDs, HttpResourceIDs, makeNonNullType } from 'graphql-transformer-common';
-import { InvalidDirectiveError } from 'graphql-transformer-core';
+import { HttpResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { HttpHeader } from './HttpTransformer';
 export class ResourceFactory {
   public makeParams() {
@@ -134,7 +118,7 @@ export class ResourceFactory {
           ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
         )
       ),
-    }); //.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
 
   /**
@@ -183,7 +167,7 @@ export class ResourceFactory {
           ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
         )
       ),
-    }); //.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
 
   /**
@@ -231,7 +215,7 @@ export class ResourceFactory {
           ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
         )
       ),
-    }); //.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
 
   /**
@@ -272,7 +256,7 @@ export class ResourceFactory {
           ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
         )
       ),
-    }); //.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
 
   /**
@@ -320,6 +304,6 @@ export class ResourceFactory {
           ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
         )
       ),
-    }); //.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
 }
