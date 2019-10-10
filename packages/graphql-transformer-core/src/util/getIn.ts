@@ -4,13 +4,13 @@
  * @param path The path.
  */
 export default function getIn(obj: any, path: string[]): any {
-    let val = obj;
-    for (const elem of path) {
-        if (val[elem]) {
-            val = val[elem]
-        } else {
-            return null;
-        }
+  let val = obj;
+  for (const elem of path) {
+    if (val[elem]) {
+      val = val[elem];
+    } else {
+      return null;
     }
-    return val;
+  }
+  return val;
 }

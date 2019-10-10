@@ -10,7 +10,6 @@ export class JavaMap {
     Object.entries(obj).forEach(([key, value]) => {
       this.map.set(key, value);
     });
-    
   }
 
   clear() {
@@ -33,9 +32,9 @@ export class JavaMap {
             key,
             value,
           },
-          this.mapper,
-        ),
-      ),
+          this.mapper
+        )
+      )
     );
 
     return new JavaArray(entries, this.mapper);
@@ -66,7 +65,7 @@ export class JavaMap {
     return saveValue;
   }
 
-  putAll(map: object| JavaMap) {
+  putAll(map: object | JavaMap) {
     map = toJSON(map);
     Object.entries(map).forEach(([key, value]) => {
       this.put(key, value);
@@ -96,7 +95,7 @@ export class JavaMap {
         ...sum,
         [key]: toJSON(value),
       }),
-      {},
+      {}
     );
   }
 }

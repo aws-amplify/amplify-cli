@@ -4,11 +4,7 @@ import path from 'path';
 import Context from '../../domain/context';
 import PluginInfo from '../../domain/plugin-info';
 import constants from '../../domain/constants';
-import {
-    addUserPluginPackage,
-    addExcludedPluginPackage as addFromExcluded,
-    confirmAndScan,
-} from '../../plugin-manager';
+import { addUserPluginPackage, addExcludedPluginPackage as addFromExcluded, confirmAndScan } from '../../plugin-manager';
 import inquirer, { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
 import { AddPluginError } from '../../domain/add-plugin-result';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
@@ -47,8 +43,7 @@ async function resolvePluginPathAndAdd(context: Context, inputPath: string) {
   }
 }
 
-async function resolvePluginPackagePath(context: Context, inputPath: string):
-Promise<string | undefined> {
+async function resolvePluginPackagePath(context: Context, inputPath: string): Promise<string | undefined> {
   if (path.isAbsolute(inputPath)) {
     return inputPath;
   }
@@ -56,21 +51,13 @@ Promise<string | undefined> {
   let result;
 
   const { pluginPlatform } = context;
-  let searchDirPaths = [
-    constants.ParentDirectory,
-    constants.LocalNodeModules,
-    constants.GlobalNodeModules,
-    process.cwd(),
-  ];
-  searchDirPaths = searchDirPaths.filter(dirPath =>
-    !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
+  let searchDirPaths = [constants.ParentDirectory, constants.LocalNodeModules, constants.GlobalNodeModules, process.cwd()];
+  searchDirPaths = searchDirPaths.filter(dirPath => !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
   searchDirPaths = searchDirPaths.concat(pluginPlatform.pluginDirectories);
 
-  const candicatePluginDirPaths = searchDirPaths.map(dirPath =>
-    path.normalize(path.join(normalizePluginDirectory(dirPath), inputPath)),
-  ).filter(pluginDirPath =>
-    fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory(),
-  );
+  const candicatePluginDirPaths = searchDirPaths
+    .map(dirPath => path.normalize(path.join(normalizePluginDirectory(dirPath), inputPath)))
+    .filter(pluginDirPath => fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory());
 
   if (candicatePluginDirPaths.length === 0) {
     context.print.error('Can not locate the plugin package.');
@@ -90,9 +77,7 @@ Promise<string | undefined> {
   } else if (candicatePluginDirPaths.length > 1) {
     context.print.warning('Multiple plugins with the package name are found.');
 
-    const options = candicatePluginDirPaths.concat([
-      CANCEL,
-    ]);
+    const options = candicatePluginDirPaths.concat([CANCEL]);
     const answer = await inquirer.prompt({
       type: 'list',
       name: 'selection',
@@ -107,12 +92,11 @@ Promise<string | undefined> {
   return result;
 }
 
-
 async function promptAndAdd(context: Context) {
   const options = new Array<InquirerOption>();
   const { excluded } = context.pluginPlatform;
   if (excluded && Object.keys(excluded).length > 0) {
-    Object.keys(excluded).forEach((key) => {
+    Object.keys(excluded).forEach(key => {
       if (excluded[key].length > 0) {
         const option = {
           name: key + EXPAND,
@@ -126,7 +110,7 @@ async function promptAndAdd(context: Context) {
         }
         options.push(option);
       }
-    })
+    });
   }
 
   if (options.length > 0) {
@@ -153,7 +137,6 @@ async function promptAndAdd(context: Context) {
   }
 }
 
-
 async function promptForPluginPath(): Promise<string> {
   const answer = await inquirer.prompt({
     type: 'input',
@@ -173,22 +156,19 @@ async function promptForPluginPath(): Promise<string> {
 
 async function addNewPluginPackage(context: Context, pluginDirPath: string) {
   try {
-    const addUserPluginResult = addUserPluginPackage(
-      context.pluginPlatform,
-      pluginDirPath.trim(),
-    );
+    const addUserPluginResult = addUserPluginPackage(context.pluginPlatform, pluginDirPath.trim());
     if (addUserPluginResult.isAdded) {
       context.print.success('Successfully added plugin package.');
       await confirmAndScan(context.pluginPlatform);
     } else {
       context.print.error('Failed to add the plugin package.');
       context.print.info(`Error code: ${addUserPluginResult.error}`);
-      if (addUserPluginResult.error === AddPluginError.FailedVerification &&
-                addUserPluginResult.pluginVerificationResult &&
-                addUserPluginResult.pluginVerificationResult.error) {
-        context.print.info(
-          `Plugin verification error code: ${addUserPluginResult.pluginVerificationResult.error}`,
-        );
+      if (
+        addUserPluginResult.error === AddPluginError.FailedVerification &&
+        addUserPluginResult.pluginVerificationResult &&
+        addUserPluginResult.pluginVerificationResult.error
+      ) {
+        context.print.info(`Plugin verification error code: ${addUserPluginResult.pluginVerificationResult.error}`);
       }
     }
   } catch (e) {
@@ -203,12 +183,12 @@ async function addExcludedPluginPackage(context: Context, userSelection: PluginI
       addFromExcluded(context.pluginPlatform, userSelection[0]);
     } else {
       const options = new Array<InquirerOption>();
-      userSelection.forEach((pluginInfo) => {
+      userSelection.forEach(pluginInfo => {
         options.push({
           name: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
           value: pluginInfo,
           short: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
-        })
+        });
       });
 
       const answer = await inquirer.prompt({

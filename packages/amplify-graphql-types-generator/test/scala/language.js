@@ -2,11 +2,7 @@ import { stripIndent } from 'common-tags';
 
 import CodeGenerator from '../../src/utilities/CodeGenerator';
 
-import {
-  objectDeclaration,
-  caseClassDeclaration,
-  propertyDeclaration,
-} from '../../src/scala/language';
+import { objectDeclaration, caseClassDeclaration, propertyDeclaration } from '../../src/scala/language';
 
 describe('Scala code generation: Basic language constructs', function() {
   let generator;
@@ -32,7 +28,11 @@ describe('Scala code generation: Basic language constructs', function() {
   });
 
   test(`should generate a case class declaration`, function() {
-    caseClassDeclaration(generator, { caseClassName: 'Hero', params: [{name: 'name', type: 'String'}, {name: 'age', type: 'Int'}] }, () => {});
+    caseClassDeclaration(
+      generator,
+      { caseClassName: 'Hero', params: [{ name: 'name', type: 'String' }, { name: 'age', type: 'Int' }] },
+      () => {}
+    );
 
     expect(generator.output).toBe(stripIndent`
       case class Hero(name: String, age: Int) {
@@ -41,9 +41,13 @@ describe('Scala code generation: Basic language constructs', function() {
   });
 
   test(`should generate nested case class declarations`, function() {
-    caseClassDeclaration(generator, { caseClassName: 'Hero', params: [{name: 'name', type: 'String'}, {name: 'age', type: 'Int'}] }, () => {
-      caseClassDeclaration(generator, { caseClassName: 'Friend', params: [{name: 'name', type: 'String'}] }, () => {});
-    });
+    caseClassDeclaration(
+      generator,
+      { caseClassName: 'Hero', params: [{ name: 'name', type: 'String' }, { name: 'age', type: 'Int' }] },
+      () => {
+        caseClassDeclaration(generator, { caseClassName: 'Friend', params: [{ name: 'name', type: 'String' }] }, () => {});
+      }
+    );
 
     expect(generator.output).toBe(stripIndent`
       case class Hero(name: String, age: Int) {
@@ -55,8 +59,16 @@ describe('Scala code generation: Basic language constructs', function() {
 
   test(`should handle multi-line descriptions`, () => {
     caseClassDeclaration(generator, { caseClassName: 'Hero', description: 'A hero' }, () => {
-      propertyDeclaration(generator, { propertyName: 'name', typeName: 'String', description: `A multiline comment \n on the hero's name.` }, () => {});
-      propertyDeclaration(generator, { propertyName: 'age', typeName: 'String', description: `A multiline comment \n on the hero's age.` }, () => {});
+      propertyDeclaration(
+        generator,
+        { propertyName: 'name', typeName: 'String', description: `A multiline comment \n on the hero's name.` },
+        () => {}
+      );
+      propertyDeclaration(
+        generator,
+        { propertyName: 'age', typeName: 'String', description: `A multiline comment \n on the hero's age.` },
+        () => {}
+      );
     });
 
     expect(generator.output).toMatchSnapshot();

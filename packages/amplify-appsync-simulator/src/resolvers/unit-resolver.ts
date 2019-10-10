@@ -3,10 +3,7 @@ import { AppSyncSimulatorUnitResolverConfig } from '../type-definition';
 
 export class AppSyncUnitResolver {
   private config: AppSyncSimulatorUnitResolverConfig;
-  constructor(
-    config: AppSyncSimulatorUnitResolverConfig,
-    private simulatorContext: AmplifyAppSyncSimulator
-  ) {
+  constructor(config: AppSyncSimulatorUnitResolverConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     try {
       simulatorContext.getMappingTemplate(config.requestMappingTemplateLocation);
       simulatorContext.getMappingTemplate(config.responseMappingTemplateLocation);
@@ -22,12 +19,8 @@ export class AppSyncUnitResolver {
   }
 
   async resolve(source, args, context, info) {
-    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(
-      this.config.requestMappingTemplateLocation
-    );
-    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(
-      this.config.responseMappingTemplateLocation
-    );
+    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);
+    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
     const { result: requestPayload, errors: requestTemplateErrors } = requestMappingTemplate.render(
       { source, arguments: args },
@@ -51,10 +44,11 @@ export class AppSyncUnitResolver {
       return;
     }
 
-    const {
-      result: responseTemplateResult,
-      errors: responseTemplateErrors,
-    } = responseMappingTemplate.render({ source, arguments: args, result, error }, context, info);
+    const { result: responseTemplateResult, errors: responseTemplateErrors } = responseMappingTemplate.render(
+      { source, arguments: args, result, error },
+      context,
+      info
+    );
     context.appsyncErrors = [...context.appsyncErrors, ...responseTemplateErrors];
 
     return responseTemplateResult;

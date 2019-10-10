@@ -101,12 +101,11 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
     for (let i = 0; i < pluginCandidates.length; i++) {
       const { name, commands, commandAliases } = pluginCandidates[i].manifest;
 
-      if ((commands && commands!.includes(Constant.HELP)) ||
-        (commandAliases && Object.keys(commandAliases).includes(Constant.HELP))) {
+      if ((commands && commands!.includes(Constant.HELP)) || (commandAliases && Object.keys(commandAliases).includes(Constant.HELP))) {
         result.helpCommandAvailable = true;
       }
 
-      if ((commands && commands!.includes(input.command!))) {
+      if (commands && commands!.includes(input.command!)) {
         result.verified = true;
         break;
       }
@@ -123,14 +122,12 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
           result.verified = true;
           break;
         }
-        if (input.options && input.options[Constant.VERSION] &&
-          commands && commands!.includes(Constant.VERSION)) {
+        if (input.options && input.options[Constant.VERSION] && commands && commands!.includes(Constant.VERSION)) {
           input.command = Constant.VERSION;
           result.verified = true;
           break;
         }
-        if (input.options && input.options[Constant.HELP] &&
-          commands && commands!.includes(Constant.HELP)) {
+        if (input.options && input.options[Constant.HELP] && commands && commands!.includes(Constant.HELP)) {
           input.command = Constant.HELP;
           result.verified = true;
           break;

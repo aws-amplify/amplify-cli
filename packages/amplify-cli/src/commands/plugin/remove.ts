@@ -7,12 +7,10 @@ import PluginInfo from '../../domain/plugin-info';
 
 export async function run(context: Context) {
   const options = new Array<InquirerOption>();
-  const {
-        plugins,
-    } = context.pluginPlatform;
+  const { plugins } = context.pluginPlatform;
 
   if (plugins && Object.keys(plugins).length > 0) {
-    Object.keys(plugins).forEach((key) => {
+    Object.keys(plugins).forEach(key => {
       if (key === Constant.CORE) {
         return;
       }
@@ -30,7 +28,7 @@ export async function run(context: Context) {
         }
         options.push(option);
       }
-    })
+    });
   }
 
   if (options.length > 0) {
@@ -63,7 +61,7 @@ async function removeNamedPlugins(pluginPlatform: PluginPlatform, pluginInfos: A
         name: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
         value: pluginInfo,
         short: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
-      }
+      };
       return optionObject;
     });
     const { selections } = await inquirer.prompt({

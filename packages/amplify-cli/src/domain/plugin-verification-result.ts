@@ -6,15 +6,15 @@ export default class PluginVerificationResult {
     public error?: PluginVerificationError,
     public errorInfo?: any,
     public packageJson?: any,
-    public manifest?: PluginManifest,
+    public manifest?: PluginManifest
   ) {}
 }
 
 export enum PluginVerificationError {
-    PluginDirPathNotExist = 'PluginDirPathNotExist',
-    InvalidNodePackage = 'InvalidNodePackage',
-    MissingManifest = 'MissingManifest',
-    InvalidManifest = 'InvalidManifest',
-    MissingExecuteAmplifyCommandMethod = 'MissingExecuteAmplifyCommandMethod',
-    MissingHandleAmplifyEventMethod = 'MissingHandleAmplifyEventMethod',
+  PluginDirPathNotExist = 'PluginDirPathNotExist',
+  InvalidNodePackage = 'InvalidNodePackage',
+  MissingManifest = 'MissingManifest',
+  InvalidManifest = 'InvalidManifest',
+  MissingExecuteAmplifyCommandMethod = 'MissingExecuteAmplifyCommandMethod',
+  MissingHandleAmplifyEventMethod = 'MissingHandleAmplifyEventMethod',
 }

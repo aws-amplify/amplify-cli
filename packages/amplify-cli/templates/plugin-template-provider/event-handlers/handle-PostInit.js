@@ -1,4 +1,4 @@
-const eventName = "PostInit";
+const eventName = 'PostInit';
 
 async function run(context, args) {
   // insert your code to handle the amplify cli PostAddResource event

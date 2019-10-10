@@ -4,7 +4,7 @@ const featureName = 'statements';
 
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     try {
       const forceDownloadSchema = !context.parameters.options.nodownload;
       const { maxDepth } = context.parameters.options;

@@ -19,7 +19,7 @@ export function generateOperationId(
         throw new Error(`Cannot find fragment "${fragmentName}"`);
       }
       return fragment.source;
-    })
+    }),
   ].join('\n');
 
   const hash = createHash('sha256');

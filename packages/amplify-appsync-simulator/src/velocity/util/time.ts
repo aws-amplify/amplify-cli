@@ -16,13 +16,11 @@ const parseTimestamp = (dateTime: string, format?: string, timezone?: string): m
   try {
     const momentFormatString = moment().toMomentFormatString(format);
 
-    return timezone
-      ? moment.tz(dateTime, momentFormatString, timezone)
-      : moment(dateTime, momentFormatString);
+    return timezone ? moment.tz(dateTime, momentFormatString, timezone) : moment(dateTime, momentFormatString);
   } catch (e) {
     return null;
   }
-}
+};
 
 export const time = () => ({
   nowISO8601(t): string {
@@ -47,11 +45,7 @@ export const time = () => ({
       return null;
     }
   },
-  parseFormattedToEpochMilliSeconds(
-    dateTime: string,
-    format: string,
-    timezone?: string
-  ): number | null {
+  parseFormattedToEpochMilliSeconds(dateTime: string, format: string, timezone?: string): number | null {
     const timestamp = parseTimestamp(dateTime, format, timezone);
     return timestamp ? timestamp.valueOf() : null;
   },
@@ -73,11 +67,7 @@ export const time = () => ({
       return null;
     }
   },
-  epochMilliSecondsToFormatted(
-    timestamp: number,
-    format: string,
-    timezone: string = 'UTC'
-  ): string | null {
+  epochMilliSecondsToFormatted(timestamp: number, format: string, timezone: string = 'UTC'): string | null {
     try {
       return moment(timestamp)
         .tz(timezone)

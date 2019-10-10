@@ -1,8 +1,7 @@
 import Context from '../../domain/context';
 import inquirer from '../../domain/inquirer-helper';
 import PluginCollection from '../../domain/plugin-collection';
-import { displayGeneralInfo,
-    displayPluginCollection, displayPluginInfoArray } from '../../plugin-helpers/display-plugin-platform';
+import { displayGeneralInfo, displayPluginCollection, displayPluginInfoArray } from '../../plugin-helpers/display-plugin-platform';
 
 export async function run(context: Context) {
   const { pluginPlatform } = context;
@@ -11,12 +10,7 @@ export async function run(context: Context) {
   const excluded = 'excluded plugins';
   const generalInfo = 'general information';
 
-  const options =
-    [
-      plugins,
-      excluded,
-      generalInfo,
-    ]
+  const options = [plugins, excluded, generalInfo];
 
   const answer = await inquirer.prompt({
     type: 'list',

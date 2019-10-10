@@ -5,8 +5,7 @@ export function twoPluginsAreTheSame(plugin0: PluginInfo, plugin1: PluginInfo) {
     return true;
   }
 
-  if (plugin0.packageName === plugin1.packageName &&
-        plugin0.packageVersion === plugin1.packageVersion) {
+  if (plugin0.packageName === plugin1.packageName && plugin0.packageVersion === plugin1.packageVersion) {
     return true;
   }
 

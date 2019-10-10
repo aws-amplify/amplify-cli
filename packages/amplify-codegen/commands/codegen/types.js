@@ -4,7 +4,7 @@ const featureName = 'types';
 
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     try {
       const forceDownloadSchema = !context.parameters.options.nodownload;
       await codeGen.generateTypes(context, forceDownloadSchema);

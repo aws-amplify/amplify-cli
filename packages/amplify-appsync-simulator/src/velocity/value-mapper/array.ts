@@ -3,7 +3,8 @@ import { toJSON } from './to-json';
 export class JavaArray extends Array<any> {
   private mapper: Function;
   constructor(values = [], mapper: Function) {
-    if(!Array.isArray(values)) { // splice sends a single object
+    if (!Array.isArray(values)) {
+      // splice sends a single object
       values = [values];
     }
     super(...values);

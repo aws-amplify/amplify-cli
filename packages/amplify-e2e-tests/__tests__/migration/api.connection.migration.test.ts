@@ -1,10 +1,5 @@
 require('../../src/aws-matchers/'); // custom matcher for assertion
-import {
-  initProjectWithProfile,
-  deleteProject,
-  amplifyPush,
-  amplifyPushUpdate
-} from '../../src/init';
+import { initProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../src/init';
 import { addApiWithSchema, updateApiSchema } from '../../src/categories/api';
 import { createNewProjectDir, deleteProjectDir } from '../../src/utils';
 
@@ -29,8 +24,8 @@ describe('amplify add api', () => {
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(
-        projRoot,
-        /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
+      projRoot,
+      /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
     );
   });
 
@@ -43,8 +38,8 @@ describe('amplify add api', () => {
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(
-        projRoot,
-        /Attempting to add and remove a global secondary index at the same time on the CommentTable table in the Comment stack.*/
+      projRoot,
+      /Attempting to add and remove a global secondary index at the same time on the CommentTable table in the Comment stack.*/
     );
   });
 
@@ -57,8 +52,8 @@ describe('amplify add api', () => {
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(
-        projRoot,
-        /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
+      projRoot,
+      /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
     );
   });
 
@@ -78,8 +73,7 @@ describe('amplify add api', () => {
 
   it(`init project, run valid migration to add a connection that uses the \
   existing key fields, then run another migration that removes the old connection \
-  and renames the field.`,
-  async () => {
+  and renames the field.`, async () => {
     const projectName = 'addremoveconnection';
     const initialSchema = 'migrations_connection/initial_schema.graphql';
     const nextSchema1 = 'migrations_connection/add_a_sort_key_before_remove.graphql';

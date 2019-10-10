@@ -9,7 +9,7 @@ function compileFromSource(source: string, schema: GraphQLSchema = starWarsSchem
   const document = parse(source);
   return compileToLegacyIR(schema, document, {
     mergeInFieldsFromFragmentSpreads: false,
-    addTypename: true
+    addTypename: true,
   });
 }
 

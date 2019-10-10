@@ -71,10 +71,7 @@ function invokeFunction(options: InvokeOptions) {
     try {
       if (!lambda[options.handler]) {
         context.fail(
-          `handler ${options.handler} does not exist in the lambda function ${path.join(
-            options.packageFolder,
-            options.fileName
-          )}`
+          `handler ${options.handler} does not exist in the lambda function ${path.join(options.packageFolder, options.fileName)}`
         );
         return;
       }

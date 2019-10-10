@@ -6,30 +6,21 @@ import { stripIndent } from 'common-tags';
 type Printable = t.Node | string;
 
 export default class Printer {
-  private printQueue: Printable[] = []
+  private printQueue: Printable[] = [];
 
   public print(): string {
-    return this.printQueue
-      .reduce(
-        (document: string, printable) => {
-          if (typeof printable === 'string') {
-            return document + printable;
-          } else {
-            const documentPart = generate(printable).code;
-            return document + this.fixCommas(documentPart);
-          }
-        },
-        ''
-      ) as string;
+    return this.printQueue.reduce((document: string, printable) => {
+      if (typeof printable === 'string') {
+        return document + printable;
+      } else {
+        const documentPart = generate(printable).code;
+        return document + this.fixCommas(documentPart);
+      }
+    }, '') as string;
   }
 
   public enqueue(printable: Printable) {
-    this.printQueue = [
-      ...this.printQueue,
-      '\n',
-      '\n',
-      printable
-    ];
+    this.printQueue = [...this.printQueue, '\n', '\n', printable];
   }
 
   public printAndClear() {
@@ -78,37 +69,33 @@ export default class Printer {
         const [contents, comment] = currentLineContents.split('//');
         newDocumentParts.push({
           main: contents.replace(/\s+$/g, '') + ',',
-          comment: comment.trim()
+          comment: comment.trim(),
         });
         currentLine++;
       } else {
         newDocumentParts.push({
           main: lines[currentLine],
-          comment: null
+          comment: null,
         });
       }
 
       currentLine++;
     }
 
-    return newDocumentParts.reduce((memo: string[], part) => {
-      const {
-        main,
-        comment
-      } = part;
+    return newDocumentParts
+      .reduce((memo: string[], part) => {
+        const { main, comment } = part;
 
-      let line;
-      if (comment !== null) {
-        const spacesBetween = maxCommentColumn - main.length;
-        line = `${main}${' '.repeat(spacesBetween)} // ${comment}`
-      } else {
-        line = main;
-      }
+        let line;
+        if (comment !== null) {
+          const spacesBetween = maxCommentColumn - main.length;
+          line = `${main}${' '.repeat(spacesBetween)} // ${comment}`;
+        } else {
+          line = main;
+        }
 
-      return [
-        ...memo,
-        line
-      ];
-    }, []).join('\n');
+        return [...memo, line];
+      }, [])
+      .join('\n');
   }
 }

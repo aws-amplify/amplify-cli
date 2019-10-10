@@ -7,8 +7,12 @@ import Constants from '../../domain/constants';
 import { writePluginsJsonFileSync } from '../../plugin-helpers/access-plugins-file';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 import { scan } from '../../plugin-manager';
-import { displayPluginDirectories, displayPrefixes, displayScanInterval,
-    displayConfiguration } from '../../plugin-helpers/display-plugin-platform';
+import {
+  displayPluginDirectories,
+  displayPrefixes,
+  displayScanInterval,
+  displayConfiguration,
+} from '../../plugin-helpers/display-plugin-platform';
 
 const MINPREFIXLENGTH = 2;
 const MAXPREFIXLENGTH = 20;
@@ -20,12 +24,7 @@ export async function run(context: Context): Promise<PluginPlatform> {
   const maxScanIntervalInSeconds = 'max CLI scan interval in seconds';
   const exit = 'save & exit';
 
-  const options = [
-    pluginDirectories,
-    pluginPrefixes,
-    maxScanIntervalInSeconds,
-    exit,
-  ];
+  const options = [pluginDirectories, pluginPrefixes, maxScanIntervalInSeconds, exit];
 
   let answer: any;
 
@@ -64,7 +63,7 @@ async function configurePluginDirectories(context: Context, pluginPlatform: Plug
   const ADD = 'add';
   const REMOVE = 'remove';
   const EXIT = 'exit';
-  const LEARNMORE = 'Learn more'
+  const LEARNMORE = 'Learn more';
 
   const actionAnswer = await inquirer.prompt({
     type: 'list',
@@ -91,7 +90,6 @@ Only explicitly added plugins are active.');
   displayPluginDirectories(context, pluginPlatform);
 }
 
-
 function displayPluginDirectoriesLearnMore(context: Context) {
   context.print.info('');
   context.print.green('The directories contained this list are searched for \
@@ -116,12 +114,8 @@ is the global node_modules directory.`);
 }
 
 async function addPluginDirectory(pluginPlatform: PluginPlatform) {
-  const ADDCUSTOMDIRECTORY = 'Add custom directory >'
-  let options = [
-    Constants.ParentDirectory,
-    Constants.LocalNodeModules,
-    Constants.GlobalNodeModules,
-  ];
+  const ADDCUSTOMDIRECTORY = 'Add custom directory >';
+  let options = [Constants.ParentDirectory, Constants.LocalNodeModules, Constants.GlobalNodeModules];
 
   options = options.filter(item => !pluginPlatform.pluginDirectories.includes(item.toString()));
 
@@ -148,7 +142,7 @@ async function addPluginDirectory(pluginPlatform: PluginPlatform) {
       type: 'input',
       name: 'newScanDirectory',
       message: `Enter the full path of the plugin scan directory you want to add${os.EOL}`,
-      validate: (input : string) => {
+      validate: (input: string) => {
         if (!fs.existsSync(input) || !fs.statSync(input).isDirectory()) {
           return 'Must enter a valid full path of a directory';
         }
@@ -166,9 +160,7 @@ async function removePluginDirectory(pluginPlatform: PluginPlatform) {
     message: 'Select the directories that Amplify CLI should NOT scan for plugins',
     choices: pluginPlatform.pluginDirectories,
   });
-  pluginPlatform.pluginDirectories = pluginPlatform.pluginDirectories.filter(
-    dir => !answer.directoriesToRemove.includes(dir),
-  );
+  pluginPlatform.pluginDirectories = pluginPlatform.pluginDirectories.filter(dir => !answer.directoriesToRemove.includes(dir));
 }
 
 async function configurePrefixes(context: Context, pluginPlatform: PluginPlatform) {
@@ -177,7 +169,7 @@ async function configurePrefixes(context: Context, pluginPlatform: PluginPlatfor
   const ADD = 'add';
   const REMOVE = 'remove';
   const EXIT = 'exit';
-  const LEARNMORE = 'Learn more'
+  const LEARNMORE = 'Learn more';
 
   const actionAnswer = await inquirer.prompt({
     type: 'list',
@@ -192,8 +184,10 @@ async function configurePrefixes(context: Context, pluginPlatform: PluginPlatfor
     await removePrefixes(pluginPlatform);
     if (pluginPlatform.pluginPrefixes.length === 0) {
       context.print.warning('You have removed all prefixes for plugin dir name matching!');
-      context.print.info('All the packages inside the plugin directories will be checked \
-during a plugin scan, this can significantly increase the scan time.')
+      context.print.info(
+        'All the packages inside the plugin directories will be checked \
+during a plugin scan, this can significantly increase the scan time.'
+      );
     }
   } else if (actionAnswer.action === LEARNMORE) {
     displayPluginPrefixesLearnMore(context);
@@ -207,8 +201,10 @@ function displayPluginPrefixesLearnMore(context: Context) {
   context.print.info('');
   context.print.green('The package name prefixes contained this list are used for \
 plugin name matching in plugin scans.');
-  context.print.green('Only packages with matching name are considered plugin candidates, \
-they are verified and then added to the Amplify CLI.');
+  context.print.green(
+    'Only packages with matching name are considered plugin candidates, \
+they are verified and then added to the Amplify CLI.'
+  );
   context.print.green('If this list is empty, all packages inside the scanned directories \
 are checked in plugin scans.');
   context.print.green('You can add or remove from this list to change the plugin \
@@ -219,10 +215,8 @@ scan behavior, and consequently its outcome.');
 }
 
 async function addPrefix(pluginPlatform: PluginPlatform) {
-  const ADDCUSTOMPREFIX = 'Add custom prefix >'
-  let options = [
-    Constants.AmplifyPrefix,
-  ];
+  const ADDCUSTOMPREFIX = 'Add custom prefix >';
+  let options = [Constants.AmplifyPrefix];
 
   options = options.filter(item => !pluginPlatform.pluginPrefixes.includes(item.toString()));
 
@@ -249,11 +243,12 @@ async function addPrefix(pluginPlatform: PluginPlatform) {
       type: 'input',
       name: 'newPrefix',
       message: 'Enter the new prefix',
-      validate: (input : string) => {
+      validate: (input: string) => {
         input = input.trim();
         if (input.length < MINPREFIXLENGTH || input.length > MAXPREFIXLENGTH) {
-          return 'The Length of prefix must be between 2 and 20.'
-        }if (!/^[a-zA-Z][a-zA-Z0-9-]+$/.test(input)) {
+          return 'The Length of prefix must be between 2 and 20.';
+        }
+        if (!/^[a-zA-Z][a-zA-Z0-9-]+$/.test(input)) {
           return 'Prefix must start with letter, and contain only alphanumerics and dashes(-)';
         }
         return true;
@@ -270,14 +265,14 @@ async function removePrefixes(pluginPlatform: PluginPlatform) {
     message: 'Select the prefixes to remove',
     choices: pluginPlatform.pluginPrefixes,
   });
-  pluginPlatform.pluginPrefixes = pluginPlatform.pluginPrefixes.filter(
-    prefix => !answer.prefixesToRemove.includes(prefix),
-  )
+  pluginPlatform.pluginPrefixes = pluginPlatform.pluginPrefixes.filter(prefix => !answer.prefixesToRemove.includes(prefix));
 }
 
 async function configureScanInterval(context: Context, pluginPlatform: PluginPlatform) {
-  context.print.green('The Amplify CLI plugin platform regularly scans the local \
-system to update its internal metadata on the locally installed plugins.');
+  context.print.green(
+    'The Amplify CLI plugin platform regularly scans the local \
+system to update its internal metadata on the locally installed plugins.'
+  );
   context.print.green('This automatic scan will happen if the last scan \
 time has passed for longer than max-scan-interval-in-seconds.');
   context.print.info('');
@@ -304,12 +299,7 @@ export async function listConfiguration(context: Context, pluginPlatform: Plugin
   const maxScanIntervalInSeconds = 'max scan interval in seconds';
   const all = 'all';
 
-  const options = [
-    pluginDirectories,
-    pluginPrefixes,
-    maxScanIntervalInSeconds,
-    all,
-  ];
+  const options = [pluginDirectories, pluginPrefixes, maxScanIntervalInSeconds, all];
 
   const answer = await inquirer.prompt({
     type: 'list',
