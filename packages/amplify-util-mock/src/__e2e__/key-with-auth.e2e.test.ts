@@ -94,9 +94,7 @@ beforeAll(async () => {
       Authorization: idToken,
     });
 
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [
-      DEVS_GROUP_NAME,
-    ]);
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [DEVS_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
@@ -259,11 +257,7 @@ async function getOrder(client: GraphQLClient, customerEmail: string, orderId: s
   return result;
 }
 
-async function listOrders(
-  client: GraphQLClient,
-  customerEmail: string,
-  orderId: { beginsWith: string }
-) {
+async function listOrders(client: GraphQLClient, customerEmail: string, orderId: { beginsWith: string }) {
   const result = await client.query(
     `query ListOrder($customerEmail: String, $orderId: ModelStringKeyConditionInput) {
         listOrders(customerEmail: $customerEmail, orderId: $orderId) {

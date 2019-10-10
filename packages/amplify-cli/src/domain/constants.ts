@@ -18,4 +18,4 @@ export default {
   GlobalNodeModules: 'global-node-modules',
   ExecuteAmplifyCommand: 'executeAmplifyCommand',
   HandleAmplifyEvent: 'handleAmplifyEvent',
-}
+};

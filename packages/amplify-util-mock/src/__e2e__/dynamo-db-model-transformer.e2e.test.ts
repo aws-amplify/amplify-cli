@@ -48,13 +48,17 @@ beforeAll(async () => {
   `;
   try {
     const transformer = new GraphQLTransform({
-      transformers: [new DynamoDBModelTransformer(), new ModelAuthTransformer({
-        authConfig: {
+      transformers: [
+        new DynamoDBModelTransformer(),
+        new ModelAuthTransformer({
+          authConfig: {
             defaultAuthentication: {
-                authenticationType: "API_KEY"
+              authenticationType: 'API_KEY',
             },
-            additionalAuthenticationProviders: []
-        }})],
+            additionalAuthenticationProviders: [],
+          },
+        }),
+      ],
     });
     const out = await transformer.transform(validSchema);
     let ddbClient;
@@ -521,11 +525,7 @@ test('Test enum filters List', async () => {
     const appearsInNonJediItems = appearsInWithFilterResponseNonJedi.data.listPosts.items;
     expect(appearsInNonJediItems.length).toEqual(3);
     appearsInNonJediItems.forEach(item => {
-      expect(
-        ['Appears in Empire & JEDI', 'Appears in New Hope', 'Appears in Empire'].includes(
-          item.title
-        )
-      ).toBeTruthy();
+      expect(['Appears in Empire & JEDI', 'Appears in New Hope', 'Appears in Empire'].includes(item.title)).toBeTruthy();
     });
 
     const appearsInContainingJedi = await GRAPHQL_CLIENT.query(
@@ -600,11 +600,7 @@ test('Test enum filters List', async () => {
     const nonJediEpisodeItems = nonJediEpisode.data.listPosts.items;
     expect(nonJediEpisodeItems.length).toEqual(3);
     nonJediEpisodeItems.forEach(item => {
-      expect(
-        ['Appears in New Hope', 'Appears in Empire', 'Appears in Empire & JEDI'].includes(
-          item.title
-        )
-      ).toBeTruthy();
+      expect(['Appears in New Hope', 'Appears in Empire', 'Appears in Empire & JEDI'].includes(item.title)).toBeTruthy();
     });
   } catch (e) {
     logDebug(e);

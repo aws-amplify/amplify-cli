@@ -1,22 +1,16 @@
 const path = require('path');
 
-function scanProject(projectPath) {
-}
+function scanProject(projectPath) {}
 
-function init(context) {
-}
+function init(context) {}
 
-function onInitSuccessful(context) {
-}
+function onInitSuccessful(context) {}
 
-function configure(context) {
-}
+function configure(context) {}
 
-function publish(context) {
-}
+function publish(context) {}
 
-function run(context) {
-}
+function run(context) {}
 
 async function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
   const newOutputsForFrontend = amplifyResources.outputsForFrontend;

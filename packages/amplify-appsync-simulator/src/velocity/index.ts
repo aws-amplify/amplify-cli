@@ -40,9 +40,7 @@ export class VelocityTemplate {
     } catch (e) {
       const lineDetails = `${e.hash.line}:${e.hash.loc.first_column}`;
       const fileName = template.path ? `${template.path}:${lineDetails}` : lineDetails;
-      const templateError = new VelocityTemplateParseError(
-        `Error:Parse error on ${fileName} \n${e.message}`
-      );
+      const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName} \n${e.message}`);
       templateError.stack = e.stack;
       throw templateError;
     }
@@ -65,11 +63,7 @@ export class VelocityTemplate {
     }
   }
 
-  private buildRenderContext(
-    ctxValues: AppSyncVTLRenderContext,
-    requestContext: any,
-    info: GraphQLResolveInfo
-  ): any {
+  private buildRenderContext(ctxValues: AppSyncVTLRenderContext, requestContext: any, info: GraphQLResolveInfo): any {
     const { source, arguments: argument, result, stash, prevResult, error } = ctxValues;
 
     const {
@@ -81,19 +75,13 @@ export class VelocityTemplate {
     const args = convertToJavaTypes(argument);
     // Identity is null for API Key
     let identity = null;
-    if (
-      requestContext.requestAuthorizationMode ===
-      AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT
-    ) {
+    if (requestContext.requestAuthorizationMode === AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT) {
       identity = convertToJavaTypes({
         sub,
         issuer,
         claims: requestContext.jwt,
       });
-    } else if (
-      requestContext.requestAuthorizationMode ===
-      AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS
-    ) {
+    } else if (requestContext.requestAuthorizationMode === AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS) {
       identity = convertToJavaTypes({
         sub,
         issuer,

@@ -6,12 +6,14 @@ import * as path from 'path';
 import * as yargs from 'yargs';
 
 import { downloadSchema, introspectSchema, printSchema, generate } from '.';
-import { ToolError, logError } from './errors'
+import { ToolError, logError } from './errors';
 
-import 'source-map-support/register'
+import 'source-map-support/register';
 
 // Make sure unhandled errors in async code are propagated correctly
-process.on('unhandledRejection', (error) => { throw error });
+process.on('unhandledRejection', error => {
+  throw error;
+});
 
 process.on('uncaughtException', handleError);
 
@@ -40,7 +42,7 @@ yargs
         demand: false,
         describe: 'Code generation target language',
         choices: ['swift', 'scala', 'json', 'ts', 'typescript', 'flow', 'flow-modern', 'angular'],
-        default: 'angular'
+        default: 'angular',
       },
       only: {
         describe: 'Parse all input files, but only output generated code for the specified file [Swift only]',
@@ -50,51 +52,52 @@ yargs
       namespace: {
         demand: false,
         describe: 'Optional namespace for generated types [currently Swift and Scala-only]',
-        type: 'string'
+        type: 'string',
       },
-      "passthrough-custom-scalars": {
+      'passthrough-custom-scalars': {
         demand: false,
         describe: "Don't attempt to map custom scalars [temporary option]",
-        default: false
-      },
-      "custom-scalars-prefix": {
-        demand: false,
-        describe: "Prefix for custom scalars. (Implies that passthrough-custom-scalars is true if set)",
-        default: '',
-        normalize: true
-      },
-      "add-typename": {
-        demand: false,
-        describe: "For non-swift targets, always add the __typename GraphQL introspection type when generating target types",
-        default: false
-      },
-      "use-flow-exact-objects": {
-        demand: false,
-        describe: "Use Flow exact objects for generated types [flow-modern only]",
         default: false,
-        type: 'boolean'
       },
-      "tag-name": {
+      'custom-scalars-prefix': {
         demand: false,
-        describe: "Name of the template literal tag used to identify template literals containing GraphQL queries in Javascript/Typescript code",
-        default: 'gql'
+        describe: 'Prefix for custom scalars. (Implies that passthrough-custom-scalars is true if set)',
+        default: '',
+        normalize: true,
       },
-      "project-name": {
+      'add-typename': {
         demand: false,
-        describe: "Name of the project to use in a multi-project .graphqlconfig file",
+        describe: 'For non-swift targets, always add the __typename GraphQL introspection type when generating target types',
+        default: false,
       },
-      "merge-in-fields-from-fragment-spreads": {
+      'use-flow-exact-objects': {
         demand: false,
-        describe: "Merge fragment fields onto its enclosing type",
+        describe: 'Use Flow exact objects for generated types [flow-modern only]',
+        default: false,
+        type: 'boolean',
+      },
+      'tag-name': {
+        demand: false,
+        describe:
+          'Name of the template literal tag used to identify template literals containing GraphQL queries in Javascript/Typescript code',
+        default: 'gql',
+      },
+      'project-name': {
+        demand: false,
+        describe: 'Name of the project to use in a multi-project .graphqlconfig file',
+      },
+      'merge-in-fields-from-fragment-spreads': {
+        demand: false,
+        describe: 'Merge fragment fields onto its enclosing type',
         default: true,
-        type: 'boolean'
+        type: 'boolean',
       },
-      "complex-object-support": {
+      'complex-object-support': {
         demand: false,
-        describe: "Adds S3 wrapper code to the output. [Swift only]",
+        describe: 'Adds S3 wrapper code to the output. [Swift only]',
         default: 'auto',
         choices: ['yes', 'no', 'auto'],
-      }
+      },
     },
     argv => {
       let { input } = argv;
@@ -110,22 +113,21 @@ yargs
         .sort();
 
       const options = {
-        passthroughCustomScalars: argv["passthrough-custom-scalars"] || argv["custom-scalars-prefix"] !== '',
-        customScalarsPrefix: argv["custom-scalars-prefix"] || '',
-        addTypename: argv["add-typename"],
+        passthroughCustomScalars: argv['passthrough-custom-scalars'] || argv['custom-scalars-prefix'] !== '',
+        customScalarsPrefix: argv['custom-scalars-prefix'] || '',
+        addTypename: argv['add-typename'],
         namespace: argv.namespace,
-        mergeInFieldsFromFragmentSpreads: argv["merge-in-fields-from-fragment-spreads"],
+        mergeInFieldsFromFragmentSpreads: argv['merge-in-fields-from-fragment-spreads'],
         useFlowExactObjects: argv['use-flow-exact-objects'],
-        complexObjectSupport: argv["complex-object-support"],
+        complexObjectSupport: argv['complex-object-support'],
       };
 
       generate(inputPaths, argv.schema, argv.output, argv.only, argv.target, argv.tagName, options);
-    },
+    }
   )
   .fail(function(message, error) {
     handleError(error ? error : new ToolError(message));
   })
   .help()
   .version()
-  .strict()
-  .argv
+  .strict().argv;

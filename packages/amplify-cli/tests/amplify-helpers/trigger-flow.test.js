@@ -6,11 +6,9 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 
-
 jest.mock('inquirer');
 jest.mock('fs');
 jest.mock('fs-extra');
-
 
 const key = 'foo';
 const values = ['bar'];
@@ -57,7 +55,6 @@ describe('TriggerFlow:  ', () => {
       },
     };
   });
-
 
   describe('When adding a trigger...', () => {
     let spyAdd;
@@ -139,7 +136,7 @@ describe('TriggerFlow:  ', () => {
     beforeEach(() => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1']);
       spyUpdate = jest.spyOn(func, 'update').mockImplementation(() => Promise.resolve());
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => (Promise.resolve()));
+      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => Promise.resolve());
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
@@ -147,10 +144,12 @@ describe('TriggerFlow:  ', () => {
               policyName: 'policy',
               trigger: 'arya',
               actions: ['actions'],
-              resources: [{
-                type: 'foo',
-                attribute: 'bar',
-              }],
+              resources: [
+                {
+                  type: 'foo',
+                  attribute: 'bar',
+                },
+              ],
             },
           },
         };
@@ -263,37 +262,19 @@ describe('TriggerFlow:  ', () => {
 
     it('...it should call deleteTrigger twice when two triggers are removed', async () => {
       previousTriggers = ['arya', 'sandor', 'joffrey'];
-      await triggerFlow.deleteDeselectedTriggers(
-        currentTriggers,
-        previousTriggers,
-        functionName,
-        path,
-        context,
-      );
+      await triggerFlow.deleteDeselectedTriggers(currentTriggers, previousTriggers, functionName, path, context);
       expect(deleteSpy).toHaveBeenCalledTimes(2);
     });
 
     it('...it should call deleteTrigger once when one trigger is removed', async () => {
       previousTriggers = ['arya', 'sandor'];
-      await triggerFlow.deleteDeselectedTriggers(
-        currentTriggers,
-        previousTriggers,
-        functionName,
-        path,
-        context,
-      );
+      await triggerFlow.deleteDeselectedTriggers(currentTriggers, previousTriggers, functionName, path, context);
       expect(deleteSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...it should not call deleteTrigger when nothing is removed', async () => {
       previousTriggers = ['arya'];
-      await triggerFlow.deleteDeselectedTriggers(
-        currentTriggers,
-        previousTriggers,
-        functionName,
-        path,
-        context,
-      );
+      await triggerFlow.deleteDeselectedTriggers(currentTriggers, previousTriggers, functionName, path, context);
       expect(deleteSpy).toHaveBeenCalledTimes(0);
     });
   });
@@ -310,10 +291,12 @@ describe('TriggerFlow:  ', () => {
               policyName: 'policy',
               trigger: 'arya',
               actions: ['actions'],
-              resources: [{
-                type: 'foo',
-                attribute: 'bar',
-              }],
+              resources: [
+                {
+                  type: 'foo',
+                  attribute: 'bar',
+                },
+              ],
             },
           },
           dragon: {
@@ -321,10 +304,12 @@ describe('TriggerFlow:  ', () => {
               policyName: 'policy',
               trigger: 'drogon',
               actions: ['actions'],
-              resources: [{
-                type: 'foo',
-                attribute: 'bar',
-              }],
+              resources: [
+                {
+                  type: 'foo',
+                  attribute: 'bar',
+                },
+              ],
             },
           },
         };
@@ -338,45 +323,25 @@ describe('TriggerFlow:  ', () => {
 
     it('...it should call getTriggerMetadata once for each key (1 result)', async () => {
       triggers = { arya: ['stark'] };
-      await triggerFlow.getTriggerPermissions(
-        context,
-        JSON.stringify(triggers),
-        category,
-        functionName,
-      );
+      await triggerFlow.getTriggerPermissions(context, JSON.stringify(triggers), category, functionName);
       expect(metadataSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...it should call getTriggerMetadata once for each key (2 results)', async () => {
       triggers = { arya: ['stark'], tyrion: ['lannister'] };
-      await triggerFlow.getTriggerPermissions(
-        context,
-        JSON.stringify(triggers),
-        category,
-        functionName,
-      );
+      await triggerFlow.getTriggerPermissions(context, JSON.stringify(triggers), category, functionName);
       expect(metadataSpy).toHaveBeenCalledTimes(2);
     });
 
     it('...it should return permissions corresponding to the key (1 result)', async () => {
       triggers = { arya: ['stark'], tyrion: ['lannister'] };
-      const result = await triggerFlow.getTriggerPermissions(
-        context,
-        JSON.stringify(triggers),
-        category,
-        functionName,
-      );
+      const result = await triggerFlow.getTriggerPermissions(context, JSON.stringify(triggers), category, functionName);
       expect(result.length).toEqual(1);
     });
 
     it('...it should return permissions corresponding to the key (2 results)', async () => {
       triggers = { arya: ['stark'], drogon: ['dragon'] };
-      const result = await triggerFlow.getTriggerPermissions(
-        context,
-        JSON.stringify(triggers),
-        category,
-        functionName,
-      );
+      const result = await triggerFlow.getTriggerPermissions(context, JSON.stringify(triggers), category, functionName);
       expect(result.length).toEqual(2);
     });
   });
@@ -412,29 +377,17 @@ describe('TriggerFlow:  ', () => {
     });
 
     it('...it should call getTriggerMetadata once', async () => {
-      await triggerFlow.getTriggerEnvVariables(
-        context,
-        { key: 'stark' },
-        functionName,
-      );
+      await triggerFlow.getTriggerEnvVariables(context, { key: 'stark' }, functionName);
       expect(metadataSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...it should call getTriggerMetadata once and return one result', async () => {
-      const result = await triggerFlow.getTriggerEnvVariables(
-        context,
-        { key: 'arya', modules: ['stark'] },
-        functionName,
-      );
+      const result = await triggerFlow.getTriggerEnvVariables(context, { key: 'arya', modules: ['stark'] }, functionName);
       expect(result.length).toEqual(1);
     });
 
     it('...it should call getTriggerMetadata once and return zero results', async () => {
-      const result = await triggerFlow.getTriggerEnvVariables(
-        context,
-        { key: 'arya', modules: ['lannister'] },
-        functionName,
-      );
+      const result = await triggerFlow.getTriggerEnvVariables(context, { key: 'arya', modules: ['lannister'] }, functionName);
       expect(result.length).toEqual(0);
     });
   });
@@ -501,15 +454,17 @@ describe('TriggerFlow:  ', () => {
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
-            env: [{
-              key: 'REDIRECTURL',
-              value: 'askUser',
-              question: {
-                name: 'REDIRECTURL',
-                type: 'input',
-                message: 'Enter the URL that your users will be redirected to upon account confirmation:',
+            env: [
+              {
+                key: 'REDIRECTURL',
+                value: 'askUser',
+                question: {
+                  name: 'REDIRECTURL',
+                  type: 'input',
+                  message: 'Enter the URL that your users will be redirected to upon account confirmation:',
+                },
               },
-            }],
+            ],
           },
         };
       });
@@ -539,16 +494,14 @@ describe('TriggerFlow:  ', () => {
     it('...it should return the prompt answers (when no currentEnvValues are present)', async () => {
       triggerKey = 'arya';
       vals = ['stark'];
-      const result = await triggerFlow
-        .getTriggerEnvInputs(context, path, triggerKey, vals, envVals);
+      const result = await triggerFlow.getTriggerEnvInputs(context, path, triggerKey, vals, envVals);
       expect(result.REDIRECTURL).toEqual('hello');
     });
     it('...it should return the prompt answers along with currentEnvValues', async () => {
       triggerKey = 'arya';
       vals = ['stark'];
       envVals = { anotherVar: 'world' };
-      const result = await triggerFlow
-        .getTriggerEnvInputs(context, path, triggerKey, vals, envVals);
+      const result = await triggerFlow.getTriggerEnvInputs(context, path, triggerKey, vals, envVals);
       expect(result.REDIRECTURL).toEqual('hello');
       expect(result.anotherVar).toEqual('world');
       expect(Object.keys(result).length).toEqual(2);
@@ -615,7 +568,7 @@ describe('TriggerFlow:  ', () => {
     let val = '';
 
     beforeEach(() => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
+      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
       copySyncSpy = jest.spyOn(fsExtra, 'copySync').mockImplementation(() => Promise.resolve());
     });
 
@@ -652,7 +605,7 @@ describe('TriggerFlow:  ', () => {
     let unlinkSyncSpy;
 
     beforeEach(() => {
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => (Promise.resolve()));
+      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => Promise.resolve());
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
@@ -660,10 +613,12 @@ describe('TriggerFlow:  ', () => {
               policyName: 'policy',
               trigger: 'arya',
               actions: ['actions'],
-              resources: [{
-                type: 'foo',
-                attribute: 'bar',
-              }],
+              resources: [
+                {
+                  type: 'foo',
+                  attribute: 'bar',
+                },
+              ],
             },
           },
           dragon: {
@@ -671,10 +626,12 @@ describe('TriggerFlow:  ', () => {
               policyName: 'policy',
               trigger: 'drogon',
               actions: ['actions'],
-              resources: [{
-                type: 'foo',
-                attribute: 'bar',
-              }],
+              resources: [
+                {
+                  type: 'foo',
+                  attribute: 'bar',
+                },
+              ],
             },
           },
         };
@@ -686,37 +643,37 @@ describe('TriggerFlow:  ', () => {
     });
 
     it('...should call getTriggerMetadata once', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
+      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
       expect(metadataSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...should call readdirSync once', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
+      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
       expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...should call readdirSync once', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
+      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
       expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...should call unlinkSync if the dir contents have values not present in passed values', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['stark.js']));
+      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['stark.js']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
       expect(unlinkSyncSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...should call unlinkSync if the dir contents have values not present in passed values (custom file)', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['custom.js']));
+      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['custom.js']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
       expect(unlinkSyncSpy).toHaveBeenCalledTimes(1);
     });
 
     it('...should throw an error if parameters are missing', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
+      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
       let error;
       try {
         await triggerFlow.cleanFunctions();
@@ -727,7 +684,7 @@ describe('TriggerFlow:  ', () => {
     });
   });
 
-  describe(('When calling choicesFromMetadata...'), () => {
+  describe('When calling choicesFromMetadata...', () => {
     let readdirSyncSpy;
     let readFileSync;
     let statSyncSpy;
@@ -735,7 +692,7 @@ describe('TriggerFlow:  ', () => {
     beforeEach(() => {
       statSyncSpy = jest.spyOn(fs, 'statSync').mockImplementation(() => ({ isDirectory: jest.fn() }));
       readFileSync = jest.spyOn(fs, 'readFileSync').mockImplementation(() => '{}');
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
+      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
     });
 
     afterEach(() => {

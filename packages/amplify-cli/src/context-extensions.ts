@@ -16,21 +16,21 @@ importedColors.setTheme({
   yellow: 'yellow',
   red: 'red',
   blue: 'blue',
-})
+});
 
 type CliPrintColors = typeof importedColors & {
-  highlight: (t: string) => string
-  info: (t: string) => string
-  warning: (t: string) => string
-  success: (t: string) => string
-  error: (t: string) => string
-  line: (t: string) => string
-  muted: (t: string) => string
-  green: (t: string) => string
-  yellow: (t: string) => string
-  red: (t: string) => string
-  blue: (t: string) => string,
-}
+  highlight: (t: string) => string;
+  info: (t: string) => string;
+  warning: (t: string) => string;
+  success: (t: string) => string;
+  error: (t: string) => string;
+  line: (t: string) => string;
+  muted: (t: string) => string;
+  green: (t: string) => string;
+  yellow: (t: string) => string;
+  red: (t: string) => string;
+  blue: (t: string) => string;
+};
 
 const colors = importedColors as CliPrintColors;
 
@@ -52,33 +52,37 @@ function attachPrompt(context: Context) {
         name: 'yesno',
         type: 'confirm',
         message,
-      })
+      });
       return yesno;
     },
     ask: async (questions: any) => {
       if (Array.isArray(questions)) {
-        questions = questions.map((q) => {
-          if (q.type === 'rawlist' || q.type === 'list') { q.type = 'select' }
-          if (q.type === 'expand') { q.type = 'autocomplete' }
-          if (q.type === 'checkbox') { q.type = 'multiselect' }
-          if (q.type === 'radio') { q.type = 'select' }
-          if (q.type === 'question') { q.type = 'input' }
-          return q
-        })
+        questions = questions.map(q => {
+          if (q.type === 'rawlist' || q.type === 'list') {
+            q.type = 'select';
+          }
+          if (q.type === 'expand') {
+            q.type = 'autocomplete';
+          }
+          if (q.type === 'checkbox') {
+            q.type = 'multiselect';
+          }
+          if (q.type === 'radio') {
+            q.type = 'select';
+          }
+          if (q.type === 'question') {
+            q.type = 'input';
+          }
+          return q;
+        });
       }
-      return inquirer.prompt(questions)
+      return inquirer.prompt(questions);
     },
-  }
+  };
 }
 
 function attachParameters(context: Context) {
-  const {
-        argv,
-        plugin,
-        command,
-        subCommands,
-        options,
-    } = context.input;
+  const { argv, plugin, command, subCommands, options } = context.input;
 
   context.parameters = {
     argv,
@@ -108,9 +112,9 @@ function attachRuntime(context: Context) {
   context.runtime = {
     plugins: [],
   };
-  Object.keys(context.pluginPlatform.plugins).forEach((pluginShortName) => {
+  Object.keys(context.pluginPlatform.plugins).forEach(pluginShortName => {
     const pluginInfos = context.pluginPlatform.plugins[pluginShortName];
-    pluginInfos.forEach((pluginInfo) => {
+    pluginInfos.forEach(pluginInfo => {
       const name = path.basename(pluginInfo.packageLocation);
       const directory = pluginInfo.packageLocation;
       const pluginName = pluginInfo.manifest.name;
@@ -122,9 +126,9 @@ function attachRuntime(context: Context) {
         pluginName,
         pluginType,
         commands,
-      })
-    })
-  })
+      });
+    });
+  });
 }
 
 function attachFilesystem(context: Context) {
@@ -155,18 +159,17 @@ const contextFileSystem = {
     const result = path.normalize(path.join(...pathParts));
     return result;
   },
-}
+};
 
 function attachPatching(context: Context) {
   context.patching = {
-    replace: async (filePath: string, oldContent: string, newContent: string):
-        Promise<string> => {
+    replace: async (filePath: string, oldContent: string, newContent: string): Promise<string> => {
       const fileContent = fs.readFileSync(filePath, 'utf-8');
       const updatedFileContent = fileContent.replace(oldContent, newContent);
       fs.writeFileSync(filePath, updatedFileContent, 'utf-8');
       return Promise.resolve(updatedFileContent);
     },
-  }
+  };
 }
 
 function attachPrint(context: Context) {
@@ -185,7 +188,7 @@ const print = {
   yellow,
   red,
   blue,
-}
+};
 
 export { print };
 
@@ -226,49 +229,47 @@ function fancy(message: string): void {
 }
 
 function debug(message: string, title: string = 'DEBUG'): void {
-  const topLine = `vvv -----[ ${title} ]----- vvv`
-  const botLine = `^^^ -----[ ${title} ]----- ^^^`
+  const topLine = `vvv -----[ ${title} ]----- vvv`;
+  const botLine = `^^^ -----[ ${title} ]----- ^^^`;
 
-  console.log(colors.rainbow(topLine))
-  console.log(message)
-  console.log(colors.rainbow(botLine))
+  console.log(colors.rainbow(topLine));
+  console.log(message);
+  console.log(colors.rainbow(botLine));
 }
 
 function table(data: string[][], options: any = {}): void {
-  let t
+  let t;
   switch (options.format) {
     case 'markdown':
-      const header = data.shift()
+      const header = data.shift();
       t = new CLITable({
         head: header,
         chars: CLI_TABLE_MARKDOWN,
       }) as CLITable.HorizontalTable;
       t.push(...data);
       t.unshift(columnHeaderDivider(t));
-      break
+      break;
     case 'lean':
       t = new CLITable() as CLITable.HorizontalTable;
       t.push(...data);
-      break
+      break;
     default:
       t = new CLITable({
         chars: CLI_TABLE_COMPACT,
       }) as CLITable.HorizontalTable;
-      t.push(...data)
+      t.push(...data);
   }
-  console.log(t.toString())
+  console.log(t.toString());
 }
 
 function columnHeaderDivider(cliTable: CLITable.Table): string[] {
-  return findWidths(cliTable).map(w => Array(w).join('-'))
+  return findWidths(cliTable).map(w => Array(w).join('-'));
 }
 
 function findWidths(cliTable: CLITable.Table): number[] {
   return [(cliTable as any).options.head]
-      .concat(getRows(cliTable))
-      .reduce((colWidths, row) => row.map(
-        (str: string, i: number) => Math.max(`${str}`.length + 1, colWidths[i] || 1),
-        ), []);
+    .concat(getRows(cliTable))
+    .reduce((colWidths, row) => row.map((str: string, i: number) => Math.max(`${str}`.length + 1, colWidths[i] || 1)), []);
 }
 
 function getRows(cliTable: CLITable.Table) {
@@ -295,43 +296,43 @@ const CLI_TABLE_COMPACT = {
   right: '',
   'right-mid': '',
   middle: ' ',
-}
+};
 
 const CLI_TABLE_MARKDOWN = {
   ...CLI_TABLE_COMPACT,
   left: '|',
   right: '|',
   middle: '|',
-}
+};
 
 function attachTemplate(context: Context) {
   context.template = {
-    async generate (opts: any): Promise<string> {
+    async generate(opts: any): Promise<string> {
       const ejs = require('ejs');
-      const template = opts.template
-      const target = opts.target
-      const props = opts.props || {}
+      const template = opts.template;
+      const target = opts.target;
+      const props = opts.props || {};
       const data = {
         props,
-      }
+      };
       const directory = opts.directory;
-      const pathToTemplate = `${directory}/${template}`
+      const pathToTemplate = `${directory}/${template}`;
 
       if (!contextFileSystem.isFile(pathToTemplate)) {
-        throw new Error(`template not found ${pathToTemplate}`)
+        throw new Error(`template not found ${pathToTemplate}`);
       }
 
       const templateContent = contextFileSystem.read(pathToTemplate);
 
-      const content = ejs.render(templateContent, data)
+      const content = ejs.render(templateContent, data);
 
       if (target.length > 0) {
-        const dir = target.replace(/$(\/)*/g, '')
-        const dest = contextFileSystem.path(dir)
-        contextFileSystem.write(dest, content)
+        const dir = target.replace(/$(\/)*/g, '');
+        const dest = contextFileSystem.path(dir);
+        contextFileSystem.write(dest, content);
       }
 
-      return content
+      return content;
     },
-  }
+  };
 }

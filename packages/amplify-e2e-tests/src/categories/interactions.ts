@@ -7,12 +7,7 @@ const defaultSettings = {
   projectName: 'CLI Interaction test',
 };
 
-
-export function addSampleInteraction(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function addSampleInteraction(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'interactions'], { cwd, stripColors: true, verbose })
@@ -22,7 +17,7 @@ export function addSampleInteraction(
       .sendline('\r')
       .wait('Choose a sample chatbot:')
       .sendline('\r')
-      .wait('Please indicate if your use of this bot is subject to the Children\'s')
+      .wait("Please indicate if your use of this bot is subject to the Children's")
       .sendline('y')
       .sendEof()
       // tslint:disable-next-line
@@ -32,8 +27,6 @@ export function addSampleInteraction(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
-
-

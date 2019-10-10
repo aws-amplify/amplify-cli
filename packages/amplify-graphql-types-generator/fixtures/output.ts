@@ -1,15 +1,15 @@
 /* tslint:disable */
 //  This file was automatically generated and should not be edited.
-import { Injectable } from "@angular/core";
-import { graphqlOperation } from "aws-amplify";
-import { AmplifyService } from "aws-amplify-angular";
+import { Injectable } from '@angular/core';
+import { graphqlOperation } from 'aws-amplify';
+import { AmplifyService } from 'aws-amplify-angular';
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export enum Episode {
-  NEWHOPE = "NEWHOPE",
-  EMPIRE = "EMPIRE",
-  JEDI = "JEDI"
+  NEWHOPE = 'NEWHOPE',
+  EMPIRE = 'EMPIRE',
+  JEDI = 'JEDI',
 }
 
 export type ReviewInput = {
@@ -2425,9 +2425,7 @@ export class AppSyncService {
     }
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <HeroQuery>response.data.Hero.items;
   }
   async Reviews(input: ReviewsQueryVariables): ReviewsQuery {
@@ -2438,9 +2436,7 @@ export class AppSyncService {
     commentary
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <ReviewsQuery>response.data.Reviews.items;
   }
   async Search(input: SearchQueryVariables): SearchQuery {
@@ -2582,9 +2578,7 @@ export class AppSyncService {
     }
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <SearchQuery>response.data.Search.items;
   }
   async Character(input: CharacterQueryVariables): CharacterQuery {
@@ -2700,9 +2694,7 @@ export class AppSyncService {
     }
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <CharacterQuery>response.data.Character.items;
   }
   async Droid(input: DroidQueryVariables): DroidQuery {
@@ -2854,9 +2846,7 @@ export class AppSyncService {
     primaryFunction
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <DroidQuery>response.data.Droid.items;
   }
   async Human(input: HumanQueryVariables): HumanQuery {
@@ -3016,9 +3006,7 @@ export class AppSyncService {
     }
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <HumanQuery>response.data.Human.items;
   }
   async Starship(input: StarshipQueryVariables): StarshipQuery {
@@ -3030,14 +3018,10 @@ export class AppSyncService {
     coordinates
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <StarshipQuery>response.data.Starship.items;
   }
-  async CreateReview(
-    input: CreateReviewMutationVariables
-  ): CreateReviewMutation {
+  async CreateReview(input: CreateReviewMutationVariables): CreateReviewMutation {
     const statement = `mutation CreateReview($episode: Episode, $review: ReviewInput!) {
   createReview(episode: $episode, review: $review) {
     episode
@@ -3045,14 +3029,10 @@ export class AppSyncService {
     commentary
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <CreateReviewMutation>response.data.CreateReview.items;
   }
-  async ReviewAdded(
-    input: ReviewAddedSubscriptionVariables
-  ): ReviewAddedSubscription {
+  async ReviewAdded(input: ReviewAddedSubscriptionVariables): ReviewAddedSubscription {
     const statement = `subscription ReviewAdded($episode: Episode) {
   reviewAdded(episode: $episode) {
     episode
@@ -3060,9 +3040,7 @@ export class AppSyncService {
     commentary
   }
 }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <ReviewAddedSubscription>response.data.ReviewAdded.items;
   }
 }

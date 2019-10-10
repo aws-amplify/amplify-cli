@@ -13,7 +13,7 @@ describe('Velocity - ValueMapper toJSON', () => {
   it('should not call toJSON if the object is null', () => {
     expect(toJSON(null)).toEqual(null);
   });
-  
+
   it('should return the source object if it doesnot implement toJSON', () => {
     const testObj = {
       foo: 'Foo',

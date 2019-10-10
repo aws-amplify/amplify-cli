@@ -5,10 +5,10 @@ import 'babel-types';
 
 declare module 'babel-types' {
   interface StringLiteralTypeAnnotation {
-    value: string
+    value: string;
   }
 
   interface ObjectTypeAnnotation {
-    exact: boolean
+    exact: boolean;
   }
 }
