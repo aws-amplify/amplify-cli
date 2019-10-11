@@ -437,6 +437,7 @@ workflows:
               only:
                 - master
                 - graphql_e2e_testing
+                - /pull\/.*/
           requires:
             - build
             - integration_test_ios
@@ -452,6 +453,7 @@ workflows:
               only:
                 - master
                 - beta
+                - /pull\/.*/
           requires:
             - build
             - integration_test_ios
@@ -463,6 +465,7 @@ workflows:
             branches:
               only:
                 - master
+                - /pull\/.*/
           requires:
             - build
             - integration_test_ios
@@ -487,6 +490,7 @@ workflows:
             branches:
               only:
                 - master
+                - /pull\/.*/
           requires:
             - build
             - test
