@@ -5,7 +5,7 @@ import { createNewProjectDir, deleteProjectDir} from '../src/utils';
 import * as fs from 'fs';
 import * as path from 'path';
 
-describe('amplify add analytics', () => {
+describe('amplify add hosting', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
