@@ -477,6 +477,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - safe-perm-fix
       - integration_test_js:
           filters:
             branches:
