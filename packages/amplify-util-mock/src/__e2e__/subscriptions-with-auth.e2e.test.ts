@@ -20,7 +20,12 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
-jest.setTimeout(2000000);
+// delays
+const SUBSCRIPTION_DELAY = 2000;
+const PROPAGATAION_DELAY = 5000;
+const JEST_TIMEOUT  = 2000000
+
+jest.setTimeout(JEST_TIMEOUT);
 
 let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;
@@ -161,7 +166,7 @@ beforeAll(async () => {
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise(res => setTimeout(() => res(), 5000));
+    await new Promise(res => setTimeout(() => res(), PROPAGATAION_DELAY));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -209,7 +214,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     done();
   });
 
-  await new Promise(res => setTimeout(() => res(), 2000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   createStudent(GRAPHQL_CLIENT_1, {
     name: 'student1',
@@ -240,7 +245,7 @@ test('Test that a user not in the group is not allowed to view the subscription'
       done();
     },
   });
-  await new Promise(res => setTimeout(() => res(), 2000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   createStudent(GRAPHQL_CLIENT_1, {
     name: 'student2',
@@ -274,7 +279,7 @@ test('Test a subscription on update', async done => {
     done();
   });
 
-  await new Promise(res => setTimeout(() => res(), 2000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   const student3 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student3',
@@ -318,7 +323,7 @@ test('Test a subscription on delete', async done => {
     done();
   });
 
-  await new Promise(res => setTimeout(() => res(), 2000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   const student4 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student4',
@@ -352,7 +357,7 @@ test('Test subscription onCreatePost with ownerField', async done => {
     expect(post.postOwner).toEqual(USERNAME1);
     done();
   });
-  await new Promise(res => setTimeout(() => res(), 2000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   createPost(GRAPHQL_CLIENT_1, {
     title: 'someTitle',
