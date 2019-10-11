@@ -23,4 +23,5 @@ module.exports = {
   DynamoDBTable: 'DynamoDBTable',
   Properties: 'Properties',
   GlobalSecondaryIndexes: 'GlobalSecondaryIndexes',
+  AttributeDefinitions: 'AttributeDefinitions',
 };
