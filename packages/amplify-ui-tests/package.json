@@ -1,6 +1,6 @@
 {
   "name": "amplify-ui-tests",
-  "version": "1.13.0",
+  "version": "1.13.1-safe-perm-fix.0",
   "description": "",
   "main": "index.js",
   "private": true,
