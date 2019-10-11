@@ -148,6 +148,19 @@ async function transformGraphQLSchema(context, options) {
   // Compilation during the push step
   const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+
+  // When build folder is missing include the API
+  // to be compiled. Without the current cloud backend
+  // cloud formation push will fail
+  // https://github.com/aws-amplify/amplify-console/issues/10
+  const resourceNeedCompile = allResources
+    .filter(r => !resources.includes(r))
+    .filter(r => {
+      const buildDir = path.normalize(path.join(backEndDir, category, r.resourceName, 'build'));
+      return !fs.existsSync(buildDir);
+    });
+  resources = resources.concat(resourceNeedCompile);
+
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
