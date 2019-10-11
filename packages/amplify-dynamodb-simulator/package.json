@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "install": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
+    "build": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
     "test": "jest",
     "test-ci": "jest"
   },
