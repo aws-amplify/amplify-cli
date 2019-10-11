@@ -51,7 +51,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   const { getAllDefaults } = require(defaultValuesSrc);
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
-
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   const attributeTypes = {
@@ -291,7 +290,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const gsiList = [];
     // Generates a clone of the attribute list
     const availableAttributes = indexableAttributeList.slice();
-
     while (continuewithGSIQuestions) {
       if (availableAttributes.length > 0) {
         const gsiAttributeQuestion = {
@@ -356,17 +354,28 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       }
     }
 
-    // if resource name is undefined then it's an 'add storage' we want to check on update
+    // if resource name is undefined then it's an 'add storage' we want to check on an update
     if (resourceName) {
-      const existingGSIs = context.amplify.getExistingStorageGSIs(context.amplify.pathManager.getBackendDirPath(), resourceName);
+      const existingGSIs = context.amplify.getExistingStorageGSIs(projectBackendDirPath, resourceName);
+      const existingAttributeDefinitions = context.amplify.getExistingStorageAttributeDefinitions(projectBackendDirPath, resourceName);
+      const allAttributeDefinitionsMap = new Map([
+        ...existingAttributeDefinitions.map(r => [r.AttributeName, r]),
+        ...answers.AttributeDefinitions.map(r => [r.AttributeName, r]),
+      ]);
       if (
         !!existingGSIs.length &&
         (await amplify.confirmPrompt.run('Do you want to keep existing global seconday indexes created on your table?'))
       ) {
-        answers.GlobalSecondaryIndexes = [...existingGSIs, ...gsiList];
-      } else if (gsiList.length > 0) {
-        answers.GlobalSecondaryIndexes = gsiList;
+        existingGSIs.forEach(r => gsiList.push(r));
+        answers.AttributeDefinitions = [...allAttributeDefinitionsMap.values()];
+        usedAttributeDefinitions = existingGSIs.reduce((prev, current) => {
+          current.KeySchema.map(r => prev.add(r.AttributeName));
+          return prev;
+        }, usedAttributeDefinitions);
       }
+    }
+    if (gsiList.length > 0) {
+      answers.GlobalSecondaryIndexes = gsiList;
     }
   }
   usedAttributeDefinitions = Array.from(usedAttributeDefinitions);
