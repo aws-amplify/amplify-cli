@@ -441,6 +441,8 @@ workflows:
             - build
             - integration_test_ios
             - mock_e2e_tests
+            - request-testing
+          context: pr
       - mock_e2e_tests:
           requires:
             - build
@@ -454,6 +456,8 @@ workflows:
             - build
             - integration_test_ios
             - mock_e2e_tests
+            - request-testing
+          context: pr
       - amplify_e2e_tests:
           filters:
             branches:
@@ -463,6 +467,7 @@ workflows:
             - build
             - integration_test_ios
             - mock_e2e_tests
+            - request-testing
       - deploy:
           requires:
             - build
@@ -486,11 +491,25 @@ workflows:
             - build
             - test
             - mock_e2e_tests
+            - request-testing
+          context: pr
       - integration_test_ios:
           filters:
             branches:
               only:
                 - master
+          requires:
+            - build
+            - test
+            - mock_e2e_tests
+            - request-testing
+          context: pr
+      - request-testing:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /pr-.*/
           requires:
             - build
             - test
