@@ -150,8 +150,8 @@ async function transformGraphQLSchema(context, options) {
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   // When build folder is missing include the API
-  // to be compiled. Without the current cloud backend
-  // cloud formation push will fail
+  // to be compiled. Without the backend/api/<api-name>/build 
+  // cloud formation push will fail even if there is no changes in the GraphQL API
   // https://github.com/aws-amplify/amplify-console/issues/10
   const resourceNeedCompile = allResources
     .filter(r => !resources.includes(r))
