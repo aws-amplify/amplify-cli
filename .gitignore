@@ -9,6 +9,7 @@ packages/amplify-cli/amplify/.config/
 packages/amplify-appsync-simulator/public
 packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
+packages/amplify-velocity-template/src/parse/index.js
 .vscode
 packages/graphql*/lib
 packages/amplify-mqtt-server/lib
