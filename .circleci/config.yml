@@ -509,7 +509,7 @@ workflows:
           filters:
             branches:
               only:
-                - /pr-.*/
+                - /pull\/.*/
           requires:
             - build
             - test
