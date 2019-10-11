@@ -7,7 +7,6 @@ import {
   TypeNode,
   EnumTypeDefinitionNode,
   ObjectTypeExtensionNode,
-  TypeDefinitionNode,
   NamedTypeNode,
   DirectiveNode,
   InterfaceTypeDefinitionNode,
@@ -76,9 +75,6 @@ export function makeNonModelInputObject(
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
-      if (field.name.value === 'id') {
-        return false;
-      }
       if (
         isScalar(field.type) ||
         nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
@@ -95,7 +91,7 @@ export function makeNonModelInputObject(
       return {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: field.name,
-        type: type,
+        type,
         // TODO: Service does not support new style descriptions so wait.
         // description: field.description,
         directives: [],
@@ -136,7 +132,7 @@ export function makeCreateInputObject(
       return false;
     })
     .map((field: FieldDefinitionNode) => {
-      let type;
+      let type: TypeNode;
       if (field.name.value === 'id') {
         // ids are always optional. when provided the value is used.
         // when not provided the value is not used.
@@ -155,7 +151,7 @@ export function makeCreateInputObject(
       return {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: field.name,
-        type: type,
+        type,
         // TODO: Service does not support new style descriptions so wait.
         // description: field.description,
         directives: [],
@@ -192,9 +188,8 @@ export function makeUpdateInputObject(
         (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
       ) {
         return true;
-      } else {
-        return false;
       }
+      return false;
     })
     .map((field: FieldDefinitionNode) => {
       let type;
@@ -209,7 +204,7 @@ export function makeUpdateInputObject(
       return {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: field.name,
-        type: type,
+        type,
         // TODO: Service does not support new style descriptions so wait.
         // description: field.description,
         directives: [],
@@ -437,7 +432,7 @@ export function makeModelSortDirectionEnumObject(): EnumTypeDefinitionNode {
 
 export function makeModelScalarFilterInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelFilterInputTypeName(type);
-  let conditions = getScalarConditions(type);
+  const conditions = getScalarConditions(type);
   const fields: InputValueDefinitionNode[] = conditions.map((condition: string) => ({
     kind: Kind.INPUT_VALUE_DEFINITION,
     name: { kind: 'Name' as 'Name', value: condition },
@@ -487,7 +482,7 @@ function getScalarConditions(type: string): string[] {
     case 'Boolean':
       return BOOLEAN_CONDITIONS;
     default:
-      throw 'Valid types are String, ID, Int, Float, Boolean';
+      throw new Error('Valid types are String, ID, Int, Float, Boolean');
   }
 }
 
