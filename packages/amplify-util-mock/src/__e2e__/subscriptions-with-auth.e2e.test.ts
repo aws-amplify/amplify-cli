@@ -209,7 +209,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     done();
   });
 
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   createStudent(GRAPHQL_CLIENT_1, {
     name: 'student1',
@@ -240,7 +240,7 @@ test('Test that a user not in the group is not allowed to view the subscription'
       done();
     },
   });
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   createStudent(GRAPHQL_CLIENT_1, {
     name: 'student2',
@@ -273,6 +273,8 @@ test('Test a subscription on update', async done => {
     expect(student.ssn).toBeNull();
     done();
   });
+
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   const student3 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student3',
@@ -316,6 +318,8 @@ test('Test a subscription on delete', async done => {
     done();
   });
 
+  await new Promise(res => setTimeout(() => res(), 2000));
+
   const student4 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student4',
     email: 'plsDelete@domain.com',
@@ -348,7 +352,7 @@ test('Test subscription onCreatePost with ownerField', async done => {
     expect(post.postOwner).toEqual(USERNAME1);
     done();
   });
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   createPost(GRAPHQL_CLIENT_1, {
     title: 'someTitle',

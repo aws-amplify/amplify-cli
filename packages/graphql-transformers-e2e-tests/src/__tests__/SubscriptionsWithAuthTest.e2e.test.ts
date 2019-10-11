@@ -618,7 +618,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     done();
   });
 
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   createStudent(GRAPHQL_CLIENT_1, {
     name: 'student1',
@@ -651,7 +651,7 @@ test('Test that an user not in the group is not allowed to view the subscription
       done();
     },
   });
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   createStudent(GRAPHQL_CLIENT_1, {
     name: 'student2',
@@ -684,6 +684,7 @@ test('Test a subscription on update', async done => {
     expect(student.ssn).toBeNull();
     done();
   });
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   const student3 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student3',
@@ -726,6 +727,7 @@ test('Test a subscription on delete', async done => {
     expect(student.ssn).toBeNull();
     done();
   });
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   const student4 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student4',
@@ -759,7 +761,7 @@ test('Test subscription onCreatePost with ownerField', async done => {
     expect(post.postOwner).toEqual(USERNAME1);
     done();
   });
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   createPost(GRAPHQL_CLIENT_1, {
     title: 'someTitle',
@@ -788,7 +790,7 @@ test('test that subcsription with apiKey', async done => {
     expect(post.name).toBeNull();
     done();
   });
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'someDescription',
@@ -816,6 +818,7 @@ test('test that subscription with apiKey onUpdate', async done => {
     expect(todo.name).toBeNull();
     done();
   });
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   const todo2 = await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'updateTodoDesc',
@@ -853,6 +856,7 @@ test('test that subscription with apiKey onDelete', async done => {
     expect(todo.name).toBeNull();
     done();
   });
+  await new Promise(res => setTimeout(() => res(), 2000));
 
   const todo3 = await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'deleteTodoDesc',
