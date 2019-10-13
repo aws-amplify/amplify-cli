@@ -202,17 +202,25 @@ async function askPrivacy(context, answers, currentPath) {
     const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
     if (userPoolGroupList.length > 0) {
-      const permissionSelection = await inquirer.prompt({
-        name: 'selection',
-        type: 'list',
-        message: 'Restrict access by?',
-        choices: ['Auth/Guest Users',
-          'Individual Groups',
-          'Both',
-          'Learn more'],
-        default: 'Auth/Guest Users',
-      });
-      permissionSelected = permissionSelection.selection;
+      do {
+        if (permissionSelected === 'Learn more') {
+          context.print.info('');
+          context.print.info('You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.');
+          context.print.info('');
+        }
+        const permissionSelection = await inquirer.prompt({
+          name: 'selection',
+          type: 'list',
+          message: 'Restrict access by?',
+          choices: ['Auth/Guest Users',
+            'Individual Groups',
+            'Both',
+            'Learn more'],
+          default: 'Auth/Guest Users',
+        });
+
+        permissionSelected = permissionSelection.selection;
+      } while (permissionSelected === 'Learn more');
     }
 
     if (permissionSelected === 'Both' || permissionSelected === 'Auth/Guest Users') {
@@ -336,6 +344,12 @@ async function askPrivacy(context, answers, currentPath) {
           message: 'Select groups:',
           choices: userPoolGroupList,
           default: defaultSelectedGroups,
+          validate: (inputs) => {
+            if (inputs.length === 0) {
+              return 'Select at least one option';
+            }
+            return true;
+          },
         },
       ]);
 
