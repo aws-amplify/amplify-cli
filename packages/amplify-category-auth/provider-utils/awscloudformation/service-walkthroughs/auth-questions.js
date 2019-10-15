@@ -16,7 +16,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   const projectType = amplify.getProjectConfig().frontend;
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
-  let userPoolGroupList = [];
+  let userPoolGroupList = context.amplify.getUserPoolGroupList(context);
+  let adminQueryGroup;
 
   handleUpdates(context, coreAnswers);
 
@@ -33,6 +34,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
 
     if (answer.userPoolGroups === true) {
       userPoolGroupList = await updateUserPoolGroups(context);
+    }
+
+    if (answer.adminQueries === true) {
+      adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
     }
 
     if (answer.triggers && answer.triggers !== '{}') {
@@ -116,6 +121,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
       */
       if (answer.updateFlow === 'updateUserPoolGroups') {
         userPoolGroupList = await updateUserPoolGroups(context);
+      } else if (answer.updateFlow === 'updateAdminQueries') {
+        adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
       } else if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
         answer.useDefault = answer.updateFlow;
         if (answer.useDefault === 'defaultSocial') {
@@ -187,6 +194,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   return {
     ...coreAnswers,
     userPoolGroupList,
+    adminQueryGroup,
   };
 }
 
@@ -310,6 +318,46 @@ async function updateUserPoolGroups(context) {
     sortedUserPoolGroupList = await sortPrompt.run();
   }
   return sortedUserPoolGroupList;
+}
+
+async function updateAdminQuery(context, userPoolGroupList) {
+  let adminGroup;
+  // Clone user pool group list
+  const userPoolGroupListClone = userPoolGroupList.slice(0);
+  if (await context.amplify.confirmPrompt.run('Do you want to restrict access to the admin queries API to a specific Group')) {
+    userPoolGroupListClone.push('Enter a custom group');
+
+    const adminGroupAnswer = await inquirer.prompt([
+      {
+        name: 'adminGroup',
+        type: 'list',
+        message: 'Select the group to restrict access with:',
+        choices: userPoolGroupListClone,
+      },
+    ]);
+
+    if (adminGroupAnswer.adminGroup === 'Enter a custom group') {
+      const temp = await inquirer.prompt([
+        {
+          name: 'userPoolGroupName',
+          type: 'input',
+          message: 'Provide a group name:',
+          validate: context.amplify.inputValidation({
+            validation: {
+              operator: 'regex',
+              value: '^[a-zA-Z0-9]+$',
+              onErrorMsg: 'Resource name should be alphanumeric',
+            },
+            required: true,
+          }),
+        },
+      ]);
+      adminGroup = temp.userPoolGroupName;
+    } else {
+      ({ adminGroup } = adminGroupAnswer);
+    }
+  }
+  return adminGroup;
 }
 
 /*

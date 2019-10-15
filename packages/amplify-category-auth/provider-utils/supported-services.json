@@ -294,6 +294,21 @@
 				]
 			},
 			{
+				"key": "adminQueries",
+				"question": "Do you want to add an admin queries API?",
+				"learnMore": "This flow will help you add multiple user pool groups to your user-pool",
+				"required": true,
+				"type": "list",
+				"map": "booleanOptions",
+				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					}		
+				]
+			},
+			{
 				"key": "additionalQuestions",
 				"question": "Do you want to configure advanced settings?",
 				"type": "list",

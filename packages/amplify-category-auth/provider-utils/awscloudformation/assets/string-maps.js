@@ -58,6 +58,10 @@ const updateFlowMap = [
     name: 'Create or update Cognito user pool groups',
     value: 'updateUserPoolGroups',
   },
+  {
+    name: 'Create or update Admin queries API',
+    value: 'updateAdminQueries',
+  },
 ];
 
 const booleanOptions = [

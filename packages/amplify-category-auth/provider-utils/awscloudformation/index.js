@@ -141,47 +141,10 @@ async function addResource(context, category, service) {
 
       await createUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
 
+      await addAdminAuth(context, props.resourceName, 'add', result.adminQueryGroup);
+
       await copyCfnTemplate(context, category, props, cfnFilename);
 
-      let lambdaGroupVar;
-      if ((await context.amplify.confirmPrompt.run('Do you want to add an admin queries API?'))) {
-        if (await context.amplify.confirmPrompt.run('Do you want to restrict access to a specific Group')) {
-          const userPoolGroupList = context.amplify.getUserPoolGroupList(context);
-          userPoolGroupList.push('Enter a custom group');
-
-          const adminGroupAnswer = await inquirer.prompt([
-            {
-              name: 'adminGroup',
-              type: 'list',
-              message: 'Select the group to restrict access with:',
-              choices: userPoolGroupList,
-            },
-          ]);
-
-          if (adminGroupAnswer.adminGroup === 'Enter a custom group') {
-            const temp = await inquirer.prompt([
-              {
-                name: 'userPoolGroupName',
-                type: 'input',
-                message: 'Provide a group name:',
-                validate: context.amplify.inputValidation({
-                  validation: {
-                    operator: 'regex',
-                    value: '^[a-zA-Z0-9]+$',
-                    onErrorMsg: 'Resource name should be alphanumeric',
-                  },
-                  required: true,
-                }),
-              },
-            ]);
-            lambdaGroupVar = temp.userPoolGroupName;
-          } else {
-            lambdaGroupVar = adminGroupAnswer.adminGroup;
-          }
-        }
-        await addAdminAuth(context, result.resourceName, lambdaGroupVar);
-      }
-      
       saveResourceParameters(
         context,
         provider,
@@ -340,11 +303,29 @@ async function updateResource(context, category, serviceResult) {
       props = Object.assign(defaults, removeDeprecatedProps(context.updatingAuth), result);
 
       const resources = context.amplify.getProjectMeta();
+
       if (resources.auth.userPoolGroups) {
         await updateUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
       } else {
         await createUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
       }
+
+
+      if (resources.api && resources.api.AdminQueries) {
+        // Find Existing functionName
+        let functionName;
+        if (resources.api.AdminQueries.dependsOn) {
+          const adminFunctionResource = resources.api.AdminQueries.dependsOn.find(resource => resource.category === 'function'
+            && resource.resourceName.includes('AdminQueries'));
+          if (adminFunctionResource) {
+            functionName = adminFunctionResource.resourceName;
+          }
+        }
+        await addAdminAuth(context, props.resourceName, 'update', result.adminQueryGroup, functionName);
+      } else {
+        await addAdminAuth(context, props.resourceName, 'add', result.adminQueryGroup);
+      }
+
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
@@ -774,17 +755,27 @@ function removeDeprecatedProps(props) {
   return props;
 }
 
-async function addAdminAuth(context, authResourceName, lambdaGroupVar) {
-  const [shortId] = uuid().split('-');
-  const functionName = `AdminQueries${shortId}`;
-
-  await createAdminAuthFunction(context, authResourceName, functionName, lambdaGroupVar);
-  await createAdminAuthAPI(context, authResourceName, functionName);
+async function addAdminAuth(context, authResourceName, operation, adminGroup, functionName) {
+  if (adminGroup) {
+    if (!functionName) {
+      const [shortId] = uuid().split('-');
+      functionName = `AdminQueries${shortId}`;
+    }
+    await createAdminAuthFunction(context, authResourceName, functionName, adminGroup, operation);
+    await createAdminAuthAPI(context, authResourceName, functionName, operation);
+  }
 }
 
-async function createAdminAuthFunction(context, authResourceName, functionName, lambdaGroupVar) {
+async function createAdminAuthFunction(
+  context,
+  authResourceName,
+  functionName,
+  adminGroup,
+  operation,
+) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
+  let lambdaGroupVar = adminGroup;
 
   const dependsOn = [];
 
@@ -835,25 +826,29 @@ async function createAdminAuthFunction(context, authResourceName, functionName, 
   ];
 
   // copy over the files
-  await context.amplify.copyBatch(context, copyJobs, functionProps);
+  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
 
-  // Update amplify-meta and backend-config
-  const backendConfigs = {
-    service: 'Lambda',
-    providerPlugin: 'awscloudformation',
-    build: true,
-    dependsOn,
-  };
+  if (operation === 'add') {
+    // add amplify-meta and backend-config
+    const backendConfigs = {
+      service: 'Lambda',
+      providerPlugin: 'awscloudformation',
+      build: true,
+      dependsOn,
+    };
 
-  await context.amplify.updateamplifyMetaAfterResourceAdd(
-    'function',
-    functionName,
-    backendConfigs,
-  );
-  context.print.success(`Successfully added ${functionName} function locally`);
+    await context.amplify.updateamplifyMetaAfterResourceAdd(
+      'function',
+      functionName,
+      backendConfigs,
+    );
+    context.print.success(`Successfully added ${functionName} function locally`);
+  } else {
+    context.print.success(`Successfully updated ${functionName} function locally`);
+  }
 }
 
-async function createAdminAuthAPI(context, authResourceName, functionName) {
+async function createAdminAuthAPI(context, authResourceName, functionName, operation) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
   const apiName = 'AdminQueries';
@@ -892,21 +887,25 @@ async function createAdminAuthAPI(context, authResourceName, functionName) {
   ];
 
   // copy over the files
-  await context.amplify.copyBatch(context, copyJobs, apiProps);
+  await context.amplify.copyBatch(context, copyJobs, apiProps, true);
 
-  // Update amplify-meta and backend-config
-  const backendConfigs = {
-    service: 'API Gateway',
-    providerPlugin: 'awscloudformation',
-    dependsOn,
-  };
+  if (operation === 'add') {
+    // Update amplify-meta and backend-config
+    const backendConfigs = {
+      service: 'API Gateway',
+      providerPlugin: 'awscloudformation',
+      dependsOn,
+    };
 
-  await context.amplify.updateamplifyMetaAfterResourceAdd(
-    'api',
-    apiName,
-    backendConfigs,
-  );
-  context.print.success(`Successfully added ${apiName} API locally`);
+    await context.amplify.updateamplifyMetaAfterResourceAdd(
+      'api',
+      apiName,
+      backendConfigs,
+    );
+    context.print.success(`Successfully added ${apiName} API locally`);
+  } else {
+    context.print.success(`Successfully updated ${apiName} API locally`);
+  }
 }
 
 module.exports = {
