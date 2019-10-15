@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
+import { getCloudFormationTemplatePath, getExistingStorageAttributeDefinitions, getExistingStorageGSIs } from './utils';
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -356,8 +357,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
     // if resource name is undefined then it's an 'add storage' we want to check on an update
     if (resourceName) {
-      const existingGSIs = context.amplify.getExistingStorageGSIs(projectBackendDirPath, resourceName);
-      const existingAttributeDefinitions = context.amplify.getExistingStorageAttributeDefinitions(projectBackendDirPath, resourceName);
+      const storageFile = getCloudFormationTemplatePath(projectBackendDirPath, resourceName);
+      const fileExists = fs.existsSync(storageFile);
+      const template = fileExists ? context.amplify.readJsonFile(storageFile) : null;
+      const existingGSIs = getExistingStorageGSIs(template);
+      const existingAttributeDefinitions = getExistingStorageAttributeDefinitions(template);
       const allAttributeDefinitionsMap = new Map([
         ...existingAttributeDefinitions.map(r => [r.AttributeName, r]),
         ...answers.AttributeDefinitions.map(r => [r.AttributeName, r]),
