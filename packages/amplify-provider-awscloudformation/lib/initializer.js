@@ -14,9 +14,10 @@ async function run(context) {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
     const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
-    const timeStamp = `${moment().format('YYYYMMDDHHmmss')}`;
+    let timeStamp = `${moment().format('YYYYMMDDHHmmss')}`;
+    timeStamp = timeStamp.slice(timeStamp.length - 5);
     const { envName = '' } = context.exeInfo.localEnvInfo;
-    const stackName = normalizeStackName(`${context.exeInfo.projectConfig.projectName}-${envName}-${timeStamp}`);
+    const stackName = normalizeStackName(`amplify-${context.exeInfo.projectConfig.projectName}-${envName}-${timeStamp}`);
     const deploymentBucketName = `${stackName}-deployment`;
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
