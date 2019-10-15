@@ -12,6 +12,7 @@ const {
   saveResourceParameters,
   ENV_SPECIFIC_PARAMS,
   migrate,
+  removeDeprecatedProps,
 } = require('./provider-utils/awscloudformation');
 
 // this function is being kept for temporary compatability.
@@ -110,12 +111,13 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       }); //eslint-disable-line
   /* eslint-enable */
   const { roles } = defaults;
-  const authProps = {
+  let authProps = {
     ...authPropsValues,
     ...roles,
   };
 
   try {
+    authProps = removeDeprecatedProps(authProps);
     await copyCfnTemplate(context, category, authProps, cfnFilename);
     saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
     if (!authExists) {
