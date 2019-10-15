@@ -61,8 +61,6 @@ export default class AmplifyToolkit {
   private _deleteAllTriggers: any;
   private _deleteDeselectedTriggers: any;
   private _dependsOnBlock: any;
-  private _getExistingStorageGSIs: any;
-  private _getExistingStorageAttributeDefinitions: any;
   private _getTriggerMetadata: any;
   private _getTriggerPermissions: any;
   private _getTriggerEnvVariables: any;
@@ -348,17 +346,6 @@ export default class AmplifyToolkit {
   get dependsOnBlock(): any {
     this._dependsOnBlock = this._dependsOnBlock || require(path.join(this._amplifyHelpersDirPath, 'trigger-flow')).dependsOnBlock;
     return this._dependsOnBlock;
-  }
-  get getExistingStorageGSIs(): any {
-    this._getExistingStorageGSIs =
-      this._getExistingStorageGSIs || require(path.join(this._amplifyHelpersDirPath, 'get-existing-storage-values')).getExistingStorageGSIs;
-    return this._getExistingStorageGSIs;
-  }
-  get getExistingStorageAttributeDefinitions(): any {
-    this._getExistingStorageAttributeDefinitions =
-      this._getExistingStorageAttributeDefinitions ||
-      require(path.join(this._amplifyHelpersDirPath, 'get-existing-storage-values')).getExistingStorageAttributeDefinitions;
-    return this._getExistingStorageAttributeDefinitions;
   }
   get getTriggerMetadata(): any {
     this._getTriggerMetadata =
