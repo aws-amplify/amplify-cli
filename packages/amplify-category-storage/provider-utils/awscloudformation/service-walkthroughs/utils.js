@@ -1,4 +1,5 @@
 import * as path from 'path';
+
 const StorageCategory = 'storage';
 const Resources = 'Resources';
 const DynamoDBTable = 'DynamoDBTable';

@@ -1,8 +1,8 @@
+import { getCloudFormationTemplatePath, getExistingStorageAttributeDefinitions, getExistingStorageGSIs } from './utils';
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
-import { getCloudFormationTemplatePath, getExistingStorageAttributeDefinitions, getExistingStorageGSIs } from './utils';
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
