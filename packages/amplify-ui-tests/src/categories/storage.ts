@@ -7,7 +7,7 @@ export function addStorageWithDefault(cwd: string, settings: any = {}, verbose: 
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .sendline('\r')
       .wait('Please provide a friendly name for your resource that will be used to label')
       .sendline('\r')
