@@ -52,7 +52,6 @@
     "ejs": "^2.6.2",
     "env-editor": "^0.4.0",
     "esm": "^3.2.25",
-    "figlet": "^1.2.1",
     "folder-hash": "^2.0.0",
     "fs-extra": "^8.1.0",
     "global-prefix": "^3.0.0",
