@@ -1,3 +1,4 @@
+const aws = require('aws-sdk');
 const ora = require('ora');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
@@ -11,6 +12,7 @@ async function deleteProject(context) {
     spinner.start();
     await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
     spinner.succeed('Project deleted in the cloud');
+
     // Remove amplify dir
     const { frontend } = context.amplify.getProjectConfig();
     const frontendPlugins = getFrontendPlugins(context);
