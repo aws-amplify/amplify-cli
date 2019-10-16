@@ -1,5 +1,4 @@
-import { getCloudFormationTemplatePath, getExistingStorageAttributeDefinitions, getExistingStorageGSIs } from './utils';
-
+const { getCloudFormationTemplatePath, getExistingStorageAttributeDefinitions, getExistingStorageGSIs } = require('./utils');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
