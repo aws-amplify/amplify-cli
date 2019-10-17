@@ -1,4 +1,5 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
+<<<<<<< HEAD
 const path = require('path');
 import fs from 'fs-extra';
 import * as AWS from 'aws-sdk';
@@ -9,6 +10,11 @@ import {
   deleteProject,
   amplifyPush,
 } from '../src/init';
+=======
+
+import * as AWS from 'aws-sdk';
+import { initProjectWithProfile, deleteProject } from '../src/init';
+>>>>>>> test: test for deleting a project
 import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../src/utils';
 import { addEnvironment } from '../src/environment/add-env';
 import { addApiWithoutSchema } from '../src/categories/api';
