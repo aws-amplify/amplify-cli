@@ -20,15 +20,14 @@ async function deleteProject(context) {
     if (
       context.input.options &&
       context.input.options.all &&
-      (await context.amplify.confirmPrompt.run(
-        'Are you sure you want to continue to delete the all the data contained and the S3 buckets?'
-      ))
+      (await context.amplify.confirmPrompt.run('Are you sure you want to continue to delete all the data contained and the S3 buckets?'))
     ) {
       spinner.text = 'Deleting S3 buckets';
       const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
       const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
       const deploymentBucketName = amplifyMeta.providers.awscloudformation.DeploymentBucketName;
+
       const storage = amplifyMeta.storage || {};
       const buckets = [
         ...Object.keys(storage)
