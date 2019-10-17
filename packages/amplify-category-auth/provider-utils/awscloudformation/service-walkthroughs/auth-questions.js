@@ -198,7 +198,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   };
 }
 
-
 async function updateUserPoolGroups(context) {
   let userPoolGroupList = [];
   let existingGroups;
@@ -207,7 +206,7 @@ async function updateUserPoolGroups(context) {
     context.amplify.pathManager.getBackendDirPath(),
     'auth',
     'userPoolGroups',
-    'user-pool-group-precedence.json',
+    'user-pool-group-precedence.json'
   );
 
   try {
@@ -219,7 +218,7 @@ async function updateUserPoolGroups(context) {
 
   if (existingGroups) {
     // eslint-disable-next-line
-    const deletionChoices = existingGroups.map((e) => {
+    const deletionChoices = existingGroups.map(e => {
       return { name: e.groupName, value: e.groupName };
     });
 

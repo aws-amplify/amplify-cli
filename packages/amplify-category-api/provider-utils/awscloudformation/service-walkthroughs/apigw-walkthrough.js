@@ -64,6 +64,13 @@ async function updateWalkthrough(context, defaultValuesFilename) {
 
   const updateApi = await inquirer.prompt(question);
 
+  if (updateApi.resourceName === 'AdminQueries') {
+    context.print.warning(
+      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`
+    );
+    process.exit(0);
+  }
+
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = pathLib.join(projectBackendDirPath, category, updateApi.resourceName);
   const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
@@ -192,9 +199,7 @@ async function askPrivacy(context, answers, currentPath) {
       return { open: true };
     }
 
-
     const userPoolGroupList = await context.amplify.getUserPoolGroupList(context);
-
 
     let permissionSelected = 'Auth/Guest Users';
     let allowUnauthenticatedIdentities = false;
@@ -205,17 +210,16 @@ async function askPrivacy(context, answers, currentPath) {
       do {
         if (permissionSelected === 'Learn more') {
           context.print.info('');
-          context.print.info('You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.');
+          context.print.info(
+            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+          );
           context.print.info('');
         }
         const permissionSelection = await inquirer.prompt({
           name: 'selection',
           type: 'list',
           message: 'Restrict access by?',
-          choices: ['Auth/Guest Users',
-            'Individual Groups',
-            'Both',
-            'Learn more'],
+          choices: ['Auth/Guest Users', 'Individual Groups', 'Both', 'Learn more'],
           default: 'Auth/Guest Users',
         });
 
@@ -238,19 +242,21 @@ async function askPrivacy(context, answers, currentPath) {
             value: 'protected',
           },
         ],
-        default: (currentPath && currentPath.privacy && currentPath.privacy.protected) ? 'protected' : 'private',
+        default: currentPath && currentPath.privacy && currentPath.privacy.protected ? 'protected' : 'private',
       });
 
       privacy[answer.privacy] = true;
-
-      if (answer.privacy === 'open') { return privacy; }
 
       context.api = {
         privacy: answer.privacy,
       };
 
-      let { privacy: { auth: authPrivacy } } = currentPath || { privacy: {} };
-      let { privacy: { unauth: unauthPrivacy } } = currentPath || { privacy: {} };
+      let {
+        privacy: { auth: authPrivacy },
+      } = currentPath || { privacy: {} };
+      let {
+        privacy: { unauth: unauthPrivacy },
+      } = currentPath || { privacy: {} };
 
       // convert legacy permissions to CRUD structure
       if (authPrivacy && ['r', 'rw'].includes(authPrivacy)) {
@@ -274,7 +280,6 @@ async function askPrivacy(context, answers, currentPath) {
         if (foundUnmetRequirements) {
           try {
             await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-            return privacy;
           } catch (e) {
             context.print.error(e);
             throw e;
@@ -297,7 +302,6 @@ async function askPrivacy(context, answers, currentPath) {
         if (foundUnmetRequirements) {
           try {
             await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-            return privacy;
           } catch (e) {
             context.print.error(e);
             throw e;
@@ -305,7 +309,6 @@ async function askPrivacy(context, answers, currentPath) {
         }
       }
     }
-
 
     if (permissionSelected === 'Both' || permissionSelected === 'Individual Groups') {
       // Enable Auth if not enabled
@@ -344,7 +347,7 @@ async function askPrivacy(context, answers, currentPath) {
           message: 'Select groups:',
           choices: userPoolGroupList,
           default: defaultSelectedGroups,
-          validate: (inputs) => {
+          validate: inputs => {
             if (inputs.length === 0) {
               return 'Select at least one option';
             }
@@ -357,18 +360,18 @@ async function askPrivacy(context, answers, currentPath) {
 
       for (let i = 0; i < selectedUserPoolGroupList.length; i += 1) {
         let defaults = [];
-        if (currentPath
-          && currentPath.privacy
-          && currentPath.privacy.userPoolGroups
-          && currentPath.privacy.userPoolGroups[selectedUserPoolGroupList[i]]
+        if (
+          currentPath &&
+          currentPath.privacy &&
+          currentPath.privacy.userPoolGroups &&
+          currentPath.privacy.userPoolGroups[selectedUserPoolGroupList[i]]
         ) {
           defaults = currentPath.privacy.userPoolGroups[selectedUserPoolGroupList[i]];
         }
         if (!privacy.userPoolGroups) {
           privacy.userPoolGroups = {};
         }
-        privacy.userPoolGroups[selectedUserPoolGroupList[i]] =
-          await askReadWrite(selectedUserPoolGroupList[i], context, defaults);
+        privacy.userPoolGroups[selectedUserPoolGroupList[i]] = await askReadWrite(selectedUserPoolGroupList[i], context, defaults);
       }
     }
     return privacy;
@@ -392,11 +395,7 @@ async function askReadWrite(userType, context, privacy) {
     });
   }
 
-  const crudAnswers = await context.amplify.crudFlow(
-    userType,
-    permissionMap,
-    defaults,
-  );
+  const crudAnswers = await context.amplify.crudFlow(userType, permissionMap, defaults);
 
   return crudAnswers;
 }
@@ -576,7 +575,7 @@ async function findDependsOn(paths, context) {
           });
         }
 
-        userPoolGroups.forEach((group) => {
+        userPoolGroups.forEach(group => {
           if (!dependsOn.find(resource => resource.attributes[0] === `${group}GroupRole`)) {
             dependsOn.push({
               category: 'auth',

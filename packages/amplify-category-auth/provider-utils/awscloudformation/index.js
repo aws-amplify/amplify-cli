@@ -4,9 +4,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
 const uuid = require('uuid');
-const {
-  existsSync,
-} = require('fs');
+const { existsSync } = require('fs');
 const { copySync } = require('fs-extra');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 
@@ -145,14 +143,7 @@ async function addResource(context, category, service) {
 
       await copyCfnTemplate(context, category, props, cfnFilename);
 
-      saveResourceParameters(
-        context,
-        provider,
-        category,
-        result.resourceName,
-        props,
-        ENV_SPECIFIC_PARAMS,
-      );
+      saveResourceParameters(context, provider, category, result.resourceName, props, ENV_SPECIFIC_PARAMS);
     })
     .then(async () => {
       await copyS3Assets(context, props);
@@ -175,32 +166,20 @@ async function createUserPoolGroups(context, resourceName, userPoolGroupList) {
       context.amplify.pathManager.getBackendDirPath(),
       'auth',
       'userPoolGroups',
-      'user-pool-group-precedence.json',
+      'user-pool-group-precedence.json'
     );
 
-    const userPoolGroupParams = path.join(
-      context.amplify.pathManager.getBackendDirPath(),
-      'auth',
-      'userPoolGroups',
-      'parameters.json',
-    );
+    const userPoolGroupParams = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'parameters.json');
 
     /* eslint-disable */
     const groupParams = {
       AuthRoleArn: {
-        'Fn::GetAtt': [
-          'AuthRole',
-          'Arn'
-        ]
+        'Fn::GetAtt': ['AuthRole', 'Arn'],
       },
       UnauthRoleArn: {
-        'Fn::GetAtt': [
-          'UnauthRole',
-          'Arn'
-        ]
+        'Fn::GetAtt': ['UnauthRole', 'Arn'],
       },
-
-    }
+    };
     /* eslint-enable */
 
     fs.outputFileSync(userPoolGroupParams, JSON.stringify(groupParams, null, 4));
@@ -213,12 +192,7 @@ async function createUserPoolGroups(context, resourceName, userPoolGroupList) {
         {
           category: 'auth',
           resourceName,
-          attributes: [
-            'UserPoolId',
-            'AppClientIDWeb',
-            'AppClientID',
-            'IdentityPoolId',
-          ],
+          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
         },
       ],
     });
@@ -241,7 +215,7 @@ async function updateUserPoolGroups(context, resourceName, userPoolGroupList) {
       context.amplify.pathManager.getBackendDirPath(),
       'auth',
       'userPoolGroups',
-      'user-pool-group-precedence.json',
+      'user-pool-group-precedence.json'
     );
 
     fs.outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
@@ -253,12 +227,7 @@ async function updateUserPoolGroups(context, resourceName, userPoolGroupList) {
         {
           category: 'auth',
           resourceName,
-          attributes: [
-            'UserPoolId',
-            'AppClientIDWeb',
-            'AppClientID',
-            'IdentityPoolId',
-          ],
+          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
         },
       ],
     });
@@ -310,13 +279,13 @@ async function updateResource(context, category, serviceResult) {
         await createUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
       }
 
-
       if (resources.api && resources.api.AdminQueries) {
         // Find Existing functionName
         let functionName;
         if (resources.api.AdminQueries.dependsOn) {
-          const adminFunctionResource = resources.api.AdminQueries.dependsOn.find(resource => resource.category === 'function'
-            && resource.resourceName.includes('AdminQueries'));
+          const adminFunctionResource = resources.api.AdminQueries.dependsOn.find(
+            resource => resource.category === 'function' && resource.resourceName.includes('AdminQueries')
+          );
           if (adminFunctionResource) {
             functionName = adminFunctionResource.resourceName;
           }
@@ -325,7 +294,6 @@ async function updateResource(context, category, serviceResult) {
       } else {
         await addAdminAuth(context, props.resourceName, 'add', result.adminQueryGroup);
       }
-
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
@@ -766,13 +734,7 @@ async function addAdminAuth(context, authResourceName, operation, adminGroup, fu
   }
 }
 
-async function createAdminAuthFunction(
-  context,
-  authResourceName,
-  functionName,
-  adminGroup,
-  operation,
-) {
+async function createAdminAuthFunction(context, authResourceName, functionName, adminGroup, operation) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
   let lambdaGroupVar = adminGroup;
@@ -837,11 +799,7 @@ async function createAdminAuthFunction(
       dependsOn,
     };
 
-    await context.amplify.updateamplifyMetaAfterResourceAdd(
-      'function',
-      functionName,
-      backendConfigs,
-    );
+    await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
     context.print.success(`Successfully added ${functionName} function locally`);
   } else {
     context.print.success(`Successfully updated ${functionName} function locally`);
@@ -864,7 +822,7 @@ async function createAdminAuthAPI(context, authResourceName, functionName, opera
       category: 'function',
       resourceName: functionName,
       attributes: ['Arn', 'Name'],
-    },
+    }
   );
 
   const apiProps = {
@@ -877,7 +835,7 @@ async function createAdminAuthAPI(context, authResourceName, functionName, opera
     {
       dir: pluginDir,
       template: './assets/adminAuth/admin-queries-api-template.json.ejs',
-      target: `${targetDir}/api/${apiName}/cloudformation-template.json`,
+      target: `${targetDir}/api/${apiName}/admin-queries-cloudformation-template.json`,
     },
     {
       dir: pluginDir,
@@ -897,11 +855,7 @@ async function createAdminAuthAPI(context, authResourceName, functionName, opera
       dependsOn,
     };
 
-    await context.amplify.updateamplifyMetaAfterResourceAdd(
-      'api',
-      apiName,
-      backendConfigs,
-    );
+    await context.amplify.updateamplifyMetaAfterResourceAdd('api', apiName, backendConfigs);
     context.print.success(`Successfully added ${apiName} API locally`);
   } else {
     context.print.success(`Successfully updated ${apiName} API locally`);

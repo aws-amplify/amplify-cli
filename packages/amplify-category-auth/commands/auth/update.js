@@ -31,8 +31,7 @@ module.exports = {
     }
 
     const resourceName = await getAuthResourceName(context);
-    const providerPlugin = context.amplify
-      .getPluginInstance(context, servicesMetadata.Cognito.provider);
+    const providerPlugin = context.amplify.getPluginInstance(context, servicesMetadata.Cognito.provider);
     context.updatingAuth = providerPlugin.loadResourceParameters(context, 'auth', resourceName);
 
     return amplify

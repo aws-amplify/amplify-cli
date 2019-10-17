@@ -5,9 +5,8 @@ async function transformUserPoolGroupSchema(context) {
     context.amplify.pathManager.getBackendDirPath(),
     'auth',
     'userPoolGroups',
-    'user-pool-group-precedence.json',
+    'user-pool-group-precedence.json'
   );
-
 
   const { allResources } = await context.amplify.getResourceStatus();
   const authResource = allResources.filter(resource => resource.service === 'Cognito');
@@ -24,12 +23,13 @@ async function transformUserPoolGroupSchema(context) {
 
   // Replace env vars with subs
 
-  groups.forEach((group) => {
+  groups.forEach(group => {
     if (group.customPolicies) {
-      group.customPolicies.forEach((policy) => {
+      group.customPolicies.forEach(policy => {
         if (policy.PolicyDocument && policy.PolicyDocument.Statement) {
-          policy.PolicyDocument.Statement.forEach((statement) => {
-            if (statement.Resource.includes('${env}')) { //eslint-disable-line
+          policy.PolicyDocument.Statement.forEach(statement => {
+            if (statement.Resource.includes('${env}')) {
+              //eslint-disable-line
               statement.Resource = { 'Fn::Sub': [statement.Resource, { env: { Ref: 'env' } }] };
             }
           });
@@ -42,25 +42,17 @@ async function transformUserPoolGroupSchema(context) {
     {
       dir: __dirname,
       template: '../provider-utils/awscloudformation/cloudformation-templates/user-pool-group-template.json.ejs',
-      target: path.join(
-        context.amplify.pathManager.getBackendDirPath(),
-        'auth',
-        'userPoolGroups',
-        'template.json',
-      ),
+      target: path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'template.json'),
     },
   ];
-
 
   const props = {
     groups,
     cognitoResourceName: authResourceName,
   };
 
-
   await context.amplify.copyBatch(context, copyJobs, props, true);
 }
-
 
 module.exports = {
   transformUserPoolGroupSchema,

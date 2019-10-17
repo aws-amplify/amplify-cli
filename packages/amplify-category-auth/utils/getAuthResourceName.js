@@ -15,4 +15,3 @@ async function getAuthResourceName(context) {
 module.exports = {
   getAuthResourceName,
 };
-

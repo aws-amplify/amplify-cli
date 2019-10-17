@@ -162,12 +162,7 @@ async function checkRequirements(requirements, context) {
 
   if (existingAuth && Object.keys(existingAuth).length > 0) {
     const authResourceName = await getAuthResourceName(context);
-    const resourceDirPath = path.join(
-      amplify.pathManager.getBackendDirPath(),
-      '/auth/',
-      authResourceName,
-      'parameters.json',
-    );
+    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', authResourceName, 'parameters.json');
     authParameters = amplify.readJsonFile(resourceDirPath);
   } else {
     return { authEnabled: false };

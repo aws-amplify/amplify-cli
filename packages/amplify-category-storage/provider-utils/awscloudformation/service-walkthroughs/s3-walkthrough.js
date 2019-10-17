@@ -167,17 +167,16 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     do {
       if (permissionSelected === 'Learn more') {
         context.print.info('');
-        context.print.info('You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.');
+        context.print.info(
+          'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+        );
         context.print.info('');
       }
       const permissionSelection = await inquirer.prompt({
         name: 'selection',
         type: 'list',
         message: 'Restrict access by?',
-        choices: ['Auth/Guest Users',
-          'Individual Groups',
-          'Both',
-          'Learn more'],
+        choices: ['Auth/Guest Users', 'Individual Groups', 'Both', 'Learn more'],
         default: 'Auth/Guest Users',
       });
 
@@ -232,7 +231,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         message: 'Select groups:',
         choices: userPoolGroupList,
         default: defaultSelectedGroups,
-        validate: (selectedAnswers) => {
+        validate: selectedAnswers => {
           if (selectedAnswers.length === 0) {
             return 'Select at least one option';
           }
@@ -244,8 +243,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const selectedUserPoolGroupList = userPoolGroupSelection.userpoolGroups;
 
     const groupCrudFlow = async (group, defaults = []) => {
-      const possibleOperations = Object.keys(permissionMap)
-        .map(el => ({ name: el, value: el }));
+      const possibleOperations = Object.keys(permissionMap).map(el => ({ name: el, value: el }));
 
       const crudAnswers = await inquirer.prompt({
         name: 'permissions',
@@ -253,7 +251,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         message: `What kind of access do you want for ${group} users?`,
         choices: possibleOperations,
         default: defaults,
-        validate: (selectedAnswers) => {
+        validate: selectedAnswers => {
           if (selectedAnswers.length === 0) {
             return 'Select at least one option';
           }
@@ -307,7 +305,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         attributes: ['UserPoolId'],
       });
 
-      selectedUserPoolGroupList.forEach((group) => {
+      selectedUserPoolGroupList.forEach(group => {
         options.dependsOn.push({
           category: 'auth',
           resourceName: 'userPoolGroups',
@@ -320,14 +318,14 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       defaultValues.groupList = selectedUserPoolGroupList;
       defaultValues.groupPolicyMap = groupPolicyMap;
     } else {
-    // In the update flow
+      // In the update flow
       await updateCfnTemplateWithGroups(
         context,
         defaultSelectedGroups,
         selectedUserPoolGroupList,
         groupPolicyMap,
         resourceName,
-        authResourceName,
+        authResourceName
       );
     }
   }
@@ -437,7 +435,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   const storageParamsString = JSON.stringify(storageParams, null, 4);
   fs.writeFileSync(storageParamsFilePath, storageParamsString, 'utf8');
 
-
   return resource;
 }
 
@@ -458,16 +455,8 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
   return await context.amplify.copyBatch(context, copyJobs, options);
 }
 
-async function updateCfnTemplateWithGroups(
-  context,
-  oldGroupList,
-  newGroupList,
-  newGroupPolicyMap,
-  s3ResourceName,
-  authResourceName,
-) {
+async function updateCfnTemplateWithGroups(context, oldGroupList, newGroupList, newGroupPolicyMap, s3ResourceName, authResourceName) {
   const groupsToBeDeleted = _.difference(oldGroupList, newGroupList);
-
 
   // Update Cloudformtion file
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -495,12 +484,12 @@ async function updateCfnTemplateWithGroups(
     Default: `auth${authResourceName}UserPoolId`,
   };
 
-  groupsToBeDeleted.forEach((group) => {
+  groupsToBeDeleted.forEach(group => {
     delete storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`];
     delete storageCFNFile.Resources[`${group}GroupPolicy`];
   });
 
-  newGroupList.forEach((group) => {
+  newGroupList.forEach(group => {
     s3DependsOnResources.push({
       category: 'auth',
       resourceName: 'userPoolGroups',
@@ -522,7 +511,7 @@ async function updateCfnTemplateWithGroups(
               '',
               [
                 {
-                  Ref: 'authapigw36252b57cUserPoolId',
+                  Ref: `auth${authResourceName}UserPoolId`,
                 },
                 `-${group}GroupRole`,
               ],
@@ -556,12 +545,7 @@ async function updateCfnTemplateWithGroups(
     };
   });
 
-  context.amplify.updateamplifyMetaAfterResourceUpdate(
-    category,
-    s3ResourceName,
-    'dependsOn',
-    s3DependsOnResources,
-  );
+  context.amplify.updateamplifyMetaAfterResourceUpdate(category, s3ResourceName, 'dependsOn', s3DependsOnResources);
 
   const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
   fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
