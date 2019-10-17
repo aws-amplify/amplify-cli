@@ -23,10 +23,9 @@ export default function deleteProject(cwd: string, deleteDeploymentBucket: Boole
             });
             await Promise.all(promises);
             await s3.deleteBucket({ Bucket: DeploymentBucketName }).promise();
-            resolve();
-          } else {
-            resolve();
           }
+
+          resolve();
         } else {
           reject(err);
         }
