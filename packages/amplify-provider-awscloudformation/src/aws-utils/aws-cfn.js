@@ -375,8 +375,8 @@ class CloudFormation {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
                 this.collectStackErrors(stackName).then(() => reject(completeErr));
-              } else {
-                if (!deleteS3) resolve();
+              } else if (!deleteS3) {
+                resolve();
               }
             });
           });
