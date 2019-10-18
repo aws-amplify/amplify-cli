@@ -1,4 +1,3 @@
-const aws = require('aws-sdk');
 const ora = require('ora');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
