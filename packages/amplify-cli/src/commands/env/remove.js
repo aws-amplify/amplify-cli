@@ -35,9 +35,13 @@ module.exports = {
       }
 
       if (await context.amplify.confirmPrompt.run('Do you also want to remove all the resources of the environment from the cloud?')) {
+        const deleteS3 =
+          context.input.options &&
+          context.input.options.force &&
+          (await context.amplify.confirmPrompt.run('Do you also want to delete the S3 buckets and the data contained?'));
         const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
         spinner.start();
-        await context.amplify.removeEnvFromCloud(context, envName);
+        await context.amplify.removeEnvFromCloud(context, envName, deleteS3);
         spinner.succeed('Successfully removed environment from the cloud');
       }
 

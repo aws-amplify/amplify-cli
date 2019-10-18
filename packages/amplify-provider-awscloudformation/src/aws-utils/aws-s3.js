@@ -1,4 +1,5 @@
 const aws = require('./aws.js');
+const _ = require('lodash');
 const providerName = require('../../lib/constants').ProviderName;
 const configurationManager = require('../../lib/configuration-manager');
 
@@ -68,6 +69,50 @@ class S3 {
             return bucketName;
           });
       }
+    });
+  }
+
+  deleteObjects(bucketName) {
+    return new Promise((resolve, reject) => {
+      this.s3
+        .listObjects({ Bucket: bucketName })
+        .promise()
+        .then((result, lerr) => {
+          if (lerr) {
+            reject(lerr);
+            return;
+          }
+
+          const promises = result.Contents.map(r => this.s3.deleteObject({ Bucket: bucketName, Key: r.Key }).promise());
+          Promise.all(promises).then((results, errors) => {
+            if (!_.compact(errors).length) resolve();
+            else reject();
+          });
+        });
+    });
+  }
+
+  deleteS3Bucket(bucketName) {
+    return new Promise((resolve, reject) => {
+      this.deleteObjects(bucketName).then((result, err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        this.s3
+          .deleteBucket({
+            Bucket: bucketName,
+          })
+          .promise()
+          .then((dresult, derr) => {
+            if (derr) {
+              reject(derr);
+              return;
+            }
+            resolve(dresult);
+          });
+      });
     });
   }
 

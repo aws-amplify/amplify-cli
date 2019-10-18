@@ -347,10 +347,11 @@ class CloudFormation {
     });
   }
 
-  deleteResourceStack(envName) {
+  deleteResourceStack(envName, deleteS3) {
     const { teamProviderInfo } = this.context.amplify.getProjectDetails();
-    const stackName = teamProviderInfo[envName][providerName].StackName;
-
+    const teamProvider = teamProviderInfo[envName][providerName];
+    const stackName = teamProvider.StackName;
+    const deploymentBucketName = teamProvider.DeploymentBucketName;
     if (!stackName) {
       throw new Error('Stack not defined for the environment.');
     }
@@ -375,7 +376,7 @@ class CloudFormation {
                 console.log(`Error deleting stack ${stackName}`);
                 this.collectStackErrors(stackName).then(() => reject(completeErr));
               } else {
-                resolve();
+                if (!deleteS3) resolve();
               }
             });
           });
@@ -383,6 +384,14 @@ class CloudFormation {
           reject(err);
         }
       });
+      if (deleteS3) {
+        new S3(this.context, {}).then(s3 => {
+          s3.deleteS3Bucket(deploymentBucketName).then((result, err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+      }
     });
   }
 }
