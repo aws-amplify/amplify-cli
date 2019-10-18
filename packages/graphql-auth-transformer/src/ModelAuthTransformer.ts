@@ -407,10 +407,6 @@ export class ModelAuthTransformer extends Transformer {
         `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}${definition.name.value}`
       );
     }
-    const modelDirective = parent.directives.find(dir => dir.name.value === 'model');
-    if (!modelDirective) {
-      throw new InvalidDirectiveError('Types annotated with @auth must also be annotated with @model.');
-    }
 
     // Retrieve the configuration options for the related @model directive
     const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, parent);
