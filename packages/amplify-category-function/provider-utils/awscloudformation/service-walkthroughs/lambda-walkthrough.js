@@ -628,36 +628,6 @@ async function askEventSourceQuestions(context, inputs) {
         },
       };
 
-    case 'sqs':
-      arnInput = inputs.find(input => input.key === 'amazonSQSQueueARN');
-      if (arnInput === undefined) {
-        throw Error('Unable to find amazonSQSQueueARN question data. (this is likely an amplify error, please report)');
-      }
-      arnQuestion = {
-        name: arnInput.key,
-        message: arnInput.question,
-        validate: context.amplify.inputValidation(arnInput),
-      };
-      arnAnswer = await inquirer.prompt([arnQuestion]);
-      eventSourceArn = arnAnswer[arnQuestion.key];
-      return {
-        triggerEventSourceMapping: {
-          batchSize: 10,
-          startingPosition: 'LATEST',
-          eventSourceArn,
-          functionTemplateName: 'trigger-custom.js',
-          triggerPolicies: [{
-            Effect: 'Allow',
-            Action: [
-              'sqs:ReceiveMessage',
-              'sqs:DeleteMessage',
-              'sqs:GetQueueAttributes',
-            ],
-            Resource: eventSourceArn,
-          }],
-        },
-      };
-
     case 'dynamoDB':
       dynamoDBStreamKindInput = inputs.find(input => input.key === 'dynamoDbStreamKind');
       if (dynamoDBStreamKindInput === undefined) {

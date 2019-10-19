@@ -59,7 +59,7 @@
 						"value": "serverless"
 					},
 					{
-						"name": "Custom EventSourceMapping Lambda Trigger",
+						"name": "Lambda Trigger",
 						"value": "lambdaTrigger"
 					}
 					
@@ -120,9 +120,6 @@
 				},{
 					"name": "Amazon Kinesis",
 					"value": "kinesis"
-				}, {
-					"name": "Amazon Simple Queue Service",
-					"value": "sqs"
 				}],
 				"required": true
 			},
@@ -147,16 +144,6 @@
 			{
 				"key": "amazonKinesisStreamARN",
 				"question": "Provide the ARN of Amazon Kinesis data stream or a stream consumer",
-				"validation": {
-					"operator": "regex",
-					"value": "arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)",
-					"onErrorMsg": "ARN format is invalid"
-				},
-				"required": true
-			},
-			{
-				"key": "amazonSQSQueueARN",
-				"question": "Provide the ARN of Amazon SQS queue",
 				"validation": {
 					"operator": "regex",
 					"value": "arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)",
