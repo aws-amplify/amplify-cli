@@ -1,4 +1,3 @@
-const extract = require('extract-zip');
 const fs = require('fs-extra');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const S3 = require('../src/aws-utils/aws-s3');

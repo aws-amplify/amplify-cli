@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const _ = require('lodash');
 const BottleNeck = require('bottleneck');
@@ -10,7 +10,8 @@ const S3 = require('./aws-s3');
 const providerName = require('../../lib/constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../../lib/configuration-manager');
-
+const { ZipFileName } = require('../../lib/constants');
+const { downloadZip, extractZip } = require('../../lib/zip-util');
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
 
@@ -386,9 +387,35 @@ class CloudFormation {
       });
       if (deleteS3) {
         new S3(this.context, {}).then(s3 => {
-          s3.deleteS3Bucket(deploymentBucketName).then((result, err) => {
+          const amplifyDir = this.context.amplify.pathManager.getAmplifyDirPath();
+          const tempDir = `${amplifyDir}/.temp`;
+          downloadZip(s3, tempDir, ZipFileName).then((file, err) => {
             if (err) reject(err);
-            else resolve();
+
+            extractZip(tempDir, file).then((unZippedDir, err) => {
+              if (err) reject(err);
+
+              const amplifyMeta = this.context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
+              const deploymentBucketName = amplifyMeta.providers.awscloudformation.DeploymentBucketName;
+
+              const storage = amplifyMeta.storage || {};
+              const buckets = [
+                ...Object.keys(storage)
+                  .filter(r => storage[r].service === 'S3')
+                  .map(r => storage[r].output.BucketName),
+                deploymentBucketName,
+              ];
+
+              Promise.all(buckets.map(r => s3.deleteS3Bucket(r))).then((results, errors) => {
+                if (_.compact(errors).length) {
+                  reject(errors);
+                } else {
+                  fs.removeSync(file);
+                  fs.removeSync(unZippedDir);
+                  resolve();
+                }
+              });
+            });
           });
         });
       }
