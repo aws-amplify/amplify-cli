@@ -32,13 +32,9 @@ class S3 {
       .then(() => projectBucket);
   }
 
-  getFile(s3Params) {
+  getFile(s3Params, envName = this.context.amplify.getEnvInfo().envName) {
     const projectDetails = this.context.amplify.getProjectDetails();
-    const { envName } = this.context.amplify.getEnvInfo();
-
-    const projectBucket = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
-      : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
 
     return this.s3
@@ -86,7 +82,7 @@ class S3 {
           const promises = result.Contents.map(r => this.s3.deleteObject({ Bucket: bucketName, Key: r.Key }).promise());
           Promise.all(promises).then((results, errors) => {
             if (!_.compact(errors).length) resolve();
-            else reject();
+            else reject(errors);
           });
         });
     });

@@ -2,11 +2,14 @@ const extract = require('extract-zip');
 const fs = require('fs-extra');
 const path = require('path');
 
-function downloadZip(s3, tempDir, zipFileName) {
+function downloadZip(s3, tempDir, zipFileName, envName) {
   return new Promise((resolve, reject) => {
-    s3.getFile({
-      Key: zipFileName,
-    }).then((objectResult, objectError) => {
+    s3.getFile(
+      {
+        Key: zipFileName,
+      },
+      envName
+    ).then((objectResult, objectError) => {
       if (objectError) {
         reject(objectError);
         return;

@@ -389,7 +389,7 @@ class CloudFormation {
         new S3(this.context, {}).then(s3 => {
           const amplifyDir = this.context.amplify.pathManager.getAmplifyDirPath();
           const tempDir = `${amplifyDir}/.temp`;
-          downloadZip(s3, tempDir, ZipFileName).then((file, err) => {
+          downloadZip(s3, tempDir, ZipFileName, envName).then((file, err) => {
             if (err) reject(err);
 
             extractZip(tempDir, file).then((unZippedDir, err) => {
@@ -405,7 +405,6 @@ class CloudFormation {
                   .map(r => storage[r].output.BucketName),
                 deploymentBucketName,
               ];
-
               Promise.all(buckets.map(r => s3.deleteS3Bucket(r))).then((results, errors) => {
                 if (_.compact(errors).length) {
                   reject(errors);
