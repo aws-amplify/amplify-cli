@@ -1,5 +1,5 @@
 import { DeletionPolicy } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 import {
   blankObject,
   makeConnectionField,
@@ -9,6 +9,7 @@ import {
   makeNonNullType,
   ModelResourceIDs,
   ResolverResourceIDs,
+  getDirectiveArgument,
 } from 'graphql-transformer-common';
 import { getDirectiveArguments, gql, Transformer, TransformerContext } from 'graphql-transformer-core';
 import {
@@ -23,6 +24,7 @@ import {
   makeScalarFilterInputs,
   makeSubscriptionField,
   makeUpdateInputObject,
+  makeModelXConditionInputObject,
 } from './definitions';
 import { ModelDirectiveArgs } from './ModelDirectiveArgs';
 import { ResourceFactory } from './resources';
@@ -190,6 +192,8 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     }
 
+    const conditionInputName = ModelResourceIDs.ModelConditionInputTypeName(typeName);
+
     // Create the mutations.
     if (shouldMakeCreate) {
       const createInput = makeCreateInputObject(def, nonModelArray, ctx);
@@ -203,7 +207,10 @@ export class DynamoDBModelTransformer extends Transformer {
       mutationFields.push(
         makeField(
           createResolver.Properties.FieldName,
-          [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))],
+          [
+            makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value))),
+            makeInputValueDefinition('condition', makeNamedType(conditionInputName)),
+          ],
           makeNamedType(def.name.value)
         )
       );
@@ -221,7 +228,10 @@ export class DynamoDBModelTransformer extends Transformer {
       mutationFields.push(
         makeField(
           updateResolver.Properties.FieldName,
-          [makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInput.name.value)))],
+          [
+            makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInput.name.value))),
+            makeInputValueDefinition('condition', makeNamedType(conditionInputName)),
+          ],
           makeNamedType(def.name.value)
         )
       );
@@ -239,12 +249,19 @@ export class DynamoDBModelTransformer extends Transformer {
       mutationFields.push(
         makeField(
           deleteResolver.Properties.FieldName,
-          [makeInputValueDefinition('input', makeNonNullType(makeNamedType(deleteInput.name.value)))],
+          [
+            makeInputValueDefinition('input', makeNonNullType(makeNamedType(deleteInput.name.value))),
+            makeInputValueDefinition('condition', makeNamedType(conditionInputName)),
+          ],
           makeNamedType(def.name.value)
         )
       );
     }
     ctx.addMutationFields(mutationFields);
+
+    if (shouldMakeCreate || shouldMakeUpdate || shouldMakeDelete) {
+      this.generateConditionInputs(ctx, def);
+    }
   };
 
   private createQueries = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
@@ -452,6 +469,93 @@ export class DynamoDBModelTransformer extends Transformer {
       ctx.addInput(tableXQueryFilterInput);
     }
   }
+
+  private generateConditionInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    const scalarFilters = makeScalarFilterInputs();
+    for (const filter of scalarFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
+    // Create the Enum filters
+    const enumFilters = makeEnumFilterInputObjects(def, ctx);
+    for (const filter of enumFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
+    // Create the ModelXConditionInput
+    const fieldsToExclude = this.getDirectiveFieldNames(ctx, def);
+    const tableXMutationConditionInput = makeModelXConditionInputObject(def, ctx, fieldsToExclude);
+    if (!this.typeExist(tableXMutationConditionInput.name.value, ctx)) {
+      ctx.addInput(tableXMutationConditionInput);
+    }
+  }
+
+  private getDirectiveFieldNames = (
+    ctx: TransformerContext,
+    type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode
+  ): Array<String> => {
+    const fieldNames = new Array<String>();
+
+    // Get PK for the type from @key directive or default to 'id'
+    const getPKFieldName = (): String => {
+      let field: FieldDefinitionNode;
+
+      for (const keyDirective of type.directives.filter(d => d.name.value === 'key')) {
+        if (getDirectiveArgument(keyDirective, 'name') === undefined) {
+          const fieldsArg = getDirectiveArgument(keyDirective, 'fields');
+
+          if (fieldsArg && fieldsArg.length && fieldsArg.length >= 1 && fieldsArg.length <= 2) {
+            field = type.fields.find(f => f.name.value === fieldsArg[0]);
+          }
+
+          // Exit the loop even if field was not set above, @key will throw validation
+          // error anyway
+          break;
+        }
+      }
+
+      return field ? field.name.value : 'id';
+    };
+
+    fieldNames.push(getPKFieldName());
+
+    // Get versionInput from @versioned directive
+    const getVersionInputName = (): String | undefined => {
+      let fieldName: String | undefined = undefined;
+
+      const versionedDirective = type.directives.find(d => d.name.value === 'versioned');
+
+      if (versionedDirective) {
+        fieldName = getDirectiveArgument(versionedDirective, 'versionInput', 'expectedVersion');
+      }
+
+      return fieldName;
+    };
+
+    const versionInputName = getVersionInputName();
+    if (versionInputName) {
+      fieldNames.push(versionInputName);
+    }
+
+    // Get auth related field names from @auth directive rules
+    const getAuthFieldNames = (): Array<String> => {
+      const authDirective = type.directives.find(d => d.name.value === 'auth');
+
+      if (authDirective) {
+        const authRules = getDirectiveArgument(authDirective, 'rules', []);
+      }
+
+      return [];
+    };
+
+    fieldNames.push(...getAuthFieldNames());
+
+    return fieldNames;
+  };
 
   private getOpts(opts: DynamoDBModelTransformerOptions) {
     const defaultOpts = {

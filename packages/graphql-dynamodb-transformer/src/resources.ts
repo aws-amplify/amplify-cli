@@ -339,6 +339,29 @@ export class ResourceFactory {
           qref('$context.args.input.put("createdAt", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601()))'),
           qref('$context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601()))'),
           qref(`$context.args.input.put("__typename", "${type}")`),
+          set(
+            ref('condition'),
+            obj({
+              expression: str('attribute_not_exists(#id)'),
+              expressionNames: obj({
+                '#id': str('id'),
+              }),
+            })
+          ),
+          iff(
+            ref('context.args.condition'),
+            compoundExpression([
+              set(ref('condition.expressionValues'), obj({})),
+              set(
+                ref('conditionFilterExpressions'),
+                raw('$util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition))')
+              ),
+              // tslint:disable-next-line
+              qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
+              qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
+              qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
+            ])
+          ),
           DynamoDBMappingTemplate.putItem({
             key: ifElse(
               ref(ResourceConstants.SNIPPETS.ModelObjectKey),
@@ -349,12 +372,7 @@ export class ResourceFactory {
               true
             ),
             attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
-            condition: obj({
-              expression: str(`attribute_not_exists(#id)`),
-              expressionNames: obj({
-                '#id': str('id'),
-              }),
-            }),
+            condition: ref('util.toJson($condition)'),
           }),
         ])
       ),
@@ -433,6 +451,19 @@ export class ResourceFactory {
               ),
               qref(`$condition.expressionNames.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionNames)`),
               qref(`$condition.expressionValues.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionValues)`),
+            ])
+          ),
+          iff(
+            ref('context.args.condition'),
+            compoundExpression([
+              set(
+                ref('conditionFilterExpressions'),
+                raw('$util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition))')
+              ),
+              // tslint:disable-next-line
+              qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
+              qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
+              qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
             ])
           ),
           DynamoDBMappingTemplate.updateItem({
@@ -647,6 +678,22 @@ export class ResourceFactory {
               set(ref('expressionValues'), raw('$util.defaultIfNull($condition.expressionValues, {})')),
               qref(`$expressionValues.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionValues)`),
               set(ref('condition.expressionValues'), ref('expressionValues')),
+            ])
+          ),
+          iff(
+            ref('context.args.condition'),
+            compoundExpression([
+              set(
+                ref('conditionFilterExpressions'),
+                raw('$util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition))')
+              ),
+              // tslint:disable-next-line
+              qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
+              qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
+              set(ref('conditionExpressionValues'), raw('$util.defaultIfNull($condition.expressionValues, {})')),
+              qref(`$conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues)`),
+              set(ref('condition.expressionValues'), ref('conditionExpressionValues')),
+              qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
             ])
           ),
           DynamoDBMappingTemplate.deleteItem({

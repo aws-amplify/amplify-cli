@@ -21,6 +21,13 @@ export class ModelResourceIDs {
     }
     return `Model${name}FilterInput`;
   }
+  static ModelConditionInputTypeName(name: string): string {
+    const nameOverride = DEFAULT_SCALARS[name];
+    if (nameOverride) {
+      return `Model${nameOverride}ConditionInput`;
+    }
+    return `Model${name}ConditionInput`;
+  }
   static ModelKeyConditionInputTypeName(name: string): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
