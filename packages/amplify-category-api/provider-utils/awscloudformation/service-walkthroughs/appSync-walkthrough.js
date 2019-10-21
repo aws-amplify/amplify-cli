@@ -448,7 +448,7 @@ async function askAdditionalQuestions(context, parameters, authConfig, defaultAu
 
   if (advancedSettingsAnswer.advancedSettings) {
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
-    if(process.env.DATASTORE === 'SYNC') {
+    if(process.env.SYNC === "true") {
       resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
     }
   }

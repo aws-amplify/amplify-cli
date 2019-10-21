@@ -170,6 +170,10 @@ export class DynamoDBModelTransformer extends Transformer {
     }
   };
 
+  // makeInputValueDefinition('_deleted', makeNamedType('Boolean')),
+  //         makeInputValueDefinition('_lastChangedAt', wrapNonNull(makeNamedType('AWSTimestamp'))),
+  // ...obj.fields,
+
   private createMutations = (
     def: ObjectTypeDefinitionNode,
     directive: DirectiveNode,
