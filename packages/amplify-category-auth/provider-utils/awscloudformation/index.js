@@ -575,7 +575,7 @@ function removeDeprecatedProps(props) {
   if (props.openIdRolePolicy) {
     delete props.openIdRolePolicy;
   }
-  if (props.openIdRopenIdLambdaIAMPolicyolePolicy) {
+  if (props.openIdLambdaIAMPolicy) {
     delete props.openIdLambdaIAMPolicy;
   }
   if (props.openIdLogPolicy) {
@@ -617,4 +617,5 @@ module.exports = {
   migrate,
   console,
   getPermissionPolicies,
+  removeDeprecatedProps,
 };

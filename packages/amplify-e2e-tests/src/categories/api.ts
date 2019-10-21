@@ -26,7 +26,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, verbose: boole
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .sendline('\r')
       .wait('Provide API name:')
       .sendline('\r')
@@ -66,7 +66,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: bool
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .sendline('')
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendline('')

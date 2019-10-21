@@ -1,7 +1,14 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-import { initProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
+import { initProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../src/init';
 import { addAuthWithDefault } from '../src/categories/auth';
-import { addSimpleDDB, addDDBWithTrigger, updateDDBWithTrigger, addS3WithTrigger } from '../src/categories/storage';
+import {
+  addSimpleDDB,
+  addDDBWithTrigger,
+  updateDDBWithTrigger,
+  addS3WithTrigger,
+  addSimpleDDBwithGSI,
+  updateSimpleDDBwithGSI,
+} from '../src/categories/storage';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from '../src/utils';
 
 describe('amplify add/update storage(S3)', () => {
@@ -30,6 +37,27 @@ describe('amplify add/update storage(S3)', () => {
 
     const bucketExists = await checkIfBucketExists(bucketName, region);
     expect(bucketExists).toMatchObject({});
+  });
+});
+
+describe('amplify add/update storage(DDB) with GSI', () => {
+  let projRoot: string;
+  beforeEach(() => {
+    projRoot = createNewProjectDir();
+    jest.setTimeout(1000 * 60 * 60); // 1 hour
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('init a project add a GSI and then update with another GSI', async () => {
+    await initProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot, {});
+    await addSimpleDDBwithGSI(projRoot, {});
+    await updateSimpleDDBwithGSI(projRoot, {});
+    await amplifyPushAuth(projRoot);
   });
 });
 
