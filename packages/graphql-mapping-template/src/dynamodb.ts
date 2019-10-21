@@ -31,7 +31,7 @@ export class DynamoDBMappingTemplate {
   }: {
     key: ObjectNode | Expression;
     attributeValues: Expression;
-    condition?: ObjectNode;
+    condition?: ObjectNode | ReferenceNode;
   }): ObjectNode {
     return obj({
       version: str('2017-02-28'),
