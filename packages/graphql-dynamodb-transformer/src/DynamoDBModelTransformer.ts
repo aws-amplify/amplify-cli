@@ -156,7 +156,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
     // Update ModelXConditionInput type
     this.updateMutationConditionInput(ctx, def);
-    // change type to include gelato fields if sync is enabled
+    // change type to include sync related fields if sync is enabled
     if (isSyncEnabled) {
       const obj = ctx.getObject(def.name.value);
       const newObj = makeObjectDefinition(obj.name.value, [
@@ -168,6 +168,10 @@ export class DynamoDBModelTransformer extends Transformer {
       ctx.updateObject(newObj);
     }
   };
+
+  // makeInputValueDefinition('_deleted', makeNamedType('Boolean')),
+  //         makeInputValueDefinition('_lastChangedAt', wrapNonNull(makeNamedType('AWSTimestamp'))),
+  // ...obj.fields,
 
   private createMutations = (
     def: ObjectTypeDefinitionNode,
@@ -222,7 +226,6 @@ export class DynamoDBModelTransformer extends Transformer {
       if (!ctx.getType(createInput.name.value)) {
         ctx.addInput(createInput);
       }
-      // resolver changes for gelato
       const createResolver = this.resources.makeCreateResolver({
         type: def.name.value,
         nameOverride: createFieldNameOverride,

@@ -365,6 +365,7 @@ export class ResourceFactory {
           Versioned: true,
         }),
       },
+      ...( isSyncEnabled && { DeltaSyncConfig: SyncUtils.syncDataSourceConfig() })
     }).dependsOn([iamRoleLogicalID]);
   }
 
