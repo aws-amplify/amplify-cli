@@ -38,7 +38,7 @@ function configure(context, defaultValuesFilename, serviceMetadata) {
     const templateDir = `${__dirname}/../cloudformation-templates`;
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
 
-    if (resourceNameAlreadyExists) {
+    if (resourceNameAlreadyExists(context, resourceName)) {
       throw new Error(`Resource ${resourceName} already exists in ${category} category.`);
     }
 
@@ -52,6 +52,10 @@ function configure(context, defaultValuesFilename, serviceMetadata) {
     const params = {
       kinesisStreamName: resourceName,
       kinesisStreamShardCount: shardCount,
+      authRoleName: defaultValues.authRoleName,
+      unauthRoleName: defaultValues.unauthRoleName,
+      authPolicyName: defaultValues.authPolicyName,
+      unauthPolicyName: defaultValues.unauthPolicyName,
     };
 
     // we don't have to force CF template generation, since the resource name existence check

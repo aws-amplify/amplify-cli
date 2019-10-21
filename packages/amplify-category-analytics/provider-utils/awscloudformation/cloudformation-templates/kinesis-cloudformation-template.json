@@ -11,6 +11,18 @@
         "kinesisStreamShardCount": {
             "Type": "Number",
             "Default": 1
+        },
+        "authPolicyName": {
+            "Type": "String"
+        },
+        "unauthPolicyName": {
+            "Type": "String"
+        },
+        "authRoleName": {
+            "Type":  "String"
+        },
+        "unauthRoleName": {
+            "Type":  "String"
         }
     },
     "Conditions": {
@@ -35,6 +47,66 @@
                     ]
                 },
                 "ShardCount": { "Ref": "kinesisStreamShardCount" }
+            }
+        },
+        "CognitoUnauthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": {"Ref": "unauthPolicyName" },
+                "Roles": [ 
+                    {"Ref": "unauthRoleName" }
+                ],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Action": [
+                            "kinesis:PutRecord",
+                            "kinesis:PutRecords"
+                        ],
+                        "Resource": {
+                            "Fn::Join": [
+                                ":",
+                                [
+                                    "arn:aws:kinesis",
+                                    { "Ref": "AWS::Region" },
+                                    { "Ref": "AWS::AccountId" },
+                                    { "Fn::Join": ["/", ["stream", {"Ref": "KinesisStream" }]]}
+                                ]
+                            ]
+                        }
+                    }]
+                }
+            }
+        },
+        "CognitoAuthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": {"Ref": "authPolicyName" },
+                "Roles": [ 
+                    {"Ref": "authRoleName" }
+                ],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Action": [
+                            "kinesis:PutRecord",
+                            "kinesis:PutRecords"
+                        ],
+                        "Resource": {
+                            "Fn::Join": [
+                                ":",
+                                [
+                                    "arn:aws:kinesis",
+                                    { "Ref": "AWS::Region" },
+                                    { "Ref": "AWS::AccountId" },
+                                    { "Fn::Join": ["/", ["stream", {"Ref": "KinesisStream" }]]}
+                                ]
+                            ]
+                        }
+                    }]
+                }
             }
         }
     },
