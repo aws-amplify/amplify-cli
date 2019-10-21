@@ -31,7 +31,7 @@ import {
   InputValueDefinitionNode,
 } from 'graphql/language/ast';
 import { _Kind } from 'graphql/language/kinds';
-
+import { SyncConfig } from './util';
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {
@@ -108,6 +108,8 @@ export class TransformerContext {
   public metadata: TransformerContextMetadata = new TransformerContextMetadata();
 
   private stackMapping: StackMapping = new Map();
+
+  private syncConfig: SyncConfig;
 
   constructor(inputSDL: string) {
     const doc: DocumentNode = parse(inputSDL);
@@ -361,6 +363,13 @@ export class TransformerContext {
   public addObject(obj: ObjectTypeDefinitionNode) {
     if (this.nodeMap[obj.name.value]) {
       throw new Error(`Conflicting type '${obj.name.value}' found.`);
+    }
+    this.nodeMap[obj.name.value] = obj;
+  }
+
+  public updateObject(obj: ObjectTypeDefinitionNode) {
+    if (!this.nodeMap[obj.name.value]) {
+      throw new Error(`Type ${obj.name.value} does not exist.`)
     }
     this.nodeMap[obj.name.value] = obj;
   }
@@ -686,5 +695,19 @@ export class TransformerContext {
 
   public getStackMapping(): StackMapping {
     return this.stackMapping;
+  }
+
+  /**
+   * Setter and getter the sync config
+   */
+  public setSyncConfig(syncConfig: SyncConfig) {
+    if (this.syncConfig) {
+      throw new Error(`Sync Configuration has already been added to the context`)
+    }
+    this.syncConfig = syncConfig;
+  }
+
+  public getSyncConfig(): SyncConfig {
+    return this.syncConfig;
   }
 }
