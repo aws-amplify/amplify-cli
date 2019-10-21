@@ -3,6 +3,7 @@ require('../src/aws-matchers/'); // custom matcher for assertion
 import * as AWS from 'aws-sdk';
 import { initProjectWithProfile, deleteProject } from '../src/init';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../src/utils';
+import { addEnvironment } from '../src/environment/add-env';
 
 describe('amplify delete', () => {
   let projRoot: string;
@@ -19,11 +20,16 @@ describe('amplify delete', () => {
   it('should delete resources', async () => {
     const amplifyMeta = getProjectMeta(projRoot);
     const meta = amplifyMeta.providers.awscloudformation;
+    const deploymentBucketName1 = meta.DeploymentBucketName;
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName } = meta;
 
+    await addEnvironment(projRoot, {});
+    const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
+
     await deleteProject(projRoot, true);
-    await expect(await bucketExists(meta.DeploymentBucketName)).toBe(false);
+    await expect(await bucketExists(deploymentBucketName1)).toBe(false);
+    await expect(await bucketExists(deploymentBucketName2)).toBe(false);
     await expect(AuthRoleName).not.toBeIAMRoleWithArn();
     await expect(UnauthRoleName).not.toBeIAMRoleWithArn();
   });
