@@ -11,7 +11,12 @@ module.exports = {
   run: async (context) => {
     const { amplify } = context;
 
-    return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
+    return amplify.serviceSelectionPrompt(
+      context,
+      category,
+      servicesMetadata,
+      'Select an Analytics provider',
+    )
       .then((result) => {
         options = {
           service: result.service,

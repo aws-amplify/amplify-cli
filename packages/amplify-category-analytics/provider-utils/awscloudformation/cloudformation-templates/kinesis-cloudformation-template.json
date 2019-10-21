@@ -1,0 +1,52 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Pinpoint resource stack creation using Amplify CLI",
+    "Parameters": {
+        "env": {
+            "Type":  "String"
+        },
+        "kinesisStreamName": {
+            "Type": "String"
+        },
+        "kinesisStreamShardCount": {
+            "Type": "Number",
+            "Default": 1
+        }
+    },
+    "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                { "Ref": "env" },
+                "NONE"
+            ]
+        }
+    },
+    "Resources": {
+        "KinesisStream": {
+            "Type": "AWS::Kinesis::Stream",
+            "Properties": {
+                "Name": {
+                    "Fn::Join": [
+                        "-",
+                        [
+                          { "Ref": "kinesisStreamName" },
+                          { "Ref": "env"}
+                        ]
+                    ]
+                },
+                "ShardCount": { "Ref": "kinesisStreamShardCount" }
+            }
+        }
+    },
+    "Outputs": {
+        "kinesisStreamId": { 
+            "Value": {"Ref": "KinesisStream" }
+        },
+        "kinesisStreamName": {
+            "Value": {"Ref": "kinesisStreamName"}
+        },
+        "kinesisStreamShardCount": {
+            "Value": {"Ref": "kinesisStreamShardCount" }
+        }
+    }
+}
