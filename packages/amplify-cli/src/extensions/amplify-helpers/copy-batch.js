@@ -7,7 +7,7 @@ const fs = require('fs');
  * @param {any[]}           jobs           - A list of jobs to run.
  * @param {any}             props          - The props to use for variable replacement.
  * @param {boolean}         force          - Force CF template generation
- * @param {array|object}    privateKeys    - data for the CF template but not parameters file
+ * @param {array|object}    writeParams    - data for the CF template but not parameters file
  */
 async function copyBatch(context, jobs, props, force, writeParams) {
   // grab some features
