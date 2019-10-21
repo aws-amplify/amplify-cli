@@ -113,10 +113,13 @@ export function makeNonModelInputObject(
   };
 }
 
+// export function addSyncFields()
+
 export function makeCreateInputObject(
   obj: ObjectTypeDefinitionNode,
   nonModelTypes: ObjectTypeDefinitionNode[],
-  ctx: TransformerContext
+  ctx: TransformerContext,
+  isSync: boolean = false,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelCreateInputObjectName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -157,6 +160,10 @@ export function makeCreateInputObject(
         directives: [],
       };
     });
+    // add the version if this project is a sync project
+    if (isSync) {
+      fields.push(makeInputValueDefinition('_version', makeNamedType('Int')))
+    }
   return {
     kind: 'InputObjectTypeDefinition',
     // TODO: Service does not support new style descriptions so wait.
@@ -176,7 +183,8 @@ export function makeCreateInputObject(
 export function makeUpdateInputObject(
   obj: ObjectTypeDefinitionNode,
   nonModelTypes: ObjectTypeDefinitionNode[],
-  ctx: TransformerContext
+  ctx: TransformerContext,
+  isSync: boolean = false,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelUpdateInputObjectName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -210,6 +218,9 @@ export function makeUpdateInputObject(
         directives: [],
       };
     });
+    if (isSync) {
+      fields.push(makeInputValueDefinition('_version', makeNamedType('Int')))
+    }
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
     // TODO: Service does not support new style descriptions so wait.
@@ -226,8 +237,24 @@ export function makeUpdateInputObject(
   };
 }
 
-export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode, isSync: boolean = false): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelDeleteInputObjectName(obj.name.value);
+  const fields: InputValueDefinitionNode[] = [
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: { kind: 'Name', value: 'id' },
+      type: makeNamedType('ID'),
+      // TODO: Service does not support new style descriptions so wait.
+      // description: {
+      //     kind: 'StringValue',
+      //     value: `The id of the ${obj.name.value} to delete.`
+      // },
+      directives: [],
+    },
+  ]
+  if (isSync) {
+    fields.push(makeInputValueDefinition('_version', makeNamedType('Int')))
+  }
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
     // TODO: Service does not support new style descriptions so wait.
@@ -239,19 +266,7 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
       kind: 'Name',
       value: name,
     },
-    fields: [
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: { kind: 'Name', value: 'id' },
-        type: makeNamedType('ID'),
-        // TODO: Service does not support new style descriptions so wait.
-        // description: {
-        //     kind: 'StringValue',
-        //     value: `The id of the ${obj.name.value} to delete.`
-        // },
-        directives: [],
-      },
-    ],
+    fields,
     directives: [],
   };
 }
@@ -570,11 +585,14 @@ function getScalarConditions(type: string): string[] {
   }
 }
 
-export function makeModelConnectionType(typeName: string): ObjectTypeExtensionNode {
+export function makeModelConnectionType(typeName: string, isSync: Boolean = false): ObjectTypeExtensionNode {
   const connectionName = ModelResourceIDs.ModelConnectionTypeName(typeName);
   let connectionTypeExtension = blankObjectExtension(connectionName);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('items', [], makeListType(makeNamedType(typeName)))]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
+  if (isSync) {
+    connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('startedAt', [], makeNamedType('AWSTimestamp'))]);
+  }
   return connectionTypeExtension;
 }
 

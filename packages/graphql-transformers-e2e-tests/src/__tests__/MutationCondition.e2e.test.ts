@@ -1,11 +1,11 @@
-import GraphQLTransform from 'graphql-transformer-core';
-import KeyTransformer from 'graphql-key-transformer';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { KeyTransformer } from 'graphql-key-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { parse } from 'graphql/language/parser';
 import { DocumentNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, DefinitionNode, Kind } from 'graphql';
-import VersionedModelTransformer from 'graphql-versioned-transformer';
-import ModelConnectionTransformer from 'graphql-connection-transformer';
-import ModelAuthTransformer from 'graphql-auth-transformer';
+import { VersionedModelTransformer } from 'graphql-versioned-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
 
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
