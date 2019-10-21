@@ -477,10 +477,11 @@ Static group authorization should perform as expected.`
       // Delete operations are only protected by @auth directives on objects.
       const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule));
       this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration);
+    } else {
+      // if @auth is used without @model only generate static group rules
+      const staticGroupRules = rules.filter((rule: AuthRule) => rule.groups);
+      this.protectField(ctx, parent, definition, staticGroupRules);
     }
-    // if @auth is used without @model only generate static group rules
-    const staticGroupRules = rules.filter((rule: AuthRule) => rule.groups);
-    this.protectField(ctx, parent, definition, staticGroupRules);
   };
 
   private protectField(
