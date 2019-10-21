@@ -10,6 +10,32 @@ export interface TransformMigrationConfig {
     Resources: string[];
   };
 }
+
+// Sync Config
+export declare enum ConflictHandlerType {
+  DEFAULT = "DEFAULT",
+  SERVER = "SERVER_WINS",
+  LAMBDA = "LAMBDA"
+}
+export type ConflictDectionType = 'CONDITIONALS' | 'SYNC';
+export type SyncConfigDEFAULT = {
+  ConflictDetection: ConflictDectionType;
+  ConflictHandler: ConflictHandlerType.DEFAULT;
+}
+export type SyncConfigSERVER = {
+  ConflictDetection: ConflictDectionType;
+  ConflictHandler: ConflictHandlerType.SERVER;
+}
+export type SyncConfigLAMBDA = {
+  ConflictDetection: ConflictDectionType;
+  ConflictHandler: ConflictHandlerType.LAMBDA;
+  LamdaConflictHandler: {
+    name: string,
+    region?: string,
+    lambdaArn?: any,
+  }
+}
+export type SyncConfig = SyncConfigDEFAULT | SyncConfigSERVER | SyncConfigLAMBDA;
 /**
  * The transform config is specified in transform.conf.json within an Amplify
  * API project directory.
@@ -54,6 +80,10 @@ export interface TransformConfig {
    * Keeping a track of transformer version changes
    */
   Version?: number;
+  /**
+   * Object which states info about a sync project
+   */
+  Sync?: SyncConfig
 }
 /**
  * try to load transformer config from specified projectDir
@@ -74,6 +104,7 @@ export async function loadConfig(projectDir: string): Promise<TransformConfig> {
     return config;
   }
 }
+
 export async function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig> {
   const configFilePath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
   await fs.writeFile(configFilePath, JSON.stringify(config, null, 4));
