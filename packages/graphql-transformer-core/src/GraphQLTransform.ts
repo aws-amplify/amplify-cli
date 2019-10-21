@@ -22,6 +22,8 @@ import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
+import { TransformConfig, SyncConfig, SyncUtils } from './util';
+import { SyncResourceIDs } from 'graphql-transformer-common';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';
@@ -187,11 +189,14 @@ export interface GraphQLTransformOptions {
   // migrations as all the input/export/ref/getatt changes will be made
   // automatically.
   stackMapping?: StackMapping;
+  // transform config which can change the behavior of the transformer
+  transformConfig?: TransformConfig;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: ITransformer[];
   private stackMappingOverrides: StackMapping;
+  private transformConfig: TransformConfig;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -204,6 +209,8 @@ export class GraphQLTransform {
     }
     this.transformers = options.transformers;
     this.stackMappingOverrides = options.stackMapping || {};
+    this.transformConfig = options.transformConfig || {};
+    // check if this is an sync enabled project
   }
 
   /**
@@ -233,6 +240,12 @@ export class GraphQLTransform {
     const errors = validateModelSchema({ kind: Kind.DOCUMENT, definitions: allModelDefinitions });
     if (errors && errors.length) {
       throw new SchemaValidationError(errors.slice(0));
+    }
+
+    // check if the project is sync enabled
+    if (this.transformConfig.Sync) {
+      this.createResourcesForSyncEnabledProject(context, this.transformConfig.Sync);
+      context.setSyncConfig(this.transformConfig.Sync);
     }
 
     for (const transformer of this.transformers) {
@@ -295,6 +308,19 @@ export class GraphQLTransform {
     for (const resourceId of Object.keys(this.stackMappingOverrides)) {
       context.mapResourceToStack(this.stackMappingOverrides[resourceId], resourceId);
     }
+  }
+
+  private createResourcesForSyncEnabledProject(context: TransformerContext, syncConfig: SyncConfig) {
+    const syncResources = {
+      [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable(),
+      [SyncResourceIDs.syncIAMRoleID]: SyncUtils.createSyncIAMRole(),
+    };
+    // if lambda config exists add it to the SyncConfig and create a role for it
+    if (SyncUtils.isLambdaSyncConfig(syncConfig)) {
+      syncConfig.LamdaConflictHandler.lambdaArn = SyncUtils.syncLambdaArnResource(syncConfig.LamdaConflictHandler);
+      syncResources[SyncResourceIDs.syncFunctionID] = SyncUtils.syncLambdaIAMRole(syncConfig.LamdaConflictHandler);
+    }
+    context.mergeResources(syncResources);
   }
 
   private transformObject(
