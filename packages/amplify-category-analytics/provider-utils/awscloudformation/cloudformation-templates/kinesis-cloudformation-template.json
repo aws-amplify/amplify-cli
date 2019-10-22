@@ -65,15 +65,7 @@
                             "kinesis:PutRecords"
                         ],
                         "Resource": {
-                            "Fn::Join": [
-                                ":",
-                                [
-                                    "arn:aws:kinesis",
-                                    { "Ref": "AWS::Region" },
-                                    { "Ref": "AWS::AccountId" },
-                                    { "Fn::Join": ["/", ["stream", {"Ref": "KinesisStream" }]]}
-                                ]
-                            ]
+                            "Fn::GetAtt": ["KinesisStream", "Arn"]
                         }
                     }]
                 }
@@ -95,15 +87,7 @@
                             "kinesis:PutRecords"
                         ],
                         "Resource": {
-                            "Fn::Join": [
-                                ":",
-                                [
-                                    "arn:aws:kinesis",
-                                    { "Ref": "AWS::Region" },
-                                    { "Ref": "AWS::AccountId" },
-                                    { "Fn::Join": ["/", ["stream", {"Ref": "KinesisStream" }]]}
-                                ]
-                            ]
+                            "Fn::GetAtt": ["KinesisStream", "Arn"]
                         }
                     }]
                 }
@@ -111,11 +95,11 @@
         }
     },
     "Outputs": {
+        "kinesisStreamArn": {
+            "Value": {"Fn::GetAtt": ["KinesisStream", "Arn"] }
+        },
         "kinesisStreamId": { 
             "Value": {"Ref": "KinesisStream" }
-        },
-        "kinesisStreamName": {
-            "Value": {"Ref": "kinesisStreamName"}
         },
         "kinesisStreamShardCount": {
             "Value": {"Ref": "kinesisStreamShardCount" }

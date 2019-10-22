@@ -118,7 +118,7 @@
 					"name": "Amazon DynamoDB Stream",
 					"value": "dynamoDB"
 				},{
-					"name": "Amazon Kinesis",
+					"name": "Amazon Kinesis Stream",
 					"value": "kinesis"
 				}],
 				"required": true
@@ -138,6 +138,20 @@
 				{
 					"name": "Provide the ARN of DynamoDB stream directly",
 					"value": "dynamoDbStreamRawARN"
+				}],
+				"required": true
+			},
+			{
+				"key": "kinesisStreamKind",
+				"question": "Choose a Kinesis event source option",
+				"type": "list",
+				"options": [{
+					"name": "Use Analytics category kinesis stream configured(and deployed) in the current Amplify project",
+					"value": "analyticsKinesisStream"
+				},
+				{
+					"name": "Provide the ARN of Kinesis stream directly",
+					"value": "kinesisStreamRawARN"
 				}],
 				"required": true
 			},
@@ -165,6 +179,11 @@
 				"key": "dynamoDbAPIResourceName",
 				"type": "list",
 				"question": "Please choose an API resource to associate with?"
+			},
+			{
+				"key": "kinesisAnalyticsResourceName",
+				"type": "list",
+				"question": "Please select an Analytics resource Kinesis stream to associate with?"
 			},
 			{
 				"key": "graphqlAPIModelName",

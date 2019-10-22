@@ -587,61 +587,79 @@ async function askEventSourceQuestions(context, inputs) {
   let arnQuestion;
   let arnAnswer;
   let eventSourceArn;
-  let dynamoDBStreamKindInput;
-  let dynamoDbStreamKindQuestion;
-  let dynamoDbStreamKindAnswer;
-  let dynamoDbStreamKind;
+  let streamKindInput;
+  let streamKindQuestion;
+  let streamKindAnswer;
+  let streamKind;
   let dynamoDBCategoryStorageRes;
   let dynamoDBCategoryStorageStreamArnRef;
   switch (eventSourceTypeAnswer[eventSourceTypeInput.key]) {
     case 'kinesis':
-      arnInput = inputs.find(input => input.key === 'amazonKinesisStreamARN');
-      if (arnInput === undefined) {
-        throw Error('Unable to find amazonKinesisStreamARN question data. (this is likely an amplify error, please report)');
+      streamKindInput = inputs.find(input => input.key === 'kinesisStreamKind');
+      if (streamKindInput === undefined) {
+        throw Error('Unable to find kinesisStreamKind question data. (this is likely an amplify error, please report)');
       }
-      arnQuestion = {
-        name: arnInput.key,
-        message: arnInput.question,
-        validate: context.amplify.inputValidation(arnInput),
+      streamKindQuestion = {
+        type: streamKindInput.type,
+        name: streamKindInput.key,
+        message: streamKindInput.question,
+        choices: streamKindInput.options,
       };
-      arnAnswer = await inquirer.prompt([arnQuestion]);
-      eventSourceArn = arnAnswer[arnInput.key];
-      return {
-        triggerEventSourceMapping: {
-          batchSize: 100,
-          startingPosition: 'LATEST',
-          eventSourceArn,
-          functionTemplateName: 'trigger-custom.js',
-          triggerPolicies: [{
-            Effect: 'Allow',
-            Action: [
-              'kinesis:DescribeStream',
-              'kinesis:DescribeStreamSummary',
-              'kinesis:GetRecords',
-              'kinesis:GetShardIterator',
-              'kinesis:ListShards',
-              'kinesis:ListStreams',
-              'kinesis:SubscribeToShard',
-            ],
-            Resource: eventSourceArn,
-          }],
-        },
-      };
-
+      streamKindAnswer = await inquirer.prompt([streamKindQuestion]);
+      streamKind = streamKindAnswer[streamKindInput.key];
+      switch (streamKind) {
+        case 'kinesisStreamRawARN':
+          arnInput = inputs.find(input => input.key === 'amazonKinesisStreamARN');
+          if (arnInput === undefined) {
+            throw Error('Unable to find amazonKinesisStreamARN question data. (this is likely an amplify error, please report)');
+          }
+          arnQuestion = {
+            name: arnInput.key,
+            message: arnInput.question,
+            validate: context.amplify.inputValidation(arnInput),
+          };
+          arnAnswer = await inquirer.prompt([arnQuestion]);
+          eventSourceArn = arnAnswer[arnInput.key];
+          return {
+            triggerEventSourceMapping: {
+              batchSize: 100,
+              startingPosition: 'LATEST',
+              eventSourceArn,
+              functionTemplateName: 'trigger-custom.js',
+              triggerPolicies: [{
+                Effect: 'Allow',
+                Action: [
+                  'kinesis:DescribeStream',
+                  'kinesis:DescribeStreamSummary',
+                  'kinesis:GetRecords',
+                  'kinesis:GetShardIterator',
+                  'kinesis:ListShards',
+                  'kinesis:ListStreams',
+                  'kinesis:SubscribeToShard',
+                ],
+                Resource: eventSourceArn,
+              }],
+            },
+          };
+        case 'analyticsKinesisStream':
+          return await askAnalyticsCategoryKinesisQuestions(context, inputs);
+        default:
+          return {};
+      }
     case 'dynamoDB':
-      dynamoDBStreamKindInput = inputs.find(input => input.key === 'dynamoDbStreamKind');
-      if (dynamoDBStreamKindInput === undefined) {
+      streamKindInput = inputs.find(input => input.key === 'dynamoDbStreamKind');
+      if (streamKindInput === undefined) {
         throw Error('Unable to find dynamoDBStreamKindInput question data. (this is likely an amplify error, please report)');
       }
-      dynamoDbStreamKindQuestion = {
-        type: dynamoDBStreamKindInput.type,
-        name: dynamoDBStreamKindInput.key,
-        message: dynamoDBStreamKindInput.question,
-        choices: dynamoDBStreamKindInput.options,
+      streamKindQuestion = {
+        type: streamKindInput.type,
+        name: streamKindInput.key,
+        message: streamKindInput.question,
+        choices: streamKindInput.options,
       };
-      dynamoDbStreamKindAnswer = await inquirer.prompt([dynamoDbStreamKindQuestion]);
-      dynamoDbStreamKind = dynamoDbStreamKindAnswer[dynamoDBStreamKindInput.key];
-      switch (dynamoDbStreamKind) {
+      streamKindAnswer = await inquirer.prompt([streamKindQuestion]);
+      streamKind = streamKindAnswer[streamKindInput.key];
+      switch (streamKind) {
         case 'dynamoDbStreamRawARN':
           arnInput = inputs.find(input => input.key === 'dynamoDbARN');
           if (arnInput === undefined) {
@@ -710,6 +728,75 @@ async function askEventSourceQuestions(context, inputs) {
       context.print.error('Unrecognized option selected. (this is likely an amplify error, please report)');
       return {};
   }
+}
+
+async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
+  const { amplify } = context;
+  const { allResources } = await amplify.getResourceStatus();
+  const kinesisResources = allResources
+    .filter(resource => resource.service === 'Kinesis');
+
+  let targetResourceName;
+  if (kinesisResources.length === 0) {
+    context.print.error('No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream');
+    process.exit(0);
+    return;
+  } else if (kinesisResources.length === 1) {
+    targetResourceName = kinesisResources[0].resourceName;
+    context.print.success(`Selected resource ${targetResourceName}`);
+  } else {
+    const resourceNameInput = inputs.find(input => input.key === 'kinesisAnalyticsResourceName');
+    if (resourceNameInput === undefined) {
+      throw Error('Unable to find kinesisAnalyticsResourceName question data. (this is likely an amplify error, please report)');
+    }
+
+    const resourceNameQuestion = {
+      type: resourceNameInput.type,
+      name: resourceNameInput.key,
+      message: resourceNameInput.question,
+      choices: kinesisResources.map(resource => resource.resourceName),
+    };
+
+    const answer = await inquirer.prompt(resourceNameQuestion);
+    targetResourceName = answer.kinesisAnalyticsResourceName;
+  }
+
+  const targetResource = kinesisResources
+    .find(resource => resource.resourceName === targetResourceName);
+  if (!('kinesisStreamArn' in targetResource.output)) {
+    throw Error(`Unable to locate kinesisStreamArn in ${targetResourceName}`);
+  }
+
+  const streamArnParamRef = {
+    Ref: `analytics${targetResourceName}kinesisStreamArn`,
+  };
+
+  return {
+    triggerEventSourceMapping: {
+      batchSize: 100,
+      startingPosition: 'LATEST',
+      eventSourceArn: streamArnParamRef,
+      functionTemplateName: 'trigger-custom.js',
+      triggerPolicies: [{
+        Effect: 'Allow',
+        Action: [
+          'kinesis:DescribeStream',
+          'kinesis:DescribeStreamSummary',
+          'kinesis:GetRecords',
+          'kinesis:GetShardIterator',
+          'kinesis:ListShards',
+          'kinesis:ListStreams',
+          'kinesis:SubscribeToShard',
+        ],
+        Resource: streamArnParamRef,
+      }],
+    },
+    dependsOn: [{
+      category: 'analytics',
+      resourceName: targetResourceName,
+      attributes: ['kinesisStreamArn'],
+    }],
+  };
 }
 
 async function askAPICategoryDynamoDBQuestions(context, inputs) {
