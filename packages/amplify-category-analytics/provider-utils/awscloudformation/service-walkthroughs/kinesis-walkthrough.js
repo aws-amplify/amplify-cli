@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const path = require('path');
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = 'analytics';
+const service = 'Kinesis';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -11,7 +12,7 @@ function migrate() {
   // no-op for now
 }
 
-function configure(context, defaultValuesFilename, serviceMetadata) {
+function configure(context, defaultValuesFilename, serviceMetadata, resourceName = null) {
   const { amplify } = context;
   const { inputs } = serviceMetadata;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
@@ -30,16 +31,18 @@ function configure(context, defaultValuesFilename, serviceMetadata) {
       const defaultValue = defaultValues[input.key];
       return defaultValue;
     },
-  }));
+  }))
+    // when resourceName is provider, we are in update flow - skip name question
+    .filter(question => resourceName && question.name !== 'kinesisStreamName');
 
   return inquirer.prompt(questions).then(async (answers) => {
-    const resourceName = answers.kinesisStreamName;
+    const targetResourceName = resourceName || answers.kinesisStreamName;
     const shardCount = answers.kinesisStreamShardCount;
     const templateDir = `${__dirname}/../cloudformation-templates`;
-    const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
+    const resourceDirPath = path.join(projectBackendDirPath, category, targetResourceName);
 
-    if (resourceNameAlreadyExists(context, resourceName)) {
-      throw new Error(`Resource ${resourceName} already exists in ${category} category.`);
+    if (!resourceName && resourceNameAlreadyExists(context, targetResourceName)) {
+      throw new Error(`Resource ${targetResourceName} already exists in ${category} category.`);
     }
 
     const copyJobs = [{
@@ -50,7 +53,7 @@ function configure(context, defaultValuesFilename, serviceMetadata) {
     }];
 
     const params = {
-      kinesisStreamName: resourceName,
+      kinesisStreamName: targetResourceName,
       kinesisStreamShardCount: shardCount,
       authRoleName: defaultValues.authRoleName,
       unauthRoleName: defaultValues.unauthRoleName,
@@ -58,10 +61,9 @@ function configure(context, defaultValuesFilename, serviceMetadata) {
       unauthPolicyName: defaultValues.unauthPolicyName,
     };
 
-    // we don't have to force CF template generation, since the resource name existence check
-    // above should exclude the case when overwritting is needed
-    await amplify.copyBatch(context, copyJobs, {}, false, params);
-    return resourceName;
+    // allow overwrite in update case: resourceName specified
+    await amplify.copyBatch(context, copyJobs, {}, !!resourceName, params);
+    return targetResourceName;
   });
 }
 
@@ -72,6 +74,36 @@ function resourceNameAlreadyExists(context, name) {
   return category in amplifyMeta
     ? Object.keys(amplifyMeta[category]).includes(name)
     : false;
+}
+
+async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+  const { amplify } = context;
+  const { allResources } = await amplify.getResourceStatus();
+  const kinesisResources = allResources
+    .filter(resource => resource.service === service)
+    .map(resource => resource.resourceName);
+
+  let targetResourceName;
+  if (kinesisResources.length === 0) {
+    context.print.error('No Kinesis streams resource to update. Please use "amplify add analytics" command to create a new Kinesis stream');
+    process.exit(0);
+    return;
+  } else if (kinesisResources.length === 1) {
+    [targetResourceName] = kinesisResources;
+    context.print.success(`Selected resource ${targetResourceName}`);
+  } else {
+    const resourceQuestion = [{
+      name: 'resourceName',
+      message: 'Please select the Kinesis stream you would want to update',
+      type: 'list',
+      choices: kinesisResources,
+    }];
+
+    const answer = await inquirer.prompt(resourceQuestion);
+    targetResourceName = answer.resourceName;
+  }
+
+  return configure(context, defaultValuesFilename, serviceMetadata, targetResourceName);
 }
 
 function getIAMPolicies(resourceName, crudOptions) {
@@ -98,4 +130,6 @@ function getIAMPolicies(resourceName, crudOptions) {
   };
 }
 
-module.exports = { addWalkthrough, migrate, getIAMPolicies };
+module.exports = {
+  addWalkthrough, migrate, getIAMPolicies, updateWalkthrough,
+};
