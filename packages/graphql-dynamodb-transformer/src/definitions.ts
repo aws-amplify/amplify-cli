@@ -343,7 +343,7 @@ export function makeModelXFilterInputObject(
 export function makeModelXConditionInputObject(
   obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
   ctx: TransformerContext,
-  fieldsToExclude: Array<String>
+  fieldsToExclude: Set<String>
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelConditionInputTypeName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -351,7 +351,7 @@ export function makeModelXConditionInputObject(
       const fieldType = ctx.getType(getBaseType(field.type));
       if (
         (isScalar(field.type) || (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)) &&
-        !fieldsToExclude.includes(field.name.value)
+        !fieldsToExclude.has(field.name.value)
       ) {
         return true;
       }
