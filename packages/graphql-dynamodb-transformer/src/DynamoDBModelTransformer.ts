@@ -497,19 +497,20 @@ export class DynamoDBModelTransformer extends Transformer {
   private getDirectiveFieldNames = (
     ctx: TransformerContext,
     type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode
-  ): Array<String> => {
-    const fieldNames = new Array<String>();
+  ): Set<String> => {
+    const fieldNames = new Set<String>();
 
     // Get PK for the type from @key directive or default to 'id'
-    const getPKFieldName = (): String => {
-      let field: FieldDefinitionNode;
+    const getPKFieldName = (): Array<String> => {
+      let fields: Array<FieldDefinitionNode>;
 
       for (const keyDirective of type.directives.filter(d => d.name.value === 'key')) {
         if (getDirectiveArgument(keyDirective, 'name') === undefined) {
-          const fieldsArg = getDirectiveArgument(keyDirective, 'fields');
+          const fieldsArg = <Array<string>>getDirectiveArgument(keyDirective, 'fields');
 
-          if (fieldsArg && fieldsArg.length && fieldsArg.length >= 1 && fieldsArg.length <= 2) {
-            field = type.fields.find(f => f.name.value === fieldsArg[0]);
+
+          if (fieldsArg && fieldsArg.length && fieldsArg.length > 0) {
+            fields = type.fields.filter(f => fieldsArg.includes(f.name.value));
           }
 
           // Exit the loop even if field was not set above, @key will throw validation
@@ -518,10 +519,10 @@ export class DynamoDBModelTransformer extends Transformer {
         }
       }
 
-      return field ? field.name.value : 'id';
+      return fields ? fields.map(f => f.name.value) : ['id'];
     };
 
-    fieldNames.push(getPKFieldName());
+    getPKFieldName().forEach(f => fieldNames.add(f));
 
     // Get versionInput from @versioned directive
     const getVersionInputName = (): String | undefined => {
@@ -538,21 +539,50 @@ export class DynamoDBModelTransformer extends Transformer {
 
     const versionInputName = getVersionInputName();
     if (versionInputName) {
-      fieldNames.push(versionInputName);
+      fieldNames.add(versionInputName);
     }
 
     // Get auth related field names from @auth directive rules
-    const getAuthFieldNames = (): Array<String> => {
+    const getAuthFieldNames = (): Set<String> => {
+      const authFields = new Set<string>();
       const authDirective = type.directives.find(d => d.name.value === 'auth');
 
       if (authDirective) {
         const authRules = getDirectiveArgument(authDirective, 'rules', []);
+
+        if (authRules.length > 0) {
+          // Process owner rules
+          const ownerRules = authRules.filter(rule => rule.allow === 'owner');
+          const ownerFieldNameArgs = ownerRules
+                                        .filter(rule => !!rule.ownerField)
+                                        .map(rule => rule.ownerField);
+
+          ownerFieldNameArgs.forEach((f: string) => authFields.add(f));
+
+          // Add 'owner' to field list if we've owner rules without ownerField argument
+          if (ownerRules.find(rule => !rule.ownerField)) {
+            authFields.add('owner');
+          }
+
+          // Process owner rules
+          const groupsRules = authRules.filter(rule => rule.allow === 'groups');
+          const groupFieldNameArgs = groupsRules
+                                        .filter(rule => !!rule.groupsField)
+                                        .map(rule => rule.groupsField);
+
+          groupFieldNameArgs.forEach((f: string) => authFields.add(f));
+
+          // Add 'groups' to field list if we've groups rules without groupsField argument
+          if (groupsRules.find(rule => !rule.groupsField)) {
+            authFields.add('groups');
+          }
+        }
       }
 
-      return [];
+      return authFields;
     };
 
-    fieldNames.push(...getAuthFieldNames());
+    getAuthFieldNames().forEach(f => fieldNames.add(f));
 
     return fieldNames;
   };
