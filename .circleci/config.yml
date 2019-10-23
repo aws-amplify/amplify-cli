@@ -268,7 +268,7 @@ jobs:
           name: 'Checkout sample apps repository'
           command: |
             cd ..
-            git clone https://github.com/awslabs/aws-sdk-ios-samples.git -b e2e-testing && cd aws-sdk-ios-samples && git checkout f29f8c9feb8a222f27e71de3ee3dfe1ff8d16606 && cd ..
+            git clone https://github.com/awslabs/aws-sdk-ios-samples.git -b e2e-testing && cd aws-sdk-ios-samples && git checkout 81fe2f278223c9d4a07352d451144c62e712a8f9 && cd ..
       - run:
           name: 'Install AWS CLI'
           command: pip install awscli
