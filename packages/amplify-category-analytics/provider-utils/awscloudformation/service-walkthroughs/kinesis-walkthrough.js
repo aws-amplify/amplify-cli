@@ -20,22 +20,23 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
   const projectBackendDirPath = amplify.pathManager.getBackendDirPath();
 
-  const questions = inputs.map(input => ({
-    name: input.key,
-    message: input.question,
-    type: input.type || 'input',
-    choices: input.options || undefined,
-    required: input.required || false,
-    validate: 'validation' in input ? amplify.inputValidation(input) : undefined,
-    default: () => {
-      const defaultValue = defaultValues[input.key];
-      return defaultValue;
-    },
-  }))
+  const questions = inputs
+    .map(input => ({
+      name: input.key,
+      message: input.question,
+      type: input.type || 'input',
+      choices: input.options || undefined,
+      required: input.required || false,
+      validate: 'validation' in input ? amplify.inputValidation(input) : undefined,
+      default: () => {
+        const defaultValue = defaultValues[input.key];
+        return defaultValue;
+      },
+    }))
     // when resourceName is provider, we are in update flow - skip name question
     .filter(question => resourceName && question.name !== 'kinesisStreamName');
 
-  return inquirer.prompt(questions).then(async (answers) => {
+  return inquirer.prompt(questions).then(async answers => {
     const targetResourceName = resourceName || answers.kinesisStreamName;
     const shardCount = answers.kinesisStreamShardCount;
     const templateDir = `${__dirname}/../cloudformation-templates`;
@@ -45,12 +46,14 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       throw new Error(`Resource ${targetResourceName} already exists in ${category} category.`);
     }
 
-    const copyJobs = [{
-      dir: templateDir,
-      template: serviceMetadata.cfnFilename,
-      target: path.join(resourceDirPath, serviceMetadata.cfnFilename),
-      paramsFile: path.join(resourceDirPath, 'parameters.json'),
-    }];
+    const copyJobs = [
+      {
+        dir: templateDir,
+        template: serviceMetadata.cfnFilename,
+        target: path.join(resourceDirPath, serviceMetadata.cfnFilename),
+        paramsFile: path.join(resourceDirPath, 'parameters.json'),
+      },
+    ];
 
     const params = {
       kinesisStreamName: targetResourceName,
@@ -71,17 +74,13 @@ function resourceNameAlreadyExists(context, name) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
-  return category in amplifyMeta
-    ? Object.keys(amplifyMeta[category]).includes(name)
-    : false;
+  return category in amplifyMeta ? Object.keys(amplifyMeta[category]).includes(name) : false;
 }
 
 async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const { amplify } = context;
   const { allResources } = await amplify.getResourceStatus();
-  const kinesisResources = allResources
-    .filter(resource => resource.service === service)
-    .map(resource => resource.resourceName);
+  const kinesisResources = allResources.filter(resource => resource.service === service).map(resource => resource.resourceName);
 
   let targetResourceName;
   if (kinesisResources.length === 0) {
@@ -92,12 +91,14 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
     [targetResourceName] = kinesisResources;
     context.print.success(`Selected resource ${targetResourceName}`);
   } else {
-    const resourceQuestion = [{
-      name: 'resourceName',
-      message: 'Please select the Kinesis stream you would want to update',
-      type: 'list',
-      choices: kinesisResources,
-    }];
+    const resourceQuestion = [
+      {
+        name: 'resourceName',
+        message: 'Please select the Kinesis stream you would want to update',
+        type: 'list',
+        choices: kinesisResources,
+      },
+    ];
 
     const answer = await inquirer.prompt(resourceQuestion);
     targetResourceName = answer.resourceName;
@@ -107,22 +108,24 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
 }
 
 function getIAMPolicies(resourceName, crudOptions) {
-  const actions = crudOptions.map((crudOption) => {
-    switch (crudOption) {
-      case 'read':
-        return [
-          'kinesis:DescribeStream',
-          'kinesis:DescribeStreamSummary',
-          'kinesis:GetRecords',
-          'kinesis:GetShardIterator',
-          'kinesis:ListShards',
-          'kinesis:ListStreams',
-          'kinesis:SubscribeToShard',
-        ];
-      default:
-        return [];
-    }
-  }).reduce((flattened, kinesisActions) => [...flattened, ...kinesisActions], []);
+  const actions = crudOptions
+    .map(crudOption => {
+      switch (crudOption) {
+        case 'read':
+          return [
+            'kinesis:DescribeStream',
+            'kinesis:DescribeStreamSummary',
+            'kinesis:GetRecords',
+            'kinesis:GetShardIterator',
+            'kinesis:ListShards',
+            'kinesis:ListStreams',
+            'kinesis:SubscribeToShard',
+          ];
+        default:
+          return [];
+      }
+    })
+    .reduce((flattened, kinesisActions) => [...flattened, ...kinesisActions], []);
 
   return {
     Effect: 'Allow',
@@ -131,5 +134,8 @@ function getIAMPolicies(resourceName, crudOptions) {
 }
 
 module.exports = {
-  addWalkthrough, migrate, getIAMPolicies, updateWalkthrough,
+  addWalkthrough,
+  migrate,
+  getIAMPolicies,
+  updateWalkthrough,
 };

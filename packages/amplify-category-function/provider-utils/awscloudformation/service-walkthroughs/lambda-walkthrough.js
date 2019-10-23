@@ -585,19 +585,21 @@ async function askEventSourceQuestions(context, inputs) {
               startingPosition: 'LATEST',
               eventSourceArn,
               functionTemplateName: 'trigger-custom.js',
-              triggerPolicies: [{
-                Effect: 'Allow',
-                Action: [
-                  'kinesis:DescribeStream',
-                  'kinesis:DescribeStreamSummary',
-                  'kinesis:GetRecords',
-                  'kinesis:GetShardIterator',
-                  'kinesis:ListShards',
-                  'kinesis:ListStreams',
-                  'kinesis:SubscribeToShard',
-                ],
-                Resource: eventSourceArn,
-              }],
+              triggerPolicies: [
+                {
+                  Effect: 'Allow',
+                  Action: [
+                    'kinesis:DescribeStream',
+                    'kinesis:DescribeStreamSummary',
+                    'kinesis:GetRecords',
+                    'kinesis:GetShardIterator',
+                    'kinesis:ListShards',
+                    'kinesis:ListStreams',
+                    'kinesis:SubscribeToShard',
+                  ],
+                  Resource: eventSourceArn,
+                },
+              ],
             },
           };
         case 'analyticsKinesisStream':
@@ -637,16 +639,13 @@ async function askEventSourceQuestions(context, inputs) {
               startingPosition: 'LATEST',
               eventSourceArn,
               functionTemplateName: 'trigger-dynamodb.js',
-              triggerPolicies: [{
-                Effect: 'Allow',
-                Action: [
-                  'dynamodb:DescribeStream',
-                  'dynamodb:GetRecords',
-                  'dynamodb:GetShardIterator',
-                  'dynamodb:ListStreams',
-                ],
-                Resource: eventSourceArn,
-              }],
+              triggerPolicies: [
+                {
+                  Effect: 'Allow',
+                  Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+                  Resource: eventSourceArn,
+                },
+              ],
             },
           };
         case 'graphqlModelTable':
@@ -663,22 +662,21 @@ async function askEventSourceQuestions(context, inputs) {
               startingPosition: 'LATEST',
               eventSourceArn: dynamoDBCategoryStorageStreamArnRef,
               functionTemplateName: 'trigger-dynamodb.js',
-              triggerPolicies: [{
-                Effect: 'Allow',
-                Action: [
-                  'dynamodb:DescribeStream',
-                  'dynamodb:GetRecords',
-                  'dynamodb:GetShardIterator',
-                  'dynamodb:ListStreams',
-                ],
-                Resource: dynamoDBCategoryStorageStreamArnRef,
-              }],
+              triggerPolicies: [
+                {
+                  Effect: 'Allow',
+                  Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+                  Resource: dynamoDBCategoryStorageStreamArnRef,
+                },
+              ],
             },
-            dependsOn: [{
-              category: 'storage',
-              resourceName: dynamoDBCategoryStorageRes.resourceName,
-              attributes: ['StreamArn'],
-            }],
+            dependsOn: [
+              {
+                category: 'storage',
+                resourceName: dynamoDBCategoryStorageRes.resourceName,
+                attributes: ['StreamArn'],
+              },
+            ],
           };
         default:
           return {};
@@ -692,8 +690,7 @@ async function askEventSourceQuestions(context, inputs) {
 async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
   const { amplify } = context;
   const { allResources } = await amplify.getResourceStatus();
-  const kinesisResources = allResources
-    .filter(resource => resource.service === 'Kinesis');
+  const kinesisResources = allResources.filter(resource => resource.service === 'Kinesis');
 
   let targetResourceName;
   if (kinesisResources.length === 0) {
@@ -720,8 +717,7 @@ async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
     targetResourceName = answer.kinesisAnalyticsResourceName;
   }
 
-  const targetResource = kinesisResources
-    .find(resource => resource.resourceName === targetResourceName);
+  const targetResource = kinesisResources.find(resource => resource.resourceName === targetResourceName);
   if (!('kinesisStreamArn' in targetResource.output)) {
     throw Error(`Unable to locate kinesisStreamArn in ${targetResourceName}`);
   }
@@ -736,25 +732,29 @@ async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
       startingPosition: 'LATEST',
       eventSourceArn: streamArnParamRef,
       functionTemplateName: 'trigger-custom.js',
-      triggerPolicies: [{
-        Effect: 'Allow',
-        Action: [
-          'kinesis:DescribeStream',
-          'kinesis:DescribeStreamSummary',
-          'kinesis:GetRecords',
-          'kinesis:GetShardIterator',
-          'kinesis:ListShards',
-          'kinesis:ListStreams',
-          'kinesis:SubscribeToShard',
-        ],
-        Resource: streamArnParamRef,
-      }],
+      triggerPolicies: [
+        {
+          Effect: 'Allow',
+          Action: [
+            'kinesis:DescribeStream',
+            'kinesis:DescribeStreamSummary',
+            'kinesis:GetRecords',
+            'kinesis:GetShardIterator',
+            'kinesis:ListShards',
+            'kinesis:ListStreams',
+            'kinesis:SubscribeToShard',
+          ],
+          Resource: streamArnParamRef,
+        },
+      ],
     },
-    dependsOn: [{
-      category: 'analytics',
-      resourceName: targetResourceName,
-      attributes: ['kinesisStreamArn'],
-    }],
+    dependsOn: [
+      {
+        category: 'analytics',
+        resourceName: targetResourceName,
+        attributes: ['kinesisStreamArn'],
+      },
+    ],
   };
 }
 
@@ -807,13 +807,13 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
           partial = {};
       }
 
-      return ({
+      return {
         ...infos,
         [parsedOutput.tableName]: {
-          ...infos[parsedOutput.tableName] || {},
+          ...(infos[parsedOutput.tableName] || {}),
           ...partial,
         },
-      });
+      };
     }, {});
 
   const modelNameInput = inputs.find(input => input.key === 'graphqlAPIModelName');
@@ -833,7 +833,7 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
   const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
   const modelName = modelNameAnswer[modelNameInput.key];
   const tableInfo = tableInfos[modelName];
-  if (!(('streamArn') in tableInfo)) {
+  if (!('streamArn' in tableInfo)) {
     throw Error(`Unable to find associated streamArn for ${tableInfo} model dynamoDb table.`);
   }
 
@@ -847,22 +847,21 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
       startingPosition: 'LATEST',
       eventSourceArn: streamArnParamRef,
       functionTemplateName: 'trigger-dynamodb.js',
-      triggerPolicies: [{
-        Effect: 'Allow',
-        Action: [
-          'dynamodb:DescribeStream',
-          'dynamodb:GetRecords',
-          'dynamodb:GetShardIterator',
-          'dynamodb:ListStreams',
-        ],
-        Resource: streamArnParamRef,
-      }],
+      triggerPolicies: [
+        {
+          Effect: 'Allow',
+          Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+          Resource: streamArnParamRef,
+        },
+      ],
     },
-    dependsOn: [{
-      category: 'api',
-      resourceName,
-      attributes: [`NGetAtt${modelName}TableStreamArn`],
-    }],
+    dependsOn: [
+      {
+        category: 'api',
+        resourceName,
+        attributes: [`NGetAtt${modelName}TableStreamArn`],
+      },
+    ],
   };
 }
 
@@ -873,11 +872,9 @@ async function askDynamoDBQuestions(context, inputs, currentProjectOnly = false)
     message: inputs[5].question,
     choices: inputs[5].options,
   };
-  while (true) { 
+  while (true) {
     //eslint-disable-line
-    const dynamoDbTypeAnswer = currentProjectOnly
-      ? { [inputs[5].key]: 'currentProject' }
-      : (await inquirer.prompt([dynamoDbTypeQuestion]));
+    const dynamoDbTypeAnswer = currentProjectOnly ? { [inputs[5].key]: 'currentProject' } : await inquirer.prompt([dynamoDbTypeQuestion]);
     switch (dynamoDbTypeAnswer[inputs[5].key]) {
       case 'currentProject': {
         const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;
