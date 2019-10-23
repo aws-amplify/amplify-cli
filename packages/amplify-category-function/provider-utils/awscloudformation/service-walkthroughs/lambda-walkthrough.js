@@ -759,30 +759,38 @@ async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
 }
 
 async function askAPICategoryDynamoDBQuestions(context, inputs) {
-  const outputs = context.amplify.getResourceOutputs().outputsByCategory;
-  if (!('api' in outputs) || Object.keys(outputs.api).length === 0) {
-    throw Error('No resources have been configured in API category');
+  const { allResources } = await context.amplify.getResourceStatus();
+  const appSynchResources = allResources.filter(resource => resource.service === 'AppSync');
+
+  let targetResourceName;
+  if (appSynchResources.length === 0) {
+    context.print.error(`
+      No AppSync resources have been configured in API category. 
+      Please use "amplify add api" command to create a new appsync resource`);
+    process.exit(0);
+    return;
+  } else if (appSynchResources.length === 1) {
+    targetResourceName = appSynchResources[0].resourceName;
+    context.print.success(`Selected resource ${targetResourceName}`);
+  } else {
+    const resourceNameInput = inputs.find(input => input.key === 'dynamoDbAPIResourceName');
+    if (resourceNameInput === undefined) {
+      throw Error('Unable to find dynamoDbAPIResourceName question data. (this is likely an amplify error, please report)');
+    }
+
+    const resourceNameQuestion = {
+      type: resourceNameInput.type,
+      name: resourceNameInput.key,
+      message: resourceNameInput.question,
+      choices: appSynchResources.map(resource => resource.resourceName),
+    };
+
+    const answer = await inquirer.prompt(resourceNameQuestion);
+    targetResourceName = answer.dynamoDbAPIResourceName;
   }
 
-  // let resourceNameInput, resourceNameQuestion, resourceNameAnswer, resourceName;
-  const apiOutput = outputs.api;
-  const resourceNames = Object.keys(apiOutput);
-  const resourceNameInput = inputs.find(input => input.key === 'dynamoDbAPIResourceName');
-  if (resourceNameInput === undefined) {
-    throw Error('Unable to find dynamoDbAPIResourceName question data. (this is likely an amplify error, please report)');
-  }
-
-  const resourceNameQuestion = {
-    type: resourceNameInput.type,
-    name: resourceNameInput.key,
-    message: resourceNameInput.question,
-    choices: resourceNames,
-  };
-
-  const resourceNameAnswer = await inquirer.prompt([resourceNameQuestion]);
-  const resourceName = resourceNameAnswer[resourceNameInput.key];
-  const resourceOutput = apiOutput[resourceName];
-
+  const targetResource = appSynchResources.find(resource => resource.resourceName === targetResourceName);
+  const resourceOutput = targetResource.output;
   const tableInfos = Object.keys(resourceOutput)
     .map(outputName => outputName.match(/^NGetAtt(.*)(TableName|DataSourceName|TableStreamArn)$/))
     .filter(match => match)
@@ -820,25 +828,31 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
   if (modelNameInput === undefined) {
     throw Error('Unable to find graphqlAPIModelName question data. (this is likely an amplify error, please report)');
   }
+
+  let modelName;
   if (Object.keys(tableInfos).length === 0) {
     throw Error('Unable to find graphql model info.');
+  } else if (Object.keys(tableInfos).length === 1) {
+    [modelName] = Object.keys(tableInfos);
+    context.print.success(`Selected @model ${modelName}`);
+  } else {
+    const modelNameQuestion = {
+      type: modelNameInput.type,
+      name: modelNameInput.key,
+      message: modelNameInput.question,
+      choices: Object.keys(tableInfos),
+    };
+    const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
+    modelName = modelNameAnswer[modelNameInput.key];
   }
 
-  const modelNameQuestion = {
-    type: modelNameInput.type,
-    name: modelNameInput.key,
-    message: modelNameInput.question,
-    choices: Object.keys(tableInfos),
-  };
-  const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
-  const modelName = modelNameAnswer[modelNameInput.key];
   const tableInfo = tableInfos[modelName];
   if (!('streamArn' in tableInfo)) {
     throw Error(`Unable to find associated streamArn for ${tableInfo} model dynamoDb table.`);
   }
 
   const streamArnParamRef = {
-    Ref: `api${resourceName}NGetAtt${modelName}TableStreamArn`,
+    Ref: `api${targetResourceName}NGetAtt${modelName}TableStreamArn`,
   };
 
   return {
@@ -858,7 +872,7 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
     dependsOn: [
       {
         category: 'api',
-        resourceName,
+        resourceName: targetResourceName,
         attributes: [`NGetAtt${modelName}TableStreamArn`],
       },
     ],
