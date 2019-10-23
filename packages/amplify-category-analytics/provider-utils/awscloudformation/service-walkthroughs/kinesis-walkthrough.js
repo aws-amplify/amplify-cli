@@ -127,10 +127,14 @@ function getIAMPolicies(resourceName, crudOptions) {
     })
     .reduce((flattened, kinesisActions) => [...flattened, ...kinesisActions], []);
 
-  return {
+  const policy = {
     Effect: 'Allow',
-    Actions: actions,
+    Action: actions,
+    Resource: { Ref: `${category}${resourceName}kinesisStreamArn` },
   };
+
+  const attributes = ['kinesisStreamArn'];
+  return { policy, attributes };
 }
 
 module.exports = {
