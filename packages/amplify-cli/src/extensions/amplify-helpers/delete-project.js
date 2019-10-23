@@ -11,7 +11,6 @@ async function deleteProject(context) {
     spinner.start();
     await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
     spinner.succeed('Project deleted in the cloud');
-
     // Remove amplify dir
     const { frontend } = context.amplify.getProjectConfig();
     const frontendPlugins = getFrontendPlugins(context);
