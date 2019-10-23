@@ -34,7 +34,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       },
     }))
     // when resourceName is provider, we are in update flow - skip name question
-    .filter(question => resourceName && question.name !== 'kinesisStreamName');
+    .filter(question => (resourceName && question.name !== 'kinesisStreamName') || !resourceName);
 
   return inquirer.prompt(questions).then(async answers => {
     const targetResourceName = resourceName || answers.kinesisStreamName;
