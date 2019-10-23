@@ -3,6 +3,7 @@ const path = require('path');
 const ora = require('ora');
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 const { getConfirmation } = require('../../extensions/amplify-helpers/delete-project');
+
 module.exports = {
   name: 'remove',
   run: async context => {
