@@ -3,32 +3,36 @@ const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 
 async function deleteProject(context) {
-  if (
-    await context.amplify.confirmPrompt.run(
-      'Are you sure you want to continue? (This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)'
-    )
-  ) {
-    const removeEnvPromises = [];
+  const confirmation = await getConfirmation(context);
+  if (confirmation.proceed) {
     const allEnvs = context.amplify.getEnvDetails();
-    const deleteS3 =
-      context.input.options &&
-      context.input.options.all &&
-      (await context.amplify.confirmPrompt.run('Are you sure you want to continue to delete all the data contained and the S3 buckets?'));
-    Object.keys(allEnvs).forEach(env => {
-      removeEnvPromises.push(removeEnvFromCloud(context, env, deleteS3));
-    });
     const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
     spinner.start();
-    await Promise.all(removeEnvPromises);
-
+    await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
     spinner.succeed('Project deleted in the cloud');
-
     // Remove amplify dir
     context.filesystem.remove(pathManager.getAmplifyDirPath());
     context.print.success('Project deleted locally.');
   }
 }
 
+async function getConfirmation(context) {
+  if (context.input.options && context.input.options.force)
+    return {
+      proceed: true,
+      deleteS3: true,
+    };
+  else
+    return {
+      proceed: await context.amplify.confirmPrompt.run(
+        'Are you sure you want to continue? (This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)'
+      ),
+      //place holder for later selective deletes
+      deleteS3: true,
+    };
+}
+
 module.exports = {
   deleteProject,
+  getConfirmation,
 };

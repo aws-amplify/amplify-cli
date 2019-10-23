@@ -388,7 +388,7 @@ class CloudFormation {
       if (deleteS3) {
         new S3(this.context, {}).then(s3 => {
           const amplifyDir = this.context.amplify.pathManager.getAmplifyDirPath();
-          const tempDir = `${amplifyDir}/.temp`;
+          const tempDir = `${amplifyDir}-${envName}/.temp`;
           downloadZip(s3, tempDir, ZipFileName, envName).then((file, err) => {
             if (err) reject(err);
 
@@ -411,7 +411,7 @@ class CloudFormation {
                 } else {
                   fs.removeSync(file);
                   fs.removeSync(unZippedDir);
-                  resolve();
+                  resolve(results);
                 }
               });
             });
