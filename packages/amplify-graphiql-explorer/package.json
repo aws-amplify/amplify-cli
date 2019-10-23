@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "0.16.0",
+  "version": "0.21.0",
   "private": true,
   "dependencies": {
     "add": "^2.0.6",
@@ -23,7 +23,6 @@
     "@types/react-dom": "16.8.5",
     "cross-env": "^5.2.0",
     "eslint": "^6.1.0",
-    "prettier": "^1.18.2",
     "typescript": "^3.5.3"
   },
   "author": "Amazon Web Services",
@@ -31,8 +30,7 @@
   "scripts": {
     "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts start",
     "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts build",
-    "eject": "react-scripts eject",
-    "prettier": "prettier --config ../../.prettierrc --write src/**/*.ts[x]*"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"

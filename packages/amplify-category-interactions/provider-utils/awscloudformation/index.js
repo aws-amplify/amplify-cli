@@ -60,35 +60,30 @@ async function addResource(context, category, service, options) {
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
-  return addWalkthrough(context, defaultValuesFilename, serviceMetadata)
-    .then((answers) => {
-      copyCfnTemplate(context, category, answers, cfnFilename);
+  return addWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
+    copyCfnTemplate(context, category, answers, cfnFilename);
 
-      const parameters = { ...answers };
-      const cfnParameters = {
-        authRoleArn: defaultValues.authRoleArn,
-        authRoleName: defaultValues.authRoleName,
-        unauthRoleName: defaultValues.unauthRoleName,
-      };
+    const parameters = { ...answers };
+    const cfnParameters = {
+      authRoleArn: defaultValues.authRoleArn,
+      authRoleName: defaultValues.authRoleName,
+      unauthRoleName: defaultValues.unauthRoleName,
+    };
 
-      const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
-      fs.ensureDirSync(resourceDirPath);
+    const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
+    fs.ensureDirSync(resourceDirPath);
 
-      const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-      let jsonString = JSON.stringify(parameters, null, 4);
-      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    let jsonString = JSON.stringify(parameters, null, 4);
+    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
-      const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
-      jsonString = JSON.stringify(cfnParameters, null, 4);
-      fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
+    const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
+    jsonString = JSON.stringify(cfnParameters, null, 4);
+    fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
 
-      context.amplify.updateamplifyMetaAfterResourceAdd(
-        category,
-        answers.resourceName,
-        options,
-      );
-      return answers.resourceName;
-    });
+    context.amplify.updateamplifyMetaAfterResourceAdd(category, answers.resourceName, options);
+    return answers.resourceName;
+  });
 }
 
 function updateResource(context, category, service) {
@@ -99,24 +94,20 @@ function updateResource(context, category, service) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
-  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata)
-    .then((answers) => {
-      answers.shortId = uuid().substring(0, 8);
-      copyCfnTemplate(context, category, answers, cfnFilename);
+  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
+    answers.shortId = uuid().substring(0, 8);
+    copyCfnTemplate(context, category, answers, cfnFilename);
 
-      const parameters = { ...answers };
-      const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
-      fs.ensureDirSync(resourceDirPath);
-      const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-      const jsonString = JSON.stringify(parameters, null, 4);
-      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    const parameters = { ...answers };
+    const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
+    fs.ensureDirSync(resourceDirPath);
+    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    const jsonString = JSON.stringify(parameters, null, 4);
+    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
-      context.amplify.updateamplifyMetaAfterResourceUpdate(
-        category,
-        answers.resourceName,
-      );
-      return answers.resourceName;
-    });
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName);
+    return answers.resourceName;
+  });
 }
 
 async function migrateResource(context, projectPath, service, resourceName) {
@@ -147,7 +138,9 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-
 module.exports = {
-  addResource, updateResource, migrateResource, getPermissionPolicies,
+  addResource,
+  updateResource,
+  migrateResource,
+  getPermissionPolicies,
 };

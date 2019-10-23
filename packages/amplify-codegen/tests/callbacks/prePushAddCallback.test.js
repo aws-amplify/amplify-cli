@@ -42,10 +42,7 @@ describe('callback - prePushAddCallback', () => {
   });
 
   it('should walkthrough add questions', async () => {
-    const { gqlConfig, shouldGenerateDocs } = await prePushAddCallback(
-      MOCK_CONTEXT,
-      MOCK_RESOURCE_NAME,
-    );
+    const { gqlConfig, shouldGenerateDocs } = await prePushAddCallback(MOCK_CONTEXT, MOCK_RESOURCE_NAME);
 
     expect(gqlConfig).toEqual({
       projectName: MOCK_RESOURCE_NAME,

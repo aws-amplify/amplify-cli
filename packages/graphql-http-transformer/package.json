@@ -1,6 +1,6 @@
 {
   "name": "graphql-http-transformer",
-  "version": "3.21.0",
+  "version": "3.26.0",
   "description": "An AppSync model transform for HTTP resolvers.",
   "main": "lib/index.js",
   "scripts": {
@@ -20,9 +20,9 @@
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "3.18.0",
-    "graphql-transformer-common": "3.25.0",
-    "graphql-transformer-core": "5.11.0"
+    "graphql-mapping-template": "3.23.0",
+    "graphql-transformer-common": "3.30.0",
+    "graphql-transformer-core": "5.16.0"
   },
   "devDependencies": {
     "@types/graphql": "^0.13.4",
@@ -47,6 +47,7 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "collectCoverage": true
   }
 }

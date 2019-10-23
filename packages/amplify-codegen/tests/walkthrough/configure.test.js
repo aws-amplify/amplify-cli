@@ -75,15 +75,13 @@ describe('configure walk-through', () => {
     expect(selectProject).toHaveBeenCalledWith(mockContext, mockProjectSelect);
     expect(askCodegenTargetLanguage).toHaveBeenCalledWith(
       mockContext,
-      mockConfigs[1].amplifyExtension.codeGenTarget, false, undefined, undefined,
+      mockConfigs[1].amplifyExtension.codeGenTarget,
+      false,
+      undefined,
+      undefined
     );
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith([
-      join(mockGraphQLDirectory, '**', mockGraphQLExtension),
-    ]);
-    expect(askGeneratedFileName).toHaveBeenCalledWith(
-      mockConfigs[1].amplifyExtension.generatedFileName,
-      mockTargetLanguage,
-    );
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith([join(mockGraphQLDirectory, '**', mockGraphQLExtension)]);
+    expect(askGeneratedFileName).toHaveBeenCalledWith(mockConfigs[1].amplifyExtension.generatedFileName, mockTargetLanguage);
     expect(askMaxDepth).toHaveBeenCalledWith(10);
     expect(results).toEqual({
       projectName: mockConfigs[1].projectName,

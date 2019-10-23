@@ -6,7 +6,8 @@
         "configure",
         "console",
         "reset-cache",
-        "setupNewUser"
+        "setupNewUser",
+        "help"
     ],
     "commandAliases":{
         "resetCache": "reset-cache",

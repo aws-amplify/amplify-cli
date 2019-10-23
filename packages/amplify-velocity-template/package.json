@@ -1,7 +1,7 @@
 {
   "name": "amplify-velocity-template",
   "description": "Velocity Template Language(VTL) for JavaScript",
-  "version": "0.15.0",
+  "version": "0.20.0",
   "keywords": [
     "velocity template"
   ],
@@ -21,7 +21,6 @@
     "jison": ">=0.3",
     "mocha": ">=1.7.2",
     "mocha-lcov-reporter": "0.0.1",
-    "prettier": "^1.18.2",
     "should": "^7.0.1"
   },
   "dependencies": {
@@ -30,7 +29,6 @@
   "scripts": {
     "test": "mocha tests --require should",
     "pub": "npm version patch && npm publish && git push origin master && git push origin --tag",
-    "build": "jison src/parse/velocity.yy src/parse/velocity.l -o src/parse/index.js",
-    "prettier": "prettier --config ../../.prettierrc --write src/**/*.js"
+    "build": "jison src/parse/velocity.yy src/parse/velocity.l -o src/parse/index.js"
   }
 }

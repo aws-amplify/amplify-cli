@@ -1,5 +1,5 @@
 import { parse, GraphQLSchema } from 'graphql';
-import { compileToIR, CompilerOptions, } from '../../src/compiler';
+import { compileToIR, CompilerOptions } from '../../src/compiler';
 import { loadSchema } from '../../src/loading';
 
 export const starWarsSchema = loadSchema(require.resolve('../fixtures/starwars/schema.json'));

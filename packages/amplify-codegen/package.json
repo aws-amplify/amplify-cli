@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "1.22.0",
+  "version": "1.27.0",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
@@ -8,14 +8,13 @@
     "lint-fix": "eslint src/** tests/** --fix",
     "test": "jest",
     "test-ci": "jest --ci -i",
-    "test-watch": "jest --watch",
-    "format": "prettier --write ./src/**/*.js ./__tests__/**/*.js"
+    "test-watch": "jest --watch"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-graphql-docs-generator": "1.21.0",
-    "amplify-graphql-types-generator": "1.17.0",
+    "amplify-graphql-docs-generator": "1.26.0",
+    "amplify-graphql-types-generator": "1.22.0",
     "aws-appsync-codegen": "^0.17.4",
     "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",
@@ -31,8 +30,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
-    "jest": "^23.0.0",
-    "prettier": "^1.18.2"
+    "jest": "^23.0.0"
   },
   "jest": {
     "collectCoverage": true,

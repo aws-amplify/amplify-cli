@@ -1,4 +1,3 @@
-
 function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdminTrigger) {
   // Add reference for the new triggerFunction
   storageCFNFile.Parameters[`function${functionName}Arn`] = {
@@ -16,7 +15,6 @@ function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdmi
     Default: `function${functionName}LambdaExecutionRole`,
   };
 
-
   storageCFNFile.Parameters.triggerFunction = {
     Type: 'String',
   };
@@ -33,10 +31,11 @@ function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdmi
         Event: 's3:ObjectCreated:*',
         Filter: {
           S3Key: {
-            Rules: [{
-              Name: 'prefix',
-              Value: prefixForAdminTrigger,
-            },
+            Rules: [
+              {
+                Name: 'prefix',
+                Value: prefixForAdminTrigger,
+              },
             ],
           },
         },
@@ -48,10 +47,11 @@ function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdmi
         Event: 's3:ObjectRemoved:*',
         Filter: {
           S3Key: {
-            Rules: [{
-              Name: 'prefix',
-              Value: prefixForAdminTrigger,
-            },
+            Rules: [
+              {
+                Name: 'prefix',
+                Value: prefixForAdminTrigger,
+              },
             ],
           },
         },
@@ -108,9 +108,7 @@ function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdmi
 
   storageCFNFile.Resources.S3TriggerBucketPolicy = {
     Type: 'AWS::IAM::Policy',
-    DependsOn: [
-      'S3Bucket',
-    ],
+    DependsOn: ['S3Bucket'],
     Properties: {
       PolicyName: 's3-trigger-lambda-execution-policy',
       Roles: [
@@ -123,12 +121,7 @@ function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdmi
         Statement: [
           {
             Effect: 'Allow',
-            Action: [
-              's3:PutObject',
-              's3:GetObject',
-              's3:ListBucket',
-              's3:DeleteObject',
-            ],
+            Action: ['s3:PutObject', 's3:GetObject', 's3:ListBucket', 's3:DeleteObject'],
             Resource: [
               {
                 'Fn::Join': [
@@ -152,7 +145,6 @@ function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdmi
   return storageCFNFile;
 }
 
-
 function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, prefixForAdminTrigger) {
   storageCFNFile.Parameters[`function${functionName}Arn`] = {
     Type: 'String',
@@ -169,7 +161,6 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
     Default: `function${functionName}LambdaExecutionRole`,
   };
 
-
   storageCFNFile.Parameters.triggerFunction = {
     Type: 'String',
   };
@@ -183,11 +174,10 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
   // Modify existing notification configuration here//
 
   const lambdaConfigurations = [];
-  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((triggers) => {
+  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach(triggers => {
     if (!triggers.Filter) {
-      lambdaConfigurations.push(addObjectKeys(
-        triggers,
-        {
+      lambdaConfigurations.push(
+        addObjectKeys(triggers, {
           Filter: {
             S3Key: {
               Rules: [
@@ -201,7 +191,6 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
                         {
                           Ref: 'AWS::Region',
                         },
-
                       ],
                     ],
                   },
@@ -209,11 +198,10 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
               ],
             },
           },
-        },
-      ));
-      lambdaConfigurations.push(addObjectKeys(
-        triggers,
-        {
+        })
+      );
+      lambdaConfigurations.push(
+        addObjectKeys(triggers, {
           Filter: {
             S3Key: {
               Rules: [
@@ -227,7 +215,6 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
                         {
                           Ref: 'AWS::Region',
                         },
-
                       ],
                     ],
                   },
@@ -235,11 +222,10 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
               ],
             },
           },
-        },
-      ));
-      lambdaConfigurations.push(addObjectKeys(
-        triggers,
-        {
+        })
+      );
+      lambdaConfigurations.push(
+        addObjectKeys(triggers, {
           Filter: {
             S3Key: {
               Rules: [
@@ -253,7 +239,6 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
                         {
                           Ref: 'AWS::Region',
                         },
-
                       ],
                     ],
                   },
@@ -261,8 +246,8 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
               ],
             },
           },
-        },
-      ));
+        })
+      );
     } else {
       lambdaConfigurations.push(triggers);
     }
@@ -300,7 +285,7 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
       Function: {
         Ref: `function${functionName}Arn`,
       },
-    },
+    }
   );
 
   storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConfigurations;
@@ -416,11 +401,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
         Statement: [
           {
             Effect: 'Allow',
-            Action: [
-              'rekognition:ListFaces',
-              'rekognition:IndexFaces',
-              'rekognition:DeleteFaces',
-            ],
+            Action: ['rekognition:ListFaces', 'rekognition:IndexFaces', 'rekognition:DeleteFaces'],
             Resource: [
               {
                 'Fn::Join': [
@@ -543,10 +524,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
       Runtime: 'nodejs8.10',
       Timeout: '300',
       Role: {
-        'Fn::GetAtt': [
-          'CollectionsLambdaExecutionRole',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['CollectionsLambdaExecutionRole', 'Arn'],
       },
     },
   };
@@ -555,10 +533,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
     Type: 'Custom::LambdaCallout',
     Properties: {
       ServiceToken: {
-        'Fn::GetAtt': [
-          'CollectionCreationFunction',
-          'Arn',
-        ],
+        'Fn::GetAtt': ['CollectionCreationFunction', 'Arn'],
       },
       region: {
         Ref: 'AWS::Region',
@@ -601,7 +576,6 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
             Ref: 'resourceName',
           },
           {
-
             'Fn::Join': [
               '',
               [
@@ -623,13 +597,9 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
           {
             Effect: 'Allow',
             Principal: {
-              Service: [
-                'lambda.amazonaws.com',
-              ],
+              Service: ['lambda.amazonaws.com'],
             },
-            Action: [
-              'sts:AssumeRole',
-            ],
+            Action: ['sts:AssumeRole'],
           },
         ],
       },
@@ -643,11 +613,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
             Statement: [
               {
                 Effect: 'Allow',
-                Action: [
-                  'logs:CreateLogGroup',
-                  'logs:CreateLogStream',
-                  'logs:PutLogEvents',
-                ],
+                Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
                 Resource: 'arn:aws:logs:*:*:*',
               },
             ],
@@ -662,15 +628,12 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
             Statement: [
               {
                 Effect: 'Allow',
-                Action: [
-                  'rekognition:CreateCollection',
-                  'rekognition:DeleteCollection',
-                  's3:PutObject',
-                ],
+                Action: ['rekognition:CreateCollection', 'rekognition:DeleteCollection', 's3:PutObject'],
                 Resource: [
                   {
                     'Fn::Join': [
-                      '', [
+                      '',
+                      [
                         'arn:aws:rekognition:',
                         { Ref: 'AWS::Region' },
                         ':',
@@ -718,9 +681,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
               },
               {
                 Effect: 'Allow',
-                Action: [
-                  'rekognition:ListCollections',
-                ],
+                Action: ['rekognition:ListCollections'],
                 Resource: '*',
               },
             ],
@@ -779,20 +740,10 @@ function generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, pr
     Type: 'AWS::IAM::Policy',
     Properties: {
       PolicyName: {
-        'Fn::Join': [
-          '', [
-            { Ref: 'identifyPolicyName' },
-            '-',
-            'searchFaces',
-          ],
-        ],
+        'Fn::Join': ['', [{ Ref: 'identifyPolicyName' }, '-', 'searchFaces']],
       },
       Roles: {
-        'Fn::If': [
-          'AuthGuestRoleAccess',
-          [{ Ref: 'authRoleName' }, { Ref: 'unauthRoleName' }],
-          [{ Ref: 'authRoleName' }],
-        ],
+        'Fn::If': ['AuthGuestRoleAccess', [{ Ref: 'authRoleName' }, { Ref: 'unauthRoleName' }], [{ Ref: 'authRoleName' }]],
       },
       PolicyDocument: {
         Version: '2012-10-17',
@@ -803,7 +754,8 @@ function generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, pr
             Resource: [
               {
                 'Fn::Join': [
-                  '', [
+                  '',
+                  [
                     'arn:aws:rekognition:',
                     { Ref: 'AWS::Region' },
                     ':',
@@ -867,7 +819,7 @@ function generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, pr
                       Ref: `storage${s3ResourceName}BucketName`,
                     },
                     `/${prefixForAdminTrigger}`,
-                        "${cognito-identity.amazonaws.com:sub}/*", // eslint-disable-line
+                    '${cognito-identity.amazonaws.com:sub}/*', // eslint-disable-line
                   ],
                 ],
               },
@@ -886,21 +838,22 @@ function addObjectKeys(original, additional) {
 }
 
 function addTextractPolicies(identifyCFNFile) {
-  identifyCFNFile.Resources
-    .IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
-      'rekognition:DetectText',
-      'rekognition:DetectLabel',
-      'textract:AnalyzeDocument',
-      'textract:DetectDocumentText',
-      'textract:GetDocumentAnalysis',
-      'textract:StartDocumentTextDetection',
-    ];
+  identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
+    'rekognition:DetectText',
+    'rekognition:DetectLabel',
+    'textract:AnalyzeDocument',
+    'textract:DetectDocumentText',
+    'textract:GetDocumentAnalysis',
+    'textract:StartDocumentTextDetection',
+  ];
   return JSON.stringify(identifyCFNFile, null, 4);
 }
 
 function removeTextractPolicies(identifyCFNFile) {
-  identifyCFNFile.Resources
-    .IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = ['rekognition:DetectText', 'rekognition:DetectLabel'];
+  identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
+    'rekognition:DetectText',
+    'rekognition:DetectLabel',
+  ];
   return JSON.stringify(identifyCFNFile, null, 4);
 }
 

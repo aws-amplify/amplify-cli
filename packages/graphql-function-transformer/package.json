@@ -1,6 +1,6 @@
 {
   "name": "graphql-function-transformer",
-  "version": "1.18.0",
+  "version": "1.23.0",
   "description": "Implements the @function directive.",
   "main": "lib/index.js",
   "author": "Michael Paris",
@@ -14,9 +14,9 @@
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "3.18.0",
-    "graphql-transformer-common": "3.25.0",
-    "graphql-transformer-core": "5.11.0"
+    "graphql-mapping-template": "3.23.0",
+    "graphql-transformer-common": "3.30.0",
+    "graphql-transformer-core": "5.16.0"
   },
   "devDependencies": {
     "@types/jest": "23.1.1",
@@ -39,6 +39,7 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "collectCoverage": true
   }
 }

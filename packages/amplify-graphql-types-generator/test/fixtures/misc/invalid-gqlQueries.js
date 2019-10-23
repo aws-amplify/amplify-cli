@@ -1,5 +1,5 @@
-const gql = String.raw 
+const gql = String.raw;
 
 export const hello = gql`world and other words`;
 
-export const foo = `bar`
+export const foo = `bar`;

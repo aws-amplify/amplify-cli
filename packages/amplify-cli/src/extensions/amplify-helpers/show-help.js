@@ -2,7 +2,6 @@ const print = require('./print');
 const figlet = require('figlet');
 const cliConstants = require('./constants');
 
-
 function showHelp(header, commands) {
   figlet.text(
     cliConstants.BrandName,
@@ -24,7 +23,7 @@ function showHelp(header, commands) {
       const { table } = print;
 
       table(tableOptions, { format: 'default' });
-    },
+    }
   );
 }
 

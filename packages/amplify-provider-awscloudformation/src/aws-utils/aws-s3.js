@@ -52,9 +52,11 @@ class S3 {
       Bucket: bucketName,
     };
 
-    return this.ifBucketExists(bucketName).then((result) => {
+    return this.ifBucketExists(bucketName).then(result => {
       if (!result) {
-        this.context.print.warning('The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....');
+        this.context.print.warning(
+          'The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....'
+        );
         this.context.print.warning(`Bucket name: ${bucketName}`);
 
         return this.s3
@@ -73,7 +75,7 @@ class S3 {
     return this.s3
       .listBuckets({})
       .promise()
-      .then((result) => {
+      .then(result => {
         const index = result.Buckets.findIndex(bucket => bucket.Name === bucketName);
         if (index !== -1) {
           return true;

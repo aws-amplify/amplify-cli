@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-analytics",
-  "version": "1.21.0",
+  "version": "1.26.0",
   "description": "amplify-cli analytics plugin",
   "main": "index.js",
   "dependencies": {
-    "amplify-category-auth": "1.23.0",
+    "amplify-category-auth": "1.28.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^6.5.1",
     "open": "^6.4.0",

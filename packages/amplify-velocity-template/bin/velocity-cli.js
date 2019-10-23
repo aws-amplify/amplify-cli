@@ -1,5 +1,5 @@
-var path   = require('path');
-var fs     = require('fs');
+var path = require('path');
+var fs = require('fs');
 var exists = fs.existsSync || path.existsSync;
 var currentPath = process.cwd();
 
@@ -9,13 +9,13 @@ var parse = Velocity.parse;
 var Structure = Velocity.Helper.Structure;
 var Jsonify = Velocity.Helper.Jsonify;
 
-function escapeIt(buf){
-  var str =  Buffer.isBuffer(buf) ? buf.toString(): buf;
+function escapeIt(buf) {
+  var str = Buffer.isBuffer(buf) ? buf.toString() : buf;
   var len = str.length;
   var ret = '';
   for (var i = 0; i < len; i++) {
     var bit = str.charCodeAt(i);
-    if (bit < 0 || bit > 255){
+    if (bit < 0 || bit > 255) {
       ret += '\\u' + bit.toString(16);
     } else {
       ret += str[i];
@@ -25,12 +25,10 @@ function escapeIt(buf){
   return ret;
 }
 
-function buildAst(files, prefix){
+function buildAst(files, prefix) {
   var _template = fs.readFileSync(__dirname + '/build-tpl.js').toString();
-  files.forEach(function(file){
-
+  files.forEach(function(file) {
     if (path.extname(file) === '.vm') {
-
       console.log('read file ' + file);
       var template = _template;
 
@@ -42,14 +40,11 @@ function buildAst(files, prefix){
 
       console.log('read js ' + file);
       fs.writeFileSync(currentPath + '/' + file.replace('.vm', '.js'), template);
-
     }
-
   });
 }
 
-function parseVelocity(argv){
-
+function parseVelocity(argv) {
   var vmfile = argv[0];
   if (vmfile && vmfile.indexOf('.vm')) {
     vmfile = path.resolve(process.cwd(), vmfile);
@@ -65,7 +60,7 @@ function parseVelocity(argv){
 
   if (ext === '.json') {
     if (exists(dataFile)) data = fs.readFileSync(dataFile).toString();
-  } else if(ext ==='.js') {
+  } else if (ext === '.js') {
     if (exists(dataFile)) data = require(dataFile);
   }
 
@@ -77,7 +72,7 @@ function parseVelocity(argv){
   }
 }
 
-function showHelp(){
+function showHelp() {
   console.log(fs.readFileSync(__dirname + '/help.txt').toString());
 }
 
@@ -86,8 +81,7 @@ function showVersion() {
   console.log('v' + JSON.parse(data).version);
 }
 
-function jsonify(file){
-
+function jsonify(file) {
   file = process.cwd() + '/' + file;
   var pwd = process.cwd() + '/';
 
@@ -107,14 +101,13 @@ function jsonify(file){
   }
 }
 
-function getVTL(file, context, macros){
+function getVTL(file, context, macros) {
   var asts = Parser.parse(fs.readFileSync(file).toString());
   var makeup = new Jsonify(asts, context, macros);
   return makeup.toVTL();
 }
 
-function showMakeup(file){
-
+function showMakeup(file) {
   file = process.cwd() + '/' + file;
 
   if (!fs.existsSync(file)) {
@@ -126,7 +119,6 @@ function showMakeup(file){
   var makeup = new Structure(asts);
   console.log(makeup.context);
   //console.log(JSON.stringify(makeup.context, true, 2));
-
 }
 
 module.exports = {
@@ -135,5 +127,5 @@ module.exports = {
   showHelp: showHelp,
   showVersion: showVersion,
   showMakeup: showMakeup,
-  jsonify: jsonify
+  jsonify: jsonify,
 };

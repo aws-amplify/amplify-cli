@@ -36,8 +36,7 @@ async function ensurePinpointApp(context, resourceName) {
       resourceName = await createPinpointApp(context, resourceName);
     }
   }
-  context.exeInfo.serviceMeta =
-    context.exeInfo.amplifyMeta[constants.CategoryName][resourceName];
+  context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[constants.CategoryName][resourceName];
   context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
 }
 
@@ -66,7 +65,7 @@ async function createPinpointApp(context, resourceName) {
         type: 'input',
         message: 'Provide your pinpoint resource name: ',
         default: resourceName,
-        validate: (name) => {
+        validate: name => {
           let result = false;
           let message = '';
           if (name && name.length > 0) {
@@ -127,9 +126,7 @@ function scanCategoryMetaForPinpoint(categoryMeta, options) {
     for (let i = 0; i < resources.length; i++) {
       resourceName = resources[i];
       const serviceMeta = categoryMeta[resourceName];
-      if (serviceMeta.service === constants.PinpointName &&
-        serviceMeta.output &&
-        serviceMeta.output.Id) {
+      if (serviceMeta.service === constants.PinpointName && serviceMeta.output && serviceMeta.output.Id) {
         result = {
           Id: serviceMeta.output.Id,
         };
@@ -159,9 +156,7 @@ function removeCategoryMetaForPinpoint(categoryMeta, pinpointAppId) {
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === 'Pinpoint' &&
-        serviceMeta.output &&
-        serviceMeta.output.Id === pinpointAppId) {
+      if (serviceMeta.service === 'Pinpoint' && serviceMeta.output && serviceMeta.output.Id === pinpointAppId) {
         delete categoryMeta[services[i]];
       }
     }
@@ -219,8 +214,7 @@ function console(context) {
   }
   if (pinpointApp) {
     const { Id, Region } = pinpointApp;
-    const consoleUrl =
-          `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/settings`;
+    const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/settings`;
     open(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither notifications nor analytics is enabled in the cloud.');
@@ -242,7 +236,6 @@ function isAnalyticsAdded(context) {
   }
   return result;
 }
-
 
 module.exports = {
   getPinpointApp,

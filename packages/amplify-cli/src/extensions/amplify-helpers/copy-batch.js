@@ -11,21 +11,14 @@ const fs = require('fs');
  */
 async function copyBatch(context, jobs, props, force, writeParams) {
   // grab some features
-  const {
-    template,
-    prompt,
-    filesystem,
-  } = context;
-  const {
-    confirm,
-  } = prompt;
+  const { template, prompt, filesystem } = context;
+  const { confirm } = prompt;
 
   // If the file exists
-  const shouldGenerate = async (target) => {
+  const shouldGenerate = async target => {
     if (!filesystem.exists(target) || force) return true;
     return confirm(`overwrite ${target}`);
   };
-
 
   for (let index = 0; index < jobs.length; index += 1) {
     // grab the current job
@@ -34,7 +27,6 @@ async function copyBatch(context, jobs, props, force, writeParams) {
     if (!job) {
       continue;
     }
-
 
     // generate the React component
     // TODO: Error handling in event of single file write failure
@@ -46,18 +38,14 @@ async function copyBatch(context, jobs, props, force, writeParams) {
         props,
       });
 
-
       if (writeParams && job.paramsFile) {
-        const params = writeParams &&
-          Object.keys(writeParams) &&
-          Object.keys(writeParams).length > 0 ? writeParams : props;
+        const params = writeParams && Object.keys(writeParams) && Object.keys(writeParams).length > 0 ? writeParams : props;
         const jsonString = JSON.stringify(params, null, 4);
         fs.writeFileSync(job.paramsFile, jsonString, 'utf8');
       }
     }
   }
 }
-
 
 module.exports = {
   copyBatch,

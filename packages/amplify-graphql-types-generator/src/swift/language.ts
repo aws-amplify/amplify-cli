@@ -70,8 +70,8 @@ export class SwiftGenerator<Context> extends CodeGenerator<Context, { typeName: 
 
   deprecationAttributes(isDeprecated: boolean | undefined, deprecationReason: string | undefined) {
     if (isDeprecated !== undefined && isDeprecated) {
-      deprecationReason = (deprecationReason !== undefined && deprecationReason.length > 0) ? deprecationReason : ""
-      this.printOnNewline(`@available(*, deprecated, message: "${escapedString(deprecationReason)}")`)
+      deprecationReason = deprecationReason !== undefined && deprecationReason.length > 0 ? deprecationReason : '';
+      this.printOnNewline(`@available(*, deprecated, message: "${escapedString(deprecationReason)}")`);
     }
   }
 

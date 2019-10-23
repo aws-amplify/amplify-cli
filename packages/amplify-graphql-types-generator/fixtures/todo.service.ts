@@ -1,9 +1,9 @@
 /* tslint:disable */
 //  This file was automatically generated and should not be edited.
-import { Injectable } from "@angular/core";
-import { graphqlOperation } from "aws-amplify";
-import { AmplifyService } from "aws-amplify-angular";
-import * as Observable from "zen-observable";
+import { Injectable } from '@angular/core';
+import { graphqlOperation } from 'aws-amplify';
+import { AmplifyService } from 'aws-amplify-angular';
+import * as Observable from 'zen-observable';
 
 export type ModelTodoFilterInput = {
   id?: ModelIDFilterInput | null;
@@ -145,7 +145,7 @@ export type OnDeleteTodoSubscription = {
 };
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class AppSyncService {
   constructor(private amplifyService: AmplifyService) {}
@@ -157,9 +157,7 @@ export class AppSyncService {
           description
         }
       }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <GetTodoQuery>response.data;
   }
   async ListTodos(input: ListTodosQueryVariables): Promise<ListTodosQuery> {
@@ -173,14 +171,10 @@ export class AppSyncService {
           nextToken
         }
       }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <ListTodosQuery>response.data;
   }
-  async CreateTodo(
-    input: CreateTodoMutationVariables
-  ): Promise<CreateTodoMutation> {
+  async CreateTodo(input: CreateTodoMutationVariables): Promise<CreateTodoMutation> {
     const statement = `mutation CreateTodo($input: CreateTodoInput!) {
         createTodo(input: $input) {
           id
@@ -188,14 +182,10 @@ export class AppSyncService {
           description
         }
       }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <CreateTodoMutation>response.data;
   }
-  async UpdateTodo(
-    input: UpdateTodoMutationVariables
-  ): Promise<UpdateTodoMutation> {
+  async UpdateTodo(input: UpdateTodoMutationVariables): Promise<UpdateTodoMutation> {
     const statement = `mutation UpdateTodo($input: UpdateTodoInput!) {
         updateTodo(input: $input) {
           id
@@ -203,14 +193,10 @@ export class AppSyncService {
           description
         }
       }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <UpdateTodoMutation>response.data;
   }
-  async DeleteTodo(
-    input: DeleteTodoMutationVariables
-  ): Promise<DeleteTodoMutation> {
+  async DeleteTodo(input: DeleteTodoMutationVariables): Promise<DeleteTodoMutation> {
     const statement = `mutation DeleteTodo($input: DeleteTodoInput!) {
         deleteTodo(input: $input) {
           id
@@ -218,14 +204,10 @@ export class AppSyncService {
           description
         }
       }`;
-    const response = await this.amplifyService
-      .api()
-      .graphql(graphqlOperation(statement, input));
+    const response = await this.amplifyService.api().graphql(graphqlOperation(statement, input));
     return <DeleteTodoMutation>response.data;
   }
-  OnCreateTodoListener: Observable<
-    OnCreateTodoSubscription
-  > = this.amplifyService.api().graphql(
+  OnCreateTodoListener: Observable<OnCreateTodoSubscription> = this.amplifyService.api().graphql(
     graphqlOperation(
       `subscription OnCreateTodo {
         onCreateTodo {
@@ -237,9 +219,7 @@ export class AppSyncService {
     )
   ) as Observable<OnCreateTodoSubscription>;
 
-  OnUpdateTodoListener: Observable<
-    OnUpdateTodoSubscription
-  > = this.amplifyService.api().graphql(
+  OnUpdateTodoListener: Observable<OnUpdateTodoSubscription> = this.amplifyService.api().graphql(
     graphqlOperation(
       `subscription OnUpdateTodo {
         onUpdateTodo {
@@ -251,9 +231,7 @@ export class AppSyncService {
     )
   ) as Observable<OnUpdateTodoSubscription>;
 
-  OnDeleteTodoListener: Observable<
-    OnDeleteTodoSubscription
-  > = this.amplifyService.api().graphql(
+  OnDeleteTodoListener: Observable<OnDeleteTodoSubscription> = this.amplifyService.api().graphql(
     graphqlOperation(
       `subscription OnDeleteTodo {
         onDeleteTodo {

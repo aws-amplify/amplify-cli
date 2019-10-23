@@ -4,12 +4,7 @@ const askGeneratedFileName = require('../../src/walkthrough/questions/generatedF
 const askGenerateCode = require('../../src/walkthrough/questions/generateCode');
 const askShouldGenerateDocs = require('../../src/walkthrough/questions/generateDocs');
 const askMaxDepth = require('../../src/walkthrough/questions/maxDepth');
-const {
-  getGraphQLDocPath,
-  getSchemaDownloadLocation,
-  getFrontEndHandler,
-  getIncludePattern,
-} = require('../../src/utils');
+const { getGraphQLDocPath, getSchemaDownloadLocation, getFrontEndHandler, getIncludePattern } = require('../../src/utils');
 const add = require('../../src/walkthrough/add');
 
 jest.mock('../../src/walkthrough/questions/languageTarget');
@@ -24,8 +19,7 @@ describe('Add walk-through', () => {
   const MOCK_TARGET_LANGUAGE = 'MOCK_TARGET_LANGUAGE';
   const MOCK_INCLUDE_PATTERN = 'MOCK_INCLUDE_PATTERN';
   const MOCK_CONTEXT = {
-    exeInfo: {
-    },
+    exeInfo: {},
   };
   const MOCK_GENERATED_FILE_NAME = 'MOCK_FILE_NAME.ts';
   const MOCK_DOWNLOAD_LOCATION = 'MOCK_SCHEMA_DIR/graphql/schema.json';
@@ -52,8 +46,7 @@ describe('Add walk-through', () => {
 
   it('should show questions in walkthrough', async () => {
     const results = await add(MOCK_CONTEXT);
-    expect(askCodegenTargetLanguage).toHaveBeenCalledWith(MOCK_CONTEXT, undefined, undefined,
-      undefined, undefined);
+    expect(askCodegenTargetLanguage).toHaveBeenCalledWith(MOCK_CONTEXT, undefined, undefined, undefined, undefined);
     expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['src/graphql/**/*.js']);
     expect(askGeneratedFileName).toHaveBeenCalledWith('API', MOCK_TARGET_LANGUAGE);
     expect(getGraphQLDocPath).toHaveBeenCalledWith(MOCK_FRONTEND_HANDLER, MOCK_DOWNLOAD_LOCATION);

@@ -6,7 +6,6 @@ const category = 'api';
 
 const categories = 'categories';
 
-
 async function console(context) {
   await run(context);
 }
@@ -14,20 +13,17 @@ async function console(context) {
 async function migrate(context, serviceName) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
-  Object.keys(amplifyMeta).forEach((categoryName) => {
+  Object.keys(amplifyMeta).forEach(categoryName => {
     if (categoryName === category) {
-      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+      Object.keys(amplifyMeta[category]).forEach(resourceName => {
         try {
           if (amplifyMeta[category][resourceName].providerPlugin) {
             const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
             if (providerController) {
               if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
-                migrateResourcePromises.push(providerController.migrateResource(
-                  context,
-                  projectPath,
-                  amplifyMeta[category][resourceName].service,
-                  resourceName,
-                ));
+                migrateResourcePromises.push(
+                  providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName)
+                );
               }
             }
           } else {
@@ -98,22 +94,25 @@ async function initEnv(context) {
   const currEnv = amplify.getEnvInfo().envName;
   const teamProviderInfoFilePath = amplify.pathManager.getProviderInfoFilePath();
   const teamProviderInfo = amplify.readJsonFile(teamProviderInfoFilePath);
-  if (teamProviderInfo[currEnv][categories]
-    && teamProviderInfo[currEnv][categories][category]
-    && teamProviderInfo[currEnv][categories][category][resourceName]
-    && teamProviderInfo[currEnv][categories][category][resourceName]
-    && teamProviderInfo[currEnv][categories][category][resourceName][rdsRegion]) {
+  if (
+    teamProviderInfo[currEnv][categories] &&
+    teamProviderInfo[currEnv][categories][category] &&
+    teamProviderInfo[currEnv][categories][category][resourceName] &&
+    teamProviderInfo[currEnv][categories][category][resourceName] &&
+    teamProviderInfo[currEnv][categories][category][resourceName][rdsRegion]
+  ) {
     return;
   }
 
   /**
    * Execute the walkthrough
    */
-  return providerController.addDatasource(context, category, datasource)
-    .then((answers) => {
-    /**
-     * Write the new answers to the team provider info
-     */
+  return providerController
+    .addDatasource(context, category, datasource)
+    .then(answers => {
+      /**
+       * Write the new answers to the team provider info
+       */
       if (!teamProviderInfo[currEnv][categories]) {
         teamProviderInfo[currEnv][categories] = {};
       }
@@ -124,14 +123,10 @@ async function initEnv(context) {
         teamProviderInfo[currEnv][categories][category][resourceName] = {};
       }
 
-      teamProviderInfo[currEnv][categories][category][resourceName][rdsRegion]
-       = answers.region;
-      teamProviderInfo[currEnv][categories][category][resourceName][rdsClusterIdentifier]
-       = answers.dbClusterArn;
-      teamProviderInfo[currEnv][categories][category][resourceName][rdsSecretStoreArn]
-       = answers.secretStoreArn;
-      teamProviderInfo[currEnv][categories][category][resourceName][rdsDatabaseName]
-       = answers.databaseName;
+      teamProviderInfo[currEnv][categories][category][resourceName][rdsRegion] = answers.region;
+      teamProviderInfo[currEnv][categories][category][resourceName][rdsClusterIdentifier] = answers.dbClusterArn;
+      teamProviderInfo[currEnv][categories][category][resourceName][rdsSecretStoreArn] = answers.secretStoreArn;
+      teamProviderInfo[currEnv][categories][category][resourceName][rdsDatabaseName] = answers.databaseName;
 
       fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
     })
@@ -146,7 +141,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach((resourceName) => {
+  Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
       const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
       if (providerController) {
@@ -154,7 +149,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName],
+          resourceOpsMapping[resourceName]
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });

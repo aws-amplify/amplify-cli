@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-notifications",
-  "version": "1.20.0",
+  "version": "1.25.0",
   "description": "amplify-cli notifications plugin",
   "main": "index.js",
   "dependencies": {
-    "amplify-category-auth": "1.23.0",
+    "amplify-category-auth": "1.28.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^6.5.1",
     "open": "^6.4.0",
@@ -31,6 +31,10 @@
   "jest": {
     "coveragePathIgnorePatterns": [
       "/node_modules/"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "lib/**/*.js"
     ]
   }
 }

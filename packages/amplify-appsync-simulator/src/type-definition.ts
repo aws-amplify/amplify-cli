@@ -42,6 +42,7 @@ export interface AppSyncSimulatorFunctionResolverConfig {
   responseMappingTemplateLocation: string;
 }
 export type AppSyncSimulatorMappingTemplate = AppSyncMockFile;
+export type AppSyncSimulatorTable = string;
 export interface AppSyncSimulatorUnitResolver extends AppSyncSimulatorUnitResolverConfig {
   datSourceName: string;
 }
@@ -123,6 +124,7 @@ export type AmplifyAppSyncSimulatorConfig = {
   functions?: AppSyncSimulatorFunctionsConfig[];
   dataSources?: AppSyncSimulatorDataSourceConfig[];
   mappingTemplates?: AppSyncSimulatorMappingTemplate[];
+  tables?: AppSyncSimulatorTable[];
   appSync: AmplifyAppSyncAPIConfig;
 };
 
@@ -132,8 +134,8 @@ export type AppSyncSimulatorServerConfig = {
 };
 
 export type AmplifyAppSyncSimulatorRequestContext = {
-  jwt?: object,
-  requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType,
-  request: Request,
-  appsyncErrors: {}
-}
+  jwt?: object;
+  requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType;
+  request: Request;
+  appsyncErrors: {};
+};

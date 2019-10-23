@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-types-generator",
-  "version": "1.17.0",
+  "version": "1.22.0",
   "description": "Generate API code or type annotations based on a GraphQL schema and statements",
   "main": "./lib/index.js",
   "engines": {
@@ -68,6 +68,7 @@
     "setupFiles": [
       "<rootDir>/src/polyfills.js"
     ],
+    "collectCoverage": true,
     "testURL": "http://localhost",
     "setupTestFrameworkScriptFile": "<rootDir>/test/test-utils/matchers.ts",
     "testMatch": [

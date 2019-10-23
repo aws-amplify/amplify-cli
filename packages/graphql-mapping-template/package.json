@@ -1,6 +1,6 @@
 {
   "name": "graphql-mapping-template",
-  "version": "3.18.0",
+  "version": "3.23.0",
   "description": "An AST wrapper around AWS AppSync resolvers",
   "main": "lib/index.js",
   "scripts": {
@@ -40,6 +40,7 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "collectCoverage": true
   }
 }

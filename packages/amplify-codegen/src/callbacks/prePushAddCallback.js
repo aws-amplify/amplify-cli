@@ -17,9 +17,7 @@ async function prePushAddCallback(context, resourceName) {
     const inputParams = context.exeInfo.inputParams[constants.Label];
     const yesFlag = context.exeInfo.inputParams.yes;
 
-    shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () =>
-      askShouldGenerateCode(),
-    );
+    shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
   } else {
     shouldGenerateCode = await askShouldGenerateCode();
   }

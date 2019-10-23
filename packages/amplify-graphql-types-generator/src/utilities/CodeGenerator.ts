@@ -1,7 +1,6 @@
 export interface BasicGeneratedFile {
-  output: string
+  output: string;
 }
-
 
 export class GeneratedFile<Scope = any> implements BasicGeneratedFile {
   scopeStack: Scope[] = [];

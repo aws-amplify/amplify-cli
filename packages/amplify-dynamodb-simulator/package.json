@@ -1,19 +1,18 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "0.16.0",
+  "version": "0.21.0",
   "description": "DynamoDB emulator nodejs wrapper",
   "main": "index.js",
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "install": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
+    "build": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
     "test": "jest",
     "test-ci": "jest"
   },
   "dependencies": {
     "aws-sdk": "^2.510.0",
     "detect-port": "^1.3.0",
-    "download-cli": "^1.1.1",
     "event-to-promise": "^0.8.0",
     "execa": "^2.0.3",
     "fs-extra": "^8.1.0",
@@ -23,10 +22,12 @@
     "which": "^1.3.1"
   },
   "devDependencies": {
+    "download-cli": "^1.1.1",
     "jest": "^24.8.0",
     "jest-environment-node": "^24.8.0"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "collectCoverage": true
   }
 }

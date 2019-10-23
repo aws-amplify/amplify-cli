@@ -11,12 +11,12 @@ export async function run(context: Context) {
 
   const subCommandPath = path.normalize(path.join(__dirname, 'plugin', subCommand));
   import(subCommandPath)
-    .then(async (subCommandModule) => {
+    .then(async subCommandModule => {
       await subCommandModule.run(context);
     })
     .catch(() => {
       context.print.error(`Cannot load command amplify plugin ${subCommand}`);
-    })
+    });
 }
 
 function mapSubcommandAlias(subcommand: string): string {

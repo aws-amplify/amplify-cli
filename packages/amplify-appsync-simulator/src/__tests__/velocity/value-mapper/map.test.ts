@@ -36,10 +36,7 @@ describe('JavaMap', () => {
   it('entrySet', () => {
     const obj = { foo: 'Foo Value', bar: 'Bar Value' };
     const map = new JavaMap(obj, identityMapper);
-    expect(map.entrySet().toJSON()).toEqual([
-      { key: 'foo', value: 'Foo Value' },
-      { key: 'bar', value: 'Bar Value' },
-    ]);
+    expect(map.entrySet().toJSON()).toEqual([{ key: 'foo', value: 'Foo Value' }, { key: 'bar', value: 'Bar Value' }]);
   });
 
   it('equal', () => {

@@ -1,12 +1,17 @@
-import { GraphQLScalarType } from 'graphql'
+import { GraphQLScalarType } from 'graphql';
 import {
-    Kind, DocumentNode, TypeSystemDefinitionNode,
-    DirectiveDefinitionNode, ScalarTypeDefinitionNode, parse,
-    SchemaDefinitionNode, TypeDefinitionNode
-} from 'graphql/language'
-import { GraphQLSchema, GraphQLObjectType, isOutputType } from 'graphql/type'
-import { validate } from 'graphql/validation'
-import { ASTDefinitionBuilder } from 'graphql/utilities/buildASTSchema'
+  Kind,
+  DocumentNode,
+  TypeSystemDefinitionNode,
+  DirectiveDefinitionNode,
+  ScalarTypeDefinitionNode,
+  parse,
+  SchemaDefinitionNode,
+  TypeDefinitionNode,
+} from 'graphql/language';
+import { GraphQLSchema, GraphQLObjectType, isOutputType } from 'graphql/type';
+import { validate } from 'graphql/validation';
+import { ASTDefinitionBuilder } from 'graphql/utilities/buildASTSchema';
 
 // Spec Section: "Subscriptions with Single Root Field"
 import { SingleFieldSubscriptions } from 'graphql/validation/rules/SingleFieldSubscriptions';
@@ -56,20 +61,20 @@ import { ProvidedNonNullArguments } from 'graphql/validation/rules/ProvidedNonNu
  * most clear output when encountering multiple validation errors.
  */
 export const specifiedRules = [
-    SingleFieldSubscriptions,
-    KnownTypeNames,
-    FragmentsOnCompositeTypes,
-    VariablesAreInputTypes,
-    ScalarLeafs,
-    FieldsOnCorrectType,
-    KnownDirectives,
-    KnownArgumentNames,
-    UniqueArgumentNames,
-    ValuesOfCorrectType,
-    VariablesInAllowedPosition,
-    OverlappingFieldsCanBeMerged,
-    UniqueInputFieldNames,
-    ProvidedNonNullArguments
+  SingleFieldSubscriptions,
+  KnownTypeNames,
+  FragmentsOnCompositeTypes,
+  VariablesAreInputTypes,
+  ScalarLeafs,
+  FieldsOnCorrectType,
+  KnownDirectives,
+  KnownArgumentNames,
+  UniqueArgumentNames,
+  ValuesOfCorrectType,
+  VariablesInAllowedPosition,
+  OverlappingFieldsCanBeMerged,
+  UniqueInputFieldNames,
+  ProvidedNonNullArguments,
 ];
 
 const EXTRA_SCALARS_DOCUMENT = parse(`
@@ -84,7 +89,7 @@ scalar AWSPhone
 scalar AWSIPAddress
 scalar BigInt
 scalar Double
-`)
+`);
 
 const EXTRA_DIRECTIVES_DOCUMENT = parse(`
 directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
@@ -95,62 +100,51 @@ directive @aws_oidc on FIELD_DEFINITION | OBJECT
 directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
 
 # Allows transformer libraries to deprecate directive arguments.
-directive @deprecated(reason: String!) on INPUT_FIELD_DEFINITION | ENUM
-`)
+directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
+`);
 
 export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
-    const nodeMap = doc.definitions
-        .filter((def: TypeSystemDefinitionNode) => def.kind !== Kind.SCHEMA_DEFINITION && Boolean(def.name))
-        .reduce(
-            (a: { [k: string]: TypeDefinitionNode }, def: TypeDefinitionNode) => ({
-                ...a,
-                [def.name.value]: def
-            }), {})
-    return new ASTDefinitionBuilder(
-        nodeMap,
-        {},
-        typeRef => {
-            throw new Error(`Type "${typeRef.name.value}" not found in document.`);
-        },
-    )
+  const nodeMap = doc.definitions
+    .filter((def: TypeSystemDefinitionNode) => def.kind !== Kind.SCHEMA_DEFINITION && Boolean(def.name))
+    .reduce(
+      (a: { [k: string]: TypeDefinitionNode }, def: TypeDefinitionNode) => ({
+        ...a,
+        [def.name.value]: def,
+      }),
+      {}
+    );
+  return new ASTDefinitionBuilder(nodeMap, {}, typeRef => {
+    throw new Error(`Type "${typeRef.name.value}" not found in document.`);
+  });
 }
 
 export function validateModelSchema(doc: DocumentNode) {
-    const fullDocument = {
-        kind: Kind.DOCUMENT,
-        definitions: [
-            ...EXTRA_DIRECTIVES_DOCUMENT.definitions,
-            ...doc.definitions,
-            ...EXTRA_SCALARS_DOCUMENT.definitions,
-        ]
-    }
-    const builder = astBuilder(fullDocument)
-    const directives = fullDocument.definitions
-        .filter(d => d.kind === Kind.DIRECTIVE_DEFINITION)
-        .map((d: DirectiveDefinitionNode) => {
-            return builder.buildDirective(d)
-        })
-    const types = fullDocument.definitions
-        .filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION)
-        .map((d: TypeDefinitionNode) => builder.buildType(d))
-    const outputTypes = types.filter(
-        t => isOutputType(t)
-    )
-    const fields = outputTypes.reduce(
-        (acc, t) => ({ ...acc, [t.name]: { type: t } }),
-        {}
-    )
+  const fullDocument = {
+    kind: Kind.DOCUMENT,
+    definitions: [...EXTRA_DIRECTIVES_DOCUMENT.definitions, ...doc.definitions, ...EXTRA_SCALARS_DOCUMENT.definitions],
+  };
+  const builder = astBuilder(fullDocument);
+  const directives = fullDocument.definitions
+    .filter(d => d.kind === Kind.DIRECTIVE_DEFINITION)
+    .map((d: DirectiveDefinitionNode) => {
+      return builder.buildDirective(d);
+    });
+  const types = fullDocument.definitions
+    .filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION)
+    .map((d: TypeDefinitionNode) => builder.buildType(d));
+  const outputTypes = types.filter(t => isOutputType(t));
+  const fields = outputTypes.reduce((acc, t) => ({ ...acc, [t.name]: { type: t } }), {});
 
-    const schemaRecord = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
-    const queryOp = schemaRecord ? schemaRecord.operationTypes.find(o => o.operation === 'query') : undefined;
-    const queryName = queryOp ? queryOp.type.name.value : 'Query';
-    const existingQueryType = types.find(t => t.name === queryName) as GraphQLObjectType;
-    const queryType = existingQueryType ?
-        existingQueryType :
-        new GraphQLObjectType({
-            name: queryName,
-            fields
-        })
-    const schema = new GraphQLSchema({ query: queryType, types, directives });
-    return validate(schema, fullDocument, specifiedRules)
+  const schemaRecord = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
+  const queryOp = schemaRecord ? schemaRecord.operationTypes.find(o => o.operation === 'query') : undefined;
+  const queryName = queryOp ? queryOp.type.name.value : 'Query';
+  const existingQueryType = types.find(t => t.name === queryName) as GraphQLObjectType;
+  const queryType = existingQueryType
+    ? existingQueryType
+    : new GraphQLObjectType({
+        name: queryName,
+        fields,
+      });
+  const schema = new GraphQLSchema({ query: queryType, types, directives });
+  return validate(schema, fullDocument, specifiedRules);
 }

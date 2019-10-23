@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 
 module.exports = {
   name: 'console',
-  run: async (context) => {
+  run: async context => {
     const categoryPlugins = context.amplify.getCategoryPlugins(context);
     const providerPlugins = context.amplify.getProviderPlugins(context);
 

@@ -2,7 +2,7 @@ const featureName = 'api';
 
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     if (/^win/.test(process.platform)) {
       try {
         const { run } = require(`./${featureName}/${context.parameters.first}`);
@@ -19,7 +19,7 @@ module.exports = {
       },
       {
         name: 'push',
-        description: `Provisions ${featureName} cloud resources and it's dependencies with the latest local developments`,
+        description: `Provisions ${featureName} cloud resources and its dependencies with the latest local developments`,
       },
       {
         name: 'remove',
@@ -36,6 +36,10 @@ module.exports = {
       {
         name: 'add-graphql-datasource',
         description: 'Provisions the AppSync resources and its dependencies for the provided Aurora Serverless data source',
+      },
+      {
+        name: 'console',
+        description: 'Opens the web console for the selected api service',
       },
     ];
 

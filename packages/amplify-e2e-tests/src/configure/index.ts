@@ -3,9 +3,9 @@ import { join } from 'path';
 
 import { getCLIPath, isCI } from '../utils';
 type AmplifyConfiguration = {
-  accessKeyId: string,
-  secretAccessKey: string,
-  profileName?: string,
+  accessKeyId: string;
+  secretAccessKey: string;
+  profileName?: string;
 };
 const defaultSettings = {
   profileName: 'amplify-integ-test-user',
@@ -14,10 +14,7 @@ const defaultSettings = {
 };
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey'];
-export default function amplifyConfigure(
-  settings: AmplifyConfiguration,
-  verbose: Boolean = isCI() ? false : true
-) {
+export default function amplifyConfigure(settings: AmplifyConfiguration, verbose: Boolean = isCI() ? false : true) {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {
@@ -34,7 +31,7 @@ export default function amplifyConfigure(
       .sendline('\r')
       .wait('user name:')
       .sendline('\r')
-      .wait("Press Enter to continue")
+      .wait('Press Enter to continue')
       .sendline('\r')
       .wait('accessKeyId')
       .sendline(s.accessKeyId)
@@ -42,9 +39,7 @@ export default function amplifyConfigure(
       .sendline(s.secretAccessKey)
       .wait('Profile Name:')
       .sendline(s.profileName)
-      .wait(
-        'Successfully set up the new user.'
-      )
+      .wait('Successfully set up the new user.')
       .run(function(err) {
         if (!err) {
           resolve();

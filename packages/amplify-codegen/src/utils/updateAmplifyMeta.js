@@ -1,4 +1,3 @@
-
 module.exports = async (context, apiDetails) => {
   const fs = context.filesystem;
 
@@ -28,12 +27,11 @@ module.exports = async (context, apiDetails) => {
 
   amplifyMeta.api[apiDetails.name] = appsyncMetadata;
 
-
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   fs.write(amplifyMetaFilePath, JSON.stringify(amplifyMeta, null, 4));
 
   const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
-  const currentAmplifyMeta = JSON.parse(fs.read(currentAmplifyMetaFilePath));
+  const currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
   if (!currentAmplifyMeta.api) {
     currentAmplifyMeta.api = {};
   }

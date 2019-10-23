@@ -4,10 +4,8 @@ const fs = require('fs-extra');
 
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify, filesystem } = context;
-  const projectPath = context.exeInfo ?
-    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ?
-    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
   const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
 
@@ -45,23 +43,31 @@ function getAWSConfigObject(amplifyResources) {
 
   const projectRegion = amplifyResources.metadata.Region;
 
-  Object.keys(serviceResourceMapping).forEach((service) => {
+  Object.keys(serviceResourceMapping).forEach(service => {
     switch (service) {
-      case 'Cognito': Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
+      case 'Cognito':
+        Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'S3': Object.assign(configOutput, getS3Config(serviceResourceMapping[service], projectRegion));
+      case 'S3':
+        Object.assign(configOutput, getS3Config(serviceResourceMapping[service], projectRegion));
         break;
-      case 'Pinpoint': Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
+      case 'Pinpoint':
+        Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'DynamoDB': Object.assign(configOutput, getDynamoDBConfig(serviceResourceMapping[service], projectRegion));
+      case 'DynamoDB':
+        Object.assign(configOutput, getDynamoDBConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'AppSync': Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
+      case 'AppSync':
+        Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'Lex': Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
+      case 'Lex':
+        Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'Sumerian': Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
+      case 'Sumerian':
+        Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
         break;
-      default: break;
+      default:
+        break;
     }
   });
 
@@ -70,10 +76,8 @@ function getAWSConfigObject(amplifyResources) {
 
 function getCurrentAWSConfig(context) {
   const { amplify } = context;
-  const projectPath = context.exeInfo ?
-    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ?
-    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
   const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
 
@@ -86,10 +90,9 @@ function getCurrentAWSConfig(context) {
   return awsConfig;
 }
 
-
 function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
   const customConfigs = {};
-  Object.keys(currentAWSConfig).forEach((key) => {
+  Object.keys(currentAWSConfig).forEach(key => {
     if (!cloudAWSConfig[key]) {
       customConfigs[key] = currentAWSConfig[key];
     }
@@ -97,13 +100,10 @@ function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
   return customConfigs;
 }
 
-
 function generateAWSConfigFile(context, configOutput) {
   const { amplify } = context;
-  const projectPath = context.exeInfo ?
-    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ?
-    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
   const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
 
@@ -192,10 +192,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     });
   }
 
-
   return cognitoConfig;
 }
-
 
 function getS3Config(s3Resources) {
   const s3Resource = s3Resources[0];
@@ -254,9 +252,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
     authMode = authConfig.defaultAuthentication.authenticationType;
   }
 
-  const apiKey = authMode === 'API_KEY'
-    ? appsyncResource.output.GraphQLAPIKeyOutput
-    : undefined;
+  const apiKey = authMode === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined;
 
   const result = {
     AppSync: {
@@ -274,16 +270,16 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
     result.AppSync.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
   }
 
-  const additionalAuths = appsyncResource.output.authConfig.additionalAuthenticationProviders || [];
-  additionalAuths.forEach((auth) => {
+  const additionalAuths =
+    (appsyncResource.output && appsyncResource.output.authConfig && appsyncResource.output.authConfig.additionalAuthenticationProviders) ||
+    [];
+  additionalAuths.forEach(auth => {
     const apiName = `${appsyncResource.resourceName}_${auth.authenticationType}`;
     const config = {
       ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
       Region: appsyncResource.output.region || projectRegion,
       AuthMode: auth.authenticationType,
-      ApiKey: auth.authenticationType === 'API_KEY'
-        ? appsyncResource.output.GraphQLAPIKeyOutput
-        : undefined,
+      ApiKey: auth.authenticationType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
       ClientDatabasePrefix: apiName,
     };
     if (testMode) {
@@ -297,7 +293,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
 
 function getLexConfig(lexResources) {
   const config = {};
-  lexResources.forEach((r) => {
+  lexResources.forEach(r => {
     config[r.output.BotName] = {
       Name: r.output.BotName,
       Alias: '$LATEST',
@@ -311,7 +307,7 @@ function getLexConfig(lexResources) {
 
 function getSumerianConfig(sumerianResources) {
   const config = {};
-  sumerianResources.forEach((r) => {
+  sumerianResources.forEach(r => {
     const { output } = r;
     Object.assign(config, output);
   });
@@ -320,6 +316,5 @@ function getSumerianConfig(sumerianResources) {
     Sumerian: config,
   };
 }
-
 
 module.exports = { createAWSConfig, createAmplifyConfig };

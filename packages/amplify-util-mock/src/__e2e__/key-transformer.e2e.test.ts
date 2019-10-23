@@ -149,10 +149,7 @@ test('Test listX with three part primary key.', async () => {
   });
   expect(items.data.listItems.items).toHaveLength(1);
   items = await listItem(hashKey, {
-    between: [
-      { status: 'PENDING', createdAt: '2018-08-01' },
-      { status: 'PENDING', createdAt: '2018-10-01' },
-    ],
+    between: [{ status: 'PENDING', createdAt: '2018-08-01' }, { status: 'PENDING', createdAt: '2018-10-01' }],
   });
   expect(items.data.listItems.items).toHaveLength(1);
   items = await listItem(hashKey, {
@@ -291,22 +288,14 @@ test('Test update mutation validation with three part secondary key.', async () 
 });
 
 test('Test Customer Create with list member and secondary key', async () => {
-  const createCustomer1 = await createCustomer(
-    'customer1@email.com',
-    ['thing1', 'thing2'],
-    'customerusr1'
-  );
+  const createCustomer1 = await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing1', 'thing2']);
   // const items = await onCreateCustomer
 });
 
 test('Test Customer Mutation with list member', async () => {
-  const updateCustomer1 = await updateCustomer(
-    'customer1@email.com',
-    ['thing3', 'thing4'],
-    'new_customerusr1'
-  );
+  const updateCustomer1 = await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing3', 'thing4']);
 });
@@ -428,12 +417,7 @@ async function getOrder(customerEmail: string, createdAt: string) {
   return result;
 }
 
-async function createItem(
-  orderId: string,
-  status: string,
-  name: string,
-  createdAt: string = new Date().toISOString()
-) {
+async function createItem(orderId: string, status: string, name: string, createdAt: string = new Date().toISOString()) {
   const input = { status, orderId, name, createdAt };
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateItem($input: CreateItemInput!) {
@@ -532,12 +516,7 @@ interface ItemCompositeKeyInput {
   status?: string;
   createdAt?: string;
 }
-async function listItem(
-  orderId?: string,
-  statusCreatedAt?: ItemCompositeKeyConditionInput,
-  limit?: number,
-  nextToken?: string
-) {
+async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyConditionInput, limit?: number, nextToken?: string) {
   const result = await GRAPHQL_CLIENT.query(
     `query ListItems($orderId: ID, $statusCreatedAt: ModelItemPrimaryCompositeKeyConditionInput, $limit: Int, $nextToken: String) {
         listItems(orderId: $orderId, statusCreatedAt: $statusCreatedAt, limit: $limit, nextToken: $nextToken) {
@@ -556,12 +535,7 @@ async function listItem(
   return result;
 }
 
-async function itemsByStatus(
-  status: string,
-  createdAt?: StringKeyConditionInput,
-  limit?: number,
-  nextToken?: string
-) {
+async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput, limit?: number, nextToken?: string) {
   const result = await GRAPHQL_CLIENT.query(
     `query ListByStatus($status: Status!, $createdAt: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
         itemsByStatus(status: $status, createdAt: $createdAt, limit: $limit, nextToken: $nextToken) {
@@ -580,12 +554,7 @@ async function itemsByStatus(
   return result;
 }
 
-async function itemsByCreatedAt(
-  createdAt: string,
-  status?: StringKeyConditionInput,
-  limit?: number,
-  nextToken?: string
-) {
+async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionInput, limit?: number, nextToken?: string) {
   const result = await GRAPHQL_CLIENT.query(
     `query ListByCreatedAt($createdAt: AWSDateTime!, $status: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
         itemsByCreatedAt(createdAt: $createdAt, status: $status, limit: $limit, nextToken: $nextToken) {
@@ -604,12 +573,7 @@ async function itemsByCreatedAt(
   return result;
 }
 
-async function createShippingUpdate(
-  orderId: string,
-  itemId: string,
-  status: string,
-  name?: string
-) {
+async function createShippingUpdate(orderId: string, itemId: string, status: string, name?: string) {
   const input = { status, orderId, itemId, name };
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateShippingUpdate($input: CreateShippingUpdateInput!) {

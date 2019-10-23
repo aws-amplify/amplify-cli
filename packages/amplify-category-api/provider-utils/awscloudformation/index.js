@@ -13,7 +13,6 @@ function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFile
   return serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
-
 function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
@@ -30,7 +29,6 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   // copy over the files
   return context.amplify.copyBatch(context, copyJobs, options, true, false);
 }
-
 
 function console(context, service) {
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
@@ -53,50 +51,45 @@ function addResource(context, category, service, options) {
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
-  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
-    .then((result) => {
-      if (result.answers) {
-        ({ answers } = result);
-        options.dependsOn = result.dependsOn;
-      } else {
-        answers = result;
+  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename).then(result => {
+    if (result.answers) {
+      ({ answers } = result);
+      options.dependsOn = result.dependsOn;
+    } else {
+      answers = result;
+    }
+    if (result.output) {
+      options.output = result.output;
+    }
+    if (!result.noCfnFile) {
+      if (answers.customCfnFile) {
+        cfnFilename = answers.customCfnFile;
       }
-      if (result.output) {
-        options.output = result.output;
-      }
-      if (!result.noCfnFile) {
-        if (answers.customCfnFile) {
-          cfnFilename = answers.customCfnFile;
-        }
-        copyCfnTemplate(context, category, answers, cfnFilename);
+      copyCfnTemplate(context, category, answers, cfnFilename);
 
-        const parameters = { ...answers };
-        const cfnParameters = {
-          authRoleName: {
-            Ref: 'AuthRoleName',
-          },
-          unauthRoleName: {
-            Ref: 'UnauthRoleName',
-          },
-        };
-        const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
-        fs.ensureDirSync(resourceDirPath);
+      const parameters = { ...answers };
+      const cfnParameters = {
+        authRoleName: {
+          Ref: 'AuthRoleName',
+        },
+        unauthRoleName: {
+          Ref: 'UnauthRoleName',
+        },
+      };
+      const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
+      fs.ensureDirSync(resourceDirPath);
 
-        const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-        let jsonString = JSON.stringify(parameters, null, 4);
-        fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+      const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+      let jsonString = JSON.stringify(parameters, null, 4);
+      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
-        const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
-        jsonString = JSON.stringify(cfnParameters, null, 4);
-        fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
-      }
-      context.amplify.updateamplifyMetaAfterResourceAdd(
-        category,
-        answers.resourceName,
-        options,
-      );
-      return answers.resourceName;
-    });
+      const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
+      jsonString = JSON.stringify(cfnParameters, null, 4);
+      fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
+    }
+    context.amplify.updateamplifyMetaAfterResourceAdd(category, answers.resourceName, options);
+    return answers.resourceName;
+  });
 }
 
 async function updateResource(context, category, service) {
@@ -113,41 +106,31 @@ async function updateResource(context, category, service) {
     process.exit(0);
   }
 
-  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata)
-    .then((result) => {
-      const options = {};
-      if (result) {
-        if (result.answers) {
-          ({ answers } = result);
-          options.dependsOn = result.dependsOn;
-        } else {
-          answers = result;
-        }
-
-        if (!result.noCfnFile) {
-          if (answers.customCfnFile) {
-            cfnFilename = answers.customCfnFile;
-          }
-          copyCfnTemplate(context, category, answers, cfnFilename);
-          const parameters = { ...answers };
-          const resourceDirPath = path.join(
-            projectBackendDirPath,
-            category,
-            parameters.resourceName,
-          );
-          fs.ensureDirSync(resourceDirPath);
-          const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-          const jsonString = JSON.stringify(parameters, null, 4);
-          fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-          context.amplify.updateamplifyMetaAfterResourceUpdate(
-            category,
-            answers.resourceName,
-            'dependsOn',
-            answers.dependsOn,
-          );
-        }
+  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then(result => {
+    const options = {};
+    if (result) {
+      if (result.answers) {
+        ({ answers } = result);
+        options.dependsOn = result.dependsOn;
+      } else {
+        answers = result;
       }
-    });
+
+      if (!result.noCfnFile) {
+        if (answers.customCfnFile) {
+          cfnFilename = answers.customCfnFile;
+        }
+        copyCfnTemplate(context, category, answers, cfnFilename);
+        const parameters = { ...answers };
+        const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
+        fs.ensureDirSync(resourceDirPath);
+        const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+        const jsonString = JSON.stringify(parameters, null, 4);
+        fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+        context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName, 'dependsOn', answers.dependsOn);
+      }
+    }
+  });
 }
 
 async function migrateResource(context, projectPath, service, resourceName) {
@@ -185,5 +168,10 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
 }
 
 module.exports = {
-  addResource, updateResource, console, migrateResource, addDatasource, getPermissionPolicies,
+  addResource,
+  updateResource,
+  console,
+  migrateResource,
+  addDatasource,
+  getPermissionPolicies,
 };

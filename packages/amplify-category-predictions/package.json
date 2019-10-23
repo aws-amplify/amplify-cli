@@ -1,11 +1,11 @@
 {
   "name": "amplify-category-predictions",
-  "version": "1.17.0",
+  "version": "1.22.0",
   "main": "index.js",
   "description": "amplify-cli predictions plugin",
   "author": "Amazon Web Services",
   "dependencies": {
-    "amplify-category-auth": "1.23.0",
+    "amplify-category-auth": "1.28.0",
     "chalk": "^2.4.2",
     "chalk-pipe": "^2.0.0",
     "fs-extra": "^8.1.0",

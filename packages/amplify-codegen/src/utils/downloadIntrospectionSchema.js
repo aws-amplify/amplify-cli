@@ -9,15 +9,10 @@ async function downloadIntrospectionSchema(context, apiId, downloadLocation, reg
 
   if (!downloadLocation.endsWith('.graphql')) {
     try {
-      const schema = await context.amplify.executeProviderUtils(
-        context,
-        'awscloudformation',
-        'getIntrospectionSchema',
-        {
-          apiId,
-          region,
-        },
-      );
+      const schema = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getIntrospectionSchema', {
+        apiId,
+        region,
+      });
       const introspectionDir = dirname(downloadLocation);
       fs.ensureDirSync(introspectionDir);
       fs.writeFileSync(downloadLocation, schema, 'utf8');

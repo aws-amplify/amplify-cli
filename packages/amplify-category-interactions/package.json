@@ -1,11 +1,11 @@
 {
   "name": "amplify-category-interactions",
-  "version": "1.22.0",
+  "version": "1.27.0",
   "main": "index.js",
   "description": "amplify-cli interactions plugin",
   "dependencies": {
-    "amplify-category-auth": "1.23.0",
-    "amplify-category-function": "1.23.0",
+    "amplify-category-auth": "1.28.0",
+    "amplify-category-function": "1.28.0",
     "fs-extra": "^8.1.0",
     "fuzzy": "^0.1.3",
     "inquirer": "^6.5.1",

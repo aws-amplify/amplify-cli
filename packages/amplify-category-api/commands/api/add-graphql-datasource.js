@@ -9,7 +9,6 @@ const subcommand = 'add-graphql-datasource';
 const categories = 'categories';
 const category = 'api';
 const providerName = 'awscloudformation';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-datasources.json`));
 
 const rdsRegion = 'rdsRegion';
 const rdsIdentifier = 'rdsClusterIdentifier';
@@ -21,14 +20,15 @@ const rdsInit = 'rdsInit';
 
 module.exports = {
   name: subcommand,
-  run: async (context) => {
+  run: async context => {
     const { amplify } = context;
+    const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-datasources.json`);
     let resourceName;
     let datasource;
     let databaseName;
     const AWS = await getAwsClient(context, 'list');
     return datasourceSelectionPrompt(context, servicesMetadata)
-      .then((result) => {
+      .then(result => {
         datasource = result.datasource; // eslint-disable-line prefer-destructuring
 
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
@@ -39,7 +39,7 @@ module.exports = {
 
         return providerController.addDatasource(context, category, result.datasource);
       })
-      .then((answers) => {
+      .then(answers => {
         resourceName = answers.resourceName; // eslint-disable-line prefer-destructuring
         databaseName = answers.databaseName; // eslint-disable-line prefer-destructuring
 
@@ -63,14 +63,10 @@ module.exports = {
           teamProviderInfo[currEnv][categories][category][resourceName] = {};
         }
 
-        teamProviderInfo[currEnv][categories][category][resourceName][rdsRegion]
-         = answers.region;
-        teamProviderInfo[currEnv][categories][category][resourceName][rdsIdentifier]
-         = answers.dbClusterArn;
-        teamProviderInfo[currEnv][categories][category][resourceName][rdsSecretStoreArn]
-         = answers.secretStoreArn;
-        teamProviderInfo[currEnv][categories][category][resourceName][rdsDatabaseName]
-         = answers.databaseName;
+        teamProviderInfo[currEnv][categories][category][resourceName][rdsRegion] = answers.region;
+        teamProviderInfo[currEnv][categories][category][resourceName][rdsIdentifier] = answers.dbClusterArn;
+        teamProviderInfo[currEnv][categories][category][resourceName][rdsSecretStoreArn] = answers.secretStoreArn;
+        teamProviderInfo[currEnv][categories][category][resourceName][rdsDatabaseName] = answers.databaseName;
 
         fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
 
@@ -81,22 +77,26 @@ module.exports = {
 
         fs.writeFileSync(backendConfigFilePath, JSON.stringify(backendConfig, null, 4));
 
-
         /**
          * Load the MySqlRelationalDBReader
          */
         // eslint-disable-next-line max-len
-        const dbReader = new AuroraServerlessMySQLDatabaseReader(answers.region, answers.secretStoreArn, answers.dbClusterArn, answers.databaseName, AWS);
-
+        const dbReader = new AuroraServerlessMySQLDatabaseReader(
+          answers.region,
+          answers.secretStoreArn,
+          answers.dbClusterArn,
+          answers.databaseName,
+          AWS
+        );
 
         /**
          * Instantiate a new Relational Schema Transformer and perform
          * the db instrospection to get the GraphQL Schema and Template Context
          */
-        const relationalSchemaTransformer =
-         new RelationalDBSchemaTransformer(dbReader, answers.databaseName);
+        const relationalSchemaTransformer = new RelationalDBSchemaTransformer(dbReader, answers.databaseName);
         return relationalSchemaTransformer.introspectDatabaseSchema();
-      }).then((graphqlSchemaContext) => {
+      })
+      .then(graphqlSchemaContext => {
         const projectBackendDirPath = amplify.pathManager.getBackendDirPath();
 
         /**
@@ -112,8 +112,7 @@ module.exports = {
 
         const rdsGraphQLSchemaDoc = graphqlSchemaContext.schemaDoc;
 
-        const concatGraphQLSchemaDoc
-         = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
+        const concatGraphQLSchemaDoc = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
 
         fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
         const resolversDir = `${projectBackendDirPath}/${category}/${resourceName}/resolvers`;
@@ -138,20 +137,22 @@ module.exports = {
 
         return datasource;
       })
-      .then((datasourceName) => {
+      .then(datasourceName => {
         context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
         return datasourceName;
       })
-      .then((datasourceName) => {
+      .then(datasourceName => {
         const { print } = context;
         print.success(`Successfully added the ${datasourceName} datasource locally`);
         print.info('');
         print.success('Some next steps:');
         print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
-        print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
+        print.info(
+          '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+        );
         print.info('');
       })
-      .catch((err) => {
+      .catch(err => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the datasource');
       });
@@ -160,8 +161,10 @@ module.exports = {
 
 function datasourceSelectionPrompt(context, supportedDatasources) {
   const options = [];
-  Object.keys(supportedDatasources).forEach((datasource) => {
-    const optionName = supportedDatasources[datasource].alias || `${supportedDatasources[datasource].providerName}:${supportedDatasources[datasource].service}`;
+  Object.keys(supportedDatasources).forEach(datasource => {
+    const optionName =
+      supportedDatasources[datasource].alias ||
+      `${supportedDatasources[datasource].providerName}:${supportedDatasources[datasource].service}`;
     options.push({
       name: optionName,
       value: {
@@ -180,20 +183,21 @@ function datasourceSelectionPrompt(context, supportedDatasources) {
   if (options.length === 1) {
     // No need to ask questions
     context.print.info(`Using datasource: ${options[0].value.datasource}, provided by: ${options[0].value.providerName}`);
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       resolve(options[0].value);
     });
   }
 
-  const question = [{
-    name: 'datasource',
-    message: 'Please select from one of the below mentioned datasources',
-    type: 'list',
-    choices: options,
-  }];
+  const question = [
+    {
+      name: 'datasource',
+      message: 'Please select from one of the below mentioned datasources',
+      type: 'list',
+      choices: options,
+    },
+  ];
 
-  return inquirer.prompt(question)
-    .then(answer => answer.datasource);
+  return inquirer.prompt(question).then(answer => answer.datasource);
 }
 
 async function getAwsClient(context, action) {

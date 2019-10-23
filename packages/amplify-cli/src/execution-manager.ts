@@ -7,17 +7,16 @@ import PluginInfo from './domain/plugin-info';
 import inquirer from './domain/inquirer-helper';
 import constants from './domain/constants';
 import {
-    AmplifyEvent,
-    AmplifyEventArgs,
-    AmplifyPreInitEventData,
-    AmplifyPostInitEventData,
-    AmplifyPrePushEventData,
-    AmplifyPostPushEventData,
+  AmplifyEvent,
+  AmplifyEventArgs,
+  AmplifyPreInitEventData,
+  AmplifyPostInitEventData,
+  AmplifyPrePushEventData,
+  AmplifyPostPushEventData,
 } from './domain/amplify-event';
 
 export async function executeCommand(context: Context) {
-  const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform,
-    context.input.plugin!, context.input.command!);
+  const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform, context.input.plugin!, context.input.command!);
 
   if (pluginCandidates.length === 1) {
     await executePluginModuleCommand(context, pluginCandidates[0]);
@@ -26,7 +25,7 @@ export async function executeCommand(context: Context) {
       type: 'list',
       name: 'section',
       message: 'Select the module to execute',
-      choices: pluginCandidates.map((plugin) => {
+      choices: pluginCandidates.map(plugin => {
         const pluginOptions = {
           name: plugin.packageName + '@' + plugin.packageVersion,
           value: plugin,
@@ -50,16 +49,16 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo) 
     await raisePreEvent(context);
 
     const pluginModule = require(plugin.packageLocation);
-    if (pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) &&
-    typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function') {
+    if (
+      pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) &&
+      typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function'
+    ) {
       attachContextExtensions(context, plugin);
       await pluginModule.executeAmplifyCommand(context);
     } else {
       // if the module does not have the executeAmplifyCommand method,
       // fall back to the old approach by scanning the command folder and locate the command file
-      let commandFilepath = path.normalize(
-        path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command!),
-      );
+      let commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command!));
       if (context.input.subCommands && context.input.subCommands.length > 0) {
         commandFilepath = path.join(commandFilepath, ...context.input.subCommands!);
       }
@@ -73,9 +72,7 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo) 
       }
 
       if (!commandModule) {
-        commandFilepath = path.normalize(
-          path.join(plugin.packageLocation, 'commands', plugin.manifest.name),
-        );
+        commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name));
         try {
           commandModule = require(commandFilepath);
         } catch (e) {
@@ -112,17 +109,11 @@ async function raisePreEvent(context: Context) {
 }
 
 async function raisePreInitEvent(context: Context) {
-  await raiseEvent(context, new AmplifyEventArgs(
-        AmplifyEvent.PreInit,
-        new AmplifyPreInitEventData(),
-    ));
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreInit, new AmplifyPreInitEventData()));
 }
 
 async function raisePrePushEvent(context: Context) {
-  await raiseEvent(context, new AmplifyEventArgs(
-        AmplifyEvent.PrePush,
-        new AmplifyPrePushEventData(),
-    ));
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePush, new AmplifyPrePushEventData()));
 }
 
 async function raisePostEvent(context: Context) {
@@ -136,38 +127,34 @@ async function raisePostEvent(context: Context) {
 }
 
 async function raisePostInitEvent(context: Context) {
-  await raiseEvent(context, new AmplifyEventArgs(
-        AmplifyEvent.PostInit,
-        new AmplifyPostPushEventData(),
-    ));
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostPushEventData()));
 }
 
 async function raisePostPushEvent(context: Context) {
-  await raiseEvent(context, new AmplifyEventArgs(
-        AmplifyEvent.PostPush,
-        new AmplifyPostInitEventData(),
-    ));
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostInitEventData()));
 }
 
 export async function raiseEvent(context: Context, args: AmplifyEventArgs) {
   const plugins = getPluginsWithEventHandler(context.pluginPlatform, args.event);
   if (plugins.length > 0) {
     const sequential = require('promise-sequential');
-    const eventHandlers = plugins.filter((plugin) => {
-      const exists = fs.existsSync(plugin.packageLocation);
-      return exists;
-    }).map((plugin) => {
-      const eventHandler = async () => {
-        try {
-          attachContextExtensions(context, plugin);
-          const pluginModule = require(plugin.packageLocation);
-          await pluginModule.handleAmplifyEvent(context, args);
-        } catch {
-          // no need to need anything
-        }
-      };
-      return eventHandler;
-    });
+    const eventHandlers = plugins
+      .filter(plugin => {
+        const exists = fs.existsSync(plugin.packageLocation);
+        return exists;
+      })
+      .map(plugin => {
+        const eventHandler = async () => {
+          try {
+            attachContextExtensions(context, plugin);
+            const pluginModule = require(plugin.packageLocation);
+            await pluginModule.handleAmplifyEvent(context, args);
+          } catch {
+            // no need to need anything
+          }
+        };
+        return eventHandler;
+      });
     await sequential(eventHandlers);
   }
 }
@@ -179,7 +166,7 @@ function attachContextExtensions(context: Context, plugin: PluginInfo) {
     const stats = fs.statSync(extensionsDirPath);
     if (stats.isDirectory()) {
       const itemNames = fs.readdirSync(extensionsDirPath);
-      itemNames.forEach((itemName) => {
+      itemNames.forEach(itemName => {
         const itemPath = path.join(extensionsDirPath, itemName);
         let itemModule;
         try {
@@ -188,7 +175,7 @@ function attachContextExtensions(context: Context, plugin: PluginInfo) {
         } catch (e) {
           // do nothing
         }
-      })
+      });
     }
   }
 }

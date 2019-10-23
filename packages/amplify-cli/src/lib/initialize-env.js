@@ -31,9 +31,8 @@ async function initializeEnv(context, currentAmplifyMeta) {
     const categoryInitializationTasks = [];
     const initializedCategories = Object.keys(context.amplify.getProjectMeta());
     const categoryPlugins = context.amplify.getCategoryPlugins(context);
-    const availableCategory = Object.keys(categoryPlugins).filter(key =>
-      initializedCategories.includes(key));
-    availableCategory.forEach((category) => {
+    const availableCategory = Object.keys(categoryPlugins).filter(key => initializedCategories.includes(key));
+    availableCategory.forEach(category => {
       try {
         const { initEnv } = require(categoryPlugins[category]);
         if (initEnv) {
@@ -49,12 +48,9 @@ async function initializeEnv(context, currentAmplifyMeta) {
     const initializationTasks = [];
     const providerPushTasks = [];
 
-    context.exeInfo.projectConfig.providers.forEach((provider) => {
+    context.exeInfo.projectConfig.providers.forEach(provider => {
       const providerModule = require(providerPlugins[provider]);
-      initializationTasks.push(() => providerModule.initEnv(
-        context,
-        amplifyMeta.providers[provider],
-      ));
+      initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
 
     spinner.start(`Initializing your environment: ${currentEnv}`);
@@ -67,17 +63,15 @@ async function initializeEnv(context, currentAmplifyMeta) {
     await sequential(categoryInitializationTasks);
 
     if (context.exeInfo.forcePush === undefined) {
-      context.exeInfo.forcePush = await context.amplify.confirmPrompt.run('Do you want to push your resources to the cloud for your environment?');
+      context.exeInfo.forcePush = await context.amplify.confirmPrompt.run(
+        'Do you want to push your resources to the cloud for your environment?'
+      );
     }
     if (context.exeInfo.forcePush) {
       for (let i = 0; i < context.exeInfo.projectConfig.providers.length; i += 1) {
         const provider = context.exeInfo.projectConfig.providers[i];
         const providerModule = require(providerPlugins[provider]);
-        const resourceDefiniton = await context.amplify.getResourceStatus(
-          undefined,
-          undefined,
-          provider,
-        );
+        const resourceDefiniton = await context.amplify.getResourceStatus(undefined, undefined, provider);
         providerPushTasks.push(() => providerModule.pushResources(context, resourceDefiniton));
       }
       await sequential(providerPushTasks);
