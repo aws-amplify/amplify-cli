@@ -27,7 +27,7 @@ async function getConfirmation(context) {
     proceed: await context.amplify.confirmPrompt.run(
       'Are you sure you want to continue? (This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)'
     ),
-    //place holder for later selective deletes
+    // Place holder for later selective deletes
     deleteS3: true,
   };
 }
