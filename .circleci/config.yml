@@ -439,7 +439,6 @@ workflows:
                 - graphql_e2e_testing
           requires:
             - build
-            - integration_test_ios
             - mock_e2e_tests
       - mock_e2e_tests:
           requires:
@@ -452,7 +451,6 @@ workflows:
                 - beta
           requires:
             - build
-            - integration_test_ios
             - mock_e2e_tests
       - amplify_e2e_tests:
           filters:
@@ -461,7 +459,6 @@ workflows:
                 - master
           requires:
             - build
-            - integration_test_ios
             - mock_e2e_tests
       - deploy:
           requires:
