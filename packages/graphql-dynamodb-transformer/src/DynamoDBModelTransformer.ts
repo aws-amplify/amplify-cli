@@ -1,5 +1,11 @@
 import { DeletionPolicy } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
+import {
+  DirectiveNode,
+  ObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+} from 'graphql';
 import {
   blankObject,
   makeConnectionField,
@@ -146,6 +152,9 @@ export class DynamoDBModelTransformer extends Transformer {
     this.createQueries(def, directive, ctx);
     this.createMutations(def, directive, ctx, nonModelArray);
     this.createSubscriptions(def, directive, ctx);
+
+    // Update ModelXConditionInput type
+    this.updateMutationConditionInput(ctx, def);
   };
 
   private createMutations = (
@@ -487,105 +496,11 @@ export class DynamoDBModelTransformer extends Transformer {
     }
 
     // Create the ModelXConditionInput
-    const fieldsToExclude = this.getDirectiveFieldNames(ctx, def);
-    const tableXMutationConditionInput = makeModelXConditionInputObject(def, ctx, fieldsToExclude);
+    const tableXMutationConditionInput = makeModelXConditionInputObject(def, ctx);
     if (!this.typeExist(tableXMutationConditionInput.name.value, ctx)) {
       ctx.addInput(tableXMutationConditionInput);
     }
   }
-
-  private getDirectiveFieldNames = (
-    ctx: TransformerContext,
-    type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode
-  ): Set<String> => {
-    const fieldNames = new Set<String>();
-
-    // Get PK for the type from @key directive or default to 'id'
-    const getPKFieldName = (): Array<String> => {
-      let fields: Array<FieldDefinitionNode>;
-
-      for (const keyDirective of type.directives.filter(d => d.name.value === 'key')) {
-        if (getDirectiveArgument(keyDirective, 'name') === undefined) {
-          const fieldsArg = <Array<string>>getDirectiveArgument(keyDirective, 'fields');
-
-
-          if (fieldsArg && fieldsArg.length && fieldsArg.length > 0) {
-            fields = type.fields.filter(f => fieldsArg.includes(f.name.value));
-          }
-
-          // Exit the loop even if field was not set above, @key will throw validation
-          // error anyway
-          break;
-        }
-      }
-
-      return fields ? fields.map(f => f.name.value) : ['id'];
-    };
-
-    getPKFieldName().forEach(f => fieldNames.add(f));
-
-    // Get versionInput from @versioned directive
-    const getVersionInputName = (): String | undefined => {
-      let fieldName: String | undefined = undefined;
-
-      const versionedDirective = type.directives.find(d => d.name.value === 'versioned');
-
-      if (versionedDirective) {
-        fieldName = getDirectiveArgument(versionedDirective, 'versionInput', 'expectedVersion');
-      }
-
-      return fieldName;
-    };
-
-    const versionInputName = getVersionInputName();
-    if (versionInputName) {
-      fieldNames.add(versionInputName);
-    }
-
-    // Get auth related field names from @auth directive rules
-    const getAuthFieldNames = (): Set<String> => {
-      const authFields = new Set<string>();
-      const authDirective = type.directives.find(d => d.name.value === 'auth');
-
-      if (authDirective) {
-        const authRules = getDirectiveArgument(authDirective, 'rules', []);
-
-        if (authRules.length > 0) {
-          // Process owner rules
-          const ownerRules = authRules.filter(rule => rule.allow === 'owner');
-          const ownerFieldNameArgs = ownerRules
-                                        .filter(rule => !!rule.ownerField)
-                                        .map(rule => rule.ownerField);
-
-          ownerFieldNameArgs.forEach((f: string) => authFields.add(f));
-
-          // Add 'owner' to field list if we've owner rules without ownerField argument
-          if (ownerRules.find(rule => !rule.ownerField)) {
-            authFields.add('owner');
-          }
-
-          // Process owner rules
-          const groupsRules = authRules.filter(rule => rule.allow === 'groups');
-          const groupFieldNameArgs = groupsRules
-                                        .filter(rule => !!rule.groupsField)
-                                        .map(rule => rule.groupsField);
-
-          groupFieldNameArgs.forEach((f: string) => authFields.add(f));
-
-          // Add 'groups' to field list if we've groups rules without groupsField argument
-          if (groupsRules.find(rule => !rule.groupsField)) {
-            authFields.add('groups');
-          }
-        }
-      }
-
-      return authFields;
-    };
-
-    getAuthFieldNames().forEach(f => fieldNames.add(f));
-
-    return fieldNames;
-  };
 
   private getOpts(opts: DynamoDBModelTransformerOptions) {
     const defaultOpts = {
@@ -595,5 +510,38 @@ export class DynamoDBModelTransformer extends Transformer {
       ...defaultOpts,
       ...opts,
     };
+  }
+
+  // Due to the current architecture of Transformers we've to handle the 'id' field removal
+  // here, because KeyTranformer will not be invoked if there are no @key directives declared
+  // on the type.
+  private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode): void {
+    // Get the existing ModelXConditionInput
+    const tableXMutationConditionInputName = ModelResourceIDs.ModelConditionInputTypeName(type.name.value);
+
+    if (this.typeExist(tableXMutationConditionInputName, ctx)) {
+      const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
+
+      const keyDirectives = type.directives.filter(d => d.name.value === 'key');
+
+      // If there are @key directives defined we've nothing to do, it will handle everything
+      if (keyDirectives && keyDirectives.length > 0) {
+        return;
+      }
+
+      // Remove the field named 'id' from the condition if there is one
+      const idField = tableXMutationConditionInput.fields.find(f => f.name.value === 'id');
+
+      if (idField) {
+        const reducedFields = tableXMutationConditionInput.fields.filter(f => Boolean(f.name.value !== 'id'));
+
+        const updatedInput = {
+          ...tableXMutationConditionInput,
+          fields: reducedFields,
+        };
+
+        ctx.putType(updatedInput);
+      }
+    }
   }
 }
