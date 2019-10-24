@@ -45,6 +45,19 @@ exports[`Test "create", "update", "delete" auth operations 3`] = `
 $util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+#set( $condition = {
+  \\"expression\\": \\"attribute_not_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+#if( $context.args.condition )
+  #set( $condition.expressionValues = {} )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
 {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
@@ -52,12 +65,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
-  \\"condition\\": {
-      \\"expression\\": \\"attribute_not_exists(#id)\\",
-      \\"expressionNames\\": {
-          \\"#id\\": \\"id\\"
-    }
-  }
+  \\"condition\\": $util.toJson($condition)
 }
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
@@ -196,6 +204,12 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
   $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
   $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #set( $expNames = {} )
 #set( $expValues = {} )
@@ -404,6 +418,15 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
   #set( $expressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
   $util.qr($expressionValues.putAll($versionedCondition.expressionValues))
   #set( $condition.expressionValues = $expressionValues )
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  #set( $conditionExpressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues))
+  #set( $condition.expressionValues = $conditionExpressionValues )
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 {
   \\"version\\": \\"2017-02-28\\",
@@ -631,6 +654,19 @@ exports[`Test that operation overwrites queries in auth operations 3`] = `
 $util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+#set( $condition = {
+  \\"expression\\": \\"attribute_not_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+#if( $context.args.condition )
+  #set( $condition.expressionValues = {} )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
 {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
@@ -638,12 +674,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
-  \\"condition\\": {
-      \\"expression\\": \\"attribute_not_exists(#id)\\",
-      \\"expressionNames\\": {
-          \\"#id\\": \\"id\\"
-    }
-  }
+  \\"condition\\": $util.toJson($condition)
 }
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
@@ -782,6 +813,12 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
   $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
   $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #set( $expNames = {} )
 #set( $expValues = {} )
@@ -990,6 +1027,15 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
   #set( $expressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
   $util.qr($expressionValues.putAll($versionedCondition.expressionValues))
   #set( $condition.expressionValues = $expressionValues )
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  #set( $conditionExpressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues))
+  #set( $condition.expressionValues = $conditionExpressionValues )
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 {
   \\"version\\": \\"2017-02-28\\",

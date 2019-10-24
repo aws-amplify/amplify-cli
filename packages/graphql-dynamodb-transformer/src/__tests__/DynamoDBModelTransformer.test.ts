@@ -160,7 +160,7 @@ test('Test DynamoDBModelTransformer with multiple model directives', () => {
   expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
 });
 
-test('Test DynamoDBModelTransformer with filter', () => {
+test('Test DynamoDBModelTransformer with filter and condition', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -190,6 +190,7 @@ test('Test DynamoDBModelTransformer with filter', () => {
   expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
+  expect(verifyInputCount(parsed, 'ModelPostConditionInput', 1)).toBeTruthy();
 });
 
 test('Test DynamoDBModelTransformer with mutations set to null', () => {
