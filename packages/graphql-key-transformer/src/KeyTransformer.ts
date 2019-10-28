@@ -716,9 +716,9 @@ function replaceUpdateInput(
     fields: input.fields.map(f => {
       if (keyFields.find(k => k === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
-      } else {
-        return f;
       }
+
+      return f;
     }),
   };
 }
@@ -729,9 +729,14 @@ function replaceDeleteInput(
   input: InputObjectTypeDefinitionNode,
   keyFields: string[]
 ): InputObjectTypeDefinitionNode {
+  const idFields = primaryIdFields(definition, keyFields);
+  // Existing fields will contain extra fields in input type that was added/updated by other transformers
+  // like @versioned adds expectedVersion.
+  const existingFields = input.fields.filter(f => !idFields.find(pf => pf.name.value === f.name.value));
+
   return {
     ...input,
-    fields: primaryIdFields(definition, keyFields),
+    fields: [...idFields, ...existingFields],
   };
 }
 
