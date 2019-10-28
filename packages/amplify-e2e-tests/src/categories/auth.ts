@@ -62,7 +62,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: bo
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .send('\r')
       .wait('Provide API name')
       .send('\r')

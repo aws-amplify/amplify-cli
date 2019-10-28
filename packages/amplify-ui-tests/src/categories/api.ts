@@ -26,7 +26,7 @@ export function addApiWithSimpleModel(cwd: string, settings: any = {}, verbose: 
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .sendline('\r')
       .wait('Provide API name:')
       .sendline(settings.apiName)
