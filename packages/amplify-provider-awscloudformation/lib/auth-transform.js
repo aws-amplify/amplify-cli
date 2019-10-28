@@ -1,6 +1,5 @@
 const { prePushAuthHook } = require('amplify-category-auth');
 
-
 async function prePushAuthTransform(context, resources) {
   resources = resources.filter(resource => resource.resourceName === 'userPoolGroups');
   // There can only be one auth resource

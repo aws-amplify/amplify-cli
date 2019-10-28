@@ -11,7 +11,7 @@ const crudFlow = async (role, permissionMap = {}, defaults = []) => {
     message: `What kind of access do you want for ${role} users?`,
     choices: possibleOperations,
     default: defaults,
-    validate: (inputs) => {
+    validate: inputs => {
       if (inputs.length === 0) {
         return 'Select at least one option';
       }

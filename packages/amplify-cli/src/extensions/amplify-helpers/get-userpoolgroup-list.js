@@ -8,7 +8,7 @@ function getUserPoolGroupList(context) {
     context.amplify.pathManager.getBackendDirPath(),
     'auth',
     'userPoolGroups',
-    'user-pool-group-precedence.json',
+    'user-pool-group-precedence.json'
   );
 
   try {

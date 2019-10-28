@@ -28,8 +28,9 @@ async function transformUserPoolGroupSchema(context) {
       group.customPolicies.forEach(policy => {
         if (policy.PolicyDocument && policy.PolicyDocument.Statement) {
           policy.PolicyDocument.Statement.forEach(statement => {
+            // eslint-disable-next-line
             if (statement.Resource.includes('${env}')) {
-              //eslint-disable-line
+              // eslint-disable-line
               statement.Resource = { 'Fn::Sub': [statement.Resource, { env: { Ref: 'env' } }] };
             }
           });
