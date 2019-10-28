@@ -711,7 +711,8 @@ Either make the field optional, set auth on the object and not the field, or dis
         // If we've any modes to check, then add the authMode check code block
         // to the start of the resolver.
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -997,7 +998,8 @@ All @auth directives used on field definitions are performed when the field is r
       }
 
       if (authModesToCheck.size > 0) {
-        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+        const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
       }
 
       // Update the existing resolver with the authorization checks.
@@ -1132,7 +1134,8 @@ All @auth directives used on field definitions are performed when the field is r
       }
 
       if (authModesToCheck.size > 0) {
-        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+        const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
       }
 
       // These statements will be wrapped into an authMode check if statement
@@ -1236,7 +1239,8 @@ All @auth directives used on field definitions are performed when the field is r
         }
 
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -1372,7 +1376,8 @@ All @auth directives used on field definitions are performed when the field is r
         }
 
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -1673,7 +1678,8 @@ All @auth directives used on field definitions are performed when the field is r
         // If we've any modes to check, then add the authMode check code block
         // to the start of the resolver.
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         const authCheckExpressions = [
