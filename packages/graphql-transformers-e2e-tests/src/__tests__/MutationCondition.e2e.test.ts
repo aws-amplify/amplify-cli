@@ -1114,7 +1114,7 @@ describe(`Deployed Mutation Condition tests`, () => {
     expect(updateResponse.data.updatePost.content).toEqual('Content #2 - UpdateComplex');
   });
 
-  it.only('Delete Mutation with failing and succeeding complex conditions', async () => {
+  it('Delete Mutation with failing and succeeding complex conditions', async () => {
     const createMutation = gql(`
     mutation {
       createPost(input: {
@@ -1170,5 +1170,204 @@ describe(`Deployed Mutation Condition tests`, () => {
 
     expect(deleteResponse.data.deletePost.id).toBeDefined();
     expect(deleteResponse.data.deletePost.content).toEqual('Content #3');
+  });
+
+  it('Update Mutation with different owners and same condition', async () => {
+    const createMutation = gql(`
+    mutation {
+      createPost(input: {
+        id: "P4"
+        type: "Post"
+        category: "T1"
+        content: "Content #4"
+        slug: "content-4"
+        rating: 4
+      }) {
+        id
+      }
+    }
+    `);
+
+    const createResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
+      mutation: createMutation,
+      fetchPolicy: 'no-cache',
+    });
+
+    expect(createResponse.data.createPost.id).toBeDefined();
+
+    // Update P4 if rating === 4, different user (non-owner)
+    const updateMutation = gql(`
+    mutation {
+      updatePost(input: {
+        id: "P4"
+        type: "Post"
+        content: "Content #4 - Update"
+        expectedVersion: 1
+      }, condition: {
+        rating: { eq: 4 }
+      }) {
+        id
+      }
+    }
+    `);
+
+    try {
+      await USER_POOL_AUTH_CLIENT_2.mutate({
+        mutation: updateMutation,
+        fetchPolicy: 'no-cache',
+      });
+    } catch (e) {
+      expect(e.message).toMatch(conditionRegexMatch);
+    }
+
+    // Update P4 if rating === 5, owner user, wrong condition
+    const updateMutation2 = gql(`
+    mutation {
+      updatePost(input: {
+        id: "P4"
+        type: "Post"
+        content: "Content #4 - Update"
+        expectedVersion: 1
+      }, condition: {
+        rating: { eq: 5 }
+      }) {
+        id
+      }
+    }
+    `);
+
+    try {
+      await USER_POOL_AUTH_CLIENT_1.mutate({
+        mutation: updateMutation2,
+        fetchPolicy: 'no-cache',
+      });
+    } catch (e) {
+      expect(e.message).toMatch(conditionRegexMatch);
+    }
+
+    // Update P4 if rating === 4, owner user, right condition
+    const updateMutation3 = gql(`
+    mutation {
+      updatePost(input: {
+        id: "P4"
+        type: "Post"
+        content: "Content #4 - Update"
+        expectedVersion: 1
+      }, condition: {
+        rating: { eq: 4 }
+      }) {
+        id
+        content
+        version
+      }
+    }
+    `);
+
+    const updateResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
+      mutation: updateMutation3,
+      fetchPolicy: 'no-cache',
+    });
+
+    expect(updateResponse.data.updatePost.id).toBeDefined();
+    expect(updateResponse.data.updatePost.content).toEqual('Content #4 - Update');
+    expect(updateResponse.data.updatePost.version).toEqual(2);
+  });
+
+  it('Delete Mutation with different owners and same condition', async () => {
+    const createMutation = gql(`
+    mutation {
+      createPost(input: {
+        id: "P5"
+        type: "Post"
+        category: "T1"
+        content: "Content #5"
+        slug: "content-5"
+        rating: 4
+      }) {
+        id
+      }
+    }
+    `);
+
+    const createResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
+      mutation: createMutation,
+      fetchPolicy: 'no-cache',
+    });
+
+    expect(createResponse.data.createPost.id).toBeDefined();
+
+    // Delete P5 if rating === 4, different user (non-owner)
+    const deleteMutation = gql(`
+    mutation {
+      deletePost(input: {
+        id: "P5"
+        type: "Post"
+        expectedVersion: 1
+      }, condition: {
+        rating: { eq: 4 }
+      }) {
+        id
+      }
+    }
+    `);
+
+    try {
+      await USER_POOL_AUTH_CLIENT_2.mutate({
+        mutation: deleteMutation,
+        fetchPolicy: 'no-cache',
+      });
+    } catch (e) {
+      expect(e.message).toMatch(conditionRegexMatch);
+    }
+
+    // Delete P5 if rating === 5, owner user, wrong condition
+    const deleteMutation2 = gql(`
+    mutation {
+      deletePost(input: {
+        id: "P5"
+        type: "Post"
+        expectedVersion: 1
+      }, condition: {
+        rating: { eq: 5 }
+      }) {
+        id
+      }
+    }
+    `);
+
+    try {
+      await USER_POOL_AUTH_CLIENT_1.mutate({
+        mutation: deleteMutation2,
+        fetchPolicy: 'no-cache',
+      });
+    } catch (e) {
+      expect(e.message).toMatch(conditionRegexMatch);
+    }
+
+    // Delete P5 if rating === 4, owner user, right condition
+    const deleteMutation3 = gql(`
+    mutation {
+      deletePost(input: {
+        id: "P5"
+        type: "Post"
+        expectedVersion: 1
+      }, condition: {
+        rating: { eq: 4 }
+      }) {
+        id
+        content
+        version
+      }
+    }
+    `);
+
+    const deleteResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
+      mutation: deleteMutation3,
+      fetchPolicy: 'no-cache',
+    });
+
+    expect(deleteResponse.data.deletePost.id).toBeDefined();
+    expect(deleteResponse.data.deletePost.content).toEqual('Content #5');
+    expect(deleteResponse.data.deletePost.version).toEqual(1);
   });
 });
