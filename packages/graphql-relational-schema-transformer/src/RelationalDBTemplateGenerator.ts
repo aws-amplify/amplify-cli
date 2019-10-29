@@ -4,8 +4,8 @@ import IAM from 'cloudform-types/types/iam';
 
 import cloudform, { Fn, StringParameter, Refs } from 'cloudform';
 import Template from 'cloudform-types/types/template';
-import TemplateContext from './RelationalDBSchemaTransformer';
-import RelationalDBResolverGenerator from './RelationalDBResolverGenerator';
+import { TemplateContext } from './RelationalDBSchemaTransformer';
+import { RelationalDBResolverGenerator } from './RelationalDBResolverGenerator';
 
 /**
  * This is the Class responsible for generating and managing the CloudForm template
@@ -14,7 +14,7 @@ import RelationalDBResolverGenerator from './RelationalDBResolverGenerator';
  * It will generate the basic CloudForm template needed for getting the AppSync API and
  * RDS DataSource provisioned. It also allows for adding the CRUDL+Q Resolvers upon need.
  */
-export default class RelationalDBTemplateGenerator {
+export class RelationalDBTemplateGenerator {
   context: TemplateContext;
 
   constructor(context: TemplateContext) {

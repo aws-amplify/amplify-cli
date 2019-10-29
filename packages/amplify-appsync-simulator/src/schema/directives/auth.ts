@@ -3,7 +3,7 @@ import { buildSchemaFromTypeDefinitions, forEachField } from 'graphql-tools';
 import { AmplifyAppSyncSimulator } from '../..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AmplifyAppSyncSimulatorRequestContext } from '../../type-definition';
 import { Unauthorized } from '../../velocity/util';
-import AppSyncSimulatorDirectiveBase from './directive-base';
+import { AppSyncSimulatorDirectiveBase } from './directive-base';
 
 const AUTH_DIRECTIVES = {
   aws_api_key: 'directive @aws_api_key on FIELD_DEFINITION | OBJECT',

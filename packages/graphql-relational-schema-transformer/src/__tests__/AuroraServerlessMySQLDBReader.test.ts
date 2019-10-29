@@ -1,4 +1,4 @@
-import TemplateContext, { TableContext } from '../RelationalDBSchemaTransformer';
+import { TemplateContext, TableContext } from '../RelationalDBSchemaTransformer';
 import { Kind } from 'graphql';
 import { AuroraServerlessMySQLDatabaseReader } from '../AuroraServerlessMySQLDatabaseReader';
 import { AuroraDataAPIClient, ColumnDescription } from '../AuroraDataAPIClient';
@@ -96,7 +96,6 @@ function describeTableTestCommon(tableName: string, fieldLength: number, isForei
    *   comments: CommentConnection
    * }
    */
-
   expect(tableContext.tableTypeDefinition.fields.length).toEqual(fieldLength);
   expect(tableContext.updateTypeDefinition.fields.length).toEqual(fieldLength);
   expect(tableContext.createTypeDefinition.fields.length).toEqual(fieldLength);

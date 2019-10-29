@@ -1,11 +1,11 @@
-import TemplateContext from './RelationalDBSchemaTransformer';
+import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { DocumentNode } from 'graphql';
 import { Fn } from 'cloudform';
 import AppSync from 'cloudform-types/types/appSync';
 import { print, obj, set, str, list, forEach, ref, compoundExpression } from 'graphql-mapping-template';
 import { graphqlName, toUpper, plurality } from 'graphql-transformer-common';
 import { ResourceConstants } from './ResourceConstants';
-import RelationalDBMappingTemplate from './RelationalDBMappingTemplate';
+import { RelationalDBMappingTemplate } from './RelationalDBMappingTemplate';
 import * as fs from 'fs-extra';
 
 const s3BaseUrl = 's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}';
@@ -18,7 +18,7 @@ const resolverFileName = 'ResolverFileName';
  * Cloudform Resources so that they may be added on to the base template that the
  * RelationDBTemplateGenerator creates.
  */
-export default class RelationalDBResolverGenerator {
+export class RelationalDBResolverGenerator {
   document: DocumentNode;
   typePrimaryKeyMap: Map<string, string>;
   stringFieldMap: Map<string, string[]>;

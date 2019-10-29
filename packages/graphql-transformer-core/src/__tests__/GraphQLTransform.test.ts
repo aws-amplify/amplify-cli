@@ -1,7 +1,7 @@
 import { ObjectTypeDefinitionNode, DirectiveNode, parse } from 'graphql';
-import GraphQLTransform from '../GraphQLTransform';
-import TransformerContext from '../TransformerContext';
-import Transformer from '../Transformer';
+import { GraphQLTransform } from '../GraphQLTransform';
+import { TransformerContext } from '../TransformerContext';
+import { Transformer } from '../Transformer';
 import { getDirectiveArguments, gql } from '../util';
 
 class ValidObjectTransformer extends Transformer {

@@ -1,5 +1,5 @@
 import path from 'path';
-import Context from '../domain/context';
+import { Context } from '../domain/context';
 
 export async function run(context: Context) {
   let subCommand = 'help';

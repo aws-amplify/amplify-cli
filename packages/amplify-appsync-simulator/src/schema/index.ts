@@ -4,7 +4,7 @@ import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorBaseResolverConfig } from '../type-definition';
 import { scalars } from './appsync-scalars';
 import { AwsAuth, AwsSubscribe, protectResolversWithAuthRules } from './directives';
-import AppSyncSimulatorDirectiveBase from './directives/directive-base';
+import { AppSyncSimulatorDirectiveBase } from './directives/directive-base';
 const KNOWN_DIRECTIVES: {
   name: string;
   visitor: typeof AppSyncSimulatorDirectiveBase;

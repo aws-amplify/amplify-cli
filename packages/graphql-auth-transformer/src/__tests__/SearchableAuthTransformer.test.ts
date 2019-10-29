@@ -1,4 +1,4 @@
-import GraphQLTransform from 'graphql-transformer-core';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';

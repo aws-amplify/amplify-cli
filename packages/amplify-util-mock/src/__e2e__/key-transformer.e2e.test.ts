@@ -1,6 +1,6 @@
-import ModelTransformer from 'graphql-dynamodb-transformer';
-import KeyTransformer from 'graphql-key-transformer';
-import GraphQLTransform from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
@@ -48,7 +48,7 @@ beforeAll(async () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
   const out = transformer.transform(validSchema);
   let ddbClient;

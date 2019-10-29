@@ -6,7 +6,7 @@ import { loadSchema } from '../../src/loading';
 const starWarsSchema = loadSchema(require.resolve('../fixtures/starwars/schema.json'));
 const miscSchema = loadSchema(require.resolve('../fixtures/misc/schema.json'));
 
-import CodeGenerator from '../../src/utilities/CodeGenerator';
+import { CodeGenerator } from '../../src/utilities/CodeGenerator';
 
 import { compileToLegacyIR } from '../../src/compiler/legacyIR';
 

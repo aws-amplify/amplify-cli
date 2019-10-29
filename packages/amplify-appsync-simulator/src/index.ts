@@ -1,4 +1,4 @@
-import { parse, Source, validate, specifiedRules, execute, GraphQLSchema, Kind } from 'graphql';
+import { Source, GraphQLSchema } from 'graphql';
 import { generateResolvers } from './schema';
 import { VelocityTemplate } from './velocity';
 import { getDataLoader, AmplifyAppSyncSimulatorDataLoader } from './data-loader';
@@ -6,7 +6,6 @@ import { AppSyncUnitResolver } from './resolvers';
 import { AppSyncSimulatorServer } from './server';
 export { addDataLoader, removeDataLoader } from './data-loader';
 import { PubSub } from 'graphql-subscriptions';
-import * as EventEmitter from 'events';
 import { AmplifySimulatorFunction } from './resolvers/function';
 import { AppSyncPipelineResolver } from './resolvers/pipeline-resolver';
 import {

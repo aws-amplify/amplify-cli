@@ -20,7 +20,7 @@ import * as Inflector from 'inflected';
 
 import { join, wrap } from '../utilities/printing';
 
-import CodeGenerator from '../utilities/CodeGenerator';
+import { CodeGenerator } from '../utilities/CodeGenerator';
 
 import { typeDeclaration, propertyDeclaration, propertySetsDeclaration } from './language';
 

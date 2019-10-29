@@ -53,7 +53,7 @@ export class TableContext {
  * map of the primary keys for each of the types. It is also being used to track the CLI inputs needed
  * for DataSource Creation, as data source creation is apart of the cfn template generation.
  */
-export default class TemplateContext {
+export class TemplateContext {
   schemaDoc: DocumentNode;
   typePrimaryKeyMap: Map<string, string>;
   typePrimaryKeyTypeMap: Map<string, string>;

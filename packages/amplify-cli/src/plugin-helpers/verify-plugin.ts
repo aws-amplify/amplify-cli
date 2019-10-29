@@ -1,10 +1,9 @@
 import path from 'path';
 import fs from 'fs-extra';
-import constants from '../domain/constants';
+import { constants } from '../domain/constants';
 import { readJsonFileSync, readJsonFile } from '../utils/readJsonFile';
-import PluginManifest from '../domain/plugin-manifest';
-import PluginVerificationResult from '../domain/plugin-verification-result';
-import { PluginVerificationError } from '../domain/plugin-verification-result';
+import { PluginManifest } from '../domain/plugin-manifest';
+import { PluginVerificationResult, PluginVerificationError } from '../domain/plugin-verification-result';
 
 export function verifyPluginSync(pluginDirPath: string): PluginVerificationResult {
   if (fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory()) {

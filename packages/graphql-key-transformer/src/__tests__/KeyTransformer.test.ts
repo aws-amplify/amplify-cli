@@ -1,5 +1,5 @@
-import GraphQLTransform, { Transformer, InvalidDirectiveError } from 'graphql-transformer-core';
-import KeyTransformer from '../KeyTransformer';
+import { GraphQLTransform, InvalidDirectiveError } from 'graphql-transformer-core';
+import { KeyTransformer } from '../KeyTransformer';
 
 test('KeyTransformer should fail if more than 1 @key is provided without a name.', () => {
   const validSchema = `

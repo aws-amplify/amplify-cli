@@ -7,7 +7,7 @@ import { lambdaArnResource } from './lambdaArns';
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
 
-export default class FunctionTransformer extends Transformer {
+export class FunctionTransformer extends Transformer {
   constructor() {
     super(
       'FunctionTransformer',

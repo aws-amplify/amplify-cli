@@ -1,4 +1,4 @@
-import Context from './domain/context';
+import { Context } from './domain/context';
 import fs from 'fs-extra';
 import path from 'path';
 import importedColors from 'colors/safe';

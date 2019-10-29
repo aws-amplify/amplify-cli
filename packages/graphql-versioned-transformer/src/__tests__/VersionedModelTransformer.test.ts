@@ -1,8 +1,7 @@
 import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind, InputObjectTypeDefinitionNode } from 'graphql';
-import GraphQLTransform from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { VersionedModelTransformer } from '../VersionedModelTransformer';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 
 const getInputType = (schemaDoc: DocumentNode) => (name: string): InputObjectTypeDefinitionNode =>
   schemaDoc.definitions.find(d => (d.kind !== Kind.SCHEMA_DEFINITION ? d.name.value === name : false)) as InputObjectTypeDefinitionNode;

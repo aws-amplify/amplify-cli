@@ -7,8 +7,8 @@ import {
   Kind,
   InputObjectTypeDefinitionNode,
 } from 'graphql';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 
 import fs = require('fs');
 import path = require('path');

@@ -2,7 +2,7 @@ import * as yargs from 'yargs';
 import * as path from 'path';
 
 import { logError } from './logger';
-import generateAllOps from './index';
+import { generate } from './index';
 
 // / Make sure unhandled errors in async code are propagated correctly
 process.on('unhandledRejection', error => {
@@ -54,7 +54,7 @@ export function run(argv: Array<String>): void {
         },
       },
       async argv => {
-        generateAllOps(argv.schema, argv.output, { separateFiles: argv.separateFiles, language: argv.language, maxDepth: argv.maxDepth });
+        generate(argv.schema, argv.output, { separateFiles: argv.separateFiles, language: argv.language, maxDepth: argv.maxDepth });
       }
     )
     .help()
