@@ -7,7 +7,7 @@ import {
   ValidationContext,
   GraphQLSchema,
   DocumentNode,
-  OperationDefinitionNode
+  OperationDefinitionNode,
 } from 'graphql';
 
 import { ToolError, logError } from './errors';
@@ -15,11 +15,7 @@ import { ToolError, logError } from './errors';
 export function validateQueryDocument(schema: GraphQLSchema, document: DocumentNode) {
   const specifiedRulesToBeRemoved = [NoUnusedFragmentsRule];
 
-  const rules = [
-    NoAnonymousQueries,
-    NoTypenameAlias,
-    ...specifiedRules.filter(rule => !specifiedRulesToBeRemoved.includes(rule))
-  ];
+  const rules = [NoAnonymousQueries, NoTypenameAlias, ...specifiedRules.filter(rule => !specifiedRulesToBeRemoved.includes(rule))];
 
   const validationErrors = validate(schema, document, rules);
   if (validationErrors && validationErrors.length > 0) {
@@ -37,7 +33,7 @@ export function NoAnonymousQueries(context: ValidationContext) {
         context.reportError(new GraphQLError('Apollo does not support anonymous operations', [node]));
       }
       return false;
-    }
+    },
   };
 }
 
@@ -47,12 +43,9 @@ export function NoTypenameAlias(context: ValidationContext) {
       const aliasName = node.alias && node.alias.value;
       if (aliasName == '__typename') {
         context.reportError(
-          new GraphQLError(
-            'Apollo needs to be able to insert __typename when needed, please do not use it as an alias',
-            [node]
-          )
+          new GraphQLError('Apollo needs to be able to insert __typename when needed, please do not use it as an alias', [node])
         );
       }
-    }
+    },
   };
 }

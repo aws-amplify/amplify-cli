@@ -1,1 +1,1 @@
-test('TODO: Common tests', () => expect(true).toEqual(true))
+test('TODO: Common tests', () => expect(true).toEqual(true));

@@ -16,6 +16,6 @@ export function inlineRedundantTypeConditions(selectionSet: SelectionSet): Selec
 
   return {
     possibleTypes: selectionSet.possibleTypes,
-    selections
+    selections,
   };
 }

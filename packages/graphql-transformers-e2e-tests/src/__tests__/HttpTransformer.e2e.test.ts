@@ -11,7 +11,6 @@ import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3';
-import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 

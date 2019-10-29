@@ -2,15 +2,8 @@ import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorFunctionResolverConfig } from '../type-definition';
 
 export class AmplifySimulatorFunction {
-  constructor(
-    private config: AppSyncSimulatorFunctionResolverConfig,
-    private simulatorContext: AmplifyAppSyncSimulator
-  ) {
-    const {
-      dataSourceName,
-      requestMappingTemplateLocation,
-      responseMappingTemplateLocation,
-    } = config;
+  constructor(private config: AppSyncSimulatorFunctionResolverConfig, private simulatorContext: AmplifyAppSyncSimulator) {
+    const { dataSourceName, requestMappingTemplateLocation, responseMappingTemplateLocation } = config;
     if (!dataSourceName || !requestMappingTemplateLocation || !responseMappingTemplateLocation) {
       throw new Error(`Invalid configuration parameter for function ${JSON.stringify(config)}`);
     }
@@ -29,29 +22,14 @@ export class AmplifySimulatorFunction {
     this.config = config;
   }
 
-  async resolve(
-    source,
-    args,
-    stash,
-    prevResult,
-    context,
-    info
-  ): Promise<{ result: any; stash: any }> {
+  async resolve(source, args, stash, prevResult, context, info): Promise<{ result: any; stash: any }> {
     let result = null;
     let error = null;
-    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(
-      this.config.requestMappingTemplateLocation
-    );
-    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(
-      this.config.responseMappingTemplateLocation
-    );
+    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);
+    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
 
-    const requestTemplateResult = await requestMappingTemplate.render(
-      { source, arguments: args, stash, prevResult },
-      context,
-      info
-    );
+    const requestTemplateResult = await requestMappingTemplate.render({ source, arguments: args, stash, prevResult }, context, info);
     context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateResult.errors];
 
     try {

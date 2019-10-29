@@ -122,11 +122,7 @@ export interface FragmentSpread {
   selectionSet: SelectionSet;
 }
 
-export function compileToIR(
-  schema: GraphQLSchema,
-  document: DocumentNode,
-  options: CompilerOptions = {}
-): CompilerContext {
+export function compileToIR(schema: GraphQLSchema, document: DocumentNode, options: CompilerOptions = {}): CompilerContext {
   if (options.addTypename) {
     document = withTypenameFieldAddedWhereNeeded(document);
   }
@@ -151,12 +147,8 @@ export function compileToIR(
     } catch (e) {
       if (e instanceof GraphQLError) {
         if (definition.kind === 'OperationDefinition' && definition.name) {
-          const locInfo = definition.name.loc
-            ? `in ${definition.name.loc.source.name}`
-            : '';
-          console.log(
-            `${e.message} but found ${definition.operation}: ${definition.name.value} ${locInfo}  `
-          );
+          const locInfo = definition.name.loc ? `in ${definition.name.loc.source.name}` : '';
+          console.log(`${e.message} but found ${definition.operation}: ${definition.name.value} ${locInfo}  `);
         } else {
           console.log(e.message);
         }
@@ -171,9 +163,7 @@ export function compileToIR(
     }
 
     // Compute the intersection between the possible,types of the fragment spread and the fragment.
-    const possibleTypes = fragment.selectionSet.possibleTypes.filter(type =>
-      fragmentSpread.selectionSet.possibleTypes.includes(type)
-    );
+    const possibleTypes = fragment.selectionSet.possibleTypes.filter(type => fragmentSpread.selectionSet.possibleTypes.includes(type));
 
     fragmentSpread.isConditional = fragment.selectionSet.possibleTypes.some(
       type => !fragmentSpread.selectionSet.possibleTypes.includes(type)
@@ -305,9 +295,7 @@ class Compiler {
 
         const fieldDef = getFieldDef(this.schema, parentType, selectionNode);
         if (!fieldDef) {
-          throw new GraphQLError(`Cannot query field "${name}" on type "${String(parentType)}"`, [
-            selectionNode,
-          ]);
+          throw new GraphQLError(`Cannot query field "${name}" on type "${String(parentType)}"`, [selectionNode]);
         }
 
         const fieldType = fieldDef.type;
@@ -347,35 +335,21 @@ class Compiler {
         if (isCompositeType(unmodifiedFieldType)) {
           const selectionSetNode = selectionNode.selectionSet;
           if (!selectionSetNode) {
-            throw new GraphQLError(
-              `Composite field "${name}" on type "${String(parentType)}" requires selection set`,
-              [selectionNode]
-            );
+            throw new GraphQLError(`Composite field "${name}" on type "${String(parentType)}" requires selection set`, [selectionNode]);
           }
 
-          field.selectionSet = this.compileSelectionSet(
-            selectionNode.selectionSet as SelectionSetNode,
-            unmodifiedFieldType
-          );
+          field.selectionSet = this.compileSelectionSet(selectionNode.selectionSet as SelectionSetNode, unmodifiedFieldType);
         }
         return field;
       }
       case Kind.INLINE_FRAGMENT: {
         const typeNode = selectionNode.typeCondition;
-        const type = typeNode
-          ? (typeFromAST(this.schema, typeNode) as GraphQLCompositeType)
-          : parentType;
-        const possibleTypesForTypeCondition = this.possibleTypesForType(type).filter(type =>
-          possibleTypes.includes(type)
-        );
+        const type = typeNode ? (typeFromAST(this.schema, typeNode) as GraphQLCompositeType) : parentType;
+        const possibleTypesForTypeCondition = this.possibleTypesForType(type).filter(type => possibleTypes.includes(type));
         return {
           kind: 'TypeCondition',
           type,
-          selectionSet: this.compileSelectionSet(
-            selectionNode.selectionSet,
-            type,
-            possibleTypesForTypeCondition
-          ),
+          selectionSet: this.compileSelectionSet(selectionNode.selectionSet, type, possibleTypesForTypeCondition),
         };
       }
       case Kind.FRAGMENT_SPREAD: {

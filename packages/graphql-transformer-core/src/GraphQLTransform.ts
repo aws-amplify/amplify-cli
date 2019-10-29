@@ -1,28 +1,25 @@
-import Template from 'cloudform-types/types/template';
 import {
-  TypeSystemDefinitionNode,
   DirectiveDefinitionNode,
-  Kind,
   DirectiveNode,
-  TypeDefinitionNode,
-  ObjectTypeDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  ScalarTypeDefinitionNode,
-  UnionTypeDefinitionNode,
   EnumTypeDefinitionNode,
-  InputObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  InputValueDefinitionNode,
   EnumValueDefinitionNode,
-  validate,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  ScalarTypeDefinitionNode,
+  TypeDefinitionNode,
   TypeExtensionNode,
+  TypeSystemDefinitionNode,
+  UnionTypeDefinitionNode,
 } from 'graphql';
 import { DeploymentResources } from './DeploymentResources';
+import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from './errors';
 import { TransformerContext } from './TransformerContext';
-import blankTemplate from './util/blankTemplate';
 import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
-import { InvalidTransformerError, UnknownDirectiveError, SchemaValidationError } from './errors';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
 
@@ -68,6 +65,7 @@ function matchDirective(definition: DirectiveDefinitionNode, directive: Directiv
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
+    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `SCHEMA`:
         isValidLocation = node.kind === Kind.SCHEMA_DEFINITION || isValidLocation;
@@ -114,6 +112,7 @@ function matchFieldDirective(definition: DirectiveDefinitionNode, directive: Dir
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
+    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `FIELD_DEFINITION`:
         isValidLocation = node.kind === Kind.FIELD_DEFINITION || isValidLocation;
@@ -130,6 +129,7 @@ function matchInputFieldDirective(definition: DirectiveDefinitionNode, directive
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
+    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `INPUT_FIELD_DEFINITION`:
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
@@ -146,6 +146,7 @@ function matchArgumentDirective(definition: DirectiveDefinitionNode, directive: 
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
+    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `ARGUMENT_DEFINITION`:
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
@@ -162,6 +163,7 @@ function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive:
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
+    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `ENUM_VALUE`:
         isValidLocation = node.kind === Kind.ENUM_VALUE_DEFINITION || isValidLocation;
@@ -275,9 +277,9 @@ export class GraphQLTransform {
     while (reverseThroughTransformers >= 0) {
       const transformer = this.transformers[reverseThroughTransformers];
       // TODO: Validate the new context.
-      if (1 !== 1) {
-        throw new Error(`Invalid context after transformer ${transformer.name}`);
-      }
+      // if (1 !== 1) {
+      //   throw new Error(`Invalid context after transformer ${transformer.name}`);
+      // }
       if (isFunction(transformer.after)) {
         transformer.after(context);
       }

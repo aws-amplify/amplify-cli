@@ -12,7 +12,7 @@ import {
   getNamedType,
   GraphQLInputField,
   isNonNullType,
-  isListType
+  isListType,
 } from 'graphql';
 
 import { camelCase, pascalCase } from 'change-case';
@@ -32,7 +32,7 @@ const builtInScalarMap = {
   [GraphQLInt.name]: 'Int',
   [GraphQLFloat.name]: 'Double',
   [GraphQLBoolean.name]: 'Bool',
-  [GraphQLID.name]: 'GraphQLID'
+  [GraphQLID.name]: 'GraphQLID',
 };
 
 const INFLECTOR_BLACK_LIST = ['delta'];
@@ -48,11 +48,7 @@ export class Helpers {
 
   // Types
 
-  typeNameFromGraphQLType(
-    type: GraphQLType,
-    unmodifiedTypeName?: string,
-    isOptional?: boolean
-  ): string {
+  typeNameFromGraphQLType(type: GraphQLType, unmodifiedTypeName?: string, isOptional?: boolean): string {
     if (isNonNullType(type)) {
       return this.typeNameFromGraphQLType(type.ofType, unmodifiedTypeName, false);
     } else if (isOptional === undefined) {
@@ -152,7 +148,7 @@ export class Helpers {
       propertyName,
       typeName,
       structName,
-      isOptional
+      isOptional,
     });
   }
 
@@ -162,21 +158,18 @@ export class Helpers {
     return Object.assign(variant, {
       propertyName: camelCase(structName),
       typeName: structName + '?',
-      structName
+      structName,
     });
   }
 
-  propertyFromFragmentSpread(
-    fragmentSpread: FragmentSpread,
-    isConditional: boolean
-  ): FragmentSpread & Property & Struct {
+  propertyFromFragmentSpread(fragmentSpread: FragmentSpread, isConditional: boolean): FragmentSpread & Property & Struct {
     const structName = this.structNameForFragmentName(fragmentSpread.fragmentName);
 
     return Object.assign({}, fragmentSpread, {
       propertyName: camelCase(fragmentSpread.fragmentName),
       typeName: isConditional ? structName + '?' : structName,
       structName,
-      isConditional
+      isConditional,
     });
   }
 
@@ -188,15 +181,12 @@ export class Helpers {
         typeName: this.typeNameFromGraphQLType(field.type),
         isOptional: !(field.type instanceof GraphQLNonNull),
         description: field.description || null,
-        name: field.name
+        name: field.name,
       }
     );
   }
 
-  propertiesForSelectionSet(
-    selectionSet: SelectionSet,
-    namespace?: string
-  ): (Field & Property)[] | undefined {
+  propertiesForSelectionSet(selectionSet: SelectionSet, namespace?: string): (Field & Property)[] | undefined {
     const properties = collectAndMergeFields(selectionSet, true)
       .filter(field => field.name !== '__typename')
       .map(field => this.propertyFromField(field, namespace));
@@ -249,11 +239,7 @@ export class Helpers {
     );
   }
 
-  mapExpressionForType(
-    type: GraphQLType,
-    expression: (identifier: string) => string,
-    identifier = ''
-  ): string {
+  mapExpressionForType(type: GraphQLType, expression: (identifier: string) => string, identifier = ''): string {
     let isOptional;
     if (isNonNullType(type)) {
       isOptional = false;
@@ -264,11 +250,7 @@ export class Helpers {
 
     if (isListType(type)) {
       if (isOptional) {
-        return `${identifier}.flatMap { $0.map { ${this.mapExpressionForType(
-          type.ofType,
-          expression,
-          '$0'
-        )} } }`;
+        return `${identifier}.flatMap { $0.map { ${this.mapExpressionForType(type.ofType, expression, '$0')} } }`;
       } else {
         return `${identifier}.map { ${this.mapExpressionForType(type.ofType, expression, '$0')} }`;
       }

@@ -1,4 +1,3 @@
-import { ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode, Kind } from 'graphql';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
@@ -67,7 +66,6 @@ beforeAll(async () => {
         album: Album @connection (name: "AlbumPhotos", keyField: "albumId")
     }
     `;
-
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),

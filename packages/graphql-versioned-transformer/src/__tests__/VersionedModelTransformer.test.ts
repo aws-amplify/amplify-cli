@@ -1,6 +1,5 @@
 import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind, InputObjectTypeDefinitionNode } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { VersionedModelTransformer } from '../VersionedModelTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 

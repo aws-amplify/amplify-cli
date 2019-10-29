@@ -9,7 +9,6 @@ import {
 } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { ResourceConstants } from 'graphql-transformer-common';
 
 import fs = require('fs');
 import path = require('path');

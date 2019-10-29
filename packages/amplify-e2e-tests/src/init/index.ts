@@ -2,7 +2,7 @@ export {
   default as initProjectWithProfile,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
-  initNewEnvWithProfile
+  initNewEnvWithProfile,
 } from './initProjectHelper';
 export * from './amplifyPush';
 export { getProjectMeta } from '../utils';

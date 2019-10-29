@@ -1,11 +1,6 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
 const fs = require('fs');
-import {
-  initProjectWithProfile,
-  deleteProject,
-  amplifyPushAuth,
-  amplifyPush
-} from '../src/init';
+import { initProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../src/init';
 import {
   addAuthWithDefault,
   addAuthWithDefaultSocial,
@@ -14,13 +9,13 @@ import {
   addAuthWithCustomTrigger,
   updateAuthWithoutCustomTrigger,
   addAuthViaAPIWithTrigger,
-  addAuthWithMaxOptions
+  addAuthWithMaxOptions,
 } from '../src/categories/auth';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getUserPoolClients, getLambdaFunction } from '../src/utils';
 
 const defaultsSettings = {
   name: 'authTest',
-}
+};
 
 describe('amplify add auth...', () => {
   let projRoot: string;
@@ -41,7 +36,7 @@ describe('amplify add auth...', () => {
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    await expect(userPool.UserPool).toBeDefined()
+    await expect(userPool.UserPool).toBeDefined();
   });
 
   it('...should init a project and add auth with defaultSocial', async () => {
@@ -69,7 +64,7 @@ describe('amplify add auth...', () => {
 
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
-    const lambdaFunction =  await getLambdaFunction(functionName, meta.providers.awscloudformation.Region)
+    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     await expect(userPool.UserPool).toBeDefined();
     await expect(clients).toHaveLength(2);
     await expect(lambdaFunction).toBeDefined();
@@ -86,7 +81,7 @@ describe('amplify add auth...', () => {
 
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
-    const lambdaFunction =  await getLambdaFunction(functionName, meta.providers.awscloudformation.Region)
+    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     await expect(userPool.UserPool).toBeDefined();
     await expect(clients).toHaveLength(2);
     await expect(lambdaFunction).toBeDefined();
@@ -104,9 +99,9 @@ describe('amplify add auth...', () => {
     const verifyFunctionName = `${Object.keys(meta.auth)[0]}VerifyAuthChallengeResponse-integtest`;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
-    const createFunction =  await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region)
-    const defineFunction =  await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region)
-    const verifyFunction =  await getLambdaFunction(verifyFunctionName, meta.providers.awscloudformation.Region)
+    const createFunction = await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region);
+    const defineFunction = await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region);
+    const verifyFunction = await getLambdaFunction(verifyFunctionName, meta.providers.awscloudformation.Region);
 
     await expect(userPool.UserPool).toBeDefined();
     await expect(clients).toHaveLength(2);
@@ -126,8 +121,8 @@ describe('amplify add auth...', () => {
     const defineFunctionName = `${Object.keys(meta.auth)[0]}DefineAuthChallenge-integtest`;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
-    const createFunction =  await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region)
-    const defineFunction =  await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region)
+    const createFunction = await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region);
+    const defineFunction = await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region);
 
     await expect(userPool.UserPool).toBeDefined();
     await expect(clients).toHaveLength(2);
@@ -136,8 +131,7 @@ describe('amplify add auth...', () => {
 
     await expect(createFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
     await expect(defineFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
-  })
-
+  });
 });
 
 describe('amplify updating auth...', () => {
@@ -161,8 +155,8 @@ describe('amplify updating auth...', () => {
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
-    const lambdaFunction =  await getLambdaFunction(functionName, meta.providers.awscloudformation.Region)
-    const dirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`)
+    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    const dirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
     await expect(dirContents.includes('custom.js')).toBeTruthy();
     await expect(userPool.UserPool).toBeDefined();
     await expect(clients).toHaveLength(2);
@@ -171,8 +165,8 @@ describe('amplify updating auth...', () => {
 
     await updateAuthWithoutCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
-    const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region)
-    const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`)
+    const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
     await expect(updatedDirContents.includes('custom.js')).toBeFalsy();
     await expect(updatedDirContents.includes('email-filter-blacklist.js')).toBeTruthy();
     await expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist');

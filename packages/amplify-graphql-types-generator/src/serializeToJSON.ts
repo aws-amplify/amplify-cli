@@ -1,29 +1,30 @@
-import {
-  isType,
-  GraphQLType,
-  GraphQLScalarType,
-  GraphQLEnumType,
-  GraphQLInputObjectType,
-} from 'graphql';
+import { isType, GraphQLType, GraphQLScalarType, GraphQLEnumType, GraphQLInputObjectType } from 'graphql';
 
 import { LegacyCompilerContext } from './compiler/legacyIR';
 
 export default function serializeToJSON(context: LegacyCompilerContext) {
-  return serializeAST({
-    operations: Object.values(context.operations),
-    fragments: Object.values(context.fragments),
-    typesUsed: context.typesUsed.map(serializeType),
-  }, '\t');
+  return serializeAST(
+    {
+      operations: Object.values(context.operations),
+      fragments: Object.values(context.fragments),
+      typesUsed: context.typesUsed.map(serializeType),
+    },
+    '\t'
+  );
 }
 
 export function serializeAST(ast: any, space?: string) {
-  return JSON.stringify(ast, function(_, value) {
-    if (isType(value)) {
-      return String(value);
-    } else {
-      return value;
-    }
-  }, space);
+  return JSON.stringify(
+    ast,
+    function(_, value) {
+      if (isType(value)) {
+        return String(value);
+      } else {
+        return value;
+      }
+    },
+    space
+  );
 }
 
 function serializeType(type: GraphQLType) {
@@ -46,15 +47,13 @@ function serializeEnumType(type: GraphQLEnumType) {
     kind: 'EnumType',
     name,
     description,
-    values: values.map(value => (
-      {
-        name: value.name,
-        description: value.description,
-        isDeprecated: value.isDeprecated,
-        deprecationReason: value.deprecationReason
-      }
-    ))
-  }
+    values: values.map(value => ({
+      name: value.name,
+      description: value.description,
+      isDeprecated: value.isDeprecated,
+      deprecationReason: value.deprecationReason,
+    })),
+  };
 }
 
 function serializeInputObjectType(type: GraphQLInputObjectType) {
@@ -69,9 +68,9 @@ function serializeInputObjectType(type: GraphQLInputObjectType) {
       name: field.name,
       type: String(field.type),
       description: field.description,
-      defaultValue: field.defaultValue
-    }))
-  }
+      defaultValue: field.defaultValue,
+    })),
+  };
 }
 
 function serializeScalarType(type: GraphQLScalarType) {
@@ -80,6 +79,6 @@ function serializeScalarType(type: GraphQLScalarType) {
   return {
     kind: 'ScalarType',
     name,
-    description
-  }
+    description,
+  };
 }

@@ -6,11 +6,10 @@ export function parseUrl(request, route: String) {
   request.url = normalize(decodeURIComponent(request.url));
   const temp = request.url.split(route);
   request.params.path = '';
-  
+
   if (request.query.prefix !== undefined) request.params.path = request.query.prefix + '/';
 
-  if (temp[1] !== undefined)
-    request.params.path = normalize(join(request.params.path, temp[1].split('?')[0]));
+  if (temp[1] !== undefined) request.params.path = normalize(join(request.params.path, temp[1].split('?')[0]));
   // change for IOS as no bucket name is present in the original url
   else request.params.path = normalize(join(request.params.path, temp[0].split('?')[0]));
 

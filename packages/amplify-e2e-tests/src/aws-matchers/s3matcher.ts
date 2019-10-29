@@ -10,12 +10,10 @@ expect.extend({
       pass = false;
     }
 
-    const messageStr = pass
-      ? `expected S3 bucket ${bucketName} exist`
-      : `expected S3 bucket ${bucketName} does exist`;
+    const messageStr = pass ? `expected S3 bucket ${bucketName} exist` : `expected S3 bucket ${bucketName} does exist`;
     return {
       message: () => messageStr,
       pass,
     };
-  }
+  },
 });

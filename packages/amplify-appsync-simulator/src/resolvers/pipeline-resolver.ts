@@ -3,10 +3,7 @@ import { AppSyncSimulatorPipelineResolverConfig } from '../type-definition';
 
 export class AppSyncPipelineResolver {
   private config: AppSyncSimulatorPipelineResolverConfig;
-  constructor(
-    config: AppSyncSimulatorPipelineResolverConfig,
-    private simulatorContext: AmplifyAppSyncSimulator
-  ) {
+  constructor(config: AppSyncSimulatorPipelineResolverConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     try {
       simulatorContext.getMappingTemplate(config.requestMappingTemplateLocation);
       simulatorContext.getMappingTemplate(config.responseMappingTemplateLocation);
@@ -22,23 +19,15 @@ export class AppSyncPipelineResolver {
   }
 
   async resolve(source, args, context, info) {
-    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(
-      this.config.requestMappingTemplateLocation
-    );
-    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(
-      this.config.responseMappingTemplateLocation
-    );
+    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);
+    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
 
     let result = {};
     let stash = {};
     let templateErrors;
 
     // Pipeline request mapping template
-    ({ result, stash, errors: templateErrors } = requestMappingTemplate.render(
-      { source, arguments: args, stash },
-      context,
-      info
-    ));
+    ({ result, stash, errors: templateErrors } = requestMappingTemplate.render({ source, arguments: args, stash }, context, info));
     context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
 
     // Pipeline functions
@@ -46,14 +35,7 @@ export class AppSyncPipelineResolver {
       .reduce((chain, fn) => {
         const fnResolver = this.simulatorContext.getFunction(fn);
         const p = chain.then(async ({ prevResult, stash }) => {
-          ({ result: prevResult, stash } = await fnResolver.resolve(
-            source,
-            args,
-            stash,
-            prevResult,
-            context,
-            info
-          ));
+          ({ result: prevResult, stash } = await fnResolver.resolve(source, args, stash, prevResult, context, info));
           return Promise.resolve({ prevResult, stash });
         });
         return p;

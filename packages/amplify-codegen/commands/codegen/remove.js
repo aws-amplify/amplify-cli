@@ -4,7 +4,7 @@ const featureName = 'remove';
 
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     try {
       await codeGen.remove(context);
     } catch (ex) {

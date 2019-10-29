@@ -32,7 +32,7 @@ function toMatchSelectionSet(
         `   ${this.utils.printExpected(expectedResponseKeys)}` +
         'Received:\n' +
         `  ${this.utils.printReceived(actualResponseKeys)}`,
-      pass: true
+      pass: true,
     };
   } else {
     return {
@@ -42,7 +42,7 @@ function toMatchSelectionSet(
         `   ${this.utils.printExpected(expectedResponseKeys)}\n` +
         'Received:\n' +
         `   ${this.utils.printReceived(actualResponseKeys)}`,
-      pass: false
+      pass: false,
     };
   }
 }
@@ -71,7 +71,7 @@ function toContainSelectionSetMatching(
               )}`
           )
           .join('\n'),
-      pass: false
+      pass: false,
     };
   }
 
@@ -80,5 +80,5 @@ function toContainSelectionSetMatching(
 
 expect.extend({
   toMatchSelectionSet,
-  toContainSelectionSetMatching
+  toContainSelectionSetMatching,
 } as any);

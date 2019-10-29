@@ -9,7 +9,6 @@ const subcommand = 'add-graphql-datasource';
 const categories = 'categories';
 const category = 'api';
 const providerName = 'awscloudformation';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-datasources.json`));
 
 const rdsRegion = 'rdsRegion';
 const rdsIdentifier = 'rdsClusterIdentifier';
@@ -23,6 +22,7 @@ module.exports = {
   name: subcommand,
   run: async context => {
     const { amplify } = context;
+    const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-datasources.json`);
     let resourceName;
     let datasource;
     let databaseName;
