@@ -16,7 +16,7 @@ export interface FlowCompilerOptions extends CompilerOptions {
   useFlowExactObjects: boolean;
 }
 
-export default class FlowGenerator {
+export class FlowGenerator {
   options: FlowCompilerOptions;
   typeAnnotationFromGraphQLType: Function;
 

@@ -2,9 +2,9 @@
 //     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
 //     DefinitionNode, Kind, InputObjectTypeDefinitionNode
 // } from 'graphql'
-// import GraphQLTransform from 'graphql-transformer-core'
+// import { GraphQLTransform } from 'graphql-transformer-core';
 // import { ResourceConstants } from 'graphql-transformer-common'
-// import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+// import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer'
 // import { SearchableModelTransformer } from '../SearchableModelTransformer'
 // import AppSyncTransformer from 'graphql-appsync-transformer'
 

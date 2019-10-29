@@ -17,11 +17,11 @@ import {
 } from 'graphql';
 import { DeploymentResources } from './DeploymentResources';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from './errors';
-import ITransformer from './ITransformer';
-import Transformer from './Transformer';
-import TransformerContext from './TransformerContext';
-import { TransformFormatter } from './TransformFormatter';
+import { TransformerContext } from './TransformerContext';
+import { Transformer } from './Transformer';
+import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
+import { TransformFormatter } from './TransformFormatter';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';
@@ -189,7 +189,7 @@ export interface GraphQLTransformOptions {
   stackMapping?: StackMapping;
 }
 export type StackMapping = { [resourceId: string]: string };
-export default class GraphQLTransform {
+export class GraphQLTransform {
   private transformers: ITransformer[];
   private stackMappingOverrides: StackMapping;
 

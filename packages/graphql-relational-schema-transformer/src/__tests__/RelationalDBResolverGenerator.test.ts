@@ -1,5 +1,5 @@
-import RelationalDBResolverGenerator from '../RelationalDBResolverGenerator';
-import TemplateContext from '../RelationalDBSchemaTransformer';
+import { RelationalDBResolverGenerator } from '../RelationalDBResolverGenerator';
+import { TemplateContext } from '../RelationalDBSchemaTransformer';
 import { parse } from 'graphql';
 import { JSONMappingParameters } from 'cloudform-types/types/kinesisAnalyticsV2/applicationReferenceDataSource';
 

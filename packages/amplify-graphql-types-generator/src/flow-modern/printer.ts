@@ -5,7 +5,7 @@ import { stripIndent } from 'common-tags';
 
 type Printable = t.Node | string;
 
-export default class Printer {
+export class Printer {
   private printQueue: Printable[] = [];
 
   public print(): string {

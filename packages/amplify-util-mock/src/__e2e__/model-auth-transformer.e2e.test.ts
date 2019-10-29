@@ -1,6 +1,6 @@
-import ModelAuthTransformer from 'graphql-auth-transformer';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import GraphQLTransform from 'graphql-transformer-core';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';

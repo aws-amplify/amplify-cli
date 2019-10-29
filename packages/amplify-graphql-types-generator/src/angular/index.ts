@@ -2,7 +2,7 @@ import { GraphQLNonNull, GraphQLType, isScalarType } from 'graphql';
 import * as prettier from 'prettier';
 import { LegacyCompilerContext, LegacyOperation, LegacyInlineFragment, LegacyField } from '../compiler/legacyIR';
 
-import CodeGenerator from '../utilities/CodeGenerator';
+import { CodeGenerator } from '../utilities/CodeGenerator';
 import {
   typeDeclarationForGraphQLType,
   interfaceDeclarationForFragment,

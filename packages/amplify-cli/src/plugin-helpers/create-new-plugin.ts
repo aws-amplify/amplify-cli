@@ -1,12 +1,11 @@
 import path from 'path';
 import fs from 'fs-extra';
 import inquirer from '../domain/inquirer-helper';
-import Context from '../domain/context';
-import Constant from '../domain/constants';
+import { Context } from '../domain/context';
+import { constants } from '../domain/constants';
 import { AmplifyEvent } from '../domain/amplify-event';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
 import { readJsonFileSync } from '../utils/readJsonFile';
-import constants from '../domain/constants';
 import { validPluginNameSync } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';
 
@@ -22,7 +21,7 @@ export default async function createNewPlugin(context: Context, pluginParentDirP
 
 async function getPluginName(context: Context, pluginParentDirPath: string): Promise<string | undefined> {
   let pluginName = 'my-amplify-plugin';
-  const yesFlag = context.input.options && context.input.options[Constant.YES];
+  const yesFlag = context.input.options && context.input.options[constants.YES];
 
   if (context.input.subCommands!.length > 1) {
     // subcommands: ['new', 'name']
@@ -87,7 +86,7 @@ async function copyAndUpdateTemplateFiles(context: Context, pluginParentDirPath:
 }
 
 async function promptForPluginType(context: Context): Promise<string> {
-  const yesFlag = context.input.options && context.input.options[Constant.YES];
+  const yesFlag = context.input.options && context.input.options[constants.YES];
 
   if (yesFlag) {
     return AmplifyPluginType.util;
@@ -135,7 +134,7 @@ https://aws-amplify.github.io/docs/cli-toolchain/plugins');
 }
 
 async function promptForEventSubscription(context: Context): Promise<string[]> {
-  const yesFlag = context.input.options && context.input.options[Constant.YES];
+  const yesFlag = context.input.options && context.input.options[constants.YES];
   const eventHandlers = Object.keys(AmplifyEvent);
 
   if (yesFlag) {

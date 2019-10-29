@@ -98,7 +98,7 @@ export type StackMapping = Map<string, string>;
  * The transformer context is responsible for accumulating the resources,
  * types, and parameters necessary to support an AppSync transform.
  */
-export default class TransformerContext {
+export class TransformerContext {
   public template: Template = blankTemplate();
 
   public nodeMap: { [name: string]: TypeSystemDefinitionNode } = {};

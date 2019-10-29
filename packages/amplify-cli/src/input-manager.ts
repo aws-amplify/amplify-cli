@@ -1,10 +1,9 @@
 // normalize command line arguments, allow verb / noun place switch
-import Input from './domain/input';
-import Constant from './domain/constants';
-import PluginPlatform from './domain/plugin-platform';
+import { Input } from './domain/input';
+import { constants } from './domain/constants';
+import { PluginPlatform } from './domain/plugin-platform';
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
-import InputVerificationResult from './domain/input-verification-result';
-import constants from './domain/constants';
+import { InputVerificationResult } from './domain/input-verification-result';
 
 export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   const result = new Input(process.argv);
@@ -67,23 +66,23 @@ function normailizeInput(input: Input): Input {
   // -h --help => help command
   // -y --yes => yes option
   if (input.options) {
-    if (input.options[Constant.VERSION] || input.options[Constant.VERSION_SHORT]) {
-      input.options[Constant.VERSION] = true;
-      delete input.options[Constant.VERSION_SHORT];
+    if (input.options[constants.VERSION] || input.options[constants.VERSION_SHORT]) {
+      input.options[constants.VERSION] = true;
+      delete input.options[constants.VERSION_SHORT];
     }
 
-    if (input.options[Constant.HELP] || input.options[Constant.HELP_SHORT]) {
-      input.options[Constant.HELP] = true;
-      delete input.options[Constant.HELP_SHORT];
+    if (input.options[constants.HELP] || input.options[constants.HELP_SHORT]) {
+      input.options[constants.HELP] = true;
+      delete input.options[constants.HELP_SHORT];
     }
 
-    if (input.options[Constant.YES] || input.options[Constant.YES_SHORT]) {
-      input.options[Constant.YES] = true;
-      delete input.options[Constant.YES_SHORT];
+    if (input.options[constants.YES] || input.options[constants.YES_SHORT]) {
+      input.options[constants.YES] = true;
+      delete input.options[constants.YES_SHORT];
     }
   }
 
-  input.command = input.command || Constant.PLUGIN_DEFAULT_COMMAND;
+  input.command = input.command || constants.PLUGIN_DEFAULT_COMMAND;
 
   return input;
 }
@@ -101,7 +100,7 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
     for (let i = 0; i < pluginCandidates.length; i++) {
       const { name, commands, commandAliases } = pluginCandidates[i].manifest;
 
-      if ((commands && commands!.includes(Constant.HELP)) || (commandAliases && Object.keys(commandAliases).includes(Constant.HELP))) {
+      if ((commands && commands!.includes(constants.HELP)) || (commandAliases && Object.keys(commandAliases).includes(constants.HELP))) {
         result.helpCommandAvailable = true;
       }
 
@@ -116,26 +115,26 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
         break;
       }
 
-      if (input.command! === Constant.PLUGIN_DEFAULT_COMMAND) {
+      if (input.command! === constants.PLUGIN_DEFAULT_COMMAND) {
         if (commands && commands!.includes(name)) {
           input.command = name;
           result.verified = true;
           break;
         }
-        if (input.options && input.options[Constant.VERSION] && commands && commands!.includes(Constant.VERSION)) {
-          input.command = Constant.VERSION;
+        if (input.options && input.options[constants.VERSION] && commands && commands!.includes(constants.VERSION)) {
+          input.command = constants.VERSION;
           result.verified = true;
           break;
         }
-        if (input.options && input.options[Constant.HELP] && commands && commands!.includes(Constant.HELP)) {
-          input.command = Constant.HELP;
+        if (input.options && input.options[constants.HELP] && commands && commands!.includes(constants.HELP)) {
+          input.command = constants.HELP;
           result.verified = true;
           break;
         }
 
         // as a fall back, use the help command
-        if (commands && commands!.includes(Constant.HELP)) {
-          input.command = Constant.HELP;
+        if (commands && commands!.includes(constants.HELP)) {
+          input.command = constants.HELP;
           result.verified = true;
           break;
         }
@@ -145,7 +144,7 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
     if (!result.verified) {
       let commandString = input.plugin === constants.CORE ? '' : input.plugin;
 
-      if (input.command! !== Constant.PLUGIN_DEFAULT_COMMAND) {
+      if (input.command! !== constants.PLUGIN_DEFAULT_COMMAND) {
         commandString += ' ' + input.command!;
       }
 

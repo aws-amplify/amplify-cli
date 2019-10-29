@@ -3,7 +3,7 @@ import { LegacyInlineFragment } from '../compiler/legacyIR';
 import { propertyDeclarations } from './codeGeneration';
 import { typeNameFromGraphQLType } from './types';
 
-import CodeGenerator from '../utilities/CodeGenerator';
+import { CodeGenerator } from '../utilities/CodeGenerator';
 import { GraphQLType } from 'graphql';
 import Maybe from 'graphql/tsutils/Maybe';
 

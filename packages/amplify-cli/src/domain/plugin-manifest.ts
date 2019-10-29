@@ -1,6 +1,6 @@
 import { AmplifyEvent } from './amplify-event';
 
-export default class PluginManifest {
+export class PluginManifest {
   constructor(
     public name: string,
     public type: string,

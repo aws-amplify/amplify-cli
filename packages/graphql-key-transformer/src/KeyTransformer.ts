@@ -65,7 +65,7 @@ interface KeyArguments {
   queryField?: string;
 }
 
-export default class KeyTransformer extends Transformer {
+export class KeyTransformer extends Transformer {
   constructor() {
     super(
       'KeyTransformer',

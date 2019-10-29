@@ -1,9 +1,8 @@
-import { ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode, Kind } from 'graphql';
 import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import ModelConnectionTransformer from 'graphql-connection-transformer';
-import ModelAuthTransformer from 'graphql-auth-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';

@@ -42,7 +42,7 @@ import { escapedString, multilineString, dictionaryLiteralForFieldArguments } fr
 
 import { possibleTypesForType, typeNameFromGraphQLType } from './types';
 
-import CodeGenerator from '../utilities/CodeGenerator';
+import { CodeGenerator } from '../utilities/CodeGenerator';
 
 export function generateSource(context, options) {
   const generator = new CodeGenerator(context);

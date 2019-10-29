@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import * as fs from 'fs';
-import generate from '../src';
+import { generate } from '../src';
 
 describe('end 2 end tests', () => {
   const schemaPath = resolve(__dirname, '../fixtures/schema.json');

@@ -1,8 +1,8 @@
 import path from 'path';
 import os from 'os';
 import fs from 'fs-extra';
-import PluginPlatform from '../domain/plugin-platform';
-import constants from '../domain/constants';
+import { PluginPlatform } from '../domain/plugin-platform';
+import { constants } from '../domain/constants';
 import { readJsonFile, readJsonFileSync } from '../utils/readJsonFile';
 
 const JSON_SPACE = 4;

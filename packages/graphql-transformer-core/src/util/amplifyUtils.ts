@@ -1,9 +1,8 @@
 const fs = require('fs-extra');
 import * as path from 'path';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
-import GraphQLTransform from '..';
-import DeploymentResources from '../DeploymentResources';
-import { StackMapping } from '../GraphQLTransform';
+import { DeploymentResources } from '../DeploymentResources';
+import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
@@ -23,6 +22,7 @@ export interface ProjectOptions {
   disableResolverOverrides?: boolean;
   buildParameters?: Object;
 }
+
 export async function buildProject(opts: ProjectOptions) {
   await ensureMissingStackMappings(opts);
 
@@ -36,25 +36,26 @@ export async function buildProject(opts: ProjectOptions) {
       await Sanity.check(lastBuildPath, thisBuildPath, opts.rootStackFileName);
     }
   }
+
   return builtProject;
 }
 
 async function _buildProject(opts: ProjectOptions) {
-    const userProjectConfig = await loadProject(opts.projectDirectory, opts)
-    const stackMapping = getStackMappingFromProjectConfig(userProjectConfig.config);
-    // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
-    // because the StackMapping feature already builds the project once.
-    const transformers = await opts.transformersFactory(...opts.transformersFactoryArgs);
-    const transform = new GraphQLTransform({
-        transformers,
-        stackMapping
-    });
-    let transformOutput = transform.transform(userProjectConfig.schema.toString());
-    if (userProjectConfig.config && userProjectConfig.config.Migration) {
-        transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
-    }
-    const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput)
-    return merged;
+  const userProjectConfig = await loadProject(opts.projectDirectory, opts);
+  const stackMapping = getStackMappingFromProjectConfig(userProjectConfig.config);
+  // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
+  // because the StackMapping feature already builds the project once.
+  const transformers = await opts.transformersFactory(...opts.transformersFactoryArgs);
+  const transform = new GraphQLTransform({
+    transformers,
+    stackMapping,
+  });
+  let transformOutput = transform.transform(userProjectConfig.schema.toString());
+  if (userProjectConfig.config && userProjectConfig.config.Migration) {
+    transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
+  }
+  const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
+  return merged;
 }
 
 /**

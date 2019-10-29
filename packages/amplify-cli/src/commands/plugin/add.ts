@@ -1,9 +1,9 @@
 import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
-import Context from '../../domain/context';
-import PluginInfo from '../../domain/plugin-info';
-import constants from '../../domain/constants';
+import { Context } from '../../domain/context';
+import { PluginInfo } from '../../domain/plugin-info';
+import { constants } from '../../domain/constants';
 import { addUserPluginPackage, addExcludedPluginPackage as addFromExcluded, confirmAndScan } from '../../plugin-manager';
 import inquirer, { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
 import { AddPluginError } from '../../domain/add-plugin-result';

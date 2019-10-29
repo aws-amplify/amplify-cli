@@ -1,11 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
-import Context from './domain/context';
-import Constant from './domain/constants';
+import { Context } from './domain/context';
+import { constants } from './domain/constants';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
-import PluginInfo from './domain/plugin-info';
+import { PluginInfo } from './domain/plugin-info';
 import inquirer from './domain/inquirer-helper';
-import constants from './domain/constants';
 import {
   AmplifyEvent,
   AmplifyEventArgs,
@@ -99,7 +98,7 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo) 
 }
 
 async function raisePreEvent(context: Context) {
-  if (context.input.plugin === Constant.CORE) {
+  if (context.input.plugin === constants.CORE) {
     if (context.input.command === 'init') {
       await raisePreInitEvent(context);
     } else if (context.input.command === 'push') {
@@ -117,7 +116,7 @@ async function raisePrePushEvent(context: Context) {
 }
 
 async function raisePostEvent(context: Context) {
-  if (context.input.plugin === Constant.CORE) {
+  if (context.input.plugin === constants.CORE) {
     if (context.input.command === 'init') {
       await raisePostInitEvent(context);
     } else if (context.input.command === 'push') {

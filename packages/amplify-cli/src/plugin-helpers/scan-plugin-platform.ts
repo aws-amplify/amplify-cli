@@ -1,11 +1,11 @@
 import path from 'path';
 import fs from 'fs-extra';
-import PluginCollection from '../domain/plugin-collection';
-import PluginPlatform from '../domain/plugin-platform';
-import constants from '../domain/constants';
+import { PluginCollection } from '../domain/plugin-collection';
+import { PluginPlatform } from '../domain/plugin-platform';
+import { constants } from '../domain/constants';
 import { getGlobalNodeModuleDirPath } from '../utils/global-prefix';
-import PluginManifest from '../domain/plugin-manifest';
-import PluginInfo from '../domain/plugin-info';
+import { PluginManifest } from '../domain/plugin-manifest';
+import { PluginInfo } from '../domain/plugin-info';
 import { verifyPlugin } from './verify-plugin';
 import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file';
 import { twoPluginsAreTheSame } from './compare-plugins';

@@ -1,9 +1,9 @@
-import Context from '../../domain/context';
+import { Context } from '../../domain/context';
 import { removePluginPackage, confirmAndScan } from '../../plugin-manager';
-import PluginPlatform from '../../domain/plugin-platform';
-import Constant from '../../domain/constants';
+import { PluginPlatform } from '../../domain/plugin-platform';
+import { constants } from '../../domain/constants';
 import inquirer, { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
-import PluginInfo from '../../domain/plugin-info';
+import { PluginInfo } from '../../domain/plugin-info';
 
 export async function run(context: Context) {
   const options = new Array<InquirerOption>();
@@ -11,7 +11,7 @@ export async function run(context: Context) {
 
   if (plugins && Object.keys(plugins).length > 0) {
     Object.keys(plugins).forEach(key => {
-      if (key === Constant.CORE) {
+      if (key === constants.CORE) {
         return;
       }
 

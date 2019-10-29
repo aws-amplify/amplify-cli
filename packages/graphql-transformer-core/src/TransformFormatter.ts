@@ -1,4 +1,4 @@
-import TransformerContext from './TransformerContext';
+import { TransformerContext } from './TransformerContext';
 import { StringParameter } from 'cloudform-types';
 import Resource from 'cloudform-types/types/resource';
 import { Fn } from 'cloudform-types';
@@ -6,7 +6,7 @@ import { makeOperationType, makeSchema } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, print } from 'graphql';
 import { stripDirectives } from './stripDirectives';
 import { SchemaResourceUtil } from './util/SchemaResourceUtil';
-import splitStack, { StackRules } from './util/splitStack';
+import splitStack from './util/splitStack';
 import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
 import { ResourceConstants } from 'graphql-transformer-common';
 

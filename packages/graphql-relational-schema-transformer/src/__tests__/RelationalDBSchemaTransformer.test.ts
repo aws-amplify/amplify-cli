@@ -1,4 +1,4 @@
-import TemplateContext, { RelationalDBSchemaTransformer, TableContext } from '../RelationalDBSchemaTransformer';
+import { TemplateContext, RelationalDBSchemaTransformer, TableContext } from '../RelationalDBSchemaTransformer';
 import { Kind, print } from 'graphql';
 import { RelationalDBParsingException } from '../RelationalDBParsingException';
 import { IRelationalDBReader } from '../IRelationalDBReader';

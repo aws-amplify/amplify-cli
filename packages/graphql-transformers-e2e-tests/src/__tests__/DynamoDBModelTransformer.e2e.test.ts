@@ -1,8 +1,7 @@
-import { ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode, Kind } from 'graphql';
 import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import ModelAuthTransformer from 'graphql-auth-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
@@ -11,7 +10,6 @@ import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3';
 import * as moment from 'moment';
 import emptyBucket from '../emptyBucket';
-import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 

@@ -8,9 +8,9 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
 } from 'graphql';
-import GraphQLTransform, { InvalidDirectiveError } from 'graphql-transformer-core';
-import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
 
 test('Test ModelConnectionTransformer simple one to many happy case', () => {
