@@ -440,8 +440,8 @@ test('Test create comment without a post and then querying the comment.', async 
 
 test('Test default limit is 50', async () => {
   // create Auth logic around this
-  const postID = 'e2eConnectionPost'
-  const postTitle = 'samplePost'
+  const postID = 'e2eConnectionPost';
+  const postTitle = 'samplePost';
   const createPost = await GRAPHQL_CLIENT.query(
     `mutation CreatePost {
       createPost(input: {title: "${postTitle}", id: "${postID}"}) {
@@ -449,13 +449,16 @@ test('Test default limit is 50', async () => {
         title
       }
     }
-    `, {});
-    expect(createPost.data.createPost).toBeDefined()
-    expect(createPost.data.createPost.id).toEqual(postID)
-    expect(createPost.data.createPost.title).toEqual(postTitle)
+    `,
+    {}
+  );
+  expect(createPost.data.createPost).toBeDefined();
+  expect(createPost.data.createPost.id).toEqual(postID);
+  expect(createPost.data.createPost.title).toEqual(postTitle);
 
-    for (let i = 0; i < 51; i++) {
-      await GRAPHQL_CLIENT.query(`
+  for (let i = 0; i < 51; i++) {
+    await GRAPHQL_CLIENT.query(
+      `
         mutation CreateComment {
           createComment(input: {postId: "${postID}", content: "content_${i}"}) {
             content
@@ -465,10 +468,13 @@ test('Test default limit is 50', async () => {
             }
           }
         }      
-      `, {})
-    }
+      `,
+      {}
+    );
+  }
 
-    const getPost = await GRAPHQL_CLIENT.query(`
+  const getPost = await GRAPHQL_CLIENT.query(
+    `
       query GetPost($id: ID!) {
         getPost(id: $id) {
           id
@@ -483,7 +489,9 @@ test('Test default limit is 50', async () => {
             nextToken
           }
         }
-      }`, {id: postID})
+      }`,
+    { id: postID }
+  );
 
-    expect(getPost.data.getPost.comments.items.length).toEqual(50)
+  expect(getPost.data.getPost.comments.items.length).toEqual(50);
 });

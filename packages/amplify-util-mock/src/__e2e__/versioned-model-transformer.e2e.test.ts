@@ -24,10 +24,7 @@ beforeAll(async () => {
 
   try {
     const transformer = new GraphQLTransform({
-      transformers: [
-        new DynamoDBModelTransformer(),
-        new VersionedModelTransformer(),
-      ],
+      transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
     });
     const out = transformer.transform(validSchema);
 
