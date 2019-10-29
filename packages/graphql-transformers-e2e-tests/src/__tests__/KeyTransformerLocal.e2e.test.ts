@@ -346,7 +346,7 @@ test('Test that connection type is generated for custom query when queries is se
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
