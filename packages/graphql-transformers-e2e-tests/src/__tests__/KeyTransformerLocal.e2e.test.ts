@@ -331,3 +331,29 @@ test('Test that a primary @key with complex fields will update the input objects
 
   expectNonNullInputValues(deleteInput, ['email']);
 });
+
+test('Test that connection type is generated for custom query when queries is set to null.', () => {
+  const validSchema = `
+    type ContentCategory @model(queries: null, mutations: { create: "addContentToCategory", delete: "deleteContentFromCategory"})
+    @key(name: "ContentByCategory", fields: ["category", "type", "language", "datetime"], queryField: "listContentByCategory")
+    {
+        id: ID!
+        category: Int!
+        datetime: String!
+        type: String!
+        language: String!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new KeyTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  const schema = parse(out.schema);
+  const modelContentCategoryConnection = schema.definitions.find(
+    (def: any) => def.name && def.name.value === 'ModelContentCategoryConnection'
+  ) as ObjectTypeDefinitionNode;
+
+  expect(modelContentCategoryConnection).toBeDefined();
+});
