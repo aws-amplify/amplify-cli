@@ -12,11 +12,12 @@ import {
   revertAPIMigration,
 } from './util/amplifyUtils';
 import {
-  readSchema as readProjectSchema,
-  loadProject as readProjectConfiguration,
-  loadConfig as readTransformerConfiguration,
-  writeConfig as writeTransformerConfiguration,
-} from './util/transformConfig';
+    readSchema as readProjectSchema,
+    loadProject as readProjectConfiguration,
+    loadConfig as readTransformerConfiguration,
+    writeConfig as writeTransformerConfiguration,
+    TRANSFORM_CONFIG_FILE_NAME
+} from './util/transformConfig'
 
 export * from './errors';
 export * from './util';
@@ -24,18 +25,19 @@ export * from './util';
 export default GraphQLTransform;
 
 export {
-  TransformerContext,
-  Transformer,
-  ITransformer,
-  collectDirectiveNames,
-  collectDirectivesByTypeNames,
-  stripDirectives,
-  buildAPIProject,
-  migrateAPIProject,
-  uploadAPIProject,
-  readProjectSchema,
-  readProjectConfiguration,
-  readTransformerConfiguration,
-  writeTransformerConfiguration,
-  revertAPIMigration,
-};
+    TransformerContext,
+    Transformer,
+    ITransformer,
+    collectDirectiveNames,
+    collectDirectivesByTypeNames,
+    stripDirectives,
+    buildAPIProject,
+    migrateAPIProject,
+    uploadAPIProject,
+    readProjectSchema,
+    readProjectConfiguration,
+    readTransformerConfiguration,
+    writeTransformerConfiguration,
+    revertAPIMigration,
+    TRANSFORM_CONFIG_FILE_NAME
+}

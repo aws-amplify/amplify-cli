@@ -9,6 +9,7 @@ import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirect
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 import * as Sanity from './sanity-check';
 
+export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
 
@@ -39,21 +40,21 @@ export async function buildProject(opts: ProjectOptions) {
 }
 
 async function _buildProject(opts: ProjectOptions) {
-  const userProjectConfig = await loadProject(opts.projectDirectory, opts);
-  const stackMapping = getStackMappingFromProjectConfig(userProjectConfig.config);
-  // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
-  // because the StackMapping feature already builds the project once.
-  const transformers = opts.transformersFactory(...opts.transformersFactoryArgs);
-  const transform = new GraphQLTransform({
-    transformers,
-    stackMapping,
-  });
-  let transformOutput = transform.transform(userProjectConfig.schema.toString());
-  if (userProjectConfig.config && userProjectConfig.config.Migration) {
-    transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
-  }
-  const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
-  return merged;
+    const userProjectConfig = await loadProject(opts.projectDirectory, opts)
+    const stackMapping = getStackMappingFromProjectConfig(userProjectConfig.config);
+    // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
+    // because the StackMapping feature already builds the project once.
+    const transformers = await opts.transformersFactory(...opts.transformersFactoryArgs);
+    const transform = new GraphQLTransform({
+        transformers,
+        stackMapping
+    });
+    let transformOutput = transform.transform(userProjectConfig.schema.toString());
+    if (userProjectConfig.config && userProjectConfig.config.Migration) {
+        transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
+    }
+    const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput)
+    return merged;
 }
 
 /**
