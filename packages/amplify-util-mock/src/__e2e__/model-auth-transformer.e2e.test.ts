@@ -177,9 +177,7 @@ beforeAll(async () => {
       Authorization: accessToken,
     });
 
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [
-      DEVS_GROUP_NAME,
-    ]);
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [DEVS_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
@@ -378,9 +376,7 @@ test('Test updatePost mutation when authorized', async () => {
   );
   expect(updateResponse.data.updatePost.id).toEqual(response.data.createPost.id);
   expect(updateResponse.data.updatePost.title).toEqual('Bye, World!');
-  expect(updateResponse.data.updatePost.updatedAt > response.data.createPost.updatedAt).toEqual(
-    true
-  );
+  expect(updateResponse.data.updatePost.updatedAt > response.data.createPost.updatedAt).toEqual(true);
 
   const updateResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(
     `mutation {
@@ -396,9 +392,7 @@ test('Test updatePost mutation when authorized', async () => {
   );
   expect(updateResponseAccess.data.updatePost.id).toEqual(response.data.createPost.id);
   expect(updateResponseAccess.data.updatePost.title).toEqual('Bye, World!');
-  expect(
-    updateResponseAccess.data.updatePost.updatedAt > response.data.createPost.updatedAt
-  ).toEqual(true);
+  expect(updateResponseAccess.data.updatePost.updatedAt > response.data.createPost.updatedAt).toEqual(true);
 });
 
 test('Test updatePost mutation when not authorized', async () => {
@@ -434,9 +428,7 @@ test('Test updatePost mutation when not authorized', async () => {
   expect(updateResponse.data.updatePost).toEqual(null);
   expect(updateResponse.errors.length).toEqual(1);
   logDebug(updateResponse);
-  expect((updateResponse.errors[0] as any).errorType).toEqual(
-    'DynamoDB:ConditionalCheckFailedException'
-  );
+  expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
 test('Test deletePost mutation when authorized', async () => {
@@ -523,9 +515,7 @@ test('Test deletePost mutation when not authorized', async () => {
   );
   expect(deleteResponse.data.deletePost).toEqual(null);
   expect(deleteResponse.errors.length).toEqual(1);
-  expect((deleteResponse.errors[0] as any).errorType).toEqual(
-    'DynamoDB:ConditionalCheckFailedException'
-  );
+  expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
 test('Test listPosts query when authorized', async () => {
@@ -1439,9 +1429,7 @@ test(`Test listAllThrees as admin.`, async () => {
     `);
   logDebug(JSON.stringify(fetchOwnedBy2AsAdmin, null, 4));
   expect(fetchOwnedBy2AsAdmin.data.listAllThrees.items).toHaveLength(1);
-  expect(fetchOwnedBy2AsAdmin.data.listAllThrees.items[0].id).toEqual(
-    ownedBy2.data.createAllThree.id
-  );
+  expect(fetchOwnedBy2AsAdmin.data.listAllThrees.items[0].id).toEqual(ownedBy2.data.createAllThree.id);
 
   const deleteReq = await GRAPHQL_CLIENT_1.query(`
         mutation {
@@ -1486,9 +1474,7 @@ test(`Test listAllThrees as owner.`, async () => {
     `);
   logDebug(JSON.stringify(fetchOwnedBy2AsOwner, null, 4));
   expect(fetchOwnedBy2AsOwner.data.listAllThrees.items).toHaveLength(1);
-  expect(fetchOwnedBy2AsOwner.data.listAllThrees.items[0].id).toEqual(
-    ownedBy2.data.createAllThree.id
-  );
+  expect(fetchOwnedBy2AsOwner.data.listAllThrees.items[0].id).toEqual(ownedBy2.data.createAllThree.id);
 
   const deleteReq = await GRAPHQL_CLIENT_1.query(`
         mutation {
@@ -1533,9 +1519,7 @@ test(`Test listAllThrees as one of a set of editors.`, async () => {
     `);
   logDebug(JSON.stringify(fetchOwnedBy2AsEditor, null, 4));
   expect(fetchOwnedBy2AsEditor.data.listAllThrees.items).toHaveLength(1);
-  expect(fetchOwnedBy2AsEditor.data.listAllThrees.items[0].id).toEqual(
-    ownedBy2.data.createAllThree.id
-  );
+  expect(fetchOwnedBy2AsEditor.data.listAllThrees.items[0].id).toEqual(ownedBy2.data.createAllThree.id);
 
   const deleteReq = await GRAPHQL_CLIENT_1.query(`
         mutation {
@@ -1580,9 +1564,7 @@ test(`Test listAllThrees as a member of a dynamic group.`, async () => {
     `);
   logDebug(JSON.stringify(fetchOwnedByAdminsAsAdmin, null, 4));
   expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items).toHaveLength(1);
-  expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items[0].id).toEqual(
-    ownedByAdmins.data.createAllThree.id
-  );
+  expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items[0].id).toEqual(ownedByAdmins.data.createAllThree.id);
 
   const fetchOwnedByAdminsAsNonAdmin = await GRAPHQL_CLIENT_3.query(`
     query {
@@ -1643,9 +1625,7 @@ test(`Test getAllThree as a member of the alternative group.`, async () => {
     `);
   logDebug(JSON.stringify(fetchOwnedByAdminsAsAdmin, null, 4));
   expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items).toHaveLength(1);
-  expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items[0].id).toEqual(
-    ownedByAdmins.data.createAllThree.id
-  );
+  expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items[0].id).toEqual(ownedByAdmins.data.createAllThree.id);
 
   const fetchOwnedByAdminsAsNonAdmin = await GRAPHQL_CLIENT_3.query(`
     query {
@@ -1874,9 +1854,7 @@ test(`Test createAllThree as one of a set of editors.`, async () => {
         }
     `);
   logDebug(JSON.stringify(deleteReq2, null, 4));
-  expect(deleteReq2.data.deleteAllThree.id).toEqual(
-    ownedBy2WithDefaultOwner.data.createAllThree.id
-  );
+  expect(deleteReq2.data.deleteAllThree.id).toEqual(ownedBy2WithDefaultOwner.data.createAllThree.id);
 });
 
 test(`Test createAllThree as a member of a dynamic group.`, async () => {
@@ -2295,9 +2273,7 @@ test(`Test updateAllThree and deleteAllThree as a member of the alternative grou
     `);
   logDebug(JSON.stringify(ownedByAdminsUnauthed, null, 4));
   expect(ownedByAdminsUnauthed.errors.length).toEqual(1);
-  expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual(
-    'DynamoDB:ConditionalCheckFailedException'
-  );
+  expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 
   const ownedByDevs2 = await GRAPHQL_CLIENT_1.query(`
     mutation {
@@ -2403,9 +2379,7 @@ test(`Test createTestIdentity as admin.`, async () => {
     }`,
     {}
   );
-  const relevantPost = listResponse.data.listTestIdentitys.items.find(
-    p => p.id === getReq.data.getTestIdentity.id
-  );
+  const relevantPost = listResponse.data.listTestIdentitys.items.find(p => p.id === getReq.data.getTestIdentity.id);
   logDebug(JSON.stringify(listResponse, null, 4));
   expect(relevantPost).toBeTruthy();
   expect(relevantPost.title).toEqual('Test title update');

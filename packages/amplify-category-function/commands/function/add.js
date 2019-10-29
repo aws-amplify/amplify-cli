@@ -1,18 +1,16 @@
-const fs = require('fs');
-
 const subcommand = 'add';
 const category = 'function';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
 
 let options;
 
 module.exports = {
   name: subcommand,
-  run: async (context) => {
+  run: async context => {
     const { amplify } = context;
-
-    return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
-      .then((result) => {
+    const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
+    return amplify
+      .serviceSelectionPrompt(context, category, servicesMetadata)
+      .then(result => {
         options = {
           service: result.service,
           providerPlugin: result.providerName,
@@ -25,7 +23,7 @@ module.exports = {
         }
         return providerController.addResource(context, category, result.service, options);
       })
-      .then((resourceName) => {
+      .then(resourceName => {
         const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally.`);
         print.info('');
@@ -34,10 +32,12 @@ module.exports = {
         print.info('"amplify function build" builds all of your functions currently in the project');
         print.info(`"amplify function invoke ${resourceName}" enables you to test a function locally`);
         print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
-        print.info('"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud');
+        print.info(
+          '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud'
+        );
         print.info('');
       })
-      .catch((err) => {
+      .catch(err => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the function resource');
       });

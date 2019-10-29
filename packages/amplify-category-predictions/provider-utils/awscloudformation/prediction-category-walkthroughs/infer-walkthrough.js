@@ -16,7 +16,11 @@ const service = 'SageMaker';
 
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
-    if (await context.amplify.confirmPrompt.run('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
+    if (
+      await context.amplify.confirmPrompt.run(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      )
+    ) {
       try {
         const { add } = require('amplify-category-auth');
         await add(context);
@@ -39,9 +43,12 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+  Object.keys(amplifyMeta[category]).forEach(resourceName => {
     if (inferTypes.includes(amplifyMeta[category][resourceName].inferType)) {
-      predictionsResources.push({ name: resourceName, value: { name: resourceName, inferType: amplifyMeta[category][resourceName].inferType } });
+      predictionsResources.push({
+        name: resourceName,
+        value: { name: resourceName, inferType: amplifyMeta[category][resourceName].inferType },
+      });
     }
   });
   if (predictionsResources.length === 0) {
@@ -115,7 +122,9 @@ async function configure(context, resourceObj) {
   defaultValues.inferType = inferType;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
   const amplifyMetaValues = {
-    resourceName, service, inferType,
+    resourceName,
+    service,
+    inferType,
   };
   // write to file
   fs.ensureDirSync(resourceDirPath);
@@ -181,7 +190,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -217,7 +226,7 @@ function resourceAlreadyExists(context, inferType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].inferType === inferType) {
         type = inferType;
       }
@@ -230,7 +239,7 @@ async function getEndpoints(context, questionObj, params) {
   const sagemaker = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getEndpoints');
   const endpoints = [];
   const endpointMap = {};
-  sagemaker.Endpoints.forEach((endpoint) => {
+  sagemaker.Endpoints.forEach(endpoint => {
     endpoints.push({ name: `${endpoint.EndpointName}` });
     endpointMap[endpoint.EndpointName] = { endpointName: endpoint.EndpointName, endpointARN: endpoint.EndpointArn };
   });
@@ -243,8 +252,7 @@ async function getEndpoints(context, questionObj, params) {
 }
 
 async function createEndpoint(context, defaultValues) {
-  const endpointConsoleUrl =
-    `https://${defaultValues.region}.console.aws.amazon.com/sagemaker/home?region=${defaultValues.region}#/endpoints/create`;
+  const endpointConsoleUrl = `https://${defaultValues.region}.console.aws.amazon.com/sagemaker/home?region=${defaultValues.region}#/endpoints/create`;
   await open(endpointConsoleUrl, { wait: false });
   context.print.info('SageMaker Console:');
   context.print.success(endpointConsoleUrl);
@@ -254,6 +262,5 @@ async function createEndpoint(context, defaultValues) {
     message: 'Press enter to continue',
   });
 }
-
 
 module.exports = { addWalkthrough, updateWalkthrough };

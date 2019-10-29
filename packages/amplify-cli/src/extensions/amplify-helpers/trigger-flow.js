@@ -6,7 +6,7 @@ const fsExtra = require('fs-extra');
 const { flattenDeep } = require('lodash');
 const { join } = require('path');
 const { uniq } = require('lodash');
-
+const { readJsonFile } = require('./read-json-file');
 
 /** ADD A TRIGGER
  * @function addTrigger
@@ -26,7 +26,7 @@ const { uniq } = require('lodash');
  * { PostConfirmation: parentAuthResourcePostConfirmation}
  */
 
-const addTrigger = async (triggerOptions) => {
+const addTrigger = async triggerOptions => {
   const {
     key,
     values,
@@ -96,7 +96,7 @@ const addTrigger = async (triggerOptions) => {
  * @returns {null}
  */
 
-const updateTrigger = async (triggerOptions) => {
+const updateTrigger = async triggerOptions => {
   const {
     key,
     values,
@@ -121,21 +121,27 @@ const updateTrigger = async (triggerOptions) => {
     throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
   }
   try {
-    await update(context, 'awscloudformation', 'Lambda', {
-      trigger: true,
-      modules: values,
-      parentResource,
-      functionName,
-      parentStack,
-      triggerEnvs: JSON.stringify(triggerEnvs[key]),
-      triggerIndexPath,
-      triggerPackagePath,
-      triggerDir,
-      roleName: functionName,
-      triggerTemplate,
-      triggerEventPath,
-      skipEdit,
-    }, functionName);
+    await update(
+      context,
+      'awscloudformation',
+      'Lambda',
+      {
+        trigger: true,
+        modules: values,
+        parentResource,
+        functionName,
+        parentStack,
+        triggerEnvs: JSON.stringify(triggerEnvs[key]),
+        triggerIndexPath,
+        triggerPackagePath,
+        triggerDir,
+        roleName: functionName,
+        triggerTemplate,
+        triggerEventPath,
+        skipEdit,
+      },
+      functionName
+    );
     if (values && values.length > 0) {
       for (let v = 0; v < values.length; v += 1) {
         await copyFunctions(key, values[v], category, context, targetPath);
@@ -156,13 +162,7 @@ const updateTrigger = async (triggerOptions) => {
   }
 };
 
-const deleteDeselectedTriggers = async (
-  currentTriggers,
-  previousTriggers,
-  functionName,
-  targetDir,
-  context,
-) => {
+const deleteDeselectedTriggers = async (currentTriggers, previousTriggers, functionName, targetDir, context) => {
   for (let p = 0; p < previousTriggers.length; p += 1) {
     if (!currentTriggers.includes(previousTriggers[p])) {
       const targetPath = `${targetDir}/function/${previousTriggers[p]}`;
@@ -186,7 +186,6 @@ const deleteAllTriggers = async (triggers, functionName, dir, context) => {
     await context.amplify.deleteTrigger(context, functionName, targetPath);
   }
 };
-
 
 /**
  * @function triggerFlow
@@ -266,11 +265,14 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   }
 
   const tempTriggerObj = Object.assign({}, triggerObj);
-  Object.values(tempTriggerObj).forEach((t, index) => {
-    if (!t || t.length < 1) {
-      delete triggerObj[Object.keys(tempTriggerObj)[index]];
-    }
-  }, { triggerObj });
+  Object.values(tempTriggerObj).forEach(
+    (t, index) => {
+      if (!t || t.length < 1) {
+        delete triggerObj[Object.keys(tempTriggerObj)[index]];
+      }
+    },
+    { triggerObj }
+  );
   return triggerObj;
 };
 
@@ -298,13 +300,9 @@ const getTriggerPermissions = async (context, triggers, category) => {
   const triggerKeys = Object.keys(parsedTriggers);
   const pluginPath = context.amplify.getCategoryPlugins(context)[category];
 
-
   for (let c = 0; c < triggerKeys.length; c += 1) {
     const index = triggerKeys[c];
-    const meta = context.amplify.getTriggerMetadata(
-      `${pluginPath}/provider-utils/awscloudformation/triggers/${index}`,
-      index,
-    );
+    const meta = context.amplify.getTriggerMetadata(`${pluginPath}/provider-utils/awscloudformation/triggers/${index}`, index);
 
     const moduleKeys = Object.keys(meta);
     for (let v = 0; v < moduleKeys.length; v += 1) {
@@ -317,24 +315,28 @@ const getTriggerPermissions = async (context, triggers, category) => {
   return permissions;
 };
 
-
 // helper function to show help text and redisplay question if 'learn more' is selected
 const learnMoreLoop = async (key, map, metaData, question) => {
   let selections = await inquirer.prompt(question);
 
   while (
     // handle answers that are strings or arrays
-    (Array.isArray(selections[key]) && selections[key].includes('learn'))
+    Array.isArray(selections[key]) &&
+    selections[key].includes('learn')
   ) {
     let prefix;
     if (metaData.URL) {
-      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(null, chalk.blue.underline)(metaData.URL)}\n`;
+      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(null, chalk.blue.underline)(
+        metaData.URL
+      )}\n`;
       prefix = prefix.concat('\n');
     } else {
       prefix = `\nThe following ${key} are available in ${map}\n`;
-      Object.values(metaData).forEach((m) => {
+      Object.values(metaData).forEach(m => {
         prefix = prefix.concat('\n');
-        prefix = prefix.concat(`${chalkpipe(null, chalk.green)('\nName:')} ${m.name}${chalkpipe(null, chalk.green)('\nDescription:')} ${m.description}\n`);
+        prefix = prefix.concat(
+          `${chalkpipe(null, chalk.green)('\nName:')} ${m.name}${chalkpipe(null, chalk.green)('\nDescription:')} ${m.description}\n`
+        );
         prefix = prefix.concat('\n');
       });
     }
@@ -344,13 +346,11 @@ const learnMoreLoop = async (key, map, metaData, question) => {
   return selections;
 };
 
-
 // get triggerFlow options based on metadata stored in trigger directory;
 const choicesFromMetadata = (path, selection, isDir) => {
-  const templates = isDir ?
-    fs.readdirSync(path)
-      .filter(f => fs.statSync(join(path, f)).isDirectory()) :
-    fs.readdirSync(path).map(t => t.substring(0, t.length - 3));
+  const templates = isDir
+    ? fs.readdirSync(path).filter(f => fs.statSync(join(path, f)).isDirectory())
+    : fs.readdirSync(path).map(t => t.substring(0, t.length - 3));
 
   const metaData = getTriggerMetadata(path, selection);
   const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
@@ -361,9 +361,8 @@ const choicesFromMetadata = (path, selection, isDir) => {
   return options;
 };
 
-
 // get metadata from a particular file
-const getTriggerMetadata = (path, selection) => JSON.parse(fs.readFileSync(`${path}/${selection}.map.json`));
+const getTriggerMetadata = (path, selection) => readJsonFile(`${path}/${selection}.map.json`);
 
 // open customer's text editor
 async function openEditor(context, path, name) {
@@ -372,7 +371,6 @@ async function openEditor(context, path, name) {
     await context.amplify.openEditor(context, filePath);
   }
 }
-
 
 const copyFunctions = async (key, value, category, context, targetPath) => {
   try {
@@ -401,16 +399,15 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
 const cleanFunctions = async (key, values, category, context, targetPath) => {
   const pluginPath = context.amplify.getCategoryPlugins(context)[category];
   try {
-    const meta = context.amplify.getTriggerMetadata(
-      `${pluginPath}/provider-utils/awscloudformation/triggers/${key}`,
-      key,
-    );
+    const meta = context.amplify.getTriggerMetadata(`${pluginPath}/provider-utils/awscloudformation/triggers/${key}`, key);
     const dirContents = fs.readdirSync(targetPath);
     for (let x = 0; x < dirContents.length; x += 1) {
       if (dirContents[x] !== 'custom.js') {
         // checking that a file is js module (with extension removed) and not a selected module
-        if (meta[`${dirContents[x].substring(0, dirContents[x].length - 3)}`] &&
-        !values.includes(`${dirContents[x].substring(0, dirContents[x].length - 3)}`)) {
+        if (
+          meta[`${dirContents[x].substring(0, dirContents[x].length - 3)}`] &&
+          !values.includes(`${dirContents[x].substring(0, dirContents[x].length - 3)}`)
+        ) {
           try {
             fs.unlinkSync(`${targetPath}/${dirContents[x]}`);
           } catch (e) {
@@ -435,10 +432,7 @@ const cleanFunctions = async (key, values, category, context, targetPath) => {
 const getTriggerEnvVariables = (context, trigger, category) => {
   const pluginPath = context.amplify.getCategoryPlugins(context)[category];
   let env = [];
-  const meta = context.amplify.getTriggerMetadata(
-    `${pluginPath}/provider-utils/awscloudformation/triggers/${trigger.key}`,
-    trigger.key,
-  );
+  const meta = context.amplify.getTriggerMetadata(`${pluginPath}/provider-utils/awscloudformation/triggers/${trigger.key}`, trigger.key);
   if (trigger.modules) {
     for (let x = 0; x < trigger.modules.length; x++) {
       if (meta[trigger.modules[x]] && meta[trigger.modules[x]].env) {
@@ -461,9 +455,11 @@ const getTriggerEnvInputs = async (context, path, triggerKey, triggerValues, cur
       const questions = metadata[intersection[i]].env.filter(m => m.question);
       if (questions && questions.length) {
         for (let j = 0; j < questions.length; j += 1) {
-          if (!currentEnvVars ||
+          if (
+            !currentEnvVars ||
             (Object.keys(currentEnvVars) && Object.keys(currentEnvVars).length === 0) ||
-            !currentEnvVars[questions[j].key]) {
+            !currentEnvVars[questions[j].key]
+          ) {
             const answer = await inquirer.prompt(questions[j].question);
             answers[questions[j].key] = answer[questions[j].key];
           }
@@ -477,10 +473,8 @@ const getTriggerEnvInputs = async (context, path, triggerKey, triggerValues, cur
 const dependsOnBlock = (context, triggerKeys = [], provider) => {
   if (!context) throw new Error('No context provided to dependsOnBlock');
   if (!provider) throw new Error('No provider provided to dependsOnBlock');
-  const dependsOnArray = context.updatingAuth && context.updatingAuth.dependsOn ?
-    context.updatingAuth.dependsOn :
-    [];
-  triggerKeys.forEach((l) => {
+  const dependsOnArray = context.updatingAuth && context.updatingAuth.dependsOn ? context.updatingAuth.dependsOn : [];
+  triggerKeys.forEach(l => {
     if (!dependsOnArray.find(a => a.resourceName === l)) {
       dependsOnArray.push({
         category: 'function',
@@ -491,7 +485,7 @@ const dependsOnBlock = (context, triggerKeys = [], provider) => {
     }
   });
   const tempArray = Object.assign([], dependsOnArray);
-  tempArray.forEach((x) => {
+  tempArray.forEach(x => {
     if (x.triggerProvider === provider && !triggerKeys.includes(x.resourceName)) {
       const index = dependsOnArray.findIndex(i => i.resourceName === x.resourceName);
       dependsOnArray.splice(index, 1);

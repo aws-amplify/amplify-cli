@@ -7,11 +7,9 @@ async function showHelpfulProviderLinks(context) {
   const providerPlugins = getProviderPlugins(context);
   const providerPromises = [];
 
-  const {
-    allResources,
-  } = await getResourceStatus();
+  const { allResources } = await getResourceStatus();
 
-  providers.forEach((providerName) => {
+  providers.forEach(providerName => {
     const pluginModule = require(providerPlugins[providerName]);
     providerPromises.push(pluginModule.showHelpfulLinks(context, allResources));
   });

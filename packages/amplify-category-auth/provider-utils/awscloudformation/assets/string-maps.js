@@ -1,12 +1,15 @@
 const messages = {
   authExists: 'Auth has already been added to this project. To update run amplify update auth.',
-  dependenciesExists: '\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n',
+  dependenciesExists:
+    '\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n',
 };
 
-const learnMoreOption = [{
-  name: 'I want to learn more.',
-  value: 'learnMore',
-}];
+const learnMoreOption = [
+  {
+    name: 'I want to learn more.',
+    value: 'learnMore',
+  },
+];
 
 const defaultPrompMap = [
   {
@@ -105,7 +108,8 @@ const emailRegistration = [
 
 const authSelectionMap = [
   {
-    name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
+    name:
+      'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
     value: 'identityPoolAndUserPool',
   },
   {
@@ -285,53 +289,68 @@ const coreAttributes = [
   {
     name: 'Address',
     value: 'address',
-  }, {
+  },
+  {
     name: 'Birthdate',
     value: 'birthdate',
-  }, {
+  },
+  {
     name: 'Email',
     value: 'email',
-  }, {
+  },
+  {
     name: 'Family Name',
     value: 'family_name',
-  }, {
+  },
+  {
     name: 'Middle Name',
     value: 'middle_name',
-  }, {
+  },
+  {
     name: 'Gender',
     value: 'gender',
-  }, {
+  },
+  {
     name: 'Locale',
     value: 'locale',
-  }, {
+  },
+  {
     name: 'Given Name',
     value: 'given_name',
   },
   {
     name: 'Name',
     value: 'name',
-  }, {
+  },
+  {
     name: 'Nickname',
     value: 'nickname',
-  }, {
+  },
+  {
     name: 'Phone Number',
     value: 'phone_number',
-  }, {
+  },
+  {
     name: 'Preferred Username',
     value: 'preferred_username',
-  }, {
+  },
+  {
     name: 'Picture',
     value: 'picture',
-  }, {
+  },
+  {
     name: 'Profile',
     value: 'profile',
-  }, {
+  },
+  {
     name: 'Updated At',
     value: 'updated_at',
-  }, {
+  },
+  {
     name: 'Website',
     value: 'website',
-  }, {
+  },
+  {
     name: 'Zone Info',
     value: 'zoneinfo',
   },
@@ -342,7 +361,8 @@ const appClientReadAttributes = [
   {
     name: 'Email Verified?',
     value: 'email_verified',
-  }, {
+  },
+  {
     name: 'Phone Number Verified?',
     value: 'phone_number_verified',
   },
@@ -532,7 +552,7 @@ const disableOptionsOnEdit = () => {
   mfaOptions.find(i => i.value === 'ON').disabled = true;
 };
 
-const getAllMaps = ((edit) => {
+const getAllMaps = edit => {
   if (edit) {
     disableOptionsOnEdit();
   }
@@ -557,7 +577,7 @@ const getAllMaps = ((edit) => {
     capabilities,
     additonalConfigMap,
   };
-});
+};
 
 module.exports = {
   coreAttributes,

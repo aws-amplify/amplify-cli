@@ -16,8 +16,8 @@
 				"question": "Provide your pinpoint resource name:",
 				"validation": {
 					"operator": "regex",
-					"value": "^[a-zA-Z0-9]+$",
-					"onErrorMsg": "Resource name should be alphanumeric"
+					"value": "^[a-zA-Z0-9-]+$",
+					"onErrorMsg": "Resource name should be alphanumeric or can contain '-'"
 				},
 				"required": true
 			}

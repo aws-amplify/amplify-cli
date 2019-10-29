@@ -1,9 +1,4 @@
-import {
-  join,
-  block,
-  wrap,
-  indent
-} from '../utilities/printing';
+import { join, block, wrap, indent } from '../utilities/printing';
 
 import { camelCase } from 'change-case';
 
@@ -18,7 +13,7 @@ import {
   GraphQLScalarType,
   GraphQLEnumType,
   isCompositeType,
-  isAbstractType
+  isAbstractType,
 } from 'graphql';
 
 const builtInScalarMap = {
@@ -27,7 +22,7 @@ const builtInScalarMap = {
   [GraphQLFloat.name]: 'Double',
   [GraphQLBoolean.name]: 'Boolean',
   [GraphQLID.name]: 'String',
-}
+};
 
 export function possibleTypesForType(context, type) {
   if (isAbstractType(type)) {
@@ -39,7 +34,7 @@ export function possibleTypesForType(context, type) {
 
 export function typeNameFromGraphQLType(context, type, bareTypeName, isOptional) {
   if (type instanceof GraphQLNonNull) {
-    return typeNameFromGraphQLType(context, type.ofType, bareTypeName, isOptional || false)
+    return typeNameFromGraphQLType(context, type.ofType, bareTypeName, isOptional || false);
   } else if (isOptional === undefined) {
     isOptional = true;
   }
@@ -50,7 +45,7 @@ export function typeNameFromGraphQLType(context, type, bareTypeName, isOptional)
   } else if (type instanceof GraphQLScalarType) {
     typeName = typeNameForScalarType(context, type);
   } else if (type instanceof GraphQLEnumType) {
-    typeName = "String";
+    typeName = 'String';
   } else {
     typeName = bareTypeName || type.name;
   }
@@ -59,5 +54,5 @@ export function typeNameFromGraphQLType(context, type, bareTypeName, isOptional)
 }
 
 function typeNameForScalarType(context, type) {
-  return builtInScalarMap[type.name] || (context.passthroughCustomScalars ? context.customScalarsPrefix + type.name: GraphQLString)
+  return builtInScalarMap[type.name] || (context.passthroughCustomScalars ? context.customScalarsPrefix + type.name : GraphQLString);
 }

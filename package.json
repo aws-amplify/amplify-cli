@@ -5,8 +5,7 @@
   "scripts": {
     "test-changed": "lerna run test --since master",
     "test": "lerna run test",
-    "test-ci": "lerna run lint && lerna run test-ci",
-    "pretest": "lerna run lint ",
+    "test-ci": "lerna run test-ci --concurrency 1",
     "e2e": "lerna run e2e",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
@@ -21,7 +20,8 @@
     "publish:beta": "lerna publish prerelease --exact  --dist-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --yes",
     "publish:release": "lerna publish  minor --exact  --yes --message 'chore(release): Publish [ci skip]'",
     "postpublish:release": "git fetch . release:master && git push origin master",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "coverage": "codecov || exit 0"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -36,7 +36,8 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "npm run lint && npm run test-changed"
+      "pre-push": "npm run lint && npm run test-changed",
+      "pre-commit": "pretty-quick --staged"
     }
   },
   "author": "Amazon Web Services",
@@ -54,7 +55,13 @@
     "@commitlint/config-lerna-scopes": "^8.1.0",
     "commitizen": "^3.1.2",
     "cz-conventional-changelog": "^3.0.2",
-    "husky": "^3.0.3"
+    "husky": "^3.0.3",
+    "codecov": "^3.6.1",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "pretty-quick": "^1.11.1"
   },
   "config": {
     "commitizen": {

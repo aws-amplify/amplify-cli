@@ -13,13 +13,9 @@ const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
 const parametersFileName = 'parameters.json';
 
-
 const DEV = 'DEV (S3 only with HTTP)';
 const PROD = 'PROD (S3 with CloudFront using HTTPS)';
-const Environments = [
-  DEV,
-  PROD,
-];
+const Environments = [DEV, PROD];
 
 async function enable(context) {
   let templateFilePath = path.join(__dirname, templateFileName);
@@ -53,11 +49,7 @@ async function enable(context) {
     service: serviceName,
     providerPlugin,
   };
-  return context.amplify.updateamplifyMetaAfterResourceAdd(
-    constants.CategoryName,
-    serviceName,
-    metaData,
-  );
+  return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, metaData);
 }
 
 async function checkCDN(context) {
@@ -83,6 +75,7 @@ function removeCDN(context) {
   delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
   delete context.exeInfo.template.Outputs.CloudFrontDomainName;
   delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+  delete context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity;
 }
 
 function makeBucketPrivate(context) {
@@ -119,7 +112,8 @@ function publish(context, args) {
   const parametersFilePath = path.join(serviceDirPath, parametersFileName);
   context.exeInfo.template = context.amplify.readJsonFile(templateFilePath);
   context.exeInfo.parameters = context.amplify.readJsonFile(parametersFilePath);
-  return fileUPloader.run(context, args.distributionDirPath)
+  return fileUPloader
+    .run(context, args.distributionDirPath)
     .then(() => cloudFrontManager.invalidateCloudFront(context))
     .then(() => {
       const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
@@ -133,17 +127,15 @@ function publish(context, args) {
         open(WebsiteURL, { wait: false });
       }
     })
-    .catch((e) => {
+    .catch(e => {
       throw e;
     });
 }
 
 function console(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
-  const { HostingBucketName: bucket, Region: region } =
-        amplifyMeta[constants.CategoryName][serviceName].output;
-  const consoleUrl =
-        `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/?region=${region}&tab=overview`;
+  const { HostingBucketName: bucket, Region: region } = amplifyMeta[constants.CategoryName][serviceName].output;
+  const consoleUrl = `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/?region=${region}&tab=overview`;
   context.print.info(chalk.green(consoleUrl));
   open(consoleUrl, { wait: false });
 }
@@ -178,7 +170,7 @@ async function migrate(context) {
 function extractMigrationInfo(template) {
   const migrationInfo = {};
   if (template.Resources.S3Bucket) {
-    if ((typeof template.Resources.S3Bucket.Properties.BucketName) === 'string') {
+    if (typeof template.Resources.S3Bucket.Properties.BucketName === 'string') {
       migrationInfo.BucketName = template.Resources.S3Bucket.Properties.BucketName;
     }
   }
@@ -196,8 +188,7 @@ function migrateTemplate(context, template, migrationInfo) {
   Object.assign(template.Conditions, templateNewVersion.Conditions);
 
   if (migrationInfo.BucketName) {
-    template.Resources.S3Bucket.Properties.BucketName =
-      templateNewVersion.Resources.S3Bucket.Properties.BucketName;
+    template.Resources.S3Bucket.Properties.BucketName = templateNewVersion.Resources.S3Bucket.Properties.BucketName;
   }
 
   return template;

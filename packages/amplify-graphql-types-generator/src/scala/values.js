@@ -1,7 +1,4 @@
-import {
-  join,
-  wrap,
-} from '../utilities/printing';
+import { join, wrap } from '../utilities/printing';
 
 export function escapedString(string) {
   return string.replace(/"/g, '\\"');
@@ -22,15 +19,29 @@ export function dictionaryLiteralForFieldArguments(args) {
     } else if (Array.isArray(value)) {
       return wrap('[', join(value.map(expressionFromValue), ', '), ']');
     } else if (typeof value === 'object') {
-      return wrap('[', join(Object.entries(value).map(([key, value]) => {
-        return `"${key}": ${expressionFromValue(value)}`;
-      }), ', ') || ':', ']');
+      return wrap(
+        '[',
+        join(
+          Object.entries(value).map(([key, value]) => {
+            return `"${key}": ${expressionFromValue(value)}`;
+          }),
+          ', '
+        ) || ':',
+        ']'
+      );
     } else {
       return JSON.stringify(value);
     }
   }
 
-  return wrap('[', join(args.map(arg => {
-    return `"${arg.name}": ${expressionFromValue(arg.value)}`;
-  }), ', ') || ':', ']');
+  return wrap(
+    '[',
+    join(
+      args.map(arg => {
+        return `"${arg.name}": ${expressionFromValue(arg.value)}`;
+      }),
+      ', '
+    ) || ':',
+    ']'
+  );
 }

@@ -5,7 +5,7 @@ const featureName = 'configure';
 module.exports = {
   name: featureName,
   alias: 'update',
-  run: async (context) => {
+  run: async context => {
     try {
       await codeGen.configure(context);
     } catch (ex) {

@@ -9,5 +9,5 @@ module.exports = {
   DefaultAWSRegion: 'us-east-1',
   AWSAmazonConsoleUrl: 'https://console.aws.amazon.com/',
   AWSCreateIAMUsersUrl:
-  'https://console.aws.amazon.com/iam/home?region={region}#/users$new?step=final&accessKey&userNames={userName}&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess',
+    'https://console.aws.amazon.com/iam/home?region={region}#/users$new?step=final&accessKey&userNames={userName}&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess',
 };

@@ -2,1830 +2,2304 @@
 //  This file was automatically generated and should not be edited.
 
 export enum Episode {
-  NEWHOPE = "NEWHOPE",
-  EMPIRE = "EMPIRE",
-  JEDI = "JEDI",
+  NEWHOPE = 'NEWHOPE',
+  EMPIRE = 'EMPIRE',
+  JEDI = 'JEDI',
 }
 
-
 export type ReviewInput = {
-  stars: number,
-  commentary?: string | null,
-  favorite_color?: ColorInput | null,
+  stars: number;
+  commentary?: string | null;
+  favorite_color?: ColorInput | null;
 };
 
 export type ColorInput = {
-  red: number,
-  green: number,
-  blue: number,
+  red: number;
+  green: number;
+  blue: number;
 };
 
 export type HeroQueryVariables = {
-  episode?: Episode | null,
+  episode?: Episode | null;
 };
 
 export type HeroQuery = {
-  hero: ( {
-      id: string,
-      name: string,
-      friends:  Array<( {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          friendsConnection:  {
-            totalCount: number | null,
-            edges:  Array< {
-              cursor: string,
-            } | null > | null,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-          },
-          appearsIn: Array< Episode | null >,
-          homePlanet: string | null,
-          height: number | null,
-          mass: number | null,
-          starships:  Array< {
-            id: string,
-            name: string,
-            length: number | null,
-            coordinates: Array< Array< number > > | null,
-          } | null > | null,
-        } | {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          friendsConnection:  {
-            totalCount: number | null,
-            edges:  Array< {
-              cursor: string,
-            } | null > | null,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-          },
-          appearsIn: Array< Episode | null >,
-          primaryFunction: string | null,
-        }
-      ) | null > | null,
-      friendsConnection:  {
-        totalCount: number | null,
-        edges:  Array< {
-          cursor: string,
-        } | null > | null,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            primaryFunction: string | null,
+  hero:
+    | (
+        | {
+            id: string;
+            name: string;
+            friends: Array<
+              | (
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      friendsConnection: {
+                        totalCount: number | null;
+                        edges: Array<{
+                          cursor: string;
+                        } | null> | null;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                      };
+                      appearsIn: Array<Episode | null>;
+                      homePlanet: string | null;
+                      height: number | null;
+                      mass: number | null;
+                      starships: Array<{
+                        id: string;
+                        name: string;
+                        length: number | null;
+                        coordinates: Array<Array<number>> | null;
+                      } | null> | null;
+                    }
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      friendsConnection: {
+                        totalCount: number | null;
+                        edges: Array<{
+                          cursor: string;
+                        } | null> | null;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                      };
+                      appearsIn: Array<Episode | null>;
+                      primaryFunction: string | null;
+                    })
+              | null
+            > | null;
+            friendsConnection: {
+              totalCount: number | null;
+              edges: Array<{
+                cursor: string;
+              } | null> | null;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+            };
+            appearsIn: Array<Episode | null>;
+            homePlanet: string | null;
+            height: number | null;
+            mass: number | null;
+            starships: Array<{
+              id: string;
+              name: string;
+              length: number | null;
+              coordinates: Array<Array<number>> | null;
+            } | null> | null;
           }
-        ) | null > | null,
-      },
-      appearsIn: Array< Episode | null >,
-      homePlanet: string | null,
-      height: number | null,
-      mass: number | null,
-      starships:  Array< {
-        id: string,
-        name: string,
-        length: number | null,
-        coordinates: Array< Array< number > > | null,
-      } | null > | null,
-    } | {
-      id: string,
-      name: string,
-      friends:  Array<( {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          friendsConnection:  {
-            totalCount: number | null,
-            edges:  Array< {
-              cursor: string,
-            } | null > | null,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-          },
-          appearsIn: Array< Episode | null >,
-          homePlanet: string | null,
-          height: number | null,
-          mass: number | null,
-          starships:  Array< {
-            id: string,
-            name: string,
-            length: number | null,
-            coordinates: Array< Array< number > > | null,
-          } | null > | null,
-        } | {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          friendsConnection:  {
-            totalCount: number | null,
-            edges:  Array< {
-              cursor: string,
-            } | null > | null,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-          },
-          appearsIn: Array< Episode | null >,
-          primaryFunction: string | null,
-        }
-      ) | null > | null,
-      friendsConnection:  {
-        totalCount: number | null,
-        edges:  Array< {
-          cursor: string,
-        } | null > | null,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            primaryFunction: string | null,
-          }
-        ) | null > | null,
-      },
-      appearsIn: Array< Episode | null >,
-      primaryFunction: string | null,
-    }
-  ) | null,
+        | {
+            id: string;
+            name: string;
+            friends: Array<
+              | (
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      friendsConnection: {
+                        totalCount: number | null;
+                        edges: Array<{
+                          cursor: string;
+                        } | null> | null;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                      };
+                      appearsIn: Array<Episode | null>;
+                      homePlanet: string | null;
+                      height: number | null;
+                      mass: number | null;
+                      starships: Array<{
+                        id: string;
+                        name: string;
+                        length: number | null;
+                        coordinates: Array<Array<number>> | null;
+                      } | null> | null;
+                    }
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      friendsConnection: {
+                        totalCount: number | null;
+                        edges: Array<{
+                          cursor: string;
+                        } | null> | null;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                      };
+                      appearsIn: Array<Episode | null>;
+                      primaryFunction: string | null;
+                    })
+              | null
+            > | null;
+            friendsConnection: {
+              totalCount: number | null;
+              edges: Array<{
+                cursor: string;
+              } | null> | null;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+            };
+            appearsIn: Array<Episode | null>;
+            primaryFunction: string | null;
+          })
+    | null;
 };
 
 export type ReviewsQueryVariables = {
-  episode: Episode,
+  episode: Episode;
 };
 
 export type ReviewsQuery = {
-  reviews:  Array< {
-    episode: Episode | null,
-    stars: number,
-    commentary: string | null,
-  } | null > | null,
+  reviews: Array<{
+    episode: Episode | null;
+    stars: number;
+    commentary: string | null;
+  } | null> | null;
 };
 
 export type SearchQueryVariables = {
-  text?: string | null,
+  text?: string | null;
 };
 
 export type SearchQuery = {
-  search:  Array<( {
-      id: string,
-      name: string,
-      homePlanet: string | null,
-      height: number | null,
-      mass: number | null,
-      friends:  Array<( {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          homePlanet: string | null,
-          height: number | null,
-          mass: number | null,
-        } | {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          primaryFunction: string | null,
-        }
-      ) | null > | null,
-      friendsConnection:  {
-        totalCount: number | null,
-        edges:  Array< {
-          cursor: string,
-        } | null > | null,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            primaryFunction: string | null,
+  search: Array<
+    | (
+        | {
+            id: string;
+            name: string;
+            homePlanet: string | null;
+            height: number | null;
+            mass: number | null;
+            friends: Array<
+              | (
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      homePlanet: string | null;
+                      height: number | null;
+                      mass: number | null;
+                    }
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      primaryFunction: string | null;
+                    })
+              | null
+            > | null;
+            friendsConnection: {
+              totalCount: number | null;
+              edges: Array<{
+                cursor: string;
+              } | null> | null;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+            };
+            appearsIn: Array<Episode | null>;
+            starships: Array<{
+              id: string;
+              name: string;
+              length: number | null;
+              coordinates: Array<Array<number>> | null;
+            } | null> | null;
           }
-        ) | null > | null,
-      },
-      appearsIn: Array< Episode | null >,
-      starships:  Array< {
-        id: string,
-        name: string,
-        length: number | null,
-        coordinates: Array< Array< number > > | null,
-      } | null > | null,
-    } | {
-      id: string,
-      name: string,
-      friends:  Array<( {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          homePlanet: string | null,
-          height: number | null,
-          mass: number | null,
-        } | {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          primaryFunction: string | null,
-        }
-      ) | null > | null,
-      friendsConnection:  {
-        totalCount: number | null,
-        edges:  Array< {
-          cursor: string,
-        } | null > | null,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            primaryFunction: string | null,
+        | {
+            id: string;
+            name: string;
+            friends: Array<
+              | (
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      homePlanet: string | null;
+                      height: number | null;
+                      mass: number | null;
+                    }
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      primaryFunction: string | null;
+                    })
+              | null
+            > | null;
+            friendsConnection: {
+              totalCount: number | null;
+              edges: Array<{
+                cursor: string;
+              } | null> | null;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+            };
+            appearsIn: Array<Episode | null>;
+            primaryFunction: string | null;
           }
-        ) | null > | null,
-      },
-      appearsIn: Array< Episode | null >,
-      primaryFunction: string | null,
-    } | {
-      id: string,
-      name: string,
-      length: number | null,
-      coordinates: Array< Array< number > > | null,
-    }
-  ) | null > | null,
+        | {
+            id: string;
+            name: string;
+            length: number | null;
+            coordinates: Array<Array<number>> | null;
+          })
+    | null
+  > | null;
 };
 
 export type CharacterQueryVariables = {
-  id: string,
+  id: string;
 };
 
 export type CharacterQuery = {
-  character: ( {
-      id: string,
-      name: string,
-      friends:  Array<( {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          friendsConnection:  {
-            totalCount: number | null,
-            edges:  Array< {
-              cursor: string,
-            } | null > | null,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-          },
-          appearsIn: Array< Episode | null >,
-          homePlanet: string | null,
-          height: number | null,
-          mass: number | null,
-          starships:  Array< {
-            id: string,
-            name: string,
-            length: number | null,
-            coordinates: Array< Array< number > > | null,
-          } | null > | null,
-        } | {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          friendsConnection:  {
-            totalCount: number | null,
-            edges:  Array< {
-              cursor: string,
-            } | null > | null,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-          },
-          appearsIn: Array< Episode | null >,
-          primaryFunction: string | null,
-        }
-      ) | null > | null,
-      friendsConnection:  {
-        totalCount: number | null,
-        edges:  Array< {
-          cursor: string,
-        } | null > | null,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            primaryFunction: string | null,
+  character:
+    | (
+        | {
+            id: string;
+            name: string;
+            friends: Array<
+              | (
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      friendsConnection: {
+                        totalCount: number | null;
+                        edges: Array<{
+                          cursor: string;
+                        } | null> | null;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                      };
+                      appearsIn: Array<Episode | null>;
+                      homePlanet: string | null;
+                      height: number | null;
+                      mass: number | null;
+                      starships: Array<{
+                        id: string;
+                        name: string;
+                        length: number | null;
+                        coordinates: Array<Array<number>> | null;
+                      } | null> | null;
+                    }
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      friendsConnection: {
+                        totalCount: number | null;
+                        edges: Array<{
+                          cursor: string;
+                        } | null> | null;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                      };
+                      appearsIn: Array<Episode | null>;
+                      primaryFunction: string | null;
+                    })
+              | null
+            > | null;
+            friendsConnection: {
+              totalCount: number | null;
+              edges: Array<{
+                cursor: string;
+              } | null> | null;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+            };
+            appearsIn: Array<Episode | null>;
+            homePlanet: string | null;
+            height: number | null;
+            mass: number | null;
+            starships: Array<{
+              id: string;
+              name: string;
+              length: number | null;
+              coordinates: Array<Array<number>> | null;
+            } | null> | null;
           }
-        ) | null > | null,
-      },
-      appearsIn: Array< Episode | null >,
-      homePlanet: string | null,
-      height: number | null,
-      mass: number | null,
-      starships:  Array< {
-        id: string,
-        name: string,
-        length: number | null,
-        coordinates: Array< Array< number > > | null,
-      } | null > | null,
-    } | {
-      id: string,
-      name: string,
-      friends:  Array<( {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          friendsConnection:  {
-            totalCount: number | null,
-            edges:  Array< {
-              cursor: string,
-            } | null > | null,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-          },
-          appearsIn: Array< Episode | null >,
-          homePlanet: string | null,
-          height: number | null,
-          mass: number | null,
-          starships:  Array< {
-            id: string,
-            name: string,
-            length: number | null,
-            coordinates: Array< Array< number > > | null,
-          } | null > | null,
-        } | {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          friendsConnection:  {
-            totalCount: number | null,
-            edges:  Array< {
-              cursor: string,
-            } | null > | null,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                friends:  Array<( {
-                    id: string,
-                    name: string,
-                    homePlanet: string | null,
-                    height: number | null,
-                    mass: number | null,
-                  } | {
-                    id: string,
-                    name: string,
-                    primaryFunction: string | null,
-                  }
-                ) | null > | null,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-          },
-          appearsIn: Array< Episode | null >,
-          primaryFunction: string | null,
-        }
-      ) | null > | null,
-      friendsConnection:  {
-        totalCount: number | null,
-        edges:  Array< {
-          cursor: string,
-        } | null > | null,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            primaryFunction: string | null,
-          }
-        ) | null > | null,
-      },
-      appearsIn: Array< Episode | null >,
-      primaryFunction: string | null,
-    }
-  ) | null,
+        | {
+            id: string;
+            name: string;
+            friends: Array<
+              | (
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      friendsConnection: {
+                        totalCount: number | null;
+                        edges: Array<{
+                          cursor: string;
+                        } | null> | null;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                      };
+                      appearsIn: Array<Episode | null>;
+                      homePlanet: string | null;
+                      height: number | null;
+                      mass: number | null;
+                      starships: Array<{
+                        id: string;
+                        name: string;
+                        length: number | null;
+                        coordinates: Array<Array<number>> | null;
+                      } | null> | null;
+                    }
+                  | {
+                      id: string;
+                      name: string;
+                      friends: Array<
+                        | (
+                            | {
+                                id: string;
+                                name: string;
+                                homePlanet: string | null;
+                                height: number | null;
+                                mass: number | null;
+                              }
+                            | {
+                                id: string;
+                                name: string;
+                                primaryFunction: string | null;
+                              })
+                        | null
+                      > | null;
+                      friendsConnection: {
+                        totalCount: number | null;
+                        edges: Array<{
+                          cursor: string;
+                        } | null> | null;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  friends: Array<
+                                    | (
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            homePlanet: string | null;
+                                            height: number | null;
+                                            mass: number | null;
+                                          }
+                                        | {
+                                            id: string;
+                                            name: string;
+                                            primaryFunction: string | null;
+                                          })
+                                    | null
+                                  > | null;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                      };
+                      appearsIn: Array<Episode | null>;
+                      primaryFunction: string | null;
+                    })
+              | null
+            > | null;
+            friendsConnection: {
+              totalCount: number | null;
+              edges: Array<{
+                cursor: string;
+              } | null> | null;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+            };
+            appearsIn: Array<Episode | null>;
+            primaryFunction: string | null;
+          })
+    | null;
 };
 
 export type DroidQueryVariables = {
-  id: string,
+  id: string;
 };
 
 export type DroidQuery = {
-  droid:  {
-    id: string,
-    name: string,
-    friends:  Array<( {
-        id: string,
-        name: string,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            friendsConnection:  {
-              totalCount: number | null,
-              edges:  Array< {
-                cursor: string,
-              } | null > | null,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-            },
-            appearsIn: Array< Episode | null >,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-            starships:  Array< {
-              id: string,
-              name: string,
-              length: number | null,
-              coordinates: Array< Array< number > > | null,
-            } | null > | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            friendsConnection:  {
-              totalCount: number | null,
-              edges:  Array< {
-                cursor: string,
-              } | null > | null,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-            },
-            appearsIn: Array< Episode | null >,
-            primaryFunction: string | null,
-          }
-        ) | null > | null,
-        friendsConnection:  {
-          totalCount: number | null,
-          edges:  Array< {
-            cursor: string,
-          } | null > | null,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-              primaryFunction: string | null,
+  droid: {
+    id: string;
+    name: string;
+    friends: Array<
+      | (
+          | {
+              id: string;
+              name: string;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        friendsConnection: {
+                          totalCount: number | null;
+                          edges: Array<{
+                            cursor: string;
+                          } | null> | null;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                        };
+                        appearsIn: Array<Episode | null>;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                        starships: Array<{
+                          id: string;
+                          name: string;
+                          length: number | null;
+                          coordinates: Array<Array<number>> | null;
+                        } | null> | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        friendsConnection: {
+                          totalCount: number | null;
+                          edges: Array<{
+                            cursor: string;
+                          } | null> | null;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                        };
+                        appearsIn: Array<Episode | null>;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+              friendsConnection: {
+                totalCount: number | null;
+                edges: Array<{
+                  cursor: string;
+                } | null> | null;
+                friends: Array<
+                  | (
+                      | {
+                          id: string;
+                          name: string;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                          homePlanet: string | null;
+                          height: number | null;
+                          mass: number | null;
+                        }
+                      | {
+                          id: string;
+                          name: string;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                          primaryFunction: string | null;
+                        })
+                  | null
+                > | null;
+              };
+              appearsIn: Array<Episode | null>;
+              homePlanet: string | null;
+              height: number | null;
+              mass: number | null;
+              starships: Array<{
+                id: string;
+                name: string;
+                length: number | null;
+                coordinates: Array<Array<number>> | null;
+              } | null> | null;
             }
-          ) | null > | null,
-        },
-        appearsIn: Array< Episode | null >,
-        homePlanet: string | null,
-        height: number | null,
-        mass: number | null,
-        starships:  Array< {
-          id: string,
-          name: string,
-          length: number | null,
-          coordinates: Array< Array< number > > | null,
-        } | null > | null,
-      } | {
-        id: string,
-        name: string,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
+          | {
+              id: string;
+              name: string;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        friendsConnection: {
+                          totalCount: number | null;
+                          edges: Array<{
+                            cursor: string;
+                          } | null> | null;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                        };
+                        appearsIn: Array<Episode | null>;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                        starships: Array<{
+                          id: string;
+                          name: string;
+                          length: number | null;
+                          coordinates: Array<Array<number>> | null;
+                        } | null> | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        friendsConnection: {
+                          totalCount: number | null;
+                          edges: Array<{
+                            cursor: string;
+                          } | null> | null;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                        };
+                        appearsIn: Array<Episode | null>;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+              friendsConnection: {
+                totalCount: number | null;
+                edges: Array<{
+                  cursor: string;
+                } | null> | null;
+                friends: Array<
+                  | (
+                      | {
+                          id: string;
+                          name: string;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                          homePlanet: string | null;
+                          height: number | null;
+                          mass: number | null;
+                        }
+                      | {
+                          id: string;
+                          name: string;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                          primaryFunction: string | null;
+                        })
+                  | null
+                > | null;
+              };
+              appearsIn: Array<Episode | null>;
+              primaryFunction: string | null;
+            })
+      | null
+    > | null;
+    friendsConnection: {
+      totalCount: number | null;
+      edges: Array<{
+        cursor: string;
+      } | null> | null;
+      friends: Array<
+        | (
+            | {
+                id: string;
+                name: string;
+                friends: Array<
+                  | (
+                      | {
+                          id: string;
+                          name: string;
+                          homePlanet: string | null;
+                          height: number | null;
+                          mass: number | null;
+                        }
+                      | {
+                          id: string;
+                          name: string;
+                          primaryFunction: string | null;
+                        })
+                  | null
+                > | null;
+                homePlanet: string | null;
+                height: number | null;
+                mass: number | null;
               }
-            ) | null > | null,
-            friendsConnection:  {
-              totalCount: number | null,
-              edges:  Array< {
-                cursor: string,
-              } | null > | null,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-            },
-            appearsIn: Array< Episode | null >,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-            starships:  Array< {
-              id: string,
-              name: string,
-              length: number | null,
-              coordinates: Array< Array< number > > | null,
-            } | null > | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            friendsConnection:  {
-              totalCount: number | null,
-              edges:  Array< {
-                cursor: string,
-              } | null > | null,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-            },
-            appearsIn: Array< Episode | null >,
-            primaryFunction: string | null,
-          }
-        ) | null > | null,
-        friendsConnection:  {
-          totalCount: number | null,
-          edges:  Array< {
-            cursor: string,
-          } | null > | null,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-        },
-        appearsIn: Array< Episode | null >,
-        primaryFunction: string | null,
-      }
-    ) | null > | null,
-    friendsConnection:  {
-      totalCount: number | null,
-      edges:  Array< {
-        cursor: string,
-      } | null > | null,
-      friends:  Array<( {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          homePlanet: string | null,
-          height: number | null,
-          mass: number | null,
-        } | {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          primaryFunction: string | null,
-        }
-      ) | null > | null,
-    },
-    appearsIn: Array< Episode | null >,
-    primaryFunction: string | null,
-  } | null,
+            | {
+                id: string;
+                name: string;
+                friends: Array<
+                  | (
+                      | {
+                          id: string;
+                          name: string;
+                          homePlanet: string | null;
+                          height: number | null;
+                          mass: number | null;
+                        }
+                      | {
+                          id: string;
+                          name: string;
+                          primaryFunction: string | null;
+                        })
+                  | null
+                > | null;
+                primaryFunction: string | null;
+              })
+        | null
+      > | null;
+    };
+    appearsIn: Array<Episode | null>;
+    primaryFunction: string | null;
+  } | null;
 };
 
 export type HumanQueryVariables = {
-  id: string,
+  id: string;
 };
 
 export type HumanQuery = {
-  human:  {
-    id: string,
-    name: string,
-    homePlanet: string | null,
-    height: number | null,
-    mass: number | null,
-    friends:  Array<( {
-        id: string,
-        name: string,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            friendsConnection:  {
-              totalCount: number | null,
-              edges:  Array< {
-                cursor: string,
-              } | null > | null,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-            },
-            appearsIn: Array< Episode | null >,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-            starships:  Array< {
-              id: string,
-              name: string,
-              length: number | null,
-              coordinates: Array< Array< number > > | null,
-            } | null > | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            friendsConnection:  {
-              totalCount: number | null,
-              edges:  Array< {
-                cursor: string,
-              } | null > | null,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-            },
-            appearsIn: Array< Episode | null >,
-            primaryFunction: string | null,
-          }
-        ) | null > | null,
-        friendsConnection:  {
-          totalCount: number | null,
-          edges:  Array< {
-            cursor: string,
-          } | null > | null,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-              primaryFunction: string | null,
+  human: {
+    id: string;
+    name: string;
+    homePlanet: string | null;
+    height: number | null;
+    mass: number | null;
+    friends: Array<
+      | (
+          | {
+              id: string;
+              name: string;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        friendsConnection: {
+                          totalCount: number | null;
+                          edges: Array<{
+                            cursor: string;
+                          } | null> | null;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                        };
+                        appearsIn: Array<Episode | null>;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                        starships: Array<{
+                          id: string;
+                          name: string;
+                          length: number | null;
+                          coordinates: Array<Array<number>> | null;
+                        } | null> | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        friendsConnection: {
+                          totalCount: number | null;
+                          edges: Array<{
+                            cursor: string;
+                          } | null> | null;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                        };
+                        appearsIn: Array<Episode | null>;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+              friendsConnection: {
+                totalCount: number | null;
+                edges: Array<{
+                  cursor: string;
+                } | null> | null;
+                friends: Array<
+                  | (
+                      | {
+                          id: string;
+                          name: string;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                          homePlanet: string | null;
+                          height: number | null;
+                          mass: number | null;
+                        }
+                      | {
+                          id: string;
+                          name: string;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                          primaryFunction: string | null;
+                        })
+                  | null
+                > | null;
+              };
+              appearsIn: Array<Episode | null>;
+              homePlanet: string | null;
+              height: number | null;
+              mass: number | null;
+              starships: Array<{
+                id: string;
+                name: string;
+                length: number | null;
+                coordinates: Array<Array<number>> | null;
+              } | null> | null;
             }
-          ) | null > | null,
-        },
-        appearsIn: Array< Episode | null >,
-        homePlanet: string | null,
-        height: number | null,
-        mass: number | null,
-        starships:  Array< {
-          id: string,
-          name: string,
-          length: number | null,
-          coordinates: Array< Array< number > > | null,
-        } | null > | null,
-      } | {
-        id: string,
-        name: string,
-        friends:  Array<( {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
+          | {
+              id: string;
+              name: string;
+              friends: Array<
+                | (
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        friendsConnection: {
+                          totalCount: number | null;
+                          edges: Array<{
+                            cursor: string;
+                          } | null> | null;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                        };
+                        appearsIn: Array<Episode | null>;
+                        homePlanet: string | null;
+                        height: number | null;
+                        mass: number | null;
+                        starships: Array<{
+                          id: string;
+                          name: string;
+                          length: number | null;
+                          coordinates: Array<Array<number>> | null;
+                        } | null> | null;
+                      }
+                    | {
+                        id: string;
+                        name: string;
+                        friends: Array<
+                          | (
+                              | {
+                                  id: string;
+                                  name: string;
+                                  homePlanet: string | null;
+                                  height: number | null;
+                                  mass: number | null;
+                                }
+                              | {
+                                  id: string;
+                                  name: string;
+                                  primaryFunction: string | null;
+                                })
+                          | null
+                        > | null;
+                        friendsConnection: {
+                          totalCount: number | null;
+                          edges: Array<{
+                            cursor: string;
+                          } | null> | null;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    friends: Array<
+                                      | (
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              homePlanet: string | null;
+                                              height: number | null;
+                                              mass: number | null;
+                                            }
+                                          | {
+                                              id: string;
+                                              name: string;
+                                              primaryFunction: string | null;
+                                            })
+                                      | null
+                                    > | null;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                        };
+                        appearsIn: Array<Episode | null>;
+                        primaryFunction: string | null;
+                      })
+                | null
+              > | null;
+              friendsConnection: {
+                totalCount: number | null;
+                edges: Array<{
+                  cursor: string;
+                } | null> | null;
+                friends: Array<
+                  | (
+                      | {
+                          id: string;
+                          name: string;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                          homePlanet: string | null;
+                          height: number | null;
+                          mass: number | null;
+                        }
+                      | {
+                          id: string;
+                          name: string;
+                          friends: Array<
+                            | (
+                                | {
+                                    id: string;
+                                    name: string;
+                                    homePlanet: string | null;
+                                    height: number | null;
+                                    mass: number | null;
+                                  }
+                                | {
+                                    id: string;
+                                    name: string;
+                                    primaryFunction: string | null;
+                                  })
+                            | null
+                          > | null;
+                          primaryFunction: string | null;
+                        })
+                  | null
+                > | null;
+              };
+              appearsIn: Array<Episode | null>;
+              primaryFunction: string | null;
+            })
+      | null
+    > | null;
+    friendsConnection: {
+      totalCount: number | null;
+      edges: Array<{
+        cursor: string;
+      } | null> | null;
+      friends: Array<
+        | (
+            | {
+                id: string;
+                name: string;
+                friends: Array<
+                  | (
+                      | {
+                          id: string;
+                          name: string;
+                          homePlanet: string | null;
+                          height: number | null;
+                          mass: number | null;
+                        }
+                      | {
+                          id: string;
+                          name: string;
+                          primaryFunction: string | null;
+                        })
+                  | null
+                > | null;
+                homePlanet: string | null;
+                height: number | null;
+                mass: number | null;
               }
-            ) | null > | null,
-            friendsConnection:  {
-              totalCount: number | null,
-              edges:  Array< {
-                cursor: string,
-              } | null > | null,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-            },
-            appearsIn: Array< Episode | null >,
-            homePlanet: string | null,
-            height: number | null,
-            mass: number | null,
-            starships:  Array< {
-              id: string,
-              name: string,
-              length: number | null,
-              coordinates: Array< Array< number > > | null,
-            } | null > | null,
-          } | {
-            id: string,
-            name: string,
-            friends:  Array<( {
-                id: string,
-                name: string,
-                homePlanet: string | null,
-                height: number | null,
-                mass: number | null,
-              } | {
-                id: string,
-                name: string,
-                primaryFunction: string | null,
-              }
-            ) | null > | null,
-            friendsConnection:  {
-              totalCount: number | null,
-              edges:  Array< {
-                cursor: string,
-              } | null > | null,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  friends:  Array<( {
-                      id: string,
-                      name: string,
-                      homePlanet: string | null,
-                      height: number | null,
-                      mass: number | null,
-                    } | {
-                      id: string,
-                      name: string,
-                      primaryFunction: string | null,
-                    }
-                  ) | null > | null,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-            },
-            appearsIn: Array< Episode | null >,
-            primaryFunction: string | null,
-          }
-        ) | null > | null,
-        friendsConnection:  {
-          totalCount: number | null,
-          edges:  Array< {
-            cursor: string,
-          } | null > | null,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              friends:  Array<( {
-                  id: string,
-                  name: string,
-                  homePlanet: string | null,
-                  height: number | null,
-                  mass: number | null,
-                } | {
-                  id: string,
-                  name: string,
-                  primaryFunction: string | null,
-                }
-              ) | null > | null,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-        },
-        appearsIn: Array< Episode | null >,
-        primaryFunction: string | null,
-      }
-    ) | null > | null,
-    friendsConnection:  {
-      totalCount: number | null,
-      edges:  Array< {
-        cursor: string,
-      } | null > | null,
-      friends:  Array<( {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          homePlanet: string | null,
-          height: number | null,
-          mass: number | null,
-        } | {
-          id: string,
-          name: string,
-          friends:  Array<( {
-              id: string,
-              name: string,
-              homePlanet: string | null,
-              height: number | null,
-              mass: number | null,
-            } | {
-              id: string,
-              name: string,
-              primaryFunction: string | null,
-            }
-          ) | null > | null,
-          primaryFunction: string | null,
-        }
-      ) | null > | null,
-    },
-    appearsIn: Array< Episode | null >,
-    starships:  Array< {
-      id: string,
-      name: string,
-      length: number | null,
-      coordinates: Array< Array< number > > | null,
-    } | null > | null,
-  } | null,
+            | {
+                id: string;
+                name: string;
+                friends: Array<
+                  | (
+                      | {
+                          id: string;
+                          name: string;
+                          homePlanet: string | null;
+                          height: number | null;
+                          mass: number | null;
+                        }
+                      | {
+                          id: string;
+                          name: string;
+                          primaryFunction: string | null;
+                        })
+                  | null
+                > | null;
+                primaryFunction: string | null;
+              })
+        | null
+      > | null;
+    };
+    appearsIn: Array<Episode | null>;
+    starships: Array<{
+      id: string;
+      name: string;
+      length: number | null;
+      coordinates: Array<Array<number>> | null;
+    } | null> | null;
+  } | null;
 };
 
 export type StarshipQueryVariables = {
-  id: string,
+  id: string;
 };
 
 export type StarshipQuery = {
-  starship:  {
-    id: string,
-    name: string,
-    length: number | null,
-    coordinates: Array< Array< number > > | null,
-  } | null,
+  starship: {
+    id: string;
+    name: string;
+    length: number | null;
+    coordinates: Array<Array<number>> | null;
+  } | null;
 };
 
 export type CreateReviewMutationVariables = {
-  episode?: Episode | null,
-  review: ReviewInput,
+  episode?: Episode | null;
+  review: ReviewInput;
 };
 
 export type CreateReviewMutation = {
-  createReview:  {
-    episode: Episode | null,
-    stars: number,
-    commentary: string | null,
-  } | null,
+  createReview: {
+    episode: Episode | null;
+    stars: number;
+    commentary: string | null;
+  } | null;
 };
 
 export type ReviewAddedSubscriptionVariables = {
-  episode?: Episode | null,
+  episode?: Episode | null;
 };
 
 export type ReviewAddedSubscription = {
-  reviewAdded:  {
-    episode: Episode | null,
-    stars: number,
-    commentary: string | null,
-  } | null,
+  reviewAdded: {
+    episode: Episode | null;
+    stars: number;
+    commentary: string | null;
+  } | null;
 };

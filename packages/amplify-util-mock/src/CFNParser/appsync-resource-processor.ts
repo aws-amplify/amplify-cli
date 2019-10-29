@@ -1,7 +1,11 @@
 import { CloudFormationParseContext } from './types';
 import { isPlainObject } from 'lodash';
 import { parseValue } from './field-parser';
-import { AmplifyAppSyncSimulatorConfig, AmplifyAppSyncAPIConfig } from 'amplify-appsync-simulator';
+import {
+  AmplifyAppSyncSimulatorConfig,
+  AmplifyAppSyncAPIConfig,
+  AmplifyAppSyncSimulatorAuthenticationType,
+} from 'amplify-appsync-simulator';
 const CFN_DEFAULT_PARAMS = {
   'AWS::Region': 'us-east-1-fake',
   'AWS::AccountId': '12345678910',
@@ -21,12 +25,7 @@ const resourceProcessorMapping = {
   'AWS::AppSync::DataSource': graphQLDataSource,
   'AWS::AppSync::FunctionConfiguration': graphqlFunctionHandler,
 };
-export function dynamoDBResourceHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-  transformResult: any
-) {
+export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
   const tableName = resourceName;
   const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map(gsi => {
     const p = { ...gsi };
@@ -48,12 +47,7 @@ export function dynamoDBResourceHandler(
   return processedResource;
 }
 
-export function graphQLDataSource(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-  transformResult: any
-) {
+export function graphQLDataSource(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
   const tableName = resource.Properties.Name;
   const typeName = resource.Properties.Type;
   if (typeName === 'AMAZON_DYNAMODB') {
@@ -82,9 +76,7 @@ export function graphQLDataSource(
   }
 
   // XXX: Handle un-supported data sources
-  console.log(
-    `Data source of type ${typeName} is not supported by local mocking. A NONE data source will be used.`
-  );
+  console.log(`Data source of type ${typeName} is not supported by local mocking. A NONE data source will be used.`);
   return {
     name: resourceName,
     type: 'NONE',
@@ -103,34 +95,29 @@ export function graphQLAPIResourceHandler(
     name: cfnContext.params.AppSyncApiName || 'AppSyncTransformer',
     defaultAuthenticationType: {
       authenticationType: resource.Properties.AuthenticationType,
-      ...(resource.Properties.OpenIDConnectConfig ? { openIDConnectConfig : resource.Properties.OpenIDConnectConfig } : {}),
-      ...(resource.Properties.UserPoolConfig ? { cognitoUserPoolConfig: resource.Properties.UserPoolConfig}: {})
+      ...(resource.Properties.OpenIDConnectConfig ? { openIDConnectConfig: resource.Properties.OpenIDConnectConfig } : {}),
+      ...(resource.Properties.UserPoolConfig ? { cognitoUserPoolConfig: resource.Properties.UserPoolConfig } : {}),
     },
     // authenticationType: parseValue(resource.Properties.AuthenticationType, cfnContext,  transformResult: any),
     ref: `arn:aws:appsync:us-east-1:123456789012:apis/${apiId}`,
     ...(resource.Properties.AdditionalAuthenticationProviders
       ? {
-          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map(
-            p => {
-              return {
-                authenticationType: p.AuthenticationType,
-                ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
-                ...(p.CognitoUserPoolConfig ? { cognitoUserPoolConfig: p.CognitoUserPoolConfig}: {})
-              };
-            }
-          ),
+          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map(p => {
+            return {
+              authenticationType: p.AuthenticationType,
+              ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
+              ...(p.CognitoUserPoolConfig ? { cognitoUserPoolConfig: p.CognitoUserPoolConfig } : {}),
+            };
+          }),
         }
-      : {}),
+      : {
+          additionalAuthenticationProviders: [],
+        }),
   };
   return processedResource;
 }
 
-export function graphQLAPIKeyResourceHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-  transformResult: any
-) {
+export function graphQLAPIKeyResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
   const value = 'da2-fakeApiId123456'; // TODO: Generate
   const processedResource = {
     type: resource.Type,
@@ -141,33 +128,23 @@ export function graphQLAPIKeyResourceHandler(
   return processedResource;
 }
 
-export function graphQLSchemaHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-  transformResult: any
-) {
+export function graphQLSchemaHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
   return {
     content: transformResult.schema,
     path: 'schema.json', // XXX: handle schema folder
   };
 }
 
-export function graphQLResolverHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-  transformResult: any
-) {
+export function graphQLResolverHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
   const { Properties: properties } = resource;
-  const requestMappingTemplate = parseValue(
-    properties.RequestMappingTemplateS3Location,
-    cfnContext
-  ).replace('s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/', '');
-  const responseMappingTemplate = parseValue(
-    properties.ResponseMappingTemplateS3Location,
-    cfnContext
-  ).replace('s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/', '');
+  const requestMappingTemplate = parseValue(properties.RequestMappingTemplateS3Location, cfnContext).replace(
+    's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/',
+    ''
+  );
+  const responseMappingTemplate = parseValue(properties.ResponseMappingTemplateS3Location, cfnContext).replace(
+    's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/',
+    ''
+  );
   let dataSourceName;
   let functions;
   if (properties.Kind === 'PIPELINE') {
@@ -212,21 +189,16 @@ function getAppSyncFunctionName(functionConfig) {
   return functionConfig;
 }
 
-export function graphqlFunctionHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-  transformResult: any
-) {
+export function graphqlFunctionHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
   const { Properties: properties } = resource;
-  const requestMappingTemplate = parseValue(
-    properties.RequestMappingTemplateS3Location,
-    cfnContext
-  ).replace('s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/', '');
-  const responseMappingTemplate = parseValue(
-    properties.ResponseMappingTemplateS3Location,
-    cfnContext
-  ).replace('s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/', '');
+  const requestMappingTemplate = parseValue(properties.RequestMappingTemplateS3Location, cfnContext).replace(
+    's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/',
+    ''
+  );
+  const responseMappingTemplate = parseValue(properties.ResponseMappingTemplateS3Location, cfnContext).replace(
+    's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/',
+    ''
+  );
 
   const dataSourceName = getDataSourceName(properties.DataSourceName, cfnContext.resources);
 
@@ -238,11 +210,7 @@ export function graphqlFunctionHandler(
   };
 }
 
-export function processResources(
-  resources,
-  transformResult: any,
-  params = {}
-): AmplifyAppSyncSimulatorConfig {
+export function processResources(resources, transformResult: any, params = {}): AmplifyAppSyncSimulatorConfig {
   const cfnContext: CloudFormationParseContext = {
     conditions: {
       ...CFN_DEFAULT_CONDITIONS,
@@ -257,8 +225,10 @@ export function processResources(
     resources: {},
     exports: {},
   };
-  const processedResources = {
-    schema: {},
+  const processedResources: AmplifyAppSyncSimulatorConfig = {
+    schema: {
+      content: '',
+    },
     resolvers: [],
     functions: [],
     dataSources: [],
@@ -266,21 +236,18 @@ export function processResources(
     tables: [],
     appSync: {
       name: '',
-      defaultAuthenticationType: {},
+      defaultAuthenticationType: {
+        authenticationType: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
+      },
       apiKey: null,
-      additionalAuthenticationProviders: []
+      additionalAuthenticationProviders: [],
     },
   };
   Object.entries(resources).forEach(entry => {
     const [resourceName, resource] = entry;
     const { Type: resourceType } = resource as any;
     if (Object.keys(resourceProcessorMapping).includes(resourceType)) {
-      const result = resourceProcessorMapping[resourceType](
-        resourceName,
-        resource,
-        cfnContext,
-        transformResult
-      );
+      const result = resourceProcessorMapping[resourceType](resourceName, resource, cfnContext, transformResult);
       cfnContext.resources[resourceName] = result;
 
       switch (resourceType) {
@@ -313,13 +280,13 @@ export function processResources(
   Object.entries(transformResult.resolvers).forEach(([path, content]) => {
     processedResources.mappingTemplates.push({
       path: `resolvers/${path}`,
-      content,
+      content: content as string,
     });
   });
   Object.entries(transformResult.pipelineFunctions).forEach(([path, content]) => {
     processedResources.mappingTemplates.push({
       path: `pipelineFunctions/${path}`,
-      content,
+      content: content as string,
     });
   });
 

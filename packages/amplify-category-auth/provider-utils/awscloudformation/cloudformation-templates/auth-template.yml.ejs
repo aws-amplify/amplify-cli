@@ -1084,7 +1084,7 @@ Resources:
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <% } -%>
-      <%if (props.authProviders && Object.keys(props.authProviders).length > 0 && props.authProviders !== '{}') { %>
+      <%if (props.authProviders && Object.keys(props.authProviders).length > 0 && props.authProviders !== '{}' && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)) { %>
       SupportedLoginProviders: 
         <%if (props.authProviders.indexOf('graph.facebook.com') !== -1) { %>
         graph.facebook.com: !Ref facebookAppId

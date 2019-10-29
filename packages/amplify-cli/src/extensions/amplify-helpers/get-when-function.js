@@ -1,4 +1,3 @@
-
 function getWhen(input, answers, previousValues, amplify) {
   // TODO: Promisify
 
@@ -11,7 +10,7 @@ function getWhen(input, answers, previousValues, amplify) {
     }
 
     if (input.orConditions && input.orConditions.length > 0) {
-      orConditions = input.orConditions.some(condition => findMatch(condition, answers, previousValues, amplify));// eslint-disable-line max-len
+      orConditions = input.orConditions.some(condition => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
     }
 
     return andConditions && orConditions;
@@ -29,7 +28,7 @@ const findMatch = (cond, answers, previousValues, amplify) => {
   }
   /*eslint-disable*/
   if (!cond.preventEdit) {
-    if (cond.operator === '=' && (answers[cond.key] != undefined && answers[cond.key] !== cond.value|| !answers[cond.key] )) {
+    if (cond.operator === '=' && ((answers[cond.key] != undefined && answers[cond.key] !== cond.value) || !answers[cond.key])) {
       response = false;
     } else if (cond.operator === '!=' && (!answers[cond.key] || answers[cond.key] === cond.value)) {
       response = false;
@@ -37,7 +36,7 @@ const findMatch = (cond, answers, previousValues, amplify) => {
       response = false;
     } else if (cond.operator === 'configMatch' && cond.value && cond.key && amplify) {
       const configKey = amplify.getProjectConfig()[cond.key];
-      return configKey.toLowerCase() === cond.value.toLowerCase()
+      return configKey.toLowerCase() === cond.value.toLowerCase();
     } else if (cond.operator === 'exists' && previousValues && !previousValues[cond.key]) {
       return false;
     }
@@ -46,17 +45,16 @@ const findMatch = (cond, answers, previousValues, amplify) => {
       response = false;
     } else if (cond.preventEdit === 'exists' && !!previousValues[cond.key]) {
       response = false;
-    } else if (cond.preventEdit === '=' && previousValues[cond.key] != undefined && previousValues[cond.key] === cond.value ) {
+    } else if (cond.preventEdit === '=' && previousValues[cond.key] != undefined && previousValues[cond.key] === cond.value) {
       response = false;
     } else if (cond.preventEdit === 'existsInCurrent') {
       if (answers[cond.key]) {
-        return false
+        return false;
       }
     }
   }
   /* eslint-enable */
   return response;
 };
-
 
 module.exports = { getWhen };

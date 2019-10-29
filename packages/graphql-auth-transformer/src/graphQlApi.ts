@@ -10,81 +10,81 @@
  * us-west-2 (https://d201a2mn26r7lk.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json), version 4.0.0
  */
 
-import {ResourceBase, ResourceTag, Value, List} from 'cloudform-types'
+import { ResourceBase, ResourceTag, Value, List } from 'cloudform-types';
 
-export type Tags = List<ResourceTag>
+export type Tags = List<ResourceTag>;
 
 export class UserPoolConfig {
-    AppIdClientRegex?: Value<string>
-    UserPoolId?: Value<string>
-    AwsRegion?: Value<string>
-    DefaultAction?: Value<string>
+  AppIdClientRegex?: Value<string>;
+  UserPoolId?: Value<string>;
+  AwsRegion?: Value<string>;
+  DefaultAction?: Value<string>;
 
-    constructor(properties: UserPoolConfig) {
-        Object.assign(this, properties)
-    }
+  constructor(properties: UserPoolConfig) {
+    Object.assign(this, properties);
+  }
 }
 
 export class OpenIDConnectConfig {
-    Issuer?: Value<string>
-    ClientId?: Value<string>
-    AuthTTL?: Value<number>
-    IatTTL?: Value<number>
+  Issuer?: Value<string>;
+  ClientId?: Value<string>;
+  AuthTTL?: Value<number>;
+  IatTTL?: Value<number>;
 
-    constructor(properties: OpenIDConnectConfig) {
-        Object.assign(this, properties)
-    }
+  constructor(properties: OpenIDConnectConfig) {
+    Object.assign(this, properties);
+  }
 }
 
 export class LogConfig {
-    CloudWatchLogsRoleArn?: Value<string>
-    FieldLogLevel?: Value<string>
+  CloudWatchLogsRoleArn?: Value<string>;
+  FieldLogLevel?: Value<string>;
 
-    constructor(properties: LogConfig) {
-        Object.assign(this, properties)
-    }
+  constructor(properties: LogConfig) {
+    Object.assign(this, properties);
+  }
 }
 
 export class CognitoUserPoolConfig {
-    AppIdClientRegex?: Value<string>
-    UserPoolId?: Value<string>
-    AwsRegion?: Value<string>
+  AppIdClientRegex?: Value<string>;
+  UserPoolId?: Value<string>;
+  AwsRegion?: Value<string>;
 
-    constructor(properties: CognitoUserPoolConfig) {
-        Object.assign(this, properties)
-    }
+  constructor(properties: CognitoUserPoolConfig) {
+    Object.assign(this, properties);
+  }
 }
 
-export type AdditionalAuthenticationProviders = List<AdditionalAuthenticationProvider>
+export type AdditionalAuthenticationProviders = List<AdditionalAuthenticationProvider>;
 
 export class AdditionalAuthenticationProvider {
-    OpenIDConnectConfig?: OpenIDConnectConfig
-    UserPoolConfig?: CognitoUserPoolConfig
-    AuthenticationType!: Value<string>
+  OpenIDConnectConfig?: OpenIDConnectConfig;
+  UserPoolConfig?: CognitoUserPoolConfig;
+  AuthenticationType!: Value<string>;
 
-    constructor(properties: AdditionalAuthenticationProvider) {
-        Object.assign(this, properties)
-    }
+  constructor(properties: AdditionalAuthenticationProvider) {
+    Object.assign(this, properties);
+  }
 }
 
 export interface GraphQLApiProperties {
-    OpenIDConnectConfig?: OpenIDConnectConfig
-    UserPoolConfig?: UserPoolConfig
-    Tags?: Tags
-    Name: Value<string>
-    AuthenticationType: Value<string>
-    LogConfig?: LogConfig
-    AdditionalAuthenticationProviders?: AdditionalAuthenticationProviders
+  OpenIDConnectConfig?: OpenIDConnectConfig;
+  UserPoolConfig?: UserPoolConfig;
+  Tags?: Tags;
+  Name: Value<string>;
+  AuthenticationType: Value<string>;
+  LogConfig?: LogConfig;
+  AdditionalAuthenticationProviders?: AdditionalAuthenticationProviders;
 }
 
 export default class GraphQLApi extends ResourceBase {
-    static UserPoolConfig = UserPoolConfig
-    static OpenIDConnectConfig = OpenIDConnectConfig
-    static LogConfig = LogConfig
-    static CognitoUserPoolConfig = CognitoUserPoolConfig
-    static AdditionalAuthenticationProvider = AdditionalAuthenticationProvider
+  static UserPoolConfig = UserPoolConfig;
+  static OpenIDConnectConfig = OpenIDConnectConfig;
+  static LogConfig = LogConfig;
+  static CognitoUserPoolConfig = CognitoUserPoolConfig;
+  static AdditionalAuthenticationProvider = AdditionalAuthenticationProvider;
 
-    constructor(properties?: GraphQLApiProperties) {
-        super('AWS::AppSync::GraphQLApi', properties)
-    }
+  constructor(properties?: GraphQLApiProperties) {
+    super('AWS::AppSync::GraphQLApi', properties);
+  }
 }

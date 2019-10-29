@@ -5,9 +5,7 @@ const getSchemaDownloadLocation = require('./getSchemaDownloadLocation');
 const getSDLSchemaPath = require('./getSDLSchemaLocation');
 
 async function generateIntrospectionSchema(context, apiName) {
-  const appSyncDirectives = fs.readFileSync(
-    path.normalize(path.join(__dirname, '..', '..', 'awsApppSyncDirectives.graphql')),
-  );
+  const appSyncDirectives = fs.readFileSync(path.normalize(path.join(__dirname, '..', '..', 'awsApppSyncDirectives.graphql')));
   const { projectPath } = context.amplify.getEnvInfo();
   const introspectionSchemaPath = path.join(projectPath, getSchemaDownloadLocation(context));
   const sdlSchemaPath = path.join(projectPath, getSDLSchemaPath(apiName));

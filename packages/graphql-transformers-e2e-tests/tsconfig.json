@@ -10,7 +10,8 @@
             "es2016.array.include",
             "esnext.asynciterable",
             "dom"
-        ]
+        ],
+        "declaration": true
     },
     "exclude": [
         "node_modules",

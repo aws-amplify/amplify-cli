@@ -1,4 +1,3 @@
-
 import * as nexpect from 'nexpect';
 import { join } from 'path';
 import * as fs from 'fs';
@@ -8,12 +7,7 @@ const defaultSettings = {
   projectName: 'CLI Function test',
 };
 
-
-export function addHelloWorldFunction(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function addHelloWorldFunction(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'function'], { cwd, stripColors: true, verbose })
@@ -35,15 +29,11 @@ export function addHelloWorldFunction(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function functionBuild(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function functionBuild(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true, verbose })
@@ -57,6 +47,6 @@ export function functionBuild(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }

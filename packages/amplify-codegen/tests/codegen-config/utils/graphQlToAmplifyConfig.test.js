@@ -27,7 +27,6 @@ describe('graphQlToAmplifyConfig', () => {
               graphQLApiId: graphQLApiId1,
             },
           },
-
         },
       },
       proj2: {
@@ -35,7 +34,6 @@ describe('graphQlToAmplifyConfig', () => {
         includes: includes1,
       },
     };
-
 
     const getProjects = jest.fn().mockReturnValue(projects);
 

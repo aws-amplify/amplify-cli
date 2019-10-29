@@ -4,17 +4,13 @@ const constants = require('../../constants');
 const providerName = 'awscloudformation';
 
 function invalidateCloudFront(context) {
-  if (context.parameters.options.invalidateCache ||
-            context.parameters.options.invalidateCloudFront ||
-            context.parameters.options.c) {
+  if (context.parameters.options.invalidateCache || context.parameters.options.invalidateCloudFront || context.parameters.options.c) {
     return invalidate(context);
   }
 }
 
 async function invalidate(context) {
-  if (context.exeInfo.serviceMeta &&
-    context.exeInfo.serviceMeta.output &&
-    context.exeInfo.serviceMeta.output.CloudFrontDistributionID) {
+  if (context.exeInfo.serviceMeta && context.exeInfo.serviceMeta.output && context.exeInfo.serviceMeta.output.CloudFrontDistributionID) {
     const { CloudFrontDistributionID } = context.exeInfo.serviceMeta.output;
     const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
 

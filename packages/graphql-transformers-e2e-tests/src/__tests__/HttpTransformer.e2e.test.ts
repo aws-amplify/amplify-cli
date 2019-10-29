@@ -1,41 +1,41 @@
-import { ResourceConstants } from 'graphql-transformer-common'
-import GraphQLTransform from 'graphql-transformer-core'
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
-import ModelAuthTransformer from 'graphql-auth-transformer'
-import HttpTransformer from '../../../graphql-http-transformer'
-import { CloudFormationClient } from '../CloudFormationClient'
-import { Output } from 'aws-sdk/clients/cloudformation'
-import { GraphQLClient } from '../GraphQLClient'
+import { ResourceConstants } from 'graphql-transformer-common';
+import GraphQLTransform from 'graphql-transformer-core';
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
+import ModelAuthTransformer from 'graphql-auth-transformer';
+import HttpTransformer from '../../../graphql-http-transformer';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import { GraphQLClient } from '../GraphQLClient';
 import * as moment from 'moment';
 import emptyBucket from '../emptyBucket';
-import { deploy } from '../deployNestedStacks'
+import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3'
-import * as fs from 'fs'
+import * as S3 from 'aws-sdk/clients/s3';
+import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient('us-west-2')
-const customS3Client = new S3Client('us-west-2')
-const awsS3Client = new S3({ region: 'us-west-2' })
+const cf = new CloudFormationClient('us-west-2');
+const customS3Client = new S3Client('us-west-2');
+const awsS3Client = new S3({ region: 'us-west-2' });
 
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `HttpTransformerTest-${BUILD_TIMESTAMP}`
-const BUCKET_NAME = `appsync-http-transformer-test-bucket-${BUILD_TIMESTAMP}`
-const LOCAL_FS_BUILD_DIR = '/tmp/http_transformer_tests/'
-const S3_ROOT_DIR_KEY = 'deployments'
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
+const STACK_NAME = `HttpTransformerTest-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `appsync-http-transformer-test-bucket-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/http_transformer_tests/';
+const S3_ROOT_DIR_KEY = 'deployments';
 
 let GRAPHQL_CLIENT = undefined;
 
 function outputValueSelector(key: string) {
-    return (outputs: Output[]) => {
-        const output = outputs.find((o: Output) => o.OutputKey === key)
-        return output ? output.OutputValue : null
-    }
+  return (outputs: Output[]) => {
+    const output = outputs.find((o: Output) => o.OutputKey === key);
+    return output ? output.OutputValue : null;
+  };
 }
 
 beforeAll(async () => {
-    const validSchema = `
+  const validSchema = `
     type Comment @model {
         id: ID!
         title: String
@@ -79,79 +79,88 @@ beforeAll(async () => {
         email: String
         body: String
     }
-    `
-    try {
-        await awsS3Client.createBucket({Bucket: BUCKET_NAME}).promise()
-    } catch (e) {
-        console.error(`Failed to create bucket: ${e}`)
-    }
-    const transformer = new GraphQLTransform({
-        transformers: [
-            new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({
-                authConfig: {
-                    defaultAuthentication: {
-                        authenticationType: "API_KEY"
-                    },
-                    additionalAuthenticationProviders: []
-                }}),
-            new HttpTransformer()
-        ]
-    })
-    const out = transformer.transform(validSchema);
-    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
-    try {
-        const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
-            BUILD_TIMESTAMP
-        )
-        // Arbitrary wait to make sure everything is ready.
-        await cf.wait(5, () => Promise.resolve())
-        console.log('Successfully created stack ' + STACK_NAME)
-        console.log(finishedStack)
-        expect(finishedStack).toBeDefined()
-        const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
-        const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
-        const endpoint = getApiEndpoint(finishedStack.Outputs)
-        const apiKey = getApiKey(finishedStack.Outputs)
-        expect(apiKey).toBeDefined()
-        expect(endpoint).toBeDefined()
-        GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
-    } catch (e) {
-        console.error(e)
-        expect(true).toEqual(false)
-    }
+    `;
+  try {
+    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+  } catch (e) {
+    console.error(`Failed to create bucket: ${e}`);
+  }
+  const transformer = new GraphQLTransform({
+    transformers: [
+      new DynamoDBModelTransformer(),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'API_KEY',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
+      new HttpTransformer(),
+    ],
+  });
+  const out = transformer.transform(validSchema);
+  // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+  try {
+    const finishedStack = await deploy(
+      customS3Client,
+      cf,
+      STACK_NAME,
+      out,
+      { CreateAPIKey: '1' },
+      LOCAL_FS_BUILD_DIR,
+      BUCKET_NAME,
+      S3_ROOT_DIR_KEY,
+      BUILD_TIMESTAMP
+    );
+    // Arbitrary wait to make sure everything is ready.
+    await cf.wait(5, () => Promise.resolve());
+    console.log('Successfully created stack ' + STACK_NAME);
+    console.log(finishedStack);
+    expect(finishedStack).toBeDefined();
+    const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
+    const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
+    const endpoint = getApiEndpoint(finishedStack.Outputs);
+    const apiKey = getApiKey(finishedStack.Outputs);
+    expect(apiKey).toBeDefined();
+    expect(endpoint).toBeDefined();
+    GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
+  } catch (e) {
+    console.error(e);
+    expect(true).toEqual(false);
+  }
 });
 
 afterAll(async () => {
-    try {
-        console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
-        console.log('Successfully deleted stack ' + STACK_NAME)
-    } catch (e) {
-        if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-            // The stack was deleted. This is good.
-            expect(true).toEqual(true)
-            console.log('Successfully deleted stack ' + STACK_NAME)
-        } else {
-            console.error(e)
-            expect(true).toEqual(false)
-        }
+  try {
+    console.log('Deleting stack ' + STACK_NAME);
+    await cf.deleteStack(STACK_NAME);
+    await cf.waitForStack(STACK_NAME);
+    console.log('Successfully deleted stack ' + STACK_NAME);
+  } catch (e) {
+    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
+      // The stack was deleted. This is good.
+      expect(true).toEqual(true);
+      console.log('Successfully deleted stack ' + STACK_NAME);
+    } else {
+      console.error(e);
+      expect(true).toEqual(false);
     }
-    try {
-        await emptyBucket(BUCKET_NAME);
-    } catch (e) {
-        console.error(`Failed to empty S3 bucket: ${e}`)
-    }
-})
+  }
+  try {
+    await emptyBucket(BUCKET_NAME);
+  } catch (e) {
+    console.error(`Failed to empty S3 bucket: ${e}`);
+  }
+});
 
 /**
  * Test queries below
  */
 test('Test HTTP GET request', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
@@ -161,22 +170,25 @@ test('Test HTTP GET request', async () => {
                     body
                 }
             }
-        }`, {})
-        const post1Title = 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit'
-        expect(response.data.createComment.id).toBeDefined()
-        expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.simpleGet).toBeDefined()
-        expect(response.data.createComment.simpleGet.title).toEqual(post1Title)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    const post1Title = 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit';
+    expect(response.data.createComment.id).toBeDefined();
+    expect(response.data.createComment.title).toEqual('Hello, World!');
+    expect(response.data.createComment.simpleGet).toBeDefined();
+    expect(response.data.createComment.simpleGet.title).toEqual(post1Title);
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test HTTP GET request 2', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
@@ -186,22 +198,25 @@ test('Test HTTP GET request 2', async () => {
                     body
                 }
             }
-        }`, {})
-        const post2Title = 'qui est esse'
-        expect(response.data.createComment.id).toBeDefined()
-        expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.simpleGet2).toBeDefined()
-        expect(response.data.createComment.simpleGet2.title).toEqual(post2Title)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    const post2Title = 'qui est esse';
+    expect(response.data.createComment.id).toBeDefined();
+    expect(response.data.createComment.title).toEqual('Hello, World!');
+    expect(response.data.createComment.simpleGet2).toBeDefined();
+    expect(response.data.createComment.simpleGet2.title).toEqual(post2Title);
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test HTTP POST request', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
@@ -218,22 +233,25 @@ test('Test HTTP POST request', async () => {
                     userId
                 }
             }
-        }`, {})
-        expect(response.data.createComment.id).toBeDefined()
-        expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.complexPost).toBeDefined()
-        expect(response.data.createComment.complexPost.title).toEqual('foo')
-        expect(response.data.createComment.complexPost.userId).toEqual(2)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    expect(response.data.createComment.id).toBeDefined();
+    expect(response.data.createComment.title).toEqual('Hello, World!');
+    expect(response.data.createComment.complexPost).toBeDefined();
+    expect(response.data.createComment.complexPost.title).toEqual('foo');
+    expect(response.data.createComment.complexPost.userId).toEqual(2);
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test HTTP PUT request', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
@@ -253,41 +271,47 @@ test('Test HTTP PUT request', async () => {
                     userId
                 }
             }
-        }`, {})
-        expect(response.data.createComment.id).toBeDefined()
-        expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.complexPut).toBeDefined()
-        expect(response.data.createComment.complexPut.title).toEqual('foo')
-        expect(response.data.createComment.complexPut.userId).toEqual(2)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    expect(response.data.createComment.id).toBeDefined();
+    expect(response.data.createComment.title).toEqual('Hello, World!');
+    expect(response.data.createComment.complexPut).toBeDefined();
+    expect(response.data.createComment.complexPut.title).toEqual('foo');
+    expect(response.data.createComment.complexPut.userId).toEqual(2);
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test HTTP DELETE request', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
                 deleter
             }
-        }`, {})
-        expect(response.data.createComment.id).toBeDefined()
-        expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.deleter).toBeDefined()
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    expect(response.data.createComment.id).toBeDefined();
+    expect(response.data.createComment.title).toEqual('Hello, World!');
+    expect(response.data.createComment.deleter).toBeDefined();
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test GET with URL param and query values', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
@@ -305,21 +329,24 @@ test('Test GET with URL param and query values', async () => {
                     body
                 }
             }
-        }`, {})
-        expect(response.data.createComment.id).toBeDefined()
-        expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.complexGet).toBeDefined()
-        expect(response.data.createComment.complexGet.length).toEqual(7)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    expect(response.data.createComment.id).toBeDefined();
+    expect(response.data.createComment.title).toEqual('Hello, World!');
+    expect(response.data.createComment.complexGet).toBeDefined();
+    expect(response.data.createComment.complexGet.length).toEqual(7);
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test GET with multiple URL params and query values', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
@@ -338,21 +365,24 @@ test('Test GET with multiple URL params and query values', async () => {
                     email
                 }
             }
-        }`, {})
-        expect(response.data.createComment.id).toBeDefined()
-        expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.complexGet2).toBeDefined()
-        expect(response.data.createComment.complexGet2[0].email).toEqual('Jayne_Kuhic@sydney.com')
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    expect(response.data.createComment.id).toBeDefined();
+    expect(response.data.createComment.title).toEqual('Hello, World!');
+    expect(response.data.createComment.complexGet2).toBeDefined();
+    expect(response.data.createComment.complexGet2[0].email).toEqual('Jayne_Kuhic@sydney.com');
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test that GET errors when missing a required Query input object', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
@@ -366,18 +396,21 @@ test('Test that GET errors when missing a required Query input object', async ()
                     body
                 }
             }
-        }`, {})
-        expect(response.data).toBeNull()
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    expect(response.data).toBeNull();
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test that POST errors when missing a non-null arg in query/body', async () => {
-    try {
-        const response = await GRAPHQL_CLIENT.query(`mutation {
+  try {
+    const response = await GRAPHQL_CLIENT.query(
+      `mutation {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
@@ -392,11 +425,13 @@ test('Test that POST errors when missing a non-null arg in query/body', async ()
                     body
                 }
             }
-        }`, {})
-        expect(response.data.createComment.complexPost).toBeNull()
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+        }`,
+      {}
+    );
+    expect(response.data.createComment.complexPost).toBeNull();
+  } catch (e) {
+    console.error(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});

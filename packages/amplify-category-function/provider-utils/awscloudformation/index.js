@@ -1,14 +1,11 @@
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
-const {
-  invokeFunction,
-} = require('./utils/invoke');
+const { invokeFunction } = require('./utils/invoke');
 
 const categoryName = 'function';
 
 let serviceMetadata;
-
 
 async function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -16,7 +13,6 @@ async function serviceQuestions(context, defaultValuesFilename, serviceWalkthrou
 
   return serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
-
 
 function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
@@ -27,11 +23,13 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   let triggerEnvs = {};
   let writeParams;
 
-  const copyJobs = [{
-    dir: pluginDir,
-    template: `cloudformation-templates/${cfnFilename}`,
-    target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
-  }];
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: `cloudformation-templates/${cfnFilename}`,
+      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
+    },
+  ];
 
   if (options.trigger === true) {
     force = true;
@@ -56,7 +54,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
         triggerEnvs = context.amplify.loadEnvResourceParameters(context, 'function', params.resourceName);
         params.triggerEnvs = JSON.parse(params.triggerEnvs) || [];
 
-        params.triggerEnvs.forEach((c) => {
+        params.triggerEnvs.forEach(c => {
           triggerEnvs[c.key] = c.value;
         });
       }
@@ -64,92 +62,100 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       params = Object.assign(params, triggerEnvs);
     }
 
-    copyJobs.push(...[
-      {
-        dir: pluginDir,
-        template: triggerIndexPath,
-        target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-        paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
-      },
-      {
-        dir: pluginDir,
-        template: triggerEventPath,
-        target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-      },
-      {
-        dir: pluginDir,
-        template: triggerPackagePath,
-        target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-      },
-    ]);
+    copyJobs.push(
+      ...[
+        {
+          dir: pluginDir,
+          template: triggerIndexPath,
+          target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+          paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
+        },
+        {
+          dir: pluginDir,
+          template: triggerEventPath,
+          target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+        },
+        {
+          dir: pluginDir,
+          template: triggerPackagePath,
+          target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+        },
+      ]
+    );
   } else {
     switch (options.functionTemplate) {
       case 'helloWorld':
-        copyJobs.push(...[
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/index.js.ejs',
-            target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-          },
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/event.json',
-            target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-          },
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/package.json.ejs',
-            target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-          },
-        ]);
+        copyJobs.push(
+          ...[
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/index.js.ejs',
+              target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/event.json',
+              target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/package.json.ejs',
+              target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+            },
+          ]
+        );
         break;
       case 'serverless':
-        copyJobs.push(...[
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/serverless-index.js',
-            target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-          },
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/serverless-app.js.ejs',
-            target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
-          },
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/serverless-package.json.ejs',
-            target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-          },
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/serverless-event.json',
-            target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-          },
-        ]);
+        copyJobs.push(
+          ...[
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/serverless-index.js',
+              target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/serverless-app.js.ejs',
+              target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/serverless-package.json.ejs',
+              target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/serverless-event.json',
+              target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+            },
+          ]
+        );
         break;
       default:
-        copyJobs.push(...[
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/crud-index.js',
-            target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-          },
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/crud-app.js.ejs',
-            target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
-          },
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/crud-package.json.ejs',
-            target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-          },
-          {
-            dir: pluginDir,
-            template: 'function-template-dir/crud-event.json',
-            target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-          },
-        ]);
+        copyJobs.push(
+          ...[
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/crud-index.js',
+              target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/crud-app.js.ejs',
+              target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/crud-package.json.ejs',
+              target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/crud-event.json',
+              target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+            },
+          ]
+        );
         break;
     }
   }
@@ -171,8 +177,7 @@ async function addResource(context, category, service, options, parameters) {
   let answers;
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
-  const cfnFilename = parameters && parameters.triggerTemplate ?
-    parameters.triggerTemplate : serviceMetadata.cfnFilename;
+  const cfnFilename = parameters && parameters.triggerTemplate ? parameters.triggerTemplate : serviceMetadata.cfnFilename;
   let result;
 
   if (!parameters) {
@@ -192,11 +197,7 @@ async function addResource(context, category, service, options, parameters) {
     answers.resourceName = answers.functionName;
   }
 
-  context.amplify.updateamplifyMetaAfterResourceAdd(
-    category,
-    answers.resourceName,
-    options,
-  );
+  context.amplify.updateamplifyMetaAfterResourceAdd(category, answers.resourceName, options);
 
   copyCfnTemplate(context, category, answers, cfnFilename);
   if (answers.parameters || answers.trigger) {
@@ -227,7 +228,6 @@ async function updateResource(context, category, service, parameters, resourceTo
     result = { answers: parameters };
   }
 
-
   if (result.answers) {
     ({ answers } = result);
   } else {
@@ -238,14 +238,8 @@ async function updateResource(context, category, service, parameters, resourceTo
     answers.resourceName = answers.functionName;
   }
 
-
   if (result.dependsOn) {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      category,
-      answers.resourceName,
-      'dependsOn',
-      result.dependsOn,
-    );
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName, 'dependsOn', result.dependsOn);
   }
 
   if (answers.parameters) {
@@ -253,8 +247,7 @@ async function updateResource(context, category, service, parameters, resourceTo
   }
 
   if (answers.trigger) {
-    const parametersFilePath =
-      `${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`;
+    const parametersFilePath = `${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`;
     let previousParameters;
 
     if (fs.existsSync(parametersFilePath)) {
@@ -399,14 +392,10 @@ function isInHeadlessMode(context) {
 
 function getHeadlessParams(context, service) {
   const { inputParams = {} } = context.exeInfo;
-  return (
-    inputParams.categories &&
-    inputParams.categories.function &&
-    Array.isArray(inputParams.categories.function)
-  ) ? inputParams.categories.function.find(i => i.resourceName === service) || {}
+  return inputParams.categories && inputParams.categories.function && Array.isArray(inputParams.categories.function)
+    ? inputParams.categories.function.find(i => i.resourceName === service) || {}
     : {};
 }
-
 
 async function updateConfigOnEnvInit(context, category, service) {
   const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`).Lambda;
@@ -426,22 +415,16 @@ async function updateConfigOnEnvInit(context, category, service) {
   }
 
   if (resourceParams.trigger === true) {
-    envParams = await initTriggerEnvs(
-      context,
-      resourceParams,
-      providerPlugin,
-      envParams,
-      srvcMetaData,
-    );
+    envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
   }
   return envParams;
 }
 
 async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData) {
   if (resourceParams && resourceParams.parentStack && resourceParams.parentResource) {
-    const parentResourceParams = providerPlugin
-      .loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
-    const triggers = typeof parentResourceParams.triggers === 'string' ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
+    const parentResourceParams = providerPlugin.loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
+    const triggers =
+      typeof parentResourceParams.triggers === 'string' ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
     const currentTrigger = resourceParams.resourceName.replace(parentResourceParams.resourceName, '');
     if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
       const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
@@ -452,7 +435,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
           triggerPath,
           currentTrigger,
           triggers[currentTrigger],
-          currentEnvVariables,
+          currentEnvVariables
         );
       } else {
         envParams = currentEnvVariables;
@@ -461,7 +444,6 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
   }
   return envParams;
 }
-
 
 module.exports = {
   addResource,

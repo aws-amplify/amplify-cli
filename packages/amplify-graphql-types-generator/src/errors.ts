@@ -44,7 +44,12 @@ export function logErrorMessage(message: string, fileName?: string, lineNumber?:
     }
   } else {
     if (fileName) {
-      const truncatedFileName = '/' + fileName.split(path.sep).slice(-4).join(path.sep);
+      const truncatedFileName =
+        '/' +
+        fileName
+          .split(path.sep)
+          .slice(-4)
+          .join(path.sep);
       console.log(`...${truncatedFileName}: ${message}`);
     } else {
       console.log(`error: ${message}`);

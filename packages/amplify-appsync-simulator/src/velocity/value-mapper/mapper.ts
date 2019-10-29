@@ -5,7 +5,7 @@ import { isPlainObject } from 'lodash';
 
 export function map(value: any) {
   if (value instanceof JavaMap) return value;
-  if(value instanceof JavaArray) return value;
+  if (value instanceof JavaArray) return value;
   if (Array.isArray(value)) {
     return new JavaArray(value.map(x => map(x)), map);
   }
@@ -18,8 +18,8 @@ export function map(value: any) {
             [k]: map(v),
           };
         }, {}),
-        map,
-      ),
+        map
+      )
     );
   }
 

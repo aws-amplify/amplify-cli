@@ -1,7 +1,6 @@
 /* eslint-disable no-multi-str */
 /* eslint-disable object-shorthand */
 
-
 function interpretAccess(options) {
   return [
     {
@@ -18,7 +17,7 @@ function interpretAccess(options) {
           value: 'authAndGuest',
         },
       ],
-      default: (options.access) ? options.access : 'auth',
+      default: options.access ? options.access : 'auth',
     },
   ];
 }
@@ -44,10 +43,9 @@ const setup = {
       {
         name: 'resourceName',
         message: 'Provide a friendly name for your resource',
-        validate: (value) => {
+        validate: value => {
           const regex = new RegExp('^[a-zA-Z0-9]+$');
-          return regex.test(value) ?
-            true : 'Resource name should be alphanumeric!';
+          return regex.test(value) ? true : 'Resource name should be alphanumeric!';
         },
         default: defaultName,
       },

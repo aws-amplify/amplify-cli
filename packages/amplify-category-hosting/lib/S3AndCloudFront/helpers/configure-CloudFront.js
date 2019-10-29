@@ -1,5 +1,6 @@
 const path = require('path');
 const inquirer = require('inquirer');
+const configureWebsite = require('./configure-Website');
 
 const originErrorCodes = {
   400: 'Bad Request',
@@ -27,11 +28,7 @@ async function configure(context) {
       default: false,
     });
     if (answer.AddCloudFront) {
-      const {
-        CloudFrontDistribution,
-        OriginAccessIdentity,
-        PrivateBucketPolicy,
-      } = originalTemplate.Resources;
+      const { CloudFrontDistribution, OriginAccessIdentity, PrivateBucketPolicy } = originalTemplate.Resources;
       const { Outputs } = originalTemplate;
       context.exeInfo.template.Resources.OriginAccessIdentity = OriginAccessIdentity;
       context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
@@ -39,6 +36,8 @@ async function configure(context) {
       context.exeInfo.template.Outputs.CloudFrontDistributionID = Outputs.CloudFrontDistributionID;
       context.exeInfo.template.Outputs.CloudFrontDomainName = Outputs.CloudFrontDomainName;
       context.exeInfo.template.Outputs.CloudFrontSecureURL = Outputs.CloudFrontSecureURL;
+      context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity = Outputs.CloudFrontOriginAccessIdentity;
+      delete context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration;
       // Don't remove the following line,
       // customer projects setup by the CLI prior to 2/22/2019 has this resource
       delete context.exeInfo.template.Resources.BucketPolicy;
@@ -61,14 +60,20 @@ async function configure(context) {
       delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
       delete context.exeInfo.template.Outputs.CloudFrontDomainName;
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-      const { AccessControl } = originalTemplate.Resources.S3Bucket.Properties;
+      delete context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity;
+
+      const { AccessControl, WebsiteConfiguration } = originalTemplate.Resources.S3Bucket.Properties;
       context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
+      context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration = WebsiteConfiguration;
+
+      context.print.warning('Static webhosting will be enabled for the hosting bucket once you remove CloudFront Distribution.');
+      context.print.info('Set its configuration:');
+      await configureWebsite.configure(context);
     }
   }
 
   if (context.exeInfo.template.Resources.CloudFrontDistribution) {
-    const { DistributionConfig } =
-                context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
+    const { DistributionConfig } = context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
 
     const questions = [
       {
@@ -272,7 +277,7 @@ async function removeCER(context, CustomErrorResponses) {
 function getConfiguredErrorCodes(CustomErrorResponses) {
   const result = [];
   for (let i = 0; i < CustomErrorResponses.length; i++) {
-    result.push((CustomErrorResponses[i].ErrorCode).toString());
+    result.push(CustomErrorResponses[i].ErrorCode.toString());
   }
   return result;
 }

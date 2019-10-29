@@ -2,7 +2,6 @@ const path = require('path');
 
 const pluginName = 'awscloudformation';
 
-
 async function executeAmplifyCommand(context) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
@@ -14,7 +13,6 @@ async function executeAmplifyCommand(context) {
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
-
 
 async function handleAmplifyEvent(context, args) {
   context.print.info(`${pluginName} handleAmplifyEvent to be implemented`);

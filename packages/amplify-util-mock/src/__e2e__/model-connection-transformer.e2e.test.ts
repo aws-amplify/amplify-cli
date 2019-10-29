@@ -19,7 +19,7 @@ beforeAll(async () => {
         title: String!
         createdAt: String
         updatedAt: String
-        comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+        comments: [Comment] @connection(name: "PostComments", keyField: "postId", limit: 50)
         sortedComments: [SortedComment] @connection(name: "SortedPostComments", keyField: "postId", sortField: "when")
     }
     type Comment @model {
@@ -114,12 +114,8 @@ test('Test queryPost query', async () => {
   );
   expect(createCommentResponse.data.createComment.id).toBeDefined();
   expect(createCommentResponse.data.createComment.content).toEqual('A comment!');
-  expect(createCommentResponse.data.createComment.post.id).toEqual(
-    createResponse.data.createPost.id
-  );
-  expect(createCommentResponse.data.createComment.post.title).toEqual(
-    createResponse.data.createPost.title
-  );
+  expect(createCommentResponse.data.createComment.post.id).toEqual(createResponse.data.createPost.id);
+  expect(createCommentResponse.data.createComment.post.title).toEqual(createResponse.data.createPost.title);
   const queryResponse = await GRAPHQL_CLIENT.query(
     `query {
         getPost(id: "${createResponse.data.createPost.id}") {
@@ -181,12 +177,8 @@ test('Test queryPost query with sortField', async () => {
   );
   expect(createCommentResponse1.data.createSortedComment.id).toBeDefined();
   expect(createCommentResponse1.data.createSortedComment.content).toEqual(comment1);
-  expect(createCommentResponse1.data.createSortedComment.post.id).toEqual(
-    createResponse.data.createPost.id
-  );
-  expect(createCommentResponse1.data.createSortedComment.post.title).toEqual(
-    createResponse.data.createPost.title
-  );
+  expect(createCommentResponse1.data.createSortedComment.post.id).toEqual(createResponse.data.createPost.id);
+  expect(createCommentResponse1.data.createSortedComment.post.title).toEqual(createResponse.data.createPost.title);
 
   // create 2nd comment, 1 second later
   const createCommentResponse2 = await GRAPHQL_CLIENT.query(
@@ -208,12 +200,8 @@ test('Test queryPost query with sortField', async () => {
   );
   expect(createCommentResponse2.data.createSortedComment.id).toBeDefined();
   expect(createCommentResponse2.data.createSortedComment.content).toEqual(comment2);
-  expect(createCommentResponse2.data.createSortedComment.post.id).toEqual(
-    createResponse.data.createPost.id
-  );
-  expect(createCommentResponse2.data.createSortedComment.post.title).toEqual(
-    createResponse.data.createPost.title
-  );
+  expect(createCommentResponse2.data.createSortedComment.post.id).toEqual(createResponse.data.createPost.id);
+  expect(createCommentResponse2.data.createSortedComment.post.title).toEqual(createResponse.data.createPost.title);
 
   const queryResponse = await GRAPHQL_CLIENT.query(
     `query {
@@ -278,9 +266,7 @@ test('Test queryPost query with sortField', async () => {
   expect(queryResponseWithKeyCondition.data.getPost).toBeDefined();
   const itemsDescWithKeyCondition = queryResponseWithKeyCondition.data.getPost.sortedComments.items;
   expect(itemsDescWithKeyCondition.length).toEqual(1);
-  expect(itemsDescWithKeyCondition[0].id).toEqual(
-    createCommentResponse1.data.createSortedComment.id
-  );
+  expect(itemsDescWithKeyCondition[0].id).toEqual(createCommentResponse1.data.createSortedComment.id);
 
   const queryResponseWithKeyConditionEq = await GRAPHQL_CLIENT.query(
     `query {
@@ -299,12 +285,9 @@ test('Test queryPost query with sortField', async () => {
     {}
   );
   expect(queryResponseWithKeyConditionEq.data.getPost).toBeDefined();
-  const itemsDescWithKeyConditionEq =
-    queryResponseWithKeyConditionEq.data.getPost.sortedComments.items;
+  const itemsDescWithKeyConditionEq = queryResponseWithKeyConditionEq.data.getPost.sortedComments.items;
   expect(itemsDescWithKeyConditionEq.length).toEqual(1);
-  expect(itemsDescWithKeyConditionEq[0].id).toEqual(
-    createCommentResponse1.data.createSortedComment.id
-  );
+  expect(itemsDescWithKeyConditionEq[0].id).toEqual(createCommentResponse1.data.createSortedComment.id);
 
   const queryResponseWithKeyConditionGt = await GRAPHQL_CLIENT.query(
     `query {
@@ -323,12 +306,9 @@ test('Test queryPost query with sortField', async () => {
     {}
   );
   expect(queryResponseWithKeyConditionGt.data.getPost).toBeDefined();
-  const itemsDescWithKeyConditionGt =
-    queryResponseWithKeyConditionGt.data.getPost.sortedComments.items;
+  const itemsDescWithKeyConditionGt = queryResponseWithKeyConditionGt.data.getPost.sortedComments.items;
   expect(itemsDescWithKeyConditionGt.length).toEqual(1);
-  expect(itemsDescWithKeyConditionGt[0].id).toEqual(
-    createCommentResponse2.data.createSortedComment.id
-  );
+  expect(itemsDescWithKeyConditionGt[0].id).toEqual(createCommentResponse2.data.createSortedComment.id);
 
   const queryResponseWithKeyConditionGe = await GRAPHQL_CLIENT.query(
     `query {
@@ -347,15 +327,10 @@ test('Test queryPost query with sortField', async () => {
     {}
   );
   expect(queryResponseWithKeyConditionGe.data.getPost).toBeDefined();
-  const itemsDescWithKeyConditionGe =
-    queryResponseWithKeyConditionGe.data.getPost.sortedComments.items;
+  const itemsDescWithKeyConditionGe = queryResponseWithKeyConditionGe.data.getPost.sortedComments.items;
   expect(itemsDescWithKeyConditionGe.length).toEqual(2);
-  expect(itemsDescWithKeyConditionGe[0].id).toEqual(
-    createCommentResponse1.data.createSortedComment.id
-  );
-  expect(itemsDescWithKeyConditionGe[1].id).toEqual(
-    createCommentResponse2.data.createSortedComment.id
-  );
+  expect(itemsDescWithKeyConditionGe[0].id).toEqual(createCommentResponse1.data.createSortedComment.id);
+  expect(itemsDescWithKeyConditionGe[1].id).toEqual(createCommentResponse2.data.createSortedComment.id);
 
   const queryResponseWithKeyConditionLe = await GRAPHQL_CLIENT.query(
     `query {
@@ -374,15 +349,10 @@ test('Test queryPost query with sortField', async () => {
     {}
   );
   expect(queryResponseWithKeyConditionLe.data.getPost).toBeDefined();
-  const itemsDescWithKeyConditionLe =
-    queryResponseWithKeyConditionLe.data.getPost.sortedComments.items;
+  const itemsDescWithKeyConditionLe = queryResponseWithKeyConditionLe.data.getPost.sortedComments.items;
   expect(itemsDescWithKeyConditionLe.length).toEqual(2);
-  expect(itemsDescWithKeyConditionLe[0].id).toEqual(
-    createCommentResponse1.data.createSortedComment.id
-  );
-  expect(itemsDescWithKeyConditionLe[1].id).toEqual(
-    createCommentResponse2.data.createSortedComment.id
-  );
+  expect(itemsDescWithKeyConditionLe[0].id).toEqual(createCommentResponse1.data.createSortedComment.id);
+  expect(itemsDescWithKeyConditionLe[1].id).toEqual(createCommentResponse2.data.createSortedComment.id);
 
   const queryResponseWithKeyConditionLt = await GRAPHQL_CLIENT.query(
     `query {
@@ -401,12 +371,9 @@ test('Test queryPost query with sortField', async () => {
     {}
   );
   expect(queryResponseWithKeyConditionLt.data.getPost).toBeDefined();
-  const itemsDescWithKeyConditionLt =
-    queryResponseWithKeyConditionLt.data.getPost.sortedComments.items;
+  const itemsDescWithKeyConditionLt = queryResponseWithKeyConditionLt.data.getPost.sortedComments.items;
   expect(itemsDescWithKeyConditionLt.length).toEqual(1);
-  expect(itemsDescWithKeyConditionLt[0].id).toEqual(
-    createCommentResponse1.data.createSortedComment.id
-  );
+  expect(itemsDescWithKeyConditionLt[0].id).toEqual(createCommentResponse1.data.createSortedComment.id);
 
   const queryResponseWithKeyConditionBetween = await GRAPHQL_CLIENT.query(
     `query {
@@ -425,12 +392,9 @@ test('Test queryPost query with sortField', async () => {
     {}
   );
   expect(queryResponseWithKeyConditionBetween.data.getPost).toBeDefined();
-  const itemsDescWithKeyConditionBetween =
-    queryResponseWithKeyConditionBetween.data.getPost.sortedComments.items;
+  const itemsDescWithKeyConditionBetween = queryResponseWithKeyConditionBetween.data.getPost.sortedComments.items;
   expect(itemsDescWithKeyConditionBetween.length).toEqual(1);
-  expect(itemsDescWithKeyConditionBetween[0].id).toEqual(
-    createCommentResponse2.data.createSortedComment.id
-  );
+  expect(itemsDescWithKeyConditionBetween[0].id).toEqual(createCommentResponse2.data.createSortedComment.id);
 });
 
 test('Test create comment without a post and then querying the comment.', async () => {
@@ -472,4 +436,62 @@ test('Test create comment without a post and then querying the comment.', async 
     // fail
     expect(e).toBeUndefined();
   }
+});
+
+test('Test default limit is 50', async () => {
+  // create Auth logic around this
+  const postID = 'e2eConnectionPost';
+  const postTitle = 'samplePost';
+  const createPost = await GRAPHQL_CLIENT.query(
+    `mutation CreatePost {
+      createPost(input: {title: "${postTitle}", id: "${postID}"}) {
+        id
+        title
+      }
+    }
+    `,
+    {}
+  );
+  expect(createPost.data.createPost).toBeDefined();
+  expect(createPost.data.createPost.id).toEqual(postID);
+  expect(createPost.data.createPost.title).toEqual(postTitle);
+
+  for (let i = 0; i < 51; i++) {
+    await GRAPHQL_CLIENT.query(
+      `
+        mutation CreateComment {
+          createComment(input: {postId: "${postID}", content: "content_${i}"}) {
+            content
+            id
+            post {
+              title
+            }
+          }
+        }      
+      `,
+      {}
+    );
+  }
+
+  const getPost = await GRAPHQL_CLIENT.query(
+    `
+      query GetPost($id: ID!) {
+        getPost(id: $id) {
+          id
+          title
+          createdAt
+          updatedAt
+          comments {
+            items {
+              id
+              content
+            }
+            nextToken
+          }
+        }
+      }`,
+    { id: postID }
+  );
+
+  expect(getPost.data.getPost.comments.items.length).toEqual(50);
 });

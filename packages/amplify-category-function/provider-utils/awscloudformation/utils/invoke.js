@@ -22,7 +22,7 @@ function invokeFunction(options) {
 
   const context = {
     done(error, result) {
-      if (error === null || typeof (error) === 'undefined') {
+      if (error === null || typeof error === 'undefined') {
         context.succeed(result);
       } else {
         context.fail(error);
@@ -35,8 +35,8 @@ function invokeFunction(options) {
       console.log('');
       console.log('Success!  Message:');
       console.log('------------------');
-      const msg = (typeof (result) === 'object') ? JSON.stringify(result) : result;
-      console.log((typeof (result) !== 'undefined') ? msg : 'Successful!');
+      const msg = typeof result === 'object' ? JSON.stringify(result) : result;
+      console.log(typeof result !== 'undefined' ? msg : 'Successful!');
     },
     fail(error) {
       if (cwd) {
@@ -45,8 +45,8 @@ function invokeFunction(options) {
       console.log('');
       console.log('Failure!  Message:');
       console.log('------------------');
-      const msg = (typeof (error) === 'object') ? JSON.stringify(error) : error;
-      console.log((typeof (error) !== 'undefined') ? msg : 'Error not provided.');
+      const msg = typeof error === 'object' ? JSON.stringify(error) : error;
+      console.log(typeof error !== 'undefined' ? msg : 'Error not provided.');
     },
     awsRequestId: 'LAMBDA_INVOKE',
     logStreamName: 'LAMBDA_INVOKE',
@@ -64,7 +64,6 @@ function invokeFunction(options) {
   const { event } = options;
   lambda[options.handler](event, context, callback);
 }
-
 
 module.exports = {
   invokeFunction,

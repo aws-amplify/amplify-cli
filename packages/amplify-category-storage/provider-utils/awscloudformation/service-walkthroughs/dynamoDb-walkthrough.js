@@ -1,3 +1,4 @@
+const { getCloudFormationTemplatePath, getExistingStorageAttributeDefinitions, getExistingStorageGSIs } = require('./utils');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
@@ -20,7 +21,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
 
   const dynamoDbResources = {};
 
-  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+  Object.keys(amplifyMeta[category]).forEach(resourceName => {
     if (amplifyMeta[category][resourceName].service === serviceName) {
       dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
     }
@@ -32,18 +33,16 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     return;
   }
   const resources = Object.keys(dynamoDbResources);
-  const question = [{
-    name: 'resourceName',
-    message: 'Specify the resource that you would want to update',
-    type: 'list',
-    choices: resources,
-  }];
+  const question = [
+    {
+      name: 'resourceName',
+      message: 'Specify the resource that you would want to update',
+      type: 'list',
+      choices: resources,
+    },
+  ];
 
-  return inquirer.prompt(question)
-    .then(answer => configure(
-      context, defaultValuesFilename,
-      serviceMetadata, answer.resourceName,
-    ));
+  return inquirer.prompt(question).then(answer => configure(context, defaultValuesFilename, serviceMetadata, answer.resourceName));
 }
 
 async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
@@ -53,7 +52,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   const { getAllDefaults } = require(defaultValuesSrc);
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
-
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   const attributeTypes = {
@@ -109,7 +107,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       name: inputs[1].key,
       message: inputs[1].question,
       validate: amplify.inputValidation(inputs[1]),
-      default: (answers) => {
+      default: answers => {
         const defaultValue = defaultValues[inputs[1].key];
         return answers.resourceName || defaultValue;
       },
@@ -159,7 +157,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       {
         AttributeName: defaultValues.sortKeyName,
         AttributeType: defaultValues.sortKeyType,
-      },
+      }
     );
     continueAttributeQuestion = await amplify.confirmPrompt.run('Would you like to add another column?');
   }
@@ -168,9 +166,10 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   while (continueAttributeQuestion) {
     const attributeAnswer = await inquirer.prompt([attributeQuestion, attributeTypeQuestion]);
 
-    if (attributeAnswers.findIndex(attribute => attribute.AttributeName
-      === attributeAnswer[inputs[2].key]) !== -1) {
-      continueAttributeQuestion = await amplify.confirmPrompt.run('This attribute was already added. Do you want to add another attribute?');
+    if (attributeAnswers.findIndex(attribute => attribute.AttributeName === attributeAnswer[inputs[2].key]) !== -1) {
+      continueAttributeQuestion = await amplify.confirmPrompt.run(
+        'This attribute was already added. Do you want to add another attribute?'
+      );
       continue;
     }
 
@@ -187,10 +186,14 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   answers.AttributeDefinitions = attributeAnswers;
 
   print.info('');
-  print.info('Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.');
+  print.info(
+    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.'
+  );
   print.info('');
   print.info('To learn more about primary keys, see:');
-  print.info('http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey');
+  print.info(
+    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey'
+  );
   print.info('');
   // Ask for primary key
 
@@ -221,8 +224,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   // Get the type for primary index
 
-  const primaryAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr =>
-    attr.AttributeName === partitionKeyName);
+  const primaryAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr => attr.AttributeName === partitionKeyName);
   partitionKeyType = answers.AttributeDefinitions[primaryAttrTypeIndex].AttributeType;
 
   const primaryKeyAttrIndex = indexableAttributeList.indexOf(partitionKeyName);
@@ -266,17 +268,20 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   }
   if (sortKeyName) {
     // Get the type for primary index
-    const sortKeyAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr =>
-      attr.AttributeName === sortKeyName);
+    const sortKeyAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr => attr.AttributeName === sortKeyName);
     sortKeyType = answers.AttributeDefinitions[sortKeyAttrTypeIndex].AttributeType;
   }
 
   answers.KeySchema = answers.KeySchema;
 
   print.info('');
-  print.info('You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.');
+  print.info(
+    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.'
+  );
   print.info('To learn more about indexes, see:');
-  print.info('http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes');
+  print.info(
+    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes'
+  );
   print.info('');
 
   // Ask for GSI's
@@ -286,7 +291,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const gsiList = [];
     // Generates a clone of the attribute list
     const availableAttributes = indexableAttributeList.slice();
-
     while (continuewithGSIQuestions) {
       if (availableAttributes.length > 0) {
         const gsiAttributeQuestion = {
@@ -350,22 +354,45 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         break;
       }
     }
+
+    // if resource name is undefined then it's an 'add storage' we want to check on an update
+    if (resourceName) {
+      const storageFile = getCloudFormationTemplatePath(projectBackendDirPath, resourceName);
+      const fileExists = fs.existsSync(storageFile);
+      const template = fileExists ? context.amplify.readJsonFile(storageFile) : null;
+      const existingGSIs = getExistingStorageGSIs(template);
+      const existingAttributeDefinitions = getExistingStorageAttributeDefinitions(template);
+      const allAttributeDefinitionsMap = new Map([
+        ...existingAttributeDefinitions.map(r => [r.AttributeName, r]),
+        ...answers.AttributeDefinitions.map(r => [r.AttributeName, r]),
+      ]);
+      if (
+        !!existingGSIs.length &&
+        (await amplify.confirmPrompt.run('Do you want to keep existing global seconday indexes created on your table?'))
+      ) {
+        existingGSIs.forEach(r => gsiList.push(r));
+        answers.AttributeDefinitions = [...allAttributeDefinitionsMap.values()];
+        usedAttributeDefinitions = existingGSIs.reduce((prev, current) => {
+          current.KeySchema.map(r => prev.add(r.AttributeName));
+          return prev;
+        }, usedAttributeDefinitions);
+      }
+    }
     if (gsiList.length > 0) {
       answers.GlobalSecondaryIndexes = gsiList;
     }
   }
   usedAttributeDefinitions = Array.from(usedAttributeDefinitions);
   /* Filter out only attribute
-  * definitions which have been used - cfn errors out otherwise */
-  answers.AttributeDefinitions = answers.AttributeDefinitions.filter(attributeDefinition =>
-    usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1);
+   * definitions which have been used - cfn errors out otherwise */
+  answers.AttributeDefinitions = answers.AttributeDefinitions.filter(
+    attributeDefinition => usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1
+  );
 
   Object.assign(defaultValues, answers);
 
   // Ask Lambda trigger question
-  if (!storageParams ||
-    !storageParams.triggerFunctions ||
-    storageParams.triggerFunctions.length === 0) {
+  if (!storageParams || !storageParams.triggerFunctions || storageParams.triggerFunctions.length === 0) {
     if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your Table?', false)) {
       let triggerName;
 
@@ -394,11 +421,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       switch (triggerOperationAnswer.triggerOperation) {
         case 'Add a Trigger': {
           try {
-            triggerName = await addTrigger(
-              context,
-              defaultValues.resourceName,
-              storageParams.triggerFunctions,
-            );
+            triggerName = await addTrigger(context, defaultValues.resourceName, storageParams.triggerFunctions);
             if (!storageParams) {
               storageParams = {};
             } else if (!storageParams.triggerFunctions) {
@@ -415,16 +438,10 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         }
         case 'Remove a trigger': {
           try {
-            if (!storageParams ||
-              !storageParams.triggerFunctions ||
-              storageParams.triggerFunctions.length === 0) {
+            if (!storageParams || !storageParams.triggerFunctions || storageParams.triggerFunctions.length === 0) {
               throw new Error('No triggers found associated with this table');
             } else {
-              triggerName = await removeTrigger(
-                context,
-                defaultValues.resourceName,
-                storageParams.triggerFunctions,
-              );
+              triggerName = await removeTrigger(context, defaultValues.resourceName, storageParams.triggerFunctions);
 
               const index = storageParams.triggerFunctions.indexOf(triggerName);
               if (index >= 0) {
@@ -445,7 +462,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           continueWithTriggerOperationQuestion = false;
           break;
         }
-        default: console.log(`${triggerOperationAnswer.triggerOperation} not supported`);
+        default:
+          console.log(`${triggerOperationAnswer.triggerOperation} not supported`);
       }
     }
   }
@@ -477,7 +495,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   return resource;
 }
 
-
 async function removeTrigger(context, resourceName, triggerList) {
   const triggerOptionQuestion = {
     type: 'list',
@@ -488,11 +505,9 @@ async function removeTrigger(context, resourceName, triggerList) {
 
   const triggerOptionAnswer = await inquirer.prompt([triggerOptionQuestion]);
 
-
   const functionName = triggerOptionAnswer.triggerOption;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
-
 
   if (fs.existsSync(functionCFNFilePath)) {
     const functionCFNFile = context.amplify.readJsonFile(functionCFNFilePath);
@@ -505,7 +520,6 @@ async function removeTrigger(context, resourceName, triggerList) {
 
   return functionName;
 }
-
 
 async function addTrigger(context, resourceName, triggerList) {
   const triggerTypeQuestion = {
@@ -522,7 +536,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
     if (triggerList) {
       const filteredLambdaResources = [];
-      lambdaResources.forEach((lambdaResource) => {
+      lambdaResources.forEach(lambdaResource => {
         if (triggerList.indexOf(lambdaResource) === -1) {
           filteredLambdaResources.push(lambdaResource);
         }
@@ -532,7 +546,9 @@ async function addTrigger(context, resourceName, triggerList) {
     }
 
     if (lambdaResources.length === 0) {
-      throw new Error('No pre-existing functions found in the project. Please use \'amplify add function\' command to add a new function to your project.');
+      throw new Error(
+        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project."
+      );
     }
 
     const triggerOptionQuestion = {
@@ -545,7 +561,7 @@ async function addTrigger(context, resourceName, triggerList) {
     const triggerOptionAnswer = await inquirer.prompt([triggerOptionQuestion]);
     functionName = triggerOptionAnswer.triggerOption;
   } else {
-  // Create a new lambda trigger
+    // Create a new lambda trigger
 
     const targetDir = context.amplify.pathManager.getBackendDirPath();
     const [shortId] = uuid().split('-');
@@ -556,7 +572,6 @@ async function addTrigger(context, resourceName, triggerList) {
       functionName: `${functionName}`,
       roleName: `${resourceName}LambdaRole${shortId}`,
     };
-
 
     const copyJobs = [
       {
@@ -592,11 +607,7 @@ async function addTrigger(context, resourceName, triggerList) {
       build: true,
     };
 
-    context.amplify.updateamplifyMetaAfterResourceAdd(
-      'function',
-      functionName,
-      backendConfigs,
-    );
+    context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
 
     context.print.success(`Successfully added resource ${functionName} locally`);
   }
@@ -622,12 +633,9 @@ async function addTrigger(context, resourceName, triggerList) {
       Default: `storage${resourceName}Arn`,
     };
 
-
     // Update policies
     functionCFNFile.Resources[`${resourceName}TriggerPolicy`] = {
-      DependsOn: [
-        'LambdaExecutionRole',
-      ],
+      DependsOn: ['LambdaExecutionRole'],
       Type: 'AWS::IAM::Policy',
       Properties: {
         PolicyName: 'lambda-execution-policy',
@@ -639,15 +647,9 @@ async function addTrigger(context, resourceName, triggerList) {
         PolicyDocument: {
           Version: '2012-10-17',
           Statement: [
-
             {
               Effect: 'Allow',
-              Action: [
-                'dynamodb:DescribeStream',
-                'dynamodb:GetRecords',
-                'dynamodb:GetShardIterator',
-                'dynamodb:ListStreams',
-              ],
+              Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
               Resource: [
                 {
                   Ref: `storage${resourceName}StreamArn`,
@@ -659,14 +661,11 @@ async function addTrigger(context, resourceName, triggerList) {
       },
     };
 
-
     // Add TriggerResource
 
     functionCFNFile.Resources[`${resourceName}Trigger`] = {
       Type: 'AWS::Lambda::EventSourceMapping',
-      DependsOn: [
-        `${resourceName}TriggerPolicy`,
-      ],
+      DependsOn: [`${resourceName}TriggerPolicy`],
       Properties: {
         BatchSize: 100,
         Enabled: true,
@@ -674,25 +673,20 @@ async function addTrigger(context, resourceName, triggerList) {
           Ref: `storage${resourceName}StreamArn`,
         },
         FunctionName: {
-          'Fn::GetAtt': [
-            'LambdaFunction',
-            'Arn',
-          ],
+          'Fn::GetAtt': ['LambdaFunction', 'Arn'],
         },
         StartingPosition: 'LATEST',
       },
     };
-
 
     // Update dependsOn
 
     const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
     const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
-
     const resourceDependsOn = amplifyMeta.function[functionName].dependsOn || [];
     let resourceExists = false;
-    resourceDependsOn.forEach((resource) => {
+    resourceDependsOn.forEach(resource => {
       if (resource.resourceName === resourceName) {
         resourceExists = true;
         resourceDependsOn.attributes = ['Name', 'Arn', 'StreamArn'];
@@ -725,9 +719,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
 async function getLambdaFunctions(context) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaResources = allResources
-    .filter(resource => resource.service === 'Lambda')
-    .map(resource => resource.resourceName);
+  const lambdaResources = allResources.filter(resource => resource.service === 'Lambda').map(resource => resource.resourceName);
 
   return lambdaResources;
 }
@@ -754,7 +746,7 @@ function migrate(context, projectPath, resourceName) {
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
 
   // Removes dangling commas from a JSON
-  const removeDanglingCommas = (value) => {
+  const removeDanglingCommas = value => {
     const regex = /,(?!\s*?[{["'\w])/g;
     return value.replace(regex, '');
   };
@@ -799,7 +791,6 @@ function migrate(context, projectPath, resourceName) {
         Ref: 'tableName',
       },
       {
-
         'Fn::Join': [
           '',
           [
@@ -824,17 +815,22 @@ function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create': actions.push('dynamodb:Put*', 'dynamodb:Create*', 'dynamodb:BatchWriteItem');
+      case 'create':
+        actions.push('dynamodb:Put*', 'dynamodb:Create*', 'dynamodb:BatchWriteItem');
         break;
-      case 'update': actions.push('dynamodb:Update*', 'dynamodb:RestoreTable*');
+      case 'update':
+        actions.push('dynamodb:Update*', 'dynamodb:RestoreTable*');
         break;
-      case 'read': actions.push('dynamodb:Get*', 'dynamodb:BatchGetItem', 'dynamodb:List*', 'dynamodb:Describe*', 'dynamodb:Scan', 'dynamodb:Query');
+      case 'read':
+        actions.push('dynamodb:Get*', 'dynamodb:BatchGetItem', 'dynamodb:List*', 'dynamodb:Describe*', 'dynamodb:Scan', 'dynamodb:Query');
         break;
-      case 'delete': actions.push('dynamodb:Delete*');
+      case 'delete':
+        actions.push('dynamodb:Delete*');
         break;
-      default: console.log(`${crudOption} not supported`);
+      default:
+        console.log(`${crudOption} not supported`);
     }
   });
 
@@ -849,5 +845,8 @@ function getIAMPolicies(resourceName, crudOptions) {
 }
 
 module.exports = {
-  addWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+  addWalkthrough,
+  updateWalkthrough,
+  migrate,
+  getIAMPolicies,
 };

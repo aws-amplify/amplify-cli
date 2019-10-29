@@ -3,7 +3,7 @@ const featureName = 'xr';
 module.exports = {
   name: featureName,
   alias: ['XR'],
-  run: async (context) => {
+  run: async context => {
     const header = `amplify ${featureName} <subcommand>`;
 
     const commands = [
@@ -22,6 +22,10 @@ module.exports = {
       {
         name: 'remove',
         description: 'Removes XR resource from your local backend which would be removed from the cloud on the next push command',
+      },
+      {
+        name: 'console',
+        description: `Opens the web console for the ${featureName} category`,
       },
     ];
 

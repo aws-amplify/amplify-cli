@@ -1,10 +1,5 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-import {
-  initProjectWithProfile,
-  deleteProject,
-  amplifyPush,
-  amplifyPushUpdate
-} from '../src/init';
+import { initProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../src/init';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import { addApiWithSchema, updateApiSchema, updateApiWithMultiAuth } from '../src/categories/api';
@@ -35,9 +30,9 @@ describe('amplify add api', () => {
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
     const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
 
-    expect(GraphQLAPIIdOutput).toBeDefined()
-    expect(GraphQLAPIEndpointOutput).toBeDefined()
-    expect(GraphQLAPIKeyOutput).toBeDefined()
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
@@ -55,9 +50,9 @@ describe('amplify add api', () => {
     const { output } = getProjectMeta(projRoot).api[projectName];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
 
-    await expect(GraphQLAPIIdOutput).toBeDefined()
-    await expect(GraphQLAPIEndpointOutput).toBeDefined()
-    await expect(GraphQLAPIKeyOutput).toBeDefined()
+    await expect(GraphQLAPIIdOutput).toBeDefined();
+    await expect(GraphQLAPIEndpointOutput).toBeDefined();
+    await expect(GraphQLAPIKeyOutput).toBeDefined();
   });
 
   it('init a project and add the simple_model api with multiple authorization providers', async () => {
@@ -94,9 +89,9 @@ describe('amplify add api', () => {
     expect(oidc.openIDConnectConfig.iatTTL).toEqual(1000);
     expect(oidc.openIDConnectConfig.authTTL).toEqual(2000);
 
-    expect(GraphQLAPIIdOutput).toBeDefined()
-    expect(GraphQLAPIEndpointOutput).toBeDefined()
-    expect(GraphQLAPIKeyOutput).toBeDefined()
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);

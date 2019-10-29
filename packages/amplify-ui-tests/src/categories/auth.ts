@@ -1,11 +1,7 @@
 import * as nexpect from 'nexpect';
 import { getCLIPath, isCI, getEnvVars } from '../utils';
 
-export function addAuthWithDefault(
-  cwd: string,
-  settings: any = {},
-  verbose: boolean = !isCI()
-) {
+export function addAuthWithDefault(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
@@ -22,32 +18,33 @@ export function addAuthWithDefault(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function addAuthWithDefaultSocial(
-  cwd: string,
-  settings: any = {},
-  verbose: boolean = !isCI()
-) {
+export function addAuthWithDefaultSocial(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    const {
-      FACEBOOK_APP_ID,
-      FACEBOOK_APP_SECRET,
-      GOOGLE_APP_ID,
-      GOOGLE_APP_SECRET,
-      AMAZON_APP_ID,
-      AMAZON_APP_SECRET,
-    }: any = getEnvVars();
+    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
 
     const missingVars = [];
-    if (!FACEBOOK_APP_ID) { missingVars.push('FACEBOOK_APP_ID') };
-    if (!FACEBOOK_APP_SECRET) { missingVars.push('FACEBOOK_APP_SECRET') };
-    if (!GOOGLE_APP_ID) { missingVars.push('GOOGLE_APP_ID') };
-    if (!GOOGLE_APP_SECRET) { missingVars.push('GOOGLE_APP_SECRET') };
-    if (!AMAZON_APP_ID) { missingVars.push('AMAZON_APP_ID') };
-    if (!AMAZON_APP_SECRET) { missingVars.push('AMAZON_APP_SECRET') };
+    if (!FACEBOOK_APP_ID) {
+      missingVars.push('FACEBOOK_APP_ID');
+    }
+    if (!FACEBOOK_APP_SECRET) {
+      missingVars.push('FACEBOOK_APP_SECRET');
+    }
+    if (!GOOGLE_APP_ID) {
+      missingVars.push('GOOGLE_APP_ID');
+    }
+    if (!GOOGLE_APP_SECRET) {
+      missingVars.push('GOOGLE_APP_SECRET');
+    }
+    if (!AMAZON_APP_ID) {
+      missingVars.push('AMAZON_APP_ID');
+    }
+    if (!AMAZON_APP_SECRET) {
+      missingVars.push('AMAZON_APP_SECRET');
+    }
 
     if (missingVars.length > 0) {
       throw new Error(`.env file is missing the following key/values: ${missingVars.join(', ')} `);
@@ -103,6 +100,6 @@ export function addAuthWithDefaultSocial(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }

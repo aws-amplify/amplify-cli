@@ -2,11 +2,7 @@ const loadConfig = require('../codegen-config');
 const generateStatements = require('../commands/statements');
 const generateTypes = require('../commands/types');
 
-const {
-  downloadIntrospectionSchema,
-  getAppSyncAPIDetails,
-  getSchemaDownloadLocation,
-} = require('../utils');
+const { downloadIntrospectionSchema, getAppSyncAPIDetails, getSchemaDownloadLocation } = require('../utils');
 
 async function postPushCallback(context, graphQLConfig) {
   if (!graphQLConfig) {

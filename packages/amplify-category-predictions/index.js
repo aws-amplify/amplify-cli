@@ -11,12 +11,18 @@ async function console(context) {
   const { amplifyMeta } = amplify.getProjectDetails();
 
   return promptConsoleSupportedCategory()
-    .then(async (result) => {
+    .then(async result => {
       result = result.category;
       const predictionsResources = [];
-      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
-        if (result.services.includes(amplifyMeta[category][resourceName].service) && result.types.includes(amplifyMeta[category][resourceName][result.type])) {
-          predictionsResources.push({ name: resourceName, value: { name: resourceName, service: amplifyMeta[category][resourceName].service } });
+      Object.keys(amplifyMeta[category]).forEach(resourceName => {
+        if (
+          result.services.includes(amplifyMeta[category][resourceName].service) &&
+          result.types.includes(amplifyMeta[category][resourceName][result.type])
+        ) {
+          predictionsResources.push({
+            name: resourceName,
+            value: { name: resourceName, service: amplifyMeta[category][resourceName].service },
+          });
         }
       });
       if (predictionsResources.length === 0) {
@@ -34,15 +40,15 @@ async function console(context) {
         });
         resourceObj = resourceAnswer.resource;
       }
-      const providerController =
-        require(`./provider-utils/${result.provider}/index`);
+      const providerController = require(`./provider-utils/${result.provider}/index`);
       if (!providerController) {
         context.print.error('Provider not configured for this category');
         return;
       }
 
       return providerController.console(context, resourceObj, amplifyMeta);
-    }).catch((err) => {
+    })
+    .catch(err => {
       context.print.error('Error opening console.');
       context.print.info(err.message);
     });
@@ -71,4 +77,3 @@ module.exports = {
   executeAmplifyCommand,
   handleAmplifyEvent,
 };
-

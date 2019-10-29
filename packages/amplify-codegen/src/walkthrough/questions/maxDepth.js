@@ -8,11 +8,9 @@ async function askMaxDepth(defaultDepth = 2) {
       name: 'maxDepth',
       message: constants.PROMPT_MSG_MAX_DEPTH,
       type: 'input',
-      validate: (val) => {
+      validate: val => {
         const num = Number.parseInt(val, 10);
-        return Number.isInteger(num) && Number.isFinite(num) && num > 0
-          ? true
-          : constants.ERROR_MSG_MAX_DEPTH;
+        return Number.isInteger(num) && Number.isFinite(num) && num > 0 ? true : constants.ERROR_MSG_MAX_DEPTH;
       },
       default: defaultDepth,
     },

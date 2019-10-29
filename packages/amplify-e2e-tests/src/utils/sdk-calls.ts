@@ -1,6 +1,5 @@
 import * as AWS from 'aws-sdk';
 
-
 const getDDBTable = async (tableName: string, region: string) => {
   const service = new AWS.DynamoDB({ region });
   return await service.describeTable({ TableName: tableName }).promise();
@@ -16,9 +15,7 @@ const getUserPool = async (userpoolId, region) => {
   const CognitoIdentityServiceProvider = AWS.CognitoIdentityServiceProvider;
   let res;
   try {
-    res = await new CognitoIdentityServiceProvider()
-      .describeUserPool({ UserPoolId: userpoolId })
-      .promise();
+    res = await new CognitoIdentityServiceProvider().describeUserPool({ UserPoolId: userpoolId }).promise();
   } catch (e) {
     console.log(e);
   }
@@ -30,9 +27,7 @@ const getLambdaFunction = async (functionName, region) => {
   const lambda = new AWS.Lambda();
   let res;
   try {
-    res = await lambda
-      .getFunction({ FunctionName: functionName })
-      .promise();
+    res = await lambda.getFunction({ FunctionName: functionName }).promise();
   } catch (e) {
     console.log(e);
   }
@@ -50,7 +45,7 @@ const getUserPoolClients = async (userpoolId, region) => {
       let clientData = await provider
         .describeUserPoolClient({
           UserPoolId: userpoolId,
-          ClientId: clients.UserPoolClients[i].ClientId
+          ClientId: clients.UserPoolClients[i].ClientId,
         })
         .promise();
       res.push(clientData);
@@ -79,20 +74,28 @@ const getCollection = async (collectionId: string, region: string) => {
 const getTable = async (tableName: string, region: string) => {
   const service = new AWS.DynamoDB({ region });
   return await service.describeTable({ TableName: tableName }).promise();
-}
+};
 
 const deleteTable = async (tableName: string, region: string) => {
   const service = new AWS.DynamoDB({ region });
   return await service.deleteTable({ TableName: tableName }).promise();
-}
+};
 
-const getAppSyncApi = async(appSyncApiId: string, region: string) => {
+const getAppSyncApi = async (appSyncApiId: string, region: string) => {
   const service = new AWS.AppSync({ region });
   return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
-}
+};
 
 export {
-  getDDBTable, checkIfBucketExists, getUserPool,
-  getUserPoolClients, getBot, getLambdaFunction,
-  getFunction, getTable, deleteTable, getAppSyncApi, getCollection,
+  getDDBTable,
+  checkIfBucketExists,
+  getUserPool,
+  getUserPoolClients,
+  getBot,
+  getLambdaFunction,
+  getFunction,
+  getTable,
+  deleteTable,
+  getAppSyncApi,
+  getCollection,
 };

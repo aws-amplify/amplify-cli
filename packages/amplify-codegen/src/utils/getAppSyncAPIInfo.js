@@ -4,15 +4,10 @@ const constants = require('../constants');
 async function getAppSyncAPIInfo(context, apiId, region) {
   const { amplify } = context;
   try {
-    const { graphqlApi } = await amplify.executeProviderUtils(
-      context,
-      'awscloudformation',
-      'getGraphQLApiDetails',
-      {
-        apiId,
-        region,
-      },
-    );
+    const { graphqlApi } = await amplify.executeProviderUtils(context, 'awscloudformation', 'getGraphQLApiDetails', {
+      apiId,
+      region,
+    });
 
     let apiKeys;
 
@@ -51,15 +46,10 @@ async function getAppSyncAPIInfo(context, apiId, region) {
 
 async function getAPIKeys(context, apiId, region) {
   const { amplify } = context;
-  const result = await amplify.executeProviderUtils(
-    context,
-    'awscloudformation',
-    'getAppSyncApiKeys',
-    {
-      apiId,
-      region,
-    },
-  );
+  const result = await amplify.executeProviderUtils(context, 'awscloudformation', 'getAppSyncApiKeys', {
+    apiId,
+    region,
+  });
   const { apiKeys = [] } = result;
   return apiKeys;
 }

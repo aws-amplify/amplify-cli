@@ -6,7 +6,6 @@ async function run(message, defaultValue) {
     message,
     type: 'confirm',
     default: defaultValue !== false,
-
   });
   return ans.yesno;
 }

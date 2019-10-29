@@ -7,7 +7,7 @@ function filterServicesByEnabledProviders(context, enabledProviders, supportedSe
 
   const filteredServices = [];
 
-  Object.keys(supportedServices).forEach((service) => {
+  Object.keys(supportedServices).forEach(service => {
     if (enabledProviders.includes(supportedServices[service].provider)) {
       filteredServices.push({
         service,
@@ -43,20 +43,21 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
   if (options.length === 1) {
     // No need to ask questions
     context.print.info(`Using service: ${options[0].value.service}, provided by: ${options[0].value.providerName}`);
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       resolve(options[0].value);
     });
   }
 
-  const question = [{
-    name: 'service',
-    message: 'Please select from one of the below mentioned services',
-    type: 'list',
-    choices: options,
-  }];
+  const question = [
+    {
+      name: 'service',
+      message: 'Please select from one of the below mentioned services:',
+      type: 'list',
+      choices: options,
+    },
+  ];
 
-  return inquirer.prompt(question)
-    .then(answer => answer.service);
+  return inquirer.prompt(question).then(answer => answer.service);
 }
 
 function serviceSelectionPrompt(context, category, supportedServices) {

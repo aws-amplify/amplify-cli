@@ -20,7 +20,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
 
   const lexResources = {};
 
-  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+  Object.keys(amplifyMeta[category]).forEach(resourceName => {
     if (amplifyMeta[category][resourceName].service === serviceName) {
       lexResources[resourceName] = amplifyMeta[category][resourceName];
     }
@@ -32,18 +32,16 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     return;
   }
   const resources = Object.keys(lexResources);
-  const question = [{
-    name: 'resourceName',
-    message: 'Specify the resource that you would want to update',
-    type: 'list',
-    choices: resources,
-  }];
+  const question = [
+    {
+      name: 'resourceName',
+      message: 'Specify the resource that you would want to update',
+      type: 'list',
+      choices: resources,
+    },
+  ];
 
-  return inquirer.prompt(question)
-    .then(answer => configure(
-      context, defaultValuesFilename,
-      serviceMetadata, answer.resourceName,
-    ));
+  return inquirer.prompt(question).then(answer => configure(context, defaultValuesFilename, serviceMetadata, answer.resourceName));
 }
 
 // Goes through Lex walkthrough
@@ -72,7 +70,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     name: inputs[0].key,
     message: inputs[0].question,
     validate: amplify.inputValidation(inputs[0]),
-    default: (answer) => {
+    default: answer => {
       const defaultValue = defaultValues[inputs[0].key];
       return answer.resourceName || defaultValue;
     },
@@ -191,7 +189,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       };
       const addUtteranceAnswer = await inquirer.prompt(addUtteranceQuestion);
       if (addUtteranceAnswer[inputs[8].key]) {
-        utterances = (await addUtterance(context, intentName, botName, resourceName, serviceMetadata));
+        utterances = await addUtterance(context, intentName, botName, resourceName, serviceMetadata);
       }
 
       const addSlotQuestion = {
@@ -318,7 +316,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       if (deleteIntentConfirmed) {
         parameters.intents = parameters.intents.filter(intent => intent.intentName !== answers.intentName);
       } else {
-        parameters.intents.forEach((intent) => {
+        parameters.intents.forEach(intent => {
           if (intent.intentName === answers.intentName) {
             if (answers.utterances) {
               intent.utterances = intent.utterances.concat(answers.utterances);
@@ -362,8 +360,10 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
   intentName = intentName[inputs[12].key];
 
   // Checks for duplicate intent names
-  while ((intents.filter(intent => intent.intentName === intentName).length > 0)
-          || (parameters && parameters.intents.filter(intent => intent.intentName === intentName).length > 0)) {
+  while (
+    intents.filter(intent => intent.intentName === intentName).length > 0 ||
+    (parameters && parameters.intents.filter(intent => intent.intentName === intentName).length > 0)
+  ) {
     print.info('');
     print.info('Intent names must be unique');
     print.info('');
@@ -500,14 +500,24 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
   const newSlotTypes = [];
   while (addAnotherSlot) {
     const slot = {
-      name: '', type: '', prompt: '', required: true, customType: false,
+      name: '',
+      type: '',
+      prompt: '',
+      required: true,
+      customType: false,
     };
     slot.name = await inquirer.prompt(slotNameQuestion);
     slot.name = slot.name[inputs[14].key];
 
     // Checks for duplicate slot names
-    while ((slots.filter(existingSlot => existingSlot.name === slot.name).length > 0)
-            || (parameters && parameters.intents.filter(intent => intent.intentName === intentName)[0] && parameters.intents.filter(intent => intent.intentName === intentName)[0].slots.filter(existingSlot => existingSlot.name === slot.name).length > 0)) {
+    while (
+      slots.filter(existingSlot => existingSlot.name === slot.name).length > 0 ||
+      (parameters &&
+        parameters.intents.filter(intent => intent.intentName === intentName)[0] &&
+        parameters.intents
+          .filter(intent => intent.intentName === intentName)[0]
+          .slots.filter(existingSlot => existingSlot.name === slot.name).length > 0)
+    ) {
       print.info('');
       print.info('Slot names must be unique');
       print.info('');
@@ -543,7 +553,9 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
     addAnotherSlot = await inquirer.prompt(addAnotherSlotQuestion);
     addAnotherSlot = addAnotherSlot[inputs[25].key];
   }
-  if (newSlotTypeAdded) { return [slots, newSlotTypes]; }
+  if (newSlotTypeAdded) {
+    return [slots, newSlotTypes];
+  }
   return [slots];
 }
 
@@ -565,17 +577,22 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
     let builtInSlotTypes = [];
     let builtInSlotTypesReturn;
     do {
-      builtInSlotTypesReturn = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getBuiltInSlotTypes', slotTypeOptions);
+      builtInSlotTypesReturn = await context.amplify.executeProviderUtils(
+        context,
+        'awscloudformation',
+        'getBuiltInSlotTypes',
+        slotTypeOptions
+      );
       builtInSlotTypes = builtInSlotTypes.concat(builtInSlotTypesReturn.slotTypes.map(builtinSlotType => builtinSlotType.signature));
       slotTypeOptions = builtInSlotTypesReturn.nextToken;
     } while (slotTypeOptions);
 
     function searchSlotTypes(answers, input) {
       input = input || '';
-      return new Promise(((resolve) => {
+      return new Promise(resolve => {
         const fuzzyResult = fuzzy.filter(input, builtInSlotTypes);
         resolve(fuzzyResult.map(el => el.original));
-      }));
+      });
     }
 
     const slotTypeQuestion = {
@@ -677,7 +694,9 @@ async function askLambda(context) {
   const projectRegion = context.exeInfo.amplifyMeta.providers.awscloudformation.Region;
   const accountID = context.exeInfo.amplifyMeta.providers.awscloudformation.AuthRoleArn.split(':')[4];
 
-  const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions', { region: projectRegion });
+  const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions', {
+    region: projectRegion,
+  });
 
   const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
     value: {
@@ -743,10 +762,7 @@ async function migrate(context, projectPath, resourceName) {
   // Create parameters.json file
   const cfnParameters = {
     authRoleArn: {
-      'Fn::GetAtt': [
-        'AuthRole',
-        'Arn',
-      ],
+      'Fn::GetAtt': ['AuthRole', 'Arn'],
     },
     authRoleName: {
       Ref: 'AuthRoleName',
@@ -765,20 +781,22 @@ function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create': actions.push(
-        'lex:Create*',
-        'lex:Post*',
-      );
+      case 'create':
+        actions.push('lex:Create*', 'lex:Post*');
         break;
-      case 'update': actions.push('lex:Put*');
+      case 'update':
+        actions.push('lex:Put*');
         break;
-      case 'read': actions.push('lex:Get*');
+      case 'read':
+        actions.push('lex:Get*');
         break;
-      case 'delete': actions.push('lex:Delete*');
+      case 'delete':
+        actions.push('lex:Delete*');
         break;
-      default: console.log(`${crudOption} not supported`);
+      default:
+        console.log(`${crudOption} not supported`);
     }
   });
 
@@ -811,5 +829,8 @@ function getIAMPolicies(resourceName, crudOptions) {
 }
 
 module.exports = {
-  addWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+  addWalkthrough,
+  updateWalkthrough,
+  migrate,
+  getIAMPolicies,
 };

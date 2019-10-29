@@ -198,21 +198,21 @@ describe('Test put api', () => {
     expect(data3.Key).toBe('upload/long_image3.jpg');
   });
 
-  test(" async uploads", async () => {
+  test(' async uploads', async () => {
     const params1 = {
       Bucket: bucket, // pass your bucket name
-      Key: "upload/long_image1.jpg",
-      Body: buf2
+      Key: 'upload/long_image1.jpg',
+      Body: buf2,
     };
     const params2 = {
       Bucket: bucket, // pass your bucket name
-      Key: "upload/long_image2.jpg",
-      Body: buf2
+      Key: 'upload/long_image2.jpg',
+      Body: buf2,
     };
     const params3 = {
       Bucket: bucket, // pass your bucket name
-      Key: "upload/long_image3.jpg",
-      Body: buf2
+      Key: 'upload/long_image3.jpg',
+      Body: buf2,
     };
 
     const uploadPromises = [];
@@ -222,7 +222,7 @@ describe('Test put api', () => {
 
     const uploadResults = await Promise.all(uploadPromises);
     expect(uploadResults[0].Key).toBe('upload/long_image1.jpg');
-    expect(uploadResults[1].Key).toBe("upload/long_image2.jpg");
-    expect(uploadResults[2].Key).toBe("upload/long_image3.jpg");
+    expect(uploadResults[1].Key).toBe('upload/long_image2.jpg');
+    expect(uploadResults[2].Key).toBe('upload/long_image3.jpg');
   });
 });

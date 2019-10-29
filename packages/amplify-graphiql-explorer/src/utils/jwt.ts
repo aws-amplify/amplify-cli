@@ -1,13 +1,13 @@
 import { decode, sign, verify } from 'jsonwebtoken';
 
-export function generateToken(decodedToken: string| object):string {
+export function generateToken(decodedToken: string | object): string {
   try {
-    if(typeof decodedToken === 'string') {
+    if (typeof decodedToken === 'string') {
       decodedToken = JSON.parse(decodedToken);
     }
     const token = sign(decodedToken, 'open-secrete');
-    verify(token,'open-secrete');
-    return token
+    verify(token, 'open-secrete');
+    return token;
   } catch (e) {
     const err = new Error('Error when generating OIDC token: ' + e.message);
     throw err;
@@ -16,7 +16,7 @@ export function generateToken(decodedToken: string| object):string {
 
 export function parse(token): object {
   const decodedToken = decode(token);
-    return decodedToken;
+  return decodedToken;
 }
 
 /**
@@ -27,10 +27,10 @@ export function parse(token): object {
  */
 export function refreshToken(token: string, issuer?: string): string {
   const tokenObj: any = parse(token);
-  if(!Object.keys(tokenObj).length){
+  if (!Object.keys(tokenObj).length) {
     throw new Error(`Invalid token ${token}`);
   }
-  if(issuer) {
+  if (issuer) {
     tokenObj.iss = issuer;
   }
   tokenObj.exp = Math.floor(Date.now() / 100 + 20000);
