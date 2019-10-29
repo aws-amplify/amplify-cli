@@ -300,7 +300,7 @@ async function transformGraphQLSchema(context, options) {
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = async (addSearchableTransformer) => {
+  const transformerListFactory = async addSearchableTransformer => {
     const transformerList = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),
@@ -316,27 +316,27 @@ async function transformGraphQLSchema(context, options) {
     }
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers =
-      (customTransformersConfig && customTransformersConfig.transformers
-        ? customTransformersConfig.transformers
-        : [])
-        .map((transformer) => {
-          const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
-          const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
-          // handle 'cannot find module'
-          try {
-            return require(modulePath);
-          } catch (error) {
-            context.print.error(`Unable to import custom transformer module(${modulePath}).`);
-            context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
-            throw error;
-          }
-        })
-        .map((imported) => {
-          const CustomTransformer = imported.default;
-          return CustomTransformer.call({});
-        })
-        .filter(customTransformer => customTransformer);
+    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
+      ? customTransformersConfig.transformers
+      : []
+    )
+      .map(transformer => {
+        const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
+        const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
+        // handle 'cannot find module'
+        try {
+          return require(modulePath);
+        } catch (error) {
+          context.print.error(`Unable to import custom transformer module(${modulePath}).`);
+          context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
+          throw error;
+        }
+      })
+      .map(imported => {
+        const CustomTransformer = imported.default;
+        return CustomTransformer.call({});
+      })
+      .filter(customTransformer => customTransformer);
 
     if (customTransformers.length > 0) {
       transformerList.push(...customTransformers);
