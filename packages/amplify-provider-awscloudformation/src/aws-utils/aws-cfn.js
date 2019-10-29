@@ -324,7 +324,81 @@ class CloudFormation {
               }
             });
           });
+
+          return result;
         });
+      })
+      .then(result => {
+        const resources = result.StackResources;
+        const stackResourcePromises = Object.keys(amplifyMeta)
+          .map(category =>
+            Object.keys(amplifyMeta[category])
+              .filter(resource => amplifyMeta[category][resource].withNestedOutputs)
+              .map(resource => ({
+                index: resources.findIndex(resourceItem => resourceItem.LogicalResourceId === category + resource),
+                resource,
+              }))
+              .filter(({ index }) => index > -1)
+              .map(({ resource, index }) =>
+                cfnModel
+                  .describeStackResources({
+                    StackName: resources[index].PhysicalResourceId,
+                  })
+                  .promise()
+                  .then(result => ({ ...result, amplifyResourceName: resource, amplifyCategory: category }))
+              )
+          )
+          .reduce((flattened, promises) => flattened.concat(promises), []);
+
+        // fetch stack resources to further fetch nested stacks to get nested outputs
+        return Promise.all(stackResourcePromises);
+      })
+      .then(results => {
+        const stackPromises = results
+          .reduce(
+            (stackResources, result) =>
+              stackResources.concat(
+                result.StackResources.map(resource => ({
+                  ...resource,
+                  amplifyResourceName: result.amplifyResourceName,
+                  amplifyCategory: result.amplifyCategory,
+                }))
+              ),
+            []
+          )
+          .filter(resource => resource.ResourceType === 'AWS::CloudFormation::Stack')
+          .map(resource => {
+            return this.describeStack({
+              StackName: resource.PhysicalResourceId,
+            }).then(result => ({
+              ...result,
+              amplifyResourceName: resource.amplifyResourceName,
+              amplifyCategory: resource.amplifyCategory,
+            }));
+          });
+        return Promise.all(stackPromises);
+      })
+      .then(results => {
+        const nestedOutputs = results.reduce((byResource, result) => {
+          const key = result.amplifyCategory + result.amplifyResourceName;
+          return {
+            ...byResource,
+            [key]: {
+              category: result.amplifyCategory,
+              resource: result.amplifyResourceName,
+              outputs: {
+                ...(key in byResource ? byResource[key].outputs : {}),
+                [result.Stacks[0].StackName]: formatOutputs(result.Stacks[0].Outputs),
+              },
+            },
+          };
+        }, {});
+
+        Object.keys(nestedOutputs)
+          .map(key => nestedOutputs[key])
+          .forEach(item =>
+            this.context.amplify.updateamplifyMetaAfterResourceUpdate(item.category, item.resource, 'nestedStacksOutputs', item.outputs)
+          );
       });
   }
 
