@@ -1,8 +1,8 @@
-import Input from './input';
-import AmplifyToolkit from './amplify-toolkit';
-import PluginPlatform from './plugin-platform';
+import { Input } from './input';
+import { AmplifyToolkit } from './amplify-toolkit';
+import { PluginPlatform } from './plugin-platform';
 
-export default class Context {
+export class Context {
   amplify: AmplifyToolkit;
   constructor(public pluginPlatform: PluginPlatform, public input: Input) {
     this.amplify = new AmplifyToolkit();

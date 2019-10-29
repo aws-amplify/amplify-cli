@@ -4,13 +4,13 @@
  * @param path The path.
  */
 export default function setIn(obj: any, path: string[], value: any): any {
-    let val = obj;
-    for (let i = 0; i < path.length; i++) {
-        const key = path[i];
-        if (val[key] && i === path.length - 1) {
-            val[key] = value
-        } else if (val[key]) {
-            val = val[key]
-        }
+  let val = obj;
+  for (let i = 0; i < path.length; i++) {
+    const key = path[i];
+    if (val[key] && i === path.length - 1) {
+      val[key] = value;
+    } else if (val[key]) {
+      val = val[key];
     }
+  }
 }

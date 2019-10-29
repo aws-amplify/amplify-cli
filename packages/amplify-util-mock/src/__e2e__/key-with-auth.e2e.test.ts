@@ -1,7 +1,7 @@
-import ModelAuthTransformer from 'graphql-auth-transformer';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import KeyTransformer from 'graphql-key-transformer';
-import GraphQLTransform from 'graphql-transformer-core';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
@@ -94,9 +94,7 @@ beforeAll(async () => {
       Authorization: idToken,
     });
 
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [
-      DEVS_GROUP_NAME,
-    ]);
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [DEVS_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
@@ -259,11 +257,7 @@ async function getOrder(client: GraphQLClient, customerEmail: string, orderId: s
   return result;
 }
 
-async function listOrders(
-  client: GraphQLClient,
-  customerEmail: string,
-  orderId: { beginsWith: string }
-) {
+async function listOrders(client: GraphQLClient, customerEmail: string, orderId: { beginsWith: string }) {
   const result = await client.query(
     `query ListOrder($customerEmail: String, $orderId: ModelStringKeyConditionInput) {
         listOrders(customerEmail: $customerEmail, orderId: $orderId) {

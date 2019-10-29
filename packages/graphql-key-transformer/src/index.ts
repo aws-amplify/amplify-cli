@@ -1,2 +1,1 @@
-import KeyTransformer from './KeyTransformer';
-export default KeyTransformer;
+export * from './KeyTransformer';

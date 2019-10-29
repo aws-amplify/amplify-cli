@@ -1,9 +1,8 @@
-import { ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode, Kind } from 'graphql';
 import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import ModelConnectionTransformer from 'graphql-connection-transformer';
-import ModelAuthTransformer from 'graphql-auth-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
@@ -67,34 +66,44 @@ beforeAll(async () => {
         album: Album @connection (name: "AlbumPhotos", keyField: "albumId")
     }
     `;
-    const transformer = new GraphQLTransform({
-        transformers: [
-            new DynamoDBModelTransformer(),
-            new ModelConnectionTransformer(),
-            new ModelAuthTransformer({
-                authConfig: {
-                    defaultAuthentication: {
-                        authenticationType: "API_KEY"
-                    },
-                    additionalAuthenticationProviders: []
-                }}),
-        ]
-    })
-    const out = transformer.transform(validSchema);
+  const transformer = new GraphQLTransform({
+    transformers: [
+      new DynamoDBModelTransformer(),
+      new ModelConnectionTransformer(),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'API_KEY',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
+    ],
+  });
+  const out = transformer.transform(validSchema);
 
-    try {
-        await awsS3Client.createBucket({
-            Bucket: BUCKET_NAME,
-        }).promise()
-    } catch (e) {
-        console.error(`Failed to create S3 bucket: ${e}`)
-    }
-    try {
-        console.log('Creating Stack ' + STACK_NAME)
-        const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
-            BUILD_TIMESTAMP
-        )
+  try {
+    await awsS3Client
+      .createBucket({
+        Bucket: BUCKET_NAME,
+      })
+      .promise();
+  } catch (e) {
+    console.error(`Failed to create S3 bucket: ${e}`);
+  }
+  try {
+    console.log('Creating Stack ' + STACK_NAME);
+    const finishedStack = await deploy(
+      customS3Client,
+      cf,
+      STACK_NAME,
+      out,
+      { CreateAPIKey: '1' },
+      LOCAL_FS_BUILD_DIR,
+      BUCKET_NAME,
+      S3_ROOT_DIR_KEY,
+      BUILD_TIMESTAMP
+    );
 
     // Arbitrary wait to make sure everything is ready.
     await cf.wait(5, () => Promise.resolve());

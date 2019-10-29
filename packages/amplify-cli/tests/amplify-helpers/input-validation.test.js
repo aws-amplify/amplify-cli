@@ -116,7 +116,6 @@ describe('input-validation helper: ', () => {
     });
   });
 
-
   describe('case: validation operator "noEmptyArray"', () => {
     beforeEach(() => {
       question.validation = {

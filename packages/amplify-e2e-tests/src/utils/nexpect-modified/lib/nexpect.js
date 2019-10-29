@@ -9,10 +9,10 @@ var spawn = require('child_process').spawn;
 var util = require('util');
 var AssertionError = require('assert').AssertionError;
 
-function chain (context) {
+function chain(context) {
   return {
-    expect: function (expectation) {
-      var _expect = function _expect (data) {
+    expect: function(expectation) {
+      var _expect = function _expect(data) {
         return testExpectation(data, expectation);
       };
 
@@ -24,8 +24,8 @@ function chain (context) {
 
       return chain(context);
     },
-    wait: function (expectation, callback) {
-      var _wait = function _wait (data) {
+    wait: function(expectation, callback) {
+      var _wait = function _wait(data) {
         var val = testExpectation(data, expectation);
         if (val === true && typeof callback === 'function') {
           callback(data);
@@ -40,8 +40,8 @@ function chain (context) {
       context.queue.push(_wait);
       return chain(context);
     },
-    sendline: function (line) {
-      var _sendline = function _sendline () {
+    sendline: function(line) {
+      var _sendline = function _sendline() {
         context.process.stdin.write(line + '\n');
 
         if (context.verbose) {
@@ -55,8 +55,8 @@ function chain (context) {
       context.queue.push(_sendline);
       return chain(context);
     },
-    send: function (line) {
-      var _send = function _send () {
+    send: function(line) {
+      var _send = function _send() {
         context.process.stdin.write(line);
 
         if (context.verbose) {
@@ -71,7 +71,7 @@ function chain (context) {
       return chain(context);
     },
     sendEof: function() {
-      var _sendEof = function _sendEof () {
+      var _sendEof = function _sendEof() {
         context.process.stdin.destroy();
       };
       _sendEof.shift = true;
@@ -80,11 +80,11 @@ function chain (context) {
       context.queue.push(_sendEof);
       return chain(context);
     },
-    run: function (callback) {
+    run: function(callback) {
       var errState = null,
-          responded = false,
-          stdout = [],
-          options;
+        responded = false,
+        stdout = [],
+        options;
 
       //
       // **onError**
@@ -92,7 +92,7 @@ function chain (context) {
       // Helper function to respond to the callback with a
       // specified error. Kills the child process if necessary.
       //
-      function onError (err, kill) {
+      function onError(err, kill) {
         if (errState || responded) {
           return;
         }
@@ -101,8 +101,9 @@ function chain (context) {
         responded = true;
 
         if (kill) {
-          try { context.process.kill(); }
-          catch (ex) { }
+          try {
+            context.process.kill();
+          } catch (ex) {}
         }
 
         callback(err);
@@ -114,15 +115,14 @@ function chain (context) {
       // Helper function to validate the `currentFn` in the
       // `context.queue` for the target chain.
       //
-      function validateFnType (currentFn) {
+      function validateFnType(currentFn) {
         if (typeof currentFn !== 'function') {
           //
           // If the `currentFn` is not a function, short-circuit with an error.
           //
           onError(new Error('Cannot process non-function on nexpect stack.'), true);
           return false;
-        }
-        else if (['_expect', '_sendline', '_send', '_wait', '_sendEof'].indexOf(currentFn.name) === -1) {
+        } else if (['_expect', '_sendline', '_send', '_wait', '_sendEof'].indexOf(currentFn.name) === -1) {
           //
           // If the `currentFn` is a function, but not those set by `.sendline()` or
           // `.expect()` then short-circuit with an error.
@@ -141,7 +141,7 @@ function chain (context) {
       // `context.queue` against the specified `data` where the last
       // function run had `name`.
       //
-      function evalContext (data, name) {
+      function evalContext(data, name) {
         var currentFn = context.queue[0];
 
         if (!currentFn || (name === '_expect' && currentFn.name === '_expect')) {
@@ -165,11 +165,10 @@ function chain (context) {
           // If this is an `_expect` function, then evaluate it and attempt
           // to evaluate the next function (in case it is a `_sendline` function).
           //
-          return currentFn(data) === true ?
-            evalContext(data, '_expect') :
-            onError(createExpectationError(currentFn.expectation, data), true);
-        }
-        else if (currentFn.name === '_wait') {
+          return currentFn(data) === true
+            ? evalContext(data, '_expect')
+            : onError(createExpectationError(currentFn.expectation, data), true);
+        } else if (currentFn.name === '_wait') {
           //
           // If this is a `_wait` function, then evaluate it and if it returns true,
           // then evaluate the function (in case it is a `_sendline` function).
@@ -178,8 +177,7 @@ function chain (context) {
             context.queue.shift();
             evalContext(data, '_expect');
           }
-        }
-        else {
+        } else {
           //
           // If the `currentFn` is any other function then evaluate it
           //
@@ -187,8 +185,7 @@ function chain (context) {
 
           // Evaluate the next function if it does not need input
           var nextFn = context.queue[0];
-          if (nextFn && !nextFn.requiresInput)
-            evalContext(data);
+          if (nextFn && !nextFn.requiresInput) evalContext(data);
         }
       }
 
@@ -202,7 +199,7 @@ function chain (context) {
       // 2. Removing case sensitivity (if necessary)
       // 3. Splitting `data` into multiple lines.
       //
-      function onLine (data) {
+      function onLine(data) {
         data = data.toString();
 
         if (context.stripColors) {
@@ -213,7 +210,9 @@ function chain (context) {
           data = data.toLowerCase();
         }
 
-        var lines = data.split('\n').filter(function (line) { return line.length > 0; });
+        var lines = data.split('\n').filter(function(line) {
+          return line.length > 0;
+        });
         stdout = stdout.concat(lines);
 
         while (lines.length > 0) {
@@ -227,30 +226,24 @@ function chain (context) {
       // Helper function which flushes any remaining functions from
       // `context.queue` and responds to the `callback` accordingly.
       //
-      function flushQueue () {
+      function flushQueue() {
         var remainingQueue = context.queue.slice(),
-            currentFn = context.queue.shift(),
-            lastLine = stdout[stdout.length - 1];
+          currentFn = context.queue.shift(),
+          lastLine = stdout[stdout.length - 1];
 
         if (!lastLine) {
-          onError(createUnexpectedEndError(
-            'No data from child with non-empty queue.', remainingQueue));
+          onError(createUnexpectedEndError('No data from child with non-empty queue.', remainingQueue));
           return false;
-        }
-        else if (context.queue.length > 0) {
-          onError(createUnexpectedEndError(
-            'Non-empty queue on spawn exit.', remainingQueue));
+        } else if (context.queue.length > 0) {
+          onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue));
           return false;
-        }
-        else if (!validateFnType(currentFn)) {
+        } else if (!validateFnType(currentFn)) {
           // onError was called
           return false;
-        }
-        else if (currentFn.name === '_sendline') {
+        } else if (currentFn.name === '_sendline') {
           onError(new Error('Cannot call sendline after the process has exited'));
           return false;
-        }
-        else if (currentFn.name === '_wait' || currentFn.name === '_expect') {
+        } else if (currentFn.name === '_wait' || currentFn.name === '_expect') {
           if (currentFn(lastLine) !== true) {
             onError(createExpectationError(currentFn.expectation, lastLine));
             return false;
@@ -266,13 +259,13 @@ function chain (context) {
       // Helper function for writing any data from a stream
       // to `process.stdout`.
       //
-      function onData (data) {
+      function onData(data) {
         process.stdout.write(data);
       }
 
       options = {
         cwd: context.cwd,
-        env: context.env
+        env: context.env,
       };
 
       //
@@ -300,7 +293,7 @@ function chain (context) {
       // flush `context.queue` (if necessary) and respond to the callback
       // appropriately.
       //
-      context.process.on('close', function (code, signal) {
+      context.process.on('close', function(code, signal) {
         if (code === 127) {
           // XXX(sam) Not how node works (anymore?), 127 is what /bin/sh returns,
           // but it appears node does not, or not in all conditions, blithely
@@ -310,8 +303,7 @@ function chain (context) {
           // If the response code is `127` then `context.command` was not found.
           //
           return onError(new Error('Command not found: ' + context.command));
-        }
-        else if (context.queue.length && !flushQueue()) {
+        } else if (context.queue.length && !flushQueue()) {
           // if flushQueue returned false, onError was called
           return;
         }
@@ -320,7 +312,7 @@ function chain (context) {
       });
 
       return context.process;
-    }
+    },
   };
 }
 
@@ -336,50 +328,48 @@ function createUnexpectedEndError(message, remainingQueue) {
   var desc = [];
 
   if (isCI() === false) {
-    var desc = remainingQueue.map(function(it) { return it.description; });
+    var desc = remainingQueue.map(function(it) {
+      return it.description;
+    });
     var msg = message + '\n' + desc.join('\n');
   }
 
   return new AssertionError({
     message: msg,
     expected: [],
-    actual: desc
+    actual: desc,
   });
 }
 
 function createExpectationError(expected, actual) {
   var expectation;
-  if (util.isRegExp(expected))
-    expectation = 'to match ' + expected;
-  else
-    expectation = 'to contain ' + JSON.stringify(expected);
+  if (util.isRegExp(expected)) expectation = 'to match ' + expected;
+  else expectation = 'to contain ' + JSON.stringify(expected);
 
   var err = new AssertionError({
     message: util.format('expected %j %s', actual, expectation),
     actual: actual,
-    expected: expected
+    expected: expected,
   });
   return err;
 }
 
-function nspawn (command, params, options) {
+function nspawn(command, params, options) {
   if (arguments.length === 2) {
     if (Array.isArray(arguments[1])) {
       options = {};
-    }
-    else {
+    } else {
       options = arguments[1];
       params = null;
     }
   }
 
   if (Array.isArray(command)) {
-    params  = command;
+    params = command;
     command = params.shift();
-  }
-  else if (typeof command === 'string') {
+  } else if (typeof command === 'string') {
     command = command.split(' ');
-    params  = params || command.slice(1);
+    params = params || command.slice(1);
     command = command[0];
   }
 
@@ -393,7 +383,7 @@ function nspawn (command, params, options) {
     queue: [],
     stream: options.stream || 'stdout',
     stripColors: options.stripColors,
-    verbose: options.verbose
+    verbose: options.verbose,
   };
 
   return chain(context);
@@ -407,7 +397,7 @@ function isCI() {
 // Export the core `nspawn` function as well as `nexpect.nspawn` for
 // backwards compatibility.
 //
-module.exports.spawn  = nspawn;
+module.exports.spawn = nspawn;
 module.exports.nspawn = {
-  spawn: nspawn
+  spawn: nspawn,
 };

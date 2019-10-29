@@ -1,22 +1,22 @@
-import Input from './domain/input';
+import * as path from 'path';
+import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
 import { constructContext, persistContext } from './context-manager';
 import { print } from './context-extensions';
 import { executeCommand } from './execution-manager';
-import Context from './domain/context';
-import constants from './domain/constants';
-import * as path from 'path';
+import { Context } from './domain/context';
+import { constants } from './domain/constants';
 
 // entry from commandline
-export async function run() : Promise<number> {
+export async function run(): Promise<number> {
   try {
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
     let verificationResult = verifyInput(pluginPlatform, input);
 
-        // invalid input might be because plugin platform might have been updated,
-        // scan and try again
+    // invalid input might be because plugin platform might have been updated,
+    // scan and try again
     if (!verificationResult.verified) {
       if (verificationResult.message) {
         print.warning(verificationResult.message);
@@ -39,7 +39,7 @@ export async function run() : Promise<number> {
     persistContext(context);
     return 0;
   } catch (e) {
-        // ToDo: add logging to the core, and log execution errors using the unified core logging.
+    // ToDo: add logging to the core, and log execution errors using the unified core logging.
     if (e.message) {
       print.error(e.message);
     }
@@ -77,7 +77,7 @@ export async function execute(input: Input) {
     persistContext(context);
     return 0;
   } catch (e) {
-        // ToDo: add logging to the core, and log execution errors using the unified core logging.
+    // ToDo: add logging to the core, and log execution errors using the unified core logging.
     if (e.message) {
       print.error(e.message);
     }
@@ -93,4 +93,3 @@ export async function executeAmplifyCommand(context: Context) {
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
-

@@ -1,8 +1,7 @@
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import ModelAuthTransformer from 'graphql-auth-transformer';
-import ModelConnectionTransformer from 'graphql-connection-transformer';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import GraphQLTransform from 'graphql-transformer-core';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
@@ -11,7 +10,6 @@ import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 (global as any).fetch = require('node-fetch');
 
 jest.setTimeout(2000000);
-
 
 let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;
@@ -105,6 +103,10 @@ beforeAll(async () => {
       owner1: String! @auth(rules: [{allow: owner, ownerField: "notAllowed", operations: [update]}])
       text: String @auth(rules: [{ allow: owner, ownerField: "owner1", operations : [update]}])
   }
+  # add auth on a field
+  type Query {
+    someFunction: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+  }
     `;
   const transformer = new GraphQLTransform({
     transformers: [
@@ -145,10 +147,7 @@ beforeAll(async () => {
       Authorization: idToken,
     });
 
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [
-      DEVS_GROUP_NAME,
-      INSTRUCTOR_GROUP_NAME,
-    ]);
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [DEVS_GROUP_NAME, INSTRUCTOR_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
@@ -553,9 +552,7 @@ test('AND per-field dynamic auth rule test', async () => {
     }
     `);
   logDebug(badUpdatePostResponse);
-  expect(badUpdatePostResponse.errors[0].errorType).toEqual(
-    'DynamoDB:ConditionalCheckFailedException'
-  );
+  expect(badUpdatePostResponse.errors[0].errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 
   const correctUpdatePostResponse = await GRAPHQL_CLIENT_1.query(`mutation UpdatePost {
       updatePost(input: {id: "${postID1}", text: "newText"}) {
@@ -567,4 +564,27 @@ test('AND per-field dynamic auth rule test', async () => {
   logDebug(correctUpdatePostResponse);
   expect(correctUpdatePostResponse.data.updatePost.owner1).toEqual(USERNAME1);
   expect(correctUpdatePostResponse.data.updatePost.text).toEqual('newText');
+});
+
+test('test field auth on an operation type as user in admin group', async () => {
+  const queryResponse = await GRAPHQL_CLIENT_1.query(`
+    query SomeFunction {
+      someFunction
+    }
+  `);
+  // no errors though it should return null
+  logDebug(queryResponse);
+  expect(queryResponse.data.someFunction).toBeNull();
+});
+
+test('test field auth on an operation type as user not in admin group', async () => {
+  const queryResponse = await GRAPHQL_CLIENT_3.query(`
+    query SomeFunction {
+      someFunction
+    }
+  `);
+  // should return an error
+  logDebug(queryResponse);
+  expect(queryResponse.errors).toBeDefined();
+  expect(queryResponse.errors[0].message).toEqual('Unauthorized');
 });

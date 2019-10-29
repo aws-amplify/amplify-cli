@@ -1,7 +1,7 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import ModelAuthTransformer from 'graphql-auth-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -28,9 +28,10 @@ import {
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
 
+// tslint:disable: no-use-before-declare
+
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
-
 if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
   delete anyAWS.config.credentials;
 }
@@ -40,11 +41,15 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
-jest.setTimeout(2000000);
+// delay times
+const SUBSCRIPTION_DELAY = 2000;
+const PROPAGATION_DELAY = 5000;
+const JEST_TIMEOUT = 2000000;
+
+jest.setTimeout(JEST_TIMEOUT);
 
 const AWS_REGION = 'us-west-2';
 const cf = new CloudFormationClient(AWS_REGION);
-
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `SubscriptionAuthTests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `subscription-auth-tests-bucket-${BUILD_TIMESTAMP}`;
@@ -551,13 +556,13 @@ beforeAll(async () => {
       },
       auth: {
         type: AUTH_TYPE.API_KEY,
-        apiKey: apiKey,
+        apiKey,
       },
     });
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
-    await new Promise(res => setTimeout(() => res(), 5000));
+    await new Promise(res => setTimeout(() => res(), PROPAGATION_DELAY));
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -608,7 +613,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
       }
     `,
   });
-  let subscription = observer.subscribe((event: any) => {
+  const subscription = observer.subscribe((event: any) => {
     console.log('subscription event: ', event);
     const student = event.data.onCreateStudent;
     subscription.unsubscribe();
@@ -618,7 +623,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     done();
   });
 
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   createStudent(GRAPHQL_CLIENT_1, {
     name: 'student1',
@@ -651,7 +656,7 @@ test('Test that an user not in the group is not allowed to view the subscription
       done();
     },
   });
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   createStudent(GRAPHQL_CLIENT_1, {
     name: 'student2',
@@ -675,7 +680,7 @@ test('Test a subscription on update', async done => {
       }
     `,
   });
-  let subscription = observer.subscribe((event: any) => {
+  const subscription = observer.subscribe((event: any) => {
     const student = event.data.onUpdateStudent;
     subscription.unsubscribe();
     expect(student.id).toEqual(student3ID);
@@ -684,6 +689,7 @@ test('Test a subscription on update', async done => {
     expect(student.ssn).toBeNull();
     done();
   });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   const student3 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student3',
@@ -717,7 +723,7 @@ test('Test a subscription on delete', async done => {
       }
     `,
   });
-  let subscription = observer.subscribe((event: any) => {
+  const subscription = observer.subscribe((event: any) => {
     const student = event.data.onDeleteStudent;
     subscription.unsubscribe();
     expect(student.id).toEqual(student4ID);
@@ -726,6 +732,7 @@ test('Test a subscription on delete', async done => {
     expect(student.ssn).toBeNull();
     done();
   });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   const student4 = await createStudent(GRAPHQL_CLIENT_1, {
     name: 'student4',
@@ -752,14 +759,14 @@ test('Test subscription onCreatePost with ownerField', async done => {
         }
     }`,
   });
-  let subscription = observer.subscribe((event: any) => {
+  const subscription = observer.subscribe((event: any) => {
     const post = event.data.onCreatePost;
     subscription.unsubscribe();
     expect(post.title).toEqual('someTitle');
     expect(post.postOwner).toEqual(USERNAME1);
     done();
   });
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   createPost(GRAPHQL_CLIENT_1, {
     title: 'someTitle',
@@ -781,14 +788,14 @@ test('test that subcsription with apiKey', async done => {
     `,
   });
 
-  let subscription = observer.subscribe((event: any) => {
+  const subscription = observer.subscribe((event: any) => {
     const post = event.data.onCreateTodo;
     subscription.unsubscribe();
     expect(post.description).toEqual('someDescription');
     expect(post.name).toBeNull();
     done();
   });
-  await new Promise(res => setTimeout(() => res(), 1000));
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'someDescription',
@@ -808,7 +815,7 @@ test('test that subscription with apiKey onUpdate', async done => {
       }
     `,
   });
-  let subscription = observer.subscribe((event: any) => {
+  const subscription = observer.subscribe((event: any) => {
     const todo = event.data.onUpdateTodo;
     subscription.unsubscribe();
     expect(todo.id).toEqual(todo2ID);
@@ -816,6 +823,7 @@ test('test that subscription with apiKey onUpdate', async done => {
     expect(todo.name).toBeNull();
     done();
   });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   const todo2 = await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'updateTodoDesc',
@@ -845,7 +853,7 @@ test('test that subscription with apiKey onDelete', async done => {
       }
     `,
   });
-  let subscription = observer.subscribe((event: any) => {
+  const subscription = observer.subscribe((event: any) => {
     const todo = event.data.onDeleteTodo;
     subscription.unsubscribe();
     expect(todo.id).toEqual(todo3ID);
@@ -853,6 +861,7 @@ test('test that subscription with apiKey onDelete', async done => {
     expect(todo.name).toBeNull();
     done();
   });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
 
   const todo3 = await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'deleteTodoDesc',

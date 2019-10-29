@@ -1,5 +1,5 @@
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import GraphQLTransform from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
@@ -24,10 +24,7 @@ beforeAll(async () => {
 
   try {
     const transformer = new GraphQLTransform({
-      transformers: [
-        new DynamoDBModelTransformer(),
-        new VersionedModelTransformer(),
-      ],
+      transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
     });
     const out = transformer.transform(validSchema);
 
@@ -150,9 +147,7 @@ test('Test failed updatePost mutation with wrong version', async () => {
     {}
   );
   expect(updateResponse.errors.length).toEqual(1);
-  expect((updateResponse.errors[0] as any).errorType).toEqual(
-    'DynamoDB:ConditionalCheckFailedException'
-  );
+  expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
 test('Test deletePost mutation', async () => {
@@ -212,7 +207,5 @@ test('Test deletePost mutation with wrong version', async () => {
     {}
   );
   expect(deleteResponse.errors.length).toEqual(1);
-  expect((deleteResponse.errors[0] as any).errorType).toEqual(
-    'DynamoDB:ConditionalCheckFailedException'
-  );
+  expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });

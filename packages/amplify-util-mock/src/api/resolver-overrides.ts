@@ -85,9 +85,7 @@ export class ResolverOverrides {
     // Files that are in the disk used by resolvers created by custom stack will exist in resolver folder
     //  include them in the resolver output
     const resolversCreatedByTransformer = result.map(r => r.path);
-    const customResolverTemplates = Array.from(this.overrides.values()).filter(
-      o => !resolversCreatedByTransformer.includes(o)
-    );
+    const customResolverTemplates = Array.from(this.overrides.values()).filter(o => !resolversCreatedByTransformer.includes(o));
     customResolverTemplates.forEach(templateName => {
       result.push({
         path: templateName,

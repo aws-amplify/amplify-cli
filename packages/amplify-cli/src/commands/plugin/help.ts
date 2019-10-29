@@ -1,4 +1,4 @@
-import Context from '../../domain/context';
+import { Context } from '../../domain/context';
 
 export function run(context: Context) {
   context.print.info('');

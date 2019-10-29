@@ -1,4 +1,4 @@
-import Context from '../domain/context';
+import { Context } from '../domain/context';
 import { readJsonFileSync } from '../utils/readJsonFile';
 import path from 'path';
 
