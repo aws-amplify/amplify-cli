@@ -103,6 +103,10 @@ beforeAll(async () => {
       owner1: String! @auth(rules: [{allow: owner, ownerField: "notAllowed", operations: [update]}])
       text: String @auth(rules: [{ allow: owner, ownerField: "owner1", operations : [update]}])
   }
+  # add auth on a field
+  type Query {
+    someFunction: String @auth(rules: [{ allow: groups, groups: ["Admin"] }])
+  }
     `;
   const transformer = new GraphQLTransform({
     transformers: [
@@ -560,4 +564,27 @@ test('AND per-field dynamic auth rule test', async () => {
   logDebug(correctUpdatePostResponse);
   expect(correctUpdatePostResponse.data.updatePost.owner1).toEqual(USERNAME1);
   expect(correctUpdatePostResponse.data.updatePost.text).toEqual('newText');
+});
+
+test('test field auth on an operation type as user in admin group', async () => {
+  const queryResponse = await GRAPHQL_CLIENT_1.query(`
+    query SomeFunction {
+      someFunction
+    }
+  `);
+  // no errors though it should return null
+  logDebug(queryResponse);
+  expect(queryResponse.data.someFunction).toBeNull();
+});
+
+test('test field auth on an operation type as user not in admin group', async () => {
+  const queryResponse = await GRAPHQL_CLIENT_3.query(`
+    query SomeFunction {
+      someFunction
+    }
+  `);
+  // should return an error
+  logDebug(queryResponse);
+  expect(queryResponse.errors).toBeDefined();
+  expect(queryResponse.errors[0].message).toEqual('Unauthorized');
 });
