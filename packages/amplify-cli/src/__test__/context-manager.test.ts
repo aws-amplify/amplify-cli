@@ -16,4 +16,4 @@ test('constructContext', () => {
   expect(context.amplify).toBeDefined();
   expect(context.pluginPlatform).toEqual(mockPluginPlatform);
   expect(context.input).toEqual(mockInput);
-})
+});

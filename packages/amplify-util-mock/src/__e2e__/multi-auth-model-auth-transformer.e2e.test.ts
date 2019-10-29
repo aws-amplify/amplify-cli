@@ -240,9 +240,7 @@ test(`Test 'public' authStrategy`, async () => {
 
       expect(true).toBe(false);
     } catch (e) {
-      expect(e.message).toMatch(
-        'GraphQL error: Not Authorized to access getPostPublic on type Query'
-      );
+      expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPublic on type Query');
     }
   } catch (e) {
     expect(true).toBe(false);
@@ -286,9 +284,7 @@ test(`Test 'private' authStrategy`, async () => {
 
       expect(true).toBe(false);
     } catch (e) {
-      expect(e.message).toMatch(
-        'GraphQL error: Not Authorized to access getPostPrivate on type Query'
-      );
+      expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPrivate on type Query');
     }
   } catch (e) {
     console.error(e);
@@ -389,9 +385,7 @@ describe(`Connection tests with @auth on type`, () => {
         mutation: createPostMutation,
         fetchPolicy: 'no-cache',
       })
-    ).rejects.toThrow(
-      'GraphQL error: Not Authorized to access createPostConnection on type Mutation'
-    );
+    ).rejects.toThrow('GraphQL error: Not Authorized to access createPostConnection on type Mutation');
   });
 
   it('Add a comment with ApiKey - Fail', async () => {

@@ -19,16 +19,16 @@ export function configureDDBDataSource(config, ddbConfig) {
       if (d.type !== 'AMAZON_DYNAMODB') {
         return d;
       }
-        return {
-          ...d,
-          config: {
-            ...d.config,
-            endpoint: ddbConfig.endpoint,
-            region: ddbConfig.region,
-            accessKeyId: ddbConfig.accessKeyId,
-            secretAccessKey: ddbConfig.secretAccessKey,
-          },
-        };
+      return {
+        ...d,
+        config: {
+          ...d.config,
+          endpoint: ddbConfig.endpoint,
+          region: ddbConfig.region,
+          accessKeyId: ddbConfig.accessKeyId,
+          secretAccessKey: ddbConfig.secretAccessKey,
+        },
+      };
     }),
   };
 }

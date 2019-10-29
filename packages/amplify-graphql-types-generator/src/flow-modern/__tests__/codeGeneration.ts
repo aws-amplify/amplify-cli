@@ -3,11 +3,7 @@ import { parse } from 'graphql';
 import { loadSchema } from '../../loading';
 const schema = loadSchema(require.resolve('../../../test/fixtures/starwars/schema.json'));
 
-import {
-  compileToIR,
-  CompilerOptions,
-  CompilerContext,
-} from '../../compiler';
+import { compileToIR, CompilerOptions, CompilerContext } from '../../compiler';
 
 import { generateSource } from '../codeGeneration';
 
@@ -15,7 +11,7 @@ function compile(
   source: string,
   options: CompilerOptions = {
     mergeInFieldsFromFragmentSpreads: true,
-    addTypename: true
+    addTypename: true,
   }
 ): CompilerContext {
   const document = parse(source);
@@ -50,16 +46,15 @@ describe('Flow codeGeneration', () => {
         }
       }
     `);
-    context.operations["HeroName"].filePath = '/some/file/ComponentA.js';
-    context.operations["SomeOther"].filePath = '/some/file/ComponentB.js';
+    context.operations['HeroName'].filePath = '/some/file/ComponentA.js';
+    context.operations['SomeOther'].filePath = '/some/file/ComponentB.js';
     context.fragments['someFragment'].filePath = '/some/file/ComponentB.js';
     const output = generateSource(context);
     expect(output).toBeInstanceOf(Object);
-    Object.keys(output)
-      .forEach((filePath) => {
-        expect(filePath).toMatchSnapshot();
-        expect(output[filePath]).toMatchSnapshot();
-      });
+    Object.keys(output).forEach(filePath => {
+      expect(filePath).toMatchSnapshot();
+      expect(output[filePath]).toMatchSnapshot();
+    });
   });
 
   test('simple hero query', () => {
@@ -169,7 +164,7 @@ describe('Flow codeGeneration', () => {
 
     const output = generateSource(context);
     expect(output).toMatchSnapshot();
-  })
+  });
 
   test('inline fragment on type conditions', () => {
     const context = compile(`

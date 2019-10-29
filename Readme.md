@@ -39,6 +39,13 @@ $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
 
+***Note***: If you're having permission issues on your system installing the CLI, please try the following command:
+
+```bash
+$ sudo npm install -g @aws-amplify/cli --unsafe-perm=true
+$ amplify configure
+```
+
 ## Commands Summary
 
 The Amplify CLI supports the commands shown in the following table.

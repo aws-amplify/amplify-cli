@@ -11,29 +11,20 @@ import {
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLObjectType,
-  GraphQLUnionType
-} from 'graphql'
+  GraphQLUnionType,
+} from 'graphql';
 
-import  { isTypeProperSuperTypeOf } from '../utilities/graphql';
+import { isTypeProperSuperTypeOf } from '../utilities/graphql';
 
 import * as Inflector from 'inflected';
 
-import {
-  join,
-  wrap,
-} from '../utilities/printing';
+import { join, wrap } from '../utilities/printing';
 
 import CodeGenerator from '../utilities/CodeGenerator';
 
-import {
-  typeDeclaration,
-  propertyDeclaration,
-  propertySetsDeclaration
-} from './language';
+import { typeDeclaration, propertyDeclaration, propertySetsDeclaration } from './language';
 
-import {
-  typeNameFromGraphQLType,
-} from './types';
+import { typeNameFromGraphQLType } from './types';
 
 export function generateSource(context) {
   const generator = new CodeGenerator(context);
@@ -41,15 +32,13 @@ export function generateSource(context) {
   generator.printOnNewline('/* @flow */');
   generator.printOnNewline('/* eslint-disable */');
   generator.printOnNewline('//  This file was automatically generated and should not be edited.');
-  typeDeclarationForGraphQLType(context.typesUsed.forEach(type =>
-    typeDeclarationForGraphQLType(generator, type)
-  ));
+  typeDeclarationForGraphQLType(context.typesUsed.forEach(type => typeDeclarationForGraphQLType(generator, type)));
   Object.values(context.operations).forEach(operation => {
     interfaceVariablesDeclarationForOperation(generator, operation);
     typeDeclarationForOperation(generator, operation);
   });
   Object.values(context.fragments).forEach(fragment => {
-    typeDeclarationForFragment(generator, fragment)
+    typeDeclarationForFragment(generator, fragment);
   });
 
   return generator.output;
@@ -69,43 +58,42 @@ function enumerationDeclaration(generator, type) {
 
   generator.printNewlineIfNeeded();
   if (description) {
-    description.split('\n')
-      .forEach(line => {
-        generator.printOnNewline(`// ${line.trim()}`);
-      })
+    description.split('\n').forEach(line => {
+      generator.printOnNewline(`// ${line.trim()}`);
+    });
   }
   generator.printOnNewline(`export type ${name} =`);
   const nValues = values.length;
   values.forEach((value, i) => {
     if (!value.description || value.description.indexOf('\n') === -1) {
-      generator.printOnNewline(`  "${value.value}"${i === nValues - 1 ? ';' : ' |'}${wrap(' // ', value.description)}`)
+      generator.printOnNewline(`  "${value.value}"${i === nValues - 1 ? ';' : ' |'}${wrap(' // ', value.description)}`);
     } else {
       if (value.description) {
-        value.description.split('\n')
-          .forEach(line => {
-            generator.printOnNewline(`  // ${line.trim()}`);
-          })
+        value.description.split('\n').forEach(line => {
+          generator.printOnNewline(`  // ${line.trim()}`);
+        });
       }
-      generator.printOnNewline(`  "${value.value}"${i === nValues - 1 ? ';' : ' |'}`)
+      generator.printOnNewline(`  "${value.value}"${i === nValues - 1 ? ';' : ' |'}`);
     }
   });
   generator.printNewline();
 }
 
-function structDeclarationForInputObjectType(
-  generator,
-  type
-) {
+function structDeclarationForInputObjectType(generator, type) {
   const interfaceName = type.name;
-  typeDeclaration(generator, {
-    interfaceName,
-  }, () => {
-    const properties = propertiesFromFields(generator.context, Object.values(type.getFields()));
-    propertyDeclarations(generator, properties, true);
-  });
+  typeDeclaration(
+    generator,
+    {
+      interfaceName,
+    },
+    () => {
+      const properties = propertiesFromFields(generator.context, Object.values(type.getFields()));
+      propertyDeclarations(generator, properties, true);
+    }
+  );
 }
 
-function interfaceNameFromOperation({operationName, operationType}) {
+function interfaceNameFromOperation({ operationName, operationType }) {
   switch (operationType) {
     case 'query':
       return `${operationName}Query`;
@@ -123,26 +111,23 @@ function interfaceNameFromOperation({operationName, operationType}) {
 
 export function interfaceVariablesDeclarationForOperation(
   generator,
-  {
-    operationName,
-    operationType,
-    variables,
-    fields,
-    fragmentsReferenced,
-    source,
-  }
+  { operationName, operationType, variables, fields, fragmentsReferenced, source }
 ) {
   if (!variables || variables.length < 1) {
     return null;
   }
-  const interfaceName = `${interfaceNameFromOperation({operationName, operationType})}Variables`;
+  const interfaceName = `${interfaceNameFromOperation({ operationName, operationType })}Variables`;
 
-  typeDeclaration(generator, {
-    interfaceName,
-  }, () => {
-    const properties = propertiesFromFields(generator.context, variables);
-    propertyDeclarations(generator, properties, true);
-  });
+  typeDeclaration(
+    generator,
+    {
+      interfaceName,
+    },
+    () => {
+      const properties = propertiesFromFields(generator.context, variables);
+      propertyDeclarations(generator, properties, true);
+    }
+  );
 }
 
 function getObjectTypeName(type) {
@@ -156,76 +141,69 @@ function getObjectTypeName(type) {
     return `"${type.name}"`;
   }
   if (type instanceof GraphQLUnionType) {
-    return type.getTypes().map(type => getObjectTypeName(type)).join(" | ");
+    return type
+      .getTypes()
+      .map(type => getObjectTypeName(type))
+      .join(' | ');
   }
   return `"${type.name}"`;
 }
 
 export function typeDeclarationForOperation(
   generator,
-  {
-    operationName,
-    operationType,
-    variables,
-    fields,
-    fragmentSpreads,
-    fragmentsReferenced,
-    source,
-  }
+  { operationName, operationType, variables, fields, fragmentSpreads, fragmentsReferenced, source }
 ) {
-  const interfaceName = interfaceNameFromOperation({operationName, operationType});
+  const interfaceName = interfaceNameFromOperation({ operationName, operationType });
   fields = fields.map(rootField => {
-    const fields = rootField.fields && rootField.fields.map(field => {
-      if (field.fieldName === '__typename') {
-        const objectTypeName = getObjectTypeName(rootField.type);
-        return {
-          ...field,
-          typeName: objectTypeName,
-          type: { name: objectTypeName },
-        };
-      }
-      return field;
-    });
+    const fields =
+      rootField.fields &&
+      rootField.fields.map(field => {
+        if (field.fieldName === '__typename') {
+          const objectTypeName = getObjectTypeName(rootField.type);
+          return {
+            ...field,
+            typeName: objectTypeName,
+            type: { name: objectTypeName },
+          };
+        }
+        return field;
+      });
     return {
       ...rootField,
       fields,
     };
   });
   const properties = propertiesFromFields(generator.context, fields);
-  typeDeclaration(generator, {
-    interfaceName,
-  }, () => {
-    propertyDeclarations(generator, properties);
-  });
+  typeDeclaration(
+    generator,
+    {
+      interfaceName,
+    },
+    () => {
+      propertyDeclarations(generator, properties);
+    }
+  );
 }
 
-export function typeDeclarationForFragment(
-  generator,
-  fragment
-) {
-  const {
-    fragmentName,
-    typeCondition,
-    fields,
-    inlineFragments,
-    fragmentSpreads,
-    source,
-  } = fragment;
+export function typeDeclarationForFragment(generator, fragment) {
+  const { fragmentName, typeCondition, fields, inlineFragments, fragmentSpreads, source } = fragment;
 
   const interfaceName = `${fragmentName}Fragment`;
 
-  typeDeclaration(generator, {
-    interfaceName,
-    noBrackets: isAbstractType(typeCondition)
-  }, () => {
-    if (isAbstractType(typeCondition)) {
-      const propertySets = fragment.possibleTypes
-        .map(type => {
+  typeDeclaration(
+    generator,
+    {
+      interfaceName,
+      noBrackets: isAbstractType(typeCondition),
+    },
+    () => {
+      if (isAbstractType(typeCondition)) {
+        const propertySets = fragment.possibleTypes.map(type => {
           // NOTE: inlineFragment currently consists of the merged fields
           // from both inline fragments and fragment spreads.
           // TODO: Rename inlineFragments in the IR.
           const inlineFragment = inlineFragments.find(inlineFragment => {
-            return inlineFragment.typeCondition.toString() == type
+            return inlineFragment.typeCondition.toString() == type;
           });
 
           if (inlineFragment) {
@@ -234,8 +212,8 @@ export function typeDeclarationForFragment(
                 return {
                   ...field,
                   typeName: `"${inlineFragment.typeCondition}"`,
-                  type: { name: `"${inlineFragment.typeCondition}"` }
-                }
+                  type: { name: `"${inlineFragment.typeCondition}"` },
+                };
               } else {
                 return field;
               }
@@ -248,8 +226,8 @@ export function typeDeclarationForFragment(
                 return {
                   ...field,
                   typeName: `"${type}"`,
-                  type: { name: `"${type}"` }
-                }
+                  type: { name: `"${type}"` },
+                };
               } else {
                 return field;
               }
@@ -259,23 +237,24 @@ export function typeDeclarationForFragment(
           }
         });
 
-      propertySetsDeclaration(generator, fragment, propertySets, true);
-    } else {
-      const fragmentFields = fields.map(field => {
-        if (field.fieldName === '__typename') {
-          return {
-            ...field,
-            typeName: `"${fragment.typeCondition}"`,
-            type: { name: `"${fragment.typeCondition}"` }
+        propertySetsDeclaration(generator, fragment, propertySets, true);
+      } else {
+        const fragmentFields = fields.map(field => {
+          if (field.fieldName === '__typename') {
+            return {
+              ...field,
+              typeName: `"${fragment.typeCondition}"`,
+              type: { name: `"${fragment.typeCondition}"` },
+            };
+          } else {
+            return field;
           }
-        } else {
-          return field;
-        }
-      });
-      const properties = propertiesFromFields(generator.context, fragmentFields)
-      propertyDeclarations(generator, properties);
+        });
+        const properties = propertiesFromFields(generator.context, fragmentFields);
+        propertyDeclarations(generator, properties);
+      }
     }
-  });
+  );
 }
 
 export function propertiesFromFields(context, fields) {
@@ -308,8 +287,15 @@ export function propertyFromField(context, field) {
     }
     return {
       ...property,
-      typeName, fields: field.fields, isComposite: true, fragmentSpreads, inlineFragments, fieldType,
-      isArray, isNullable, isArrayElementNullable,
+      typeName,
+      fields: field.fields,
+      isComposite: true,
+      fragmentSpreads,
+      inlineFragments,
+      fieldType,
+      isArray,
+      isNullable,
+      isArrayElementNullable,
     };
   } else {
     if (field.fieldName === '__typename') {
@@ -326,55 +312,55 @@ export function propertyDeclarations(generator, properties, isInput) {
   if (!properties) return;
   properties.forEach(property => {
     if (isAbstractType(getNamedType(property.type || property.fieldType))) {
-      const propertySets = getPossibleTypeNames(generator, property)
-        .map(type => {
-          const inlineFragment = property.inlineFragments.find(inlineFragment => {
-            return inlineFragment.typeCondition.toString() == type
+      const propertySets = getPossibleTypeNames(generator, property).map(type => {
+        const inlineFragment = property.inlineFragments.find(inlineFragment => {
+          return inlineFragment.typeCondition.toString() == type;
+        });
+
+        if (inlineFragment) {
+          const fields = inlineFragment.fields.map(field => {
+            if (field.fieldName === '__typename') {
+              return {
+                ...field,
+                typeName: `"${inlineFragment.typeCondition}"`,
+                type: { name: `"${inlineFragment.typeCondition}"` },
+              };
+            } else {
+              return field;
+            }
           });
 
-          if (inlineFragment) {
-            const fields = inlineFragment.fields.map(field => {
-              if (field.fieldName === '__typename') {
-                return {
-                  ...field,
-                  typeName: `"${inlineFragment.typeCondition}"`,
-                  type: { name: `"${inlineFragment.typeCondition}"` }
-                }
-              } else {
-                return field;
-              }
-            });
+          return propertiesFromFields(generator, fields);
+        } else {
+          const fields = property.fields.map(field => {
+            if (field.fieldName === '__typename') {
+              return {
+                ...field,
+                typeName: `"${type}"`,
+                type: { name: `"${type}"` },
+              };
+            } else {
+              return field;
+            }
+          });
 
-            return propertiesFromFields(generator, fields);
-          } else {
-            const fields = property.fields.map(field => {
-              if (field.fieldName === '__typename') {
-                return {
-                  ...field,
-                  typeName: `"${type}"`,
-                  type: { name: `"${type}"` }
-                }
-              } else {
-                return field;
-              }
-            });
-
-            return propertiesFromFields(generator, fields);
-          }
-        });
+          return propertiesFromFields(generator, fields);
+        }
+      });
 
       propertySetsDeclaration(generator, property, propertySets);
     } else {
-      if (property.fields && property.fields.length > 0
-        || property.inlineFragments && property.inlineFragments.length > 0
-        || property.fragmentSpreads && property.fragmentSpreads.length > 0
+      if (
+        (property.fields && property.fields.length > 0) ||
+        (property.inlineFragments && property.inlineFragments.length > 0) ||
+        (property.fragmentSpreads && property.fragmentSpreads.length > 0)
       ) {
         propertyDeclaration(generator, property, () => {
           const properties = propertiesFromFields(generator.context, property.fields);
           propertyDeclarations(generator, properties, isInput);
         });
       } else {
-        propertyDeclaration(generator, {...property, isInput});
+        propertyDeclaration(generator, { ...property, isInput });
       }
     }
   });

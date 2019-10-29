@@ -64,12 +64,7 @@ export class StorageTest {
       const existingStorage = meta.storage;
       let backendPath = context.amplify.pathManager.getBackendDirPath();
       const resourceName = Object.keys(existingStorage)[0];
-      const CFNFilePath = path.join(
-        backendPath,
-        'storage',
-        resourceName,
-        's3-cloudformation-template.json'
-      );
+      const CFNFilePath = path.join(backendPath, 'storage', resourceName, 's3-cloudformation-template.json');
       const storageParams = context.amplify.readJsonFile(CFNFilePath);
       const lambdaConfig =
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration &&

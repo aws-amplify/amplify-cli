@@ -1,6 +1,5 @@
 const inquirer = jest.genMockFromModule('inquirer');
 
-
 function prompt(obj) {
   return obj;
 }

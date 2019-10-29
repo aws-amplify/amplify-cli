@@ -1,16 +1,6 @@
-import {
-  parse,
-  isType,
-  GraphQLID,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull
-} from 'graphql';
+import { parse, isType, GraphQLID, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
 
-import {
-  generateSource
-} from '../../src/flow/codeGeneration';
+import { generateSource } from '../../src/flow/codeGeneration';
 
 import { loadSchema } from '../../src/loading';
 const starWarsSchema = loadSchema(require.resolve('../fixtures/starwars/schema.json'));
@@ -25,19 +15,19 @@ function setup(schema) {
     schema: schema,
     operations: {},
     fragments: {},
-    typesUsed: {}
-  }
+    typesUsed: {},
+  };
 
   const generator = new CodeGenerator(context);
 
-  const compileFromSource = (source) => {
+  const compileFromSource = source => {
     const document = parse(source);
-    const context = compileToLegacyIR(schema, document, { mergeInFieldsFromFragmentSpreads: true, addTypename: true } );
+    const context = compileToLegacyIR(schema, document, { mergeInFieldsFromFragmentSpreads: true, addTypename: true });
     generator.context = context;
     return context;
   };
 
-  const addFragment = (fragment) => {
+  const addFragment = fragment => {
     generator.context.fragments[fragment.fragmentName] = fragment;
   };
 
@@ -332,7 +322,7 @@ describe('Flow code generation', function() {
       const source = generateSource(context);
       expect(source).toMatchSnapshot();
     });
-    
+
     test('should have __typename value matching fragment type on generic type', () => {
       const { compileFromSource } = setup(starWarsSchema);
       const context = compileFromSource(`

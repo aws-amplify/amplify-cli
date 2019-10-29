@@ -1,22 +1,16 @@
 const path = require('path');
 
-function init(context) {
-}
+function init(context) {}
 
-function initEnv(context, providerMetadata) {
-}
+function initEnv(context, providerMetadata) {}
 
-function onInitSuccessful(context) {
-}
+function onInitSuccessful(context) {}
 
-function pushResources(context, resourceList) {
-}
+function pushResources(context, resourceList) {}
 
-function deleteEnv(context, envName) {
-}
+function deleteEnv(context, envName) {}
 
-function configure(context) {
-}
+function configure(context) {}
 
 async function executeAmplifyCommand(context) {
   const commandsDirPath = path.normalize(path.join(__dirname, 'commands'));

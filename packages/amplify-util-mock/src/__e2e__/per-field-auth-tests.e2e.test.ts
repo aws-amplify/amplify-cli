@@ -12,7 +12,6 @@ import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 
 jest.setTimeout(2000000);
 
-
 let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;
 let dbPath = null;
@@ -145,10 +144,7 @@ beforeAll(async () => {
       Authorization: idToken,
     });
 
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [
-      DEVS_GROUP_NAME,
-      INSTRUCTOR_GROUP_NAME,
-    ]);
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [DEVS_GROUP_NAME, INSTRUCTOR_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
@@ -553,9 +549,7 @@ test('AND per-field dynamic auth rule test', async () => {
     }
     `);
   logDebug(badUpdatePostResponse);
-  expect(badUpdatePostResponse.errors[0].errorType).toEqual(
-    'DynamoDB:ConditionalCheckFailedException'
-  );
+  expect(badUpdatePostResponse.errors[0].errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 
   const correctUpdatePostResponse = await GRAPHQL_CLIENT_1.query(`mutation UpdatePost {
       updatePost(input: {id: "${postID1}", text: "newText"}) {

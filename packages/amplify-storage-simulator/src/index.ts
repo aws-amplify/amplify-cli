@@ -1,4 +1,4 @@
-import { StorageServer } from "./server/S3server";
+import { StorageServer } from './server/S3server';
 
 export interface StorageSimulatorDataSourceBaseConfig {
   name: string;

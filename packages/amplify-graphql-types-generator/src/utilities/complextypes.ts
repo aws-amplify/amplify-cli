@@ -1,6 +1,6 @@
 import { GraphQLType, isInputObjectType, getNamedType, isObjectType } from 'graphql';
 
-const S3_FIELD_NAMES = ['bucket', 'key', 'region' ];
+const S3_FIELD_NAMES = ['bucket', 'key', 'region'];
 
 export function hasS3Fields(input: GraphQLType): boolean {
   if (isObjectType(input) || isInputObjectType(input)) {
@@ -8,8 +8,7 @@ export function hasS3Fields(input: GraphQLType): boolean {
       return true;
     }
     const fields = input.getFields();
-    return Object.keys(fields)
-      .some(f => hasS3Fields((<any>fields[f]) as GraphQLType));
+    return Object.keys(fields).some(f => hasS3Fields((<any>fields[f]) as GraphQLType));
   }
   return false;
 }

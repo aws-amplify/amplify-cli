@@ -1,4 +1,4 @@
-import { stripIndent } from 'common-tags'
+import { stripIndent } from 'common-tags';
 
 import {
   GraphQLString,
@@ -11,12 +11,12 @@ import {
   GraphQLScalarType,
 } from 'graphql';
 
-import { loadSchema } from '../../src/loading'
+import { loadSchema } from '../../src/loading';
 const schema = loadSchema(require.resolve('../fixtures/starwars/schema.json'));
 
 import CodeGenerator from '../../src/utilities/CodeGenerator';
 
-import { typeNameFromGraphQLType } from '../../src/scala/types'
+import { typeNameFromGraphQLType } from '../../src/scala/types';
 
 describe('Scala code generation: Types', function() {
   describe('#typeNameFromGraphQLType()', function() {
@@ -49,7 +49,9 @@ describe('Scala code generation: Types', function() {
     });
 
     test('should return Option[Seq[Seq[Option[String]]]] for GraphQLList(GraphQLNonNull(GraphQLList(GraphQLString)))', function() {
-      expect(typeNameFromGraphQLType({}, new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLString))))).toBe('Option[Seq[Seq[Option[String]]]]');
+      expect(typeNameFromGraphQLType({}, new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLString))))).toBe(
+        'Option[Seq[Seq[Option[String]]]]'
+      );
     });
 
     test('should return Option[Int] for GraphQLInt', function() {
@@ -73,11 +75,21 @@ describe('Scala code generation: Types', function() {
     });
 
     test('should return a passed through custom scalar type with the passthroughCustomScalars option', function() {
-      expect(typeNameFromGraphQLType({ passthroughCustomScalars: true, customScalarsPrefix: '' }, new GraphQLScalarType({ name: 'CustomScalarType', serialize: String }))).toBe('Option[CustomScalarType]');
+      expect(
+        typeNameFromGraphQLType(
+          { passthroughCustomScalars: true, customScalarsPrefix: '' },
+          new GraphQLScalarType({ name: 'CustomScalarType', serialize: String })
+        )
+      ).toBe('Option[CustomScalarType]');
     });
 
     test('should return a passed through custom scalar type with a prefix with the customScalarsPrefix option', function() {
-      expect(typeNameFromGraphQLType({ passthroughCustomScalars: true, customScalarsPrefix: 'My' }, new GraphQLScalarType({ name: 'CustomScalarType', serialize: String }))).toBe('Option[MyCustomScalarType]');
+      expect(
+        typeNameFromGraphQLType(
+          { passthroughCustomScalars: true, customScalarsPrefix: 'My' },
+          new GraphQLScalarType({ name: 'CustomScalarType', serialize: String })
+        )
+      ).toBe('Option[MyCustomScalarType]');
     });
   });
 });

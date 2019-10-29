@@ -1,16 +1,10 @@
-
 import * as nexpect from 'nexpect';
 import { join } from 'path';
 import * as fs from 'fs';
 
 import { getCLIPath, isCI, getEnvVars } from '../utils';
 
-
-export function addAuthWithDefault(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function addAuthWithDefault(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
@@ -28,15 +22,11 @@ export function addAuthWithDefault(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function addAuthWithGroupTrigger(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI(),
-) {
+export function addAuthWithGroupTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
@@ -64,19 +54,15 @@ export function addAuthWithGroupTrigger(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function addAuthViaAPIWithTrigger(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI(),
-) {
+export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .send('\r')
       .wait('Provide API name')
       .send('\r')
@@ -120,15 +106,11 @@ export function addAuthViaAPIWithTrigger(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function addAuthWithCustomTrigger(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI(),
-) {
+export function addAuthWithCustomTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
@@ -163,7 +145,7 @@ export function addAuthWithCustomTrigger(
       .send('\r')
       .wait(' What attributes are required for signing up?')
       .send('\r')
-      .wait('Specify the app\'s refresh token expiration period (in days):')
+      .wait("Specify the app's refresh token expiration period (in days):")
       .send('\r')
       .wait('Do you want to specify the user attributes this app can read and write?')
       .send('\r')
@@ -197,15 +179,11 @@ export function addAuthWithCustomTrigger(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function updateAuthWithoutCustomTrigger(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI(),
-) {
+export function updateAuthWithoutCustomTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
@@ -229,7 +207,7 @@ export function updateAuthWithoutCustomTrigger(
       .send('\r')
       .wait('Do you want to override the default password policy for this User Pool?')
       .send('\r')
-      .wait('Specify the app\'s refresh token expiration period (in days):')
+      .wait("Specify the app's refresh token expiration period (in days):")
       .send('\r')
       .wait('Do you want to specify the user attributes this app can read and write?')
       .send('\r')
@@ -251,15 +229,11 @@ export function updateAuthWithoutCustomTrigger(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function addAuthWithRecaptchaTrigger(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI(),
-) {
+export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
@@ -293,32 +267,33 @@ export function addAuthWithRecaptchaTrigger(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function addAuthWithDefaultSocial(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    const {
-      FACEBOOK_APP_ID,
-      FACEBOOK_APP_SECRET,
-      GOOGLE_APP_ID,
-      GOOGLE_APP_SECRET,
-      AMAZON_APP_ID,
-      AMAZON_APP_SECRET,
-    }: any = getEnvVars();
+    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
 
     const missingVars = [];
-    if (!FACEBOOK_APP_ID) { missingVars.push('FACEBOOK_APP_ID') };
-    if (!FACEBOOK_APP_SECRET) { missingVars.push('FACEBOOK_APP_SECRET') };
-    if (!GOOGLE_APP_ID) { missingVars.push('GOOGLE_APP_ID') };
-    if (!GOOGLE_APP_SECRET) { missingVars.push('GOOGLE_APP_SECRET') };
-    if (!AMAZON_APP_ID) { missingVars.push('AMAZON_APP_ID') };
-    if (!AMAZON_APP_SECRET) { missingVars.push('AMAZON_APP_SECRET') };
+    if (!FACEBOOK_APP_ID) {
+      missingVars.push('FACEBOOK_APP_ID');
+    }
+    if (!FACEBOOK_APP_SECRET) {
+      missingVars.push('FACEBOOK_APP_SECRET');
+    }
+    if (!GOOGLE_APP_ID) {
+      missingVars.push('GOOGLE_APP_ID');
+    }
+    if (!GOOGLE_APP_SECRET) {
+      missingVars.push('GOOGLE_APP_SECRET');
+    }
+    if (!AMAZON_APP_ID) {
+      missingVars.push('AMAZON_APP_ID');
+    }
+    if (!AMAZON_APP_SECRET) {
+      missingVars.push('AMAZON_APP_SECRET');
+    }
 
     if (missingVars.length > 0) {
       throw new Error(`.env file is missing the following key/values: ${missingVars.join(', ')} `);
@@ -374,15 +349,11 @@ export function addAuthWithDefaultSocial(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function addAuthWithMaxOptions(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI(),
-) {
+export function addAuthWithMaxOptions(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
@@ -554,6 +525,6 @@ export function addAuthWithMaxOptions(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }

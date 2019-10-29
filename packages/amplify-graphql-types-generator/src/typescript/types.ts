@@ -9,7 +9,7 @@ import {
   GraphQLScalarType,
   GraphQLType,
   isNonNullType,
-  isListType
+  isListType,
 } from 'graphql';
 
 const builtInScalarMap = {
@@ -18,16 +18,20 @@ const builtInScalarMap = {
   [GraphQLFloat.name]: 'number',
   [GraphQLBoolean.name]: 'boolean',
   [GraphQLID.name]: 'string',
-}
+};
 
 const appSyncScalars: any = {
   AWSTimestamp: 'number',
-}
+};
 
-
-export function typeNameFromGraphQLType(context: LegacyCompilerContext, type: GraphQLType, bareTypeName?: string | null, nullable = true): string {
+export function typeNameFromGraphQLType(
+  context: LegacyCompilerContext,
+  type: GraphQLType,
+  bareTypeName?: string | null,
+  nullable = true
+): string {
   if (isNonNullType(type)) {
-    return typeNameFromGraphQLType(context, type.ofType, bareTypeName, false)
+    return typeNameFromGraphQLType(context, type.ofType, bareTypeName, false);
   }
 
   let typeName;
@@ -37,9 +41,7 @@ export function typeNameFromGraphQLType(context: LegacyCompilerContext, type: Gr
     typeName =
       builtInScalarMap[type.name] ||
       appSyncScalars[type.name] ||
-      (context.options.passthroughCustomScalars
-        ? context.options.customScalarsPrefix + type.name
-        : builtInScalarMap[GraphQLString.name]);
+      (context.options.passthroughCustomScalars ? context.options.customScalarsPrefix + type.name : builtInScalarMap[GraphQLString.name]);
   } else {
     typeName = bareTypeName || type.name;
   }

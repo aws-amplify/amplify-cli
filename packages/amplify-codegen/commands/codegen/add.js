@@ -5,7 +5,7 @@ const featureName = 'add';
 
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     try {
       const { options = {} } = context.parameters;
       const keys = Object.keys(options);

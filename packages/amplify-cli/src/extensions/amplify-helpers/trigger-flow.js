@@ -6,6 +6,7 @@ const fsExtra = require('fs-extra');
 const { flattenDeep } = require('lodash');
 const { join } = require('path');
 const { uniq } = require('lodash');
+const { readJsonFile } = require('./read-json-file');
 
 /** ADD A TRIGGER
  * @function addTrigger
@@ -361,7 +362,7 @@ const choicesFromMetadata = (path, selection, isDir) => {
 };
 
 // get metadata from a particular file
-const getTriggerMetadata = (path, selection) => JSON.parse(fs.readFileSync(`${path}/${selection}.map.json`));
+const getTriggerMetadata = (path, selection) => readJsonFile(`${path}/${selection}.map.json`);
 
 // open customer's text editor
 async function openEditor(context, path, name) {
