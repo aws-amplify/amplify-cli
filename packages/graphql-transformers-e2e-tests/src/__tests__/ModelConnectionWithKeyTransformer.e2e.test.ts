@@ -1,9 +1,9 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import ModelConnectionTransformer from 'graphql-connection-transformer';
-import ModelKeyTransformer from 'graphql-key-transformer';
-import ModelAuthTransformer from 'graphql-auth-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
@@ -124,7 +124,7 @@ beforeAll(async () => {
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelConnectionTransformer(),
-      new ModelKeyTransformer(),
+      new KeyTransformer(),
       new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {

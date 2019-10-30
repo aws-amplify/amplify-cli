@@ -27,7 +27,7 @@ import {
   newline,
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
-import GraphQLAPI, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, AdditionalAuthenticationProvider } from './graphQlApi';
+import GraphQLApi, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, AdditionalAuthenticationProvider } from './graphQlApi';
 import * as Transformer from './ModelAuthTransformer';
 import { FieldDefinitionNode } from 'graphql';
 
@@ -126,7 +126,7 @@ export class ResourceFactory {
     };
   }
 
-  public updateGraphQLAPIWithAuth(apiRecord: GraphQLAPI, authConfig: Transformer.AppSyncAuthConfiguration) {
+  public updateGraphQLAPIWithAuth(apiRecord: GraphQLApi, authConfig: Transformer.AppSyncAuthConfiguration) {
     let properties: GraphQLApiProperties = {
       ...apiRecord.Properties,
       Name: apiRecord.Properties.Name,
@@ -197,7 +197,7 @@ export class ResourceFactory {
       properties.AdditionalAuthenticationProviders = additionalAuthenticationProviders;
     }
 
-    return new GraphQLAPI(properties);
+    return new GraphQLApi(properties);
   }
 
   private assignOpenIDConnectConfig(config: Transformer.OpenIDConnectConfig) {
@@ -1037,10 +1037,12 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         ref('es_response'),
         obj({
           items: ref('es_items'),
-          total: ref('ctx.result.hits.total'),
         })
       ),
-      iff(raw('$es_items.size() > 0'), qref('$es_response.put("nextToken", $nextToken)')),
+      iff(
+        raw('$es_items.size() > 0'),
+        compoundExpression([qref('$es_response.put("nextToken", $nextToken)'), qref('$es_response.put("total", $es_items.size())')])
+      ),
       toJson(ref('es_response')),
     ]);
   }

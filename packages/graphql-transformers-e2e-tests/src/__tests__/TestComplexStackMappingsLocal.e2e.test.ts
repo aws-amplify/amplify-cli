@@ -1,20 +1,11 @@
-import GraphQLTransform, { Transformer, InvalidDirectiveError } from 'graphql-transformer-core';
-import ModelTransformer from 'graphql-dynamodb-transformer';
-import ElasticsearchTransformer from 'graphql-elasticsearch-transformer';
-import ConnectionTransformer from 'graphql-connection-transformer';
-import HttpTransformer from 'graphql-http-transformer';
-import AuthTransformer from 'graphql-auth-transformer';
-import FunctionTransformer from 'graphql-function-transformer';
-import Template from 'cloudform-types/types/template';
-import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, Kind, InputObjectTypeDefinitionNode } from 'graphql';
-import {
-  expectExactKeys,
-  expectNonNullFields,
-  expectNullableFields,
-  expectNonNullInputValues,
-  expectNullableInputValues,
-  expectInputValueToHandle,
-} from '../testUtil';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { HttpTransformer } from 'graphql-http-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { FunctionTransformer } from 'graphql-function-transformer';
+import { expectExactKeys } from '../testUtil';
 
 const userType = `
 type User @model @auth(rules: [{ allow: owner }]) {
@@ -61,12 +52,12 @@ test('Test that every resource exists in the correct stack given a complex schem
 function transpileAndCheck(schema: string) {
   const transformer = new GraphQLTransform({
     transformers: [
-      new ModelTransformer(),
+      new DynamoDBModelTransformer(),
       new HttpTransformer(),
-      new ElasticsearchTransformer(),
-      new ConnectionTransformer(),
+      new ModelConnectionTransformer(),
       new FunctionTransformer(),
-      new AuthTransformer({
+      new SearchableModelTransformer(),
+      new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
             authenticationType: 'AMAZON_COGNITO_USER_POOLS',

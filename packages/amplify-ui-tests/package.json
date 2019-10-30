@@ -1,6 +1,6 @@
 {
   "name": "amplify-ui-tests",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -28,7 +28,7 @@
     "rimraf": "2.6.2",
     "ts-jest": "22.4.6",
     "tslint": "5.10.0",
-    "typescript": "3.5.3"
+    "typescript": "^3.6.4"
   },
   "jest": {
     "transform": {

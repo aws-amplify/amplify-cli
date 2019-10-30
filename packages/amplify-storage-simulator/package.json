@@ -1,6 +1,6 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "An S3 simulator to test S3 APIs",
   "main": "lib/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "@types/cors": "^2.8.5",
     "@types/glob": "^7.1.1",
     "@types/serve-static": "^1.13.2",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.4"
   },
   "jest": {
     "transform": {

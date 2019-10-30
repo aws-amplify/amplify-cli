@@ -2,19 +2,24 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
-const DynamoDBModelTransformer = require('graphql-dynamodb-transformer').default;
-const ModelAuthTransformer = require('graphql-auth-transformer').default;
-const ModelConnectionTransformer = require('graphql-connection-transformer').default;
-const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
-const VersionedModelTransformer = require('graphql-versioned-transformer').default;
-const FunctionTransformer = require('graphql-function-transformer').default;
-const HTTPTransformer = require('graphql-http-transformer').default;
-const KeyTransformer = require('graphql-key-transformer').default;
+const { DynamoDBModelTransformer } = require('graphql-dynamodb-transformer');
+const { ModelAuthTransformer } = require('graphql-auth-transformer');
+const { ModelConnectionTransformer } = require('graphql-connection-transformer');
+const { SearchableModelTransformer } = require('graphql-elasticsearch-transformer');
+const { VersionedModelTransformer } = require('graphql-versioned-transformer');
+const { FunctionTransformer } = require('graphql-function-transformer');
+const { HttpTransformer } = require('graphql-http-transformer');
+const { KeyTransformer } = require('graphql-key-transformer');
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 const { hashElement } = require('folder-hash');
 
-const { collectDirectivesByTypeNames, readTransformerConfiguration, writeTransformerConfiguration } = TransformPackage;
+const {
+  collectDirectivesByTypeNames,
+  readTransformerConfiguration,
+  writeTransformerConfiguration,
+  TRANSFORM_CONFIG_FILE_NAME,
+} = TransformPackage;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
@@ -295,19 +300,46 @@ async function transformGraphQLSchema(context, options) {
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = addSearchableTransformer => {
+  const transformerListFactory = async addSearchableTransformer => {
     const transformerList = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),
       new VersionedModelTransformer(),
       new FunctionTransformer(),
-      new HTTPTransformer(),
+      new HttpTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
     ];
 
     if (addSearchableTransformer) {
       transformerList.push(new SearchableModelTransformer());
+    }
+
+    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
+    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
+      ? customTransformersConfig.transformers
+      : []
+    )
+      .map(transformer => {
+        const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
+        const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
+        // handle 'cannot find module'
+        try {
+          return require(modulePath);
+        } catch (error) {
+          context.print.error(`Unable to import custom transformer module(${modulePath}).`);
+          context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
+          throw error;
+        }
+      })
+      .map(imported => {
+        const CustomTransformer = imported.default;
+        return CustomTransformer.call({});
+      })
+      .filter(customTransformer => customTransformer);
+
+    if (customTransformers.length > 0) {
+      transformerList.push(...customTransformers);
     }
 
     // TODO: Build dependency mechanism into transformers. Auth runs last

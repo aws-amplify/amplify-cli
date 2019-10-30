@@ -34,6 +34,7 @@ import {
   makeInputValueDefinition,
   wrapNonNull,
   withNamedNodeNamed,
+  blankObject,
   makeNonNullType,
   makeNamedType,
   getBaseType,
@@ -46,6 +47,7 @@ import {
   graphqlName,
   toUpper,
 } from 'graphql-transformer-common';
+import { makeModelConnectionType } from 'graphql-dynamodb-transformer';
 import {
   ObjectTypeDefinitionNode,
   FieldDefinitionNode,
@@ -65,7 +67,7 @@ interface KeyArguments {
   queryField?: string;
 }
 
-export default class KeyTransformer extends Transformer {
+export class KeyTransformer extends Transformer {
   constructor() {
     super(
       'KeyTransformer',
@@ -326,8 +328,27 @@ export default class KeyTransformer extends Transformer {
         fields: [...queryType.fields, queryField],
       };
       ctx.putType(queryType);
+
+      this.generateModelXConnectionType(ctx, definition);
     }
   };
+
+  private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(def.name.value);
+    if (this.typeExist(tableXConnectionName, ctx)) {
+      return;
+    }
+
+    // Create the ModelXConnection
+    const connectionType = blankObject(tableXConnectionName);
+    ctx.addObject(connectionType);
+
+    ctx.addObjectExtension(makeModelConnectionType(def.name.value));
+  }
+
+  private typeExist(type: string, ctx: TransformerContext): boolean {
+    return Boolean(type in ctx.nodeMap);
+  }
 
   // Update the create, update, and delete input objects to account for any changes to the primary key.
   private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {

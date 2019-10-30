@@ -1,6 +1,6 @@
-import Context from './domain/context';
-import Input from './domain/input';
-import PluginPlatform from './domain/plugin-platform';
+import { Context } from './domain/context';
+import { Input } from './domain/input';
+import { PluginPlatform } from './domain/plugin-platform';
 import { attachExtentions } from './context-extensions';
 
 export function constructContext(pluginPlatform: PluginPlatform, input: Input): Context {

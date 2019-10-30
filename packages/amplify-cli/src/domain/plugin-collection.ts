@@ -1,5 +1,5 @@
-import PluginInfo from './plugin-info';
+import { PluginInfo } from './plugin-info';
 
-export default class PluginCollection {
+export class PluginCollection {
   [key: string]: Array<PluginInfo>;
 }

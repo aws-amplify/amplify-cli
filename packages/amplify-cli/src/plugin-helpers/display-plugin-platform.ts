@@ -1,8 +1,8 @@
 import util from 'util';
-import Context from '../domain/context';
-import PluginInfo from '../domain/plugin-info';
-import PluginCollection from '../domain/plugin-collection';
-import PluginPlatform from '../domain/plugin-platform';
+import { Context } from '../domain/context';
+import { PluginInfo } from '../domain/plugin-info';
+import { PluginCollection } from '../domain/plugin-collection';
+import { PluginPlatform } from '../domain/plugin-platform';
 
 const defaultIndentationStr = '  ';
 

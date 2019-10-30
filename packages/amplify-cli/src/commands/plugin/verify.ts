@@ -1,4 +1,4 @@
-import Context from '../../domain/context';
+import { Context } from '../../domain/context';
 import { verifyPlugin } from '../../plugin-manager';
 
 export async function run(context: Context) {

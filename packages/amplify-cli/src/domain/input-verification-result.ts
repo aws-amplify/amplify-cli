@@ -1,4 +1,4 @@
-export default class InputVerificationResult {
+export class InputVerificationResult {
   constructor(
     public verified: boolean = false,
     public helpCommandAvailable: boolean = false,

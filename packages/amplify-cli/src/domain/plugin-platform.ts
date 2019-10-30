@@ -1,9 +1,9 @@
-import PluginCollection from './plugin-collection';
-import constants from './constants';
+import { PluginCollection } from './plugin-collection';
+import { constants } from './constants';
 
 const SECONDSINADAY = 86400;
 
-export default class PluginPlatform {
+export class PluginPlatform {
   constructor() {
     this.pluginDirectories = [constants.LocalNodeModules, constants.ParentDirectory, constants.GlobalNodeModules];
     this.pluginPrefixes = [constants.AmplifyPrefix];

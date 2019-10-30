@@ -10,8 +10,8 @@ import { typeCaseForSelectionSet, Variant } from '../compiler/visitors/typeCase'
 import { collectAndMergeFields } from '../compiler/visitors/collectAndMergeFields';
 
 import { BasicGeneratedFile } from '../utilities/CodeGenerator';
-import FlowGenerator, { ObjectProperty, FlowCompilerOptions } from './language';
-import Printer from './printer';
+import { FlowGenerator, ObjectProperty, FlowCompilerOptions } from './language';
+import { Printer } from './printer';
 
 class FlowGeneratedFile implements BasicGeneratedFile {
   fileContents: string;

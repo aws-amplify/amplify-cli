@@ -1,9 +1,9 @@
-import Context from '../../domain/context';
-import constants from '../../domain/constants';
+import path from 'path';
+import { Context } from '../../domain/context';
+import { constants } from '../../domain/constants';
 import { createNewPlugin } from '../../plugin-manager';
 import { addUserPluginPackage } from '../../plugin-manager';
 import { AddPluginError } from '../../domain/add-plugin-result';
-import path from 'path';
 
 export async function run(context: Context) {
   const pluginDirPath = await createNewPlugin(context, process.cwd());

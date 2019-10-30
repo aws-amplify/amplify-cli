@@ -408,12 +408,6 @@ export class ModelAuthTransformer extends Transformer {
       );
     }
     const modelDirective = parent.directives.find(dir => dir.name.value === 'model');
-    if (!modelDirective) {
-      throw new InvalidDirectiveError('Types annotated with @auth must also be annotated with @model.');
-    }
-
-    // Retrieve the configuration options for the related @model directive
-    const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, parent);
     if (
       parent.name.value === ctx.getQueryTypeName() ||
       parent.name.value === ctx.getMutationTypeName() ||
@@ -452,31 +446,75 @@ Static group authorization should perform as expected.`
       if (rule.operations) {
         const matchesOp = rule.operations.find(o => o === op);
         return Boolean(matchesOp);
-      } else if (rule.operations === null) {
+      }
+      if (rule.operations === null) {
         return false;
       }
       return true;
     };
-    const isReadRule = isOpRule('read');
-    const isCreateRule = isOpRule('create');
-    const isUpdateRule = isOpRule('update');
-    const isDeleteRule = isOpRule('delete');
-    // The field handler adds the read rule on the object
-    const readRules = rules.filter((rule: AuthRule) => isReadRule(rule));
-    this.protectReadForField(ctx, parent, definition, readRules, modelConfiguration);
 
-    // Protect mutations when objects including this field are trying to be created.
-    const createRules = rules.filter((rule: AuthRule) => isCreateRule(rule));
-    this.protectCreateForField(ctx, parent, definition, createRules, modelConfiguration);
+    // add rules if per field @auth is used with @model
+    if (modelDirective) {
+      const isReadRule = isOpRule('read');
+      const isCreateRule = isOpRule('create');
+      const isUpdateRule = isOpRule('update');
+      const isDeleteRule = isOpRule('delete');
 
-    // Protect update mutations when objects inluding this field are trying to be updated.
-    const updateRules = rules.filter((rule: AuthRule) => isUpdateRule(rule));
-    this.protectUpdateForField(ctx, parent, definition, updateRules, modelConfiguration);
+      // Retrieve the configuration options for the related @model directive
+      const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, parent);
+      // The field handler adds the read rule on the object
+      const readRules = rules.filter((rule: AuthRule) => isReadRule(rule));
+      this.protectReadForField(ctx, parent, definition, readRules, modelConfiguration);
 
-    // Delete operations are only protected by @auth directives on objects.
-    const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule));
-    this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration);
+      // Protect mutations when objects including this field are trying to be created.
+      const createRules = rules.filter((rule: AuthRule) => isCreateRule(rule));
+      this.protectCreateForField(ctx, parent, definition, createRules, modelConfiguration);
+
+      // Protect update mutations when objects inluding this field are trying to be updated.
+      const updateRules = rules.filter((rule: AuthRule) => isUpdateRule(rule));
+      this.protectUpdateForField(ctx, parent, definition, updateRules, modelConfiguration);
+
+      // Delete operations are only protected by @auth directives on objects.
+      const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule));
+      this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration);
+    } else {
+      // if @auth is used without @model only generate static group rules
+      const staticGroupRules = rules.filter((rule: AuthRule) => rule.groups);
+      this.protectField(ctx, parent, definition, staticGroupRules);
+    }
   };
+
+  private protectField(
+    ctx: TransformerContext,
+    parent: ObjectTypeDefinitionNode,
+    field: FieldDefinitionNode,
+    staticGroupRules: AuthRule[]
+  ) {
+    const typeName = parent.name.value;
+    const fieldName = field.name.value;
+    const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+    let fieldResolverResource = ctx.getResource(resolverResourceId);
+    // add logic here to only use static group rules
+    const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
+    const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
+    const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized(field);
+    const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
+    const templateParts = [print(compoundExpression(authCheckExpressions))];
+    // if the field resolver does not exist create it
+    if (!fieldResolverResource) {
+      fieldResolverResource = this.resources.blankResolver(typeName, fieldName);
+      ctx.setResource(resolverResourceId, fieldResolverResource);
+      // add none ds if that does not exist
+      const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource);
+      if (!noneDS) {
+        ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource());
+      }
+    } else {
+      templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
+    }
+    fieldResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n');
+    ctx.setResource(resolverResourceId, fieldResolverResource);
+  }
 
   private protectReadForField(
     ctx: TransformerContext,

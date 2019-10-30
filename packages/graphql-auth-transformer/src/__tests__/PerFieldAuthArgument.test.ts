@@ -1,4 +1,4 @@
-import GraphQLTransform from 'graphql-transformer-core';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
@@ -48,4 +48,34 @@ test('Test that subscriptions are only generated if the respective mutation oper
 
   expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toContain('#set( $context.result.operation = "Mutation" )');
   expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toMatchSnapshot();
+});
+
+test('Test per-field @auth without model', () => {
+  const validSchema = `
+    type Query {
+      listContext: String @auth(rules: [{ allow: groups, groups: ["Allowed"] }])
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [
+      new DynamoDBModelTransformer(),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
+    ],
+  });
+
+  const out = transformer.transform(validSchema);
+
+  expect(out).toBeDefined();
+  expect(out.resolvers['Query.listContext.req.vtl']).toContain(
+    '## Authorization rule: { allow: groups, groups: ["Allowed"], groupClaim: "cognito:groups" } **'
+  );
+  expect(out.resolvers['Query.listContext.req.vtl']).toMatchSnapshot();
 });

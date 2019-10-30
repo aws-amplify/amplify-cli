@@ -1,4 +1,4 @@
-const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
+export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 import * as path from 'path';
 import { Template } from 'cloudform-types';
 import { throwIfNotJSONExt } from './fileUtils';

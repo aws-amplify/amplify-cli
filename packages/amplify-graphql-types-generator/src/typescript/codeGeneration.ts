@@ -17,7 +17,7 @@ import {
 
 import { wrap } from '../utilities/printing';
 
-import CodeGenerator from '../utilities/CodeGenerator';
+import { CodeGenerator } from '../utilities/CodeGenerator';
 
 import { interfaceDeclaration, propertyDeclaration, propertySetsDeclaration, Property } from './language';
 

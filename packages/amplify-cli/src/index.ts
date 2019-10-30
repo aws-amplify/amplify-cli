@@ -1,12 +1,12 @@
-import Input from './domain/input';
+import * as path from 'path';
+import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
 import { constructContext, persistContext } from './context-manager';
 import { print } from './context-extensions';
 import { executeCommand } from './execution-manager';
-import Context from './domain/context';
-import constants from './domain/constants';
-import * as path from 'path';
+import { Context } from './domain/context';
+import { constants } from './domain/constants';
 
 // entry from commandline
 export async function run(): Promise<number> {

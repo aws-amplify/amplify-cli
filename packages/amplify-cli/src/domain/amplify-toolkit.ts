@@ -1,6 +1,6 @@
 import path from 'path';
 
-export default class AmplifyToolkit {
+export class AmplifyToolkit {
   private _buildResources: any;
   private _confirmPrompt: any;
   private _constants: any;

@@ -4,7 +4,6 @@ import * as handlebars from 'handlebars';
 import * as prettier from 'prettier';
 const camelCase = require('camel-case');
 const DEFAULT_MAX_DEPTH = 3;
-import { buildClientSchema, DocumentNode, GraphQLSchema, IntrospectionSchema, IntrospectionQuery } from 'graphql';
 
 import generateAllOps, { GQLTemplateOp, GQLAllOperations, GQLTemplateFragment } from './generator';
 import { loadSchema } from './generator/utils/loading';
@@ -17,7 +16,11 @@ const FILE_EXTENSION_MAP = {
   angular: 'graphql',
 };
 
-function generate(schemaPath: string, outputPath: string, options: { separateFiles: boolean; language: string; maxDepth: number }): void {
+export function generate(
+  schemaPath: string,
+  outputPath: string,
+  options: { separateFiles: boolean; language: string; maxDepth: number }
+): void {
   const language = options.language || 'graphql';
   const schemaData = loadSchema(schemaPath);
   if (!Object.keys(FILE_EXTENSION_MAP).includes(language)) {
@@ -107,5 +110,3 @@ function format(str: string, language: string = 'graphql'): string {
   };
   return prettier.format(str, { parser: parserMap[language] });
 }
-
-export default generate;
