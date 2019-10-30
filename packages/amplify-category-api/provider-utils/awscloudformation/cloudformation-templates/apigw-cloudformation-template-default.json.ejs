@@ -145,7 +145,7 @@
             ],
           "Type": "AWS::IAM::Policy",
           "Properties": {
-              "PolicyName": "<%=selectedUserPoolGroupList[j]%>Group<%= props.paths[i].name.replace(/[^-a-z0-9]/g, '')%>Policy",
+              "PolicyName": "<%= props.apiName %>-<%= props.paths[i].name.replace(/[^-a-z0-9]/g, '')%>-<%=selectedUserPoolGroupList[j]%>-group-policy",
               "Roles": [
                 {
                     "Fn::Join": [

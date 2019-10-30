@@ -252,7 +252,7 @@
 	    "<%= props.groupList[i] %>GroupPolicy": {
 	      "Type": "AWS::IAM::Policy",
 	      "Properties": {
-	        "PolicyName": "<%= props.groupList[i] %>-group-policy",
+	        "PolicyName": "<%= props.groupList[i] %>-group-s3-policy",
 	        "Roles": [
 	        	{
                     "Fn::Join": [

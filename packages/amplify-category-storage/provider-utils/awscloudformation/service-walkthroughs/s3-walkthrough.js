@@ -504,7 +504,7 @@ async function updateCfnTemplateWithGroups(context, oldGroupList, newGroupList, 
     storageCFNFile.Resources[`${group}GroupPolicy`] = {
       Type: 'AWS::IAM::Policy',
       Properties: {
-        PolicyName: `${group}-group-policy`,
+        PolicyName: `${group}-group-s3-policy`,
         Roles: [
           {
             'Fn::Join': [

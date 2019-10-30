@@ -65,7 +65,6 @@ async function pushResources(context, category, resourceName, filteredResources)
     } catch (err) {
       // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);
-      console.log(err.stack);
       throw err;
     }
   }
