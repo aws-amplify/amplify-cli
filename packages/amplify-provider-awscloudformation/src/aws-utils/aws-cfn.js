@@ -333,7 +333,7 @@ class CloudFormation {
         const stackResourcePromises = Object.keys(amplifyMeta)
           .map(category =>
             Object.keys(amplifyMeta[category])
-              .filter(resource => amplifyMeta[category][resource].withNestedOutputs)
+              // .filter(resource => amplifyMeta[category][resource].withNestedOutputs)
               .map(resource => ({
                 index: resources.findIndex(resourceItem => resourceItem.LogicalResourceId === category + resource),
                 resource,
@@ -345,7 +345,9 @@ class CloudFormation {
                     StackName: resources[index].PhysicalResourceId,
                   })
                   .promise()
-                  .then(result => ({ ...result, amplifyResourceName: resource, amplifyCategory: category }))
+                  .then(result => {
+                    return { ...result, amplifyResourceName: resource, amplifyCategory: category };
+                  })
               )
           )
           .reduce((flattened, promises) => flattened.concat(promises), []);
@@ -372,6 +374,7 @@ class CloudFormation {
               StackName: resource.PhysicalResourceId,
             }).then(result => ({
               ...result,
+              logicalResourceId: resource.LogicalResourceId,
               amplifyResourceName: resource.amplifyResourceName,
               amplifyCategory: resource.amplifyCategory,
             }));
@@ -388,7 +391,7 @@ class CloudFormation {
               resource: result.amplifyResourceName,
               outputs: {
                 ...(key in byResource ? byResource[key].outputs : {}),
-                [result.Stacks[0].StackName]: formatOutputs(result.Stacks[0].Outputs),
+                [result.logicalResourceId]: formatOutputs(result.Stacks[0].Outputs),
               },
             },
           };
