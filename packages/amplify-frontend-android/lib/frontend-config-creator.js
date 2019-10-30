@@ -33,7 +33,7 @@ function deleteAmplifyConfig(context) {
 
   const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
   if (gqlConfig && gqlConfig.config) {
-    const projects = gqlConfig.config.projects;
+    const { projects } = gqlConfig.config;
     Object.keys(projects).forEach(project => {
       const { codeGenTarget, docsFilePath } = projects[project].extensions.amplify;
       fileNames.forEach(filename => {
