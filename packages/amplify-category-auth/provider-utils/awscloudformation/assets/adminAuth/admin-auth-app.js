@@ -28,12 +28,10 @@ const {
   signUserOut,
 } = require('./cognitoActions');
 
-
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(awsServerlessExpressMiddleware.eventContext());
-
 
 // Enable CORS for all methods
 app.use((req, res, next) => {
@@ -42,19 +40,27 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Only perform tasks if the user is in a specific group
 const allowedGroup = process.env.GROUP;
 
-const checkGroup = function (req, res, next) {
-  if (req.path == '/signUserOut') { return next(); }
+const checkGroup = function(req, res, next) {
+  if (req.path == '/signUserOut') {
+    return next();
+  }
 
-  if (typeof allowedGroup === 'undefined' || allowedGroup === 'NONE') { return next(); }
+  if (typeof allowedGroup === 'undefined' || allowedGroup === 'NONE') {
+    return next();
+  }
 
   // Fail if group enforcement is being used
-  const groups = req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'].split(',');
-  if (!(allowedGroup && (groups.indexOf(allowedGroup) > -1))) {
-    const err = new Error('Administrative privileges required');
+  if (req.apiGateway.event.requestContext.authorizer.claims['cognito:groups']) {
+    const groups = req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'].split(',');
+    if (!(allowedGroup && groups.indexOf(allowedGroup) > -1)) {
+      const err = new Error(`User does not have permissions to perform administrative tasks`);
+      next(err);
+    }
+  } else {
+    const err = new Error(`User does not have permissions to perform administrative tasks`);
     err.statusCode = 403;
     next(err);
   }
@@ -77,7 +83,6 @@ app.post('/addUserToGroup', async (req, res, next) => {
     next(err);
   }
 });
-
 
 app.post('/removeUserFromGroup', async (req, res, next) => {
   if (!req.body.username || !req.body.groupname) {
@@ -160,7 +165,7 @@ app.get('/listUsers', async (req, res, next) => {
     if (req.query.token) {
       response = await listUsers(req.query.limit || 25, req.query.token);
     } else if (req.query.limit) {
-      response = await listUsers(Limit = req.query.limit);
+      response = await listUsers((Limit = req.query.limit));
     } else {
       response = await listUsers();
     }
@@ -182,7 +187,7 @@ app.get('/listGroupsForUser', async (req, res, next) => {
     if (req.query.token) {
       response = await listGroupsForUser(req.query.username, req.query.limit || 25, req.query.token);
     } else if (req.query.limit) {
-      response = await listGroupsForUser(req.query.username, Limit = req.query.limit);
+      response = await listGroupsForUser(req.query.username, (Limit = req.query.limit));
     } else {
       response = await listGroupsForUser(req.query.username);
     }
@@ -204,7 +209,7 @@ app.get('/listUsersInGroup', async (req, res, next) => {
     if (req.query.token) {
       response = await listUsersInGroup(req.query.groupname, req.query.limit || 25, req.query.token);
     } else if (req.query.limit) {
-      response = await listUsersInGroup(req.query.groupname, Limit = req.query.limit);
+      response = await listUsersInGroup(req.query.groupname, (Limit = req.query.limit));
     } else {
       response = await listUsersInGroup(req.query.groupname);
     }
@@ -221,8 +226,10 @@ app.post('/signUserOut', async (req, res, next) => {
    * Note that this only impacts actions the user can do in User Pools
    * such as updating an attribute, not services consuming the JWT
    */
-  if ((req.body.username != req.apiGateway.event.requestContext.authorizer.claims.username) &&
-    (req.body.username != /[^/]*$/.exec(req.apiGateway.event.requestContext.identity.userArn)[0])) {
+  if (
+    req.body.username != req.apiGateway.event.requestContext.authorizer.claims.username &&
+    req.body.username != /[^/]*$/.exec(req.apiGateway.event.requestContext.identity.userArn)[0]
+  ) {
     const err = new Error('only the user can sign themselves out');
     err.statusCode = 400;
     return next(err);
@@ -240,7 +247,10 @@ app.post('/signUserOut', async (req, res, next) => {
 app.use((err, req, res, next) => {
   console.error(err.message);
   if (!err.statusCode) err.statusCode = 500; // If err has no specified error code, set error code to 'Internal Server Error (500)'
-  res.status(err.statusCode).json({ message: err.message }).end();
+  res
+    .status(err.statusCode)
+    .json({ message: err.message })
+    .end();
 });
 
 app.listen(3000, () => {
