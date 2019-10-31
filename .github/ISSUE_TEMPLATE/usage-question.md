@@ -8,10 +8,16 @@ about: Ask a question about AWS Amplify CLI usage
 
 **Which Category is your question related to?**
 
+
+
 **Amplify CLI Version** 
 
 You can use `amplify -v` to check the amplify cli version on your system
 
+
+
 **What AWS Services are you utilizing?**
+
+
 
 **Provide additional details e.g. code snippets**
