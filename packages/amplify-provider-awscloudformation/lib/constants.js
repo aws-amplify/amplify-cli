@@ -2,7 +2,7 @@ module.exports = {
   ProviderName: 'awscloudformation',
   Label: 'awscloudformation',
   CacheFileName: 'cache.json',
-  ZipFileName: '#current-cloud-backend.zip',
+  S3BackendZipFileName: '#current-cloud-backend.zip',
   LocalAWSInfoFileName: 'local-aws-info.json',
   Aliases: ['aws', 'cloudformation', 'cfn', 'awscfn'],
   DefaultAWSAccessKeyId: '<YOUR_ACCESS_KEY_ID>',

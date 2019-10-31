@@ -10,7 +10,7 @@ const S3 = require('./aws-s3');
 const providerName = require('../../lib/constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../../lib/configuration-manager');
-const { ZipFileName } = require('../../lib/constants');
+const { S3BackendZipFileName } = require('../../lib/constants');
 const { downloadZip, extractZip } = require('../../lib/zip-util');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
@@ -389,7 +389,7 @@ class CloudFormation {
         new S3(this.context, {}).then(s3 => {
           const amplifyDir = this.context.amplify.pathManager.getAmplifyDirPath();
           const tempDir = `${amplifyDir}-${envName}/.temp`;
-          downloadZip(s3, tempDir, ZipFileName, envName).then((file, err) => {
+          downloadZip(s3, tempDir, S3BackendZipFileName, envName).then((file, err) => {
             if (err) reject(err);
 
             extractZip(tempDir, file).then((unZippedDir, err) => {

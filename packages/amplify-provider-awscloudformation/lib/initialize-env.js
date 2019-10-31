@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const S3 = require('../src/aws-utils/aws-s3');
 const { downloadZip, extractZip } = require('./zip-util');
-const { ZipFileName } = require('./constants');
+const { S3BackendZipFileName } = require('./constants');
 
 function run(context, providerMetadata) {
   if (context.exeInfo && context.exeInfo.isNewEnv) {
@@ -15,7 +15,7 @@ function run(context, providerMetadata) {
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   return new S3(context)
     .then(s3 =>
-      downloadZip(s3, tempDir, ZipFileName).then(file =>
+      downloadZip(s3, tempDir, S3BackendZipFileName).then(file =>
         extractZip(tempDir, file).then(unzippeddir => {
           fs.removeSync(currentCloudBackendDir);
           fs.copySync(unzippeddir, currentCloudBackendDir);
