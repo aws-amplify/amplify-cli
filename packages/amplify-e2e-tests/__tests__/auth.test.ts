@@ -116,9 +116,9 @@ describe('amplify add auth...', () => {
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-    const createFunctionName = `${Object.keys(meta.auth)[0]}CreateAuthChallenge-integtest`;
-    const defineFunctionName = `${Object.keys(meta.auth)[0]}DefineAuthChallenge-integtest`;
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[1].output.UserPoolId;
+    const createFunctionName = `${Object.keys(meta.auth)[1]}CreateAuthChallenge-integtest`;
+    const defineFunctionName = `${Object.keys(meta.auth)[1]}DefineAuthChallenge-integtest`;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
     const createFunction = await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region);
