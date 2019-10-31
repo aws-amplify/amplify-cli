@@ -1,7 +1,13 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
 
 import * as AWS from 'aws-sdk';
-import { initProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject, amplifyPush } from '../src/init';
+import {
+  initJSProjectWithProfile,
+  initIosProjectWithProfile,
+  initAndroidProjectWithProfile,
+  deleteProject,
+  amplifyPush,
+} from '../src/init';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../src/utils';
 import { addEnvironment } from '../src/environment/add-env';
 import { addApiWithoutSchema } from '../src/categories/api';
@@ -19,7 +25,7 @@ describe('amplify delete', () => {
   });
 
   it('should delete resources javascript', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await testDeletion(projRoot, {});
   });
 

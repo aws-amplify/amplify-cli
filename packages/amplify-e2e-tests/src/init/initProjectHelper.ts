@@ -16,7 +16,7 @@ const defaultSettings = {
   profileName: '\r',
 };
 
-export default function initProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
+export default function initJSProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     nexpect

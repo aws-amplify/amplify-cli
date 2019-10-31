@@ -1,5 +1,5 @@
 export {
-  default as initProjectWithProfile,
+  default as initJSProjectWithProfile,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
   initIosProjectWithProfile,
