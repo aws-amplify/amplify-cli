@@ -1,5 +1,6 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-
+const path = require('path');
+import fs from 'fs-extra';
 import * as AWS from 'aws-sdk';
 import {
   initJSProjectWithProfile,
@@ -50,7 +51,8 @@ async function testDeletion(projRoot, settings) {
   await addApiWithoutSchema(projRoot);
   await addCodegen(projRoot, settings);
   const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
-
+  await expect(await bucketExists(deploymentBucketName1)).toBe(true);
+  await expect(await bucketExists(deploymentBucketName2)).toBe(true);
   await deleteProject(projRoot, true);
   await expect(await bucketExists(deploymentBucketName1)).toBe(false);
   await expect(await bucketExists(deploymentBucketName2)).toBe(false);
