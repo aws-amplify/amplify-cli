@@ -27,9 +27,6 @@ function deleteAmplifyConfig(context) {
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.configFilename);
     fs.removeSync(targetFilePath);
-
-    const exportsFilePath = path.join(srcDirPath, constants.exportsFilename);
-    fs.removeSync(exportsFilePath);
   }
   if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;
   const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);

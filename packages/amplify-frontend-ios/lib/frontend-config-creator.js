@@ -21,9 +21,6 @@ function deleteAmplifyConfig(context) {
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
     fs.removeSync(targetFilePath);
-
-    const awsConfigPath = path.join(srcDirPath, constants.awsConfigFilename);
-    fs.removeSync(awsConfigPath);
   }
 
   if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;
