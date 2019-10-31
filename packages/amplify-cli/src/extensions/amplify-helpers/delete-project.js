@@ -1,6 +1,7 @@
 const ora = require('ora');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
+const { getFrontendPlugins } = require('./get-frontend-plugins');
 
 async function deleteProject(context) {
   const confirmation = await getConfirmation(context);
@@ -11,6 +12,10 @@ async function deleteProject(context) {
     await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
     spinner.succeed('Project deleted in the cloud');
     // Remove amplify dir
+    const { frontend } = context.amplify.getProjectConfig();
+    const frontendPlugins = getFrontendPlugins(context);
+    const frontendPluginModule = require(frontendPlugins[frontend]);
+    frontendPluginModule.deleteConfig(context);
     context.filesystem.remove(pathManager.getAmplifyDirPath());
     context.print.success('Project deleted locally.');
   }
