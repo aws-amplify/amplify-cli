@@ -1,4 +1,5 @@
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
+const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const path = require('path');
 
 const subcommand = 'update';
@@ -29,7 +30,7 @@ module.exports = {
       context.print.info(messages.dependenciesExists);
     }
 
-    const resourceName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0];
+    const resourceName = await getAuthResourceName(context);
     const providerPlugin = context.amplify.getPluginInstance(context, servicesMetadata.Cognito.provider);
     context.updatingAuth = providerPlugin.loadResourceParameters(context, 'auth', resourceName);
 

@@ -54,6 +54,14 @@ const updateFlowMap = [
     conditionKey: 'hostedUIProviderCreds',
     conditionMsg: 'You have not initially configured OAuth.',
   },
+  {
+    name: 'Create or update Cognito user pool groups',
+    value: 'updateUserPoolGroups',
+  },
+  {
+    name: 'Create or update Admin queries API',
+    value: 'updateAdminQueries',
+  },
 ];
 
 const booleanOptions = [

@@ -1,8 +1,12 @@
 const inquirer = require('inquirer');
 const open = require('open');
+const path = require('path');
+const fs = require('fs-extra');
 const _ = require('lodash');
+const uuid = require('uuid');
 const { existsSync } = require('fs');
 const { copySync } = require('fs-extra');
+const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 
 let serviceMetadata;
 
@@ -133,13 +137,101 @@ async function addResource(context, category, service) {
 
       await lambdaTriggers(props, context, null);
 
+      await createUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
+
+      await addAdminAuth(context, props.resourceName, 'add', result.adminQueryGroup);
+
       await copyCfnTemplate(context, category, props, cfnFilename);
+
       saveResourceParameters(context, provider, category, result.resourceName, props, ENV_SPECIFIC_PARAMS);
     })
     .then(async () => {
       await copyS3Assets(context, props);
       return props.resourceName;
     });
+}
+
+async function createUserPoolGroups(context, resourceName, userPoolGroupList) {
+  if (userPoolGroupList && userPoolGroupList.length > 0) {
+    const userPoolGroupPrecedenceList = [];
+
+    for (let i = 0; i < userPoolGroupList.length; i += 1) {
+      userPoolGroupPrecedenceList.push({
+        groupName: userPoolGroupList[i],
+        precedence: i + 1,
+      });
+    }
+
+    const userPoolGroupFile = path.join(
+      context.amplify.pathManager.getBackendDirPath(),
+      'auth',
+      'userPoolGroups',
+      'user-pool-group-precedence.json'
+    );
+
+    const userPoolGroupParams = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'parameters.json');
+
+    /* eslint-disable */
+    const groupParams = {
+      AuthRoleArn: {
+        'Fn::GetAtt': ['AuthRole', 'Arn'],
+      },
+      UnauthRoleArn: {
+        'Fn::GetAtt': ['UnauthRole', 'Arn'],
+      },
+    };
+    /* eslint-enable */
+
+    fs.outputFileSync(userPoolGroupParams, JSON.stringify(groupParams, null, 4));
+    fs.outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
+
+    context.amplify.updateamplifyMetaAfterResourceAdd('auth', 'userPoolGroups', {
+      service: 'Cognito-UserPool-Groups',
+      providerPlugin: 'awscloudformation',
+      dependsOn: [
+        {
+          category: 'auth',
+          resourceName,
+          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
+        },
+      ],
+    });
+  }
+}
+
+// may be able to consolidate this into just createUserPoolGroups
+async function updateUserPoolGroups(context, resourceName, userPoolGroupList) {
+  if (userPoolGroupList && userPoolGroupList.length > 0) {
+    const userPoolGroupPrecedenceList = [];
+
+    for (let i = 0; i < userPoolGroupList.length; i += 1) {
+      userPoolGroupPrecedenceList.push({
+        groupName: userPoolGroupList[i],
+        precedence: i + 1,
+      });
+    }
+
+    const userPoolGroupFile = path.join(
+      context.amplify.pathManager.getBackendDirPath(),
+      'auth',
+      'userPoolGroups',
+      'user-pool-group-precedence.json'
+    );
+
+    fs.outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
+
+    context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', {
+      service: 'Cognito-UserPool-Groups',
+      providerPlugin: 'awscloudformation',
+      dependsOn: [
+        {
+          category: 'auth',
+          resourceName,
+          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
+        },
+      ],
+    });
+  }
 }
 
 async function updateResource(context, category, serviceResult) {
@@ -178,6 +270,30 @@ async function updateResource(context, category, serviceResult) {
       await verificationBucketName(result, context.updatingAuth);
 
       props = Object.assign(defaults, removeDeprecatedProps(context.updatingAuth), result);
+
+      const resources = context.amplify.getProjectMeta();
+
+      if (resources.auth.userPoolGroups) {
+        await updateUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
+      } else {
+        await createUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
+      }
+
+      if (resources.api && resources.api.AdminQueries) {
+        // Find Existing functionName
+        let functionName;
+        if (resources.api.AdminQueries.dependsOn) {
+          const adminFunctionResource = resources.api.AdminQueries.dependsOn.find(
+            resource => resource.category === 'function' && resource.resourceName.includes('AdminQueries')
+          );
+          if (adminFunctionResource) {
+            functionName = adminFunctionResource.resourceName;
+          }
+        }
+        await addAdminAuth(context, props.resourceName, 'update', result.adminQueryGroup, functionName);
+      } else {
+        await addAdminAuth(context, props.resourceName, 'add', result.adminQueryGroup);
+      }
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
@@ -297,7 +413,7 @@ async function migrate(context) {
   const { roles } = require(defaultValuesSrc);
 
   const providerInstance = amplify.getPluginInstance(context, provider);
-  const resourceName = Object.keys(existingAuth)[0];
+  const resourceName = await getAuthResourceName(context);
   const props = providerInstance.loadResourceParameters(context, 'auth', resourceName);
   // Roles have changed to ref. Removing old hardcoded role ref
   Object.keys(roles).forEach(key => {
@@ -605,6 +721,145 @@ function removeDeprecatedProps(props) {
     }
   });
   return props;
+}
+
+async function addAdminAuth(context, authResourceName, operation, adminGroup, functionName) {
+  if (adminGroup) {
+    if (!functionName) {
+      const [shortId] = uuid().split('-');
+      functionName = `AdminQueries${shortId}`;
+    }
+    await createAdminAuthFunction(context, authResourceName, functionName, adminGroup, operation);
+    await createAdminAuthAPI(context, authResourceName, functionName, operation);
+  }
+}
+
+async function createAdminAuthFunction(context, authResourceName, functionName, adminGroup, operation) {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+  const pluginDir = __dirname;
+  let lambdaGroupVar = adminGroup;
+
+  const dependsOn = [];
+
+  dependsOn.push({
+    category: 'auth',
+    resourceName: authResourceName,
+    attributes: ['UserPoolId'],
+  });
+
+  if (!lambdaGroupVar) {
+    lambdaGroupVar = 'NONE';
+  }
+
+  const functionProps = {
+    functionName: `${functionName}`,
+    roleName: `${functionName}LambdaRole`,
+    dependsOn,
+    authResourceName,
+    lambdaGroupVar,
+  };
+
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-auth-app.js',
+      target: `${targetDir}/function/${functionName}/src/app.js`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-auth-cognitoActions.js',
+      target: `${targetDir}/function/${functionName}/src/cognitoActions.js`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-auth-index.js',
+      target: `${targetDir}/function/${functionName}/src/index.js`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-auth-package.json',
+      target: `${targetDir}/function/${functionName}/src/package.json`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-queries-function-template.json.ejs',
+      target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
+    },
+  ];
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
+
+  if (operation === 'add') {
+    // add amplify-meta and backend-config
+    const backendConfigs = {
+      service: 'Lambda',
+      providerPlugin: 'awscloudformation',
+      build: true,
+      dependsOn,
+    };
+
+    await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
+    context.print.success(`Successfully added ${functionName} function locally`);
+  } else {
+    context.print.success(`Successfully updated ${functionName} function locally`);
+  }
+}
+
+async function createAdminAuthAPI(context, authResourceName, functionName, operation) {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+  const pluginDir = __dirname;
+  const apiName = 'AdminQueries';
+  const dependsOn = [];
+
+  dependsOn.push(
+    {
+      category: 'auth',
+      resourceName: authResourceName,
+      attributes: ['UserPoolId'],
+    },
+    {
+      category: 'function',
+      resourceName: functionName,
+      attributes: ['Arn', 'Name'],
+    }
+  );
+
+  const apiProps = {
+    functionName,
+    authResourceName,
+    dependsOn,
+  };
+
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-queries-api-template.json.ejs',
+      target: `${targetDir}/api/${apiName}/admin-queries-cloudformation-template.json`,
+    },
+    {
+      dir: pluginDir,
+      template: './assets/adminAuth/admin-queries-api-params.json',
+      target: `${targetDir}/api/${apiName}/parameters.json`,
+    },
+  ];
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, apiProps, true);
+
+  if (operation === 'add') {
+    // Update amplify-meta and backend-config
+    const backendConfigs = {
+      service: 'API Gateway',
+      providerPlugin: 'awscloudformation',
+      dependsOn,
+    };
+
+    await context.amplify.updateamplifyMetaAfterResourceAdd('api', apiName, backendConfigs);
+    context.print.success(`Successfully added ${apiName} API locally`);
+  } else {
+    context.print.success(`Successfully updated ${apiName} API locally`);
+  }
 }
 
 module.exports = {

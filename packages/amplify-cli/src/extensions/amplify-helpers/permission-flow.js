@@ -11,6 +11,12 @@ const crudFlow = async (role, permissionMap = {}, defaults = []) => {
     message: `What kind of access do you want for ${role} users?`,
     choices: possibleOperations,
     default: defaults,
+    validate: inputs => {
+      if (inputs.length === 0) {
+        return 'Select at least one option';
+      }
+      return true;
+    },
   });
 
   return _.uniq(_.flatten(answers.permissions.map(e => permissionMap[e])));

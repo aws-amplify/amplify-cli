@@ -28,6 +28,7 @@
     "graphql-transformer-common": "3.31.0",
     "graphql-transformer-core": "5.17.0",
     "graphql-versioned-transformer": "3.27.0",
+     "amplify-category-auth": "1.29.0",
     "ini": "^1.3.5",
     "inquirer": "^6.5.1",
     "lodash": "^4.17.15",

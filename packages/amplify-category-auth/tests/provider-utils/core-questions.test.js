@@ -279,10 +279,12 @@ describe('When generating auth questions...', () => {
       input.map = 'updateFlowMap';
       Object.assign(mockContext, { updatingAuth: {} });
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      expect(res.choices.length).toEqual(3);
+      expect(res.choices.length).toEqual(5);
       expect(res.choices[0].value).toEqual('default');
       expect(res.choices[1].value).toEqual('defaultSocial');
       expect(res.choices[2].value).toEqual('manual');
+      expect(res.choices[3].value).toEqual('updateUserPoolGroups');
+      expect(res.choices[4].value).toEqual('updateAdminQueries');
     });
 
     it('should disable options based on the update flow (with social options)', () => {
@@ -293,12 +295,14 @@ describe('When generating auth questions...', () => {
       input.filter = 'updateOptions';
       input.map = 'updateFlowMap';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      expect(res.choices.length).toEqual(5);
+      expect(res.choices.length).toEqual(7);
       expect(res.choices[0].value).toEqual('default');
       expect(res.choices[1].value).toEqual('defaultSocial');
       expect(res.choices[2].value).toEqual('manual');
       expect(res.choices[3].value).toEqual('callbacks');
       expect(res.choices[4].value).toEqual('providers');
+      expect(res.choices[5].value).toEqual('updateUserPoolGroups');
+      expect(res.choices[6].value).toEqual('updateAdminQueries');
     });
   });
 });
