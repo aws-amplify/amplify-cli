@@ -26,6 +26,9 @@ async function run(context) {
     process.exit(0);
   }
   if (context.parameters.options.iosSkeleton) {
+    if (fs.existsSync('./amplify')) {
+      process.exit(0);
+    }
     await createIosSkeleton();
     await cleanIosProject();
     process.exit(0);
