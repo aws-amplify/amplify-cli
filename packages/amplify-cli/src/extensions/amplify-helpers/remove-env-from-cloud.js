@@ -1,7 +1,6 @@
 const { getProjectConfig } = require('./get-project-config');
 const { getCategoryPlugins } = require('./get-category-plugins');
 const { getProviderPlugins } = require('./get-provider-plugins');
-const { getFrontendPlugins } = require('./get-frontend-plugins');
 
 async function removeEnvFromCloud(context, envName, deleteS3) {
   const { providers } = getProjectConfig();
