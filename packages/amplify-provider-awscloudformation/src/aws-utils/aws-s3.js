@@ -68,7 +68,7 @@ class S3 {
     });
   }
 
-  deleteObjects(bucketName) {
+  deleteAllObjects(bucketName) {
     return new Promise((resolve, reject) => {
       this.s3
         .listObjects({ Bucket: bucketName })
@@ -90,7 +90,7 @@ class S3 {
 
   deleteS3Bucket(bucketName) {
     return new Promise((resolve, reject) => {
-      this.deleteObjects(bucketName).then((result, err) => {
+      this.deleteAllObjects(bucketName).then((result, err) => {
         if (err) {
           reject(err);
           return;
