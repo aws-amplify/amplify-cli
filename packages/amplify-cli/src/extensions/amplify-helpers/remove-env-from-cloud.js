@@ -29,10 +29,6 @@ async function removeEnvFromCloud(context, envName, deleteS3) {
     const notificationsModule = require(categoryPlugins.notifications);
     await notificationsModule.deletePinpointAppForEnv(context, envName);
   }
-  const { frontend } = context.amplify.getProjectConfig();
-  const frontendPlugins = getFrontendPlugins(context);
-  const frontendPluginModule = require(frontendPlugins[frontend]);
-  frontendPluginModule.deleteConfig(context);
 }
 
 module.exports = {
