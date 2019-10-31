@@ -20,7 +20,7 @@
     "test": "jest",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "cloudform-types": "^4.1.0",

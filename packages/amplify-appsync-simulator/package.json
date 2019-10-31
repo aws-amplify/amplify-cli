@@ -17,9 +17,9 @@
     "simulator"
   ],
   "scripts": {
-    "copy-assets": "rm -rf ./public && cp -R ../amplify-graphiql-explorer/build ./public",
+    "copy-assets": "rimraf ./public && copyfiles --flat ../amplify-graphiql-explorer/build/* ./public",
     "build": "yarn copy-assets && tsc",
-    "clean": "rm -rf ./lib",
+    "clean": "rimraf ./lib",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
     "test": "jest",
