@@ -52,6 +52,7 @@
     "ejs": "^2.6.2",
     "env-editor": "^0.4.0",
     "esm": "^3.2.25",
+    "extract-zip": "^1.6.7",
     "figlet": "^1.2.1",
     "folder-hash": "^2.0.0",
     "fs-extra": "^8.1.0",

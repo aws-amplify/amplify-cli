@@ -3,7 +3,9 @@ const { getPackageManager } = require('../packageManagerHelpers');
 const { normalizePackageManagerForOS } = require('../packageManagerHelpers');
 const { generateLocalEnvInfoFile } = require('./s9-onSuccess');
 const url = require('url');
-const fs = require('fs');
+const fs = require('fs-extra');
+const path = require('path');
+const extract = require('extract-zip');
 
 async function run(context) {
   if (context.parameters.options.app) {
@@ -14,6 +16,19 @@ async function run(context) {
     await cloneRepo(context, repoUrl);
     await installPackage();
     await setLocalEnvDefaults(context);
+  }
+  if (context.parameters.options.androidSkeleton) {
+    if (fs.existsSync('./amplify')) {
+      process.exit(0);
+    }
+    await createAndroidSkeleton();
+    await cleanAndroidProject();
+    process.exit(0);
+  }
+  if (context.parameters.options.iosSkeleton) {
+    await createIosSkeleton();
+    await cleanIosProject();
+    process.exit(0);
   }
   return context;
 }
@@ -84,6 +99,64 @@ async function setLocalEnvDefaults(context) {
   };
   context.exeInfo.inputParams.amplify.envName = envName;
   await generateLocalEnvInfoFile(context);
+}
+
+/**
+ * Extract amplify project structure with backend-config and project-config
+ */
+async function createAndroidSkeleton() {
+  const skeletonLocalDir = path.join(__dirname, '/../../../src/lib/amplify-android.zip');
+  const skeletonProjectZipDir = path.join(process.cwd(), '/amplify-android.zip');
+  const skeletonProjectDir = path.join(process.cwd(), '/amplify-android');
+  await fs.copySync(skeletonLocalDir, skeletonProjectZipDir);
+  return new Promise((resolve, reject) => {
+    extract(skeletonProjectZipDir, { dir: skeletonProjectDir }, err => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+/**
+ * Move amplify folder and remove zip
+ */
+async function cleanAndroidProject() {
+  const skeletonProjectDir = path.join(process.cwd(), '/amplify-android');
+  const skeletonZip = path.join(process.cwd(), '/amplify-android.zip');
+  fs.copySync(skeletonProjectDir, process.cwd());
+  fs.removeSync(skeletonProjectDir);
+  fs.removeSync(skeletonZip);
+}
+
+/**
+ * Extract amplify project structure with backend-config and project-config
+ */
+async function createIosSkeleton() {
+  const skeletonLocalDir = path.join(__dirname, '/../../../src/lib/amplify-ios.zip');
+  const skeletonProjectZipDir = path.join(process.cwd(), '/amplify-ios.zip');
+  const skeletonProjectDir = path.join(process.cwd(), '/amplify-ios');
+  await fs.copySync(skeletonLocalDir, skeletonProjectZipDir);
+  return new Promise((resolve, reject) => {
+    extract(skeletonProjectZipDir, { dir: skeletonProjectDir }, err => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+/**
+ * Move amplify folder and remove zip
+ */
+async function cleanIosProject() {
+  const skeletonProjectDir = path.join(process.cwd(), '/amplify-ios');
+  const skeletonZip = path.join(process.cwd(), '/amplify-ios.zip');
+  fs.copySync(skeletonProjectDir, process.cwd());
+  fs.removeSync(skeletonProjectDir);
+  fs.removeSync(skeletonZip);
 }
 
 module.exports = {
