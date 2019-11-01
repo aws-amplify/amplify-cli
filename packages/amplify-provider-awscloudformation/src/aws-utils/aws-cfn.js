@@ -388,7 +388,7 @@ class CloudFormation {
       if (deleteS3) {
         new S3(this.context, {}).then(s3 => {
           const amplifyDir = this.context.amplify.pathManager.getAmplifyDirPath();
-          const tempDir = `${amplifyDir}-${envName}/.temp`;
+          const tempDir = path.join(amplifyDir, envName, '.temp');
           downloadZip(s3, tempDir, S3BackendZipFileName, envName).then((file, err) => {
             if (err) reject(err);
 
