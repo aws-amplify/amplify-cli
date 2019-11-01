@@ -39,6 +39,7 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
       BillingMode: 'PAY_PER_REQUEST',
       KeySchema: resource.Properties.KeySchema,
       AttributeDefinitions: resource.Properties.AttributeDefinitions,
+      LocalSecondaryIndexes: resource.Properties.LocalSecondaryIndexes,
     },
   };
   if (gsis.length) {

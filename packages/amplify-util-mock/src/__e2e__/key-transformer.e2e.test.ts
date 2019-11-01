@@ -46,6 +46,18 @@ beforeAll(async () => {
         status: Status
         name: String
     }
+    # Issue #2606 test type to ensure mocking starts successfully with 2 LSIs
+    type TypeWithLSI @model
+        @key(fields: ["id", "updatedAt"])
+        @key(name: "BySpending", fields: ["id", "totalSpending"])
+        @key(name: "ByAttendance", fields: ["id", "totalAttendance"])
+    {
+        id: ID!
+        totalSpending: Int!
+        totalAttendance: Int!
+        createdAt: AWSDateTime
+        updatedAt: AWSDateTime!
+    }
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
