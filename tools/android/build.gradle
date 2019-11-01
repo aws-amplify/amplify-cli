@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: AmplifyTools
 
+amplify.push = true
 /*
 ********External Plugin***********
  */
@@ -15,17 +16,10 @@ class AmplifyTools implements Plugin<Project> {
         def doesNodeExist = false
         def doesAmplifyCLIExist = false
 
-        def AWSCLOUDFORMATIONCONFIG="""{\
-\"configLevel\":\"project\",\
-\"useProfile\":true,\
-\"profileName\":\"default\"\
-}"""
-        def AMPLIFY="""{\
-\"envName\":\"android\"\
-}"""
-        def PROVIDERS="""{\
-\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
-}"""
+        def profile = 'default'
+        def accessKeyId = 'headlessaccesskeyid'
+        def secretAccessKey = 'headlesssecrectaccesskey'
+        def region = 'us-east-1'
 
         project.task('verifyNode') {
             try {
@@ -35,7 +29,7 @@ class AmplifyTools implements Plugin<Project> {
                 }
             } catch (e) {
                 doesNodeExist = false
-                println("Node is not installed. Please install before using this plugin")
+                println("Node is not installed. Vist https://nodejs.org/en/download/ to install it")
             }
             doesNodeExist = true
         }
@@ -60,15 +54,6 @@ class AmplifyTools implements Plugin<Project> {
         }
 
         project.task('createSkeleton') {
-//            // Incremental build - only creates dirs if they doesn't exist already
-//            project.mkdir 'amplify/backend/api/appsyncAPI'
-//            project.mkdir 'amplify/backend/auth'
-//            project.mkdir 'amplify/backend/function'
-//
-//            File schema = project.file('amplify/backend/api/appsyncAPI/schema.graphql')
-//            if (!schema.exists()) {
-//                schema.text = todoSampleSchema
-//            }
             project.exec{
                 commandLine 'amplify-dev', 'init', '--androidSkeleton'
             }
@@ -76,14 +61,14 @@ class AmplifyTools implements Plugin<Project> {
 
         project.task('getConfig') {
             doLast {
-                def inputConfigFile = project.file('amplify-gradle-config.json')
+                def inputConfigFile = project.file('./amplify-gradle-config.json')
                 def configText = inputConfigFile.text
                 def jsonSlurper = new groovy.json.JsonSlurper();
                 def configJson = jsonSlurper.parseText(configText)
-                def push = configJson.push
-                def profile = configJson.profile
-                println(push)
-                println(profile)
+                profile = configJson.profile
+                accessKeyId = configJson.accessKeyId
+                secretAccessKey = configJson.accessKeyId
+                region = configJson.region
             }
         }
 
@@ -95,64 +80,49 @@ class AmplifyTools implements Plugin<Project> {
             println('****** Execute codegen here ********')
         }
 
-        // TODO init only if local-env-info etc doesn't exist
-        project.task('amplifyInitPush') {
-            doLast {
-                if (amplifyExtension.push) {
-                    project.exec {
-                        commandLine 'amplify', 'init', '--amplify', AMPLIFY, '--providers', PROVIDERS, '--yes'
-                    }
-                }
-            }
-        }
-
         project.task('amplifyPush') {
+            def AWSCLOUDFORMATIONCONFIG="""{\
+\"configLevel\":\"project\",\
+\"useProfile\":true,\
+\"profileName\":\"$profile\",\
+\"accessKeyId\":\"$accessKeyId\",\
+\"secretAccessKey\":\"$secretAccessKey\",\
+\"region\":\"$region\"\
+}"""
+
+            def AMPLIFY="""{\
+\"envName\":\"android\"\
+}"""
+            def PROVIDERS="""{\
+\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
+}"""
             doLast {
                 if (amplifyExtension.push) {
-                    project.exec {
-//                        commandLine 'amplify-dev', 'init', '--amplify', AMPLIFY, '--providers', PROVIDERS, '--yes'
-                        commandLine 'amplify', 'push', '--yes'
+                    def doesLocalEnvExist = project.file('./amplify/.config/local-env-info.json').exists()
+                    if (doesLocalEnvExist) {
+                        project.exec {
+                            commandLine 'amplify', 'push', '--yes'
+                        }
+                    } else {
+                        project.exec {
+                            commandLine 'amplify-dev', 'init', '--amplify', AMPLIFY, '--providers', PROVIDERS, '--yes'
+                        }
                     }
+                } else {
+                    println('Amplify push set to false')
                 }
             }
         }
 
-        project.installCli.dependsOn('verifyNode')
-        project.installCli.dependsOn('verifyCli')
-        project.createSkeleton.dependsOn('installCli')
-        project.executeCodegen.dependsOn('createSkeleton')
-        project.amplifyPush.dependsOn('executeCodegen')
-//        project.amplifyPush.dependsOn('amplifyInit')
+        project.installCli.mustRunAfter('verifyNode')
+        project.installCli.mustRunAfter('verifyCli')
+        project.createSkeleton.mustRunAfter('installCli')
+        project.executeCodegen.mustRunAfter('createSkeleton')
+        project.getConfig.mustRunAfter('createSkeleton')
+        project.amplifyPush.mustRunAfter('executeCodegen')
+        project.amplifyPush.mustRunAfter('getConfig')
     }
 }
 /*
 **********End External Plugin**************
  */
-
-
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        
-    }
-    dependencies {
-        classpath 'com.amazonaws:aws-android-sdk-appsync-gradle-plugin:2.9.+'
-        classpath 'com.android.tools.build:gradle:3.5.0'
-        
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
