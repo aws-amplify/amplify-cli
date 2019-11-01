@@ -1,5 +1,5 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-import { initProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
 import { addHelloWorldFunction, functionBuild } from '../src/categories/function';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction } from '../src/utils';
 
@@ -16,7 +16,7 @@ describe('amplify add function', () => {
   });
 
   it('init a project and add  simple function', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addHelloWorldFunction(projRoot, {});
     await functionBuild(projRoot, {});
     await amplifyPushAuth(projRoot);

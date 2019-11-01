@@ -6,7 +6,7 @@ const configManager = require('./lib/configuration-manager');
 const server = require('./lib/server');
 const publisher = require('./lib/publisher');
 const constants = require('./lib/constants');
-const { createAWSExports } = require('./lib/frontend-config-creator');
+const { createAWSExports, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
 
 const pluginName = 'javascript';
 
@@ -69,4 +69,5 @@ module.exports = {
   createFrontendConfigs,
   executeAmplifyCommand,
   handleAmplifyEvent,
+  deleteConfig: deleteAmplifyConfig,
 };

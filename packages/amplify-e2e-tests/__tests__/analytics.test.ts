@@ -1,5 +1,5 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-import { initProjectWithProfile } from '../src/init';
+import { initJSProjectWithProfile } from '../src/init';
 import { addAnalytics, removeAnalytics } from '../src/categories/analytics';
 import { createNewProjectDir, deleteProjectDir } from '../src/utils';
 import * as fs from 'fs';
@@ -18,7 +18,7 @@ describe('amplify add analytics', () => {
   });
 
   it('add analytics', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     const rightName = 'my-app';
     await addAnalytics(projRoot, { rightName, wrongName: 'my=app' });
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);
