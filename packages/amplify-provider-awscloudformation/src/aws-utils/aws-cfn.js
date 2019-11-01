@@ -389,10 +389,10 @@ class CloudFormation {
         new S3(this.context, {}).then(s3 => {
           const amplifyDir = this.context.amplify.pathManager.getAmplifyDirPath();
           const tempDir = path.join(amplifyDir, envName, '.temp');
-          downloadZip(s3, tempDir, S3BackendZipFileName, envName).then((file, err) => {
+          downloadZip(s3, tempDir, S3BackendZipFileName, envName).then((sourceZipFile, err) => {
             if (err) reject(err);
 
-            extractZip(tempDir, file).then((unZippedDir, err) => {
+            extractZip(tempDir, sourceZipFile).then((unZippedDir, err) => {
               if (err) reject(err);
 
               const amplifyMeta = this.context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
@@ -409,7 +409,7 @@ class CloudFormation {
                 if (_.compact(errors).length) {
                   reject(errors);
                 } else {
-                  fs.removeSync(file);
+                  fs.removeSync(sourceZipFile);
                   fs.removeSync(unZippedDir);
                   resolve(results);
                 }
