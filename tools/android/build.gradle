@@ -17,9 +17,10 @@ class AmplifyTools implements Plugin<Project> {
         def doesAmplifyCLIExist = false
 
         def profile = 'default'
-        def accessKeyId = 'headlessaccesskeyid'
-        def secretAccessKey = 'headlesssecrectaccesskey'
-        def region = 'us-east-1'
+        def accessKeyId = null
+        def secretAccessKey = null
+        def region = null
+        def envName = null
 
         project.task('verifyNode') {
             try {
@@ -69,6 +70,7 @@ class AmplifyTools implements Plugin<Project> {
                 accessKeyId = configJson.accessKeyId
                 secretAccessKey = configJson.accessKeyId
                 region = configJson.region
+                envName = configJson.envName
             }
         }
 
@@ -81,7 +83,15 @@ class AmplifyTools implements Plugin<Project> {
         }
 
         project.task('amplifyPush') {
-            def AWSCLOUDFORMATIONCONFIG="""{\
+            def AWSCLOUDFORMATIONCONFIG
+            if (!accessKeyId || !secretAccessKey || !region) {
+                AWSCLOUDFORMATIONCONFIG="""{\
+\"configLevel\":\"project\",\
+\"useProfile\":true,\
+\"profileName\":\"$profile\"\
+}"""
+            } else {
+                AWSCLOUDFORMATIONCONFIG="""{\
 \"configLevel\":\"project\",\
 \"useProfile\":true,\
 \"profileName\":\"$profile\",\
@@ -89,10 +99,18 @@ class AmplifyTools implements Plugin<Project> {
 \"secretAccessKey\":\"$secretAccessKey\",\
 \"region\":\"$region\"\
 }"""
-
-            def AMPLIFY="""{\
-\"envName\":\"android\"\
+            }
+            def AMPLIFY
+            if (!envName) {
+                AMPLIFY="""{\
+\"envName\":\"amplify\"\
 }"""
+            } else {
+                AMPLIFY="""{\
+\"envName\":\"$envName\"\
+}"""
+            }
+
             def PROVIDERS="""{\
 \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
 }"""
