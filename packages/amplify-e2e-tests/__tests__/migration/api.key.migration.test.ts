@@ -1,5 +1,5 @@
 require('../../src/aws-matchers/'); // custom matcher for assertion
-import { initProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../src/init';
 import { addApiWithSchema, updateApiSchema } from '../../src/categories/api';
 import { createNewProjectDir, deleteProjectDir } from '../../src/utils';
 
@@ -19,7 +19,7 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_add_lsi.graphql';
-    await initProjectWithProfile(projRoot, { name: projectName });
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -33,7 +33,7 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_change_gsi.graphql';
-    await initProjectWithProfile(projRoot, { name: projectName });
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -44,7 +44,7 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_change_key_schema.graphql';
-    await initProjectWithProfile(projRoot, { name: projectName });
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -55,7 +55,7 @@ describe('amplify add api', () => {
     const projectName = 'migrationchangelsi';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_change_lsi.graphql';
-    await initProjectWithProfile(projRoot, { name: projectName });
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -66,7 +66,7 @@ describe('amplify add api', () => {
     const projectName = 'validaddinggsi';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/add_gsi.graphql';
-    await initProjectWithProfile(projRoot, { name: projectName });
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);

@@ -1,13 +1,54 @@
 const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
+const graphQLConfig = require('graphql-config');
 
-function createAmplifyConfig(context, amplifyResources) {
-  const { amplify, filesystem } = context;
+const FILE_EXTENSION_MAP = {
+  javascript: 'js',
+  graphql: 'graphql',
+  flow: 'js',
+  typescript: 'ts',
+  angular: 'graphql',
+};
+
+const fileNames = ['queries', 'mutations', 'subscriptions'];
+
+function deleteAmplifyConfig(context) {
+  const { srcDirPath, projectPath } = getSrcDir(context);
+  const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
+  if (fs.existsSync(targetFilePath)) {
+    fs.removeSync(targetFilePath);
+  }
+
+  if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;
+
+  const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
+  if (gqlConfig && gqlConfig.config) {
+    const { projects } = gqlConfig.config;
+    Object.keys(projects).forEach(project => {
+      const { codeGenTarget, docsFilePath } = projects[project].extensions.amplify;
+      fileNames.forEach(filename => {
+        const file = path.join(projectPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget] || 'graphql'}`);
+        if (fs.existsSync(file)) fs.removeSync(file);
+      });
+    });
+  }
+}
+
+function getSrcDir(context) {
+  const { amplify } = context;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
+  return {
+    srcDirPath: path.join(projectPath, frontendConfig.ResDir, 'raw'),
+    projectPath,
+  };
+}
+
+function createAmplifyConfig(context, amplifyResources) {
+  const { filesystem } = context;
+  const srcDirPath = getSrcDir(context);
 
   if (!fs.existsSync(srcDirPath)) {
     filesystem.dir(srcDirPath);
@@ -317,4 +358,4 @@ function getSumerianConfig(sumerianResources) {
   };
 }
 
-module.exports = { createAWSConfig, createAmplifyConfig };
+module.exports = { createAWSConfig, createAmplifyConfig, deleteAmplifyConfig };
