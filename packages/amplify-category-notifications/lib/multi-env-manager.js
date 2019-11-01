@@ -207,6 +207,7 @@ async function writeData(context) {
   writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
   writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
   writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getCurentAmplifyMetaFilePath());
+  await context.amplify.storeCurrentCloudBackend(context);
   await context.amplify.onCategoryOutputsChange(context);
 }
 

@@ -32,6 +32,10 @@ function pushResources(context, resourceList) {
   return resourcePusher.run(context, resourceList);
 }
 
+function storeCurrentCloudBackend(context) {
+  return resourcePusher.storeCurrentCloudBackend(context);
+}
+
 function deleteEnv(context, envName) {
   return envRemover.run(context, envName);
 }
@@ -84,6 +88,7 @@ module.exports = {
   configureNewUser,
   constants,
   pushResources,
+  storeCurrentCloudBackend,
   buildResources,
   providerUtils,
   setupNewUser,

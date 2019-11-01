@@ -86,6 +86,20 @@ async function providersPush(context, category, resourceName, filteredResources)
   await Promise.all(providerPromises);
 }
 
+async function storeCurrentCloudBackend(context) {
+  const { providers } = getProjectConfig();
+  const providerPlugins = getProviderPlugins(context);
+  const providerPromises = [];
+
+  for (let i = 0; i < providers.length; i += 1) {
+    const providerModule = require(providerPlugins[providers[i]]);
+    providerPromises.push(providerModule.storeCurrentCloudBackend(context));
+  }
+
+  await Promise.all(providerPromises);
+}
+
 module.exports = {
   pushResources,
+  storeCurrentCloudBackend,
 };

@@ -456,4 +456,5 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
 module.exports = {
   run,
   updateStackForAPIMigration,
+  storeCurrentCloudBackend,
 };
