@@ -108,6 +108,13 @@ async function setLocalEnvDefaults(context) {
  * Extract amplify project structure with backend-config and project-config
  */
 async function createAndroidSkeleton() {
+  const configJsonData = '{"push":false, "profile":"default"}';
+  const configJsonObj = JSON.parse(configJsonData);
+  const configJsonStr = JSON.stringify(configJsonObj);
+  const configDir = path.join(process.cwd(), './amplify-gradle-config.json');
+  if (await !fs.existsSync(configDir)) {
+    fs.writeFileSync(configDir, configJsonStr);
+  }
   const skeletonLocalDir = path.join(__dirname, '/../../../src/lib/amplify-android.zip');
   const skeletonProjectZipDir = path.join(process.cwd(), '/amplify-android.zip');
   const skeletonProjectDir = path.join(process.cwd(), '/amplify-android');
@@ -138,8 +145,13 @@ async function cleanAndroidProject() {
  */
 async function createIosSkeleton() {
   const skeletonLocalDir = path.join(__dirname, '/../../../src/lib/amplify-ios.zip');
-  const skeletonProjectZipDir = path.join(process.cwd(), '../amplify-ios.zip');
-  const skeletonProjectDir = path.join(process.cwd(), '../amplify-ios');
+  const skeletonProjectZipDir = path.join(process.cwd(), '/amplify-ios.zip');
+  const skeletonProjectDir = path.join(process.cwd(), '/amplify-ios');
+  const configDir = path.join(process.cwd(), '/amplifyxc.config');
+  const configStr = 'push=false\nprofile=default';
+  if (!fs.existsSync(configDir)) {
+    fs.writeFileSync(configDir, configStr);
+  }
   await fs.copySync(skeletonLocalDir, skeletonProjectZipDir);
   return new Promise((resolve, reject) => {
     extract(skeletonProjectZipDir, { dir: skeletonProjectDir }, err => {
@@ -155,9 +167,9 @@ async function createIosSkeleton() {
  * Move amplify folder and remove zip
  */
 async function cleanIosProject() {
-  const skeletonProjectDir = path.join(process.cwd(), '../amplify-ios');
-  const skeletonZip = path.join(process.cwd(), '../amplify-ios.zip');
-  fs.copySync(skeletonProjectDir, path.join(process.cwd(), '../'));
+  const skeletonProjectDir = path.join(process.cwd(), '/amplify-ios');
+  const skeletonZip = path.join(process.cwd(), '/amplify-ios.zip');
+  fs.copySync(skeletonProjectDir, process.cwd());
   fs.removeSync(skeletonProjectDir);
   fs.removeSync(skeletonZip);
 }
