@@ -1,0 +1,49 @@
+{
+  "name": "graphql-predictions-transformer",
+  "version": "1.0.0",
+  "description": "Implements the @predictions directive.",
+  "main": "lib/index.js",
+  "author": "Amazon Web Services",
+  "contributors": [
+    "Josue Ruiz <github@swaysway>"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc && cd lambdaFunction && bestzip --force node ../lib/predictionsLambdaFunction.zip predictionsLambda.js",
+    "watch": "tsc -w",
+    "clean": "rm -rf ./lib"
+  },
+  "dependencies": {
+    "cloudform": "^3.5.0",
+    "cloudform-types": "^3.7.0",
+    "graphql": "^0.13.2",
+    "graphql-mapping-template": "3.24.0",
+    "graphql-transformer-common": "3.31.0",
+    "graphql-transformer-core": "5.17.0"
+  },
+  "devDependencies": {
+    "@types/jest": "23.1.1",
+    "bestzip": "^2.1.5",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.18.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "typescript": "^3.5.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*.test.*)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}

@@ -29,6 +29,7 @@
     "graphql-transformer-common": "3.32.0",
     "graphql-transformer-core": "5.18.0",
     "graphql-versioned-transformer": "3.28.0",
+    "graphql-predictions-transformer": "1.0.0",
     "ini": "^1.3.5",
     "inquirer": "^6.5.1",
     "lodash": "^4.17.15",
