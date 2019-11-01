@@ -1,51 +1,32 @@
-const extract = require('extract-zip');
 const fs = require('fs-extra');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const S3 = require('../src/aws-utils/aws-s3');
+const { downloadZip, extractZip } = require('./zip-util');
+const { S3BackendZipFileName } = require('./constants');
 
 function run(context, providerMetadata) {
   if (context.exeInfo && context.exeInfo.isNewEnv) {
     return context;
   }
 
-  const zipFilename = '#current-cloud-backend.zip';
   const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
   const tempDir = `${amplifyDir}/.temp`;
   const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
   const backendDir = context.amplify.pathManager.getBackendDirPath();
-
   return new S3(context)
-    .then(s3 => {
-      const s3Params = {
-        Key: zipFilename,
-      };
-      return s3.getFile(s3Params);
-    })
-    .then(data => {
-      fs.ensureDirSync(tempDir);
-      const buff = Buffer.from(data);
-
-      return new Promise((resolve, reject) => {
-        fs.writeFile(`${tempDir}/${zipFilename}`, buff, err => {
-          if (err) {
-            reject(err);
+    .then(s3 =>
+      downloadZip(s3, tempDir, S3BackendZipFileName).then(file =>
+        extractZip(tempDir, file).then(unzippeddir => {
+          fs.removeSync(currentCloudBackendDir);
+          fs.copySync(unzippeddir, currentCloudBackendDir);
+          if (context.exeInfo.restoreBackend) {
+            fs.removeSync(backendDir);
+            fs.copySync(`${tempDir}/#current-cloud-backend`, backendDir);
           }
-          extract(`${tempDir}/${zipFilename}`, { dir: `${tempDir}/#current-cloud-backend` }, err => {
-            if (err) {
-              reject(err);
-            }
-            fs.removeSync(currentCloudBackendDir);
-            fs.copySync(`${tempDir}/#current-cloud-backend`, currentCloudBackendDir);
-            if (context.exeInfo.restoreBackend) {
-              fs.removeSync(backendDir);
-              fs.copySync(`${tempDir}/#current-cloud-backend`, backendDir);
-            }
-            fs.removeSync(tempDir);
-            resolve();
-          });
-        });
-      });
-    })
+          fs.removeSync(tempDir);
+        })
+      )
+    )
     .then(() => new Cloudformation(context))
     .then(cfnItem => cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName))
     .then(() => {

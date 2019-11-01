@@ -8,7 +8,7 @@ function onInitSuccessful(context) {}
 
 function pushResources(context, resourceList) {}
 
-function deleteEnv(context, envName) {}
+function deleteEnv(context, envName, deleteS3) {}
 
 function configure(context) {}
 
