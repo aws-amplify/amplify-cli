@@ -158,7 +158,7 @@ async function pushChanges(context, pinpointNotificationsMeta) {
     }
   });
 
-  await pinpointHelper.ensurePinpointApp(context, pinpointNotificationsMeta.resourceName);
+  await pinpointHelper.ensurePinpointApp(context, pinpointNotificationsMeta);
 
   const tasks = [];
   channelsToEnable.forEach(channel => {
