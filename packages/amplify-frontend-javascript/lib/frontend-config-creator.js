@@ -19,11 +19,7 @@ const FILE_EXTENSION_MAP = {
 const fileNames = ['queries', 'mutations', 'subscriptions'];
 
 function deleteAmplifyConfig(context) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
+  const { srcDirPath, projectPath } = getSrcDir(context);
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.configFilename);
     fs.removeSync(targetFilePath);
@@ -42,13 +38,21 @@ function deleteAmplifyConfig(context) {
   }
 }
 
-function createAmplifyConfig(context, amplifyResources) {
+function getSrcDir(context) {
   const { amplify } = context;
-  const pluginDir = __dirname;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
+  return {
+    srcDirPath: path.join(projectPath, frontendConfig.SourceDir),
+    projectPath,
+  };
+}
+
+function createAmplifyConfig(context, amplifyResources) {
+  const { amplify } = context;
+  const pluginDir = __dirname;
+  const { srcDirPath } = getSrcDir(context);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.configFilename);

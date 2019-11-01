@@ -15,34 +15,36 @@ const FILE_EXTENSION_MAP = {
 const fileNames = ['queries', 'mutations', 'subscriptions'];
 
 function deleteAmplifyConfig(context) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const srcDirPath = path.join(projectPath);
+  const srcDirPath = getSrcDir(context);
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
     fs.removeSync(targetFilePath);
   }
 
-  if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;
-  const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
+  if (!fs.existsSync(path.join(srcDirPath, '.graphqlconfig.yml'))) return;
+  const gqlConfig = graphQLConfig.getGraphQLConfig(srcDirPath);
   if (gqlConfig && gqlConfig.config) {
     const { projects } = gqlConfig.config;
     Object.keys(projects).forEach(project => {
       const { codeGenTarget, docsFilePath, generatedFileName } = projects[project].extensions.amplify;
       fileNames.forEach(filename => {
-        const file = path.join(projectPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget]}`);
+        const file = path.join(srcDirPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget]}`);
         if (fs.existsSync(file)) fs.removeSync(file);
       });
 
-      fs.removeSync(path.join(projectPath, generatedFileName));
+      fs.removeSync(path.join(srcDirPath, generatedFileName));
     });
   }
 }
 
-function createAmplifyConfig(context, amplifyResources) {
+function getSrcDir(context) {
   const { amplify } = context;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const srcDirPath = path.join(projectPath);
+  return path.join(projectPath);
+}
+
+function createAmplifyConfig(context, amplifyResources) {
+  const srcDirPath = getSrcDir(context);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
