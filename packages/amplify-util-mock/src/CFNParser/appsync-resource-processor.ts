@@ -41,6 +41,11 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
       AttributeDefinitions: resource.Properties.AttributeDefinitions,
     },
   };
+
+  if (resource.Properties.LocalSecondaryIndexes) {
+    processedResource.Properties.LocalSecondaryIndexes = resource.Properties.LocalSecondaryIndexes;
+  }
+
   if (gsis.length) {
     processedResource.Properties.GlobalSecondaryIndexes = gsis;
   }
