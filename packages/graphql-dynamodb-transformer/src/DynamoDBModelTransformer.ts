@@ -141,22 +141,6 @@ export class DynamoDBModelTransformer extends Transformer {
     ctx.setOutput(tableNameOutputId, this.resources.makeTableNameOutput(tableLogicalID));
     ctx.mapResourceToStack(stackName, tableNameOutputId);
 
-    // expose those nested stack outputs to the parent stack
-    // so they would avaiable inside meta and can be references in other categories
-    // put N(nested) in front of the ids in order to to override nested stacks outputs
-    ctx.setOutput(
-        `N` + streamArnOutputId,
-        this.resources.makeOutputFromNestedStack(streamArnOutputId, stackName)
-    )
-    ctx.setOutput(
-        `N` + datasourceOutputId,
-        this.resources.makeOutputFromNestedStack(datasourceOutputId, stackName)
-    )
-    ctx.setOutput(
-        `N` + tableNameOutputId,
-        this.resources.makeOutputFromNestedStack(tableNameOutputId, stackName)
-    )
-    
     this.createQueries(def, directive, ctx);
     this.createMutations(def, directive, ctx, nonModelArray);
     this.createSubscriptions(def, directive, ctx);
