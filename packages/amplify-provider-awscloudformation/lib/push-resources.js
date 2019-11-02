@@ -400,6 +400,13 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
 
               parameters[parameterKey] = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
             }
+
+            if (dependsOn.exports) {
+              for (let j = 0; j < dependsOn[i].exports.length; j += 1) {
+                const exportName = dependsOn[i].exports[j];
+                parameters[exportName] = { 'Fn::ImportValue': exportName };
+              }
+            }
           }
         }
 

@@ -286,7 +286,8 @@ class CloudFormation {
     return cfnModel
       .describeStackResources(cfnParentStackParams)
       .promise()
-      .then(result => {
+      .then(result => this.listExports().then(exports => ({ result, exports })))
+      .then(({ result, exports }) => {
         let resources = result.StackResources;
         resources = resources.filter(
           resource =>
@@ -321,19 +322,32 @@ class CloudFormation {
                   'output',
                   formatOutputs(stackResult[index].Stacks[0].Outputs)
                 );
+
+                const stackId = stackResult[index].Stacks[0].StackId;
+                const stackExports = exports
+                  .filter(exportItem => exportItem.ExportingStackId === stackId)
+                  .reduce(
+                    (exports, exportItem) => ({
+                      ...exports,
+                      [exportItem.Name]: exportItem.Value,
+                    }),
+                    {}
+                  );
+                if (Object.keys(stackExports).length > 0) {
+                  this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'exports', stackExports);
+                }
               }
             });
           });
 
-          return result;
+          return { result, exports };
         });
       })
-      .then(result => {
+      .then(({ result, exports }) => {
         const resources = result.StackResources;
         const stackResourcePromises = Object.keys(amplifyMeta)
           .map(category =>
             Object.keys(amplifyMeta[category])
-              // .filter(resource => amplifyMeta[category][resource].withNestedOutputs)
               .map(resource => ({
                 index: resources.findIndex(resourceItem => resourceItem.LogicalResourceId === category + resource),
                 resource,
@@ -353,9 +367,9 @@ class CloudFormation {
           .reduce((flattened, promises) => flattened.concat(promises), []);
 
         // fetch stack resources to further fetch nested stacks to get nested outputs
-        return Promise.all(stackResourcePromises);
+        return Promise.all(stackResourcePromises).then(results => ({ results, exports }));
       })
-      .then(results => {
+      .then(({ results, exports }) => {
         const stackPromises = results
           .reduce(
             (stackResources, result) =>
@@ -379,7 +393,17 @@ class CloudFormation {
               amplifyCategory: resource.amplifyCategory,
             }));
           });
-        return Promise.all(stackPromises);
+        return Promise.all(stackPromises).then(stacks =>
+          stacks
+            .filter(stack => stack.Stacks.length > 0)
+            .map(stack => {
+              const stackId = stack.Stacks[0].StackId;
+              return {
+                ...stack,
+                exports: exports.filter(exportItem => exportItem.ExportingStackId === stackId),
+              };
+            })
+        );
       })
       .then(results => {
         const nestedOutputs = results.reduce((byResource, result) => {
@@ -389,9 +413,15 @@ class CloudFormation {
             [key]: {
               category: result.amplifyCategory,
               resource: result.amplifyResourceName,
-              outputs: {
-                ...(key in byResource ? byResource[key].outputs : {}),
-                [result.logicalResourceId]: formatOutputs(result.Stacks[0].Outputs),
+              exports: {
+                ...(key in byResource ? byResource[key].exports : {}),
+                ...result.exports.reduce(
+                  (exports, exportItem) => ({
+                    ...exports,
+                    [exportItem.Name]: exportItem.Value,
+                  }),
+                  {}
+                ),
               },
             },
           };
@@ -400,9 +430,23 @@ class CloudFormation {
         Object.keys(nestedOutputs)
           .map(key => nestedOutputs[key])
           .forEach(item =>
-            this.context.amplify.updateamplifyMetaAfterResourceUpdate(item.category, item.resource, 'nestedStacksOutputs', item.outputs)
+            this.context.amplify.updateamplifyMetaAfterResourceUpdate(item.category, item.resource, 'exports', item.exports)
           );
       });
+  }
+
+  listExports(nextToken = null) {
+    return new Promise((resolve, reject) => {
+      this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, (err, data) => {
+        if (err) {
+          reject(err);
+        } else if (data.NextToken) {
+          this.listExports(data.NextToken).then(innerExports => resolve([...data.Exports, ...innerExports]));
+        } else {
+          resolve(data.Exports);
+        }
+      });
+    });
   }
 
   describeStack(cfnNestedStackParams, maxTry = 10, timeout = CFN_POLL_TIME) {
