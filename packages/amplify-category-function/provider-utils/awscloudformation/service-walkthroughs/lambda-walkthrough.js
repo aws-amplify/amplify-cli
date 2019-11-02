@@ -791,24 +791,31 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
 
   const targetResource = appSynchResources.find(resource => resource.resourceName === targetResourceName);
   const resourceOutput = targetResource.output;
-  const tableInfos = Object.keys(resourceOutput)
-    .map(outputName => outputName.match(/^NGetAtt(.*)(TableName|DataSourceName|TableStreamArn)$/))
+  const graphqlAPIId = resourceOutput.GraphQLAPIIdOutput;
+  if (!graphqlAPIId) {
+    throw Error(`Unable to find graphql api id for ${targetResourceName} resource`);
+  }
+
+  const exports = targetResource.exports || {};
+  const tableInfos = Object.keys(exports)
+    .filter(exportName => exportName.startsWith(graphqlAPIId))
+    .map(exportName => exportName.match(/GetAtt:(.*)(DataSource:Name|Table:Name|Table:StreamArn)$/))
     .filter(match => match)
     .map(([, tableName, outputType]) => ({
       tableName,
       outputType,
-      value: resourceOutput[`NGetAtt${tableName}${outputType}`],
+      value: exports[`${graphqlAPIId}:GetAtt:${tableName}${outputType}`],
     }))
     .reduce((infos, parsedOutput) => {
       let partial;
       switch (parsedOutput.outputType) {
-        case 'TableName':
+        case 'Table:Name':
           partial = { name: parsedOutput.value };
           break;
-        case 'DatasourceName':
+        case 'DataSource:Name':
           partial = { datasourceName: parsedOutput.value };
           break;
-        case 'TableStreamArn':
+        case 'Table:StreamArn':
           partial = { streamArn: parsedOutput.value };
           break;
         default:
@@ -851,10 +858,8 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
     throw Error(`Unable to find associated streamArn for ${tableInfo} model dynamoDb table.`);
   }
 
-  const streamArnParamRef = {
-    Ref: `api${targetResourceName}NGetAtt${modelName}TableStreamArn`,
-  };
-
+  // NOTE: parameter name is stripped off from : since it has to be alphanumeric
+  const streamArnParamRef = { Ref: `${graphqlAPIId}GetAtt${modelName}TableStreamArn` };
   return {
     triggerEventSourceMapping: {
       batchSize: 100,
@@ -873,7 +878,8 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
       {
         category: 'api',
         resourceName: targetResourceName,
-        attributes: [`NGetAtt${modelName}TableStreamArn`],
+        attributes: [],
+        exports: [`${graphqlAPIId}:GetAtt:${modelName}Table:StreamArn`],
       },
     ],
   };
