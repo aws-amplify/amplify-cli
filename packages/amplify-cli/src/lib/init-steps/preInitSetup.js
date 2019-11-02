@@ -151,6 +151,7 @@ async function createIosSkeleton() {
   const configDir = path.join(process.cwd(), '/amplifyxc.config');
   const configStr = 'push=false\nprofile=default';
   const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
+  const amplifyConfigDir = path.join(process.cwd(), '/amplifyconfiguration.json');
   const configJsonData = '{}';
   const configJsonObj = JSON.parse(configJsonData);
   const configJsonStr = JSON.stringify(configJsonObj);
@@ -162,6 +163,10 @@ async function createIosSkeleton() {
     await fs.writeFileSync(awsConfigDir, configJsonStr);
   }
   await addFileToXcodeProj(awsConfigDir);
+  if (await !fs.existsSync(amplifyConfigDir)) {
+    await fs.writeFileSync(amplifyConfigDir, configJsonStr);
+  }
+  await addFileToXcodeProj(amplifyConfigDir);
   await fs.copySync(skeletonLocalDir, skeletonProjectZipDir);
   return new Promise((resolve, reject) => {
     extract(skeletonProjectZipDir, { dir: skeletonProjectDir }, err => {
