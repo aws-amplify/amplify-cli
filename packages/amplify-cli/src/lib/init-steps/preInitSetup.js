@@ -1,6 +1,7 @@
 const { execSync } = require('child_process');
 const { getPackageManager } = require('../packageManagerHelpers');
 const { normalizePackageManagerForOS } = require('../packageManagerHelpers');
+const { addFileToXcodeProj } = require('../xcodeHelpers');
 const { generateLocalEnvInfoFile } = require('./s9-onSuccess');
 const url = require('url');
 const fs = require('fs-extra');
@@ -135,9 +136,9 @@ async function createAndroidSkeleton() {
 async function cleanAndroidProject() {
   const skeletonProjectDir = path.join(process.cwd(), '/amplify-android');
   const skeletonZip = path.join(process.cwd(), '/amplify-android.zip');
-  fs.copySync(skeletonProjectDir, process.cwd());
-  fs.removeSync(skeletonProjectDir);
-  fs.removeSync(skeletonZip);
+  await fs.copySync(skeletonProjectDir, process.cwd());
+  await fs.removeSync(skeletonProjectDir);
+  await fs.removeSync(skeletonZip);
 }
 
 /**
@@ -149,9 +150,18 @@ async function createIosSkeleton() {
   const skeletonProjectDir = path.join(process.cwd(), '/amplify-ios');
   const configDir = path.join(process.cwd(), '/amplifyxc.config');
   const configStr = 'push=false\nprofile=default';
-  if (!fs.existsSync(configDir)) {
-    fs.writeFileSync(configDir, configStr);
+  const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
+  const configJsonData = '{}';
+  const configJsonObj = JSON.parse(configJsonData);
+  const configJsonStr = JSON.stringify(configJsonObj);
+  if (await !fs.existsSync(configDir)) {
+    await fs.writeFileSync(configDir, configStr);
   }
+  await addFileToXcodeProj(configDir);
+  if (await !fs.existsSync(awsConfigDir)) {
+    await fs.writeFileSync(awsConfigDir, configJsonStr);
+  }
+  await addFileToXcodeProj(awsConfigDir);
   await fs.copySync(skeletonLocalDir, skeletonProjectZipDir);
   return new Promise((resolve, reject) => {
     extract(skeletonProjectZipDir, { dir: skeletonProjectDir }, err => {
@@ -169,9 +179,9 @@ async function createIosSkeleton() {
 async function cleanIosProject() {
   const skeletonProjectDir = path.join(process.cwd(), '/amplify-ios');
   const skeletonZip = path.join(process.cwd(), '/amplify-ios.zip');
-  fs.copySync(skeletonProjectDir, process.cwd());
-  fs.removeSync(skeletonProjectDir);
-  fs.removeSync(skeletonZip);
+  await fs.copySync(skeletonProjectDir, process.cwd());
+  await fs.removeSync(skeletonProjectDir);
+  await fs.removeSync(skeletonZip);
 }
 
 module.exports = {

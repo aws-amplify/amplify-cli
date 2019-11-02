@@ -1,7 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: AmplifyTools
 
-amplify.push = true
 /*
 ********External Plugin***********
  */
@@ -68,7 +67,7 @@ class AmplifyTools implements Plugin<Project> {
                 def configJson = jsonSlurper.parseText(configText)
                 profile = configJson.profile
                 accessKeyId = configJson.accessKeyId
-                secretAccessKey = configJson.accessKeyId
+                secretAccessKey = configJson.secretAccessKeyId
                 region = configJson.region
                 envName = configJson.envName
             }
