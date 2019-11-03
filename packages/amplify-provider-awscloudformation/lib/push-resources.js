@@ -402,10 +402,11 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
             }
 
             if (dependsOn[i].exports) {
-              for (let j = 0; j < dependsOn[i].exports.length; j += 1) {
-                const exportName = dependsOn[i].exports[j].replace(/:/g, '');
-                parameters[exportName] = { 'Fn::ImportValue': dependsOn[i].exports[j] };
-              }
+              Object.keys(dependsOn[i].exports)
+                .map(key => ({ key, value: dependsOn[i].exports[key] }))
+                .forEach(({ key, value }) => {
+                  parameters[key] = { 'Fn::ImportValue': value };
+                });
             }
           }
         }

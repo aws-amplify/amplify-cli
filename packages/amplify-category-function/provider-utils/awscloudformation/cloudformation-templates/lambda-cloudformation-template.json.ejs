@@ -11,13 +11,13 @@
         "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>": {
             "Type": "String",
             "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
-            }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1 || props.dependsOn[i].exports.length > 0) { %>,<% } %>
+            }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1 || Object.keys(props.dependsOn[i].exports || {}).length > 0) { %>,<% } %>
         <% } %>
-    <% for(var j=0; j < props.dependsOn[i].exports.length; j++) { %>
-        "<%= props.dependsOn[i].exports[j].replace(/:/g, '') %>": {
+    <% for(var j=0; j < Object.keys(props.dependsOn[i].exports || {}).length; j++) { %>
+        "<%= Object.keys(props.dependsOn[i].exports)[j] %>": {
             "Type": "String",
-            "Default": "<%= props.dependsOn[i].exports[j].replace(/:/g, '') %>"
-            }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].exports.length - 1) { %>,<% } %>
+            "Default": "<%= Object.keys(props.dependsOn[i].exports)[j] %>"
+            }<%if (i !== props.dependsOn.length - 1 || j !== Object.keys(props.dependsOn[i].exports).length - 1) { %>,<% } %>
         <% } %>
         <% } %>
     <% } %>
