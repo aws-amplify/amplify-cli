@@ -858,8 +858,11 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
     throw Error(`Unable to find associated streamArn for ${tableInfo} model dynamoDb table.`);
   }
 
-  // NOTE: parameter name is stripped off from : since it has to be alphanumeric
-  const streamArnParamRef = { Ref: `${graphqlAPIId}GetAtt${modelName}TableStreamArn` };
+  const streamArnParamRef = {
+    'Fn::ImportValue': {
+      'Fn::Sub': [`\${api${targetResourceName}GraphQLAPIIdOutput}`, 'GetAtt', `${modelName}Table`, 'StreamArn'].join(':'),
+    },
+  };
   return {
     triggerEventSourceMapping: {
       batchSize: 100,
@@ -878,8 +881,7 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
       {
         category: 'api',
         resourceName: targetResourceName,
-        attributes: [],
-        exports: [`${graphqlAPIId}:GetAtt:${modelName}Table:StreamArn`],
+        attributes: ['GraphQLAPIIdOutput'],
       },
     ],
   };
