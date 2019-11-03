@@ -64,6 +64,46 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       unauthPolicyName: defaultValues.unauthPolicyName,
     };
 
+    // Check for authorization rules and settings
+
+    const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+
+    const apiRequirements = {
+      authSelections: 'identityPoolOnly',
+      allowUnauthenticatedIdentities: true,
+    };
+    // getting requirement satisfaction map
+    const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', targetResourceName);
+    // checking to see if any requirements are unsatisfied
+    const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+    if (foundUnmetRequirements) {
+      context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
+      if (
+        await amplify.confirmPrompt.run(
+          'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)'
+        )
+      ) {
+        try {
+          await externalAuthEnable(context, 'api', targetResourceName, apiRequirements);
+        } catch (e) {
+          context.print.error(e);
+          throw e;
+        }
+      } else {
+        try {
+          context.print.warning(
+            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.'
+          );
+          apiRequirements.allowUnauthenticatedIdentities = false;
+          await externalAuthEnable(context, 'api', targetResourceName, apiRequirements);
+        } catch (e) {
+          context.print.error(e);
+          throw e;
+        }
+      }
+    }
+
     // allow overwrite in update case: resourceName specified
     await amplify.copyBatch(context, copyJobs, {}, !!resourceName, params);
     return targetResourceName;
