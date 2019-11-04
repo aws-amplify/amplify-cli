@@ -233,7 +233,8 @@ export class ResourceFactory {
         },
         Refs.NoValue
       ) as any,
-      ...(isSyncEnabled && { TimeToLiveSpecification: SyncUtils.syncTTLConfig() }),
+      ...( isSyncEnabled && {
+        TimeToLiveSpecification: SyncUtils.syncTTLConfig() }),
     }).deletionPolicy(deletionPolicy);
   }
 
@@ -329,8 +330,11 @@ export class ResourceFactory {
       DynamoDBConfig: {
         AwsRegion: Refs.Region,
         TableName: this.dynamoDBTableName(typeName),
+        ...( isSyncEnabled && {
+          DeltaSyncConfig: SyncUtils.syncDataSourceConfig(),
+          Versioned: true
+        })
       },
-      ...( isSyncEnabled && { DeltaSyncConfig: SyncUtils.syncDataSourceConfig() })
     }).dependsOn([iamRoleLogicalID]);
   }
 

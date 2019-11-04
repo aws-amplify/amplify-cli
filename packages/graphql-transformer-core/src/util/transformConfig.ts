@@ -13,18 +13,18 @@ export interface TransformMigrationConfig {
 
 // Sync Config
 export declare enum ConflictHandlerType {
-  DEFAULT = "DEFAULT",
-  SERVER = "SERVER_WINS",
+  LRW = "LAST_WRITE_WINS",
+  AUTOMERGE = "AUTOMERGE",
   LAMBDA = "LAMBDA"
 }
-export type ConflictDectionType = 'CONDITIONALS' | 'SYNC';
+export type ConflictDectionType = 'VERSION' | 'NONE';
 export type SyncConfigDEFAULT = {
   ConflictDetection: ConflictDectionType;
-  ConflictHandler: ConflictHandlerType.DEFAULT;
+  ConflictHandler: ConflictHandlerType.LRW;
 }
 export type SyncConfigSERVER = {
   ConflictDetection: ConflictDectionType;
-  ConflictHandler: ConflictHandlerType.SERVER;
+  ConflictHandler: ConflictHandlerType.AUTOMERGE;
 }
 export type SyncConfigLAMBDA = {
   ConflictDetection: ConflictDectionType;
