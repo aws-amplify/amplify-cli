@@ -1,21 +1,18 @@
 {
-    "compilerOptions": {
-      "target": "es5",
-      "module": "commonjs",
-      "sourceMap": true,
-      "mapRoot": "lib",
-      "lib": ["es6", "es2015", "dom"],
-      "declaration": false,
-      "allowJs": true,
-      "outDir": "lib",
-      // "rootDir": "src",
-      "strict": true,
-      "esModuleInterop": true,
-      "resolveJsonModule": true,
-    },
-    "include": ["src/**/*"],
-    "exclude": [
-        "node_modules",
-        "lib"
-    ]
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "sourceMap": true,
+    "mapRoot": "lib",
+    "lib": ["es6", "es2015", "dom"],
+    "declaration": false,
+    "allowJs": true,
+    "outDir": "lib",
+    // "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "lib"]
 }
