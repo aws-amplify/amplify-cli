@@ -348,7 +348,7 @@ export class DynamoDBModelTransformer extends Transformer {
             makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(def.name.value))),
             makeInputValueDefinition('limit', makeNamedType('Int')),
             makeInputValueDefinition('nextToken', makeNamedType('String')),
-            makeInputValueDefinition('lastSync', makeNamedType('AWSTimeStamp')),
+            makeInputValueDefinition('lastSync', makeNamedType('AWSTimestamp')),
           ],
           makeNamedType(ModelResourceIDs.ModelConnectionTypeName(def.name.value))
         )
