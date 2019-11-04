@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test "create", "update", "delete" auth operations 1`] = `"$util.toJson($context.result)"`;
+exports[`Test "create", "update", "delete" auth operations 1`] = `"$util.toJson($ctx.result)"`;
 
 exports[`Test "create", "update", "delete" auth operations 2`] = `"$util.toJson($ctx.result)"`;
 
@@ -609,7 +609,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 3
 $util.toJson(null)"
 `;
 
-exports[`Test that operation overwrites queries in auth operations 1`] = `"$util.toJson($context.result)"`;
+exports[`Test that operation overwrites queries in auth operations 1`] = `"$util.toJson($ctx.result)"`;
 
 exports[`Test that operation overwrites queries in auth operations 2`] = `"$util.toJson($ctx.result)"`;
 
