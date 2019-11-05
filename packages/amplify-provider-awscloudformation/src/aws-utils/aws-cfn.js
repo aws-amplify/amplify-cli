@@ -401,7 +401,7 @@ class CloudFormation {
               const storage = amplifyMeta.storage || {};
               const buckets = [
                 ...Object.keys(storage)
-                  .filter(r => storage[r].service === 'S3')
+                  .filter(r => storage[r].service === 'S3' && storage[r].output)
                   .map(r => storage[r].output.BucketName),
                 deploymentBucketName,
               ];
