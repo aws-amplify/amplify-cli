@@ -8,14 +8,11 @@ export function addMockDataToGitIgnore(context) {
       .readFileSync(gitIgnoreFilePath)
       .toString()
       .split(os.EOL);
-    const gitIgnoreMap = gitIgnoreContent.reduce((map, val) => {
-      map.set(val, true);
-      return map;
-    }, new Map<string, boolean>());
+    const gitIgnoreSet = new Set<string>(gitIgnoreContent);
     const amplifyMockData = 'amplify/mock-data';
-    if (!gitIgnoreMap.has(amplifyMockData)) {
-      gitIgnoreMap.set(amplifyMockData, true);
-      fs.writeFileSync(gitIgnoreFilePath, [...gitIgnoreMap.keys()].join(os.EOL));
+    if (!gitIgnoreSet.has(amplifyMockData)) {
+      gitIgnoreSet.add(amplifyMockData);
+      fs.writeFileSync(gitIgnoreFilePath, [...gitIgnoreSet.keys()].join(os.EOL));
     }
   }
 }
