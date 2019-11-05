@@ -24,13 +24,13 @@ async function init(amplifyServiceParams) {
   let amplifyAppId;
 
   // in the "amplify env add" workflow, there might be other envs, new env can be added to existing appId
-  let teamProviderFilePath; 
-  try{
+  let teamProviderFilePath;
+  try {
     teamProviderFilePath = context.amplify.pathManager.getProviderInfoFilePath();
-  }catch{
-    //do nothing
+  } catch (e) {
+    // do nothing
   }
-   
+
   if (teamProviderFilePath && fs.existsSync(teamProviderFilePath)) {
     const teamProviderInfo = context.amplify.readJsonFile(teamProviderFilePath);
 
