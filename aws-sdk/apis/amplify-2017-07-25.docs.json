@@ -1,0 +1,1427 @@
+{
+  "version": "2.0",
+  "service": null,
+  "operations": {
+    "CreateApp": null,
+    "CreateBackendEnvironment": null,
+    "CreateBranch": null,
+    "CreateDeployment": null,
+    "CreateDomainAssociation": null,
+    "CreateWebhook": null,
+    "DeleteApp": null,
+    "DeleteBackendEnvironment": null,
+    "DeleteBranch": null,
+    "DeleteDomainAssociation": null,
+    "DeleteJob": null,
+    "DeleteWebhook": null,
+    "GenerateAccessLogs": null,
+    "GetApp": null,
+    "GetArtifactUrl": null,
+    "GetBackendEnvironment": null,
+    "GetBranch": null,
+    "GetDomainAssociation": null,
+    "GetJob": null,
+    "GetWebhook": null,
+    "ListApps": null,
+    "ListArtifacts": null,
+    "ListBackendEnvironments": null,
+    "ListBranches": null,
+    "ListDomainAssociations": null,
+    "ListJobs": null,
+    "ListTagsForResource": null,
+    "ListWebhooks": null,
+    "StartDeployment": null,
+    "StartJob": null,
+    "StopJob": null,
+    "TagResource": null,
+    "UntagResource": null,
+    "UpdateApp": null,
+    "UpdateBackendEnvironment": null,
+    "UpdateBranch": null,
+    "UpdateDomainAssociation": null,
+    "UpdateWebhook": null
+  },
+  "shapes": {
+    "AccessToken": {
+      "base": null,
+      "refs": {
+        "CreateAppRequest$accessToken": null,
+        "UpdateAppRequest$accessToken": null
+      }
+    },
+    "ActiveJobId": {
+      "base": null,
+      "refs": {
+        "Branch$activeJobId": null
+      }
+    },
+    "App": {
+      "base": null,
+      "refs": {
+        "Apps$member": null,
+        "CreateAppResult$app": null,
+        "DeleteAppResult$app": null,
+        "GetAppResult$app": null,
+        "UpdateAppResult$app": null
+      }
+    },
+    "AppArn": {
+      "base": null,
+      "refs": {
+        "App$appArn": null
+      }
+    },
+    "AppId": {
+      "base": null,
+      "refs": {
+        "App$appId": null,
+        "CreateBackendEnvironmentRequest$appId": null,
+        "CreateBranchRequest$appId": null,
+        "CreateDeploymentRequest$appId": null,
+        "CreateDomainAssociationRequest$appId": null,
+        "CreateWebhookRequest$appId": null,
+        "DeleteAppRequest$appId": null,
+        "DeleteBackendEnvironmentRequest$appId": null,
+        "DeleteBranchRequest$appId": null,
+        "DeleteDomainAssociationRequest$appId": null,
+        "DeleteJobRequest$appId": null,
+        "GenerateAccessLogsRequest$appId": null,
+        "GetAppRequest$appId": null,
+        "GetBackendEnvironmentRequest$appId": null,
+        "GetBranchRequest$appId": null,
+        "GetDomainAssociationRequest$appId": null,
+        "GetJobRequest$appId": null,
+        "ListArtifactsRequest$appId": null,
+        "ListBackendEnvironmentsRequest$appId": null,
+        "ListBranchesRequest$appId": null,
+        "ListDomainAssociationsRequest$appId": null,
+        "ListJobsRequest$appId": null,
+        "ListWebhooksRequest$appId": null,
+        "StartDeploymentRequest$appId": null,
+        "StartJobRequest$appId": null,
+        "StopJobRequest$appId": null,
+        "UpdateAppRequest$appId": null,
+        "UpdateBackendEnvironmentRequest$appId": null,
+        "UpdateBranchRequest$appId": null,
+        "UpdateDomainAssociationRequest$appId": null
+      }
+    },
+    "Apps": {
+      "base": null,
+      "refs": {
+        "ListAppsResult$apps": null
+      }
+    },
+    "Artifact": {
+      "base": null,
+      "refs": {
+        "Artifacts$member": null
+      }
+    },
+    "ArtifactFileName": {
+      "base": null,
+      "refs": {
+        "Artifact$artifactFileName": null
+      }
+    },
+    "ArtifactId": {
+      "base": null,
+      "refs": {
+        "Artifact$artifactId": null,
+        "GetArtifactUrlRequest$artifactId": null,
+        "GetArtifactUrlResult$artifactId": null
+      }
+    },
+    "ArtifactUrl": {
+      "base": null,
+      "refs": {
+        "GetArtifactUrlResult$artifactUrl": null
+      }
+    },
+    "Artifacts": {
+      "base": null,
+      "refs": {
+        "ListArtifactsResult$artifacts": null
+      }
+    },
+    "ArtifactsUrl": {
+      "base": null,
+      "refs": {
+        "Step$artifactsUrl": null
+      }
+    },
+    "AssociatedResource": {
+      "base": null,
+      "refs": {
+        "AssociatedResources$member": null
+      }
+    },
+    "AssociatedResources": {
+      "base": null,
+      "refs": {
+        "Branch$associatedResources": null
+      }
+    },
+    "AutoBranchCreationConfig": {
+      "base": null,
+      "refs": {
+        "App$autoBranchCreationConfig": null,
+        "CreateAppRequest$autoBranchCreationConfig": null,
+        "UpdateAppRequest$autoBranchCreationConfig": null
+      }
+    },
+    "AutoBranchCreationPattern": {
+      "base": null,
+      "refs": {
+        "AutoBranchCreationPatterns$member": null
+      }
+    },
+    "AutoBranchCreationPatterns": {
+      "base": null,
+      "refs": {
+        "App$autoBranchCreationPatterns": null,
+        "CreateAppRequest$autoBranchCreationPatterns": null,
+        "UpdateAppRequest$autoBranchCreationPatterns": null
+      }
+    },
+    "BackendEnvironment": {
+      "base": null,
+      "refs": {
+        "BackendEnvironments$member": null,
+        "CreateBackendEnvironmentResult$backendEnvironment": null,
+        "DeleteBackendEnvironmentResult$backendEnvironment": null,
+        "GetBackendEnvironmentResult$backendEnvironment": null,
+        "UpdateBackendEnvironmentResult$backendEnvironment": null
+      }
+    },
+    "BackendEnvironmentArn": {
+      "base": null,
+      "refs": {
+        "BackendEnvironment$backendEnvironmentArn": null,
+        "Branch$backendEnvironmentArn": null,
+        "CreateBranchRequest$backendEnvironmentArn": null,
+        "UpdateBranchRequest$backendEnvironmentArn": null
+      }
+    },
+    "BackendEnvironments": {
+      "base": null,
+      "refs": {
+        "ListBackendEnvironmentsResult$backendEnvironments": null
+      }
+    },
+    "BadRequestException": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "BasicAuthCredentials": {
+      "base": null,
+      "refs": {
+        "App$basicAuthCredentials": null,
+        "AutoBranchCreationConfig$basicAuthCredentials": null,
+        "Branch$basicAuthCredentials": null,
+        "CreateAppRequest$basicAuthCredentials": null,
+        "CreateBranchRequest$basicAuthCredentials": null,
+        "UpdateAppRequest$basicAuthCredentials": null,
+        "UpdateBranchRequest$basicAuthCredentials": null
+      }
+    },
+    "Branch": {
+      "base": null,
+      "refs": {
+        "Branches$member": null,
+        "CreateBranchResult$branch": null,
+        "DeleteBranchResult$branch": null,
+        "GetBranchResult$branch": null,
+        "UpdateBranchResult$branch": null
+      }
+    },
+    "BranchArn": {
+      "base": null,
+      "refs": {
+        "Branch$branchArn": null
+      }
+    },
+    "BranchName": {
+      "base": null,
+      "refs": {
+        "Branch$branchName": null,
+        "Branch$destinationBranch": null,
+        "Branch$sourceBranch": null,
+        "CreateBranchRequest$branchName": null,
+        "CreateDeploymentRequest$branchName": null,
+        "CreateWebhookRequest$branchName": null,
+        "DeleteBranchRequest$branchName": null,
+        "DeleteJobRequest$branchName": null,
+        "GetBranchRequest$branchName": null,
+        "GetJobRequest$branchName": null,
+        "ListArtifactsRequest$branchName": null,
+        "ListJobsRequest$branchName": null,
+        "ProductionBranch$branchName": null,
+        "StartDeploymentRequest$branchName": null,
+        "StartJobRequest$branchName": null,
+        "StopJobRequest$branchName": null,
+        "SubDomainSetting$branchName": null,
+        "UpdateBranchRequest$branchName": null,
+        "UpdateWebhookRequest$branchName": null,
+        "Webhook$branchName": null
+      }
+    },
+    "Branches": {
+      "base": null,
+      "refs": {
+        "ListBranchesResult$branches": null
+      }
+    },
+    "BuildSpec": {
+      "base": null,
+      "refs": {
+        "App$buildSpec": null,
+        "AutoBranchCreationConfig$buildSpec": null,
+        "Branch$buildSpec": null,
+        "CreateAppRequest$buildSpec": null,
+        "CreateBranchRequest$buildSpec": null,
+        "UpdateAppRequest$buildSpec": null,
+        "UpdateBranchRequest$buildSpec": null
+      }
+    },
+    "CertificateVerificationDNSRecord": {
+      "base": null,
+      "refs": {
+        "DomainAssociation$certificateVerificationDNSRecord": null
+      }
+    },
+    "Code": {
+      "base": null,
+      "refs": {
+        "ResourceNotFoundException$code": null
+      }
+    },
+    "CommitId": {
+      "base": null,
+      "refs": {
+        "JobSummary$commitId": null,
+        "StartJobRequest$commitId": null
+      }
+    },
+    "CommitMessage": {
+      "base": null,
+      "refs": {
+        "JobSummary$commitMessage": null,
+        "StartJobRequest$commitMessage": null
+      }
+    },
+    "CommitTime": {
+      "base": null,
+      "refs": {
+        "JobSummary$commitTime": null,
+        "StartJobRequest$commitTime": null
+      }
+    },
+    "Condition": {
+      "base": null,
+      "refs": {
+        "CustomRule$condition": null
+      }
+    },
+    "Context": {
+      "base": null,
+      "refs": {
+        "Step$context": null
+      }
+    },
+    "CreateAppRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateAppResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateBackendEnvironmentRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateBackendEnvironmentResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateBranchRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateBranchResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateDeploymentRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateDeploymentResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateDomainAssociationRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateDomainAssociationResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateTime": {
+      "base": null,
+      "refs": {
+        "App$createTime": null,
+        "BackendEnvironment$createTime": null,
+        "Branch$createTime": null,
+        "Webhook$createTime": null
+      }
+    },
+    "CreateWebhookRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CreateWebhookResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "CustomDomain": {
+      "base": null,
+      "refs": {
+        "CustomDomains$member": null
+      }
+    },
+    "CustomDomains": {
+      "base": null,
+      "refs": {
+        "Branch$customDomains": null
+      }
+    },
+    "CustomRule": {
+      "base": null,
+      "refs": {
+        "CustomRules$member": null
+      }
+    },
+    "CustomRules": {
+      "base": null,
+      "refs": {
+        "App$customRules": null,
+        "CreateAppRequest$customRules": null,
+        "UpdateAppRequest$customRules": null
+      }
+    },
+    "DNSRecord": {
+      "base": null,
+      "refs": {
+        "SubDomain$dnsRecord": null
+      }
+    },
+    "DefaultDomain": {
+      "base": null,
+      "refs": {
+        "App$defaultDomain": null
+      }
+    },
+    "DeleteAppRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteAppResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteBackendEnvironmentRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteBackendEnvironmentResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteBranchRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteBranchResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteDomainAssociationRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteDomainAssociationResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteJobRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteJobResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteWebhookRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeleteWebhookResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DependentServiceFailureException": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "DeploymentArtifacts": {
+      "base": null,
+      "refs": {
+        "BackendEnvironment$deploymentArtifacts": null,
+        "CreateBackendEnvironmentRequest$deploymentArtifacts": null
+      }
+    },
+    "DeploymentSource": {
+      "base": null,
+      "refs": {
+        "BackendEnvironment$deploymentSource": null,
+        "CreateBackendEnvironmentRequest$deploymentSource": null,
+        "UpdateBackendEnvironmentRequest$deploymentSource": null
+      }
+    },
+    "Description": {
+      "base": null,
+      "refs": {
+        "App$description": null,
+        "Branch$description": null,
+        "CreateAppRequest$description": null,
+        "CreateBranchRequest$description": null,
+        "CreateWebhookRequest$description": null,
+        "UpdateAppRequest$description": null,
+        "UpdateBranchRequest$description": null,
+        "UpdateWebhookRequest$description": null,
+        "Webhook$description": null
+      }
+    },
+    "DisplayName": {
+      "base": null,
+      "refs": {
+        "Branch$displayName": null,
+        "CreateBranchRequest$displayName": null,
+        "UpdateBranchRequest$displayName": null
+      }
+    },
+    "DomainAssociation": {
+      "base": null,
+      "refs": {
+        "CreateDomainAssociationResult$domainAssociation": null,
+        "DeleteDomainAssociationResult$domainAssociation": null,
+        "DomainAssociations$member": null,
+        "GetDomainAssociationResult$domainAssociation": null,
+        "UpdateDomainAssociationResult$domainAssociation": null
+      }
+    },
+    "DomainAssociationArn": {
+      "base": null,
+      "refs": {
+        "DomainAssociation$domainAssociationArn": null
+      }
+    },
+    "DomainAssociations": {
+      "base": null,
+      "refs": {
+        "ListDomainAssociationsResult$domainAssociations": null
+      }
+    },
+    "DomainName": {
+      "base": null,
+      "refs": {
+        "CreateDomainAssociationRequest$domainName": null,
+        "DeleteDomainAssociationRequest$domainName": null,
+        "DomainAssociation$domainName": null,
+        "GenerateAccessLogsRequest$domainName": null,
+        "GetDomainAssociationRequest$domainName": null,
+        "UpdateDomainAssociationRequest$domainName": null
+      }
+    },
+    "DomainPrefix": {
+      "base": null,
+      "refs": {
+        "SubDomainSetting$prefix": null
+      }
+    },
+    "DomainStatus": {
+      "base": null,
+      "refs": {
+        "DomainAssociation$domainStatus": null
+      }
+    },
+    "EnableAutoBranchCreation": {
+      "base": null,
+      "refs": {
+        "App$enableAutoBranchCreation": null,
+        "CreateAppRequest$enableAutoBranchCreation": null,
+        "UpdateAppRequest$enableAutoBranchCreation": null
+      }
+    },
+    "EnableAutoBuild": {
+      "base": null,
+      "refs": {
+        "AutoBranchCreationConfig$enableAutoBuild": null,
+        "Branch$enableAutoBuild": null,
+        "CreateBranchRequest$enableAutoBuild": null,
+        "UpdateAppRequest$enableBranchAutoBuild": null,
+        "UpdateBranchRequest$enableAutoBuild": null
+      }
+    },
+    "EnableAutoSubDomain": {
+      "base": null,
+      "refs": {
+        "CreateDomainAssociationRequest$enableAutoSubDomain": null,
+        "DomainAssociation$enableAutoSubDomain": null,
+        "UpdateDomainAssociationRequest$enableAutoSubDomain": null
+      }
+    },
+    "EnableBasicAuth": {
+      "base": null,
+      "refs": {
+        "App$enableBasicAuth": null,
+        "AutoBranchCreationConfig$enableBasicAuth": null,
+        "Branch$enableBasicAuth": null,
+        "CreateAppRequest$enableBasicAuth": null,
+        "CreateBranchRequest$enableBasicAuth": null,
+        "UpdateAppRequest$enableBasicAuth": null,
+        "UpdateBranchRequest$enableBasicAuth": null
+      }
+    },
+    "EnableBranchAutoBuild": {
+      "base": null,
+      "refs": {
+        "App$enableBranchAutoBuild": null,
+        "CreateAppRequest$enableBranchAutoBuild": null
+      }
+    },
+    "EnableNotification": {
+      "base": null,
+      "refs": {
+        "Branch$enableNotification": null,
+        "CreateBranchRequest$enableNotification": null,
+        "UpdateBranchRequest$enableNotification": null
+      }
+    },
+    "EnablePullRequestPreview": {
+      "base": null,
+      "refs": {
+        "AutoBranchCreationConfig$enablePullRequestPreview": null,
+        "Branch$enablePullRequestPreview": null,
+        "CreateBranchRequest$enablePullRequestPreview": null,
+        "UpdateBranchRequest$enablePullRequestPreview": null
+      }
+    },
+    "EndTime": {
+      "base": null,
+      "refs": {
+        "GenerateAccessLogsRequest$endTime": null,
+        "JobSummary$endTime": null,
+        "Step$endTime": null
+      }
+    },
+    "EnvKey": {
+      "base": null,
+      "refs": {
+        "EnvironmentVariables$key": null
+      }
+    },
+    "EnvValue": {
+      "base": null,
+      "refs": {
+        "EnvironmentVariables$value": null
+      }
+    },
+    "EnvironmentName": {
+      "base": null,
+      "refs": {
+        "BackendEnvironment$environmentName": null,
+        "CreateBackendEnvironmentRequest$environmentName": null,
+        "DeleteBackendEnvironmentRequest$environmentName": null,
+        "GetBackendEnvironmentRequest$environmentName": null,
+        "ListBackendEnvironmentsRequest$environmentName": null,
+        "UpdateBackendEnvironmentRequest$environmentName": null
+      }
+    },
+    "EnvironmentVariables": {
+      "base": null,
+      "refs": {
+        "App$environmentVariables": null,
+        "AutoBranchCreationConfig$environmentVariables": null,
+        "Branch$environmentVariables": null,
+        "CreateAppRequest$environmentVariables": null,
+        "CreateBranchRequest$environmentVariables": null,
+        "UpdateAppRequest$environmentVariables": null,
+        "UpdateBranchRequest$environmentVariables": null
+      }
+    },
+    "ErrorMessage": {
+      "base": null,
+      "refs": {
+        "BadRequestException$message": null,
+        "DependentServiceFailureException$message": null,
+        "InternalFailureException$message": null,
+        "LimitExceededException$message": null,
+        "NotFoundException$message": null,
+        "ResourceNotFoundException$message": null,
+        "UnauthorizedException$message": null
+      }
+    },
+    "FileMap": {
+      "base": null,
+      "refs": {
+        "CreateDeploymentRequest$fileMap": null
+      }
+    },
+    "FileName": {
+      "base": null,
+      "refs": {
+        "FileMap$key": null,
+        "FileUploadUrls$key": null
+      }
+    },
+    "FileUploadUrls": {
+      "base": null,
+      "refs": {
+        "CreateDeploymentResult$fileUploadUrls": null
+      }
+    },
+    "Framework": {
+      "base": null,
+      "refs": {
+        "AutoBranchCreationConfig$framework": null,
+        "Branch$framework": null,
+        "CreateBranchRequest$framework": null,
+        "UpdateBranchRequest$framework": null
+      }
+    },
+    "GenerateAccessLogsRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GenerateAccessLogsResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetAppRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetAppResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetArtifactUrlRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetArtifactUrlResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetBackendEnvironmentRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetBackendEnvironmentResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetBranchRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetBranchResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetDomainAssociationRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetDomainAssociationResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetJobRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetJobResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetWebhookRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "GetWebhookResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "InternalFailureException": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "Job": {
+      "base": null,
+      "refs": {
+        "GetJobResult$job": null
+      }
+    },
+    "JobArn": {
+      "base": null,
+      "refs": {
+        "JobSummary$jobArn": null
+      }
+    },
+    "JobId": {
+      "base": null,
+      "refs": {
+        "CreateDeploymentResult$jobId": null,
+        "DeleteJobRequest$jobId": null,
+        "GetJobRequest$jobId": null,
+        "JobSummary$jobId": null,
+        "ListArtifactsRequest$jobId": null,
+        "StartDeploymentRequest$jobId": null,
+        "StartJobRequest$jobId": null,
+        "StopJobRequest$jobId": null
+      }
+    },
+    "JobReason": {
+      "base": null,
+      "refs": {
+        "StartJobRequest$jobReason": null
+      }
+    },
+    "JobStatus": {
+      "base": null,
+      "refs": {
+        "JobSummary$status": null,
+        "Step$status": null
+      }
+    },
+    "JobSummaries": {
+      "base": null,
+      "refs": {
+        "ListJobsResult$jobSummaries": null
+      }
+    },
+    "JobSummary": {
+      "base": null,
+      "refs": {
+        "DeleteJobResult$jobSummary": null,
+        "Job$summary": null,
+        "JobSummaries$member": null,
+        "StartDeploymentResult$jobSummary": null,
+        "StartJobResult$jobSummary": null,
+        "StopJobResult$jobSummary": null
+      }
+    },
+    "JobType": {
+      "base": null,
+      "refs": {
+        "JobSummary$jobType": null,
+        "StartJobRequest$jobType": null
+      }
+    },
+    "LastDeployTime": {
+      "base": null,
+      "refs": {
+        "ProductionBranch$lastDeployTime": null
+      }
+    },
+    "LimitExceededException": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListAppsRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListAppsResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListArtifactsRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListArtifactsResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListBackendEnvironmentsRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListBackendEnvironmentsResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListBranchesRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListBranchesResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListDomainAssociationsRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListDomainAssociationsResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListJobsRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListJobsResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListTagsForResourceRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListTagsForResourceResponse": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListWebhooksRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "ListWebhooksResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "LogUrl": {
+      "base": null,
+      "refs": {
+        "GenerateAccessLogsResult$logUrl": null,
+        "Step$logUrl": null
+      }
+    },
+    "MD5Hash": {
+      "base": null,
+      "refs": {
+        "FileMap$value": null
+      }
+    },
+    "MaxResults": {
+      "base": null,
+      "refs": {
+        "ListAppsRequest$maxResults": null,
+        "ListArtifactsRequest$maxResults": null,
+        "ListBackendEnvironmentsRequest$maxResults": null,
+        "ListBranchesRequest$maxResults": null,
+        "ListDomainAssociationsRequest$maxResults": null,
+        "ListJobsRequest$maxResults": null,
+        "ListWebhooksRequest$maxResults": null
+      }
+    },
+    "Name": {
+      "base": null,
+      "refs": {
+        "App$name": null,
+        "CreateAppRequest$name": null,
+        "UpdateAppRequest$name": null
+      }
+    },
+    "NextToken": {
+      "base": null,
+      "refs": {
+        "ListAppsRequest$nextToken": null,
+        "ListAppsResult$nextToken": null,
+        "ListArtifactsRequest$nextToken": null,
+        "ListArtifactsResult$nextToken": null,
+        "ListBackendEnvironmentsRequest$nextToken": null,
+        "ListBackendEnvironmentsResult$nextToken": null,
+        "ListBranchesRequest$nextToken": null,
+        "ListBranchesResult$nextToken": null,
+        "ListDomainAssociationsRequest$nextToken": null,
+        "ListDomainAssociationsResult$nextToken": null,
+        "ListJobsRequest$nextToken": null,
+        "ListJobsResult$nextToken": null,
+        "ListWebhooksRequest$nextToken": null,
+        "ListWebhooksResult$nextToken": null
+      }
+    },
+    "NotFoundException": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "OauthToken": {
+      "base": null,
+      "refs": {
+        "CreateAppRequest$oauthToken": null,
+        "UpdateAppRequest$oauthToken": null
+      }
+    },
+    "Platform": {
+      "base": null,
+      "refs": {
+        "App$platform": null,
+        "CreateAppRequest$platform": null,
+        "UpdateAppRequest$platform": null
+      }
+    },
+    "ProductionBranch": {
+      "base": null,
+      "refs": {
+        "App$productionBranch": null
+      }
+    },
+    "PullRequestEnvironmentName": {
+      "base": null,
+      "refs": {
+        "AutoBranchCreationConfig$pullRequestEnvironmentName": null,
+        "Branch$pullRequestEnvironmentName": null,
+        "CreateBranchRequest$pullRequestEnvironmentName": null,
+        "UpdateBranchRequest$pullRequestEnvironmentName": null
+      }
+    },
+    "Repository": {
+      "base": null,
+      "refs": {
+        "App$repository": null,
+        "CreateAppRequest$repository": null,
+        "UpdateAppRequest$repository": null
+      }
+    },
+    "ResourceArn": {
+      "base": null,
+      "refs": {
+        "ListTagsForResourceRequest$resourceArn": null,
+        "TagResourceRequest$resourceArn": null,
+        "UntagResourceRequest$resourceArn": null
+      }
+    },
+    "ResourceNotFoundException": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "Screenshots": {
+      "base": null,
+      "refs": {
+        "Step$screenshots": null
+      }
+    },
+    "ServiceRoleArn": {
+      "base": null,
+      "refs": {
+        "App$iamServiceRoleArn": null,
+        "CreateAppRequest$iamServiceRoleArn": null,
+        "UpdateAppRequest$iamServiceRoleArn": null
+      }
+    },
+    "Source": {
+      "base": null,
+      "refs": {
+        "CustomRule$source": null
+      }
+    },
+    "SourceUrl": {
+      "base": null,
+      "refs": {
+        "StartDeploymentRequest$sourceUrl": null
+      }
+    },
+    "StackName": {
+      "base": null,
+      "refs": {
+        "BackendEnvironment$stackName": null,
+        "CreateBackendEnvironmentRequest$stackName": null
+      }
+    },
+    "Stage": {
+      "base": null,
+      "refs": {
+        "AutoBranchCreationConfig$stage": null,
+        "Branch$stage": null,
+        "CreateBranchRequest$stage": null,
+        "UpdateBranchRequest$stage": null
+      }
+    },
+    "StartDeploymentRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "StartDeploymentResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "StartJobRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "StartJobResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "StartTime": {
+      "base": null,
+      "refs": {
+        "GenerateAccessLogsRequest$startTime": null,
+        "JobSummary$startTime": null,
+        "Step$startTime": null
+      }
+    },
+    "Status": {
+      "base": null,
+      "refs": {
+        "CustomRule$status": null,
+        "ProductionBranch$status": null
+      }
+    },
+    "StatusReason": {
+      "base": null,
+      "refs": {
+        "DomainAssociation$statusReason": null,
+        "Step$statusReason": null
+      }
+    },
+    "Step": {
+      "base": null,
+      "refs": {
+        "Steps$member": null
+      }
+    },
+    "StepName": {
+      "base": null,
+      "refs": {
+        "Step$stepName": null
+      }
+    },
+    "Steps": {
+      "base": null,
+      "refs": {
+        "Job$steps": null
+      }
+    },
+    "StopJobRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "StopJobResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "SubDomain": {
+      "base": null,
+      "refs": {
+        "SubDomains$member": null
+      }
+    },
+    "SubDomainSetting": {
+      "base": null,
+      "refs": {
+        "SubDomain$subDomainSetting": null,
+        "SubDomainSettings$member": null
+      }
+    },
+    "SubDomainSettings": {
+      "base": null,
+      "refs": {
+        "CreateDomainAssociationRequest$subDomainSettings": null,
+        "UpdateDomainAssociationRequest$subDomainSettings": null
+      }
+    },
+    "SubDomains": {
+      "base": null,
+      "refs": {
+        "DomainAssociation$subDomains": null
+      }
+    },
+    "TTL": {
+      "base": null,
+      "refs": {
+        "Branch$ttl": null,
+        "CreateBranchRequest$ttl": null,
+        "UpdateBranchRequest$ttl": null
+      }
+    },
+    "TagKey": {
+      "base": null,
+      "refs": {
+        "TagKeyList$member": null,
+        "TagMap$key": null
+      }
+    },
+    "TagKeyList": {
+      "base": null,
+      "refs": {
+        "UntagResourceRequest$tagKeys": null
+      }
+    },
+    "TagMap": {
+      "base": null,
+      "refs": {
+        "App$tags": null,
+        "Branch$tags": null,
+        "CreateAppRequest$tags": null,
+        "CreateBranchRequest$tags": null,
+        "ListTagsForResourceResponse$tags": null,
+        "TagResourceRequest$tags": null
+      }
+    },
+    "TagResourceRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "TagResourceResponse": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "TagValue": {
+      "base": null,
+      "refs": {
+        "TagMap$value": null
+      }
+    },
+    "Target": {
+      "base": null,
+      "refs": {
+        "CustomRule$target": null
+      }
+    },
+    "TestArtifactsUrl": {
+      "base": null,
+      "refs": {
+        "Step$testArtifactsUrl": null
+      }
+    },
+    "TestConfigUrl": {
+      "base": null,
+      "refs": {
+        "Step$testConfigUrl": null
+      }
+    },
+    "ThumbnailName": {
+      "base": null,
+      "refs": {
+        "Screenshots$key": null
+      }
+    },
+    "ThumbnailUrl": {
+      "base": null,
+      "refs": {
+        "Branch$thumbnailUrl": null,
+        "ProductionBranch$thumbnailUrl": null,
+        "Screenshots$value": null
+      }
+    },
+    "TotalNumberOfJobs": {
+      "base": null,
+      "refs": {
+        "Branch$totalNumberOfJobs": null
+      }
+    },
+    "UnauthorizedException": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UntagResourceRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UntagResourceResponse": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateAppRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateAppResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateBackendEnvironmentRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateBackendEnvironmentResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateBranchRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateBranchResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateDomainAssociationRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateDomainAssociationResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateTime": {
+      "base": null,
+      "refs": {
+        "App$updateTime": null,
+        "BackendEnvironment$updateTime": null,
+        "Branch$updateTime": null,
+        "Webhook$updateTime": null
+      }
+    },
+    "UpdateWebhookRequest": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UpdateWebhookResult": {
+      "base": null,
+      "refs": {
+      }
+    },
+    "UploadUrl": {
+      "base": null,
+      "refs": {
+        "CreateDeploymentResult$zipUploadUrl": null,
+        "FileUploadUrls$value": null
+      }
+    },
+    "Verified": {
+      "base": null,
+      "refs": {
+        "SubDomain$verified": null
+      }
+    },
+    "Webhook": {
+      "base": null,
+      "refs": {
+        "CreateWebhookResult$webhook": null,
+        "DeleteWebhookResult$webhook": null,
+        "GetWebhookResult$webhook": null,
+        "UpdateWebhookResult$webhook": null,
+        "Webhooks$member": null
+      }
+    },
+    "WebhookArn": {
+      "base": null,
+      "refs": {
+        "Webhook$webhookArn": null
+      }
+    },
+    "WebhookId": {
+      "base": null,
+      "refs": {
+        "DeleteWebhookRequest$webhookId": null,
+        "GetWebhookRequest$webhookId": null,
+        "UpdateWebhookRequest$webhookId": null,
+        "Webhook$webhookId": null
+      }
+    },
+    "WebhookUrl": {
+      "base": null,
+      "refs": {
+        "Webhook$webhookUrl": null
+      }
+    },
+    "Webhooks": {
+      "base": null,
+      "refs": {
+        "ListWebhooksResult$webhooks": null
+      }
+    }
+  }
+}

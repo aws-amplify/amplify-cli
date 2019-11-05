@@ -10,6 +10,7 @@ const setupNewUser = require('./lib/setup-new-user');
 const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
 const pinpoint = require('./src/aws-utils/aws-pinpoint');
+const amplifyService = require('./src/aws-utils/aws-amplify');
 const consoleCommand = require('./lib/console');
 const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
 const { formUserAgentParam } = require('./src/aws-utils/user-agent');
@@ -55,12 +56,16 @@ async function getConfiguredAWSClient(context, category, action) {
   return aws;
 }
 
-function getConfiguredPinpointClient(context) {
-  return pinpoint.getConfiguredPinpointClient(context);
+function getConfiguredPinpointClient(context, category, action, options = {}) {
+  return pinpoint.getConfiguredPinpointClient(context, category, action, options);
 }
 
-function getPinpointRegionMapping(context) {
-  return pinpoint.getPinpointRegionMapping(context);
+function getPinpointRegionMapping() {
+  return pinpoint.getPinpointRegionMapping();
+}
+
+function getConfiguredAmplifyClient(context, category, action, options = {}) {
+  return amplifyService.getConfiguredAmplifyClient(context, category, action, options);
 }
 
 function showHelpfulLinks(context, resources) {
@@ -90,6 +95,7 @@ module.exports = {
   getConfiguredAWSClient,
   getPinpointRegionMapping,
   getConfiguredPinpointClient,
+  getConfiguredAmplifyClient,
   showHelpfulLinks,
   deleteEnv,
   loadResourceParameters,

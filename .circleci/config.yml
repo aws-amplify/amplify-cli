@@ -464,14 +464,11 @@ workflows:
           requires:
             - build
             - test
-            - integration_test
-            - graphql_e2e_tests
-            - amplify_e2e_tests
-            - mock_e2e_tests
           filters:
             branches:
               only:
                 - release
+                - console-integration
                 - master
                 - beta
       - integration_test_js:
