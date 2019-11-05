@@ -18,7 +18,7 @@ export declare enum ConflictHandlerType {
   LAMBDA = "LAMBDA"
 }
 export type ConflictDectionType = 'VERSION' | 'NONE';
-export type SyncConfigDEFAULT = {
+export type SyncConfigLRW = {
   ConflictDetection: ConflictDectionType;
   ConflictHandler: ConflictHandlerType.LRW;
 }
@@ -35,7 +35,7 @@ export type SyncConfigLAMBDA = {
     lambdaArn?: any,
   }
 }
-export type SyncConfig = SyncConfigDEFAULT | SyncConfigSERVER | SyncConfigLAMBDA;
+export type SyncConfig = SyncConfigLRW | SyncConfigSERVER | SyncConfigLAMBDA;
 /**
  * The transform config is specified in transform.conf.json within an Amplify
  * API project directory.
