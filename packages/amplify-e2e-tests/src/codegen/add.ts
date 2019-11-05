@@ -5,7 +5,6 @@ export function addCodegen(cwd: string, settings: any, verbose: boolean = !isCI(
   return new Promise((resolve, reject) => {
     const run = nexpect.spawn(getCLIPath(), ['codegen', 'add'], { cwd, stripColors: true, verbose });
     if (!(settings.ios || settings.android)) {
-      console.log('here');
       run.wait('Choose the code generation language target').sendline('');
     }
     run
