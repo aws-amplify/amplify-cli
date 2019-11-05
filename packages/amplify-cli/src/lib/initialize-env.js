@@ -9,9 +9,10 @@ const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provid
 
 async function initializeEnv(context, currentAmplifyMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  const isPulling = context.input.command === 'pull' ||
-                    context.input.command === 'push' ||
-                    (context.input.command === 'env' && context.input.subCommands[0] == 'pull'); 
+  const isPulling =
+    context.input.command === 'pull' ||
+    context.input.command === 'push' ||
+    (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
 
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
@@ -57,9 +58,9 @@ async function initializeEnv(context, currentAmplifyMeta) {
       initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
 
-    spinner.start(isPulling? `Pulling current backend for environment: ${currentEnv}` : `Initializing your environment: ${currentEnv}`);
+    spinner.start(isPulling ? `Pulling current backend for environment: ${currentEnv}` : `Initializing your environment: ${currentEnv}`);
     await sequential(initializationTasks);
-    spinner.succeed(isPulling? 'Successfully pulled your current backend environment.' : 'Initialized provider successfully.');
+    spinner.succeed(isPulling ? 'Successfully pulled your current backend environment.' : 'Initialized provider successfully.');
 
     const projectDetails = context.amplify.getProjectDetails();
     context.exeInfo = context.exeInfo || {};
@@ -82,9 +83,9 @@ async function initializeEnv(context, currentAmplifyMeta) {
     }
     // Generate AWS exports/configurtion file
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
-    context.print.success(isPulling? '': 'Initialized your environment successfully.');
+    context.print.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
-    spinner.fail(isPulling? 'There was an error pulling your environment.' : 'There was an error initializing your environment.');
+    spinner.fail(isPulling ? 'There was an error pulling your environment.' : 'There was an error initializing your environment.');
     throw e;
   }
 }
