@@ -317,8 +317,9 @@ export class GraphQLTransform {
     }
     // if lambda config exists add it to the SyncConfig and create a role for it
     if (SyncUtils.isLambdaSyncConfig(syncConfig)) {
-      syncConfig.LamdaConflictHandler.lambdaArn = SyncUtils.syncLambdaArnResource(syncConfig.LamdaConflictHandler);
-      syncResources[SyncResourceIDs.syncFunctionID] = SyncUtils.syncLambdaIAMRole(syncConfig.LamdaConflictHandler);
+      syncConfig.LambdaConflictHandler.lambdaArn = SyncUtils.syncLambdaArnResource(syncConfig.LambdaConflictHandler);
+      syncResources[
+        SyncResourceIDs.syncFunctionID(syncConfig.LambdaConflictHandler.name)] = SyncUtils.syncLambdaIAMRole(syncConfig.LambdaConflictHandler);
     }
     context.mergeResources(syncResources);
   }

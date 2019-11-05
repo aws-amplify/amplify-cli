@@ -3,7 +3,7 @@ import { DynamoDB, IAM, Fn } from 'cloudform-types';
 // import { DeltaSyncConfig } from 'cloudform-types/types/appSync/dataSource';
 // import { SyncConfig } from 'cloudform-types/types/appSync/resolver';
 import { SyncResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { SyncConfigLAMBDA, SyncConfigDEFAULT, SyncConfigSERVER } from './transformConfig';
+import { SyncConfigLAMBDA, SyncConfigLRW, SyncConfigSERVER } from './transformConfig';
 
 // Cloudformation Types for AppSync Local
 type SyncConfig = {
@@ -136,13 +136,13 @@ export module SyncUtils {
       RoleName: Fn.If(
         ResourceConstants.CONDITIONS.HasEnvironmentParameter,
         Fn.Join('-', [
-          SyncResourceIDs.syncFunctionID.slice(0, 26), // max of 64. 64-10-26-28 = 0
+          name.slice(0, 26), // max of 64. 64-10-26-28 = 0
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
           Fn.Ref(ResourceConstants.PARAMETERS.Env), // 10
         ]),
         Fn.Join('-', [
           // tslint:disable-next-line: no-magic-numbers
-          SyncResourceIDs.syncFunctionID.slice(0, 37), // max of 64. 64-26-38 = 0
+          name.slice(0, 37), // max of 64. 64-26-38 = 0
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
         ])
       ),
@@ -188,21 +188,21 @@ export module SyncUtils {
       BaseTableTTL: 30,
     };
   }
-  export function syncResolverConfig(syncConfig: SyncConfigDEFAULT | SyncConfigLAMBDA | SyncConfigSERVER): SyncConfig {
+  export function syncResolverConfig(syncConfig: SyncConfigLRW | SyncConfigLAMBDA | SyncConfigSERVER): SyncConfig {
     const resolverObj: SyncConfig = {
       ConflictDetection: syncConfig.ConflictDetection,
       ConflictHandler: syncConfig.ConflictHandler,
     };
     if (isLambdaSyncConfig(syncConfig)) {
-      if (!syncConfig.LamdaConflictHandler.lambdaArn) {
+      if (!syncConfig.LambdaConflictHandler.lambdaArn) {
         throw Error('Lambda ARN was not configured.');
       }
-      resolverObj.LambdaConflictHandlerARN = syncConfig.LamdaConflictHandler.lambdaArn;
+      resolverObj.LambdaConflictHandlerARN = syncConfig.LambdaConflictHandler.lambdaArn;
     }
     return resolverObj;
   }
   export function isLambdaSyncConfig(obj: any): obj is SyncConfigLAMBDA {
-    const lambbdaConfigKey: keyof SyncConfigLAMBDA = 'LamdaConflictHandler';
+    const lambbdaConfigKey: keyof SyncConfigLAMBDA = 'LambdaConflictHandler';
     if (obj && obj.ConflictDetection === 'LAMBDA') {
       if (obj.hasOwnProperty(lambbdaConfigKey)) {
         return true;
