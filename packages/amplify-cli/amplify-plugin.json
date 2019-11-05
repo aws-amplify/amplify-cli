@@ -12,6 +12,7 @@
         "migrate",
         "publish",
         "push",
+        "pull",
         "run",
         "status",
         "plugin",
