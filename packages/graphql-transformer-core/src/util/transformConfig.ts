@@ -29,7 +29,7 @@ export type SyncConfigSERVER = {
 export type SyncConfigLAMBDA = {
   ConflictDetection: ConflictDectionType;
   ConflictHandler: ConflictHandlerType.LAMBDA;
-  LamdaConflictHandler: {
+  LambdaConflictHandler: {
     name: string,
     region?: string,
     lambdaArn?: any,
