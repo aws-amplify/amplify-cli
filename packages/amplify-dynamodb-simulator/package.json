@@ -1,6 +1,6 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "0.23.1-console-integration.0",
+  "version": "0.23.1-console-integration.1",
   "description": "DynamoDB emulator nodejs wrapper",
   "main": "index.js",
   "license": "Apache-2.0",

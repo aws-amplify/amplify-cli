@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "1.29.1-console-integration.0",
+  "version": "1.29.1-console-integration.1",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
@@ -13,8 +13,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-graphql-docs-generator": "1.28.1-console-integration.0",
-    "amplify-graphql-types-generator": "1.24.1-console-integration.0",
+    "amplify-graphql-docs-generator": "1.28.1-console-integration.1",
+    "amplify-graphql-types-generator": "1.24.1-console-integration.1",
     "aws-appsync-codegen": "^0.17.4",
     "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",
