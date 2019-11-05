@@ -203,7 +203,7 @@ export module SyncUtils {
   }
   export function isLambdaSyncConfig(obj: any): obj is SyncConfigLAMBDA {
     const lambbdaConfigKey: keyof SyncConfigLAMBDA = 'LambdaConflictHandler';
-    if (obj && obj.ConflictDetection === 'LAMBDA') {
+    if (obj && obj.ConflictHandler === 'LAMBDA') {
       if (obj.hasOwnProperty(lambbdaConfigKey)) {
         return true;
       }
