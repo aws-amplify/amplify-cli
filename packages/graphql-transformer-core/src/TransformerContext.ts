@@ -31,7 +31,7 @@ import {
   InputValueDefinitionNode,
 } from 'graphql/language/ast';
 import { _Kind } from 'graphql/language/kinds';
-import { SyncConfig } from './util';
+import { ResolverConfig } from './util';
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {
@@ -109,7 +109,7 @@ export class TransformerContext {
 
   private stackMapping: StackMapping = new Map();
 
-  private syncConfig: SyncConfig;
+  private resolverConfig: ResolverConfig;
 
   constructor(inputSDL: string) {
     const doc: DocumentNode = parse(inputSDL);
@@ -700,14 +700,14 @@ export class TransformerContext {
   /**
    * Setter and getter the sync config
    */
-  public setSyncConfig(syncConfig: SyncConfig) {
-    if (this.syncConfig) {
-      throw new Error(`Sync Configuration has already been added to the context`)
+  public setResolverConfig(resolverConfig: ResolverConfig) {
+    if (this.resolverConfig) {
+      throw new Error(`Resolver Configuration has already been added to the context`)
     }
-    this.syncConfig = syncConfig;
+    this.resolverConfig = resolverConfig;
   }
 
-  public getSyncConfig(): SyncConfig {
-    return this.syncConfig;
+  public getResolverConfig(): ResolverConfig {
+    return this.resolverConfig;
   }
 }

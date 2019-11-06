@@ -9,7 +9,7 @@ import { SyncConfigLAMBDA, SyncConfigLRW, SyncConfigSERVER } from './transformCo
 type SyncConfig = {
   ConflictDetection: string;
   ConflictHandler: string;
-  LambdaConflictHandlerARN?: string;
+  LambdaConflictHandlerARN?: any;
 };
 type DeltaSyncConfig = {
   DeltaSyncTableName: string;
@@ -175,6 +175,22 @@ export module SyncUtils {
       ],
     });
   }
+
+  export function createSyncLambdaIAMPolicy({ name, region }: { name: string; region?: string }) {
+    return new IAM.Role.Policy({
+      PolicyName: 'InvokeLambdaFunction',
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: ['lambda:InvokeFunction'],
+            Resource: syncLambdaArnResource({ name, region }),
+          },
+        ],
+      },
+    });
+  }
   export function syncTTLConfig() {
     return {
       AttributeName: '_ttl',
@@ -194,10 +210,7 @@ export module SyncUtils {
       ConflictHandler: syncConfig.ConflictHandler,
     };
     if (isLambdaSyncConfig(syncConfig)) {
-      if (!syncConfig.LambdaConflictHandler.lambdaArn) {
-        throw Error('Lambda ARN was not configured.');
-      }
-      resolverObj.LambdaConflictHandlerARN = syncConfig.LambdaConflictHandler.lambdaArn;
+      resolverObj.LambdaConflictHandlerARN = syncLambdaArnResource(syncConfig.LambdaConflictHandler);
     }
     return resolverObj;
   }
@@ -209,5 +222,6 @@ export module SyncUtils {
       }
       throw Error(`Invalid Lambda SyncConfig`);
     }
+    return false;
   }
 }
