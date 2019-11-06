@@ -36,6 +36,13 @@ export type SyncConfigLAMBDA = {
   }
 }
 export type SyncConfig = SyncConfigLRW | SyncConfigSERVER | SyncConfigLAMBDA;
+
+export type ResolverConfig = {
+  project: SyncConfig;
+  models: {
+    [key: string]: SyncConfig;
+  }
+}
 /**
  * The transform config is specified in transform.conf.json within an Amplify
  * API project directory.
@@ -81,9 +88,10 @@ export interface TransformConfig {
    */
   Version?: number;
   /**
-   * Object which states info about a sync project
+   * Object which states info about a resolver's configuration
+   * Such as sync configuration for appsync local support
    */
-  Sync?: SyncConfig
+  ResolverConfig?: ResolverConfig
 }
 /**
  * try to load transformer config from specified projectDir

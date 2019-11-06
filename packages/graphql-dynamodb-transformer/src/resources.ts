@@ -30,7 +30,7 @@ import {
   comment,
   forEach,
 } from 'graphql-mapping-template';
-import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs } from 'graphql-transformer-common';
+import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs, SyncResourceIDs } from 'graphql-transformer-common';
 import { plural } from 'pluralize';
 import { SyncConfig, SyncUtils } from 'graphql-transformer-core';
 
@@ -39,7 +39,7 @@ type MutationResolverInput = {
   syncConfig: SyncConfig;
   nameOverride?: string;
   mutationTypeName?: string;
-}
+};
 
 export class ResourceFactory {
   public makeParams() {
@@ -183,7 +183,7 @@ export class ResourceFactory {
     hashKey: string = 'id',
     rangeKey?: string,
     deletionPolicy: DeletionPolicy = DeletionPolicy.Delete,
-    isSyncEnabled: boolean = false,
+    isSyncEnabled: boolean = false
   ) {
     const keySchema =
       hashKey && rangeKey
@@ -233,8 +233,9 @@ export class ResourceFactory {
         },
         Refs.NoValue
       ) as any,
-      ...( isSyncEnabled && {
-        TimeToLiveSpecification: SyncUtils.syncTTLConfig() }),
+      ...(isSyncEnabled && {
+        TimeToLiveSpecification: SyncUtils.syncTTLConfig(),
+      }),
     }).deletionPolicy(deletionPolicy);
   }
 
@@ -255,7 +256,7 @@ export class ResourceFactory {
    * transform.
    * @param name  The name of the IAM role to create.
    */
-  public makeIAMRole(typeName: string) {
+  public makeIAMRole(typeName: string, syncConfig?: SyncConfig) {
     return new IAM.Role({
       RoleName: Fn.If(
         ResourceConstants.CONDITIONS.HasEnvironmentParameter,
@@ -308,11 +309,24 @@ export class ResourceFactory {
                   Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
                     tablename: this.dynamoDBTableName(typeName),
                   }),
+                  ...(syncConfig
+                    ? [
+                        Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                          tablename: SyncResourceIDs.syncTableName,
+                        }),
+                        Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                          tablename: SyncResourceIDs.syncTableName,
+                        }),
+                      ]
+                    : []),
                 ],
               },
             ],
           },
         }),
+        ...(syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)
+          ? [SyncUtils.createSyncLambdaIAMPolicy(syncConfig.LambdaConflictHandler)]
+          : []),
       ],
     });
   }
@@ -330,10 +344,10 @@ export class ResourceFactory {
       DynamoDBConfig: {
         AwsRegion: Refs.Region,
         TableName: this.dynamoDBTableName(typeName),
-        ...( isSyncEnabled && {
+        ...(isSyncEnabled && {
           DeltaSyncConfig: SyncUtils.syncDataSourceConfig(),
-          Versioned: true
-        })
+          Versioned: true,
+        }),
       },
     }).dependsOn([iamRoleLogicalID]);
   }
@@ -377,26 +391,29 @@ export class ResourceFactory {
               qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
             ])
           ),
-          DynamoDBMappingTemplate.putItem({
-            key: ifElse(
-              ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-              raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
-              obj({
-                id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`),
-              }),
-              true
-            ),
-            attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
-            condition: ref('util.toJson($condition)'),
-          }, syncConfig ? '2018-05-29' : '2017-02-28'),
+          DynamoDBMappingTemplate.putItem(
+            {
+              key: ifElse(
+                ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
+                obj({
+                  id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`),
+                }),
+                true
+              ),
+              attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
+              condition: ref('util.toJson($condition)'),
+            },
+            syncConfig ? '2018-05-29' : '2017-02-28'
+          ),
         ])
       ),
       ResponseMappingTemplate: syncConfig ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
-      ...( syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) })
+      ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
 
-  public makeUpdateResolver({type, nameOverride, syncConfig, mutationTypeName = 'Mutation'}: MutationResolverInput) {
+  public makeUpdateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type));
     const isSyncEnabled = syncConfig ? true : false;
     return new AppSync.Resolver({
@@ -495,12 +512,12 @@ export class ResourceFactory {
             condition: ref('util.toJson($condition)'),
             objectKeyVariable: ResourceConstants.SNIPPETS.ModelObjectKey,
             nameOverrideMap: ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap,
-            isSyncEnabled
+            isSyncEnabled,
           }),
         ])
       ),
       ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
-      ...( syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) })
+      ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
 
@@ -525,7 +542,7 @@ export class ResourceFactory {
             }),
             true
           ),
-          isSyncEnabled
+          isSyncEnabled,
         })
       ),
       ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
@@ -543,14 +560,15 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
       FieldName: fieldName,
       TypeName: queryTypeName,
-      RequestMappingTemplate: print(DynamoDBMappingTemplate.syncItem({
-        filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
-        limit: ref('util.defaultIfNull($ctx.args.limit, 100)'),
-        lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
-        nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
-      })),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse())
-
+      RequestMappingTemplate: print(
+        DynamoDBMappingTemplate.syncItem({
+          filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
+          limit: ref('util.defaultIfNull($ctx.args.limit, 100)'),
+          lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
+          nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
+        })
+      ),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse()),
     });
   }
   /**
@@ -588,13 +606,17 @@ export class ResourceFactory {
             filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
             limit: ref('limit'),
             nextToken: ifElse(ref('context.args.nextToken'), str('$context.args.nextToken'), nul()),
-            isSyncEnabled
+            isSyncEnabled,
           }),
         ])
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(
-        DynamoDBMappingTemplate.dynamoDBResponse(compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]))
-      ) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: isSyncEnabled
+        ? print(
+            DynamoDBMappingTemplate.dynamoDBResponse(
+              compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')])
+            )
+          )
+        : print(ref('util.toJson($ctx.result)')),
     });
   }
 
@@ -653,7 +675,7 @@ export class ResourceFactory {
    * @param type The name of the type to delete an item of.
    * @param nameOverride A user provided override for the field name.
    */
-  public makeDeleteResolver({type, nameOverride, syncConfig, mutationTypeName = 'Mutation'}: MutationResolverInput) {
+  public makeDeleteResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName('delete' + toUpper(type));
     const isSyncEnabled = syncConfig ? true : false;
     return new AppSync.Resolver({
@@ -754,7 +776,7 @@ export class ResourceFactory {
         ])
       ),
       ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
-      ...( syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) })
+      ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
 }
