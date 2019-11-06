@@ -391,6 +391,11 @@ export class ModelAuthTransformer extends Transformer {
       this.protectSearchQuery(ctx, def, ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), operationRules.read);
     }
 
+    // protect sync query if model is sync enabled
+    if (this.isSyncEnabled(ctx, def.name.value)) {
+      this.protectSyncQuery(ctx, def, ResolverResourceIDs.SyncResolverResourceID(def.name.value), operationRules.read);
+    }
+
     // Check if subscriptions is enabled
     if (modelConfiguration.getName('level') !== 'off') {
       this.protectOnCreateSubscription(ctx, operationRules.create, def, modelConfiguration);
@@ -1575,6 +1580,27 @@ All @auth directives used on field definitions are performed when the field is r
     }
   }
 
+  protectSyncQuery(ctx: TransformerContext, def: ObjectTypeDefinitionNode, resolverResourceID: string, rules: AuthRule[]) {
+    const resolver = ctx.getResource(resolverResourceID);
+    if (!rules || rules.length === 0 || !resolver) {
+      return;
+    }
+    const operationName = resolver.Properties.FieldName;
+    const includeDefault = def !== null ? this.isTypeHasRulesForOperation(def, 'list') : false;
+    const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
+    if (operationDirectives.length > 0) {
+      this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
+    }
+    this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
+    // create auth expression
+    const authExpression = this.authorizationExpressionForListResult(rules);
+    if (authExpression) {
+      const templateParts = [ print(authExpression), resolver.Properties.ResponseMappingTemplate ];
+      resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
+      ctx.setResource(resolverResourceID, resolver);
+    }
+  }
+
   // OnCreate Subscription
   private protectOnCreateSubscription(
     ctx: TransformerContext,
@@ -2167,6 +2193,17 @@ found '${rule.provider}' assigned.`
 
   private typeExist(type: string, ctx: TransformerContext): boolean {
     return Boolean(type in ctx.nodeMap);
+  }
+
+  private isSyncEnabled(ctx: TransformerContext, typeName: string): boolean {
+    const resolverConfig = ctx.getResolverConfig();
+    if (resolverConfig && resolverConfig.project) {
+      return true;
+    }
+    if (resolverConfig && resolverConfig.models[typeName]) {
+      return true;
+    }
+    return false;
   }
 }
 
