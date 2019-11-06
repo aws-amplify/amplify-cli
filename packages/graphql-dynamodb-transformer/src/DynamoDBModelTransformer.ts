@@ -169,10 +169,6 @@ export class DynamoDBModelTransformer extends Transformer {
     }
   };
 
-  // makeInputValueDefinition('_deleted', makeNamedType('Boolean')),
-  //         makeInputValueDefinition('_lastChangedAt', wrapNonNull(makeNamedType('AWSTimestamp'))),
-  // ...obj.fields,
-
   private createMutations = (
     def: ObjectTypeDefinitionNode,
     directive: DirectiveNode,
@@ -345,7 +341,7 @@ export class DynamoDBModelTransformer extends Transformer {
     // Create sync query
     if (isSyncEnabled) {
       const syncResolver = this.resources.makeSyncResolver(typeName);
-      const syncResourceID = ResolverResourceIDs.ResolverResourceID(typeName, syncResolver.Properties.FieldName);
+      const syncResourceID = ResolverResourceIDs.SyncResolverResourceID(typeName);
       ctx.setResource(syncResourceID, syncResolver);
       ctx.mapResourceToStack(typeName, syncResourceID);
       this.generateModelXConnectionType(ctx, def, isSyncEnabled);
