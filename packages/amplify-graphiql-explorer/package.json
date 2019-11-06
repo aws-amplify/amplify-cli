@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "0.23.1-console-integration.1",
+  "version": "0.23.1-console-integration.2",
   "private": true,
   "dependencies": {
     "add": "^2.0.6",
