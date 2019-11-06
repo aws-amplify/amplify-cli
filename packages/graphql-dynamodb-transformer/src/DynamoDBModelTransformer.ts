@@ -13,7 +13,7 @@ import {
   ResolverResourceIDs,
   getDirectiveArgument,
 } from 'graphql-transformer-common';
-import { getDirectiveArguments, gql, Transformer, TransformerContext } from 'graphql-transformer-core';
+import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig } from 'graphql-transformer-core';
 import {
   getNonModelObjectArray,
   makeCreateInputObject,
@@ -33,6 +33,7 @@ import { ResourceFactory } from './resources';
 
 export interface DynamoDBModelTransformerOptions {
   EnableDeletionProtection?: boolean;
+  SyncConfig?: SyncConfig;
 }
 
 /**
@@ -113,20 +114,21 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     });
 
+    // Set Sync Config if it exists
+
     // Create the dynamodb table to hold the @model type
     // TODO: Handle types with more than a single "id" hash key
     const typeName = def.name.value;
-    const isSyncEnabled = ctx.getSyncConfig() ? true : false;
+    this.setSyncConfig(ctx, typeName);
+    const isSyncEnabled = this.opts.SyncConfig ? true : false;
     const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName);
     const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName);
     const dataSourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(typeName);
     const deletionPolicy = this.opts.EnableDeletionProtection ? DeletionPolicy.Retain : DeletionPolicy.Delete;
     ctx.setResource(tableLogicalID, this.resources.makeModelTable(typeName, undefined, undefined, deletionPolicy, isSyncEnabled));
     ctx.mapResourceToStack(stackName, tableLogicalID);
-
-    ctx.setResource(iamRoleLogicalID, this.resources.makeIAMRole(typeName));
+    ctx.setResource(iamRoleLogicalID, this.resources.makeIAMRole(typeName, this.opts.SyncConfig));
     ctx.mapResourceToStack(stackName, iamRoleLogicalID);
-
     ctx.setResource(
       dataSourceRoleLogicalID,
       this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName, isSyncEnabled)
@@ -156,7 +158,7 @@ export class DynamoDBModelTransformer extends Transformer {
     // Update ModelXConditionInput type
     this.updateMutationConditionInput(ctx, def);
     // change type to include gelato fields if sync is enabled
-    if (ctx.getSyncConfig()) {
+    if (isSyncEnabled) {
       const obj = ctx.getObject(def.name.value);
       const newObj = makeObjectDefinition(obj.name.value, [
         ...obj.fields,
@@ -179,8 +181,7 @@ export class DynamoDBModelTransformer extends Transformer {
     nonModelArray: ObjectTypeDefinitionNode[]
   ) => {
     const typeName = def.name.value;
-    const syncConfig = ctx.getSyncConfig();
-    const isSyncEnabled = syncConfig ? true : false;
+    const isSyncEnabled = this.opts.SyncConfig ? true : false;
 
     const mutationFields = [];
     // Get any name overrides provided by the user. If an empty map it provided
@@ -230,7 +231,7 @@ export class DynamoDBModelTransformer extends Transformer {
       const createResolver = this.resources.makeCreateResolver({
         type: def.name.value,
         nameOverride: createFieldNameOverride,
-        syncConfig,
+        syncConfig: this.opts.SyncConfig,
       });
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
       ctx.setResource(resourceId, createResolver);
@@ -252,7 +253,11 @@ export class DynamoDBModelTransformer extends Transformer {
       if (!ctx.getType(updateInput.name.value)) {
         ctx.addInput(updateInput);
       }
-      const updateResolver = this.resources.makeUpdateResolver({ type: def.name.value, nameOverride: updateFieldNameOverride, syncConfig });
+      const updateResolver = this.resources.makeUpdateResolver({
+        type: def.name.value,
+        nameOverride: updateFieldNameOverride,
+        syncConfig: this.opts.SyncConfig,
+      });
       const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
       ctx.setResource(resourceId, updateResolver);
       ctx.mapResourceToStack(typeName, resourceId);
@@ -273,7 +278,11 @@ export class DynamoDBModelTransformer extends Transformer {
       if (!ctx.getType(deleteInput.name.value)) {
         ctx.addInput(deleteInput);
       }
-      const deleteResolver = this.resources.makeDeleteResolver({ type: def.name.value, nameOverride: deleteFieldNameOverride, syncConfig });
+      const deleteResolver = this.resources.makeDeleteResolver({
+        type: def.name.value,
+        nameOverride: deleteFieldNameOverride,
+        syncConfig: this.opts.SyncConfig,
+      });
       const resourceId = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName);
       ctx.setResource(resourceId, deleteResolver);
       ctx.mapResourceToStack(typeName, resourceId);
@@ -305,7 +314,7 @@ export class DynamoDBModelTransformer extends Transformer {
     let shouldMakeList = true;
     let getFieldNameOverride = undefined;
     let listFieldNameOverride = undefined;
-    const isSyncEnabled = ctx.getSyncConfig() ? true : false;
+    const isSyncEnabled = this.opts.SyncConfig ? true : false;
 
     // Figure out which queries to make and if they have name overrides.
     // If queries is undefined (default), create all queries
@@ -554,6 +563,18 @@ export class DynamoDBModelTransformer extends Transformer {
       ...defaultOpts,
       ...opts,
     };
+  }
+
+  private setSyncConfig(ctx: TransformerContext, typeName: string) {
+    let syncConfig: SyncConfig;
+    const resolverConfig = ctx.getResolverConfig();
+    if (resolverConfig && resolverConfig.project) {
+      syncConfig = resolverConfig.project;
+    }
+    if (resolverConfig && resolverConfig.models[typeName]) {
+      syncConfig = resolverConfig.models[typeName];
+    }
+    return (this.opts.SyncConfig = syncConfig);
   }
 
   // Due to the current architecture of Transformers we've to handle the 'id' field removal

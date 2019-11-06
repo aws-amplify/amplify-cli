@@ -30,7 +30,7 @@ import {
   comment,
   forEach,
 } from 'graphql-mapping-template';
-import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs } from 'graphql-transformer-common';
+import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs, SyncResourceIDs } from 'graphql-transformer-common';
 import { plural } from 'pluralize';
 import { SyncConfig, SyncUtils } from 'graphql-transformer-core';
 
@@ -233,8 +233,9 @@ export class ResourceFactory {
         },
         Refs.NoValue
       ) as any,
-      ...( isSyncEnabled && {
-        TimeToLiveSpecification: SyncUtils.syncTTLConfig() }),
+      ...(isSyncEnabled && {
+        TimeToLiveSpecification: SyncUtils.syncTTLConfig(),
+      }),
     }).deletionPolicy(deletionPolicy);
   }
 
@@ -255,7 +256,7 @@ export class ResourceFactory {
    * transform.
    * @param name  The name of the IAM role to create.
    */
-  public makeIAMRole(typeName: string) {
+  public makeIAMRole(typeName: string, syncConfig?: SyncConfig) {
     return new IAM.Role({
       RoleName: Fn.If(
         ResourceConstants.CONDITIONS.HasEnvironmentParameter,
@@ -308,11 +309,24 @@ export class ResourceFactory {
                   Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
                     tablename: this.dynamoDBTableName(typeName),
                   }),
+                  ...(syncConfig
+                    ? [
+                        Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                          tablename: SyncResourceIDs.syncTableName,
+                        }),
+                        Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                          tablename: SyncResourceIDs.syncTableName,
+                        }),
+                      ]
+                    : []),
                 ],
               },
             ],
           },
         }),
+        ...(syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)
+          ? [SyncUtils.createSyncLambdaIAMPolicy(syncConfig.LambdaConflictHandler)]
+          : []),
       ],
     });
   }
@@ -330,10 +344,10 @@ export class ResourceFactory {
       DynamoDBConfig: {
         AwsRegion: Refs.Region,
         TableName: this.dynamoDBTableName(typeName),
-        ...( isSyncEnabled && {
+        ...(isSyncEnabled && {
           DeltaSyncConfig: SyncUtils.syncDataSourceConfig(),
-          Versioned: true
-        })
+          Versioned: true,
+        }),
       },
     }).dependsOn([iamRoleLogicalID]);
   }
@@ -354,6 +368,21 @@ export class ResourceFactory {
           qref('$context.args.input.put("createdAt", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601()))'),
           qref('$context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601()))'),
           qref(`$context.args.input.put("__typename", "${type}")`),
+          DynamoDBMappingTemplate.putItem(
+            {
+              key: ifElse(
+                ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
+                obj({
+                  id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`),
+                }),
+                true
+              ),
+              attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
+              condition: ref('util.toJson($condition)'),
+            },
+            syncConfig ? '2018-05-29' : '2017-02-28'
+          ),
           DynamoDBMappingTemplate.putItem(
             {
               key: ifElse(

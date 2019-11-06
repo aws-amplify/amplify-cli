@@ -243,9 +243,9 @@ export class GraphQLTransform {
     }
 
     // check if the project is sync enabled
-    if (this.transformConfig.Sync) {
-      this.createResourcesForSyncEnabledProject(context, this.transformConfig.Sync);
-      context.setSyncConfig(this.transformConfig.Sync);
+    if (this.transformConfig.ResolverConfig) {
+      this.createResourcesForSyncEnabledProject(context);
+      context.setResolverConfig(this.transformConfig.ResolverConfig);
     }
 
     for (const transformer of this.transformers) {
@@ -310,17 +310,16 @@ export class GraphQLTransform {
     }
   }
 
-  private createResourcesForSyncEnabledProject(context: TransformerContext, syncConfig: SyncConfig) {
+  private createResourcesForSyncEnabledProject(context: TransformerContext) {
     const syncResources = {
-      [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable(),
-      [SyncResourceIDs.syncIAMRoleID]: SyncUtils.createSyncIAMRole(),
-    };
-    // if lambda config exists add it to the SyncConfig and create a role for it
-    if (SyncUtils.isLambdaSyncConfig(syncConfig)) {
-      syncConfig.LambdaConflictHandler.lambdaArn = SyncUtils.syncLambdaArnResource(syncConfig.LambdaConflictHandler);
-      syncResources[
-        SyncResourceIDs.syncFunctionID(syncConfig.LambdaConflictHandler.name)] = SyncUtils.syncLambdaIAMRole(syncConfig.LambdaConflictHandler);
+      [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable()
     }
+    // if lambda config exists add it to the SyncConfig and create a role for it
+    // if (SyncUtils.isLambdaSyncConfig(syncConfig)) {
+    //   syncConfig.LambdaConflictHandler.lambdaArn = SyncUtils.syncLambdaArnResource(syncConfig.LambdaConflictHandler);
+    //   // syncResources[
+    //   //   SyncResourceIDs.syncFunctionID(syncConfig.LambdaConflictHandler.name)] = SyncUtils.syncLambdaIAMRole(syncConfig.LambdaConflictHandler);
+    // }
     context.mergeResources(syncResources);
   }
 
