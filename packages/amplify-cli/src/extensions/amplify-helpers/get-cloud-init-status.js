@@ -4,7 +4,7 @@ const pathManager = require('./path-manager');
 const CLOUD_INITIALIZED = 'CLOUD_INITIALIZED';
 const CLOUD_NOT_INITIALIZED = 'CLOUD_NOT_INITIALIZED';
 const NON_AMPLIFY_PROJECT = 'NON_AMPLIFY_PROJECT';
-function getCloudInitStatus(context) {
+function getCloudInitStatus() {
   const amplifyMetaPath = pathManager.getAmplifyMetaFilePath();
   const backendConfigPath = pathManager.getBackendConfigFilePath();
 

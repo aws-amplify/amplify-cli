@@ -36,7 +36,7 @@ function warnOnAuth(context, map) {
   }
 }
 
-function getTransformerFactory(resourceDir, authConfig) {
+function getTransformerFactory(context, resourceDir, authConfig) {
   return async addSearchableTransformer => {
     const transformerList = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
@@ -350,7 +350,7 @@ async function transformGraphQLSchema(context, options) {
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = getTransformerFactory(resourceDir, authConfig);
+  const transformerListFactory = getTransformerFactory(context, resourceDir, authConfig);
 
   let searchableTransformerFlag = false;
 
@@ -426,8 +426,8 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 //   return undefined;
 // }
 
-async function getDirectiveDefinitions(resourceDir) {
-  const transformList = await getTransformerFactory(resourceDir)(true, undefined);
+async function getDirectiveDefinitions(context, resourceDir) {
+  const transformList = await getTransformerFactory(context, resourceDir)(true, undefined);
   return transformList.map(transformPluginInst => transformPluginInst.getDirective()).join('\n');
 }
 module.exports = {

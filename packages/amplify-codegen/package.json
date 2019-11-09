@@ -25,14 +25,14 @@
     "underscore": "^1.9.1",
     "upath": "^1.2.0",
     "appsync-local-codegen-plugin":"^0.1.0",
-    "@graphql-codegen/core":"^1.8.3"
+    "@graphql-codegen/core":"^1.8.3",
+    "graphql": "^0.13.2"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
-    "jest": "^23.0.0",
-    "graphql": "^0.13.2"
+    "jest": "^23.0.0"
   },
   "jest": {
     "collectCoverage": true,
