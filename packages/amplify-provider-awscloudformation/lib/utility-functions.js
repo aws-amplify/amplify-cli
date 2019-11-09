@@ -32,7 +32,7 @@ module.exports = {
     if (!resourceDir) {
       throw new Error('missing resource directory');
     }
-    return getDirectiveDefinitions(resourceDir);
+    return getDirectiveDefinitions(context, resourceDir);
   },
   getRegions: () => awsRegions.regions,
   getRegionMappings: () => awsRegions.regionMappings,
