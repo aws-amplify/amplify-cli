@@ -6,7 +6,7 @@ const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
 const { getEnvInfo } = require('./get-env-info');
 const _ = require('lodash');
-const { CLOUD_INITIALIZED, NON_AMPLIFY_PROJECT, CLOUD_NOT_INITIALIZED, getCloudInitStatus } = require('./get-cloud-init-status');
+const { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } = require('./get-cloud-init-status');
 const { readJsonFile } = require('./read-json-file');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
