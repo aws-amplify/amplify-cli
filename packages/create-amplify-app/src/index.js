@@ -5,6 +5,7 @@ const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const { spawnSync, spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
+const args = require('yargs').argv;
 
 function run() {
   return checkNodeVersion()
@@ -83,13 +84,16 @@ async function createAmplifySkeletonProject() {
 
       createSkeletonAmplifyProject.on('exit', code => {
         if (code === 0) {
-          return getProjectConfig().then(projectConfig => {
-            const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
-
-            fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
-            console.log('Successfully created Amplify Project');
-            resolve(projectConfig.frontend);
-          });
+          return getProjectConfig()
+            .then(projectConfig => {
+              const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
+              fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
+              console.log('Successfully created Amplify Project');
+              resolve(projectConfig.frontend);
+            })
+            .catch(e => {
+              reject(e);
+            });
         }
         console.log(`Failed to create Amplify Project`);
         reject();
@@ -103,52 +107,7 @@ async function getProjectConfig() {
   const projectName = path.basename(process.cwd());
   let projectConfig = {};
 
-  const frontendPlugins = {
-    javascript: 'amplify-frontend-javascript',
-    android: 'amplify-frontend-android',
-    ios: 'amplify-frontend-ios',
-  };
-
-  let suitableFrontend;
-  let fitToHandleScore = -1;
-
-  Object.keys(frontendPlugins).forEach(key => {
-    const { scanProject } = require(frontendPlugins[key]);
-    const newScore = scanProject(process.cwd());
-    if (newScore > fitToHandleScore) {
-      fitToHandleScore = newScore;
-      suitableFrontend = key;
-    }
-  });
-
-  let jsFrameWork = 'none';
-
-  if (suitableFrontend === 'javascript') {
-    jsFrameWork = guessFramework(process.cwd());
-    if (jsFrameWork === 'none') {
-      const platformComfirmation = {
-        type: 'list',
-        name: 'platform',
-        message: 'What type of app are you building',
-        choices: Object.keys(frontendPlugins),
-      };
-
-      const platformAnswer = await inquirer.prompt(platformComfirmation);
-      suitableFrontend = platformAnswer.platform;
-
-      if (suitableFrontend === 'javascript') {
-        const frameworkComfirmation = {
-          type: 'list',
-          name: 'framework',
-          message: 'What javascript framework are you using',
-          choices: Object.keys(frameworkConfigMapping),
-        };
-
-        const frameworkAnswer = await inquirer.prompt(frameworkComfirmation);
-        jsFrameWork = frameworkAnswer.framework;
-      }
-    }
-  }
+  const { suitableFrontend, jsFrameWork } = await guessPlatform();
 
   const projectConfigTemplateFilePath = path.join(__dirname, 'project-configs', `project-config-${suitableFrontend}.json`);
   projectConfig = JSON.parse(fs.readFileSync(projectConfigTemplateFilePath));
@@ -159,6 +118,78 @@ async function getProjectConfig() {
   }
 
   return projectConfig;
+}
+
+async function guessPlatform() {
+  const frontendPlugins = {
+    javascript: 'amplify-frontend-javascript',
+    android: 'amplify-frontend-android',
+    ios: 'amplify-frontend-ios',
+  };
+
+  let suitableFrontend;
+
+  const validFrontends = Object.keys(frontendPlugins);
+
+  if (args.platform) {
+    if (!validFrontends.includes(args.platform)) {
+      throw new Error('Invalid platform value passed. Valid values are javascript/ios/android');
+    } else {
+      suitableFrontend = args.platform;
+    }
+  } else {
+    let fitToHandleScore = -1;
+
+    Object.keys(frontendPlugins).forEach(key => {
+      const { scanProject } = require(frontendPlugins[key]);
+      const newScore = scanProject(process.cwd());
+      if (newScore > fitToHandleScore) {
+        fitToHandleScore = newScore;
+        suitableFrontend = key;
+      }
+    });
+  }
+
+  let jsFrameWork = 'none';
+
+  if (suitableFrontend === 'javascript') {
+    const validJSFrameworks = Object.keys(frameworkConfigMapping);
+
+    if (args.platform) {
+      if (!validJSFrameworks.includes(args.framework)) {
+        throw new Error('Invalid framework value passed. Valid values are  angular/ember/ionic/react/react-native/vue/none');
+      } else {
+        jsFrameWork = args.framework;
+      }
+    } else {
+      jsFrameWork = guessFramework(process.cwd());
+
+      if (jsFrameWork === 'none') {
+        const platformComfirmation = {
+          type: 'list',
+          name: 'platform',
+          message: 'What type of app are you building',
+          choices: Object.keys(frontendPlugins),
+        };
+
+        const platformAnswer = await inquirer.prompt(platformComfirmation);
+        suitableFrontend = platformAnswer.platform;
+
+        if (suitableFrontend === 'javascript') {
+          const frameworkComfirmation = {
+            type: 'list',
+            name: 'framework',
+            message: 'What javascript framework are you using',
+            choices: Object.keys(frameworkConfigMapping),
+          };
+
+          const frameworkAnswer = await inquirer.prompt(frameworkComfirmation);
+          jsFrameWork = frameworkAnswer.framework;
+        }
+      }
+    }
+  }
+  return { suitableFrontend, jsFrameWork };
 }
 
 function guessFramework(projectPath) {
