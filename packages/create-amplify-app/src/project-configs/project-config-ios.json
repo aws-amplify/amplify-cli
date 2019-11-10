@@ -1,0 +1,6 @@
+{
+  "projectName": "amplifyStarter",
+  "version": "2.0",
+  "frontend": "ios",
+  "providers": ["awscloudformation"]
+}
