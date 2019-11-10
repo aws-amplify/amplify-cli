@@ -566,7 +566,7 @@ export class DynamoDBModelTransformer extends Transformer {
     if (resolverConfig && resolverConfig.project) {
       syncConfig = resolverConfig.project;
     }
-    if (resolverConfig && resolverConfig.models[typeName]) {
+    if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
       syncConfig = resolverConfig.models[typeName];
     }
     return (this.opts.SyncConfig = syncConfig);
