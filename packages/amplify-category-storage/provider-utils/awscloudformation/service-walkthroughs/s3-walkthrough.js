@@ -902,6 +902,19 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
                         {
                           Ref: 'bucketName',
                         },
+                        {
+                          'Fn::Select': [
+                            3,
+                            {
+                              'Fn::Split': [
+                                '-',
+                                {
+                                  Ref: 'AWS::StackId',
+                                },
+                              ],
+                            },
+                          ],
+                        },
                         '-',
                         {
                           Ref: 'env',
@@ -1082,6 +1095,19 @@ function migrate(context, projectPath, resourceName) {
           [
             {
               Ref: 'bucketName',
+            },
+            {
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    '-',
+                    {
+                      Ref: 'AWS::StackId',
+                    },
+                  ],
+                },
+              ],
             },
             '-',
             {
