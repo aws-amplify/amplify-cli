@@ -1,5 +1,5 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-import { initProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
 import { addAuthWithDefault } from '../src/categories/auth';
 import {
   addSimpleDDB,
@@ -24,7 +24,7 @@ describe('amplify add/update storage(S3)', () => {
   });
 
   it('init a project and add S3 bucket with trigger', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3WithTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -53,7 +53,7 @@ describe('amplify add/update storage(DDB) with GSI', () => {
   });
 
   it('init a project add a GSI and then update with another GSI', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addSimpleDDBwithGSI(projRoot, {});
     await updateSimpleDDBwithGSI(projRoot, {});
@@ -74,7 +74,7 @@ describe('amplify add/update storage(DDB)', () => {
   });
 
   it('init a project and add/update ddb table with & without trigger', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addSimpleDDB(projRoot, {});
     await addDDBWithTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
