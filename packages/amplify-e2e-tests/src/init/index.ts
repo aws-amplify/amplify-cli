@@ -1,9 +1,7 @@
 export {
-  default as initJSProjectWithProfile,
+  default as initProjectWithProfile,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
-  initIosProjectWithProfile,
-  initAndroidProjectWithProfile,
   initNewEnvWithProfile,
 } from './initProjectHelper';
 export * from './amplifyPush';

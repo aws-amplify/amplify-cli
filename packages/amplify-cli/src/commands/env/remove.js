@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
-const { getConfirmation } = require('../../extensions/amplify-helpers/delete-project');
 
 module.exports = {
   name: 'remove',
@@ -34,11 +33,11 @@ module.exports = {
         context.print.error("If this is your only environment you can use the 'amplify delete' command to delete your project");
         process.exit(1);
       }
-      const confirmation = await getConfirmation(context);
-      if (confirmation.proceed) {
+
+      if (await context.amplify.confirmPrompt.run('Do you also want to remove all the resources of the environment from the cloud?')) {
         const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
         spinner.start();
-        await context.amplify.removeEnvFromCloud(context, envName, confirmation.deleteS3);
+        await context.amplify.removeEnvFromCloud(context, envName);
         spinner.succeed('Successfully removed environment from the cloud');
       }
 
