@@ -108,8 +108,6 @@ function normalizeInputParams(context) {
       }
     }
     context.exeInfo.inputParams[constants.Label] = normalizedInputParams;
-  } else {
-    context.exeInfo.inputParams = {};
   }
 }
 
