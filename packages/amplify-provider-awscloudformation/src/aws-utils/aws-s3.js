@@ -1,4 +1,5 @@
 const aws = require('./aws.js');
+const _ = require('lodash');
 const providerName = require('../../lib/constants').ProviderName;
 const configurationManager = require('../../lib/configuration-manager');
 
@@ -31,13 +32,9 @@ class S3 {
       .then(() => projectBucket);
   }
 
-  getFile(s3Params) {
+  getFile(s3Params, envName = this.context.amplify.getEnvInfo().envName) {
     const projectDetails = this.context.amplify.getProjectDetails();
-    const { envName } = this.context.amplify.getEnvInfo();
-
-    const projectBucket = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
-      : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
 
     return this.s3
@@ -68,6 +65,50 @@ class S3 {
             return bucketName;
           });
       }
+    });
+  }
+
+  deleteAllObjects(bucketName) {
+    return new Promise((resolve, reject) => {
+      this.s3
+        .listObjects({ Bucket: bucketName })
+        .promise()
+        .then((result, lerr) => {
+          if (lerr) {
+            reject(lerr);
+            return;
+          }
+
+          const promises = result.Contents.map(r => this.s3.deleteObject({ Bucket: bucketName, Key: r.Key }).promise());
+          Promise.all(promises).then((results, errors) => {
+            if (!_.compact(errors).length) resolve();
+            else reject(errors);
+          });
+        });
+    });
+  }
+
+  deleteS3Bucket(bucketName) {
+    return new Promise((resolve, reject) => {
+      this.deleteAllObjects(bucketName).then((result, err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        this.s3
+          .deleteBucket({
+            Bucket: bucketName,
+          })
+          .promise()
+          .then((dresult, derr) => {
+            if (derr) {
+              reject(derr);
+              return;
+            }
+            resolve(dresult);
+          });
+      });
     });
   }
 

@@ -1,5 +1,5 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-import { initProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
 import { addSampleInteraction } from '../src/categories/interactions';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getBot } from '../src/utils';
 
@@ -16,7 +16,7 @@ describe('amplify add interactions', () => {
   });
 
   it('init a project and add  simple interaction', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addSampleInteraction(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

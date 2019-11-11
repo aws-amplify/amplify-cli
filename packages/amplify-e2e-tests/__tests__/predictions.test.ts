@@ -1,5 +1,5 @@
 require('../src/aws-matchers');
-import { initProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getAWSExports, getCollection } from '../src/utils';
 import { addConvert, addInterpret, addIdentifyCollection } from '../src/categories/predictions';
 import { addAuthWithDefault } from '../src/categories/auth';
@@ -17,7 +17,7 @@ describe('amplify add predictions', () => {
   });
 
   it('init a project with convert subcategory translate text', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addConvert(projRoot, {});
     await addInterpret(projRoot, {});
@@ -32,7 +32,7 @@ describe('amplify add predictions', () => {
   });
 
   it('init a project with identify sub category identifyEntities with collection config', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addIdentifyCollection(projRoot, {});
     await amplifyPushAuth(projRoot);
