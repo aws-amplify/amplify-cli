@@ -7,9 +7,11 @@ import { print } from './context-extensions';
 import { executeCommand } from './execution-manager';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
+import { checkAndCollectMetrics, configPrompt } from './metrics';
 
 // entry from commandline
 export async function run(): Promise<number> {
+  let collectMetrics = (e: any) => {};
   try {
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
@@ -35,10 +37,14 @@ export async function run(): Promise<number> {
     }
 
     const context = constructContext(pluginPlatform, input);
+    const canCollectMetrics = await configPrompt(context);
+    if (canCollectMetrics) collectMetrics = checkAndCollectMetrics(context);
     await executeCommand(context);
     persistContext(context);
+
     return 0;
   } catch (e) {
+    collectMetrics(e);
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
     if (e.message) {
       print.error(e.message);
