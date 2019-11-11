@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const BottleNeck = require('bottleneck');
@@ -10,8 +10,6 @@ const S3 = require('./aws-s3');
 const providerName = require('../../lib/constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../../lib/configuration-manager');
-const { S3BackendZipFileName } = require('../../lib/constants');
-const { downloadZip, extractZip } = require('../../lib/zip-util');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -349,10 +347,10 @@ class CloudFormation {
     });
   }
 
-  deleteResourceStack(envName, deleteS3) {
+  deleteResourceStack(envName) {
     const { teamProviderInfo } = this.context.amplify.getProjectDetails();
-    const teamProvider = teamProviderInfo[envName][providerName];
-    const stackName = teamProvider.StackName;
+    const stackName = teamProviderInfo[envName][providerName].StackName;
+
     if (!stackName) {
       throw new Error('Stack not defined for the environment.');
     }
@@ -376,7 +374,7 @@ class CloudFormation {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
                 this.collectStackErrors(stackName).then(() => reject(completeErr));
-              } else if (!deleteS3) {
+              } else {
                 resolve();
               }
             });
@@ -385,39 +383,6 @@ class CloudFormation {
           reject(err);
         }
       });
-      if (deleteS3) {
-        new S3(this.context, {}).then(s3 => {
-          const amplifyDir = this.context.amplify.pathManager.getAmplifyDirPath();
-          const tempDir = path.join(amplifyDir, envName, '.temp');
-          downloadZip(s3, tempDir, S3BackendZipFileName, envName).then((sourceZipFile, err) => {
-            if (err) reject(err);
-
-            extractZip(tempDir, sourceZipFile).then((unZippedDir, err) => {
-              if (err) reject(err);
-
-              const amplifyMeta = this.context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
-              const deploymentBucketName = amplifyMeta.providers.awscloudformation.DeploymentBucketName;
-
-              const storage = amplifyMeta.storage || {};
-              const buckets = [
-                ...Object.keys(storage)
-                  .filter(r => storage[r].service === 'S3')
-                  .map(r => storage[r].output.BucketName),
-                deploymentBucketName,
-              ];
-              Promise.all(buckets.map(r => s3.deleteS3Bucket(r))).then((results, errors) => {
-                if (_.compact(errors).length) {
-                  reject(errors);
-                } else {
-                  fs.removeSync(sourceZipFile);
-                  fs.removeSync(unZippedDir);
-                  resolve(results);
-                }
-              });
-            });
-          });
-        });
-      }
     });
   }
 }
