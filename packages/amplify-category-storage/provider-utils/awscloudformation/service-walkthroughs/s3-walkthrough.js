@@ -909,7 +909,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
                               'Fn::Split': [
                                 '-',
                                 {
-                                  Ref: 'AWS::StackId',
+                                  Ref: 'AWS::StackName',
                                 },
                               ],
                             },
@@ -1103,7 +1103,7 @@ function migrate(context, projectPath, resourceName) {
                   'Fn::Split': [
                     '-',
                     {
-                      Ref: 'AWS::StackId',
+                      Ref: 'AWS::StackName',
                     },
                   ],
                 },
