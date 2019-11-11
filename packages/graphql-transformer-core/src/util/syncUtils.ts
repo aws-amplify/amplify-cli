@@ -20,7 +20,10 @@ type DeltaSyncConfig = {
 export module SyncUtils {
   export function createSyncTable() {
     return new DynamoDB.Table({
-      TableName: SyncResourceIDs.syncTableName,
+      TableName: joinWithEnv('-', [
+        SyncResourceIDs.syncTableName,
+        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+      ]),
       AttributeDefinitions: [
         {
           AttributeName: SyncResourceIDs.syncPrimaryKey,
@@ -49,20 +52,10 @@ export module SyncUtils {
   export function createSyncIAMRole() {
     const roleName = SyncResourceIDs.syncIAMRoleName;
     return new IAM.Role({
-      RoleName: Fn.If(
-        ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-        Fn.Join('-', [
-          roleName.slice(0, 21), // max of 64. 64-10-26-4-3 = 21
-          'role', // 4
-          Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
-          Fn.Ref(ResourceConstants.PARAMETERS.Env), // 10
-        ]),
-        Fn.Join('-', [
-          roleName.slice(0, 31), // max of 64. 64-26-4-3 = 31
-          'role',
-          Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-        ])
-      ),
+      RoleName: joinWithEnv('-', [
+        roleName,
+        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+      ]),
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -130,6 +123,13 @@ export module SyncUtils {
   }
   function removeEnvReference(value: string) {
     return value.replace(/(-\${env})/, '');
+  }
+  function joinWithEnv(separator: string, listToJoin: any[]) {
+    return Fn.If(
+      ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+      Fn.Join(separator, [...listToJoin, Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
+      Fn.Join(separator, listToJoin),
+    );
   }
   export function syncLambdaIAMRole({ name, region }: { name: string; region?: string }) {
     return new IAM.Role({
