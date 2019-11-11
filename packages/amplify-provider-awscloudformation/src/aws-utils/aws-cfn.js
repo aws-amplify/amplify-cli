@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const _ = require('lodash');
 const BottleNeck = require('bottleneck');
@@ -10,6 +10,8 @@ const S3 = require('./aws-s3');
 const providerName = require('../../lib/constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../../lib/configuration-manager');
+const { S3BackendZipFileName } = require('../../lib/constants');
+const { downloadZip, extractZip } = require('../../lib/zip-util');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -347,10 +349,10 @@ class CloudFormation {
     });
   }
 
-  deleteResourceStack(envName) {
+  deleteResourceStack(envName, deleteS3) {
     const { teamProviderInfo } = this.context.amplify.getProjectDetails();
-    const stackName = teamProviderInfo[envName][providerName].StackName;
-
+    const teamProvider = teamProviderInfo[envName][providerName];
+    const stackName = teamProvider.StackName;
     if (!stackName) {
       throw new Error('Stack not defined for the environment.');
     }
@@ -374,7 +376,7 @@ class CloudFormation {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
                 this.collectStackErrors(stackName).then(() => reject(completeErr));
-              } else {
+              } else if (!deleteS3) {
                 resolve();
               }
             });
