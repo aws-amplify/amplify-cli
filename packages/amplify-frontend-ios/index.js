@@ -1,9 +1,10 @@
 const path = require('path');
+
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
 const configManager = require('./lib/configuration-manager');
 const constants = require('./lib/constants');
-const { createAWSConfig, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
+const { createAWSConfig } = require('./lib/frontend-config-creator');
 
 const pluginName = 'ios';
 
@@ -65,5 +66,4 @@ module.exports = {
   createFrontendConfigs,
   executeAmplifyCommand,
   handleAmplifyEvent,
-  deleteConfig: deleteAmplifyConfig,
 };

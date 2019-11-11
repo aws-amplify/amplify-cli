@@ -1,7 +1,7 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-import { initJSProjectWithProfile } from '../src/init';
+import { initProjectWithProfile } from '../src/init';
 import { addHosting, removeHosting, amplifyPush } from '../src/categories/hosting';
-import { createNewProjectDir, deleteProjectDir } from '../src/utils';
+import { createNewProjectDir, deleteProjectDir} from '../src/utils';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -14,14 +14,14 @@ describe('amplify add hosting', () => {
 
   afterEach(async () => {
     await removeHosting(projRoot);
-    await amplifyPush(projRoot);
+    await amplifyPush(projRoot); 
     deleteProjectDir(projRoot);
   });
 
   it('add hosting', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initProjectWithProfile(projRoot, {});
     await addHosting(projRoot);
-    await amplifyPush(projRoot);
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
+    await amplifyPush(projRoot); 
+    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', "S3AndCloudFront"))).toBe(true);
   });
 });

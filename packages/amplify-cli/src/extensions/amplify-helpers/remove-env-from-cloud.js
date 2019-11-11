@@ -2,7 +2,7 @@ const { getProjectConfig } = require('./get-project-config');
 const { getCategoryPlugins } = require('./get-category-plugins');
 const { getProviderPlugins } = require('./get-provider-plugins');
 
-async function removeEnvFromCloud(context, envName, deleteS3) {
+async function removeEnvFromCloud(context, envName) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises = [];
@@ -11,7 +11,7 @@ async function removeEnvFromCloud(context, envName, deleteS3) {
 
   providers.forEach(providerName => {
     const pluginModule = require(providerPlugins[providerName]);
-    providerPromises.push(pluginModule.deleteEnv(context, envName, deleteS3));
+    providerPromises.push(pluginModule.deleteEnv(context, envName));
   });
 
   try {
