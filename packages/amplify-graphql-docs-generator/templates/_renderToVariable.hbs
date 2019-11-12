@@ -1,4 +1,5 @@
 {{#each operations }}
+  // language=GraphQL
   export const {{camelCase name}} =  `{{#format }}
       {{> renderOp }}
     {{/format}}`;

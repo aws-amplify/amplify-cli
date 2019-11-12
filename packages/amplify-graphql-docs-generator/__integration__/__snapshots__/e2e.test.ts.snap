@@ -488,6 +488,7 @@ exports[`end 2 end tests should generate statements in JS 1`] = `
 "/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+// language=GraphQL
 export const hero = \`query Hero($episode: Episode) {
   hero(episode: $episode) {
     id
@@ -569,6 +570,7 @@ export const hero = \`query Hero($episode: Episode) {
   }
 }
 \`;
+// language=GraphQL
 export const reviews = \`query Reviews($episode: Episode!) {
   reviews(episode: $episode) {
     episode
@@ -577,6 +579,7 @@ export const reviews = \`query Reviews($episode: Episode!) {
   }
 }
 \`;
+// language=GraphQL
 export const search = \`query Search($text: String) {
   search(text: $text) {
     ... on Human {
@@ -726,6 +729,7 @@ export const search = \`query Search($text: String) {
   }
 }
 \`;
+// language=GraphQL
 export const character = \`query Character($id: ID!) {
   character(id: $id) {
     id
@@ -807,6 +811,7 @@ export const character = \`query Character($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const droid = \`query Droid($id: ID!) {
   droid(id: $id) {
     id
@@ -875,6 +880,7 @@ export const droid = \`query Droid($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const human = \`query Human($id: ID!) {
   human(id: $id) {
     id
@@ -951,6 +957,7 @@ export const human = \`query Human($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const starship = \`query Starship($id: ID!) {
   starship(id: $id) {
     id
@@ -960,6 +967,7 @@ export const starship = \`query Starship($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
   createReview(episode: $episode, review: $review) {
     episode
@@ -968,6 +976,7 @@ export const createReview = \`mutation CreateReview($episode: Episode, $review: 
   }
 }
 \`;
+// language=GraphQL
 export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
   reviewAdded(episode: $episode) {
     episode
@@ -983,6 +992,7 @@ exports[`end 2 end tests should generate statements in Typescript 1`] = `
 "// tslint:disable
 // this is an auto generated file. This will be overwritten
 
+// language=GraphQL
 export const hero = \`query Hero($episode: Episode) {
   hero(episode: $episode) {
     id
@@ -1064,6 +1074,7 @@ export const hero = \`query Hero($episode: Episode) {
   }
 }
 \`;
+// language=GraphQL
 export const reviews = \`query Reviews($episode: Episode!) {
   reviews(episode: $episode) {
     episode
@@ -1072,6 +1083,7 @@ export const reviews = \`query Reviews($episode: Episode!) {
   }
 }
 \`;
+// language=GraphQL
 export const search = \`query Search($text: String) {
   search(text: $text) {
     ... on Human {
@@ -1221,6 +1233,7 @@ export const search = \`query Search($text: String) {
   }
 }
 \`;
+// language=GraphQL
 export const character = \`query Character($id: ID!) {
   character(id: $id) {
     id
@@ -1302,6 +1315,7 @@ export const character = \`query Character($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const droid = \`query Droid($id: ID!) {
   droid(id: $id) {
     id
@@ -1370,6 +1384,7 @@ export const droid = \`query Droid($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const human = \`query Human($id: ID!) {
   human(id: $id) {
     id
@@ -1446,6 +1461,7 @@ export const human = \`query Human($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const starship = \`query Starship($id: ID!) {
   starship(id: $id) {
     id
@@ -1455,6 +1471,7 @@ export const starship = \`query Starship($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
   createReview(episode: $episode, review: $review) {
     episode
@@ -1463,6 +1480,7 @@ export const createReview = \`mutation CreateReview($episode: Episode, $review: 
   }
 }
 \`;
+// language=GraphQL
 export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
   reviewAdded(episode: $episode) {
     episode
@@ -1478,6 +1496,7 @@ exports[`end 2 end tests should generate statements in flow 1`] = `
 "// @flow
 // this is an auto generated file. This will be overwritten
 
+// language=GraphQL
 export const hero = \`query Hero($episode: Episode) {
   hero(episode: $episode) {
     id
@@ -1559,6 +1578,7 @@ export const hero = \`query Hero($episode: Episode) {
   }
 }
 \`;
+// language=GraphQL
 export const reviews = \`query Reviews($episode: Episode!) {
   reviews(episode: $episode) {
     episode
@@ -1567,6 +1587,7 @@ export const reviews = \`query Reviews($episode: Episode!) {
   }
 }
 \`;
+// language=GraphQL
 export const search = \`query Search($text: String) {
   search(text: $text) {
     ... on Human {
@@ -1716,6 +1737,7 @@ export const search = \`query Search($text: String) {
   }
 }
 \`;
+// language=GraphQL
 export const character = \`query Character($id: ID!) {
   character(id: $id) {
     id
@@ -1797,6 +1819,7 @@ export const character = \`query Character($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const droid = \`query Droid($id: ID!) {
   droid(id: $id) {
     id
@@ -1865,6 +1888,7 @@ export const droid = \`query Droid($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const human = \`query Human($id: ID!) {
   human(id: $id) {
     id
@@ -1941,6 +1965,7 @@ export const human = \`query Human($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const starship = \`query Starship($id: ID!) {
   starship(id: $id) {
     id
@@ -1950,6 +1975,7 @@ export const starship = \`query Starship($id: ID!) {
   }
 }
 \`;
+// language=GraphQL
 export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
   createReview(episode: $episode, review: $review) {
     episode
@@ -1958,6 +1984,7 @@ export const createReview = \`mutation CreateReview($episode: Episode, $review: 
   }
 }
 \`;
+// language=GraphQL
 export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
   reviewAdded(episode: $episode) {
     episode
