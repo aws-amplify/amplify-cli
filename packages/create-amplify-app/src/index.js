@@ -100,8 +100,11 @@ async function createAmplifySkeletonProject() {
         reject();
       });
     });
+  } else {
+    console.log('Amplify project already initialized. Not generating skeleton project.');
+    let projectConfig = await getProjectConfig();
+    return projectConfig.frontend;
   }
-  console.log('Amplify project already initialized. Not generating skeleton project.');
 }
 
 async function getProjectConfig() {
