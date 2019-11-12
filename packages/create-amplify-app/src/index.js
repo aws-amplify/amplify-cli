@@ -300,7 +300,7 @@ async function createJSHelperFiles() {
 }
 
 async function createAndoidHelperFiles() {
-  const configJsonData = '{"profile":"default"}';
+  const configJsonData = '{"profile":"default", "envName":"amplify"}';
   const configJsonObj = JSON.parse(configJsonData);
   const configJsonStr = JSON.stringify(configJsonObj);
   const configDir = path.join(process.cwd(), './amplify-gradle-config.json');
@@ -311,7 +311,7 @@ async function createAndoidHelperFiles() {
 
 async function createIosHelperFiles() {
   const configDir = path.join(process.cwd(), '/amplifyxc.config');
-  const configStr = 'push=false\nprofile=default';
+  const configStr = 'push=false\nprofile=default\nenvName=amplify';
   const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
   const amplifyConfigDir = path.join(process.cwd(), '/amplifyconfiguration.json');
   const configJsonData = '{}';
