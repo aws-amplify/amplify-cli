@@ -42,17 +42,15 @@ class AmplifyTools implements Plugin<Project> {
         }
 
         project.task('getConfig') {
-            doLast {
-                def inputConfigFile = project.file('./amplify-gradle-config.json')
-                def configText = inputConfigFile.text
-                def jsonSlurper = new groovy.json.JsonSlurper();
-                def configJson = jsonSlurper.parseText(configText)
-                profile = configJson.profile
-                accessKeyId = configJson.accessKeyId
-                secretAccessKey = configJson.secretAccessKeyId
-                region = configJson.region
-                envName = configJson.envName
-            }
+            def inputConfigFile = project.file('./amplify-gradle-config.json')
+            def configText = inputConfigFile.text
+            def jsonSlurper = new groovy.json.JsonSlurper();
+            def configJson = jsonSlurper.parseText(configText)
+            profile = configJson.profile
+            accessKeyId = configJson.accessKeyId
+            secretAccessKey = configJson.secretAccessKeyId
+            region = configJson.region
+            envName = configJson.envName
         }
 
         project.task('amplifyPush') {
@@ -107,8 +105,10 @@ class AmplifyTools implements Plugin<Project> {
             }
         }
         project.createAmplifyApp.mustRunAfter('verifyNode')
-        project.amplifyPush.mustRunAfter('getConfig')
         project.amplifyPush.mustRunAfter('createAmplifyApp')
+        project.getConfig.mustRunAfter('createAmplifyApp')
+        project.amplifyPush.mustRunAfter('getConfig')
+
     }
 }
 /*
