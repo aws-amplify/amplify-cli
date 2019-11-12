@@ -105,7 +105,6 @@ class AmplifyTools implements Plugin<Project> {
             }
         }
         project.createAmplifyApp.mustRunAfter('verifyNode')
-        project.amplifyPush.mustRunAfter('createAmplifyApp')
         project.getConfig.mustRunAfter('createAmplifyApp')
         project.amplifyPush.mustRunAfter('getConfig')
 
