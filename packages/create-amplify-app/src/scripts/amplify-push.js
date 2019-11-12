@@ -104,7 +104,7 @@ async function run() {
   if (!fs.existsSync(`./amplify/.config/local-env-info.json`)) {
     // init and then push
 
-    cloudPush = spawn('amplify', ['init', '----amplify', PROJECT_CONFIG, '--providers', PROVIDER_CONFIG, '--yes'], {
+    cloudPush = spawn('amplify', ['init', '--amplify', PROJECT_CONFIG, '--providers', PROVIDER_CONFIG, '--yes'], {
       cwd: process.cwd(),
       env: process.env,
       stdio: 'inherit',

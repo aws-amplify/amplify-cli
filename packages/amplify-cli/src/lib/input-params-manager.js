@@ -26,7 +26,7 @@ function normalizeKey(key) {
 }
 
 function normalizeValue(key, value) {
-  if (key === 'app' || key === 'androidSkeleton' || key === 'iosSkeleton') {
+  if (key === 'app' || key === 'quickstart') {
     return value;
   }
   const normalizedValue = JSON.parse(value);

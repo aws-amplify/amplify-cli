@@ -6,6 +6,7 @@ const inquirer = require('inquirer');
 const { spawnSync, spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
+const { addFileToXcodeProj } = require('../../amplify-cli/src/lib/xcodeHelpers');
 
 function run() {
   return checkNodeVersion()
@@ -76,7 +77,7 @@ async function createAmplifySkeletonProject() {
     console.log('Creating base Amplify project...');
 
     return new Promise((resolve, reject) => {
-      const createSkeletonAmplifyProject = spawn('amplify-dev', ['init', '--androidSkeleton'], {
+      const createSkeletonAmplifyProject = spawn('amplify-dev', ['init', '--quickstart'], {
         cwd: process.cwd(),
         env: process.env,
         stdio: 'inherit',
@@ -222,81 +223,127 @@ function guessFramework(projectPath) {
   return frameWork;
 }
 
+async function createJSHelperFiles() {
+  /* Check for build configs  */
+  let buildConfig = {
+    profile: 'default',
+    envName: 'amplify',
+  };
+  const buildConfigFilepath = `./amplify-build-config.json`;
+  if (fs.existsSync(buildConfigFilepath)) {
+    buildConfig = JSON.parse(fs.readFileSync(buildConfigFilepath));
+  } else {
+    fs.writeFileSync(buildConfigFilepath, JSON.stringify(buildConfig, null, 4));
+  }
+
+  /* Add run scripts to package.json */
+
+  console.log('Adding npm run scripts to your package.json...');
+
+  const sourceScriptDir = path.join(__dirname, 'scripts');
+  const targetScriptDir = path.join('.', 'amplify', 'scripts');
+
+  fs.ensureDirSync(targetScriptDir);
+  fs.copySync(sourceScriptDir, targetScriptDir);
+
+  const packageJSONFilepath = `./package.json`;
+  let packageJSON;
+  if (fs.existsSync(packageJSONFilepath)) {
+    packageJSON = JSON.parse(fs.readFileSync(packageJSONFilepath));
+  } else {
+    packageJSON = {
+      name: 'amplify-app',
+      version: '1.0.0',
+      description: 'amplify app skeleton',
+      main: 'index.js',
+      dependencies: {},
+      devDependencies: {},
+    };
+  }
+
+  if (!packageJSON.scripts) {
+    packageJSON.scripts = {};
+  }
+  if (!packageJSON.devDependencies) {
+    packageJSON.devDependencies = {};
+  }
+
+  const modelGenScriptPath = path.join('amplify', 'scripts', 'amplify-modelgen.js');
+  const pushScript = path.join('amplify', 'scripts', 'amplify-push.js');
+
+  const runScripts = {
+    'amplify-modelgen': `node ${modelGenScriptPath}`,
+    'amplify-push': `node ${pushScript}`,
+  };
+
+  const devDependencies = {
+    ini: '^1.3.5',
+  };
+
+  Object.assign(packageJSON.scripts, runScripts);
+  Object.assign(packageJSON.devDependencies, devDependencies);
+
+  fs.writeFileSync(packageJSONFilepath, JSON.stringify(packageJSON, null, 4));
+
+  return new Promise((resolve, reject) => {
+    const npmInstall = spawn('npm', ['install'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+
+    npmInstall.on('exit', code => {
+      if (code === 0) {
+        console.log(`Successfully installed dependencies`);
+        resolve();
+      } else {
+        reject();
+      }
+    });
+  });
+}
+
+async function createAndoidHelperFiles() {
+  const configJsonData = '{"profile":"default"}';
+  const configJsonObj = JSON.parse(configJsonData);
+  const configJsonStr = JSON.stringify(configJsonObj);
+  const configDir = path.join(process.cwd(), './amplify-gradle-config.json');
+  if (await !fs.existsSync(configDir)) {
+    fs.writeFileSync(configDir, configJsonStr);
+  }
+}
+
+async function createIosHelperFiles() {
+  const configDir = path.join(process.cwd(), '/amplifyxc.config');
+  const configStr = 'push=false\nprofile=default';
+  const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
+  const amplifyConfigDir = path.join(process.cwd(), '/amplifyconfiguration.json');
+  const configJsonData = '{}';
+  const configJsonObj = JSON.parse(configJsonData);
+  const configJsonStr = JSON.stringify(configJsonObj);
+
+  // Write files if needed and them to xcode project if one exists
+  if (await !fs.existsSync(configDir)) {
+    await fs.writeFileSync(configDir, configStr);
+  }
+  await addFileToXcodeProj(configDir);
+  if (await !fs.existsSync(awsConfigDir)) {
+    await fs.writeFileSync(awsConfigDir, configJsonStr);
+  }
+  await addFileToXcodeProj(awsConfigDir);
+  if (await !fs.existsSync(amplifyConfigDir)) {
+    await fs.writeFileSync(amplifyConfigDir, configJsonStr);
+  }
+  await addFileToXcodeProj(amplifyConfigDir);
+}
+
 async function createAmplifyHelperFiles(frontend) {
   if (frontend === 'javascript') {
-    /* Check for build configs  */
-    let buildConfig = {
-      profile: 'default',
-      envName: 'amplify',
-    };
-    const buildConfigFilepath = `./amplify-build-config.json`;
-    if (fs.existsSync(buildConfigFilepath)) {
-      buildConfig = JSON.parse(fs.readFileSync(buildConfigFilepath));
-    } else {
-      fs.writeFileSync(buildConfigFilepath, JSON.stringify(buildConfig, null, 4));
-    }
+    await createJSHelperFiles();
+  }
 
-    /* Add run scripts to package.json */
+  if (frontend === 'android') {
+    await createAndoidHelperFiles();
+  }
 
-    console.log('Adding npm run scripts to your package.json...');
-
-    const sourceScriptDir = path.join(__dirname, 'scripts');
-    const targetScriptDir = path.join('.', 'amplify', 'scripts');
-
-    fs.ensureDirSync(targetScriptDir);
-    fs.copySync(sourceScriptDir, targetScriptDir);
-
-    const packageJSONFilepath = `./package.json`;
-    let packageJSON;
-    if (fs.existsSync(packageJSONFilepath)) {
-      packageJSON = JSON.parse(fs.readFileSync(packageJSONFilepath));
-    } else {
-      packageJSON = {
-        name: 'amplify-app',
-        version: '1.0.0',
-        description: 'amplify app skeleton',
-        main: 'index.js',
-        dependencies: {},
-        devDependencies: {},
-      };
-    }
-
-    if (!packageJSON.scripts) {
-      packageJSON.scripts = {};
-    }
-    if (!packageJSON.devDependencies) {
-      packageJSON.devDependencies = {};
-    }
-
-    const modelGenScriptPath = path.join('amplify', 'scripts', 'amplify-modelgen.js');
-    const pushScript = path.join('amplify', 'scripts', 'amplify-push.js');
-
-    const runScripts = {
-      'amplify-modelgen': `node ${modelGenScriptPath}`,
-      'amplify-push': `node ${pushScript}`,
-    };
-
-    const devDependencies = {
-      ini: '^1.3.5',
-    };
-
-    Object.assign(packageJSON.scripts, runScripts);
-    Object.assign(packageJSON.devDependencies, devDependencies);
-
-    fs.writeFileSync(packageJSONFilepath, JSON.stringify(packageJSON, null, 4));
-
-    return new Promise((resolve, reject) => {
-      const npmInstall = spawn('npm', ['install'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
-
-      npmInstall.on('exit', code => {
-        if (code === 0) {
-          console.log(`Successfully installed dependencies`);
-          resolve();
-        } else {
-          reject();
-        }
-      });
-    });
+  if (frontend === 'ios') {
+    await createIosHelperFiles();
   }
 }
 

@@ -13,7 +13,6 @@ class AmplifyTools implements Plugin<Project> {
     void apply(Project project) {
         def amplifyExtension = project.extensions.create('amplify', AmplifyToolsPluginExtension)
         def doesNodeExist = false
-        def doesAmplifyCLIExist = false
 
         def profile = 'default'
         def accessKeyId = null
@@ -23,9 +22,9 @@ class AmplifyTools implements Plugin<Project> {
 
         project.task('verifyNode') {
             try {
-                //TODO check if version is <8.6 and ask user to update otherwise
                 project.exec {
-                    commandLine 'node', '-v'
+                    commandLine 'which', 'node'
+                    standardOutput = new ByteArrayOutputStream()
                 }
             } catch (e) {
                 doesNodeExist = false
@@ -34,28 +33,11 @@ class AmplifyTools implements Plugin<Project> {
             doesNodeExist = true
         }
 
-        project.task('verifyCli') {
-            try {
+        project.task('createAmplifyApp') {
+            if (doesNodeExist) {
                 project.exec {
-                    commandLine 'amplify', '-v'
+                    commandLine 'npx', 'create-amplify-app', '--platform', 'android'
                 }
-            } catch (e) {
-                doesAmplifyCLIExist = false
-            }
-            doesAmplifyCLIExist = true
-        }
-
-        project.task('installCli') {
-            if (doesNodeExist && !doesAmplifyCLIExist) {
-                project.exec {
-                    commandLine 'npm', 'install', '-g', '@aws-amplify/cli'
-                }
-            }
-        }
-
-        project.task('createSkeleton') {
-            project.exec{
-                commandLine 'amplify-dev', 'init', '--androidSkeleton'
             }
         }
 
@@ -71,14 +53,6 @@ class AmplifyTools implements Plugin<Project> {
                 region = configJson.region
                 envName = configJson.envName
             }
-        }
-
-        project.task('executeCodegen') {
-            // project.exec {
-            //     //TODO command that executes codegen
-            //     // commandLine 'amplify', 'codegen'
-            // }
-            println('****** Execute codegen here ********')
         }
 
         project.task('amplifyPush') {
@@ -99,6 +73,7 @@ class AmplifyTools implements Plugin<Project> {
 \"region\":\"$region\"\
 }"""
             }
+
             def AMPLIFY
             if (!envName) {
                 AMPLIFY="""{\
@@ -113,12 +88,13 @@ class AmplifyTools implements Plugin<Project> {
             def PROVIDERS="""{\
 \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
 }"""
+
             doLast {
                 if (amplifyExtension.push) {
                     def doesLocalEnvExist = project.file('./amplify/.config/local-env-info.json').exists()
                     if (doesLocalEnvExist) {
                         project.exec {
-                            commandLine 'amplify', 'push', '--yes'
+                            commandLine 'amplify-dev', 'push', '--yes'
                         }
                     } else {
                         project.exec {
@@ -130,14 +106,9 @@ class AmplifyTools implements Plugin<Project> {
                 }
             }
         }
-
-        project.installCli.mustRunAfter('verifyNode')
-        project.installCli.mustRunAfter('verifyCli')
-        project.createSkeleton.mustRunAfter('installCli')
-        project.executeCodegen.mustRunAfter('createSkeleton')
-        project.getConfig.mustRunAfter('createSkeleton')
-        project.amplifyPush.mustRunAfter('executeCodegen')
+        project.createAmplifyApp.mustRunAfter('verifyNode')
         project.amplifyPush.mustRunAfter('getConfig')
+        project.amplifyPush.mustRunAfter('createAmplifyApp')
     }
 }
 /*
