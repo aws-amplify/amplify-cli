@@ -73,7 +73,7 @@ Resources:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_sns-role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_sns-role`%>', '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_sns-role`%>', !Join ['',[ 'sns', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
       AssumeRolePolicyDocument: 
         Version: "2012-10-17"
         Statement: 
@@ -325,7 +325,7 @@ Resources:
   # Created to execute Lambda which gets userpool app client config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',['upClientLambdaRole', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -381,7 +381,7 @@ Resources:
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_userpoolclient_lambda_iam_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+        - !Ref UserPoolClientRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -398,7 +398,7 @@ Resources:
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_userpoolclient_lambda_log_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+        - !Ref UserPoolClientRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -505,7 +505,7 @@ Resources:
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'hostedUI']]
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+        - !Ref UserPoolClientRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -525,7 +525,7 @@ Resources:
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'hostedUILogPolicy']]
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+        - !Ref UserPoolClientRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -634,7 +634,7 @@ Resources:
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'hostedUIProvider']]
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+        - !Ref UserPoolClientRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -652,7 +652,7 @@ Resources:
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'hostedUIProviderLogPolicy']]
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+        - !Ref UserPoolClientRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -733,7 +733,7 @@ Resources:
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'OAuth']]
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+        - !Ref UserPoolClientRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -748,7 +748,7 @@ Resources:
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'OAuthLogPolicy']]
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+        - !Ref UserPoolClientRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
