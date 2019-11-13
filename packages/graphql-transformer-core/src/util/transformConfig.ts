@@ -13,14 +13,14 @@ export interface TransformMigrationConfig {
 
 // Sync Config
 export declare enum ConflictHandlerType {
-  LRW = "LAST_WRITE_WINS",
+  OPTIMISTIC = "OPTIMISTIC_CONCURRENCY",
   AUTOMERGE = "AUTOMERGE",
   LAMBDA = "LAMBDA"
 }
 export type ConflictDectionType = 'VERSION' | 'NONE';
-export type SyncConfigLRW = {
+export type SyncConfigOPTIMISTIC = {
   ConflictDetection: ConflictDectionType;
-  ConflictHandler: ConflictHandlerType.LRW;
+  ConflictHandler: ConflictHandlerType.OPTIMISTIC;
 }
 export type SyncConfigSERVER = {
   ConflictDetection: ConflictDectionType;
@@ -35,7 +35,7 @@ export type SyncConfigLAMBDA = {
     lambdaArn?: any,
   }
 }
-export type SyncConfig = SyncConfigLRW | SyncConfigSERVER | SyncConfigLAMBDA;
+export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
 
 export type ResolverConfig = {
   project: SyncConfig;
