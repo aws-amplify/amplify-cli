@@ -41,17 +41,22 @@ export PATH=$PATH:`npm bin -g`
 cd ..
 if ! which node > /dev/null; then
   echo "warning: Node is not installed. Vist https://nodejs.org/en/download/ to install it"
-else
+elif ! test -f ./amplifyxc.config; then
   npx create-amplify-app --platform ios
 fi
 
 . amplifyxc.config
 amplifyPush=$push
+amplifyModelgen=$modelgen
 amplifyProfile=$profile
 amplifyAccessKey=$accessKeyId
 amplifySecretKey=$secretAccessKey
 amplifyRegion=$region
 amplifyEnvName=$envName
+
+if $amplifyModelgen; then 
+  amplify-dev codegen model
+fi
 
 if [ -z "$amplifyAccessKey" ] || [ -z "$amplifySecretKey" ] || [ -z "$amplifyRegion" ]; then
 AWSCLOUDFORMATIONCONFIG="{\
