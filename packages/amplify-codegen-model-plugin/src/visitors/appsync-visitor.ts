@@ -16,6 +16,9 @@ import {
   ObjectTypeDefinitionNode,
   valueFromASTUntyped,
   isScalarType,
+  parse,
+  Kind,
+  DefinitionNode,
 } from 'graphql';
 import { getTypeInfo } from '../utils/get-type-info';
 import { type } from 'os';
@@ -73,6 +76,12 @@ export interface RawAppSyncLocalConfig extends RawConfig {
    * ```
    */
   metadata: boolean;
+  /**
+   * @name directives
+   * @type string
+   * @descriptions optional string which includes directive definition and types used by directives. The types defined in here won't make it to output
+   */
+  directives?: string;
 }
 
 // Todo: need to figure out how to share config
@@ -137,10 +146,21 @@ export abstract class AppSyncLocalVisitor<
       ...additionalConfig,
       scalars: buildScalars(_schema, rawConfig.scalars || '', defaultScalars),
     });
-    this.scalars;
+
+    const typesUsedInDirectives: string[] = [];
+    if (rawConfig.directives) {
+      const directiveSchema = parse(rawConfig.directives);
+      directiveSchema.definitions.forEach((definition: DefinitionNode) => {
+        if (definition.kind === Kind.ENUM_TYPE_DEFINITION || definition.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION) {
+          typesUsedInDirectives.push(definition.name.value);
+        }
+      });
+    }
+
     this.typesToSkip = [this._schema.getQueryType(), this._schema.getMutationType(), this._schema.getSubscriptionType()]
       .filter(t => t)
       .map(t => (t && t.name) || '');
+    this.typesToSkip.push(...typesUsedInDirectives);
   }
 
   ObjectTypeDefinition(node: ObjectTypeDefinitionNode, index?: string | number, parent?: any) {
@@ -174,6 +194,10 @@ export abstract class AppSyncLocalVisitor<
     };
   }
   EnumTypeDefinition(node: EnumTypeDefinitionNode): void {
+    if (this.typesToSkip.includes(node.name.value)) {
+      // Skip Query, mutation and subscription type and additional
+      return;
+    }
     const enumName = this.getEnumName(node.name.value);
     const values = node.values
       ? node.values.reduce(

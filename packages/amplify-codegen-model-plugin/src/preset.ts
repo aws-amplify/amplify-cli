@@ -1,5 +1,5 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { isEnumType, TypeDefinitionNode } from 'graphql';
+import { isEnumType, TypeDefinitionNode, Kind } from 'graphql';
 import { join } from 'path';
 
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
@@ -72,10 +72,10 @@ const generateSwiftPreset = (
         selectedType: modelName,
       },
     });
-    if (!isEnumType(model)) {
+    if (model.kind !== Kind.ENUM_TYPE_DEFINITION) {
       config.push({
         ...options,
-        filename: join(options.baseOutputDir, `${modelName}+Metadata.swift`),
+        filename: join(options.baseOutputDir, `${modelName}+Schema.swift`),
         config: {
           ...options.config,
           target: 'swift',
