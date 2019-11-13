@@ -336,9 +336,11 @@ async function createAndoidHelperFiles() {
 
 async function createIosHelperFiles() {
   const configDir = path.join(process.cwd(), '/amplifyxc.config');
-  const configStr = 'push=false\nprofile=default\nenvName=amplify';
+  const configStr = 'push=false\nmodelgen=true\nprofile=default\nenvName=amplify';
   const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
   const amplifyConfigDir = path.join(process.cwd(), '/amplifyconfiguration.json');
+  const amplifyDir = path.join(process.cwd(), '/amplify');
+  const modelsDir = path.join(process.cwd(), '/models');
   const configJsonData = '{}';
   const configJsonObj = JSON.parse(configJsonData);
   const configJsonStr = JSON.stringify(configJsonObj);
@@ -356,6 +358,13 @@ async function createIosHelperFiles() {
     await fs.writeFileSync(amplifyConfigDir, configJsonStr);
   }
   await addFileToXcodeProj(amplifyConfigDir);
+
+  if (await fs.existsSync(amplifyDir)) {
+    await addFileToXcodeProj(amplifyDir);
+  }
+  if (await fs.existsSync(modelsDir)) {
+    await addFileToXcodeProj(modelsDir);
+  }
 }
 
 async function createAmplifyHelperFiles(frontend) {
