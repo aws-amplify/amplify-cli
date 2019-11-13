@@ -312,10 +312,26 @@ export class ResourceFactory {
                   ...(syncConfig
                     ? [
                         Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                          tablename: SyncResourceIDs.syncTableName,
+                          tablename: Fn.If(
+                            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                            Fn.Join('-', [
+                              SyncResourceIDs.syncTableName,
+                              Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                              Fn.Ref(ResourceConstants.PARAMETERS.Env),
+                            ]),
+                            Fn.Join('-', [SyncResourceIDs.syncTableName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+                          )
                         }),
                         Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                          tablename: SyncResourceIDs.syncTableName,
+                          tablename: Fn.If(
+                            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                            Fn.Join('-', [
+                              SyncResourceIDs.syncTableName,
+                              Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                              Fn.Ref(ResourceConstants.PARAMETERS.Env),
+                            ]),
+                            Fn.Join('-', [SyncResourceIDs.syncTableName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+                          ),
                         }),
                       ]
                     : []),
