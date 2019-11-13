@@ -243,6 +243,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
+  if (syncConfig) {
+    await writeSyncConfig(context, syncConfig, resourceDir);
+  }
+
   if (editSchemaChoice) {
     return context.amplify.openEditor(context, targetSchemaFilePath).then(async () => {
       let notCompiled = true;
@@ -269,10 +273,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
       return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
     });
-  }
-
-  if (syncConfig) {
-    await writeSyncConfig(context, syncConfig, resourceDir);
   }
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
@@ -472,8 +472,8 @@ async function askSyncQuestions(context, parameters, modelTypes) {
           message: msg,
           choices: [
             {
-              name: 'Last Writer Wins',
-              value: 'LAST_WRITE_WINS',
+              name: 'Optimistic Concurrency',
+              value: 'OPTIMISTIC_CONCURRENCY',
             },
             {
               name: 'Custom Lambda',
