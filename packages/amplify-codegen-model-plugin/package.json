@@ -1,8 +1,9 @@
 {
-  "name": "appsync-local-codegen-plugin",
+  "name": "amplify-codegen-model-plugin",
   "version": "0.1.0",
   "main": "lib/index.js",
-  "license": "MIT",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "dependencies": {
     "@graphql-codegen/core": "^1.8.1",
     "@graphql-codegen/java-common": "^1.8.2",
