@@ -119,7 +119,7 @@ publishing {
     publications {
         pluginPublication(MavenPublication) {
             groupId 'com.amplifyframework'
-            artifactId 'amplify-tools-gradle-plugin'
+            artifactId 'amplify-tools-gradle-plugin-beta'
             version VERSION_NAME + "-SNAPSHOT"
         }
     }
