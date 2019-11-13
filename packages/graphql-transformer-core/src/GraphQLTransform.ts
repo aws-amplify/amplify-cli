@@ -314,12 +314,6 @@ export class GraphQLTransform {
     const syncResources = {
       [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable()
     }
-    // if lambda config exists add it to the SyncConfig and create a role for it
-    // if (SyncUtils.isLambdaSyncConfig(syncConfig)) {
-    //   syncConfig.LambdaConflictHandler.lambdaArn = SyncUtils.syncLambdaArnResource(syncConfig.LambdaConflictHandler);
-    //   // syncResources[
-    //   //   SyncResourceIDs.syncFunctionID(syncConfig.LambdaConflictHandler.name)] = SyncUtils.syncLambdaIAMRole(syncConfig.LambdaConflictHandler);
-    // }
     context.mergeResources(syncResources);
   }
 
