@@ -29,7 +29,8 @@ class AmplifyTools implements Plugin<Project> {
         }
 
         project.task('createAmplifyApp') {
-            if (doesNodeExist) {
+            def doesGradleConfigExist = project.file('./amplify-gradle-config.json').exists()
+            if (doesNodeExist && !doesGradleConfigExist) {
                 project.exec {
                     commandLine 'npx', 'create-amplify-app', '--platform', 'android'
                 }
@@ -109,6 +110,7 @@ class AmplifyTools implements Plugin<Project> {
         }
         project.createAmplifyApp.mustRunAfter('verifyNode')
         project.getConfig.mustRunAfter('createAmplifyApp')
+        project.modelgen.mustRunAfter('getConfig')
         project.amplifyPush.mustRunAfter('getConfig')
     }
 }
