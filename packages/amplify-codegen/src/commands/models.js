@@ -3,7 +3,7 @@ const { parse } = require('graphql');
 const { readFileSync, writeFileSync, ensureFileSync, pathExistsSync, lstatSync, readdirSync } = require('fs-extra');
 const gqlCodeGen = require('@graphql-codegen/core');
 
-const appSyncLocalCodeGen = require('appsync-local-codegen-plugin');
+const appSyncLocalCodeGen = require('amplify-codegen-model-plugin');
 
 async function generateModels(context) {
   // steps:
@@ -37,7 +37,7 @@ async function generateModels(context) {
   });
 
   const schemaContent = loadSchema(apiResourcePath);
-  const outputPath = path.join(projectRoot, 'models');
+  const outputPath = path.join(projectRoot, getModelOutputPath(context));
   const schema = parse(schemaContent);
   const projectConfig = context.amplify.getProjectConfig();
 
@@ -97,5 +97,19 @@ function loadSchema(apiResourcePath) {
   }
 
   throw new Error('Could not load the schema');
+}
+
+function getModelOutputPath(context) {
+  const projectConfig = context.amplify.getProjectConfig();
+  switch (projectConfig.frontend) {
+    case 'javascript':
+      return 'src';
+    case 'android':
+      return projectConfig.android.config.ResDir;
+    case 'ios':
+      return 'models';
+    default:
+      return '.';
+  }
 }
 module.exports = generateModels;

@@ -86,23 +86,16 @@ export class AppSyncLocalJavascriptVisitor<
    * the generated object would be
    * const Status = {
    *    "PENDING": "pending",
-   *    "pending": "pending",
    *    "DONE": "done",
-   *    "done": "done"
    * }
    * @param enumObj: CodeGenEnun codegen enum object
    * @param exportEnum: boolean export the enum object
    */
   protected generateEnumObject(enumObj: CodeGenEnum, exportEnum: boolean = false): string {
     const enumName = this.getEnumName(enumObj);
-    const enumValues = Object.entries(enumObj.values).reduce((acc: { [key: string]: string }, [enumKey, enumValue]: [string, string]) => {
-      acc[enumKey] = enumValue;
-      acc[enumValue] = enumValue;
-      return acc;
-    }, {});
     const header = [exportEnum ? 'export' : null, 'const', enumName].filter(h => h).join(' ');
 
-    return `${header} = ${JSON.stringify(enumValues, null, 4)};`;
+    return `${header} = ${JSON.stringify(enumObj.values, null, 2)};`;
   }
 
   /**

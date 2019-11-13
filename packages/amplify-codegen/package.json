@@ -24,7 +24,7 @@
     "ora": "^3.4.0",
     "underscore": "^1.9.1",
     "upath": "^1.2.0",
-    "appsync-local-codegen-plugin":"^0.1.0",
+    "amplify-codegen-model-plugin":"^0.1.0",
     "@graphql-codegen/core":"^1.8.3",
     "graphql": "^0.13.2"
   },
