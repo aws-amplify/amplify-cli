@@ -1,7 +1,6 @@
 const { execSync } = require('child_process');
 const { getPackageManager } = require('../packageManagerHelpers');
 const { normalizePackageManagerForOS } = require('../packageManagerHelpers');
-const { addFileToXcodeProj } = require('../xcodeHelpers');
 const { generateLocalEnvInfoFile } = require('./s9-onSuccess');
 const url = require('url');
 const fs = require('fs-extra');
