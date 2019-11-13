@@ -1,9 +1,4 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: AmplifyTools
-
-/*
-********External Plugin***********
- */
 
 class AmplifyTools implements Plugin<Project> {
     static class AmplifyToolsPluginExtension {
@@ -51,6 +46,14 @@ class AmplifyTools implements Plugin<Project> {
             secretAccessKey = configJson.secretAccessKeyId
             region = configJson.region
             envName = configJson.envName
+        }
+
+        project.task('modelgen') {
+            doLast {
+                project.exec {
+                    commandLine 'amplify-dev', 'codegen', 'model'
+                }
+            }
         }
 
         project.task('amplifyPush') {
@@ -107,9 +110,18 @@ class AmplifyTools implements Plugin<Project> {
         project.createAmplifyApp.mustRunAfter('verifyNode')
         project.getConfig.mustRunAfter('createAmplifyApp')
         project.amplifyPush.mustRunAfter('getConfig')
-
     }
 }
-/*
-**********End External Plugin**************
- */
+
+publishing {
+    publications {
+        pluginPublication(MavenPublication) {
+            groupId 'com.amplifyframework'
+            artifactId 'amplify-tools-gradle-plugin'
+            version VERSION_NAME + "-SNAPSHOT"
+        }
+    }
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
