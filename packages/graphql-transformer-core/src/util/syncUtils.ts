@@ -1,18 +1,15 @@
 import { DynamoDB, IAM, Fn } from 'cloudform-types';
-// import { TimeToLiveSpecification } from 'cloudform-types/types/dynamoDb/table';
-// import { DeltaSyncConfig } from 'cloudform-types/types/appSync/dataSource';
-// import { SyncConfig } from 'cloudform-types/types/appSync/resolver';
 import { SyncResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { SyncConfigLAMBDA, SyncConfigLRW, SyncConfigSERVER } from './transformConfig';
+import { SyncConfigLAMBDA, SyncConfigOPTIMISTIC, SyncConfigSERVER } from './transformConfig';
 
 // Cloudformation Types for AppSync Local
 type SyncConfig = {
   ConflictDetection: string;
   ConflictHandler: string;
-  LambdaConflictHandlerARN?: any;
+  LambdaConflictHandlerArn?: any;
 };
 type DeltaSyncConfig = {
-  DeltaSyncTableName: string;
+  DeltaSyncTableName: any;
   DeltaSyncTableTTL: number;
   BaseTableTTL: number;
 };
@@ -199,18 +196,22 @@ export module SyncUtils {
   }
   export function syncDataSourceConfig(): DeltaSyncConfig {
     return {
-      DeltaSyncTableName: SyncResourceIDs.syncTableName,
+      DeltaSyncTableName: joinWithEnv('-', [
+        SyncResourceIDs.syncTableName,
+        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+      ]),
       DeltaSyncTableTTL: 30,
       BaseTableTTL: 30,
     };
+    // default values for deltasync
   }
-  export function syncResolverConfig(syncConfig: SyncConfigLRW | SyncConfigLAMBDA | SyncConfigSERVER): SyncConfig {
+  export function syncResolverConfig(syncConfig: SyncConfigOPTIMISTIC | SyncConfigLAMBDA | SyncConfigSERVER): SyncConfig {
     const resolverObj: SyncConfig = {
       ConflictDetection: syncConfig.ConflictDetection,
       ConflictHandler: syncConfig.ConflictHandler,
     };
     if (isLambdaSyncConfig(syncConfig)) {
-      resolverObj.LambdaConflictHandlerARN = syncLambdaArnResource(syncConfig.LambdaConflictHandler);
+      resolverObj.LambdaConflictHandlerArn = syncLambdaArnResource(syncConfig.LambdaConflictHandler);
     }
     return resolverObj;
   }
