@@ -52,7 +52,8 @@ function getUserId(context: Context) {
     const projectDetails = context.amplify.getProjectDetails();
     const stackId = projectDetails.amplifyMeta.providers.awscloudformation.StackId;
     const stackIdSplit = stackId.split(':');
-    const accountId = stackIdSplit[4];
+    const fourth = 4;
+    const accountId = stackIdSplit[fourth];
     return crypto
       .createHash('md5')
       .update(accountId)
