@@ -22,3 +22,6 @@ packages/*/package-lock.json
 amplify-integ*/
 packages/amplify-storage-simulator/lib
 packages/**/reports/junit/*
+.gitsecret/keys/random_seed
+!*.secret
+packages/amplify-cli/src/metrics/secret-key.json

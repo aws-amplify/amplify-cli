@@ -3,8 +3,13 @@ import bugsnag, { Bugsnag } from '@bugsnag/js';
 import crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 
 export const checkAndCollectMetrics = (context: Context) => async (e: any): Promise<any> => {
+  if (fs.existsSync('./secret-key.json')) {
+    console.log('key file not found maybe missing git secret');
+    return;
+  }
   let releaseStage = 'production';
   const { input } = context;
   if (input.argv.length > 1) {
@@ -24,9 +29,11 @@ export const checkAndCollectMetrics = (context: Context) => async (e: any): Prom
 };
 
 function createBugSnagClient(releaseStage: string, version: string) {
-  const { BUGSNAG_API_KEY = '' } = process.env;
+  const keys = require('./secret-key.json');
+
+  const { bugsnagKey } = keys;
   return bugsnag({
-    apiKey: BUGSNAG_API_KEY,
+    apiKey: bugsnagKey,
     appVersion: version,
     autoCaptureSessions: false,
     releaseStage,
