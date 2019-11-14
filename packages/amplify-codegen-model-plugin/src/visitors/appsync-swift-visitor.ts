@@ -1,4 +1,4 @@
-import { AppSyncLocalVisitor, CodeGenModel, CodeGenField, TypeInfo } from './appsync-visitor';
+import { AppSyncLocalVisitor, CodeGenModel, CodeGenField, TypeInfo, CodeGenGenerateEnum } from './appsync-visitor';
 import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { lowerCaseFirst, camelCase } from 'change-case';
@@ -12,8 +12,11 @@ export class AppSyncSwiftVisitor extends AppSyncLocalVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
   protected imports: string[] = ['import Foundation'];
   generate(): string {
-    if (this._parsedConfig.metadata) {
+    if (this._parsedConfig.generate === CodeGenGenerateEnum.metadata) {
       return this.generateSchema();
+    }
+    if (this._parsedConfig.generate === CodeGenGenerateEnum.loader) {
+      return this.generateClassLoader();
     }
 
     if (this.selectedTypeIsEnum()) {
@@ -27,7 +30,7 @@ export class AppSyncSwiftVisitor extends AppSyncLocalVisitor {
       const structBlock: SwiftDeclarationBlock = new SwiftDeclarationBlock()
         .withName(this.getModelName(obj))
         .access('public')
-        .withProtocols(['model']);
+        .withProtocols(['Model']);
       Object.entries(obj.fields).forEach(([fieldName, field]) => {
         const fieldType = this.getNativeType(field);
         structBlock.addProperty(field.name, fieldType, undefined, 'public', {
@@ -130,6 +133,28 @@ export class AppSyncSwiftVisitor extends AppSyncLocalVisitor {
       { static: true, variable: false },
       ' MARK: - ModelSchema'
     );
+  }
+
+  protected generateClassLoader(): string {
+    const structList = Object.values(this.typeMap).map(typeObj => {
+      return `${this.getModelName(typeObj)}.self`;
+    });
+
+    const result: string[] = [...this.modelExtensionImports, ''];
+
+    const classDeclaration = new SwiftDeclarationBlock()
+      .access('public')
+      .withName('AmplifyModels')
+      .asKind('class')
+      .final()
+      .withComment('Contains the set of classes that conforms to the `Model` protocol.');
+
+    const impl: string = ['return [', indentMultiline(structList.join(',\n')), ']'].join('\n');
+    classDeclaration.addClassMethod('get', '[Model.Type]', impl, undefined, 'public', { static: true });
+
+    result.push(classDeclaration.string);
+
+    return result.join('\n');
   }
 
   private getInitBody(fields: CodeGenField[]): string {
