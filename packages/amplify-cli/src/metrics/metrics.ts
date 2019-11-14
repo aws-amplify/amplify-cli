@@ -17,7 +17,6 @@ export const checkAndCollectMetrics = (context: Context) => async (e: any): Prom
     const split = base.split('-');
     if (split.length > 1) releaseStage = split[1];
   }
-  console.log(JSON.stringify(input, null, 1));
   const bugsnagClient = createBugSnagClient(releaseStage, getVersion(context));
   const userId = getUserId(context);
   setUser(bugsnagClient, userId);
@@ -47,14 +46,17 @@ function setUser(bugsnagClient: Bugsnag.Client, userId: string) {
 }
 
 function getUserId(context: Context) {
-  const projectDetails = context.amplify.getProjectDetails();
-  if (!projectDetails) return 'N/A';
-  const stackId = projectDetails.amplifyMeta.providers['awscloudformation'].StackId;
-  const accountId = stackId.split(':')[4];
-  return crypto
-    .createHash('md5')
-    .update(accountId)
-    .digest('hex');
+  try {
+    const projectDetails = context.amplify.getProjectDetails();
+    const stackId = projectDetails.amplifyMeta.providers['awscloudformation'].StackId;
+    const accountId = stackId.split(':')[4];
+    return crypto
+      .createHash('md5')
+      .update(accountId)
+      .digest('hex');
+  } catch (e) {
+    return 'N/A';
+  }
 }
 
 const getVersion = (context: Context) => context.pluginPlatform.plugins.core[0].packageVersion;
