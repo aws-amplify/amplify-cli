@@ -22,6 +22,12 @@ import {
 } from 'graphql';
 import { getTypeInfo } from '../utils/get-type-info';
 import { type } from 'os';
+
+export enum CodeGenGenerateEnum {
+  metadata = "metadata",
+  code = "code",
+  loader = "loader"
+}
 export interface RawAppSyncLocalConfig extends RawConfig {
   /**
    * @name target
@@ -60,22 +66,25 @@ export interface RawAppSyncLocalConfig extends RawConfig {
   selectedType: string;
 
   /**
-   * @name metadata
-   * @type boolean
-   * @description optional, name of the model to which the code needs to be generated
-   * @default undefined, this will generate non meta data code
+   * @name generate
+   * @type string
+   * @description optional, informs what needs to be generated.
+   * type - Generate class or struct
+   * metadata - Generate metadata used by swift and JS/TS
+   * loader - Class/Struct loader used by swift or Java
+   * @default code, this will generate non meta data code
    *
    * generates:
    * Models:
    * config:
    *    target: 'swift'
    *    model: Todo
-   *    metadata: true
+   *    generate: 'metadata'
    *  plugins:
    *    - appsync-local-codegen-plugin
    * ```
    */
-  metadata: boolean;
+  generate:CodeGenGenerateEnum;
   /**
    * @name directives
    * @type string
@@ -87,7 +96,7 @@ export interface RawAppSyncLocalConfig extends RawConfig {
 // Todo: need to figure out how to share config
 export interface ParsedAppSyncLocalConfig extends ParsedConfig {
   selectedType?: string;
-  metadata?: boolean;
+  generate?: CodeGenGenerateEnum;
 }
 export type CodeGenArgumentsMap = {
   [argumentName: string]: any;
