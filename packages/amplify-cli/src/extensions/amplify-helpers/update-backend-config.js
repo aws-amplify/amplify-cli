@@ -4,7 +4,12 @@ const { readJsonFile } = require('./read-json-file');
 
 function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
+
+  let backendConfig = {};
+  if (fs.existsSync(backendConfigFilePath)) {
+    backendConfig = readJsonFile(backendConfigFilePath);
+  }
+
   if (!backendConfig[category]) {
     backendConfig[category] = {};
   }
@@ -18,7 +23,11 @@ function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
 
 function updateBackendConfigDependsOn(category, resourceName, attribute, value) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
+
+  let backendConfig = {};
+  if (fs.existsSync(backendConfigFilePath)) {
+    backendConfig = readJsonFile(backendConfigFilePath);
+  }
 
   if (!backendConfig[category]) {
     backendConfig[category] = {};
@@ -35,7 +44,11 @@ function updateBackendConfigDependsOn(category, resourceName, attribute, value) 
 
 function updateBackendConfigAfterResourceRemove(category, resourceName) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
+
+  let backendConfig = {};
+  if (fs.existsSync(backendConfigFilePath)) {
+    backendConfig = readJsonFile(backendConfigFilePath);
+  }
 
   if (backendConfig[category] && backendConfig[category][resourceName] !== undefined) {
     delete backendConfig[category][resourceName];
