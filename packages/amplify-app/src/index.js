@@ -52,8 +52,6 @@ async function checkNodeVersion() {
 async function installAmplifyCLI() {
   const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
 
-  console.log('wtf', process.cwd());
-
   if (amplifyCLIVersionCheck.stderr !== null) {
     console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersionCheck.stdout.toString()}`);
   } else {
