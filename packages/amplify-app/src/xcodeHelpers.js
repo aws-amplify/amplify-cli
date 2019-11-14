@@ -2,7 +2,7 @@ const xcode = require('xcode');
 const path = require('path');
 const fs = require('fs-extra');
 
-function getXcodeProjectDir() {
+async function getXcodeProjectDir() {
   const EXTENSION = '.xcodeproj';
   const files = fs.readdirSync(process.cwd());
   const targetFiles = files.filter(function(file) {
@@ -17,8 +17,8 @@ function getXcodeProjectDir() {
   return projDir;
 }
 
-function addFileToXcodeProj(file) {
-  const projectPath = getXcodeProjectDir();
+async function addFileToXcodeProj(file) {
+  const projectPath = await getXcodeProjectDir();
   // Silently return if not in same directory as xcode project
   if (!projectPath) {
     return;
