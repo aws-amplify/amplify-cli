@@ -301,10 +301,10 @@ export class ModelAuthTransformer extends Transformer {
   };
 
   private getApiKeyConfig(): ApiKeyConfig {
-    const authProviders = [];
+    let authProviders = [];
 
     if (this.config.authConfig.additionalAuthenticationProviders) {
-      authProviders.concat(this.config.authConfig.additionalAuthenticationProviders.filter(p => !!p.authenticationType));
+      authProviders = authProviders.concat(this.config.authConfig.additionalAuthenticationProviders.filter(p => !!p.authenticationType));
     }
 
     authProviders.push(this.config.authConfig.defaultAuthentication);
