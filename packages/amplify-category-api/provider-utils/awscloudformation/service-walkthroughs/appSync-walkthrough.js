@@ -60,7 +60,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const resourceName = resourceAlreadyExists(context);
   let authConfig;
   let defaultAuthType;
-  let syncConfig;
+  let resolverConfig;
 
   if (resourceName) {
     context.print.warning(
@@ -103,7 +103,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   /* eslint-disable */
   ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
-  ({ authConfig, syncConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType));
+  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType));
   await checkForCognitoUserPools(context, parameters, authConfig);
   /* eslint-disable */
 
@@ -243,8 +243,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
-  if (syncConfig) {
-    await writeSyncConfig(context, syncConfig, resourceDir);
+  if (resolverConfig) {
+    await writeResolverConfig(context, resolverConfig, resourceDir);
   }
 
   if (editSchemaChoice) {
@@ -284,7 +284,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
 }
 
-async function writeSyncConfig(context, syncConfig, resourceDir) {
+async function writeResolverConfig(context, syncConfig, resourceDir) {
   const localTransformerConfig = await readTransformerConfiguration(resourceDir);
   localTransformerConfig.ResolverConfig = syncConfig;
   await writeTransformerConfiguration(resourceDir, localTransformerConfig);
@@ -339,7 +339,7 @@ async function updateWalkthrough(context) {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
-  let authConfig, defaultAuthType, syncConfig;
+  let authConfig, defaultAuthType, resolverConfig;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
 
   // There can only be one appsync resource
@@ -388,7 +388,7 @@ async function updateWalkthrough(context) {
 
   /* eslint-disable */
   ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
-  ({ authConfig, syncConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
+  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
   await checkForCognitoUserPools(context, parameters, authConfig);
   /* eslint-disable */
 
@@ -414,7 +414,9 @@ async function updateWalkthrough(context) {
   jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
-  await writeSyncConfig(context, syncConfig, resourceDir);
+  if (resolverConfig) {
+    await writeResolverConfig(context, resolverConfig, resourceDir);
+  }
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     resourceDir,
@@ -424,7 +426,7 @@ async function updateWalkthrough(context) {
 }
 
 async function askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes) {
-  let syncConfig;
+  let resolverConfig;
 
   const advancedSettingsQuestion = {
     type: 'list',
@@ -446,13 +448,15 @@ async function askAdditionalQuestions(context, parameters, authConfig, defaultAu
 
   if (advancedSettingsAnswer.advancedSettings) {
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
-    syncConfig = await askSyncQuestions(context, parameters, modelTypes);
+    if(process.env.DATASTORE === 'SYNC') {
+      resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
+    }
   }
 
-  return { authConfig, syncConfig };
+  return { authConfig, resolverConfig };
 }
 
-async function askSyncQuestions(context, parameters, modelTypes) {
+async function askResolverConflictQuestion(context, parameters, modelTypes) {
   let resolverConfig = {};
 
   if (await context.prompt.confirm('Configure conflict detection?')) {
