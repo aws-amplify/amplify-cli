@@ -12,7 +12,7 @@ import { checkAndCollectMetrics, configPrompt } from './metrics';
 // entry from commandline
 export async function run(): Promise<number> {
   let collectMetrics = (e: any) => {
-    return;
+    // do nothing
   };
   let canCollectMetrics: Boolean = false;
   try {
