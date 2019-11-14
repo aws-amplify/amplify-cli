@@ -1,10 +1,10 @@
 {
-  "name": "create-amplify-app",
+  "name": "amplify-app",
   "version": "1.0.0",
   "description": "Amplify CLI",
   "main": "src/index.js",
   "bin": {
-    "create-amplify-app": "bin/create-amplify-app"
+    "amplify-app": "bin/amplify-app"
   },
   "publishConfig": {
     "access": "public"
