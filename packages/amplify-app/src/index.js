@@ -9,6 +9,12 @@ const args = require('yargs').argv;
 const { addFileToXcodeProj } = require('./xcodeHelpers');
 
 function run() {
+  const path = args.path;
+
+  if (path) {
+    process.chdir(path);
+  }
+
   return checkNodeVersion()
     .then(() => installAmplifyCLI())
     .then(() => createAmplifySkeletonProject())
@@ -46,6 +52,8 @@ async function checkNodeVersion() {
 async function installAmplifyCLI() {
   const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
 
+  console.log('wtf', process.cwd());
+
   if (amplifyCLIVersionCheck.stderr !== null) {
     console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersionCheck.stdout.toString()}`);
   } else {
@@ -54,7 +62,7 @@ async function installAmplifyCLI() {
     console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
 
     return new Promise((resolve, reject) => {
-      const amplifyCLIInstall = spawn('npm', ['install', '-g', '@aws-amplify/cli'], {
+      const amplifyCLIInstall = spawn('npm', ['install', '-g', '@aws-amplify/cli@gelato'], {
         cwd: process.cwd(),
         env: process.env,
         stdio: 'inherit',
