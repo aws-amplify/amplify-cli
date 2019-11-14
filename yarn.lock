@@ -3624,6 +3624,36 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+amplify-frontend-android@1.31.0:
+  version "1.31.0"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-android/-/amplify-frontend-android-1.31.0.tgz#cbab66b75675faed5a49eceb51a254cbb3b63484"
+  integrity sha512-NL7vd54CoyV5NyVIpzEUJfuOHp470amBNaUYPLL2WO/Y+yNeT+ivkywAFbGnNG2xBYHLClCYszufHzgSVTFkfA==
+  dependencies:
+    chalk "^2.4.2"
+    fs-extra "^8.1.0"
+    inquirer "^6.5.1"
+    path "^0.12.7"
+
+amplify-frontend-ios@1.31.0:
+  version "1.31.0"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-ios/-/amplify-frontend-ios-1.31.0.tgz#2dcd57d3943006564d284850d12036fc0d2230a8"
+  integrity sha512-BVr8ZruUmj8yNcheUfw6wd1Ay8mKB3vVH5T0PtoVDUbvVp7wnwye6RQA+YohwyrNlKYC3bJeXLhDJ/PCUDDbRw==
+  dependencies:
+    chalk "^2.4.2"
+    fs-extra "^8.1.0"
+    inquirer "^6.5.1"
+    path "^0.12.7"
+
+amplify-frontend-javascript@1.29.0:
+  version "1.29.0"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-javascript/-/amplify-frontend-javascript-1.29.0.tgz#022d9ab2eccd4916bb10942bfbf366b9eaf58fdf"
+  integrity sha512-Ls3C98aIlsDlE8w+RhfHXHCL0wWDy8q+YsYfBTQ3LssuIKMOQvQaHyKGyp+sTS+kpO7ixJRi+XRGfZzNi1PpXA==
+  dependencies:
+    chalk "^2.4.2"
+    fs-extra "^8.1.0"
+    inquirer "^6.5.1"
+    path "^0.12.7"
+
 ansi-align@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-2.0.0.tgz#c36aeccba563b89ceb556f3690f0b1d9e3547f7f"
@@ -13401,6 +13431,11 @@ lodash.templatesettings@^4.0.0:
   dependencies:
     lodash._reinterpolate "^3.0.0"
 
+lodash.toarray@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.toarray/-/lodash.toarray-4.4.0.tgz#24c4bfcd6b2fba38bfd0594db1179d8e9b656561"
+  integrity sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
+
 lodash.unescape@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
@@ -14318,6 +14353,13 @@ no-case@^2.2.0, no-case@^2.3.2:
   integrity sha512-rmTZ9kz+f3rCvK2TD1Ue/oZlns7OGoIWP4fc3llxxRXlOkHKoWPPWJOfFYpITabSow43QJbRIoHQXtt10VldyQ==
   dependencies:
     lower-case "^1.1.1"
+
+node-emoji@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/node-emoji/-/node-emoji-1.10.0.tgz#8886abd25d9c7bb61802a658523d1f8d2a89b2da"
+  integrity sha512-Yt3384If5H6BYGVHiHwTL+99OzJKHhgp82S8/dktEK73T26BazdgZ4JZh92xSVtGNJvz9UbXdNAc5hcrXV42vw==
+  dependencies:
+    lodash.toarray "^4.4.0"
 
 node-environment-flags@1.0.5:
   version "1.0.5"
@@ -18154,7 +18196,11 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
   integrity sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
 
-<<<<<<< HEAD
+signedsource@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/signedsource/-/signedsource-1.0.0.tgz#1ddace4981798f93bd833973803d80d52e93ad6a"
+  integrity sha1-HdrOSYF5j5O9gzlzgD2A1S6TrWo=
+
 simple-plist@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/simple-plist/-/simple-plist-1.1.0.tgz#8354ab63eb3922a054c78ce96c209c532e907a23"
@@ -18163,12 +18209,6 @@ simple-plist@^1.0.0:
     bplist-creator "0.0.8"
     bplist-parser "0.2.0"
     plist "^3.0.1"
-=======
-signedsource@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/signedsource/-/signedsource-1.0.0.tgz#1ddace4981798f93bd833973803d80d52e93ad6a"
-  integrity sha1-HdrOSYF5j5O9gzlzgD2A1S6TrWo=
->>>>>>> feat: add support for generation of models in codegen
 
 simple-swizzle@^0.2.2:
   version "0.2.2"
