@@ -15,7 +15,9 @@ export const checkAndCollectMetrics = (context: Context) => async (e: any): Prom
   if (input.argv.length > 1) {
     const base = path.basename(input.argv[1]);
     const split = base.split('-');
-    if (split.length > 1) releaseStage = split[1];
+    if (split.length > 1) {
+      releaseStage = split[1];
+    }
   }
   const bugsnagClient = createBugSnagClient(releaseStage, getVersion(context));
   const userId = getUserId(context);
@@ -48,8 +50,9 @@ function setUser(bugsnagClient: Bugsnag.Client, userId: string) {
 function getUserId(context: Context) {
   try {
     const projectDetails = context.amplify.getProjectDetails();
-    const stackId = projectDetails.amplifyMeta.providers['awscloudformation'].StackId;
-    const accountId = stackId.split(':')[4];
+    const stackId = projectDetails.amplifyMeta.providers.awscloudformation.StackId;
+    const stackIdSplit = stackId.split(':');
+    const accountId = stackIdSplit[4];
     return crypto
       .createHash('md5')
       .update(accountId)
