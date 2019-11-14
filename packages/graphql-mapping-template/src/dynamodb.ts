@@ -162,8 +162,11 @@ export class DynamoDBMappingTemplate {
     key: ObjectNode | Expression;
     condition: ObjectNode | ReferenceNode;
     isSyncEnabled: boolean;
-  },
-    version: string = RESOLVER_VERSION_ID): ObjectNode {
+  }): ObjectNode {
+    let version: string = RESOLVER_VERSION_ID
+    if (isSyncEnabled) {
+      version  = '2018-05-29';
+    }
     return obj({
       version: str(version),
       operation: str('DeleteItem'),
