@@ -7,7 +7,7 @@ const { spawn } = require('child_process');
 const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
 const configFilePath = path.join(dotAWSDirPath, 'config');
 
-return run();
+run();
 
 function getNamedProfiles() {
   let namedProfiles;

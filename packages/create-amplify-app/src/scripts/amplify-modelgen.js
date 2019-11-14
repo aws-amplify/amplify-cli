@@ -4,10 +4,10 @@ const { spawn } = require('child_process');
 
 console.log('Running codegen...');
 
-return run();
+run();
 
 async function run() {
-  let modelGen = spawn('amplify-dev', ['codegen', 'model'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+  const modelGen = spawn('amplify-dev', ['codegen', 'model'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
   modelGen.on('exit', code => {
     if (code === 0) {
