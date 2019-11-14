@@ -470,7 +470,12 @@ async function askSyncQuestions(context, parameters, modelTypes) {
           type: 'list',
           name: 'conflictResolutionStrategy',
           message: msg,
+          default: 'AUTOMERGE',
           choices: [
+            {
+              name: 'Auto Merge',
+              value: 'AUTOMERGE',
+            },
             {
               name: 'Optimistic Concurrency',
               value: 'OPTIMISTIC_CONCURRENCY',
@@ -478,10 +483,6 @@ async function askSyncQuestions(context, parameters, modelTypes) {
             {
               name: 'Custom Lambda',
               value: 'LAMBDA',
-            },
-            {
-              name: 'Auto Merge',
-              value: 'AUTOMERGE',
             },
             {
               name: 'Learn More',
@@ -525,7 +526,7 @@ async function askSyncQuestions(context, parameters, modelTypes) {
           resolverConfig.models = {};
           for (let i = 0; i < selectedModelTypes.length; i += 1) {
             resolverConfig.models[selectedModelTypes[i]] = await askConflictResolutionStrategy(
-              `Select the resolution strategy form ${selectedModelTypes[i]} model`
+              `Select the resolution strategy for ${selectedModelTypes[i]} model`
             );
           }
         }
