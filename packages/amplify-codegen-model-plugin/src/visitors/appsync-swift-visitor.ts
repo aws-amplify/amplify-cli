@@ -100,7 +100,7 @@ export class AppSyncSwiftVisitor extends AppSyncLocalVisitor {
       .withComment('MARK: - CodingKeys');
 
     // AddEnums.name
-    model.fields.forEach(field => codingKeyEnum.addEnumValue(this.getFieldName(field)));
+    model.fields.forEach(field => codingKeyEnum.addEnumValue(this.getFieldName(field), field.name));
     extensionDeclaration.appendBlock(codingKeyEnum.string);
 
     // expose keys
