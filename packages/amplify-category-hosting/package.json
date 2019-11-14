@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-hosting",
-  "version": "1.26.1",
+  "version": "1.26.2-gelato.0",
   "description": "amplify-cli hosting plugin",
   "main": "index.js",
   "author": "Amazon Web Services",

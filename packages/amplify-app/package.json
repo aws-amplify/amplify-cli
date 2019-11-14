@@ -1,6 +1,6 @@
 {
   "name": "amplify-app",
-  "version": "1.0.1",
+  "version": "1.0.2-gelato.0",
   "description": "Amplify CLI",
   "main": "src/index.js",
   "bin": {

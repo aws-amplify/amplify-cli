@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen-model-plugin",
-  "version": "0.1.1",
+  "version": "0.1.2-gelato.0",
   "main": "lib/index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
