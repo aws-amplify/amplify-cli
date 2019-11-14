@@ -55,7 +55,7 @@ amplifyRegion=$region
 amplifyEnvName=$envName
 
 if $amplifyModelgen; then 
-  amplify-dev codegen model
+  amplify codegen model
 fi
 
 if [ -z "$amplifyAccessKey" ] || [ -z "$amplifySecretKey" ] || [ -z "$amplifyRegion" ]; then
@@ -91,9 +91,9 @@ PROVIDERS="{\
 
 if $amplifyPush; then
     if test -f ./amplify/.config/local-env-info.json; then
-        amplify-dev push --yes
+        amplify push --yes
     else 
-        amplify-dev init --amplify $AMPLIFY --providers $PROVIDERS --yes
+        amplify init --amplify $AMPLIFY --providers $PROVIDERS --yes
     fi
 fi',
     :execution_position => :before_compile
