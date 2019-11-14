@@ -52,7 +52,7 @@ class AmplifyTools implements Plugin<Project> {
         project.task('modelgen') {
             doLast {
                 project.exec {
-                    commandLine 'amplify-dev', 'codegen', 'model'
+                    commandLine 'amplify', 'codegen', 'model'
                 }
             }
         }
@@ -96,11 +96,11 @@ class AmplifyTools implements Plugin<Project> {
                     def doesLocalEnvExist = project.file('./amplify/.config/local-env-info.json').exists()
                     if (doesLocalEnvExist) {
                         project.exec {
-                            commandLine 'amplify-dev', 'push', '--yes'
+                            commandLine 'amplify', 'push', '--yes'
                         }
                     } else {
                         project.exec {
-                            commandLine 'amplify-dev', 'init', '--amplify', AMPLIFY, '--providers', PROVIDERS, '--yes'
+                            commandLine 'amplify', 'init', '--amplify', AMPLIFY, '--providers', PROVIDERS, '--yes'
                         }
                     }
                 } else {
