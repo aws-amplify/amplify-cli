@@ -368,9 +368,6 @@ async function createIosHelperFiles() {
   if (await fs.existsSync(amplifyDir)) {
     await addFileToXcodeProj(amplifyDir);
   }
-  if (await fs.existsSync(modelsDir)) {
-    await addFileToXcodeProj(modelsDir);
-  }
 }
 
 async function createAmplifyHelperFiles(frontend) {
