@@ -431,6 +431,11 @@ workflows:
       - test:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
+                - graphql_e2e_testing
       - graphql_e2e_tests:
           filters:
             branches:
@@ -443,6 +448,11 @@ workflows:
       - mock_e2e_tests:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
+                - graphql_e2e_testing
       - integration_test:
           filters:
             branches:
