@@ -6,7 +6,7 @@ const emoji = require('node-emoji');
 const { spawnSync, spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
-const { addFileToXcodeProj } = require('../../amplify-cli/src/lib/xcodeHelpers');
+const { addFileToXcodeProj } = require('./xcodeHelpers');
 
 function run() {
   return checkNodeVersion()
