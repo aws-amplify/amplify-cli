@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "0.23.0",
+  "version": "0.23.1-gelato.0",
   "private": true,
   "dependencies": {
     "add": "^2.0.6",
