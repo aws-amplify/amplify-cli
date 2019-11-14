@@ -1,32 +1,32 @@
 import {
   BaseVisitor,
+  buildScalars,
   DEFAULT_SCALARS,
   NormalizedScalarsMap,
   ParsedConfig,
   RawConfig,
-  buildScalars,
 } from '@graphql-codegen/visitor-plugin-common';
 import { camelCase, pascalCase, upperCase } from 'change-case';
+import * as crypto from 'crypto';
 import {
+  DefinitionNode,
   DirectiveNode,
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
   GraphQLNamedType,
   GraphQLSchema,
-  ObjectTypeDefinitionNode,
-  valueFromASTUntyped,
-  isScalarType,
-  parse,
   Kind,
-  DefinitionNode,
+  ObjectTypeDefinitionNode,
+  parse,
+  valueFromASTUntyped,
 } from 'graphql';
 import { getTypeInfo } from '../utils/get-type-info';
-import { type } from 'os';
+import { sortFields } from '../utils/sort';
 
 export enum CodeGenGenerateEnum {
-  metadata = "metadata",
-  code = "code",
-  loader = "loader"
+  metadata = 'metadata',
+  code = 'code',
+  loader = 'loader',
 }
 export interface RawAppSyncLocalConfig extends RawConfig {
   /**
@@ -84,7 +84,7 @@ export interface RawAppSyncLocalConfig extends RawConfig {
    *    - appsync-local-codegen-plugin
    * ```
    */
-  generate:CodeGenGenerateEnum;
+  generate: CodeGenGenerateEnum;
   /**
    * @name directives
    * @type string
@@ -325,6 +325,37 @@ export abstract class AppSyncLocalVisitor<
   protected isModelType(field: CodeGenField): boolean {
     const typeName = field.type;
     return typeName in this.typeMap;
+  }
+
+  protected computeVersion(): string {
+    // Sort types
+    const typeArr: any[] = [];
+    Object.values(this.typeMap).forEach((obj: CodeGenModel) => {
+      // include only key directive as we don't care about others for versioning
+      const directives = obj.directives.filter(dir => dir.name === 'key');
+      const fields = obj.fields
+        .map((field: CodeGenField) => {
+          // include only connection field and type
+          const fieldDirectives = field.directives.filter(field => field.name === 'connection');
+          return {
+            name: field.name,
+            directives: fieldDirectives,
+            type: field.type,
+          };
+        })
+        .sort((a, b) => sortFields(a, b));
+      typeArr.push({
+        name: obj.name,
+        directives,
+        fields,
+      });
+    });
+    typeArr.sort(sortFields);
+    return crypto
+      .createHash('MD5')
+      .update(JSON.stringify(typeArr))
+      .digest()
+      .toString('hex');
   }
 
   protected ensureIdField(model: CodeGenModel) {

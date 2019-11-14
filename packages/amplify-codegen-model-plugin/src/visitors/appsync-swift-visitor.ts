@@ -149,6 +149,7 @@ export class AppSyncSwiftVisitor extends AppSyncLocalVisitor {
       .final()
       .withComment('Contains the set of classes that conforms to the `Model` protocol.');
 
+    classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', { static: true });
     const impl: string = ['return [', indentMultiline(structList.join(',\n')), ']'].join('\n');
     classDeclaration.addClassMethod('get', '[Model.Type]', impl, undefined, 'public', { static: true });
 
