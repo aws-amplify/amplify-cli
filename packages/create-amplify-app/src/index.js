@@ -336,7 +336,7 @@ async function createAndoidHelperFiles() {
 
 async function createIosHelperFiles() {
   const configDir = path.join(process.cwd(), '/amplifyxc.config');
-  const configStr = 'push=false\nmodelgen=true\nprofile=default\nenvName=amplify';
+  const configStr = 'push=false\nmodelgen=false\nprofile=default\nenvName=amplify';
   const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
   const amplifyConfigDir = path.join(process.cwd(), '/amplifyconfiguration.json');
   const amplifyDir = path.join(process.cwd(), '/amplify');
