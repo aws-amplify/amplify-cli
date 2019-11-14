@@ -38,7 +38,23 @@ import {
   makeField,
   ModelResourceIDs,
 } from 'graphql-transformer-common';
-import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, or, newline, comment } from 'graphql-mapping-template';
+import {
+  Expression,
+  print,
+  raw,
+  iff,
+  forEach,
+  set,
+  ref,
+  list,
+  compoundExpression,
+  or,
+  newline,
+  comment,
+  and,
+  not,
+  parens,
+} from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
@@ -1080,8 +1096,12 @@ All @auth directives used on field definitions are performed when the field is r
     const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
     const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
     const ownerAuthorizationRules = this.getOwnerRules(rules);
+    const providerAuthorization = true;
 
     if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      // If we've a provider based grant defined then we need to add that grant as well
+      const providerGrantAuthorizationExpression = this.resources.providerBasedAuthorizationExpression(providerAuthorization);
+
       // Generate the expressions to validate each strategy.
       const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
 
@@ -1103,7 +1123,14 @@ All @auth directives used on field definitions are performed when the field is r
       const appendIfLocallyAuthorized = this.resources.appendItemIfLocallyAuthorized();
 
       const ifNotStaticallyAuthedFilterObjects = iff(
-        raw(`! $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
+        not(
+          parens(
+            or([
+              raw(`$${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
+              raw(`$${ResourceConstants.SNIPPETS.IsProviderAuthorizedVariable}`),
+            ])
+          )
+        ),
         compoundExpression([
           set(ref('items'), list([])),
           forEach(ref('item'), ref(itemList), [
@@ -1140,6 +1167,7 @@ All @auth directives used on field definitions are performed when the field is r
 
       // These statements will be wrapped into an authMode check if statement
       const templateExpressions = [
+        providerGrantAuthorizationExpression,
         staticGroupAuthorizationExpression,
         newline(),
         comment('[Start] If not static group authorized, filter items'),

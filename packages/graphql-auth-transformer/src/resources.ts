@@ -234,6 +234,19 @@ export class ResourceFactory {
   }
 
   /**
+   * Set the ResourceConstants.SNIPPETS.IsProviderAuthorizedVariable to true
+   * if authMode is matches with request and that should grant access to the data.
+   * This can happen when 'owner' or 'group' rules used together with 'private' for userPools.
+   */
+  public providerBasedAuthorizationExpression(grant: Boolean): Expression {
+    if (grant === true) {
+      return block('Provider Based Authorization', [raw(`#set($${ResourceConstants.SNIPPETS.IsProviderAuthorizedVariable} = true)`)]);
+    }
+
+    return comment(`No Provider Based Authorization`);
+  }
+
+  /**
    * Builds a VTL expression that will set the
    * ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable variable to
    * true if the user is static group authorized.
@@ -906,7 +919,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       conditions.push(equals(ref(ResourceConstants.SNIPPETS.AuthMode), str(`${expectedAuthMode}`)));
     }
 
-    return block('Check authMode and execute owner/group checks', [
+    return block('Check authMode and execute owner/group/provider checks', [
       iff(conditions.length === 1 ? conditions[0] : or(conditions), expression),
     ]);
   }
