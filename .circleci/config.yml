@@ -474,6 +474,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - gelato
       - integration_test_js:
           filters:
             branches:
