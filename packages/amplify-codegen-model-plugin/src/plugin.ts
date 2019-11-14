@@ -18,7 +18,7 @@ export const plugin: PluginFunction<RawAppSyncLocalConfig> = (
     case 'ios':
       visitor = new AppSyncSwiftVisitor(schema, config, {
         selectedType: config.selectedType,
-        metadata: config.metadata,
+        generate: config.generate,
       });
       break;
     case 'java':

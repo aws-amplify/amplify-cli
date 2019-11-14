@@ -68,7 +68,7 @@ const generateSwiftPreset = (
       config: {
         ...options.config,
         scalars: { ...SWIFT_SCALAR_MAP, ...options.config.scalars },
-        metadata: false,
+        generate: 'code',
         selectedType: modelName,
       },
     });
@@ -80,7 +80,7 @@ const generateSwiftPreset = (
           ...options.config,
           target: 'swift',
           scalars: { ...SWIFT_SCALAR_MAP, ...options.config.scalars },
-          metadata: true,
+          generate: 'metadata',
           selectedType: modelName,
         },
       });
@@ -96,6 +96,18 @@ const generateSwiftPreset = (
       target: 'metadata',
     },
   });
+
+  // class loader
+    config.push({
+      ...options,
+      filename: join(options.baseOutputDir, `AmplifyModels.swift`),
+      config: {
+        ...options.config,
+        scalars: { ...SWIFT_SCALAR_MAP, ...options.config.scalars },
+        target: 'swift',
+        generate: 'loader'
+      },
+    });
   return config;
 };
 

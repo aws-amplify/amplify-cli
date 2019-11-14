@@ -27,6 +27,7 @@ const IMPORT_PKGS = [
   '',
 ];
 
+const ENUN_IMPORT_PKGS = ['import com.google.gson.annotations.SerializedName;', ''];
 const PKG_NAME = 'com.amplify.datastore.generated';
 
 export class AppSyncJavaVisitor<
@@ -43,14 +44,15 @@ export class AppSyncJavaVisitor<
   }
 
   generateEnums(): string {
-    const result: string[] = [this.generatePackageName()];
+    const result: string[] = [this.generatePackageName(), ...ENUN_IMPORT_PKGS];
     Object.entries(this.getSelectedEnums()).forEach(([name, enumValue]) => {
       const enumDeclaration = new JavaDeclarationBlock()
         .asKind('enum')
         .access('public')
         .withName(this.getEnumName(enumValue));
       const body = Object.entries(enumValue.values).map(([name, value]) => {
-        return `${name}("${value}")`;
+
+        return `@SerializedName("${value}")\n${name}`;
       });
       enumDeclaration.withBlock(indentMultiline(body.join(',\n') + ';'));
       result.push(enumDeclaration.string);
@@ -76,7 +78,8 @@ export class AppSyncJavaVisitor<
       .asKind('class')
       .access('public')
       .withName(model.name)
-      .implements(['Model']);
+      .implements(['Model'])
+      .final();
 
     const annotations = this.generateModelAnnotations(model);
     classDeclarationBlock.annotate(annotations);
