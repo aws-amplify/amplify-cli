@@ -198,11 +198,11 @@ export class DynamoDBMappingTemplate {
     // Auto timestamp
     // qref('$input.put("updatedAt", "$util.time.nowISO8601()")'),
     const entryKeyAttributeNameVar = 'entryKeyAttributeName';
-    const keyFields: StringNode[] = [str('id')];
+    let keyFields: StringNode[] = [str('id')];
     let version = RESOLVER_VERSION_ID
     // sync changes made to the resolver
     if (isSyncEnabled) {
-      keyFields.concat([str('_version'), str('_deleted'), str('_lastChangedAt')])
+      keyFields = [...keyFields, str('_version'), str('_deleted'), str('_lastChangedAt')]
       version = '2018-05-29'
     }
     const handleRename = (keyVar: string) =>
