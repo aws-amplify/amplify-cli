@@ -1,0 +1,26 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'maven-publish'
+
+apply from: rootProject.file('gradle-mvn-push.gradle')
+
+sourceSets.main.groovy.srcDirs = ["src/main/java", "src/main/groovy"]
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+}
+
+publishing {
+    publications {
+        pluginPublication(MavenPublication) {
+            from components.java
+            groupId 'com.amplifyframework'
+            artifactId 'amplify-tools-gradle-plugin-beta'
+            version VERSION_NAME + "-SNAPSHOT"
+        }
+    }
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"

@@ -1,9 +1,5 @@
-apply plugin: 'groovy'
-apply plugin: 'idea'
-apply plugin: 'java-gradle-plugin'
-apply plugin: 'maven-publish'
-
-apply from: rootProject.file('gradle-mvn-push.gradle')
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 
 class AmplifyTools implements Plugin<Project> {
     static class AmplifyToolsPluginExtension {
@@ -38,7 +34,7 @@ class AmplifyTools implements Plugin<Project> {
             def doesGradleConfigExist = project.file('./amplify-gradle-config.json').exists()
             if (doesNodeExist && !doesGradleConfigExist) {
                 project.exec {
-                    commandLine 'npx', 'amplify-app@canary', '--platform', 'android', '--path', '$PWD'
+                    commandLine 'npx', 'amplify-app@canary', '--platform', 'android'
                 }
             }
         }
@@ -120,21 +116,3 @@ class AmplifyTools implements Plugin<Project> {
         project.amplifyPush.mustRunAfter('getConfig')
     }
 }
-
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-}
-
-publishing {
-    publications {
-        pluginPublication(MavenPublication) {
-            from components.java
-            groupId 'com.amplifyframework'
-            artifactId 'amplify-tools-gradle-plugin-beta'
-            version VERSION_NAME + "-SNAPSHOT"
-        }
-    }
-}
-
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
