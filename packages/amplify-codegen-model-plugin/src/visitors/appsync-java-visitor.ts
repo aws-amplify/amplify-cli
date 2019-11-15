@@ -10,7 +10,6 @@ import {
 } from './appsync-visitor';
 import { indent, indentMultiline, DEFAULT_SCALARS, NormalizedScalarsMap, buildScalars } from '@graphql-codegen/visitor-plugin-common';
 import { isScalarType, GraphQLSchema } from 'graphql';
-import { directives } from '../directives';
 import { isArray } from 'util';
 
 // Fields which can not be using builder,
@@ -51,7 +50,6 @@ export class AppSyncJavaVisitor<
         .access('public')
         .withName(this.getEnumName(enumValue));
       const body = Object.entries(enumValue.values).map(([name, value]) => {
-
         return `@SerializedName("${value}")\n${name}`;
       });
       enumDeclaration.withBlock(indentMultiline(body.join(',\n') + ';'));

@@ -3,7 +3,7 @@ import { isEnumType, TypeDefinitionNode, Kind } from 'graphql';
 import { join } from 'path';
 
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
-const APPSYNC_LOCAL_CODEGEN_TARGETS = ['java', 'swift', 'javascript', 'typescript'];
+const APPSYNC_LOCAL_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
 const JAVA_PACKAGE_NAME = 'com.amplify.datastore.generated';
 
 export type AppSyncLocalCodeGenPresetConfig = {
@@ -23,7 +23,7 @@ export type AppSyncLocalCodeGenPresetConfig = {
    *    - appsync-local-codegen-plugin
    * ```
    */
-  target: 'java' | 'swift' | 'javascript' | 'typescript';
+  target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript';
 };
 
 const hasDirective = (directiveName: string) => (typeObj: TypeDefinitionNode): boolean => {
@@ -98,16 +98,16 @@ const generateSwiftPreset = (
   });
 
   // class loader
-    config.push({
-      ...options,
-      filename: join(options.baseOutputDir, `AmplifyModels.swift`),
-      config: {
-        ...options.config,
-        scalars: { ...SWIFT_SCALAR_MAP, ...options.config.scalars },
-        target: 'swift',
-        generate: 'loader'
-      },
-    });
+  config.push({
+    ...options,
+    filename: join(options.baseOutputDir, `AmplifyModels.swift`),
+    config: {
+      ...options.config,
+      scalars: { ...SWIFT_SCALAR_MAP, ...options.config.scalars },
+      target: 'swift',
+      generate: 'loader',
+    },
+  });
   return config;
 };
 

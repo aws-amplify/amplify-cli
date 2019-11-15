@@ -1,8 +1,4 @@
 import { RawDocumentsConfig } from '@graphql-codegen/visitor-plugin-common';
-import { directives } from './directives';
-export type DirectiveMap = {
-  [name: string]: string;
-};
 
 export interface AppSyncLocalPluginConfig extends RawDocumentsConfig {
   directives?: string;
