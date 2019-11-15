@@ -5,7 +5,7 @@ import { AppSyncLocalVisitor, CodeGenDirective, CodeGenField, ParsedAppSyncLocal
 type JSONSchema = {
   models: JSONSchemaModels;
   enums: JSONSchemaEnums;
-  version: number;
+  version: string;
 };
 type JSONSchemaModels = Record<string, JSONSchemaModel>;
 type JSONSchemaModel = {
@@ -118,7 +118,7 @@ export class AppSyncJSONVisitor<
     const result: JSONSchema = {
       models: {},
       enums: {},
-      version: 1,
+      version: this.computeVersion(),
     };
 
     Object.entries(this.getSelectedModels()).forEach(([name, obj]) => {

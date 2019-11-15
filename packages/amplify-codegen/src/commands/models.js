@@ -107,7 +107,7 @@ function getModelOutputPath(context) {
     case 'android':
       return projectConfig.android.config.ResDir;
     case 'ios':
-      return 'models';
+      return 'amplify/generated/models';
     default:
       return '.';
   }
