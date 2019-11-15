@@ -487,7 +487,7 @@ export class ResourceFactory {
 
   /**
    * Create a resolver that creates an item in DynamoDB.
-   * @param type
+   * @parasrc/KeyTransformer.ts
    */
   public makeGetResolver(type: string, nameOverride?: string, queryTypeName: string = 'Query') {
     const fieldName = nameOverride ? nameOverride : graphqlName('get' + toUpper(type));
