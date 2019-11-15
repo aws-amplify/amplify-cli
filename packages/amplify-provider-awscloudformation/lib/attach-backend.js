@@ -7,7 +7,6 @@ const inquirer = require('inquirer');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
 const systemConfigManager = require('./system-config-manager');
-const amplifyServiceManager = require('./amplify-service-manager');
 const constants = require('./constants');
 
 async function run(context) {
@@ -27,14 +26,14 @@ async function run(context) {
   }
 
   await downloadBackend(context, backendEnv, awsConfig);
-  const currentAmplifyMeta = await ensureAmplifyMeta(context, amplifyApp);
+  const currentAmplifyMeta = await ensureAmplifyMeta(context, amplifyApp, awsConfig);
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
   context.exeInfo.teamProviderInfo[backendEnv.environmentName] = currentAmplifyMeta.providers;
 }
 
-async function ensureAmplifyMeta(context, amplifyApp) {
+async function ensureAmplifyMeta(context, amplifyApp, awsConfig) {
   // check if appId is present in the provider section of the metadata
   // if not, it's a migration case and we need to
   // 1. insert the appId
@@ -49,10 +48,34 @@ async function ensureAmplifyMeta(context, amplifyApp) {
     fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
     fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
-    await amplifyServiceManager.storeArtifactsForAmplifyService(context);
+    const { DeploymentBucketName } = currentAmplifyMeta.providers[constants.ProviderName];
+    await storeArtifactsForAmplifyService(context, awsConfig, DeploymentBucketName);
   }
 
   return currentAmplifyMeta;
+}
+
+async function storeArtifactsForAmplifyService(context, awsConfig, deploymentBucketName) {
+  const s3Client = getConfiguredS3Client(awsConfig);
+  const amplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
+  const backendConfigFilePath = context.amplify.pathManager.getCurrentBackendConfigFilePath(process.cwd());
+  await uploadFile(s3Client, deploymentBucketName, amplifyMetaFilePath);
+  await uploadFile(s3Client, deploymentBucketName, backendConfigFilePath);
+}
+
+async function uploadFile(s3Client, bucketName, filePath) {
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+  const key = path.basename(filePath);
+  const body = fs.createReadStream(filePath);
+  await s3Client
+    .putObject({
+      Bucket: bucketName,
+      Key: key,
+      Body: body,
+    })
+    .promise();
 }
 
 async function getAmplifyApp(context, amplifyClient) {
