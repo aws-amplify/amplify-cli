@@ -1,4 +1,4 @@
-const { normalizeInputParams } = require('../lib/input-params-manager');
+const { normalizeInputParams } = require('./input-params-manager');
 
 function constructInputParams(context) {
   const inputParams = normalizeInputParams(context);

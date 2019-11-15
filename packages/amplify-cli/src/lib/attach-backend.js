@@ -5,7 +5,7 @@ const queryProvider = require('./attach-backend-steps/a10-queryProvider');
 const analyzeProject = require('./attach-backend-steps/a20-analyzeProject');
 const initFrontend = require('./attach-backend-steps/a30-initFrontend');
 const generateFiles = require('./attach-backend-steps/a40-generateFiles');
-const { constructInputParams, postPullCodeGenCheck } = require('./pull-helper');
+const { constructInputParams, postPullCodeGenCheck } = require('./amplify-service-helper');
 
 const backupAmplifyDirName = 'amplify-backup';
 

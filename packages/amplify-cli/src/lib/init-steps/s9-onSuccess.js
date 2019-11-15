@@ -21,7 +21,7 @@ async function run(context) {
   fs.ensureDirSync(currentBackendDirPath);
 
   // Get current-cloud-backend's amplify-meta
-  const currentAmplifyMetafilePath = amplify.pathManager.getCurentAmplifyMetaFilePath();
+  const currentAmplifyMetafilePath = amplify.pathManager.getCurrentAmplifyMetaFilePath();
 
   let currentAmplifyMeta = {};
 
@@ -72,7 +72,7 @@ function generateAmplifyMetaFile(context) {
   if (context.exeInfo.isNewEnv) {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, 4);
-    const currentBackendMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
+    const currentBackendMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
     const backendMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');

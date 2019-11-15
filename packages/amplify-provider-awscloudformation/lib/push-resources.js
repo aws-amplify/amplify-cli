@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
 const ora = require('ora');
-const sequential = require('promise-sequential');
 const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
@@ -85,7 +84,7 @@ async function run(context, resourceDefinition) {
       storeCurrentCloudBackend(context)
     )
     .then(async () => {
-      await storeArtifactsForAmplifyService(context);
+      await amplifyServiceManager.storeArtifactsForAmplifyService(context);
     })
     .then(() => {
       spinner.succeed('All resources are updated in the cloud');
@@ -192,30 +191,6 @@ function storeCurrentCloudBackend(context) {
     .then(() => {
       fs.removeSync(tempDir);
     });
-}
-
-function storeArtifactsForAmplifyService(context) {
-  return new S3(context).then(async s3 => {
-    const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
-    const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
-    const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
-    const fileUploadTasks = [];
-
-    fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
-    fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
-
-    await sequential(fileUploadTasks);
-  });
-}
-
-async function uploadFile(s3, filePath, key) {
-  if (fs.existsSync(filePath)) {
-    const s3Params = {
-      Body: fs.createReadStream(filePath),
-      Key: key,
-    };
-    await s3.uploadFile(s3Params);
-  }
 }
 
 function validateCfnTemplates(context, resourcesToBeUpdated) {

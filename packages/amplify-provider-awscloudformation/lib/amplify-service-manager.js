@@ -1,5 +1,8 @@
 const fs = require('fs-extra');
+const path = require('path');
 const inquirer = require('inquirer');
+const sequential = require('promise-sequential');
+const S3 = require('../src/aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
 const constants = require('./constants');
 
@@ -309,8 +312,33 @@ async function searchAmplifyService(amplifyClient, stackName) {
   return result;
 }
 
+function storeArtifactsForAmplifyService(context) {
+  return new S3(context).then(async s3 => {
+    const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+    const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
+    const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
+    const fileUploadTasks = [];
+
+    fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
+    fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
+
+    await sequential(fileUploadTasks);
+  });
+}
+
+async function uploadFile(s3, filePath, key) {
+  if (fs.existsSync(filePath)) {
+    const s3Params = {
+      Body: fs.createReadStream(filePath),
+      Key: key,
+    };
+    await s3.uploadFile(s3Params);
+  }
+}
+
 module.exports = {
   init,
   deleteEnv,
   postPushCheck,
+  storeArtifactsForAmplifyService,
 };

@@ -1,5 +1,5 @@
 const { initializeEnv } = require('./initialize-env');
-const { constructInputParams, postPullCodeGenCheck } = require('./pull-helper');
+const { constructInputParams, postPullCodeGenCheck } = require('./amplify-service-helper');
 
 async function pullBackend(context) {
   context.exeInfo = context.amplify.getProjectDetails();

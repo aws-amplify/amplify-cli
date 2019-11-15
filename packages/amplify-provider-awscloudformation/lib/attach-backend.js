@@ -7,6 +7,7 @@ const inquirer = require('inquirer');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
 const systemConfigManager = require('./system-config-manager');
+const amplifyServiceManager = require('./amplify-service-manager');
 const constants = require('./constants');
 
 async function run(context) {
@@ -26,14 +27,32 @@ async function run(context) {
   }
 
   await downloadBackend(context, backendEnv, awsConfig);
+  const currentAmplifyMeta = await ensureAmplifyMeta(context);
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
-
-  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath(process.cwd());
-  const currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
-  context.exeInfo.teamProviderInfo[backendEnv.environmentName] = {};
   context.exeInfo.teamProviderInfo[backendEnv.environmentName] = currentAmplifyMeta.providers;
+}
+
+async function ensureAmplifyMeta(context, amplifyApp) {
+  // check if appId is present in the provider section of the metadata
+  // if not, it's a migration case and we need to
+  // 1. insert the appId
+  // 2. upload the metadata file and the backend config file into the deployment bucket
+  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
+  const currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
+  if (!currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel]) {
+    currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyApp.appId;
+
+    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(process.cwd());
+    const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
+    fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
+    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+    await amplifyServiceManager.storeArtifactsForAmplifyService(context);
+  }
+
+  return currentAmplifyMeta;
 }
 
 async function getAmplifyApp(context, amplifyClient) {

@@ -37,7 +37,7 @@ async function run(context) {
 
   await sequential(providerOnSuccessTasks);
 
-  const currentAmplifyMetafilePath = amplify.pathManager.getCurentAmplifyMetaFilePath();
+  const currentAmplifyMetafilePath = amplify.pathManager.getCurrentAmplifyMetaFilePath();
   let currentAmplifyMeta = {};
   if (fs.existsSync(currentAmplifyMetafilePath)) {
     currentAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);

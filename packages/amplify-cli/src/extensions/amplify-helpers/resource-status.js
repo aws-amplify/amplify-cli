@@ -222,7 +222,7 @@ async function getResourceStatus(category, resourceName, providerName, filteredR
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = readJsonFile(amplifyMetaFilePath);
 
-  const currentamplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
+  const currentamplifyMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const currentamplifyMeta = readJsonFile(currentamplifyMetaFilePath);
 
   let resourcesToBeCreated = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);

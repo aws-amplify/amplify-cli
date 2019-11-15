@@ -6,7 +6,7 @@ const { attachBackend } = require('../lib/attach-backend');
 module.exports = {
   name: 'pull',
   run: async context => {
-    const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath(process.cwd());
+    const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
     if (fs.existsSync(currentAmplifyMetaFilePath)) {
       await pullBackend(context);
     } else {

@@ -22,7 +22,7 @@ async function initializeEnv(context, currentAmplifyMeta) {
 
     if (!currentAmplifyMeta) {
       // Get current-cloud-backend's amplify-meta
-      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
 
       if (fs.existsSync(currentAmplifyMetafilePath)) {
         currentAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);
