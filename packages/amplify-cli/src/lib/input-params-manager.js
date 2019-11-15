@@ -26,11 +26,11 @@ function normalizeKey(key) {
 }
 
 function normalizeValue(key, value) {
-  const normalizedValue = value;
+  let normalizedValue = value;
   try {
     normalizedValue = JSON.parse(value);
   } catch (e) {
-    //do nothing, allow plain string as input parameter.
+    // do nothing, allow plain string as input parameter.
   }
   return normalizedValue;
 }

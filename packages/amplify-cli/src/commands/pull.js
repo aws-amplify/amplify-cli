@@ -17,7 +17,7 @@ module.exports = {
 };
 
 async function pull(context) {
-  context.exeInfo = getProjectDetails();
+  context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = constructInputParams(context);
   context.print.info('');
   context.print.info('Pre pull check:');
@@ -25,7 +25,7 @@ async function pull(context) {
   context.print.info('');
 
   context.exeInfo.forcePush = false;
-  context.exeInfo.restoreBackend = context.input.options['no-override'] ? false : true;
+  context.exeInfo.restoreBackend = !context.input.options['no-override'];
 
   if (hasChanges && context.exeInfo.restoreBackend) {
     context.print.warning('Local changes detected.');
@@ -60,7 +60,7 @@ function constructInputParams(context) {
     delete inputParams.envName;
   }
 
-  if (inputParams['no-override'] != undefined) {
+  if (inputParams['no-override'] !== undefined) {
     inputParams.amplify.noOverride = inputParams['no-override'];
     delete inputParams['no-override'];
   }

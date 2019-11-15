@@ -126,7 +126,7 @@ function constructInputParams(context) {
     delete inputParams.envName;
   }
 
-  if (inputParams['no-override'] != undefined) {
+  if (inputParams['no-override'] !== undefined) {
     inputParams.amplify.noOverride = inputParams['no-override'];
     delete inputParams['no-override'];
   }
