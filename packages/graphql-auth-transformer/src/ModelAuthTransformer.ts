@@ -20,12 +20,14 @@ import {
   InterfaceTypeDefinitionNode,
   valueFromASTUntyped,
   NamedTypeNode,
+  InputObjectTypeDefinitionNode,
 } from 'graphql';
 import {
   ResourceConstants,
   ResolverResourceIDs,
   isListType,
   getBaseType,
+  getDirectiveArgument,
   makeDirective,
   makeNamedType,
   makeInputValueDefinition,
@@ -34,6 +36,7 @@ import {
   extendFieldWithDirectives,
   makeNonNullType,
   makeField,
+  ModelResourceIDs,
 } from 'graphql-transformer-common';
 import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, or, newline, comment } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
@@ -394,6 +397,9 @@ export class ModelAuthTransformer extends Transformer {
       this.protectOnUpdateSubscription(ctx, operationRules.update, def, modelConfiguration);
       this.protectOnDeleteSubscription(ctx, operationRules.delete, def, modelConfiguration);
     }
+
+    // Update ModelXConditionInput type
+    this.updateMutationConditionInput(ctx, def, rules);
   };
 
   public field = (
@@ -705,7 +711,8 @@ Either make the field optional, set auth on the object and not the field, or dis
         // If we've any modes to check, then add the authMode check code block
         // to the start of the resolver.
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -991,7 +998,8 @@ All @auth directives used on field definitions are performed when the field is r
       }
 
       if (authModesToCheck.size > 0) {
-        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+        const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
       }
 
       // Update the existing resolver with the authorization checks.
@@ -1126,7 +1134,8 @@ All @auth directives used on field definitions are performed when the field is r
       }
 
       if (authModesToCheck.size > 0) {
-        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+        const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
       }
 
       // These statements will be wrapped into an authMode check if statement
@@ -1230,7 +1239,8 @@ All @auth directives used on field definitions are performed when the field is r
         }
 
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -1366,7 +1376,8 @@ All @auth directives used on field definitions are performed when the field is r
         }
 
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -1667,7 +1678,8 @@ All @auth directives used on field definitions are performed when the field is r
         // If we've any modes to check, then add the authMode check code block
         // to the start of the resolver.
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         const authCheckExpressions = [
@@ -2100,6 +2112,61 @@ found '${rule.provider}' assigned.`
 
   private isOperationExpressionSet(operationTypeName: string, template: string): boolean {
     return template.includes(`$context.result.operation = "${operationTypeName}"`);
+  }
+
+  private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode, rules: Array<AuthRule>): void {
+    // Get the existing ModelXConditionInput
+    const tableXMutationConditionInputName = ModelResourceIDs.ModelConditionInputTypeName(type.name.value);
+
+    if (this.typeExist(tableXMutationConditionInputName, ctx)) {
+      const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
+
+      const fieldNames = new Set<String>();
+
+      // Get auth related field names from @auth directive rules
+      const getAuthFieldNames = (): void => {
+        if (rules.length > 0) {
+          // Process owner rules
+          const ownerRules = this.getOwnerRules(rules);
+          const ownerFieldNameArgs = ownerRules.filter(rule => !!rule.ownerField).map(rule => rule.ownerField);
+
+          ownerFieldNameArgs.forEach((f: string) => fieldNames.add(f));
+
+          // Add 'owner' to field list if we've owner rules without ownerField argument
+          if (ownerRules.find(rule => !rule.ownerField)) {
+            fieldNames.add('owner');
+          }
+
+          // Process owner rules
+          const groupsRules = rules.filter(rule => rule.allow === 'groups');
+          const groupFieldNameArgs = groupsRules.filter(rule => !!rule.groupsField).map(rule => rule.groupsField);
+
+          groupFieldNameArgs.forEach((f: string) => fieldNames.add(f));
+
+          // Add 'groups' to field list if we've groups rules without groupsField argument
+          if (groupsRules.find(rule => !rule.groupsField)) {
+            fieldNames.add('groups');
+          }
+        }
+      };
+
+      getAuthFieldNames();
+
+      if (fieldNames.size > 0) {
+        const reducedFields = tableXMutationConditionInput.fields.filter(field => !fieldNames.has(field.name.value));
+
+        const updatedInput = {
+          ...tableXMutationConditionInput,
+          fields: reducedFields,
+        };
+
+        ctx.putType(updatedInput);
+      }
+    }
+  }
+
+  private typeExist(type: string, ctx: TransformerContext): boolean {
+    return Boolean(type in ctx.nodeMap);
   }
 }
 

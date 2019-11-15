@@ -46,6 +46,7 @@ import {
   toCamelCase,
   graphqlName,
   toUpper,
+  getDirectiveArgument,
 } from 'graphql-transformer-common';
 import { makeModelConnectionType } from 'graphql-dynamodb-transformer';
 import {
@@ -60,6 +61,7 @@ import {
 } from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import { fieldsConflictMessage } from 'graphql/validation/rules/OverlappingFieldsCanBeMerged';
 
 interface KeyArguments {
   name?: string;
@@ -86,6 +88,8 @@ export class KeyTransformer extends Transformer {
     this.updateSchema(definition, directive, ctx);
     this.updateResolvers(definition, directive, ctx);
     this.addKeyConditionInputs(definition, directive, ctx);
+    // Update ModelXConditionInput type
+    this.updateMutationConditionInput(ctx, definition, directive);
   };
 
   /**
@@ -578,6 +582,56 @@ export class KeyTransformer extends Transformer {
       }
     }
   };
+
+  private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode, directive: DirectiveNode): void {
+    // Get the existing ModelXConditionInput
+    const tableXMutationConditionInputName = ModelResourceIDs.ModelConditionInputTypeName(type.name.value);
+
+    if (this.typeExist(tableXMutationConditionInputName, ctx)) {
+      const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
+
+      const fieldNames = new Set<String>();
+
+      // Get PK for the type from @key directive or default to 'id'
+      const getKeyFieldNames = (): void => {
+        let fields: Array<FieldDefinitionNode>;
+
+        if (getDirectiveArgument(directive, 'name') === undefined) {
+          const fieldsArg = <Array<string>>getDirectiveArgument(directive, 'fields');
+
+          if (fieldsArg && fieldsArg.length && fieldsArg.length > 0) {
+            fields = type.fields.filter(f => fieldsArg.includes(f.name.value));
+          }
+        }
+
+        fieldNames.add('id');
+
+        if (fields && fields.length > 0) {
+          fields.forEach(f => fieldNames.add(f.name.value));
+        } else {
+          // Add default named key for exclusion from input type
+          fieldNames.add('id');
+        }
+      };
+
+      getKeyFieldNames();
+
+      if (fieldNames.size > 0) {
+        const reducedFields = tableXMutationConditionInput.fields.filter(field => !fieldNames.has(field.name.value));
+
+        const updatedInput = {
+          ...tableXMutationConditionInput,
+          fields: reducedFields,
+        };
+
+        ctx.putType(updatedInput);
+      }
+    }
+  }
+
+  private typeExist(type: string, ctx: TransformerContext): boolean {
+    return Boolean(type in ctx.nodeMap);
+  }
 }
 
 /**
@@ -683,9 +737,9 @@ function replaceUpdateInput(
     fields: input.fields.map(f => {
       if (keyFields.find(k => k === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
-      } else {
-        return f;
       }
+
+      return f;
     }),
   };
 }
@@ -696,9 +750,14 @@ function replaceDeleteInput(
   input: InputObjectTypeDefinitionNode,
   keyFields: string[]
 ): InputObjectTypeDefinitionNode {
+  const idFields = primaryIdFields(definition, keyFields);
+  // Existing fields will contain extra fields in input type that was added/updated by other transformers
+  // like @versioned adds expectedVersion.
+  const existingFields = input.fields.filter(f => !idFields.find(pf => pf.name.value === f.name.value));
+
   return {
     ...input,
-    fields: primaryIdFields(definition, keyFields),
+    fields: [...idFields, ...existingFields],
   };
 }
 

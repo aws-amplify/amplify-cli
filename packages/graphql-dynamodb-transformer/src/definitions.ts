@@ -340,6 +340,90 @@ export function makeModelXFilterInputObject(
   };
 }
 
+export function makeModelXConditionInputObject(
+  obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+  ctx: TransformerContext
+): InputObjectTypeDefinitionNode {
+  const name = ModelResourceIDs.ModelConditionInputTypeName(obj.name.value);
+  const fields: InputValueDefinitionNode[] = obj.fields
+    .filter((field: FieldDefinitionNode) => {
+      const fieldType = ctx.getType(getBaseType(field.type));
+      if (isScalar(field.type) || (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)) {
+        return true;
+      }
+    })
+    .map((field: FieldDefinitionNode) => {
+      const baseType = getBaseType(field.type);
+      const fieldType = ctx.getType(baseType);
+      const isList = isListType(field.type);
+      const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
+      const conditionTypeName =
+        isEnumType && isList
+          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType)
+          : ModelResourceIDs.ModelFilterInputTypeName(baseType);
+
+      return {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: field.name,
+        type: makeNamedType(conditionTypeName),
+        // TODO: Service does not support new style descriptions so wait.
+        // description: field.description,
+        directives: [],
+      };
+    });
+
+  fields.push(
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'and',
+      },
+      type: makeListType(makeNamedType(name)),
+      // TODO: Service does not support new style descriptions so wait.
+      // description: field.description,
+      directives: [],
+    },
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'or',
+      },
+      type: makeListType(makeNamedType(name)),
+      // TODO: Service does not support new style descriptions so wait.
+      // description: field.description,
+      directives: [],
+    },
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'not',
+      },
+      type: makeNamedType(name),
+      // TODO: Service does not support new style descriptions so wait.
+      // description: field.description,
+      directives: [],
+    }
+  );
+
+  return {
+    kind: 'InputObjectTypeDefinition',
+    // TODO: Service does not support new style descriptions so wait.
+    // description: {
+    //     kind: 'StringValue',
+    //     value: `Input type for ${obj.name.value} mutations`
+    // },
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    fields,
+    directives: [],
+  };
+}
+
 export function makeEnumFilterInputObjects(obj: ObjectTypeDefinitionNode, ctx: TransformerContext): InputObjectTypeDefinitionNode[] {
   return obj.fields
     .filter((field: FieldDefinitionNode) => {
