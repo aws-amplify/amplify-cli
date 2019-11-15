@@ -27,7 +27,7 @@ async function run(context) {
   }
 
   await downloadBackend(context, backendEnv, awsConfig);
-  const currentAmplifyMeta = await ensureAmplifyMeta(context);
+  const currentAmplifyMeta = await ensureAmplifyMeta(context, amplifyApp);
 
   context.exeInfo.projectConfig.projectName = amplifyApp.name;
   context.exeInfo.localEnvInfo.envName = backendEnv.environmentName;
