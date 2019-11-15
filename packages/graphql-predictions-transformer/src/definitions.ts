@@ -1,6 +1,14 @@
 import { InputValueDefinitionNode, InputObjectTypeDefinitionNode, Kind } from 'graphql';
 import { makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 
+export function getActionInputName(action: string, fieldName: string) {
+  return `${capitalizeFirstLetter(fieldName)}${capitalizeFirstLetter(action)}Input`;
+}
+
+function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export function makeActionInputObject(fieldName: string, fields: InputValueDefinitionNode[]): InputObjectTypeDefinitionNode {
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
@@ -11,7 +19,7 @@ export function makeActionInputObject(fieldName: string, fields: InputValueDefin
 }
 
 export const actionInputFunctions = {
-  translateText: (isFirst: boolean = false): InputObjectTypeDefinitionNode => {
+  translateText: (actionInputName: string, isFirst: boolean = false): InputObjectTypeDefinitionNode => {
     const fields: InputValueDefinitionNode[] = [
       {
         kind: Kind.INPUT_VALUE_DEFINITION,
@@ -25,24 +33,23 @@ export const actionInputFunctions = {
         type: makeNonNullType(makeNamedType('String')),
         directives: [],
       },
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: { kind: 'Name' as 'Name', value: 'text' },
-        type: isFirst ? makeNonNullType(makeNamedType('String')) : makeNamedType('String'),
-        directives: [],
-      },
+      ...( isFirst ? [
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: { kind: 'Name' as 'Name', value: 'text' },
+          type: makeNonNullType(makeNamedType('String')),
+          directives: [],
+        }
+      ] : []),
     ];
     return {
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-      name: {
-        kind: 'Name',
-        value: 'TranslateTextInput',
-      },
+      name: { kind: 'Name', value: actionInputName },
       fields,
       directives: []
     };
   },
-  identifyText: (isFirst: boolean = false): InputObjectTypeDefinitionNode => {
+  identifyText: (actionInputName: string, isFirst: boolean = false): InputObjectTypeDefinitionNode => {
     const fields: InputValueDefinitionNode[] = [
       {
         kind: Kind.INPUT_VALUE_DEFINITION,
@@ -53,12 +60,28 @@ export const actionInputFunctions = {
     ];
     return {
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-      name: { kind: 'Name', value: 'IdentifyTextInput' },
+      name: { kind: 'Name', value: actionInputName },
       fields,
       directives: []
     };
   },
-  convertTextToSpeech: (isFirst: boolean = false): InputObjectTypeDefinitionNode => {
+  identifyLabels: (actionInputName: string, isFirst: boolean = false): InputObjectTypeDefinitionNode => {
+    const fields: InputValueDefinitionNode[] = [
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name' as 'Name', value: 'key' },
+        type: makeNonNullType(makeNamedType('String')),
+        directives: [],
+      },
+    ];
+    return {
+      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+      name: { kind: 'Name', value: actionInputName },
+      fields,
+      directives: []
+    };
+  },
+  convertTextToSpeech: (actionInputName: string, isFirst: boolean = false): InputObjectTypeDefinitionNode => {
     const fields: InputValueDefinitionNode[] = [
       {
         kind: Kind.INPUT_VALUE_DEFINITION,
@@ -66,16 +89,18 @@ export const actionInputFunctions = {
         type: makeNonNullType(makeNamedType('String')),
         directives: []
       },
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: { kind: 'Name' as 'Name', value: 'text' },
-        type: isFirst ? makeNonNullType(makeNamedType('String')) : makeNamedType('String'),
-        directives: [],
-      },
+      ...( isFirst ? [
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: { kind: 'Name' as 'Name', value: 'text' },
+          type: makeNonNullType(makeNamedType('String')),
+          directives: [],
+        }
+      ] : []),
     ];
     return {
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-      name: { kind: 'Name', value: 'ConvertTextToSpeechInput' },
+      name: { kind: 'Name', value: actionInputName },
       fields,
       directives: []
     };

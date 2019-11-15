@@ -1,4 +1,3 @@
-
 export class PredictionsResourceIDs {
   static PredictionsDataSourceID(action: string) {
     switch (action) {
@@ -15,8 +14,8 @@ export class PredictionsResourceIDs {
     }
   }
 
-  private static capitalizeFirstLetter(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  static getActionMapID() {
+    return 'predictionsActionMap';
   }
 
   static getIAMRole() {
@@ -44,6 +43,6 @@ export class PredictionsResourceIDs {
   }
 
   static getPredictionFunctionName(action: string) {
-    return `${action}Function`
+    return `${action}Function`;
   }
 }
