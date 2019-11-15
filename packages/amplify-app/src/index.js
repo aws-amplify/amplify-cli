@@ -256,7 +256,7 @@ function guessFramework(projectPath) {
 
 async function createJSHelperFiles() {
   /* Check for build configs  */
-  let buildConfig = {
+  const buildConfig = {
     profile: 'default',
     envName: 'amplify',
   };
