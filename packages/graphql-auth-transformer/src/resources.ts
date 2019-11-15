@@ -919,7 +919,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       conditions.push(equals(ref(ResourceConstants.SNIPPETS.AuthMode), str(`${expectedAuthMode}`)));
     }
 
-    return block('Check authMode and execute owner/group/provider checks', [
+    return block('Check authMode and execute owner/group checks', [
       iff(conditions.length === 1 ? conditions[0] : or(conditions), expression),
     ]);
   }

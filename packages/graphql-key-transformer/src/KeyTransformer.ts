@@ -350,10 +350,6 @@ export class KeyTransformer extends Transformer {
     ctx.addObjectExtension(makeModelConnectionType(def.name.value));
   }
 
-  private typeExist(type: string, ctx: TransformerContext): boolean {
-    return Boolean(type in ctx.nodeMap);
-  }
-
   // Update the create, update, and delete input objects to account for any changes to the primary key.
   private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     if (this.isPrimaryKey(directive)) {
