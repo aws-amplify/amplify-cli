@@ -9,10 +9,10 @@ const args = require('yargs').argv;
 const { addFileToXcodeProj } = require('./xcodeHelpers');
 
 function run() {
-  const path = args.path;
+  const projpath = args.path;
 
-  if (path) {
-    process.chdir(path);
+  if (projpath) {
+    process.chdir(projpath);
   }
 
   return checkNodeVersion()
@@ -346,7 +346,6 @@ async function createIosHelperFiles() {
   const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
   const amplifyConfigDir = path.join(process.cwd(), '/amplifyconfiguration.json');
   const amplifyDir = path.join(process.cwd(), '/amplify');
-  const modelsDir = path.join(process.cwd(), '/models');
   const configJsonData = '{}';
   const configJsonObj = JSON.parse(configJsonData);
   const configJsonStr = JSON.stringify(configJsonObj);
