@@ -261,9 +261,7 @@ async function createJSHelperFiles() {
     envName: 'amplify',
   };
   const buildConfigFilepath = `./amplify-build-config.json`;
-  if (fs.existsSync(buildConfigFilepath)) {
-    buildConfig = JSON.parse(fs.readFileSync(buildConfigFilepath));
-  } else {
+  if (!fs.existsSync(buildConfigFilepath)) {
     fs.writeFileSync(buildConfigFilepath, JSON.stringify(buildConfig, null, 4));
   }
 
