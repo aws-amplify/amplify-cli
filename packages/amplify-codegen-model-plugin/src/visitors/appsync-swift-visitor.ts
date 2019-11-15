@@ -1,7 +1,7 @@
-import { AppSyncLocalVisitor, CodeGenModel, CodeGenField, TypeInfo, CodeGenGenerateEnum } from './appsync-visitor';
-import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
-import { lowerCaseFirst, camelCase } from 'change-case';
+import { camelCase, lowerCaseFirst } from 'change-case';
+import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
+import { AppSyncLocalVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
 const schemaTypeMap: Record<string, string> = {
   String: '.string',
   AWSDate: '.dateTime',
@@ -66,7 +66,7 @@ export class AppSyncSwiftVisitor extends AppSyncLocalVisitor {
         .withProtocols(['String'])
         .withName(this.getEnumName(enumValue));
 
-      const body = Object.entries(enumValue.values).map(([name, value]) => {
+      Object.entries(enumValue.values).forEach(([name, value]) => {
         enumDeclaration.addEnumValue(name, value);
       });
 

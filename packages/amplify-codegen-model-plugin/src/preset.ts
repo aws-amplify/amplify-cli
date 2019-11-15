@@ -1,8 +1,8 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
-import { isEnumType, TypeDefinitionNode, Kind } from 'graphql';
+import { Kind, TypeDefinitionNode } from 'graphql';
 import { join } from 'path';
-
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
+
 const APPSYNC_LOCAL_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
 const JAVA_PACKAGE_NAME = 'com.amplify.datastore.generated';
 
@@ -196,7 +196,6 @@ const generateJavasScriptPreset = (
 export const preset: Types.OutputPreset<AppSyncLocalCodeGenPresetConfig> = {
   buildGeneratesSection: (options: Types.PresetFnArgs<AppSyncLocalCodeGenPresetConfig>): Types.GenerateOptions[] => {
     const codeGenTarget = options.config.target;
-    const config: Types.GenerateOptions[] = [];
 
     const hasModelDirective = hasDirective('model');
     const models: TypeDefinitionNode[] = options.schema.definitions.filter(

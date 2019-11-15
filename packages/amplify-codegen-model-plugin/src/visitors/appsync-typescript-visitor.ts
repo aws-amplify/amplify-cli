@@ -1,14 +1,13 @@
+import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
+import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
 import {
   AppSyncLocalVisitor,
   CodeGenEnum,
-  CodeGenModel,
   CodeGenField,
+  CodeGenModel,
   ParsedAppSyncLocalConfig,
   RawAppSyncLocalConfig,
 } from './appsync-visitor';
-import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
-import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
-import { type } from 'os';
 
 export interface RawAppSyncLocalTypeScriptConfig extends RawAppSyncLocalConfig {}
 export interface ParsedAppSyncLocalTypeScriptConfig extends ParsedAppSyncLocalConfig {

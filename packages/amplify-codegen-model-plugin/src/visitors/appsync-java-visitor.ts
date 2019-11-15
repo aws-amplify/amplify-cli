@@ -1,16 +1,8 @@
 import { JavaDeclarationBlock } from '@graphql-codegen/java-common';
-import { pascalCase, camelCase, upperCase } from 'change-case';
-import {
-  AppSyncLocalVisitor,
-  CodeGenModel,
-  CodeGenField,
-  CodeGenEnum,
-  RawAppSyncLocalConfig,
-  ParsedAppSyncLocalConfig,
-} from './appsync-visitor';
-import { indent, indentMultiline, DEFAULT_SCALARS, NormalizedScalarsMap, buildScalars } from '@graphql-codegen/visitor-plugin-common';
-import { isScalarType, GraphQLSchema } from 'graphql';
+import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
+import { pascalCase } from 'change-case';
 import { isArray } from 'util';
+import { AppSyncLocalVisitor, CodeGenField, CodeGenModel, ParsedAppSyncLocalConfig, RawAppSyncLocalConfig } from './appsync-visitor';
 
 // Fields which can not be using builder,
 

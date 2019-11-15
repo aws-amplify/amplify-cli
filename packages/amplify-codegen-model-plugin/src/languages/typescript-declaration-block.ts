@@ -1,6 +1,6 @@
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
-import { NameNode, StringValueNode, ValueNode } from 'graphql';
 import { access } from 'fs';
+import { StringValueNode } from 'graphql';
 
 function isStringValueNode(node: any): node is StringValueNode {
   return node && typeof node === 'object' && node.kind === 'StringValue';
@@ -227,8 +227,6 @@ export class TypeScriptDeclarationBlock {
 
   protected generateMethods(): string {
     const methods: string[] = this._methods.map(method => {
-      const result: string[] = [];
-
       const methodAccessAndName = [];
       if (method.access !== 'DEFAULT') {
         methodAccessAndName.push(access);

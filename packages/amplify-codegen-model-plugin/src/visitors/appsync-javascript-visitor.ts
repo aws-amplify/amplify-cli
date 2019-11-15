@@ -1,15 +1,7 @@
-import {
-  AppSyncLocalVisitor,
-  CodeGenEnum,
-  CodeGenModel,
-  CodeGenField,
-  RawAppSyncLocalConfig,
-  ParsedAppSyncLocalConfig,
-} from './appsync-visitor';
-
-import { AppSyncLocalTypeScriptVisitor } from './appsync-typescript-visitor';
-import { NormalizedScalarsMap, DEFAULT_SCALARS } from '@graphql-codegen/visitor-plugin-common';
+import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-plugin-common';
 import { GraphQLSchema } from 'graphql';
+import { AppSyncLocalTypeScriptVisitor } from './appsync-typescript-visitor';
+import { CodeGenEnum, CodeGenModel, ParsedAppSyncLocalConfig, RawAppSyncLocalConfig } from './appsync-visitor';
 
 export interface RawAppSyncLocalJavaScriptConfig extends RawAppSyncLocalConfig {
   /**

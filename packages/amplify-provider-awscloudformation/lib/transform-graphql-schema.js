@@ -427,7 +427,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 async function getDirectiveDefinitions(context, resourceDir) {
-  const transformList = await getTransformerFactory(context, resourceDir)(true, undefined);
+  const transformList = await getTransformerFactory(context, resourceDir)(true);
   return transformList.map(transformPluginInst => transformPluginInst.getDirective()).join('\n');
 }
 module.exports = {
