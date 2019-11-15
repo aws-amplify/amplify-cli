@@ -1,10 +1,16 @@
-apply plugin: AmplifyTools
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'maven-publish'
+
+apply from: rootProject.file('gradle-mvn-push.gradle')
 
 class AmplifyTools implements Plugin<Project> {
     static class AmplifyToolsPluginExtension {
         // push is set to true by default since we have an explicit task for push
         Boolean push = true
     }
+
     void apply(Project project) {
         def amplifyExtension = project.extensions.create('amplify', AmplifyToolsPluginExtension)
         def doesNodeExist = false
@@ -60,13 +66,13 @@ class AmplifyTools implements Plugin<Project> {
         project.task('amplifyPush') {
             def AWSCLOUDFORMATIONCONFIG
             if (!accessKeyId || !secretAccessKey || !region) {
-                AWSCLOUDFORMATIONCONFIG="""{\
+                AWSCLOUDFORMATIONCONFIG = """{\
 \"configLevel\":\"project\",\
 \"useProfile\":true,\
 \"profileName\":\"$profile\"\
 }"""
             } else {
-                AWSCLOUDFORMATIONCONFIG="""{\
+                AWSCLOUDFORMATIONCONFIG = """{\
 \"configLevel\":\"project\",\
 \"useProfile\":true,\
 \"profileName\":\"$profile\",\
@@ -78,16 +84,16 @@ class AmplifyTools implements Plugin<Project> {
 
             def AMPLIFY
             if (!envName) {
-                AMPLIFY="""{\
+                AMPLIFY = """{\
 \"envName\":\"amplify\"\
 }"""
             } else {
-                AMPLIFY="""{\
+                AMPLIFY = """{\
 \"envName\":\"$envName\"\
 }"""
             }
 
-            def PROVIDERS="""{\
+            def PROVIDERS = """{\
 \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
 }"""
 
@@ -115,9 +121,14 @@ class AmplifyTools implements Plugin<Project> {
     }
 }
 
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+}
+
 publishing {
     publications {
         pluginPublication(MavenPublication) {
+            from components.java
             groupId 'com.amplifyframework'
             artifactId 'amplify-tools-gradle-plugin-beta'
             version VERSION_NAME + "-SNAPSHOT"
