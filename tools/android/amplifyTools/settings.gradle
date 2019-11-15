@@ -1,2 +1,0 @@
-include ':app', ':aws-amplify-tools'
-rootProject.name='amplifyTools'
