@@ -5,7 +5,7 @@ const queryProvider = require('./attach-backend-steps/a10-queryProvider');
 const analyzeProject = require('./attach-backend-steps/a20-analyzeProject');
 const initFrontend = require('./attach-backend-steps/a30-initFrontend');
 const generateFiles = require('./attach-backend-steps/a40-generateFiles');
-const { normalizeInputParams } = require('./input-params-manager');
+const { constructInputParams, postPullCodeGenCheck } = require('./pull-helper');
 
 const backupAmplifyDirName = 'amplify-backup';
 
@@ -40,6 +40,8 @@ async function onSuccess(context) {
       fs.copySync(backupBackendDirPath, backendDirPath);
     }
   }
+
+  await postPullCodeGenCheck(context);
 
   if (!inputParams.yes) {
     const confirmKeepCodebase = await context.amplify.confirmPrompt.run('Do you want to keep the backend codebase?', true);
@@ -111,27 +113,6 @@ function prepareContext(context) {
     },
     teamProviderInfo: {},
   };
-}
-
-function constructInputParams(context) {
-  const inputParams = normalizeInputParams(context);
-
-  if (inputParams.appId) {
-    inputParams.amplify.appId = inputParams.appId;
-    delete inputParams.appId;
-  }
-
-  if (inputParams.envName) {
-    inputParams.amplify.envName = inputParams.envName;
-    delete inputParams.envName;
-  }
-
-  if (inputParams['no-override'] !== undefined) {
-    inputParams.amplify.noOverride = inputParams['no-override'];
-    delete inputParams['no-override'];
-  }
-
-  return inputParams;
 }
 
 module.exports = {
