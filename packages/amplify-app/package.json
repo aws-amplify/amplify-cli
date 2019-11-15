@@ -10,8 +10,6 @@
     "access": "public"
   },
   "scripts": {
-    "test": "jest",
-    "test-ci": "jest --ci -i",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "clean": "rm -rf ./lib"
