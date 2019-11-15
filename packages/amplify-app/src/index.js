@@ -60,7 +60,7 @@ async function installAmplifyCLI() {
     console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
 
     return new Promise((resolve, reject) => {
-      const amplifyCLIInstall = spawn('npm', ['install', '-g', '@aws-amplify/cli@gelato'], {
+      const amplifyCLIInstall = spawn('npm', ['install', '-g', '@aws-amplify/cli@canary'], {
         cwd: process.cwd(),
         env: process.env,
         stdio: 'inherit',
