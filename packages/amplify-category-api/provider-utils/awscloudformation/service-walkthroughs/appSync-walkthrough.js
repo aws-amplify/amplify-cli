@@ -295,7 +295,7 @@ async function createSyncFunction(context) {
   const pluginDir = __dirname;
   const [shortId] = uuid().split('-');
 
-  const functionName = `synConflictHandler${shortId}`;
+  const functionName = `syncConflictHandler${shortId}`;
 
   const functionProps = {
     functionName: `${functionName}`,
@@ -448,7 +448,7 @@ async function askAdditionalQuestions(context, parameters, authConfig, defaultAu
 
   if (advancedSettingsAnswer.advancedSettings) {
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
-    if(process.env.SYNC === "true") {
+    if (process.env.AMPLIFY_DATASTORE_SYNC === 'true') {
       resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
     }
   }
@@ -465,6 +465,7 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
 
       do {
         if (conflictResolutionStrategy === 'Learn More') {
+          // Todo: Update the help text
           context.print.info('');
           context.print.info('DataStore help text');
           context.print.info('');
@@ -552,7 +553,7 @@ async function askSyncFunctionQuestion(context) {
         value: 'NEW',
       },
       {
-        name: 'Pre-existing Lambda Function',
+        name: 'Existing Lambda Function',
         value: 'EXISTING',
       },
     ],
@@ -572,10 +573,6 @@ async function askSyncFunctionQuestion(context) {
       validate: val => !!val,
     };
     ({ lambdaFunctionName } = await inquirer.prompt([syncLambdaNameQuestion]));
-  }
-
-  if (!lambdaFunctionName) {
-    throw new Error('Error in configuring Lambda function');
   }
 
   return lambdaFunctionName;

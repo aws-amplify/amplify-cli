@@ -170,10 +170,6 @@ export class DynamoDBModelTransformer extends Transformer {
     }
   };
 
-  // makeInputValueDefinition('_deleted', makeNamedType('Boolean')),
-  //         makeInputValueDefinition('_lastChangedAt', wrapNonNull(makeNamedType('AWSTimestamp'))),
-  // ...obj.fields,
-
   private createMutations = (
     def: ObjectTypeDefinitionNode,
     directive: DirectiveNode,
@@ -571,7 +567,12 @@ export class DynamoDBModelTransformer extends Transformer {
       syncConfig = resolverConfig.project;
     }
     if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
-      syncConfig = resolverConfig.models[typeName];
+      const typeResolverConfig = resolverConfig.models[typeName];
+      if (typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
+        syncConfig = typeResolverConfig;
+      } else {
+        console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
+      }
     }
     return (this.opts.SyncConfig = syncConfig);
   }
