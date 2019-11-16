@@ -2,7 +2,7 @@ import { DynamoDB, IAM, Fn } from 'cloudform-types';
 import { SyncResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { SyncConfigLAMBDA, SyncConfigOPTIMISTIC, SyncConfigSERVER } from './transformConfig';
 
-// Cloudformation Types for AppSync Local
+// Cloudformation Types for dataStore
 type SyncConfig = {
   ConflictDetection: string;
   ConflictHandler: string;
