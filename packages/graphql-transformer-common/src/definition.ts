@@ -359,7 +359,6 @@ export function makeInputValueDefinition(name: string, type: TypeNode): InputVal
   };
 }
 
-// export function makeValueDefinition(name: string, type: TypeNode): ValueDe
 
 export function makeNamedType(name: string): NamedTypeNode {
   return {
