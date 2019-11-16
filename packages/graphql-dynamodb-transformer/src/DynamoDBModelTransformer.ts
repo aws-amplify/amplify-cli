@@ -566,8 +566,13 @@ export class DynamoDBModelTransformer extends Transformer {
     if (resolverConfig && resolverConfig.project) {
       syncConfig = resolverConfig.project;
     }
-    if (resolverConfig && resolverConfig.models[typeName]) {
-      syncConfig = resolverConfig.models[typeName];
+    if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
+      const typeResolverConfig = resolverConfig.models[typeName];
+      if (typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
+        syncConfig = typeResolverConfig;
+      } else {
+        console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
+      }
     }
     return (this.opts.SyncConfig = syncConfig);
   }
