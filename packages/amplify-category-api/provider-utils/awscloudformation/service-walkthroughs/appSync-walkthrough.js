@@ -466,7 +466,7 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
       do {
         if (conflictResolutionStrategy === 'Learn More') {
           context.print.info('');
-          context.print.info('AppSync Local Help Text');
+          context.print.info('DataStore help text');
           context.print.info('');
         }
 
@@ -569,6 +569,7 @@ async function askSyncFunctionQuestion(context) {
       type: 'input',
       name: 'lambdaFunctionName',
       message: 'Enter lambda function name',
+      validate: val => !!val,
     };
     ({ lambdaFunctionName } = await inquirer.prompt([syncLambdaNameQuestion]));
   }
