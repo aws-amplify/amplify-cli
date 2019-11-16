@@ -113,7 +113,6 @@ export function makeNonModelInputObject(
   };
 }
 
-// export function addSyncFields()
 
 export function makeCreateInputObject(
   obj: ObjectTypeDefinitionNode,
