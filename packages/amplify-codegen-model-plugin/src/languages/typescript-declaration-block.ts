@@ -1,5 +1,4 @@
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
-import { access } from 'fs';
 import { StringValueNode } from 'graphql';
 
 function isStringValueNode(node: any): node is StringValueNode {
