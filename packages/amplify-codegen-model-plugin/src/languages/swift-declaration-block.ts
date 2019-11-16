@@ -6,12 +6,12 @@ function isStringValueNode(node: any): node is StringValueNode {
 }
 
 function transformComment(comment: string | StringValueNode, indentLevel = 0): string {
-  if (!comment || comment === '') {
-    return '';
-  }
-
   if (isStringValueNode(comment)) {
     comment = comment.value;
+  }
+
+  if (!comment || comment === '') {
+    return '';
   }
 
   const lines = comment.split('\n');
@@ -160,7 +160,7 @@ export class SwiftDeclarationBlock {
   addClassMethod(
     name: string,
     returnType: string | null,
-    impl: string,
+    implementation: string,
     args: MethodArgument[] = [],
     access: Access = 'public',
     flags: MethodFlags = {},
@@ -169,7 +169,7 @@ export class SwiftDeclarationBlock {
     this._methods.push({
       name,
       returnType,
-      implementation: impl,
+      implementation: implementation,
       args,
       access,
       flags,

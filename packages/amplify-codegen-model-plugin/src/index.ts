@@ -1,13 +1,13 @@
 import { RawDocumentsConfig } from '@graphql-codegen/visitor-plugin-common';
 
-export interface AppSyncLocalPluginConfig extends RawDocumentsConfig {
+export interface AppSyncModelPluginConfig extends RawDocumentsConfig {
   directives?: string;
 }
 
 export * from './plugin';
 export * from './preset';
 
-export const addToSchema = (config: AppSyncLocalPluginConfig) => {
+export const addToSchema = (config: AppSyncModelPluginConfig) => {
   const result: string[] = [];
   if (config.scalars) {
     if (typeof config.scalars === 'string') {

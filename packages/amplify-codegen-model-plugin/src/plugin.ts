@@ -2,15 +2,15 @@ import { PluginFunction, Types } from '@graphql-codegen/plugin-helpers';
 import { GraphQLSchema, parse, visit } from 'graphql';
 import { printSchemaWithDirectives } from 'graphql-toolkit';
 import { AppSyncSwiftVisitor } from './visitors/appsync-swift-visitor';
-import { RawAppSyncLocalConfig } from './visitors/appsync-visitor';
+import { RawAppSyncModelConfig } from './visitors/appsync-visitor';
 import { AppSyncJSONVisitor } from './visitors/appsync-json-metadata-visitor';
-import { AppSyncJavaVisitor } from './visitors/appsync-java-visitor';
-import { AppSyncLocalTypeScriptVisitor } from './visitors/appsync-typescript-visitor';
-import { AppSyncLocalJavascriptVisitor } from './visitors/appsync-javascript-visitor';
-export const plugin: PluginFunction<RawAppSyncLocalConfig> = (
+import { AppSyncModelJavaVisitor } from './visitors/appsync-java-visitor';
+import { AppSyncModelTypeScriptVisitor } from './visitors/appsync-typescript-visitor';
+import { AppSyncModelJavascriptVisitor } from './visitors/appsync-javascript-visitor';
+export const plugin: PluginFunction<RawAppSyncModelConfig> = (
   schema: GraphQLSchema,
   rawDocuments: Types.DocumentFile[],
-  config: RawAppSyncLocalConfig
+  config: RawAppSyncModelConfig
 ) => {
   let visitor;
   switch (config.target) {
@@ -23,7 +23,7 @@ export const plugin: PluginFunction<RawAppSyncLocalConfig> = (
       break;
     case 'java':
     case 'android':
-      visitor = new AppSyncJavaVisitor(schema, config, {
+      visitor = new AppSyncModelJavaVisitor(schema, config, {
         selectedType: config.selectedType,
       });
       break;
@@ -31,10 +31,10 @@ export const plugin: PluginFunction<RawAppSyncLocalConfig> = (
       visitor = new AppSyncJSONVisitor(schema, config, {});
       break;
     case 'typescript':
-      visitor = new AppSyncLocalTypeScriptVisitor(schema, config, {});
+      visitor = new AppSyncModelTypeScriptVisitor(schema, config, {});
       break;
     case 'javascript':
-      visitor = new AppSyncLocalJavascriptVisitor(schema, config, {});
+      visitor = new AppSyncModelJavascriptVisitor(schema, config, {});
       break;
     default:
       return '';

@@ -2,7 +2,7 @@ import { JavaDeclarationBlock } from '@graphql-codegen/java-common';
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { pascalCase } from 'change-case';
 import { isArray } from 'util';
-import { AppSyncLocalVisitor, CodeGenField, CodeGenModel, ParsedAppSyncLocalConfig, RawAppSyncLocalConfig } from './appsync-visitor';
+import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 
 // Fields which can not be using builder,
 
@@ -21,10 +21,10 @@ const IMPORT_PKGS = [
 const ENUN_IMPORT_PKGS = ['import com.google.gson.annotations.SerializedName;', ''];
 const PKG_NAME = 'com.amplify.datastore.generated';
 
-export class AppSyncJavaVisitor<
-  TRawConfig extends RawAppSyncLocalConfig = RawAppSyncLocalConfig,
-  TPluginConfig extends ParsedAppSyncLocalConfig = ParsedAppSyncLocalConfig
-> extends AppSyncLocalVisitor<TRawConfig, TPluginConfig> {
+export class AppSyncModelJavaVisitor<
+  TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
+  TPluginConfig extends ParsedAppSyncModelConfig = ParsedAppSyncModelConfig
+> extends AppSyncModelVisitor<TRawConfig, TPluginConfig> {
   protected additionalPackages: Set<string> = new Set();
 
   generate(): string {

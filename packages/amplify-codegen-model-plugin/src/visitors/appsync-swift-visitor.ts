@@ -1,14 +1,14 @@
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { camelCase, lowerCaseFirst } from 'change-case';
 import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
-import { AppSyncLocalVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
+import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
 const schemaTypeMap: Record<string, string> = {
   String: '.string',
   AWSDate: '.dateTime',
   AWSTime: '.dateTime',
   Boolean: '.bool',
 };
-export class AppSyncSwiftVisitor extends AppSyncLocalVisitor {
+export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
   protected imports: string[] = ['import Foundation'];
   generate(): string {

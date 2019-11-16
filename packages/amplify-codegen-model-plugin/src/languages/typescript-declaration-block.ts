@@ -229,7 +229,7 @@ export class TypeScriptDeclarationBlock {
     const methods: string[] = this._methods.map(method => {
       const methodAccessAndName = [];
       if (method.access !== 'DEFAULT') {
-        methodAccessAndName.push(access);
+        methodAccessAndName.push(method.access);
       }
       if (method.flags.static) {
         methodAccessAndName.push('static');
@@ -254,7 +254,7 @@ export class TypeScriptDeclarationBlock {
   }
 
   protected generateInterface(): string {
-    throw new Error('Not implemented');
+    throw new Error('Not implemented yet');
   }
   protected generatePropertyName(property: Property): string {
     let propertyName: string = property.name;

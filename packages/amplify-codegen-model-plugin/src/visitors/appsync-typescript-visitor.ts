@@ -1,23 +1,23 @@
 import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
 import {
-  AppSyncLocalVisitor,
+  AppSyncModelVisitor,
   CodeGenEnum,
   CodeGenField,
   CodeGenModel,
-  ParsedAppSyncLocalConfig,
-  RawAppSyncLocalConfig,
+  ParsedAppSyncModelConfig,
+  RawAppSyncModelConfig,
 } from './appsync-visitor';
 
-export interface RawAppSyncLocalTypeScriptConfig extends RawAppSyncLocalConfig {}
-export interface ParsedAppSyncLocalTypeScriptConfig extends ParsedAppSyncLocalConfig {
+export interface RawAppSyncModelTypeScriptConfig extends RawAppSyncModelConfig {}
+export interface ParsedAppSyncModelTypeScriptConfig extends ParsedAppSyncModelConfig {
   isDeclaration: boolean;
 }
 
-export class AppSyncLocalTypeScriptVisitor<
-  TRawConfig extends RawAppSyncLocalTypeScriptConfig = RawAppSyncLocalTypeScriptConfig,
-  TPluginConfig extends ParsedAppSyncLocalTypeScriptConfig = ParsedAppSyncLocalTypeScriptConfig
-> extends AppSyncLocalVisitor<TRawConfig, TPluginConfig> {
+export class AppSyncModelTypeScriptVisitor<
+  TRawConfig extends RawAppSyncModelTypeScriptConfig = RawAppSyncModelTypeScriptConfig,
+  TPluginConfig extends ParsedAppSyncModelTypeScriptConfig = ParsedAppSyncModelTypeScriptConfig
+> extends AppSyncModelVisitor<TRawConfig, TPluginConfig> {
   protected SCALAR_TYPE_MAP: { [key: string]: string } = {
     String: 'string',
     Int: 'number',

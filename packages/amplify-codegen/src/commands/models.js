@@ -3,7 +3,7 @@ const { parse } = require('graphql');
 const { readFileSync, writeFileSync, ensureFileSync, pathExistsSync, lstatSync, readdirSync } = require('fs-extra');
 const gqlCodeGen = require('@graphql-codegen/core');
 
-const appSyncLocalCodeGen = require('amplify-codegen-model-plugin');
+const appSyncLocalCodeGen = require('amplify-codegen-appsync-model-plugin');
 
 async function generateModels(context) {
   // steps:

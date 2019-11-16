@@ -28,7 +28,7 @@ export enum CodeGenGenerateEnum {
   code = 'code',
   loader = 'loader',
 }
-export interface RawAppSyncLocalConfig extends RawConfig {
+export interface RawAppSyncModelConfig extends RawConfig {
   /**
    * @name target
    * @type string
@@ -41,7 +41,7 @@ export interface RawAppSyncLocalConfig extends RawConfig {
    * config:
    *    target: 'swift'
    *  plugins:
-   *    - appsync-local-codegen-plugin
+   *    - amplify-codegen-appsync-model-plugin
    * ```
    * target: 'swift'| 'javascript'| 'typescript' | 'android' | 'metadata'
    */
@@ -60,7 +60,7 @@ export interface RawAppSyncLocalConfig extends RawConfig {
    *    target: 'swift'
    *    model: Todo
    *  plugins:
-   *    - appsync-local-codegen-plugin
+   *    - amplify-codegen-appsync-model-plugin
    * ```
    */
   selectedType: string;
@@ -81,7 +81,7 @@ export interface RawAppSyncLocalConfig extends RawConfig {
    *    model: Todo
    *    generate: 'metadata'
    *  plugins:
-   *    - appsync-local-codegen-plugin
+   *    - amplify-codegen-appsync-model-plugin
    * ```
    */
   generate: CodeGenGenerateEnum;
@@ -94,7 +94,7 @@ export interface RawAppSyncLocalConfig extends RawConfig {
 }
 
 // Todo: need to figure out how to share config
-export interface ParsedAppSyncLocalConfig extends ParsedConfig {
+export interface ParsedAppSyncModelConfig extends ParsedConfig {
   selectedType?: string;
   generate?: CodeGenGenerateEnum;
 }
@@ -136,9 +136,9 @@ export type CodeGenEnumValueMap = { [enumConvertedName: string]: string };
 
 export type CodeGenEnumMap = Record<string, CodeGenEnum>;
 
-export abstract class AppSyncLocalVisitor<
-  TRawConfig extends RawAppSyncLocalConfig = RawAppSyncLocalConfig,
-  TPluginConfig extends ParsedAppSyncLocalConfig = ParsedAppSyncLocalConfig
+export abstract class AppSyncModelVisitor<
+  TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
+  TPluginConfig extends ParsedAppSyncModelConfig = ParsedAppSyncModelConfig
 > extends BaseVisitor<TRawConfig, TPluginConfig> {
   protected READ_ONLY_FIELDS = ['id'];
   protected SCALAR_TYPE_MAP: Record<string, string> = {};

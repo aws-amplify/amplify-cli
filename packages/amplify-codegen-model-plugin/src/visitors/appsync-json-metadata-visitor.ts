@@ -1,6 +1,6 @@
 import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-plugin-common';
 import { GraphQLSchema } from 'graphql';
-import { AppSyncLocalVisitor, CodeGenDirective, CodeGenField, ParsedAppSyncLocalConfig, RawAppSyncLocalConfig } from './appsync-visitor';
+import { AppSyncModelVisitor, CodeGenDirective, CodeGenField, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 
 type JSONSchema = {
   models: JSONSchemaModels;
@@ -42,7 +42,7 @@ type JSONModelField = {
 type JSONModelFieldAttributes = JSONModelFieldAttribute[];
 type JSONModelFieldAttribute = JSONModelAttribute;
 
-export interface RawAppSyncLocalMetadataConfig extends RawAppSyncLocalConfig {
+export interface RawAppSyncModelMetadataConfig extends RawAppSyncModelConfig {
   /**
    * @name metaDataTarget
    * @type string
@@ -56,20 +56,20 @@ export interface RawAppSyncLocalMetadataConfig extends RawAppSyncLocalConfig {
    *    target: 'metadata'
    *    metaDataTarget: 'typescript'
    *  plugins:
-   *    - appsync-local-codegen-plugin
+   *    - amplify-codegen-appsync-model-plugin
    * ```
    * metaDataTarget: 'javascript'| 'typescript'
    */
   metaDataTarget?: string;
 }
 
-export interface ParsedAppSyncLocalMetadataConfig extends ParsedAppSyncLocalConfig {
+export interface ParsedAppSyncModelMetadataConfig extends ParsedAppSyncModelConfig {
   metaDataTarget: string;
 }
 export class AppSyncJSONVisitor<
-  TRawConfig extends RawAppSyncLocalMetadataConfig = RawAppSyncLocalMetadataConfig,
-  TPluginConfig extends ParsedAppSyncLocalMetadataConfig = ParsedAppSyncLocalMetadataConfig
-> extends AppSyncLocalVisitor<TRawConfig, TPluginConfig> {
+  TRawConfig extends RawAppSyncModelMetadataConfig = RawAppSyncModelMetadataConfig,
+  TPluginConfig extends ParsedAppSyncModelMetadataConfig = ParsedAppSyncModelMetadataConfig
+> extends AppSyncModelVisitor<TRawConfig, TPluginConfig> {
   constructor(
     schema: GraphQLSchema,
     rawConfig: TRawConfig,

@@ -3,10 +3,10 @@ import { Kind, TypeDefinitionNode } from 'graphql';
 import { join } from 'path';
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
 
-const APPSYNC_LOCAL_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
+const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
 const JAVA_PACKAGE_NAME = 'com.amplify.datastore.generated';
 
-export type AppSyncLocalCodeGenPresetConfig = {
+export type AppSyncModelCodeGenPresetConfig = {
   /**
    * @name target
    * @type string
@@ -16,11 +16,11 @@ export type AppSyncLocalCodeGenPresetConfig = {
    * ```yml
    * generates:
    * Models:
-   *  preset: appsync-local-codegen-plugin
+   *  preset: amplify-codegen-appsync-model-plugin
    *  presetConfig:
    *    target: java
    *  plugins:
-   *    - appsync-local-codegen-plugin
+   *    - amplify-codegen-appsync-model-plugin
    * ```
    */
   target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript';
@@ -34,7 +34,7 @@ const hasDirective = (directiveName: string) => (typeObj: TypeDefinitionNode): b
 };
 
 const generateJavaPreset = (
-  options: Types.PresetFnArgs<AppSyncLocalCodeGenPresetConfig>,
+  options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
   models: TypeDefinitionNode[]
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
@@ -56,7 +56,7 @@ const generateJavaPreset = (
 };
 
 const generateSwiftPreset = (
-  options: Types.PresetFnArgs<AppSyncLocalCodeGenPresetConfig>,
+  options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
   models: TypeDefinitionNode[]
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
@@ -112,7 +112,7 @@ const generateSwiftPreset = (
 };
 
 const generateTypeScriptPreset = (
-  options: Types.PresetFnArgs<AppSyncLocalCodeGenPresetConfig>,
+  options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
   models: TypeDefinitionNode[]
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
@@ -141,7 +141,7 @@ const generateTypeScriptPreset = (
 };
 
 const generateJavasScriptPreset = (
-  options: Types.PresetFnArgs<AppSyncLocalCodeGenPresetConfig>,
+  options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
   models: TypeDefinitionNode[]
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
@@ -193,8 +193,8 @@ const generateJavasScriptPreset = (
   return config;
 };
 
-export const preset: Types.OutputPreset<AppSyncLocalCodeGenPresetConfig> = {
-  buildGeneratesSection: (options: Types.PresetFnArgs<AppSyncLocalCodeGenPresetConfig>): Types.GenerateOptions[] => {
+export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
+  buildGeneratesSection: (options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>): Types.GenerateOptions[] => {
     const codeGenTarget = options.config.target;
 
     const hasModelDirective = hasDirective('model');
@@ -220,7 +220,7 @@ export const preset: Types.OutputPreset<AppSyncLocalCodeGenPresetConfig> = {
         break;
       default:
         throw new Error(
-          `AppSyncLocal codegen does not support language target ${codeGenTarget}. Supported codegen targets arr ${APPSYNC_LOCAL_CODEGEN_TARGETS.join(
+          `amplify-codegen-appsync-model-plugin not support language target ${codeGenTarget}. Supported codegen targets arr ${APPSYNC_DATA_STORE_CODEGEN_TARGETS.join(
             ', '
           )}`
         );

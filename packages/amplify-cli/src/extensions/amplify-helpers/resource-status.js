@@ -231,6 +231,10 @@ async function getResourceStatus(category, resourceName, providerName, filteredR
   } else if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
     const backendConfigFilePath = pathManager.getBackendConfigFilePath();
     amplifyMeta = readJsonFile(backendConfigFilePath);
+  } else {
+    throw new Error(
+      "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
+    );
   }
 
   let resourcesToBeCreated = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);

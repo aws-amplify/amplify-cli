@@ -1,9 +1,9 @@
 import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-plugin-common';
 import { GraphQLSchema } from 'graphql';
-import { AppSyncLocalTypeScriptVisitor } from './appsync-typescript-visitor';
-import { CodeGenEnum, CodeGenModel, ParsedAppSyncLocalConfig, RawAppSyncLocalConfig } from './appsync-visitor';
+import { AppSyncModelTypeScriptVisitor } from './appsync-typescript-visitor';
+import { CodeGenEnum, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 
-export interface RawAppSyncLocalJavaScriptConfig extends RawAppSyncLocalConfig {
+export interface RawAppSyncModelJavaScriptConfig extends RawAppSyncModelConfig {
   /**
    * @name isDeclaration
    * @type boolean
@@ -17,21 +17,21 @@ export interface RawAppSyncLocalJavaScriptConfig extends RawAppSyncLocalConfig {
    *    target: 'javascript'
    *    isDelcaration: true
    *  plugins:
-   *    - appsync-local-codegen-plugin
+   *    - amplify-codegen-appsync-model-plugin
    * ```
    * isDeclaration: true| false
    */
   isDeclaration?: boolean;
 }
 
-export interface ParsedAppSyncLocalJavaScriptConfig extends ParsedAppSyncLocalConfig {
+export interface ParsedAppSyncModelJavaScriptConfig extends ParsedAppSyncModelConfig {
   isDeclaration: boolean;
 }
 
-export class AppSyncLocalJavascriptVisitor<
-  TRawConfig extends RawAppSyncLocalJavaScriptConfig = RawAppSyncLocalJavaScriptConfig,
-  TPluginConfig extends ParsedAppSyncLocalJavaScriptConfig = ParsedAppSyncLocalJavaScriptConfig
-> extends AppSyncLocalTypeScriptVisitor<TRawConfig, TPluginConfig> {
+export class AppSyncModelJavascriptVisitor<
+  TRawConfig extends RawAppSyncModelJavaScriptConfig = RawAppSyncModelJavaScriptConfig,
+  TPluginConfig extends ParsedAppSyncModelJavaScriptConfig = ParsedAppSyncModelJavaScriptConfig
+> extends AppSyncModelTypeScriptVisitor<TRawConfig, TPluginConfig> {
   protected IMPORT_STATEMENTS = ['import { ModelInit, MutableModel, PersistentModelConstructor } from "@aws-amplify/datastore";'];
 
   constructor(
