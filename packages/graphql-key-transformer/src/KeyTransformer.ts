@@ -624,6 +624,9 @@ export class KeyTransformer extends Transformer {
       }
     }
   }
+  private typeExist(type: string, ctx: TransformerContext): boolean {
+    return Boolean(type in ctx.nodeMap);
+  }
 }
 
 /**
