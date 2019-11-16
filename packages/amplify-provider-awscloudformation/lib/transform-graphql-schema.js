@@ -299,7 +299,6 @@ async function transformGraphQLSchema(context, options) {
   warnOnAuth(context, directiveMap.types);
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
-  // const TransformConfiguration = await readTransformerConfiguration(resourceDir);
 
   const transformerListFactory = async addSearchableTransformer => {
     const transformerList = [
