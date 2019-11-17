@@ -82,10 +82,8 @@ export class DynamoDBMappingTemplate {
     index?: StringNode;
     isSyncEnabled?: boolean;
   }): ObjectNode {
-    let version = RESOLVER_VERSION_ID;
-    if (isSyncEnabled) {
-      version = '2018-05-29';
-    }
+    const version = isSyncEnabled ? '2018-05-29' : RESOLVER_VERSION_ID;
+
     return obj({
       version: str(version),
       operation: str('Query'),
@@ -93,8 +91,8 @@ export class DynamoDBMappingTemplate {
       scanIndexForward,
       filter,
       limit,
-      nextToken,
-      index,
+      ...(nextToken ? { nextToken } : {}),
+      ...(index ? { index } : {}),
     });
   }
 
@@ -161,15 +159,17 @@ export class DynamoDBMappingTemplate {
    * Create a delete item resolver template.
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
    */
-  public static deleteItem({ key, condition, isSyncEnabled }: {
+  public static deleteItem({
+    key,
+    condition,
+    isSyncEnabled,
+  }: {
     key: ObjectNode | Expression;
     condition: ObjectNode | ReferenceNode;
     isSyncEnabled: boolean;
   }): ObjectNode {
-    let version: string = RESOLVER_VERSION_ID
-    if (isSyncEnabled) {
-      version  = '2018-05-29';
-    }
+    const version: string = isSyncEnabled ? '2018-05-29' : RESOLVER_VERSION_ID;
+
     return obj({
       version: str(version),
       operation: str('DeleteItem'),
@@ -201,11 +201,11 @@ export class DynamoDBMappingTemplate {
     // qref('$input.put("updatedAt", "$util.time.nowISO8601()")'),
     const entryKeyAttributeNameVar = 'entryKeyAttributeName';
     let keyFields: StringNode[] = [str('id')];
-    let version = RESOLVER_VERSION_ID
+    let version = RESOLVER_VERSION_ID;
     // sync changes made to the resolver
     if (isSyncEnabled) {
-      keyFields = [...keyFields, str('_version'), str('_deleted'), str('_lastChangedAt')]
-      version = '2018-05-29'
+      keyFields = [...keyFields, str('_version'), str('_deleted'), str('_lastChangedAt')];
+      version = '2018-05-29';
     }
     const handleRename = (keyVar: string) =>
       ifElse(
