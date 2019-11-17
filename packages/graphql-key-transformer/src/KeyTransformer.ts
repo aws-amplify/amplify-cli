@@ -748,7 +748,11 @@ function replaceDeleteInput(
   const idFields = primaryIdFields(definition, keyFields);
   // Existing fields will contain extra fields in input type that was added/updated by other transformers
   // like @versioned adds expectedVersion.
-  const existingFields = input.fields.filter(f => !idFields.find(pf => pf.name.value === f.name.value));
+  // field id of type ID is a special case that we need to filter as this is automatically inserted to input by dynamo db transformer
+  // Todo: Find out a better way to handle input types
+  const existingFields = input.fields.filter(
+    f => !(idFields.find(pf => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id'))
+  );
 
   return {
     ...input,
