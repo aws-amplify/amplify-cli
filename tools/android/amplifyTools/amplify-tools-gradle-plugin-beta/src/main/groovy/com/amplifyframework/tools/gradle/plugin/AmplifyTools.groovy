@@ -25,7 +25,7 @@ class AmplifyTools implements Plugin<Project> {
                 }
             } catch (e) {
                 doesNodeExist = false
-                println("Node is not installed. Vist https://nodejs.org/en/download/ to install it")
+                println("Node is not installed. Visit https://nodejs.org/en/download/ to install it")
             }
             doesNodeExist = true
         }
