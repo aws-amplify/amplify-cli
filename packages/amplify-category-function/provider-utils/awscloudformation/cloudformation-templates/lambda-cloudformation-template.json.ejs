@@ -179,38 +179,40 @@
             }
         }
         <% } %>
-        <% if (props.triggerEventSourceMapping) { %>
-        ,"LambdaTriggerPolicy": {
+        <% if (props.triggerEventSourceMappings && props.triggerEventSourceMappings.length > 0) { %>
+        <% for(var i=0; i < props.triggerEventSourceMappings.length; i++) { %>
+        ,"LambdaTriggerPolicy<%= props.triggerEventSourceMappings[i].modelName%>": {
             "DependsOn": ["LambdaExecutionRole"],
             "Type": "AWS::IAM::Policy",
             "Properties": {
-                "PolicyName": "amplify-lambda-execution-policy",
+                "PolicyName": "amplify-lambda-execution-policy-<%= props.triggerEventSourceMappings[i].modelName%>",
                 "Roles": [{ "Ref": "LambdaExecutionRole" }],
                 "PolicyDocument": {
                     "Version": "2012-10-17",
-                    "Statement": <%- JSON.stringify(props.triggerEventSourceMapping.triggerPolicies) %>
+                    "Statement": <%- JSON.stringify(props.triggerEventSourceMappings[i].triggerPolicies) %>
                 }
             }
         }
-        ,"LambdaEventSourceMapping": {
+        ,"LambdaEventSourceMapping<%= props.triggerEventSourceMappings[i].modelName%>": {
             "Type": "AWS::Lambda::EventSourceMapping",
             "DependsOn": [
-                "LambdaTriggerPolicy",
+                "LambdaTriggerPolicy<%= props.triggerEventSourceMappings[i].modelName%>",
                 "LambdaExecutionRole"
             ],
             "Properties": {
-                "BatchSize": <%= props.triggerEventSourceMapping.batchSize %>,
+                "BatchSize": <%= props.triggerEventSourceMappings[i].batchSize %>,
                 "Enabled": true,
-                "EventSourceArn": <%- JSON.stringify(props.triggerEventSourceMapping.eventSourceArn) %>,
+                "EventSourceArn": <%- JSON.stringify(props.triggerEventSourceMappings[i].eventSourceArn) %>,
                 "FunctionName": {
                     "Fn::GetAtt": [
                         "LambdaFunction",
                         "Arn"
                     ]
                 },
-                "StartingPosition": "<%= props.triggerEventSourceMapping.startingPosition %>"
+                "StartingPosition": "<%= props.triggerEventSourceMappings[i].startingPosition %>"
             }
         }
+        <% } %>
         <% } %>
     },
     "Outputs": {

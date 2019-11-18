@@ -136,7 +136,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
           ...[
             {
               dir: pluginDir,
-              template: `function-template-dir/${options.triggerEventSourceMapping.functionTemplateName}`,
+              template: `function-template-dir/${options.triggerEventSourceMappings[0].functionTemplateName}`,
               target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
             },
             {

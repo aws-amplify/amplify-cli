@@ -1,199 +1,202 @@
 {
-	"Lambda": {
-		"inputs": [
-			{
-				"key": "resourceName",
-				"question": "Provide a friendly name for your resource to be used as a label for this category in the project:",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9]+$",
-					"onErrorMsg": "Resource name should be alphanumeric"
-				},
-				"required": true
-			},
-			{
-				"key": "functionName",
-				"question": "Provide the AWS Lambda function name:",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9._-]+$",
-					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
-				},
-				"required": true
-			},
-			{
-				"key": "handlerFilename",
-				"question": "Provide the name of the script file that contains your handler function:",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9._-]+$",
-					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
-				},
-				"required": true
-			},
-			{
-				"key": "handlerName",
-				"question": "Provide the name of the handler function to invoke:",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9._-]+$",
-					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
-				},
-				"required": true
-			},
-			{
-				"key": "functionTemplate",
-				"question": "Choose the function template that you want to use:",
-				"type": "list",
-				"options": [
-					{
-						"name": "Hello world function",
-						"value": "helloWorld"
-					},
-					{
-						"name": "CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)",
-						"value": "crud"
-					},
-					{
-						"name": "Serverless express function (Integration with Amazon API Gateway)",
-						"value": "serverless"
-					},
-					{
-						"name": "Lambda Trigger",
-						"value": "lambdaTrigger"
-					}
-					
-				],
-				"required": true
-			},
-			{
-
-				"key": "dynamoDbType",
-				"type": "list",
-				"question": "Choose a DynamoDB data source option",
-				"options": [{
-						"name": "Use DynamoDB table configured in the current Amplify project",
-						"value": "currentProject"
-					},
-					{
-						"name": "Create a new DynamoDB table",
-						"value": "newResource"
-					}
-				]
-			},
-			{
-
-				"key": "dynamoDbResources",
-				"type": "list",
-				"question": "Choose from one of the already configured DynamoDB tables"
-			},
-			{
-
-				"key": "dynamodbTableChoice",
-				"type": "list",
-				"question": "Choose a DynamoDB table:",
-				"required": true
-			},
-			{
-
-				"key": "dynamoRegion",
-				"type": "list",
-				"question": "Specify a Region:"
-			},
-			{
-				"key": "eventName",
-				"question": "Provide the relative path to the event:",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9/._-]+?\\.json$",
-					"onErrorMsg": "You should provide correct unix-like path to .json file"
-				},
-				"required": true
-			},
-			{
-				"key": "eventSourceType",
-				"question": "What event source do you want to associate with Lambda trigger",
-				"type": "list",
-				"options": [{
-					"name": "Amazon DynamoDB Stream",
-					"value": "dynamoDB"
-				},{
-					"name": "Amazon Kinesis Stream",
-					"value": "kinesis"
-				}],
-				"required": true
-			},
-			{
-				"key": "dynamoDbStreamKind",
-				"question": "Choose a DynamoDB event source option",
-				"type": "list",
-				"options": [{
-					"name": "Use API category graphql @model backed DynamoDB table configured(and deployed) in the current Amplify project",
-					"value": "graphqlModelTable"
-				}, 
-				{
-					"name": "Use storage category DynamoDB table configured in the current Amplify project",
-					"value": "storageDynamoDBTable"
-				},
-				{
-					"name": "Provide the ARN of DynamoDB stream directly",
-					"value": "dynamoDbStreamRawARN"
-				}],
-				"required": true
-			},
-			{
-				"key": "kinesisStreamKind",
-				"question": "Choose a Kinesis event source option",
-				"type": "list",
-				"options": [{
-					"name": "Use Analytics category kinesis stream configured(and deployed) in the current Amplify project",
-					"value": "analyticsKinesisStream"
-				},
-				{
-					"name": "Provide the ARN of Kinesis stream directly",
-					"value": "kinesisStreamRawARN"
-				}],
-				"required": true
-			},
-			{
-				"key": "amazonKinesisStreamARN",
-				"question": "Provide the ARN of Amazon Kinesis data stream or a stream consumer",
-				"validation": {
-					"operator": "regex",
-					"value": "arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)",
-					"onErrorMsg": "ARN format is invalid"
-				},
-				"required": true
-			},
-			{
-				"key": "dynamoDbARN",
-				"question": "Provide the ARN of Amazon DynamoDB stream",
-				"validation": {
-					"operator": "regex",
-					"value": "arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)",
-					"onErrorMsg": "ARN format is invalid"
-				},
-				"required": true
-			},
-			{
-				"key": "dynamoDbAPIResourceName",
-				"type": "list",
-				"question": "Please choose an API resource to associate with?"
-			},
-			{
-				"key": "kinesisAnalyticsResourceName",
-				"type": "list",
-				"question": "Please select an Analytics resource Kinesis stream to associate with?"
-			},
-			{
-				"key": "graphqlAPIModelName",
-				"type": "list",
-				"question": "Please choose a graphql @model"
-			}
-		],
-		"defaultValuesFilename": "lambda-defaults.js",
-		"serviceWalkthroughFilename": "lambda-walkthrough.js",
-		"cfnFilename": "lambda-cloudformation-template.json.ejs",
-		"provider": "awscloudformation"
-	}
+  "Lambda": {
+    "inputs": [
+      {
+        "key": "resourceName",
+        "question": "Provide a friendly name for your resource to be used as a label for this category in the project:",
+        "validation": {
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9]+$",
+          "onErrorMsg": "Resource name should be alphanumeric"
+        },
+        "required": true
+      },
+      {
+        "key": "functionName",
+        "question": "Provide the AWS Lambda function name:",
+        "validation": {
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9._-]+$",
+          "onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+        },
+        "required": true
+      },
+      {
+        "key": "handlerFilename",
+        "question": "Provide the name of the script file that contains your handler function:",
+        "validation": {
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9._-]+$",
+          "onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+        },
+        "required": true
+      },
+      {
+        "key": "handlerName",
+        "question": "Provide the name of the handler function to invoke:",
+        "validation": {
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9._-]+$",
+          "onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+        },
+        "required": true
+      },
+      {
+        "key": "functionTemplate",
+        "question": "Choose the function template that you want to use:",
+        "type": "list",
+        "options": [
+          {
+            "name": "Hello world function",
+            "value": "helloWorld"
+          },
+          {
+            "name": "CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)",
+            "value": "crud"
+          },
+          {
+            "name": "Serverless express function (Integration with Amazon API Gateway)",
+            "value": "serverless"
+          },
+          {
+            "name": "Lambda Trigger",
+            "value": "lambdaTrigger"
+          }
+        ],
+        "required": true
+      },
+      {
+        "key": "dynamoDbType",
+        "type": "list",
+        "question": "Choose a DynamoDB data source option",
+        "options": [
+          {
+            "name": "Use DynamoDB table configured in the current Amplify project",
+            "value": "currentProject"
+          },
+          {
+            "name": "Create a new DynamoDB table",
+            "value": "newResource"
+          }
+        ]
+      },
+      {
+        "key": "dynamoDbResources",
+        "type": "list",
+        "question": "Choose from one of the already configured DynamoDB tables"
+      },
+      {
+        "key": "dynamodbTableChoice",
+        "type": "list",
+        "question": "Choose a DynamoDB table:",
+        "required": true
+      },
+      {
+        "key": "dynamoRegion",
+        "type": "list",
+        "question": "Specify a Region:"
+      },
+      {
+        "key": "eventName",
+        "question": "Provide the relative path to the event:",
+        "validation": {
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9/._-]+?\\.json$",
+          "onErrorMsg": "You should provide correct unix-like path to .json file"
+        },
+        "required": true
+      },
+      {
+        "key": "eventSourceType",
+        "question": "What event source do you want to associate with Lambda trigger",
+        "type": "list",
+        "options": [
+          {
+            "name": "Amazon DynamoDB Stream",
+            "value": "dynamoDB"
+          },
+          {
+            "name": "Amazon Kinesis Stream",
+            "value": "kinesis"
+          }
+        ],
+        "required": true
+      },
+      {
+        "key": "dynamoDbStreamKind",
+        "question": "Choose a DynamoDB event source option",
+        "type": "list",
+        "options": [
+          {
+            "name": "Use API category graphql @model backed DynamoDB table(s) in the current Amplify project",
+            "value": "graphqlModelTable"
+          },
+          {
+            "name": "Use storage category DynamoDB table configured in the current Amplify project",
+            "value": "storageDynamoDBTable"
+          },
+          {
+            "name": "Provide the ARN of DynamoDB stream directly",
+            "value": "dynamoDbStreamRawARN"
+          }
+        ],
+        "required": true
+      },
+      {
+        "key": "kinesisStreamKind",
+        "question": "Choose a Kinesis event source option",
+        "type": "list",
+        "options": [
+          {
+            "name": "Use Analytics category kinesis stream in the current Amplify project",
+            "value": "analyticsKinesisStream"
+          },
+          {
+            "name": "Provide the ARN of Kinesis stream directly",
+            "value": "kinesisStreamRawARN"
+          }
+        ],
+        "required": true
+      },
+      {
+        "key": "amazonKinesisStreamARN",
+        "question": "Provide the ARN of Amazon Kinesis data stream or a stream consumer",
+        "validation": {
+          "operator": "regex",
+          "value": "arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)",
+          "onErrorMsg": "ARN format is invalid"
+        },
+        "required": true
+      },
+      {
+        "key": "dynamoDbARN",
+        "question": "Provide the ARN of Amazon DynamoDB stream",
+        "validation": {
+          "operator": "regex",
+          "value": "arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)",
+          "onErrorMsg": "ARN format is invalid"
+        },
+        "required": true
+      },
+      {
+        "key": "dynamoDbAPIResourceName",
+        "type": "list",
+        "question": "Please choose an API resource to associate with?"
+      },
+      {
+        "key": "kinesisAnalyticsResourceName",
+        "type": "list",
+        "question": "Please select an Analytics resource Kinesis stream to associate with?"
+      },
+      {
+        "key": "graphqlAPIModelName",
+        "type": "checkbox",
+        "question": "Please choose graphql @models"
+      }
+    ],
+    "defaultValuesFilename": "lambda-defaults.js",
+    "serviceWalkthroughFilename": "lambda-walkthrough.js",
+    "cfnFilename": "lambda-cloudformation-template.json.ejs",
+    "provider": "awscloudformation"
+  }
 }

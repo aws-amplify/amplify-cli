@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
+const TransformPackage = require('graphql-transformer-core');
 
 const categoryName = 'function';
 const serviceName = 'Lambda';
@@ -717,11 +718,6 @@ async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
     targetResourceName = answer.kinesisAnalyticsResourceName;
   }
 
-  const targetResource = kinesisResources.find(resource => resource.resourceName === targetResourceName);
-  if (!('kinesisStreamArn' in targetResource.output)) {
-    throw Error(`Unable to locate kinesisStreamArn in ${targetResourceName}`);
-  }
-
   const streamArnParamRef = {
     Ref: `analytics${targetResourceName}kinesisStreamArn`,
   };
@@ -796,75 +792,49 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
     throw Error(`Unable to find graphql api id for ${targetResourceName} resource`);
   }
 
-  const exports = targetResource.exports || {};
-  const tableInfos = Object.keys(exports)
-    .filter(exportName => exportName.startsWith(graphqlAPIId))
-    .map(exportName => exportName.match(/GetAtt:(.*)(DataSource:Name|Table:Name|Table:StreamArn)$/))
-    .filter(match => match)
-    .map(([, tableName, outputType]) => ({
-      tableName,
-      outputType,
-      value: exports[`${graphqlAPIId}:GetAtt:${tableName}${outputType}`],
-    }))
-    .reduce((infos, parsedOutput) => {
-      let partial;
-      switch (parsedOutput.outputType) {
-        case 'Table:Name':
-          partial = { name: parsedOutput.value };
-          break;
-        case 'DataSource:Name':
-          partial = { datasourceName: parsedOutput.value };
-          break;
-        case 'Table:StreamArn':
-          partial = { streamArn: parsedOutput.value };
-          break;
-        default:
-          partial = {};
-      }
-
-      return {
-        ...infos,
-        [parsedOutput.tableName]: {
-          ...(infos[parsedOutput.tableName] || {}),
-          ...partial,
-        },
-      };
-    }, {});
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(backendDir, 'api', targetResourceName);
+  const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
+  const directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+  const modelNames = Object.keys(directiveMap.types).filter(typeName => directiveMap.types[typeName].includes('model'));
 
   const modelNameInput = inputs.find(input => input.key === 'graphqlAPIModelName');
   if (modelNameInput === undefined) {
     throw Error('Unable to find graphqlAPIModelName question data. (this is likely an amplify error, please report)');
   }
 
-  let modelName;
-  if (Object.keys(tableInfos).length === 0) {
+  let targetModelNames = [];
+  if (modelNames.length === 0) {
     throw Error('Unable to find graphql model info.');
-  } else if (Object.keys(tableInfos).length === 1) {
-    [modelName] = Object.keys(tableInfos);
+  } else if (modelNames.length === 1) {
+    [modelName] = modelNames;
     context.print.success(`Selected @model ${modelName}`);
   } else {
-    const modelNameQuestion = {
-      type: modelNameInput.type,
-      name: modelNameInput.key,
-      message: modelNameInput.question,
-      choices: Object.keys(tableInfos),
+    while (targetModelNames.length == 0) {
+      const modelNameQuestion = {
+        type: modelNameInput.type,
+        name: modelNameInput.key,
+        message: modelNameInput.question,
+        choices: modelNames,
+      };
+      const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
+      targetModelNames = modelNameAnswer[modelNameInput.key];
+
+      if (targetModelNames.length == 0) {
+        context.print.info('You need to select at least one @model');
+      }
+    }
+  }
+
+  const triggerEventSourceMappings = targetModelNames.map(modelName => {
+    const streamArnParamRef = {
+      'Fn::ImportValue': {
+        'Fn::Sub': [`\${api${targetResourceName}GraphQLAPIIdOutput}`, 'GetAtt', `${modelName}Table`, 'StreamArn'].join(':'),
+      },
     };
-    const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
-    modelName = modelNameAnswer[modelNameInput.key];
-  }
 
-  const tableInfo = tableInfos[modelName];
-  if (!('streamArn' in tableInfo)) {
-    throw Error(`Unable to find associated streamArn for ${tableInfo} model dynamoDb table.`);
-  }
-
-  const streamArnParamRef = {
-    'Fn::ImportValue': {
-      'Fn::Sub': [`\${api${targetResourceName}GraphQLAPIIdOutput}`, 'GetAtt', `${modelName}Table`, 'StreamArn'].join(':'),
-    },
-  };
-  return {
-    triggerEventSourceMapping: {
+    return {
+      modelName,
       batchSize: 100,
       startingPosition: 'LATEST',
       eventSourceArn: streamArnParamRef,
@@ -876,7 +846,11 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
           Resource: streamArnParamRef,
         },
       ],
-    },
+    };
+  });
+
+  return {
+    triggerEventSourceMappings,
     dependsOn: [
       {
         category: 'api',
