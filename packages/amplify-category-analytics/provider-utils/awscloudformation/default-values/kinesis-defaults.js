@@ -13,7 +13,7 @@ const getAllDefaults = project => {
   };
 
   const defaults = {
-    kinesisStreamName: appName,
+    kinesisStreamName: `${appName}Kinesis`,
     kinesisStreamShardCount: 1,
     authRoleName,
     unauthRoleName,
