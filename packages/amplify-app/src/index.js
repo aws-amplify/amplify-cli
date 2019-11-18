@@ -6,7 +6,6 @@ const emoji = require('node-emoji');
 const { spawnSync, spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
-const { addFileToXcodeProj } = require('./xcodeHelpers');
 
 function run() {
   const projpath = args.path;
@@ -328,7 +327,7 @@ async function createJSHelperFiles() {
   });
 }
 
-async function createAndoidHelperFiles() {
+async function createAndroidHelperFiles() {
   const configJsonData = '{"profile":"default", "envName":"amplify"}';
   const configJsonObj = JSON.parse(configJsonData);
   const configJsonStr = JSON.stringify(configJsonObj);
@@ -338,46 +337,13 @@ async function createAndoidHelperFiles() {
   }
 }
 
-async function createIosHelperFiles() {
-  const configDir = path.join(process.cwd(), '/amplifyxc.config');
-  const configStr = 'push=false\nmodelgen=false\nprofile=default\nenvName=amplify';
-  const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
-  const amplifyConfigDir = path.join(process.cwd(), '/amplifyconfiguration.json');
-  const amplifyDir = path.join(process.cwd(), '/amplify');
-  const configJsonData = '{}';
-  const configJsonObj = JSON.parse(configJsonData);
-  const configJsonStr = JSON.stringify(configJsonObj);
-
-  // Write files if needed and them to xcode project if one exists
-  if (await !fs.existsSync(configDir)) {
-    await fs.writeFileSync(configDir, configStr);
-  }
-  await addFileToXcodeProj(configDir);
-  if (await !fs.existsSync(awsConfigDir)) {
-    await fs.writeFileSync(awsConfigDir, configJsonStr);
-  }
-  await addFileToXcodeProj(awsConfigDir);
-  if (await !fs.existsSync(amplifyConfigDir)) {
-    await fs.writeFileSync(amplifyConfigDir, configJsonStr);
-  }
-  await addFileToXcodeProj(amplifyConfigDir);
-
-  if (await fs.existsSync(amplifyDir)) {
-    await addFileToXcodeProj(amplifyDir);
-  }
-}
-
 async function createAmplifyHelperFiles(frontend) {
   if (frontend === 'javascript') {
     await createJSHelperFiles();
   }
 
   if (frontend === 'android') {
-    await createAndoidHelperFiles();
-  }
-
-  if (frontend === 'ios') {
-    await createIosHelperFiles();
+    await createAndroidHelperFiles();
   }
 
   return frontend;
@@ -406,7 +372,13 @@ async function showJSHelpText() {
 }
 
 async function showAndroidHelpText() {
-  // TBD
+  console.log();
+  console.log(chalk.green('Some next steps:'));
+  console.log('Running the "modelgen" task provided in this plugin will allow you to generate models/entities for your GraphQL models');
+  console.log(
+    'Running the "amplifyPush" task provided in this plugin will build all your local backend resources and provision it in the cloud'
+  );
+  console.log('');
 }
 
 async function showIOSHelpText() {
