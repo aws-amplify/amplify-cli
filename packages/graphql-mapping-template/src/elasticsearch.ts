@@ -16,6 +16,8 @@ import {
   ListNode,
 } from './ast';
 
+const RESOLVER_VERSION_ID = '2018-05-29';
+
 export class ElasticsearchMappingTemplate {
   /**
    * Create a mapping template for ES.
@@ -30,7 +32,7 @@ export class ElasticsearchMappingTemplate {
     params: Expression | ObjectNode | CompoundExpressionNode;
   }): ObjectNode {
     return obj({
-      version: str('2017-02-28'),
+      version: str(RESOLVER_VERSION_ID),
       operation,
       path,
       params,
@@ -57,7 +59,7 @@ export class ElasticsearchMappingTemplate {
     search_after?: Expression | ListNode;
   }): ObjectNode {
     return obj({
-      version: str('2017-02-28'),
+      version: str(RESOLVER_VERSION_ID),
       operation: str('GET'),
       path,
       params: obj({

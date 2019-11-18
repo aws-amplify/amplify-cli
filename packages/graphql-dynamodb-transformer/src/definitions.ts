@@ -113,10 +113,12 @@ export function makeNonModelInputObject(
   };
 }
 
+
 export function makeCreateInputObject(
   obj: ObjectTypeDefinitionNode,
   nonModelTypes: ObjectTypeDefinitionNode[],
-  ctx: TransformerContext
+  ctx: TransformerContext,
+  isSync: boolean = false
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelCreateInputObjectName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -157,6 +159,10 @@ export function makeCreateInputObject(
         directives: [],
       };
     });
+  // add the version if this project is a sync project
+  if (isSync) {
+    fields.push(makeInputValueDefinition('_version', makeNamedType('Int')));
+  }
   return {
     kind: 'InputObjectTypeDefinition',
     // TODO: Service does not support new style descriptions so wait.
@@ -176,7 +182,8 @@ export function makeCreateInputObject(
 export function makeUpdateInputObject(
   obj: ObjectTypeDefinitionNode,
   nonModelTypes: ObjectTypeDefinitionNode[],
-  ctx: TransformerContext
+  ctx: TransformerContext,
+  isSync: boolean = false
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelUpdateInputObjectName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -210,6 +217,9 @@ export function makeUpdateInputObject(
         directives: [],
       };
     });
+  if (isSync) {
+    fields.push(makeInputValueDefinition('_version', makeNamedType('Int')));
+  }
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
     // TODO: Service does not support new style descriptions so wait.
@@ -226,8 +236,24 @@ export function makeUpdateInputObject(
   };
 }
 
-export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode, isSync: boolean = false): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelDeleteInputObjectName(obj.name.value);
+  const fields: InputValueDefinitionNode[] = [
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: { kind: 'Name', value: 'id' },
+      type: makeNamedType('ID'),
+      // TODO: Service does not support new style descriptions so wait.
+      // description: {
+      //     kind: 'StringValue',
+      //     value: `The id of the ${obj.name.value} to delete.`
+      // },
+      directives: [],
+    },
+  ];
+  if (isSync) {
+    fields.push(makeInputValueDefinition('_version', makeNamedType('Int')));
+  }
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
     // TODO: Service does not support new style descriptions so wait.
@@ -239,19 +265,7 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
       kind: 'Name',
       value: name,
     },
-    fields: [
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: { kind: 'Name', value: 'id' },
-        type: makeNamedType('ID'),
-        // TODO: Service does not support new style descriptions so wait.
-        // description: {
-        //     kind: 'StringValue',
-        //     value: `The id of the ${obj.name.value} to delete.`
-        // },
-        directives: [],
-      },
-    ],
+    fields,
     directives: [],
   };
 }
@@ -282,6 +296,90 @@ export function makeModelXFilterInputObject(
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: field.name,
         type: makeNamedType(filterTypeName),
+        // TODO: Service does not support new style descriptions so wait.
+        // description: field.description,
+        directives: [],
+      };
+    });
+
+  fields.push(
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'and',
+      },
+      type: makeListType(makeNamedType(name)),
+      // TODO: Service does not support new style descriptions so wait.
+      // description: field.description,
+      directives: [],
+    },
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'or',
+      },
+      type: makeListType(makeNamedType(name)),
+      // TODO: Service does not support new style descriptions so wait.
+      // description: field.description,
+      directives: [],
+    },
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'not',
+      },
+      type: makeNamedType(name),
+      // TODO: Service does not support new style descriptions so wait.
+      // description: field.description,
+      directives: [],
+    }
+  );
+
+  return {
+    kind: 'InputObjectTypeDefinition',
+    // TODO: Service does not support new style descriptions so wait.
+    // description: {
+    //     kind: 'StringValue',
+    //     value: `Input type for ${obj.name.value} mutations`
+    // },
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    fields,
+    directives: [],
+  };
+}
+
+export function makeModelXConditionInputObject(
+  obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+  ctx: TransformerContext
+): InputObjectTypeDefinitionNode {
+  const name = ModelResourceIDs.ModelConditionInputTypeName(obj.name.value);
+  const fields: InputValueDefinitionNode[] = obj.fields
+    .filter((field: FieldDefinitionNode) => {
+      const fieldType = ctx.getType(getBaseType(field.type));
+      if (isScalar(field.type) || (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)) {
+        return true;
+      }
+    })
+    .map((field: FieldDefinitionNode) => {
+      const baseType = getBaseType(field.type);
+      const fieldType = ctx.getType(baseType);
+      const isList = isListType(field.type);
+      const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
+      const conditionTypeName =
+        isEnumType && isList
+          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType)
+          : ModelResourceIDs.ModelFilterInputTypeName(baseType);
+
+      return {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: field.name,
+        type: makeNamedType(conditionTypeName),
         // TODO: Service does not support new style descriptions so wait.
         // description: field.description,
         directives: [],
@@ -486,11 +584,14 @@ function getScalarConditions(type: string): string[] {
   }
 }
 
-export function makeModelConnectionType(typeName: string): ObjectTypeExtensionNode {
+export function makeModelConnectionType(typeName: string, isSync: Boolean = false): ObjectTypeExtensionNode {
   const connectionName = ModelResourceIDs.ModelConnectionTypeName(typeName);
   let connectionTypeExtension = blankObjectExtension(connectionName);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('items', [], makeListType(makeNamedType(typeName)))]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
+  if (isSync) {
+    connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('startedAt', [], makeNamedType('AWSTimestamp'))]);
+  }
   return connectionTypeExtension;
 }
 

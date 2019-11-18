@@ -7,6 +7,8 @@ const { spawnSync, spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
 
+const amplifyCliPackageName = '@aws-amplify/cli@canary';
+
 function run() {
   const projpath = args.path;
 
@@ -59,7 +61,7 @@ async function installAmplifyCLI() {
     console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
 
     return new Promise((resolve, reject) => {
-      const amplifyCLIInstall = spawn('npm', ['install', '-g', '@aws-amplify/cli@canary'], {
+      const amplifyCLIInstall = spawn('npm', ['install', '-g', `${amplifyCliPackageName}`], {
         cwd: process.cwd(),
         env: process.env,
         stdio: 'inherit',

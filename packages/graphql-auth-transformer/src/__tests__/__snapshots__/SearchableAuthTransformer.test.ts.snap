@@ -104,9 +104,17 @@ input DeletePostInput {
 }
 
 type Mutation {
-  createPost(input: CreatePostInput!): Post @aws_api_key @aws_iam
-  updatePost(input: UpdatePostInput!): Post @aws_api_key @aws_iam
-  deletePost(input: DeletePostInput!): Post @aws_api_key @aws_iam
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam
+}
+
+input ModelPostConditionInput {
+  content: ModelStringFilterInput
+  secret: ModelStringFilterInput
+  and: [ModelPostConditionInput]
+  or: [ModelPostConditionInput]
+  not: ModelPostConditionInput
 }
 
 type Subscription {

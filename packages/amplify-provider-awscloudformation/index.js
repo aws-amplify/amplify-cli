@@ -32,8 +32,8 @@ function pushResources(context, resourceList) {
   return resourcePusher.run(context, resourceList);
 }
 
-function deleteEnv(context, envName) {
-  return envRemover.run(context, envName);
+function deleteEnv(context, envName, deleteS3) {
+  return envRemover.run(context, envName, deleteS3);
 }
 
 function configure(context) {

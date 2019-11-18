@@ -1,6 +1,6 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
 const fs = require('fs');
-import { initProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../src/init';
 import {
   addAuthWithDefault,
   addAuthWithDefaultSocial,
@@ -30,7 +30,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project and add auth with defaults', async () => {
-    await initProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -40,7 +40,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project and add auth with defaultSocial', async () => {
-    await initProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -55,7 +55,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {
-    await initProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithGroupTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -72,7 +72,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should allow the user to add auth via API category, with a trigger', async () => {
-    await initProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthViaAPIWithTrigger(projRoot, {});
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -89,7 +89,7 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {
-    await initProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -112,13 +112,13 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project where all possible options are selected', async () => {
-    await initProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-    const createFunctionName = `${Object.keys(meta.auth)[0]}CreateAuthChallenge-integtest`;
-    const defineFunctionName = `${Object.keys(meta.auth)[0]}DefineAuthChallenge-integtest`;
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[1].output.UserPoolId;
+    const createFunctionName = `${Object.keys(meta.auth)[1]}CreateAuthChallenge-integtest`;
+    const defineFunctionName = `${Object.keys(meta.auth)[1]}DefineAuthChallenge-integtest`;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
     const createFunction = await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region);
@@ -147,7 +147,7 @@ describe('amplify updating auth...', () => {
   });
 
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
-    await initProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);

@@ -6,21 +6,33 @@ const AppSync = require('../src/aws-utils/aws-appsync');
 const Lex = require('../src/aws-utils/aws-lex');
 const Polly = require('../src/aws-utils/aws-polly');
 const SageMaker = require('../src/aws-utils/aws-sagemaker');
-const { transformGraphQLSchema } = require('./transform-graphql-schema');
+const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
 
 module.exports = {
   compileSchema: async (context, options) => {
     const category = 'api';
-    const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
-    let resources = resourcesToBeCreated.concat(resourcesToBeUpdated).concat(allResources);
-    resources = resources.filter(resource => resource.service === 'AppSync');
-    resources = resources.map(resource => resource.resourceName);
-    const optionsWithUpdateHandler = {
-      ...options,
-      handleMigration: resources.length ? opts => updateStackForAPIMigration(context, category, resources[0], opts) : undefined,
-    };
+    let optionsWithUpdateHandler = { ...options };
+
+    if (!options.dryRun) {
+      const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
+      let resources = resourcesToBeCreated.concat(resourcesToBeUpdated).concat(allResources);
+      resources = resources.filter(resource => resource.service === 'AppSync');
+      resources = resources.map(resource => resource.resourceName);
+      optionsWithUpdateHandler = {
+        ...options,
+        handleMigration: resources.length ? opts => updateStackForAPIMigration(context, category, resources[0], opts) : undefined,
+      };
+    }
+
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
+  },
+  getTransformerDirectives: async (context, options) => {
+    const { resourceDir } = options;
+    if (!resourceDir) {
+      throw new Error('missing resource directory');
+    }
+    return getDirectiveDefinitions(context, resourceDir);
   },
   getRegions: () => awsRegions.regions,
   getRegionMappings: () => awsRegions.regionMappings,

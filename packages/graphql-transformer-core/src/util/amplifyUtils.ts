@@ -49,6 +49,7 @@ async function _buildProject(opts: ProjectOptions) {
   const transform = new GraphQLTransform({
     transformers,
     stackMapping,
+    transformConfig: userProjectConfig.config,
   });
   let transformOutput = transform.transform(userProjectConfig.schema.toString());
   if (userProjectConfig.config && userProjectConfig.config.Migration) {

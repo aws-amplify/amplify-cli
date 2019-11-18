@@ -10,6 +10,39 @@ export interface TransformMigrationConfig {
     Resources: string[];
   };
 }
+
+// Sync Config
+export declare enum ConflictHandlerType {
+  OPTIMISTIC = "OPTIMISTIC_CONCURRENCY",
+  AUTOMERGE = "AUTOMERGE",
+  LAMBDA = "LAMBDA"
+}
+export type ConflictDectionType = 'VERSION' | 'NONE';
+export type SyncConfigOPTIMISTIC = {
+  ConflictDetection: ConflictDectionType;
+  ConflictHandler: ConflictHandlerType.OPTIMISTIC;
+}
+export type SyncConfigSERVER = {
+  ConflictDetection: ConflictDectionType;
+  ConflictHandler: ConflictHandlerType.AUTOMERGE;
+}
+export type SyncConfigLAMBDA = {
+  ConflictDetection: ConflictDectionType;
+  ConflictHandler: ConflictHandlerType.LAMBDA;
+  LambdaConflictHandler: {
+    name: string,
+    region?: string,
+    lambdaArn?: any,
+  }
+}
+export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
+
+export type ResolverConfig = {
+  project: SyncConfig;
+  models: {
+    [key: string]: SyncConfig;
+  }
+}
 /**
  * The transform config is specified in transform.conf.json within an Amplify
  * API project directory.
@@ -54,6 +87,11 @@ export interface TransformConfig {
    * Keeping a track of transformer version changes
    */
   Version?: number;
+  /**
+   * Object which states info about a resolver's configuration
+   * Such as sync configuration for appsync local support
+   */
+  ResolverConfig?: ResolverConfig
 }
 /**
  * try to load transformer config from specified projectDir
@@ -74,6 +112,7 @@ export async function loadConfig(projectDir: string): Promise<TransformConfig> {
     return config;
   }
 }
+
 export async function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig> {
   const configFilePath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
   await fs.writeFile(configFilePath, JSON.stringify(config, null, 4));
