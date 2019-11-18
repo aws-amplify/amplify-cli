@@ -9,7 +9,8 @@
     "inquirer": "^6.5.1",
     "mime-types": "^2.1.24",
     "promise-sequential": "^1.1.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "graphql-transformer-core": "5.16.0"
   },
   "scripts": {
     "lint": "eslint .",

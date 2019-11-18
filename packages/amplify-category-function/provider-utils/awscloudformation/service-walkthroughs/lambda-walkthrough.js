@@ -807,10 +807,11 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
   if (modelNames.length === 0) {
     throw Error('Unable to find graphql model info.');
   } else if (modelNames.length === 1) {
-    [modelName] = modelNames;
+    const [modelName] = modelNames;
     context.print.success(`Selected @model ${modelName}`);
+    targetModelNames = modelNames;
   } else {
-    while (targetModelNames.length == 0) {
+    while (targetModelNames.length === 0) {
       const modelNameQuestion = {
         type: modelNameInput.type,
         name: modelNameInput.key,
@@ -820,7 +821,7 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
       const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
       targetModelNames = modelNameAnswer[modelNameInput.key];
 
-      if (targetModelNames.length == 0) {
+      if (targetModelNames.length === 0) {
         context.print.info('You need to select at least one @model');
       }
     }
