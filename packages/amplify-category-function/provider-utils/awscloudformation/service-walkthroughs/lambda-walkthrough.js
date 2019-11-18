@@ -856,7 +856,7 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
       {
         category: 'api',
         resourceName: targetResourceName,
-        attributes: ['GraphQLAPIIdOutput'],
+        attributes: ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'],
       },
     ],
   };

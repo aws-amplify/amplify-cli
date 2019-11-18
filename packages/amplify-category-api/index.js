@@ -141,11 +141,13 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  const resources = Object.keys(resourceOpsMapping);
+  for (let i = 0; i < resources.length; i += 1) {
+    const resourceName = resources[i];
     try {
       const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
       if (providerController) {
-        const { policy, attributes } = providerController.getPermissionPolicies(
+        const { policy, attributes } = await providerController.getPermissionPolicies(
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
@@ -160,7 +162,8 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
       context.print.warning(`Could not get policies for ${category}: ${resourceName}`);
       throw e;
     }
-  });
+  }
+
   return { permissionPolicies, resourceAttributes };
 }
 

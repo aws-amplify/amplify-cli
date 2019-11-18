@@ -642,7 +642,7 @@ function convertToCRUD(privacy) {
   return privacy;
 }
 
-function getIAMPolicies(resourceName, crudOptions) {
+function getIAMPolicies(context, resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
