@@ -319,8 +319,11 @@ export class ResourceFactory {
                               Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
                               Fn.Ref(ResourceConstants.PARAMETERS.Env),
                             ]),
-                            Fn.Join('-', [SyncResourceIDs.syncTableName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
-                          )
+                            Fn.Join('-', [
+                              SyncResourceIDs.syncTableName,
+                              Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                            ])
+                          ),
                         }),
                         Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
                           tablename: Fn.If(
@@ -330,7 +333,10 @@ export class ResourceFactory {
                               Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
                               Fn.Ref(ResourceConstants.PARAMETERS.Env),
                             ]),
-                            Fn.Join('-', [SyncResourceIDs.syncTableName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+                            Fn.Join('-', [
+                              SyncResourceIDs.syncTableName,
+                              Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                            ])
                           ),
                         }),
                       ]
@@ -365,7 +371,6 @@ export class ResourceFactory {
           Versioned: true,
         }),
       },
-      ...( isSyncEnabled && { DeltaSyncConfig: SyncUtils.syncDataSourceConfig() })
     }).dependsOn([iamRoleLogicalID]);
   }
 
