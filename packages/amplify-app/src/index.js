@@ -333,9 +333,9 @@ async function createAndroidHelperFiles() {
   const configJsonData = '{"profile":"default", "envName":"amplify"}';
   const configJsonObj = JSON.parse(configJsonData);
   const configJsonStr = JSON.stringify(configJsonObj);
-  const configDir = path.join(process.cwd(), './amplify-gradle-config.json');
-  if (await !fs.existsSync(configDir)) {
-    fs.writeFileSync(configDir, configJsonStr);
+  const configFile = path.join(process.cwd(), './amplify-gradle-config.json');
+  if (!fs.existsSync(configDir)) {
+    fs.writeFileSync(configFile, configJsonStr);
   }
 }
 
@@ -369,16 +369,18 @@ async function showJSHelpText() {
   console.log();
   console.log(chalk.green('Some next steps:'));
   console.log('"npm run amplify-modelgen" will allow you to generate models/entities for your GraphQL models');
-  console.log('"npm run amplify-push" will build all your local backend resources and provision it in the cloud');
+  console.log('"npm run amplify-push" will build all your local backend resources and provision them in the cloud');
   console.log('');
 }
 
 async function showAndroidHelpText() {
   console.log();
   console.log(chalk.green('Some next steps:'));
-  console.log('Running the "modelgen" task provided in this plugin will allow you to generate models/entities for your GraphQL models');
   console.log(
-    'Running the "amplifyPush" task provided in this plugin will build all your local backend resources and provision it in the cloud'
+    'Running the "modelgen" task provided in the amplifytools plugin will allow you to generate models/entities for your GraphQL models'
+  );
+  console.log(
+    'Running the "amplifyPush" task provided in the amplifytools plugin will build all your local backend resources and provision them in the cloud'
   );
   console.log('');
 }
