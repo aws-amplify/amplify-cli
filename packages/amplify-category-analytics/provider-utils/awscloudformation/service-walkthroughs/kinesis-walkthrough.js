@@ -5,6 +5,12 @@ const category = 'analytics';
 const service = 'Kinesis';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+  const resourceName = resourceAlreadyExists(context);
+
+  if (resourceName) {
+    context.print.warning('Kinesis resource have already been added to your project.');
+    process.exit(0);
+  }
   return configure(context, defaultValuesFilename, serviceMetadata);
 }
 
@@ -175,6 +181,23 @@ function getIAMPolicies(resourceName, crudOptions) {
 
   const attributes = ['kinesisStreamArn'];
   return { policy, attributes };
+}
+
+function resourceAlreadyExists(context) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  let resourceName;
+
+  if (amplifyMeta[category]) {
+    const categoryResources = amplifyMeta[category];
+    Object.keys(categoryResources).forEach(resource => {
+      if (categoryResources[resource].service === service) {
+        resourceName = resource;
+      }
+    });
+  }
+
+  return resourceName;
 }
 
 module.exports = {
