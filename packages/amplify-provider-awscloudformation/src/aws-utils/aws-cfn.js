@@ -286,8 +286,7 @@ class CloudFormation {
     return cfnModel
       .describeStackResources(cfnParentStackParams)
       .promise()
-      .then(result => this.listExports().then(exports => ({ result, exports })))
-      .then(({ result, exports }) => {
+      .then(result => {
         let resources = result.StackResources;
         resources = resources.filter(
           resource =>
@@ -322,116 +321,10 @@ class CloudFormation {
                   'output',
                   formatOutputs(stackResult[index].Stacks[0].Outputs)
                 );
-
-                const stackId = stackResult[index].Stacks[0].StackId;
-                const stackExports = exports
-                  .filter(exportItem => exportItem.ExportingStackId === stackId)
-                  .reduce(
-                    (exports, exportItem) => ({
-                      ...exports,
-                      [exportItem.Name]: exportItem.Value,
-                    }),
-                    {}
-                  );
-                if (Object.keys(stackExports).length > 0) {
-                  this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'exports', stackExports);
-                }
               }
             });
           });
-
-          return { result, exports };
         });
-      })
-      .then(({ result, exports }) => {
-        const resources = result.StackResources;
-        const stackResourcePromises = Object.keys(amplifyMeta)
-          .map(category =>
-            Object.keys(amplifyMeta[category])
-              .map(resource => ({
-                index: resources.findIndex(resourceItem => resourceItem.LogicalResourceId === category + resource),
-                resource,
-              }))
-              .filter(({ index }) => index > -1)
-              .map(({ resource, index }) =>
-                cfnModel
-                  .describeStackResources({
-                    StackName: resources[index].PhysicalResourceId,
-                  })
-                  .promise()
-                  .then(result => {
-                    return { ...result, amplifyResourceName: resource, amplifyCategory: category };
-                  })
-              )
-          )
-          .reduce((flattened, promises) => flattened.concat(promises), []);
-
-        // fetch stack resources to further fetch nested stacks to get nested outputs
-        return Promise.all(stackResourcePromises).then(results => ({ results, exports }));
-      })
-      .then(({ results, exports }) => {
-        const stackPromises = results
-          .reduce(
-            (stackResources, result) =>
-              stackResources.concat(
-                result.StackResources.map(resource => ({
-                  ...resource,
-                  amplifyResourceName: result.amplifyResourceName,
-                  amplifyCategory: result.amplifyCategory,
-                }))
-              ),
-            []
-          )
-          .filter(resource => resource.ResourceType === 'AWS::CloudFormation::Stack')
-          .map(resource => {
-            return this.describeStack({
-              StackName: resource.PhysicalResourceId,
-            }).then(result => ({
-              ...result,
-              logicalResourceId: resource.LogicalResourceId,
-              amplifyResourceName: resource.amplifyResourceName,
-              amplifyCategory: resource.amplifyCategory,
-            }));
-          });
-        return Promise.all(stackPromises).then(stacks =>
-          stacks
-            .filter(stack => stack.Stacks.length > 0)
-            .map(stack => {
-              const stackId = stack.Stacks[0].StackId;
-              return {
-                ...stack,
-                exports: exports.filter(exportItem => exportItem.ExportingStackId === stackId),
-              };
-            })
-        );
-      })
-      .then(results => {
-        const nestedOutputs = results.reduce((byResource, result) => {
-          const key = result.amplifyCategory + result.amplifyResourceName;
-          return {
-            ...byResource,
-            [key]: {
-              category: result.amplifyCategory,
-              resource: result.amplifyResourceName,
-              exports: {
-                ...(key in byResource ? byResource[key].exports : {}),
-                ...result.exports.reduce(
-                  (exports, exportItem) => ({
-                    ...exports,
-                    [exportItem.Name]: exportItem.Value,
-                  }),
-                  {}
-                ),
-              },
-            },
-          };
-        }, {});
-
-        Object.keys(nestedOutputs)
-          .map(key => nestedOutputs[key])
-          .forEach(item =>
-            this.context.amplify.updateamplifyMetaAfterResourceUpdate(item.category, item.resource, 'exports', item.exports)
-          );
       });
   }
 
