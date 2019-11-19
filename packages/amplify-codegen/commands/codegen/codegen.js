@@ -37,8 +37,8 @@ module.exports = {
     }
 
     try {
-      let forceDownloadSchema = !context.parameters.options.nodownload;
-      let { maxDepth } = context.parameters.options;
+      const forceDownloadSchema = !context.parameters.options.nodownload;
+      const { 'max-depth': maxDepth } = context.parameters.options;
       await codeGen.generate(context, forceDownloadSchema, maxDepth);
     } catch (e) {
       context.print.info(e.message);
