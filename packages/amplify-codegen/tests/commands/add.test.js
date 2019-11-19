@@ -85,7 +85,7 @@ describe('command - add', () => {
     expect(newProjectConfig.amplifyExtension.generatedFileName).toEqual(MOCK_GENERATED_FILE_NAME);
     expect(newProjectConfig.amplifyExtension.docsFilePath).toEqual(MOCK_DOCS_FILE_PATH);
 
-    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false, undefined, false, undefined);
+    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false, undefined, false, false, undefined);
     expect(generateTypes).toHaveBeenCalledWith(MOCK_CONTEXT, false, false, undefined);
 
     expect(LOAD_CONFIG_METHODS.save).toHaveBeenCalledWith();
