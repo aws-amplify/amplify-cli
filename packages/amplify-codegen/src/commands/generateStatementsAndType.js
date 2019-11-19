@@ -8,7 +8,7 @@ const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../utils');
 const path = require('path');
 const fs = require('fs-extra');
 
-async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
+async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth, addTypename = false) {
   let withoutInit = false;
   // Determine if working in an amplify project
   try {
@@ -55,7 +55,7 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
     );
     await Promise.all(downloadPromises);
   }
-  await generateStatements(context, false, maxDepth, withoutInit, frontend);
+  await generateStatements(context, false, maxDepth, addTypename, withoutInit, frontend);
   await generateTypes(context, false, withoutInit, frontend);
 }
 

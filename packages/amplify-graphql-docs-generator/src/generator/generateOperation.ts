@@ -8,10 +8,11 @@ export default function generateOperation(
   operation: GraphQLField<any, any>,
   schema: GraphQLSchema,
   maxDepth: number = 3,
+  addTypename: boolean,
   options: GQLDocsGenOptions
 ): GQLTemplateGenericOp {
   const args: Array<GQLTemplateArgDeclaration> = getArgs(operation.args);
-  const body: GQLTemplateOpBody = getBody(operation, schema, maxDepth, options);
+  const body: GQLTemplateOpBody = getBody(operation, schema, maxDepth, addTypename, options);
   return {
     args,
     body,

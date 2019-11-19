@@ -7,13 +7,14 @@ export default function getBody(
   op: GraphQLField<any, any>,
   schema: GraphQLSchema,
   maxDepth: number = 3,
+  addTypename: boolean,
   options: GQLDocsGenOptions
 ): GQLTemplateOpBody {
   const args: Array<GQLTemplateArgInvocation> = op.args.map(arg => ({
     name: arg.name,
     value: `\$${arg.name}`,
   }));
-  const fields: GQLTemplateField = getFields(op, schema, maxDepth, options);
+  const fields: GQLTemplateField = getFields(op, schema, maxDepth, addTypename, options);
   return {
     args,
     ...fields,

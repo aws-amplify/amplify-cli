@@ -15,13 +15,14 @@ export function generateQueries(
   queries: GraphQLObjectType,
   schema: GraphQLSchema,
   maxDepth: number,
+  addTypename: boolean,
   options: GQLDocsGenOptions
 ): Array<GQLTemplateOp> | undefined {
   if (queries) {
     const allQueries = queries.getFields();
     const processedQueries: Array<GQLTemplateOp> = Object.keys(allQueries).map(queryName => {
       const type: GQLOperationTypeEnum = GQLOperationTypeEnum.QUERY;
-      const op = generateOperation(allQueries[queryName], schema, maxDepth, options);
+      const op = generateOperation(allQueries[queryName], schema, maxDepth, addTypename, options);
       const name: string = pascalCase(queryName);
       return { type, name, ...op };
     });
@@ -33,13 +34,14 @@ export function generateMutations(
   mutations: GraphQLObjectType,
   schema: GraphQLSchema,
   maxDepth: number,
+  addTypename: boolean = false,
   options: GQLDocsGenOptions
 ): Array<any> {
   if (mutations) {
     const allMutations = mutations.getFields();
     const processedMutations = Object.keys(allMutations).map(mutationName => {
       const type: GQLOperationTypeEnum = GQLOperationTypeEnum.MUTATION;
-      const op = generateOperation(allMutations[mutationName], schema, maxDepth, options);
+      const op = generateOperation(allMutations[mutationName], schema, maxDepth, addTypename, options);
       const name = pascalCase(mutationName);
       return { type, name, ...op };
     });
@@ -51,13 +53,14 @@ export function generateSubscriptions(
   subscriptions: GraphQLObjectType,
   schema: GraphQLSchema,
   maxDepth: number,
+  addTypename: boolean = false,
   options: GQLDocsGenOptions
 ): Array<any> {
   if (subscriptions) {
     const allSubscriptions = subscriptions.getFields();
     const processedMutations = Object.keys(allSubscriptions).map(subscriptionName => {
       const type: GQLOperationTypeEnum = GQLOperationTypeEnum.SUBSCRIPTION;
-      const op = generateOperation(allSubscriptions[subscriptionName], schema, maxDepth, options);
+      const op = generateOperation(allSubscriptions[subscriptionName], schema, maxDepth, addTypename, options);
       const name = pascalCase(subscriptionName);
       return { type, name, ...op };
     });

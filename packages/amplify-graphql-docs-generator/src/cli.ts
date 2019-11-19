@@ -52,9 +52,18 @@ export function run(argv: Array<String>): void {
           default: false,
           type: 'boolean',
         },
+        addTypename: {
+          default: false,
+          type: 'boolean',
+        },
       },
       async argv => {
-        generate(argv.schema, argv.output, { separateFiles: argv.separateFiles, language: argv.language, maxDepth: argv.maxDepth });
+        generate(argv.schema, argv.output, {
+          separateFiles: argv.separateFiles,
+          language: argv.language,
+          maxDepth: argv.maxDepth,
+          addTypename: argv.addTypename,
+        });
       }
     )
     .help()

@@ -136,6 +136,7 @@ async function add(context, apiId = null) {
       codeGenTarget: answer.target || '',
       generatedFileName: answer.generatedFileName || '',
       docsFilePath: answer.docsFilePath,
+      addTypename: false,
       region,
       apiId,
       ...(withoutInit ? { frontend } : {}),
@@ -148,7 +149,7 @@ async function add(context, apiId = null) {
   }
   config.addProject(newProject);
   if (answer.shouldGenerateDocs) {
-    await generateStatements(context, false, undefined, withoutInit, frontend);
+    await generateStatements(context, false, undefined, false, withoutInit, frontend);
   }
   if (answer.shouldGenerateCode) {
     await generateTypes(context, false, withoutInit, frontend);

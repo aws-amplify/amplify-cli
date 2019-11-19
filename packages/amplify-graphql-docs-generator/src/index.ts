@@ -4,6 +4,7 @@ import * as handlebars from 'handlebars';
 import * as prettier from 'prettier';
 const camelCase = require('camel-case');
 const DEFAULT_MAX_DEPTH = 3;
+const DEFAULT_ADD_TYPENAME = false;
 
 import generateAllOps, { GQLTemplateOp, GQLAllOperations, GQLTemplateFragment } from './generator';
 import { loadSchema } from './generator/utils/loading';
@@ -19,7 +20,7 @@ const FILE_EXTENSION_MAP = {
 export function generate(
   schemaPath: string,
   outputPath: string,
-  options: { separateFiles: boolean; language: string; maxDepth: number }
+  options: { separateFiles: boolean; language: string; maxDepth: number; addTypename: boolean }
 ): void {
   const language = options.language || 'graphql';
   const schemaData = loadSchema(schemaPath);
@@ -28,8 +29,10 @@ export function generate(
   }
 
   const maxDepth = options.maxDepth || DEFAULT_MAX_DEPTH;
+  const addTypename = options.addTypename || DEFAULT_ADD_TYPENAME;
+
   const useExternalFragmentForS3Object = options.language === 'graphql';
-  const gqlOperations: GQLAllOperations = generateAllOps(schemaData, maxDepth, {
+  const gqlOperations: GQLAllOperations = generateAllOps(schemaData, maxDepth, addTypename, {
     useExternalFragmentForS3Object,
   });
   registerPartials();

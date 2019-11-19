@@ -16,6 +16,8 @@ describe('generate', () => {
     getSubscriptionType,
   };
   const maxDepth = 4;
+  const addTypename = false;
+
   const generateOption: GQLDocsGenOptions = { useExternalFragmentForS3Object: true };
   beforeEach(() => {
     jest.resetAllMocks();
@@ -30,14 +32,14 @@ describe('generate', () => {
   });
 
   it('should generate operations using the helper methods', () => {
-    generate(mockSchema, maxDepth, generateOption);
-    expect(generateQueries).toHaveBeenCalledWith(mockSchema.getQueryType(), mockSchema, maxDepth, generateOption);
-    expect(generateMutations).toHaveBeenCalledWith(mockSchema.getMutationType(), mockSchema, maxDepth, generateOption);
-    expect(generateSubscriptions).toHaveBeenCalledWith(mockSchema.getSubscriptionType(), mockSchema, maxDepth, generateOption);
+    generate(mockSchema, maxDepth, addTypename, generateOption);
+    expect(generateQueries).toHaveBeenCalledWith(mockSchema.getQueryType(), mockSchema, maxDepth, addTypename, generateOption);
+    expect(generateMutations).toHaveBeenCalledWith(mockSchema.getMutationType(), mockSchema, maxDepth, addTypename, generateOption);
+    expect(generateSubscriptions).toHaveBeenCalledWith(mockSchema.getSubscriptionType(), mockSchema, maxDepth, addTypename, generateOption);
   });
 
   it('should call the individual operation generator and return the value from them', () => {
-    expect(generate(mockSchema, maxDepth, generateOption)).toEqual({
+    expect(generate(mockSchema, maxDepth, addTypename, generateOption)).toEqual({
       queries: 'MOCK_GENERATED_QUERY',
       subscriptions: 'MOCK_GENERATED_SUBSCRIPTION',
       mutations: 'MOCK_GENERATED_MUTATION',

@@ -21,6 +21,7 @@ export default function getFields(
   field: GraphQLField<any, any>,
   schema: GraphQLSchema,
   depth: number = 2,
+  addTypename: boolean = false,
   options: GQLDocsGenOptions
 ): GQLTemplateField {
   const fieldType: GQLConcreteType = getType(field.type);
@@ -36,22 +37,24 @@ export default function getFields(
   const fields: Array<GQLTemplateField> = Object.keys(subFields)
     .map(fieldName => {
       const subField = subFields[fieldName];
-      return getFields(subField, schema, depth - 1, options);
+      return getFields(subField, schema, depth - 1, addTypename, options);
     })
     .filter(f => f);
   const fragments: Array<GQLTemplateFragment> = Object.keys(subFragments)
-    .map(fragment => getFragment(subFragments[fragment], schema, depth, fields, null, false, options))
+    .map(fragment => getFragment(subFragments[fragment], schema, depth, addTypename, fields, null, false, options))
     .filter(f => f);
 
   // Special treatment for S3 input
   // Swift SDK needs S3 Object to have fragment
   if (renderS3FieldFragment) {
-    fragments.push(getFragment(fieldType as GraphQLObjectType, schema, depth, [], 'S3Object', true, options));
+    fragments.push(getFragment(fieldType as GraphQLObjectType, schema, depth, addTypename, [], 'S3Object', true, options));
   }
 
   // if the current field is an object and none of the subfields are included, don't include the field itself
-  if (!(isScalarType(fieldType) || isEnumType(fieldType)) && fields.length === 0 && fragments.length === 0 && !renderS3FieldFragment) {
-    return;
+  // also if there are fields or fragments and the `addTypename` option is true include the '__typename' field
+  if (!(isScalarType(fieldType) || isEnumType(fieldType)) && !renderS3FieldFragment) {
+    if (fields.length === 0 && fragments.length === 0) return;
+    if (addTypename) fields.unshift({ name: '__typename', fields: [], fragments: [], hasBody: false });
   }
 
   return {
