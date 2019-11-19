@@ -26,9 +26,11 @@ async function addFileToXcodeProj(file) {
   const myProj = xcode.project(projectPath);
   return new Promise((resolve, reject) =>
     myProj.parse(function(err) {
+      // hash of the group we add the files to, in this case the root of the xcode project
       let hash = '';
       Object.entries(myProj.hash.project.objects.PBXGroup).forEach(entry => {
         const [key, value] = entry;
+        // only the root pbx group has no name, path or description
         if (typeof value !== 'string' && value.name === undefined && value.path === undefined) {
           hash = key;
         }
