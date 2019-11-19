@@ -7,7 +7,7 @@ const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
-async function generateStatements(context, forceDownloadSchema, maxDepth, withoutInit = false, decoupleFrontend = '') {
+async function generateStatements(context, forceDownloadSchema, maxDepth, addTypename, withoutInit = false, decoupleFrontend = '') {
   try {
     context.amplify.getProjectMeta();
   } catch (e) {
@@ -56,6 +56,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth, withou
       separateFiles: true,
       language,
       maxDepth: maxDepth || cfg.amplifyExtension.maxDepth,
+      addTypename: addTypename || cfg.amplifyExtension.addTypename,
     });
     opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory));
   });
