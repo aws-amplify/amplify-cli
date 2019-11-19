@@ -1,6 +1,7 @@
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -178,10 +179,22 @@ beforeAll(async () => {
         content: String
         owner: String
     }
+    type Performance @model @auth(rules: [{ allow: groups, groups: ["Admin"]}, { allow: private, operations: [read] }]) {
+        id: ID!
+        performer: String!
+        description: String!
+        time: AWSDateTime
+        stage: Stage! @connection
+    }
+    type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}, { allow: private, operations: [read] }]) {
+        id: ID!
+        name: String!
+    }
     `;
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
+      new ModelConnectionTransformer(),
       new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
@@ -2739,4 +2752,184 @@ test("Test deleteOwnerCreateUpdateDeleteProtected with 'update' operation set", 
   expect(response3.data.deleteOwnerCreateUpdateDeleteProtected.id).toBeDefined();
   expect(response3.data.deleteOwnerCreateUpdateDeleteProtected.content).toEqual('Hello, World!');
   expect(response3.data.deleteOwnerCreateUpdateDeleteProtected.owner).toEqual(USERNAME1);
+});
+
+test('Test allow private combined with groups as Admin and non-admin users', async () => {
+  const create = `mutation {
+      p1: createPerformance(input: {
+        id: "P1"
+        performer: "Perf #1"
+        description: "Description"
+        time: "2019-11-11T00:00:00Z"
+        performanceStageId: "S1"
+      }) {
+        id
+      }
+
+      p2: createPerformance(input: {
+        id: "P2"
+        performer: "Perf #2"
+        description: "Description"
+        time: "2019-11-11T00:00:00Z"
+        performanceStageId: "S1"
+      }) {
+        id
+      }
+
+      s1: createStage(input: {
+        id: "S1"
+        name: "Stage #1"
+      }) {
+        id
+      }
+    }
+    `;
+
+  // Create as non-admin user, should fail
+  const response1 = await GRAPHQL_CLIENT_3.query(create, {});
+  console.log(response1);
+
+  expect(response1.data.p1).toBeNull();
+  expect(response1.data.p2).toBeNull();
+  expect(response1.data.s1).toBeNull();
+  expect(response1.errors.length).toEqual(3);
+  expect((response1.errors[0] as any).errorType).toEqual('Unauthorized');
+  expect((response1.errors[1] as any).errorType).toEqual('Unauthorized');
+  expect((response1.errors[2] as any).errorType).toEqual('Unauthorized');
+
+  // Create as Admin, should succeed
+  const response2 = await GRAPHQL_CLIENT_1.query(create, {});
+  console.log(response2);
+
+  expect(response2.data.p1.id).toEqual('P1');
+  expect(response2.data.p2.id).toEqual('P2');
+  expect(response2.data.s1.id).toEqual('S1');
+
+  const update = `mutation {
+    updatePerformance(input: {
+      id: "P1"
+      performer: "Best Perf #1"
+    }) {
+      id
+      performer
+    }
+  }
+  `;
+
+  // Update as non-admin user, should fail
+  const response3 = await GRAPHQL_CLIENT_3.query(update, {});
+  console.log(response3);
+
+  expect(response3.data.updatePerformance).toBeNull();
+  expect(response3.errors.length).toEqual(1);
+  expect((response3.errors[0] as any).errorType).toEqual('Unauthorized');
+
+  // Update as Admin, should succeed
+  const response4 = await GRAPHQL_CLIENT_1.query(update, {});
+  console.log(response4);
+
+  expect(response4.data.updatePerformance.id).toEqual('P1');
+  expect(response4.data.updatePerformance.performer).toEqual('Best Perf #1');
+
+  // List as non-admin and Admin user as well, should succeed
+  const list = `query List {
+    listPerformances {
+      items {
+        id
+        performer
+        description
+        time
+        stage {
+          name
+        }
+      }
+    }
+  }
+  `;
+
+  const response5 = await GRAPHQL_CLIENT_3.query(list, {});
+  console.log(response5);
+
+  expect(response5.data.listPerformances).toBeDefined();
+  expect(response5.data.listPerformances.items).toBeDefined();
+  expect(response5.data.listPerformances.items.length).toEqual(2);
+  expect(response5.data.listPerformances.items[0].id).toEqual('P2');
+  expect(response5.data.listPerformances.items[0].performer).toEqual('Perf #2');
+  expect(response5.data.listPerformances.items[0].stage).toBeDefined();
+  expect(response5.data.listPerformances.items[0].stage.name).toEqual('Stage #1');
+  expect(response5.data.listPerformances.items[1].id).toEqual('P1');
+  expect(response5.data.listPerformances.items[1].performer).toEqual('Best Perf #1');
+  expect(response5.data.listPerformances.items[1].stage).toBeDefined();
+  expect(response5.data.listPerformances.items[1].stage.name).toEqual('Stage #1');
+
+  const response6 = await GRAPHQL_CLIENT_1.query(list, {});
+  console.log(response6);
+
+  expect(response6.data.listPerformances).toBeDefined();
+  expect(response6.data.listPerformances.items).toBeDefined();
+  expect(response6.data.listPerformances.items.length).toEqual(2);
+  expect(response6.data.listPerformances.items[0].id).toEqual('P2');
+  expect(response6.data.listPerformances.items[0].performer).toEqual('Perf #2');
+  expect(response6.data.listPerformances.items[0].stage).toBeDefined();
+  expect(response6.data.listPerformances.items[0].stage.name).toEqual('Stage #1');
+  expect(response6.data.listPerformances.items[1].id).toEqual('P1');
+  expect(response6.data.listPerformances.items[1].performer).toEqual('Best Perf #1');
+  expect(response6.data.listPerformances.items[1].stage.name).toEqual('Stage #1');
+  expect(response6.data.listPerformances.items[1].stage).toBeDefined();
+
+  // Get as non-admin and Admin user as well, should succeed
+  const get = `query Get {
+    getPerformance(id: "P1") {
+      id
+      performer
+      description
+      time
+      stage {
+        name
+      }
+    }
+  }
+  `;
+
+  const response7 = await GRAPHQL_CLIENT_3.query(get, {});
+  console.log(response7);
+
+  expect(response7.data.getPerformance).toBeDefined();
+  expect(response7.data.getPerformance.id).toEqual('P1');
+  expect(response7.data.getPerformance.performer).toEqual('Best Perf #1');
+  expect(response7.data.getPerformance.stage).toBeDefined();
+  expect(response7.data.getPerformance.stage.name).toEqual('Stage #1');
+
+  const response8 = await GRAPHQL_CLIENT_1.query(get, {});
+  console.log(response8);
+
+  expect(response8.data.getPerformance).toBeDefined();
+  expect(response8.data.getPerformance.id).toEqual('P1');
+  expect(response8.data.getPerformance.performer).toEqual('Best Perf #1');
+  expect(response8.data.getPerformance.stage).toBeDefined();
+  expect(response8.data.getPerformance.stage.name).toEqual('Stage #1');
+
+  const deleteMutation = `mutation {
+    deletePerformance(input: {
+      id: "P1"
+    }) {
+      id
+    }
+  }
+  `;
+
+  // Delete as non-admin user, should fail
+  const response9 = await GRAPHQL_CLIENT_3.query(deleteMutation, {});
+  console.log(response9);
+
+  expect(response9.data.deletePerformance).toBeNull();
+  expect(response9.errors.length).toEqual(1);
+  expect((response9.errors[0] as any).errorType).toEqual('Unauthorized');
+
+  // Delete as Admin, should succeed
+  const response10 = await GRAPHQL_CLIENT_1.query(deleteMutation, {});
+  console.log(response10);
+
+  expect(response10.data.deletePerformance).toBeDefined();
+  expect(response10.data.deletePerformance.id).toEqual('P1');
 });

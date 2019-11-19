@@ -38,7 +38,23 @@ import {
   makeField,
   ModelResourceIDs,
 } from 'graphql-transformer-common';
-import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, or, newline, comment } from 'graphql-mapping-template';
+import {
+  Expression,
+  print,
+  raw,
+  iff,
+  forEach,
+  set,
+  ref,
+  list,
+  compoundExpression,
+  or,
+  newline,
+  comment,
+  and,
+  not,
+  parens,
+} from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
@@ -672,8 +688,12 @@ Either make the field optional, set auth on the object and not the field, or dis
       const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
       const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
       const ownerAuthorizationRules = this.getOwnerRules(rules);
+      const providerAuthorization = this.hasProviderAuthRules(rules);
 
-      if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      if (
+        (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+        providerAuthorization === false
+      ) {
         // Generate the expressions to validate each strategy.
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
 
@@ -972,8 +992,12 @@ All @auth directives used on field definitions are performed when the field is r
     const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
     const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
     const ownerAuthorizationRules = this.getOwnerRules(rules);
+    const providerAuthorization = this.hasProviderAuthRules(rules);
 
-    if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+    if (
+      (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+      providerAuthorization === false
+    ) {
       // Generate the expressions to validate each strategy.
       const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
       const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForReadOperations(
@@ -1048,29 +1072,29 @@ All @auth directives used on field definitions are performed when the field is r
     const resolver = ctx.getResource(resolverResourceId);
     if (!rules || rules.length === 0 || !resolver) {
       return;
-    } else {
-      if (modelConfiguration.shouldHave('list')) {
-        const operationName = explicitOperationName ? explicitOperationName : modelConfiguration.getName('list');
-        // If the parent type has any rules for this operation AND
-        // the default provider we've to get directives including the default
-        // as well.
-        const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'list') : false;
-        const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
+    }
 
-        if (operationDirectives.length > 0) {
-          this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
-        }
+    if (modelConfiguration.shouldHave('list')) {
+      const operationName = explicitOperationName ? explicitOperationName : modelConfiguration.getName('list');
+      // If the parent type has any rules for this operation AND
+      // the default provider we've to get directives including the default
+      // as well.
+      const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'list') : false;
+      const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
-        this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
+      if (operationDirectives.length > 0) {
+        this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
       }
 
-      const authExpression = this.authorizationExpressionForListResult(rules);
+      this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
+    }
 
-      if (authExpression) {
-        const templateParts = [print(authExpression), resolver.Properties.ResponseMappingTemplate];
-        resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
-        ctx.setResource(resolverResourceId, resolver);
-      }
+    const authExpression = this.authorizationExpressionForListResult(rules);
+
+    if (authExpression) {
+      const templateParts = [print(authExpression), resolver.Properties.ResponseMappingTemplate];
+      resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
+      ctx.setResource(resolverResourceId, resolver);
     }
   }
 
@@ -1085,8 +1109,17 @@ All @auth directives used on field definitions are performed when the field is r
     const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
     const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
     const ownerAuthorizationRules = this.getOwnerRules(rules);
+    const providerAuthorization = this.hasProviderAuthRules(rules);
 
-    if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+    // if there is a rule combination of owner or group and private, public for userpools then we don't need to emit any of the access check
+    // logic since it is not needed. For example we don't emit any of this logic for rules like this:
+    // { allow: groups, groups: ["Admin"]},
+    // { allow: private }
+
+    if (
+      (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+      providerAuthorization === false
+    ) {
       // Generate the expressions to validate each strategy.
       const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
 
@@ -1108,7 +1141,7 @@ All @auth directives used on field definitions are performed when the field is r
       const appendIfLocallyAuthorized = this.resources.appendItemIfLocallyAuthorized();
 
       const ifNotStaticallyAuthedFilterObjects = iff(
-        raw(`! $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
+        not(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable)),
         compoundExpression([
           set(ref('items'), list([])),
           forEach(ref('item'), ref(itemList), [
@@ -1203,8 +1236,12 @@ All @auth directives used on field definitions are performed when the field is r
       const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
       const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
       const ownerAuthorizationRules = this.getOwnerRules(rules);
+      const providerAuthorization = this.hasProviderAuthRules(rules);
 
-      if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      if (
+        (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+        providerAuthorization === false
+      ) {
         // Generate the expressions to validate each strategy.
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
 
@@ -1322,8 +1359,12 @@ All @auth directives used on field definitions are performed when the field is r
       const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
       const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
       const ownerAuthorizationRules = this.getOwnerRules(rules);
+      const providerAuthorization = this.hasProviderAuthRules(rules);
 
-      if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      if (
+        (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+        providerAuthorization === false
+      ) {
         // Generate the expressions to validate each strategy.
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
 
@@ -1683,8 +1724,9 @@ All @auth directives used on field definitions are performed when the field is r
       // Break the rules out by strategy.
       const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
       const ownerAuthorizationRules = this.getOwnerRules(rules);
+      const providerAuthorization = this.hasProviderAuthRules(rules);
 
-      if (staticGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      if ((staticGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) && providerAuthorization === false) {
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
         const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(ownerAuthorizationRules);
 
@@ -1787,6 +1829,10 @@ All @auth directives used on field definitions are performed when the field is r
 
   private getDynamicGroupRules(rules: AuthRule[]): AuthRule[] {
     return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups));
+  }
+
+  public hasProviderAuthRules(rules: AuthRule[]): Boolean {
+    return rules.filter(rule => rule.provider === 'userPools' && (rule.allow === 'public' || rule.allow === 'private')).length > 0;
   }
 
   private extendTypeWithDirectives(ctx: TransformerContext, typeName: string, directives: DirectiveNode[]) {
