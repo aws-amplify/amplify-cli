@@ -3,7 +3,7 @@ const featureName = 'notifications';
 module.exports = {
   name: featureName,
   alias: ['notification'],
-  run: async (context) => {
+  run: async context => {
     if (/^win/.test(process.platform)) {
       try {
         const { run } = require(`./${featureName}/${context.parameters.first}`);

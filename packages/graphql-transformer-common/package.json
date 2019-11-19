@@ -1,12 +1,13 @@
 {
   "name": "graphql-transformer-common",
-  "version": "3.26.0",
+  "version": "3.32.0",
   "description": "Common code and constants for AppSync Transformers",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci -i",
     "build": "tsc",
+    "watch": "tsc -w",
     "clean": "rm -rf ./lib"
   },
   "keywords": [
@@ -19,7 +20,7 @@
   "dependencies": {
     "cloudform": "^3.5.0",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "3.19.0"
+    "graphql-mapping-template": "3.25.0"
   },
   "devDependencies": {
     "@types/graphql": "^0.13.4",
@@ -29,7 +30,7 @@
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.4"
   },
   "jest": {
     "transform": {

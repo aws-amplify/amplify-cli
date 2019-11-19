@@ -4,7 +4,7 @@ const initializer = require('./lib/initializer');
 const configManager = require('./lib/configuration-manager');
 const projectScanner = require('./lib/project-scanner');
 const constants = require('./lib/constants');
-const { createAWSConfig } = require('./lib/frontend-config-creator');
+const { createAWSConfig, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
 
 const pluginName = 'android';
 
@@ -26,7 +26,6 @@ function createFrontendConfigs(context, amplifyResources, amplifyCloudResources)
   // createAmplifyConfig(context, outputsByCategory);
   return createAWSConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
 }
-
 
 function configure(context) {
   return configManager.configure(context);
@@ -68,4 +67,5 @@ module.exports = {
   createFrontendConfigs,
   executeAmplifyCommand,
   handleAmplifyEvent,
+  deleteConfig: deleteAmplifyConfig,
 };

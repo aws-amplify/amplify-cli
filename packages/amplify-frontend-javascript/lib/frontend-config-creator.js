@@ -1,21 +1,58 @@
 const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
+const graphQLConfig = require('graphql-config');
 
 const CUSTOM_CONFIG_BLACK_LIST = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
   'aws_appsync_dangerously_connect_to_http_endpoint_for_testing',
 ];
 
+const FILE_EXTENSION_MAP = {
+  javascript: 'js',
+  graphql: 'graphql',
+  flow: 'js',
+  typescript: 'ts',
+  angular: 'graphql',
+};
+
+const fileNames = ['queries', 'mutations', 'subscriptions'];
+
+function deleteAmplifyConfig(context) {
+  const { srcDirPath, projectPath } = getSrcDir(context);
+  if (fs.existsSync(srcDirPath)) {
+    const targetFilePath = path.join(srcDirPath, constants.configFilename);
+    fs.removeSync(targetFilePath);
+  }
+  if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;
+  const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
+  if (gqlConfig && gqlConfig.config) {
+    const { projects } = gqlConfig.config;
+    Object.keys(projects).forEach(project => {
+      const { codeGenTarget, docsFilePath } = projects[project].extensions.amplify;
+      fileNames.forEach(filename => {
+        const file = path.join(projectPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget] || 'graphql'}`);
+        if (fs.existsSync(file)) fs.removeSync(file);
+      });
+    });
+  }
+}
+
+function getSrcDir(context) {
+  const { amplify } = context;
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const frontendConfig = projectConfig.config;
+  return {
+    srcDirPath: path.join(projectPath, frontendConfig.SourceDir),
+    projectPath,
+  };
+}
+
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify } = context;
   const pluginDir = __dirname;
-  const projectPath = context.exeInfo ?
-    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ?
-    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
+  const { srcDirPath } = getSrcDir(context);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.configFilename);
@@ -53,7 +90,7 @@ function getCustomConfigs(cloudAWSExports, currentAWSExports) {
   if (currentAWSExports) {
     Object.keys(currentAWSExports)
       .filter(key => !CUSTOM_CONFIG_BLACK_LIST.includes(key))
-      .forEach((key) => {
+      .forEach(key => {
         if (!cloudAWSExports[key]) {
           customConfigs[key] = currentAWSExports[key];
         }
@@ -70,25 +107,34 @@ function getAWSExportsObject(resources) {
   const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
 
-  Object.keys(serviceResourceMapping).forEach((service) => {
+  Object.keys(serviceResourceMapping).forEach(service => {
     switch (service) {
-      case 'Cognito': Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
+      case 'Cognito':
+        Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'S3': Object.assign(configOutput, getS3Config(serviceResourceMapping[service], projectRegion));
+      case 'S3':
+        Object.assign(configOutput, getS3Config(serviceResourceMapping[service], projectRegion));
         break;
-      case 'AppSync': Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
+      case 'AppSync':
+        Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'API Gateway': Object.assign(configOutput, getAPIGWConfig(serviceResourceMapping[service], projectRegion));
+      case 'API Gateway':
+        Object.assign(configOutput, getAPIGWConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'Pinpoint': Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
+      case 'Pinpoint':
+        Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'DynamoDB': Object.assign(configOutput, getDynamoDBConfig(serviceResourceMapping[service], projectRegion));
+      case 'DynamoDB':
+        Object.assign(configOutput, getDynamoDBConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'S3AndCloudFront': Object.assign(configOutput, getS3AndCloudFrontConfig(serviceResourceMapping[service], projectRegion));
+      case 'S3AndCloudFront':
+        Object.assign(configOutput, getS3AndCloudFrontConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'Lex': Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
+      case 'Lex':
+        Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'Sumerian': Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
+      case 'Sumerian':
+        Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
         break;
       // predictions config generation
       case 'Translate':
@@ -118,7 +164,8 @@ function getAWSExportsObject(resources) {
           ...getInferConfig(serviceResourceMapping[service]),
         };
         break;
-      default: break;
+      default:
+        break;
     }
   });
 
@@ -132,10 +179,8 @@ function getAWSExportsObject(resources) {
 
 async function getCurrentAWSExports(context) {
   const { amplify } = context;
-  const projectPath = context.exeInfo ?
-    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ?
-    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
   const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
 
@@ -152,10 +197,8 @@ async function getCurrentAWSExports(context) {
 async function generateAWSExportsFile(context, configOutput) {
   const { amplify } = context;
   const pluginDir = __dirname;
-  const projectPath = context.exeInfo ?
-    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ?
-    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
   const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
 
@@ -214,9 +257,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     responseType,
   };
 
-  if (cognitoResource.output.GoogleWebClient ||
-    cognitoResource.output.FacebookWebClient ||
-    cognitoResource.output.AmazonWebClient) {
+  if (cognitoResource.output.GoogleWebClient || cognitoResource.output.FacebookWebClient || cognitoResource.output.AmazonWebClient) {
     idpFederation = true;
   }
 
@@ -229,7 +270,6 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   } else if (idpFederation) {
     federationTarget = 'COGNITO_IDENTITY_POOLS';
   }
-
 
   return {
     aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolId,
@@ -341,7 +381,7 @@ function getIdentifyConfig(identifyResources) {
   const baseConfig = {
     proxy: false,
   };
-  identifyResources.forEach((identifyResource) => {
+  identifyResources.forEach(identifyResource => {
     if (identifyResource.identifyType === 'identifyText') {
       resultConfig.identifyText = {
         ...baseConfig,
@@ -434,8 +474,7 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
   return {
     aws_content_delivery_bucket: s3AndCloudfrontResource.output.HostingBucketName,
     aws_content_delivery_bucket_region: s3AndCloudfrontResource.output.Region,
-    aws_content_delivery_url: s3AndCloudfrontResource.output.CloudFrontSecureURL ||
-      s3AndCloudfrontResource.output.WebsiteURL,
+    aws_content_delivery_url: s3AndCloudfrontResource.output.CloudFrontSecureURL || s3AndCloudfrontResource.output.WebsiteURL,
   };
 }
 
@@ -454,7 +493,7 @@ function getLexConfig(lexResources) {
 
 function getSumerianConfig(sumerianResources) {
   const scenes = {};
-  sumerianResources.forEach((r) => {
+  sumerianResources.forEach(r => {
     const { resourceName, output } = r;
     delete output.service;
 
@@ -469,4 +508,4 @@ function getSumerianConfig(sumerianResources) {
   };
 }
 
-module.exports = { createAWSExports, createAmplifyConfig };
+module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };

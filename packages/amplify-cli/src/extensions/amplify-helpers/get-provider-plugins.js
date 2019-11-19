@@ -1,6 +1,6 @@
 function getProviderPlugins(context) {
   const providers = {};
-  context.runtime.plugins.forEach((plugin) => {
+  context.runtime.plugins.forEach(plugin => {
     if (plugin.pluginType === 'provider') {
       providers[plugin.pluginName] = plugin.directory;
     }

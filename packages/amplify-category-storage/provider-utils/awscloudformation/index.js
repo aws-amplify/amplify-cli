@@ -4,15 +4,10 @@ function addResource(context, category, service, options) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { addWalkthrough } = require(serviceWalkthroughSrc);
 
-  return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options)
-    .then(async (resourceName) => {
-      context.amplify.updateamplifyMetaAfterResourceAdd(
-        category,
-        resourceName,
-        options,
-      );
-      return resourceName;
-    });
+  return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async resourceName => {
+    context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+    return resourceName;
+  });
 }
 
 function updateResource(context, category, service) {
@@ -57,7 +52,9 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-
 module.exports = {
-  addResource, updateResource, migrateResource, getPermissionPolicies,
+  addResource,
+  updateResource,
+  migrateResource,
+  getPermissionPolicies,
 };

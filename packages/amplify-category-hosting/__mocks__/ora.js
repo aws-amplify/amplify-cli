@@ -1,13 +1,9 @@
 function ora() {
   return {
-    start: () => {
-    },
-    stop: () => {
-    },
-    succeed: () => {
-    },
-    fail: () => {
-    },
+    start: () => {},
+    stop: () => {},
+    succeed: () => {},
+    fail: () => {},
   };
 }
 

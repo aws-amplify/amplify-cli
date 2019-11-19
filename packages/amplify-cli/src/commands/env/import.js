@@ -4,7 +4,7 @@ const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-fil
 
 module.exports = {
   name: 'import',
-  run: async (context) => {
+  run: async context => {
     const envName = context.parameters.options.name;
     if (!envName) {
       context.print.error('You must pass in the name of the environment using the --name flag');
@@ -24,14 +24,16 @@ module.exports = {
       try {
         awsInfo = JSON.parse(context.parameters.options.awsInfo);
       } catch (e) {
-        context.print.error('You must pass in the AWS credential info in an object format for intializating your environment using the --awsInfo flag');
+        context.print.error(
+          'You must pass in the AWS credential info in an object format for intializating your environment using the --awsInfo flag'
+        );
         process.exit(1);
       }
     }
 
     let envFound = false;
     const allEnvs = context.amplify.getEnvDetails();
-    Object.keys(allEnvs).forEach((env) => {
+    Object.keys(allEnvs).forEach(env => {
       if (env === envName) {
         envFound = true;
       }
@@ -61,7 +63,11 @@ module.exports = {
     if (envFound) {
       if (context.parameters.options.yes) {
         addNewEnvConfig();
-      } else if (await context.amplify.confirmPrompt.run('We found an environment with the same name. Do you want to overwrite existing enviornment config?')) {
+      } else if (
+        await context.amplify.confirmPrompt.run(
+          'We found an environment with the same name. Do you want to overwrite existing enviornment config?'
+        )
+      ) {
         addNewEnvConfig();
       }
     } else {

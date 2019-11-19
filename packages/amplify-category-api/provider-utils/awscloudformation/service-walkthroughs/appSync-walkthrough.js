@@ -1,7 +1,9 @@
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
+const uuid = require('uuid');
 const path = require('path');
 const open = require('open');
+const TransformPackage = require('graphql-transformer-core');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -12,15 +14,33 @@ const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
 const defaultStackName = 'CustomResources.json';
 
+const { collectDirectivesByTypeNames, readTransformerConfiguration, writeTransformerConfiguration } = TransformPackage;
+
+const authProviderChoices = [
+  {
+    name: 'API key',
+    value: 'API_KEY',
+  },
+  {
+    name: 'Amazon Cognito User Pool',
+    value: 'AMAZON_COGNITO_USER_POOLS',
+  },
+  {
+    name: 'IAM',
+    value: 'AWS_IAM',
+  },
+  {
+    name: 'OpenID Connect',
+    value: 'OPENID_CONNECT',
+  },
+];
+
 function openConsole(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
   let appSyncMeta;
-  Object.keys(categoryAmplifyMeta).forEach((resourceName) => {
-    if (
-      categoryAmplifyMeta[resourceName].service === serviceName &&
-      categoryAmplifyMeta[resourceName].output
-    ) {
+  Object.keys(categoryAmplifyMeta).forEach(resourceName => {
+    if (categoryAmplifyMeta[resourceName].service === serviceName && categoryAmplifyMeta[resourceName].output) {
       appSyncMeta = categoryAmplifyMeta[resourceName].output;
     }
   });
@@ -38,9 +58,14 @@ function openConsole(context) {
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
+  let authConfig;
+  let defaultAuthType;
+  let resolverConfig;
 
   if (resourceName) {
-    context.print.warning('You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.');
+    context.print.warning(
+      'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.'
+    );
     process.exit(0);
   }
 
@@ -74,9 +99,13 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     DynamoDBEnableServerSideEncryption: 'false',
   };
 
-  // Ask auth/security questions
+  // Ask additonal questions
 
-  const authConfig = await askSecurityQuestions(context, parameters);
+  /* eslint-disable */
+  ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
+  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType));
+  await checkForCognitoUserPools(context, parameters, authConfig);
+  /* eslint-disable */
 
   // Ask schema file question
 
@@ -110,10 +139,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Write the default custom resources stack out to disk.
   const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
-  fs.writeFileSync(
-    `${resourceDir}/${stacksDirName}/${defaultStackName}`,
-    defaultCustomResourcesStack,
-  );
+  fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
 
   if (schemaFileAnswer[inputs[2].key]) {
     // User has an annotated schema file
@@ -217,17 +243,20 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
+  if (resolverConfig) {
+    await writeResolverConfig(context, resolverConfig, resourceDir);
+  }
+
   if (editSchemaChoice) {
     return context.amplify.openEditor(context, targetSchemaFilePath).then(async () => {
       let notCompiled = true;
       while (notCompiled) {
         try {
-          await context.amplify.executeProviderUtils(
-            context,
-            'awscloudformation',
-            'compileSchema',
-            { resourceDir, parameters, authConfig },
-          );
+          await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+            resourceDir,
+            parameters,
+            authConfig,
+          });
         } catch (e) {
           context.print.error('Failed compiling GraphQL schema:');
           context.print.info(e.message);
@@ -255,10 +284,62 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
 }
 
+async function writeResolverConfig(context, syncConfig, resourceDir) {
+  const localTransformerConfig = await readTransformerConfiguration(resourceDir);
+  localTransformerConfig.ResolverConfig = syncConfig;
+  await writeTransformerConfiguration(resourceDir, localTransformerConfig);
+}
+
+async function createSyncFunction(context) {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+  const pluginDir = __dirname;
+  const [shortId] = uuid().split('-');
+
+  const functionName = `syncConflictHandler${shortId}`;
+
+  const functionProps = {
+    functionName: `${functionName}`,
+    roleName: `${functionName}LambdaRole`,
+  };
+
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: '../sync-conflict-handler-assets/sync-conflict-handler-index.js.ejs',
+      target: `${targetDir}/function/${functionName}/src/index.js`,
+    },
+    {
+      dir: pluginDir,
+      template: '../sync-conflict-handler-assets/sync-conflict-handler-package.json.ejs',
+      target: `${targetDir}/function/${functionName}/src/package.json`,
+    },
+    {
+      dir: pluginDir,
+      template: '../sync-conflict-handler-assets/sync-conflict-handler-template.json.ejs',
+      target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
+    },
+  ];
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
+
+  const backendConfigs = {
+    service: 'Lambda',
+    providerPlugin: 'awscloudformation',
+    build: true,
+  };
+
+  await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
+  context.print.success(`Successfully added ${functionName} function locally`);
+
+  return functionName + '-${env}';
+}
+
 async function updateWalkthrough(context) {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
+  let authConfig, defaultAuthType, resolverConfig;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
 
   // There can only be one appsync resource
@@ -266,7 +347,9 @@ async function updateWalkthrough(context) {
     const resource = resources[0];
     if (resource.providerPlugin !== providerName) {
       // TODO: Move message string to seperate file
-      throw new Error(`The selected resource is not managed using AWS Cloudformation. Please use the AWS AppSync Console to make updates to your API - ${resource.resourceName}`);
+      throw new Error(
+        `The selected resource is not managed using AWS Cloudformation. Please use the AWS AppSync Console to make updates to your API - ${resource.resourceName}`
+      );
     }
     ({ resourceName } = resource);
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -287,7 +370,27 @@ async function updateWalkthrough(context) {
     context.print.info(e.stack);
   }
 
-  const authConfig = await askSecurityQuestions(context, parameters);
+  // Get models
+
+  const project = await TransformPackage.readProjectConfiguration(resourceDir);
+
+  // Check for common errors
+  const directiveMap = collectDirectivesByTypeNames(project.schema);
+  let modelTypes = [];
+
+  if (directiveMap.types) {
+    Object.keys(directiveMap.types).forEach(type => {
+      if (directiveMap.types[type].includes('model')) {
+        modelTypes.push(type);
+      }
+    });
+  }
+
+  /* eslint-disable */
+  ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
+  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
+  await checkForCognitoUserPools(context, parameters, authConfig);
+  /* eslint-disable */
 
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
@@ -311,6 +414,10 @@ async function updateWalkthrough(context) {
   jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
+  if (resolverConfig) {
+    await writeResolverConfig(context, resolverConfig, resourceDir);
+  }
+
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     resourceDir,
     parameters,
@@ -318,43 +425,8 @@ async function updateWalkthrough(context) {
   });
 }
 
-async function askSecurityQuestions(context, parameters) {
-  const authProviderChoices = [
-    {
-      name: 'API key',
-      value: 'API_KEY',
-    },
-    {
-      name: 'Amazon Cognito User Pool',
-      value: 'AMAZON_COGNITO_USER_POOLS',
-    },
-    {
-      name: 'IAM',
-      value: 'AWS_IAM',
-    },
-    {
-      name: 'OpenID Connect',
-      value: 'OPENID_CONNECT',
-    },
-  ];
-
-  const defaultAuthTypeQuestion = {
-    type: 'list',
-    name: 'authType',
-    message: 'Choose the default authorization type for the API',
-    choices: authProviderChoices,
-  };
-
-  const { authType } = await inquirer.prompt([defaultAuthTypeQuestion]);
-
-  const authConfig = {
-    additionalAuthenticationProviders: [],
-  };
-
-  // Get default auth configured
-  const defaultAuth = await askAuthQuestions(authType, context);
-
-  authConfig.defaultAuthentication = defaultAuth;
+async function askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes) {
+  let resolverConfig;
 
   const advancedSettingsQuestion = {
     type: 'list',
@@ -375,8 +447,162 @@ async function askSecurityQuestions(context, parameters) {
   const advancedSettingsAnswer = await inquirer.prompt([advancedSettingsQuestion]);
 
   if (advancedSettingsAnswer.advancedSettings) {
+    authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
+    if (process.env.AMPLIFY_DATASTORE_SYNC === 'true') {
+      resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
+    }
+  }
+
+  return { authConfig, resolverConfig };
+}
+
+async function askResolverConflictQuestion(context, parameters, modelTypes) {
+  let resolverConfig = {};
+
+  if (await context.prompt.confirm('Configure conflict detection?')) {
+    const askConflictResolutionStrategy = async msg => {
+      let conflictResolutionStrategy;
+
+      do {
+        if (conflictResolutionStrategy === 'Learn More') {
+          // Todo: Update the help text
+          context.print.info('');
+          context.print.info('DataStore help text');
+          context.print.info('');
+        }
+
+        const conflictResolutionQuestion = {
+          type: 'list',
+          name: 'conflictResolutionStrategy',
+          message: msg,
+          default: 'AUTOMERGE',
+          choices: [
+            {
+              name: 'Auto Merge',
+              value: 'AUTOMERGE',
+            },
+            {
+              name: 'Optimistic Concurrency',
+              value: 'OPTIMISTIC_CONCURRENCY',
+            },
+            {
+              name: 'Custom Lambda',
+              value: 'LAMBDA',
+            },
+            {
+              name: 'Learn More',
+              value: 'Learn More',
+            },
+          ],
+        };
+        ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
+      } while (conflictResolutionStrategy === 'Learn More');
+
+      let syncConfig = {
+        ConflictHandler: conflictResolutionStrategy,
+        ConflictDetection: 'VERSION',
+      };
+
+      if (conflictResolutionStrategy === 'LAMBDA') {
+        const lambdaFunctionName = await askSyncFunctionQuestion(context);
+        syncConfig.LambdaConflictHandler = {};
+        syncConfig.LambdaConflictHandler.name = lambdaFunctionName;
+      }
+
+      return syncConfig;
+    };
+
+    resolverConfig.project = await askConflictResolutionStrategy('Select the default resolution strategy');
+
+    // Ask for per-model resolver override setting
+
+    if (modelTypes && modelTypes.length > 0) {
+      if (await context.prompt.confirm('Do you want to override default per model settings?')) {
+        const modelTypeQuestion = {
+          type: 'checkbox',
+          name: 'selectedModelTypes',
+          message: 'Select the models from below:',
+          choices: modelTypes,
+        };
+
+        const { selectedModelTypes } = await inquirer.prompt([modelTypeQuestion]);
+
+        if (selectedModelTypes.length > 0) {
+          resolverConfig.models = {};
+          for (let i = 0; i < selectedModelTypes.length; i += 1) {
+            resolverConfig.models[selectedModelTypes[i]] = await askConflictResolutionStrategy(
+              `Select the resolution strategy for ${selectedModelTypes[i]} model`
+            );
+          }
+        }
+      }
+    }
+  }
+
+  return resolverConfig;
+}
+
+async function askSyncFunctionQuestion(context) {
+  const syncLambdaQuestion = {
+    type: 'list',
+    name: 'syncLambdaAnswer',
+    message: 'Select from the options below',
+    choices: [
+      {
+        name: 'Create a new Lambda Function',
+        value: 'NEW',
+      },
+      {
+        name: 'Existing Lambda Function',
+        value: 'EXISTING',
+      },
+    ],
+  };
+
+  const { syncLambdaAnswer } = await inquirer.prompt([syncLambdaQuestion]);
+
+  let lambdaFunctionName;
+
+  if (syncLambdaAnswer === 'NEW') {
+    lambdaFunctionName = await createSyncFunction(context);
+  } else {
+    const syncLambdaNameQuestion = {
+      type: 'input',
+      name: 'lambdaFunctionName',
+      message: 'Enter lambda function name',
+      validate: val => !!val,
+    };
+    ({ lambdaFunctionName } = await inquirer.prompt([syncLambdaNameQuestion]));
+  }
+
+  return lambdaFunctionName;
+}
+async function askDefaultAuthQuestion(context, parameters) {
+  const defaultAuthTypeQuestion = {
+    type: 'list',
+    name: 'defaultAuthType',
+    message: 'Choose the default authorization type for the API',
+    choices: authProviderChoices,
+  };
+
+  const { defaultAuthType } = await inquirer.prompt([defaultAuthTypeQuestion]);
+
+  const authConfig = {
+    additionalAuthenticationProviders: [],
+  };
+
+  // Get default auth configured
+  const defaultAuth = await askAuthQuestions(defaultAuthType, context);
+
+  authConfig.defaultAuthentication = defaultAuth;
+
+  return { authConfig, defaultAuthType };
+}
+
+async function askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType) {
+  if (await context.prompt.confirm('Configure additional auth types?')) {
     // Get additional auth configured
-    const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== authType);
+    const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
 
     const additionalProvidersQuestion = {
       type: 'checkbox',
@@ -395,14 +621,17 @@ async function askSecurityQuestions(context, parameters) {
       authConfig.additionalAuthenticationProviders.push(config);
     }
   }
-  const additionalUserPoolProviders = authConfig.additionalAuthenticationProviders.filter(provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS');
-  const additionalUserPoolProvider =
-    additionalUserPoolProviders.length > 0 ? additionalUserPoolProviders[0] : undefined;
 
-  if (
-    authConfig.defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS' ||
-    additionalUserPoolProvider
-  ) {
+  return authConfig;
+}
+
+async function checkForCognitoUserPools(context, parameters, authConfig) {
+  const additionalUserPoolProviders = authConfig.additionalAuthenticationProviders.filter(
+    provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
+  );
+  const additionalUserPoolProvider = additionalUserPoolProviders.length > 0 ? additionalUserPoolProviders[0] : undefined;
+
+  if (authConfig.defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS' || additionalUserPoolProvider) {
     let userPoolId;
     const configuredUserPoolName = checkIfAuthExists(context);
 
@@ -422,8 +651,6 @@ async function askSecurityQuestions(context, parameters) {
   } else {
     delete parameters.AuthCognitoUserPoolId;
   }
-
-  return authConfig;
 }
 
 async function askAuthQuestions(authType, context, printLeadText = false) {
@@ -501,7 +728,7 @@ async function askApiKeyQuestions() {
       type: 'input',
       name: 'apiKeyExpirationDays',
       message: 'After how many days from now the API key should expire (1-365):',
-      default: 180,
+      default: 7,
       validate: validateDays,
     },
   ];
@@ -566,7 +793,9 @@ function validateDays(input) {
 }
 
 function validateIssuerUrl(input) {
-  const isValid = /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(input);
+  const isValid = /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
+    input
+  );
 
   if (!isValid) {
     return 'The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost.';
@@ -592,7 +821,7 @@ function resourceAlreadyExists(context) {
 
   if (amplifyMeta[category]) {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === serviceName) {
         resourceName = resource;
       }
@@ -611,7 +840,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach((resource) => {
+    Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === authServiceName) {
         authResourceName = resource;
       }
@@ -631,7 +860,7 @@ function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
       case 'create':
         actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
@@ -683,10 +912,7 @@ function getAuthTypes(authConfig) {
     .map(provider => provider.authenticationType)
     .filter(t => !!t);
 
-  const uniqueAuthTypes = new Set([
-    ...additionalAuthTypes,
-    authConfig.defaultAuthentication.authenticationType,
-  ]);
+  const uniqueAuthTypes = new Set([...additionalAuthTypes, authConfig.defaultAuthentication.authenticationType]);
 
   return [...uniqueAuthTypes.keys()];
 }

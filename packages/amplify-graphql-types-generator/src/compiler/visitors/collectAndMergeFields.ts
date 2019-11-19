@@ -9,17 +9,10 @@ declare module '../' {
   }
 }
 
-export function collectAndMergeFields(
-  selectionSet: SelectionSet,
-  mergeInFragmentSpreads: Boolean = true
-): Field[] {
+export function collectAndMergeFields(selectionSet: SelectionSet, mergeInFragmentSpreads: Boolean = true): Field[] {
   const groupedFields: Map<string, Field[]> = new Map();
 
-  function visitSelectionSet(
-    selections: Selection[],
-    possibleTypes: GraphQLObjectType[],
-    conditions: BooleanCondition[] = []
-  ) {
+  function visitSelectionSet(selections: Selection[], possibleTypes: GraphQLObjectType[], conditions: BooleanCondition[] = []) {
     if (possibleTypes.length < 1) return;
 
     for (const selection of selections) {
@@ -39,9 +32,9 @@ export function collectAndMergeFields(
             selectionSet: selection.selectionSet
               ? {
                   possibleTypes: selection.selectionSet.possibleTypes,
-                  selections: [...selection.selectionSet.selections]
+                  selections: [...selection.selectionSet.selections],
                 }
-              : undefined
+              : undefined,
           });
           break;
         case 'FragmentSpread':
@@ -70,10 +63,7 @@ export function collectAndMergeFields(
     return fields
       .map(field => {
         if (isFieldIncludedUnconditionally && field.isConditional && field.selectionSet) {
-          field.selectionSet.selections = wrapInBooleanConditionsIfNeeded(
-            field.selectionSet.selections,
-            field.conditions
-          );
+          field.selectionSet.selections = wrapInBooleanConditionsIfNeeded(field.selectionSet.selections, field.conditions);
         }
         return field;
       })
@@ -114,10 +104,7 @@ export function collectAndMergeFields(
   return fields;
 }
 
-export function wrapInBooleanConditionsIfNeeded(
-  selections: Selection[],
-  conditions?: BooleanCondition[]
-): Selection[] {
+export function wrapInBooleanConditionsIfNeeded(selections: Selection[], conditions?: BooleanCondition[]): Selection[] {
   if (!conditions || conditions.length == 0) return selections;
 
   const [condition, ...rest] = conditions;
@@ -126,8 +113,8 @@ export function wrapInBooleanConditionsIfNeeded(
       ...condition,
       selectionSet: {
         possibleTypes: condition.selectionSet.possibleTypes,
-        selections: wrapInBooleanConditionsIfNeeded(selections, rest)
-      }
-    }
+        selections: wrapInBooleanConditionsIfNeeded(selections, rest),
+      },
+    },
   ];
 }

@@ -2,46 +2,97 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
-const DynamoDBModelTransformer = require('graphql-dynamodb-transformer').default;
-const ModelAuthTransformer = require('graphql-auth-transformer').default;
-const ModelConnectionTransformer = require('graphql-connection-transformer').default;
-const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
-const VersionedModelTransformer = require('graphql-versioned-transformer').default;
-const FunctionTransformer = require('graphql-function-transformer').default;
-const HTTPTransformer = require('graphql-http-transformer').default;
-const KeyTransformer = require('graphql-key-transformer').default;
+const { DynamoDBModelTransformer } = require('graphql-dynamodb-transformer');
+const { ModelAuthTransformer } = require('graphql-auth-transformer');
+const { ModelConnectionTransformer } = require('graphql-connection-transformer');
+const { SearchableModelTransformer } = require('graphql-elasticsearch-transformer');
+const { VersionedModelTransformer } = require('graphql-versioned-transformer');
+const { FunctionTransformer } = require('graphql-function-transformer');
+const { HttpTransformer } = require('graphql-http-transformer');
+const { KeyTransformer } = require('graphql-key-transformer');
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
+const { hashElement } = require('folder-hash');
 
 const {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
   writeTransformerConfiguration,
+  TRANSFORM_CONFIG_FILE_NAME,
 } = TransformPackage;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
+const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 
 function warnOnAuth(context, map) {
-  const unAuthModelTypes = Object.keys(map).filter(type => (!map[type].includes('auth') && map[type].includes('model')));
+  const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
-    context.print.warning('\nThe following types do not have \'@auth\' enabled. Consider using @auth with @model');
+    context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
     context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth \n');
   }
 }
 
+function getTransformerFactory(context, resourceDir, authConfig) {
+  return async addSearchableTransformer => {
+    const transformerList = [
+      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
+      new DynamoDBModelTransformer(),
+      new VersionedModelTransformer(),
+      new FunctionTransformer(),
+      new HttpTransformer(),
+      new KeyTransformer(),
+      new ModelConnectionTransformer(),
+    ];
+
+    if (addSearchableTransformer) {
+      transformerList.push(new SearchableModelTransformer());
+    }
+
+    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
+    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
+      ? customTransformersConfig.transformers
+      : []
+    )
+      .map(transformer => {
+        const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
+        const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
+        // handle 'cannot find module'
+        try {
+          return require(modulePath);
+        } catch (error) {
+          context.print.error(`Unable to import custom transformer module(${modulePath}).`);
+          context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
+          throw error;
+        }
+      })
+      .map(imported => {
+        const CustomTransformer = imported.default;
+        return CustomTransformer.call({});
+      })
+      .filter(customTransformer => customTransformer);
+
+    if (customTransformers.length > 0) {
+      transformerList.push(...customTransformers);
+    }
+
+    // TODO: Build dependency mechanism into transformers. Auth runs last
+    // so any resolvers that need to be protected will already be created.
+    transformerList.push(new ModelAuthTransformer({ authConfig }));
+
+    return transformerList;
+  };
+}
 /**
  * @TODO Include a map of versions to keep track
  */
-async function transformerVersionCheck(
-  context, resourceDir, cloudBackendDirectory,
-  updatedResources, usedDirectives,
-) {
-  const versionChangeMessage = 'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
-  const checkVersionExist = config => (config && config.Version);
+async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
+  const versionChangeMessage =
+    'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+  const checkVersionExist = config => config && config.Version;
 
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
@@ -59,8 +110,7 @@ async function transformerVersionCheck(
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
 
   if (showPrompt && usedDirectives.includes('auth') && resources.length > 0) {
-    if (context.exeInfo &&
-      context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
+    if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       context.print.warning(`\n${versionChangeMessage}\n`);
     } else {
       const response = await inquirer.prompt({
@@ -141,6 +191,7 @@ async function migrateProject(context, options) {
 }
 
 async function transformGraphQLSchema(context, options) {
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
     return;
@@ -150,12 +201,21 @@ async function transformGraphQLSchema(context, options) {
   const { forceCompile } = options;
 
   // Compilation during the push step
-  const {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    allResources,
-  } = await context.amplify.getResourceStatus(category);
+  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+
+  // When build folder is missing include the API
+  // to be compiled without the backend/api/<api-name>/build
+  // cloud formation push will fail even if there is no changes in the GraphQL API
+  // https://github.com/aws-amplify/amplify-console/issues/10
+  const resourceNeedCompile = allResources
+    .filter(r => !resources.includes(r))
+    .filter(r => {
+      const buildDir = path.normalize(path.join(backEndDir, category, r.resourceName, 'build'));
+      return !fs.existsSync(buildDir);
+    });
+  resources = resources.concat(resourceNeedCompile);
+
   if (forceCompile) {
     resources = resources.concat(allResources);
   }
@@ -169,7 +229,6 @@ async function transformGraphQLSchema(context, options) {
         return;
       }
       const { category, resourceName } = resource;
-      const backEndDir = context.amplify.pathManager.getBackendDirPath();
       resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     } else {
       // No appsync resource to update/add
@@ -203,10 +262,7 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const isCLIMigration = options.migrate;
-  const isOldApiVersion = apiProjectIsFromOldVersion(
-    previouslyDeployedBackendDir,
-    resourcesToBeCreated,
-  );
+  const isOldApiVersion = apiProjectIsFromOldVersion(previouslyDeployedBackendDir, resourcesToBeCreated);
   const migrateOptions = {
     ...options,
     resourceDir,
@@ -222,17 +278,18 @@ async function transformGraphQLSchema(context, options) {
     if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       IsOldApiProject = context.exeInfo.inputParams.yes;
     } else {
-      const migrateMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
-      '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
-      'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
-      '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n' +
-      '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
-      '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
-      `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
-      '\n1. Make sure to have an internet connection through the migration process\n' +
-      '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
-      '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n' +
-      '\nDo you want to continue?\n';
+      const migrateMessage =
+        `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
+        '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
+        'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
+        '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n' +
+        '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
+        '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
+        `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
+        '\n1. Make sure to have an internet connection through the migration process\n' +
+        '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
+        '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n' +
+        '\nDo you want to continue?\n';
       ({ IsOldApiProject } = await inquirer.prompt({
         name: 'IsOldApiProject',
         type: 'confirm',
@@ -267,9 +324,20 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 
-  const buildDir = `${resourceDir}/build`;
-  const schemaFilePath = `${resourceDir}/${schemaFileName}`;
-  const schemaDirPath = `${resourceDir}/${schemaDirName}`;
+  const buildDir = path.normalize(path.join(resourceDir, 'build'));
+  const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
+  const schemaDirPath = path.normalize(path.join(resourceDir, schemaDirName));
+  let deploymentRootKey = await getPreviousDeploymentRootKey(previouslyDeployedBackendDir);
+  if (!deploymentRootKey) {
+    const deploymentSubKey = await hashDirectory(resourceDir);
+    deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
+  }
+  const projectBucket = options.dryRun ? 'fake-bucket' : getProjectBucket(context);
+  const buildParameters = {
+    ...parameters,
+    S3DeploymentBucket: projectBucket,
+    S3DeploymentRootKey: deploymentRootKey,
+  };
 
   fs.ensureDirSync(buildDir);
   // Transformer compiler code
@@ -278,39 +346,11 @@ async function transformGraphQLSchema(context, options) {
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  warnOnAuth(
-    context,
-    directiveMap.types,
-  );
+  warnOnAuth(context, directiveMap.types);
 
-  await transformerVersionCheck(
-    context,
-    resourceDir,
-    previouslyDeployedBackendDir,
-    resourcesToBeUpdated,
-    directiveMap.directives,
-  );
+  await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = (addSearchableTransformer) => {
-    const transformerList = [
-      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
-      new DynamoDBModelTransformer(),
-      new VersionedModelTransformer(),
-      new FunctionTransformer(),
-      new HTTPTransformer(),
-      new KeyTransformer(),
-      new ModelConnectionTransformer(),
-      // TODO: Build dependency mechanism into transformers. Auth runs last
-      // so any resolvers that need to be protected will already be created.
-      new ModelAuthTransformer({ authConfig }),
-    ];
-
-    if (addSearchableTransformer) {
-      transformerList.push(new SearchableModelTransformer());
-    }
-
-    return transformerList;
-  };
+  const transformerListFactory = getTransformerFactory(context, resourceDir, authConfig);
 
   let searchableTransformerFlag = false;
 
@@ -319,6 +359,7 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const buildConfig = {
+    buildParameters,
     projectDirectory: options.dryrun ? false : resourceDir,
     transformersFactory: transformerListFactory,
     transformersFactoryArgs: [searchableTransformerFlag],
@@ -339,6 +380,39 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 }
 
+function getProjectBucket(context) {
+  const projectDetails = context.amplify.getProjectDetails();
+  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
+  return projectBucket;
+}
+
+async function hashDirectory(directory) {
+  const options = {
+    encoding: 'hex',
+    folders: {
+      exclude: ['build'],
+    },
+  };
+
+  return hashElement(directory, options).then(result => result.hash);
+}
+
+async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
+  // this is the function
+  let parameters;
+  try {
+    const parametersPath = path.join(previouslyDeployedBackendDir, `build/${parametersFileName}`);
+    const parametersExists = await fs.exists(parametersPath);
+    if (parametersExists) {
+      const parametersString = await fs.readFile(parametersPath);
+      parameters = JSON.parse(parametersString.toString());
+    }
+    return parameters.S3DeploymentRootKey;
+  } catch (err) {
+    return undefined;
+  }
+}
+
 // TODO: Remove until further discussion
 // function getTransformerOptions(project, transformerName) {
 //   if (
@@ -352,6 +426,11 @@ place .graphql files in a directory at ${schemaDirPath}`);
 //   return undefined;
 // }
 
+async function getDirectiveDefinitions(context, resourceDir) {
+  const transformList = await getTransformerFactory(context, resourceDir)(true);
+  return transformList.map(transformPluginInst => transformPluginInst.getDirective()).join('\n');
+}
 module.exports = {
   transformGraphQLSchema,
+  getDirectiveDefinitions,
 };

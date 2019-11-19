@@ -4,7 +4,7 @@ import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorBaseResolverConfig } from '../type-definition';
 import { scalars } from './appsync-scalars';
 import { AwsAuth, AwsSubscribe, protectResolversWithAuthRules } from './directives';
-import AppSyncSimulatorDirectiveBase from './directives/directive-base';
+import { AppSyncSimulatorDirectiveBase } from './directives/directive-base';
 const KNOWN_DIRECTIVES: {
   name: string;
   visitor: typeof AppSyncSimulatorDirectiveBase;
@@ -42,10 +42,7 @@ export function generateResolvers(
       const typeName = resolverConfig.typeName;
       typeObj[resolverConfig.fieldName] = {
         resolve: async (source, args, context, info) => {
-          const resolver = simulatorContext.getResolver(
-            resolverConfig.typeName,
-            resolverConfig.fieldName
-          );
+          const resolver = simulatorContext.getResolver(resolverConfig.typeName, resolverConfig.fieldName);
           try {
             // Mutation and Query
             if (typeName !== 'Subscription') {
@@ -111,9 +108,7 @@ function generateDefaultSubscriptions(
   configuredResolvers: AppSyncSimulatorBaseResolverConfig[],
   simulatorContext: AmplifyAppSyncSimulator
 ) {
-  const configuredSubscriptions = configuredResolvers
-    .filter(cfg => cfg.fieldName === 'Subscription')
-    .map(cfg => cfg.typeName);
+  const configuredSubscriptions = configuredResolvers.filter(cfg => cfg.fieldName === 'Subscription').map(cfg => cfg.typeName);
   const schema = buildASTSchema(doc);
   const subscriptionType = schema.getSubscriptionType();
   if (subscriptionType) {

@@ -1,4 +1,4 @@
-module.exports = (value) => {
+module.exports = value => {
   value = value.trim();
 
   let isValid = value.length > 0;

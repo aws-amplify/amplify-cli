@@ -38,9 +38,10 @@ function getPublishIgnoreFilePath(context) {
   if (projectPath || fs.existsSync(projectPath)) {
     return path.join(projectPath, PublishIgnoreFileName);
   }
-  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+  throw new Error(
+    "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
+  );
 }
-
 
 async function configurePublishIgnore(context, publishIgnore) {
   const DONE = 'exit';
@@ -77,10 +78,9 @@ async function configurePublishIgnore(context, publishIgnore) {
   return publishIgnore;
 }
 
-
 function listPublishIgnore(context, publishIgnore) {
   context.print.info('');
-  publishIgnore.forEach((element) => {
+  publishIgnore.forEach(element => {
     context.print.info(element);
   });
   context.print.info('');

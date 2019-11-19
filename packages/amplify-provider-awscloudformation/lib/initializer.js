@@ -12,11 +12,11 @@ const proxyAgent = require('proxy-agent');
 
 async function run(context) {
   await configurationManager.init(context);
-  if (!context.exeInfo || (context.exeInfo.isNewEnv)) {
+  if (!context.exeInfo || context.exeInfo.isNewEnv) {
     const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
-    const timeStamp = `${moment().format('YYYYMMDDHHmmss')}`;
+    const timeStamp = `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
-    const stackName = normalizeStackName(`${context.exeInfo.projectConfig.projectName}-${envName}-${timeStamp}`);
+    const stackName = normalizeStackName(`amplify-${context.exeInfo.projectConfig.projectName}-${envName}-${timeStamp}`);
     const deploymentBucketName = `${stackName}-deployment`;
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
@@ -45,12 +45,12 @@ async function run(context) {
     spinner.start('Initializing project in the cloud...');
     return new Cloudformation(context, 'init', awsConfig)
       .then(cfnItem => cfnItem.createResourceStack(params))
-      .then((waitData) => {
+      .then(waitData => {
         processStackCreationData(context, waitData);
         spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
         return context;
       })
-      .catch((e) => {
+      .catch(e => {
         spinner.fail('Root stack creation failed');
         throw e;
       });
@@ -64,8 +64,7 @@ async function getAwsConfig(context) {
   let awsConfig;
   if (awsConfigInfo.configLevel === 'project') {
     if (awsConfigInfo.config.useProfile) {
-      awsConfig =
-        await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
+      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
     } else {
       awsConfig = {
         accessKeyId: awsConfigInfo.config.accessKeyId,
@@ -88,7 +87,7 @@ async function getAwsConfig(context) {
 function processStackCreationData(context, stackDescriptiondata) {
   const metaData = {};
   const { Outputs } = stackDescriptiondata.Stacks[0];
-  Outputs.forEach((element) => {
+  Outputs.forEach(element => {
     metaData[element.OutputKey] = element.OutputValue;
   });
   context.exeInfo.amplifyMeta = {};
@@ -116,26 +115,26 @@ function storeCurrentCloudBackend(context) {
   const zipFilename = '#current-cloud-backend.zip';
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const tempDir = `${backendDir}/.temp`;
-  const currentCloudBackendDir = context.exeInfo ?
-    `${context.exeInfo.localEnvInfo.projectPath}/amplify/#current-cloud-backend` :
-    context.amplify.pathManager.getCurrentCloudBackendDirPath();
+  const currentCloudBackendDir = context.exeInfo
+    ? `${context.exeInfo.localEnvInfo.projectPath}/amplify/#current-cloud-backend`
+    : context.amplify.pathManager.getCurrentCloudBackendDirPath();
 
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
   }
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  return archiver.run(currentCloudBackendDir, zipFilePath)
-    .then((result) => {
+  return archiver
+    .run(currentCloudBackendDir, zipFilePath)
+    .then(result => {
       const s3Key = `${result.zipFilename}`;
-      return new S3(context)
-        .then((s3) => {
-          const s3Params = {
-            Body: fs.createReadStream(result.zipFilePath),
-            Key: s3Key,
-          };
-          return s3.uploadFile(s3Params);
-        });
+      return new S3(context).then(s3 => {
+        const s3Params = {
+          Body: fs.createReadStream(result.zipFilePath),
+          Key: s3Key,
+        };
+        return s3.uploadFile(s3Params);
+      });
     })
     .then(() => {
       fs.removeSync(tempDir);

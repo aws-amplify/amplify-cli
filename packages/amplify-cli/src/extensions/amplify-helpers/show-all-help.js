@@ -13,7 +13,8 @@ function showAllHelp(context) {
     },
     {
       name: 'configure',
-      description: 'Configures the attributes of your project for amplify-cli, such as switching front-end framework and adding/removing cloud-provider plugins.',
+      description:
+        'Configures the attributes of your project for amplify-cli, such as switching front-end framework and adding/removing cloud-provider plugins.',
     },
     {
       name: 'push',
@@ -66,6 +67,10 @@ function showAllHelp(context) {
     {
       name: 'env',
       description: 'Displays and manages environment related information for your Amplify project.',
+    },
+    {
+      name: 'console',
+      description: 'Opens the web console for the selected cloud resource.',
     },
   ];
 

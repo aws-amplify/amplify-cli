@@ -1,7 +1,7 @@
-import ModelAuthTransformer from 'graphql-auth-transformer';
-import ModelConnectionTransformer from 'graphql-connection-transformer';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import GraphQLTransform from 'graphql-transformer-core';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
@@ -129,9 +129,7 @@ type ConnectionProtected @model(
       Authorization: idToken,
     });
 
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [
-      DEVS_GROUP_NAME,
-    ]);
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [DEVS_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });

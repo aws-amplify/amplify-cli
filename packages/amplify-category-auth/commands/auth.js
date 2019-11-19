@@ -2,7 +2,7 @@ const featureName = 'auth';
 
 module.exports = {
   name: featureName,
-  run: async (context) => {
+  run: async context => {
     if (/^win/.test(process.platform)) {
       try {
         const { run } = require(`./${featureName}/${context.parameters.first}`);
@@ -29,6 +29,10 @@ module.exports = {
       {
         name: 'update',
         description: `Updates the ${featureName} resource from your local backend.`,
+      },
+      {
+        name: 'console',
+        description: `Opens the web console for the ${featureName} category`,
       },
     ];
 

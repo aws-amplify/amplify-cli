@@ -13,7 +13,7 @@ async function run(context) {
   const initializationTasks = [];
   const onInitSuccessfulTasks = [];
 
-  selectedProviders.forEach((provider) => {
+  selectedProviders.forEach(provider => {
     const providerModule = require(providerPlugins[provider]);
     if (currentProviders.includes(provider)) {
       configTasks.push(() => providerModule.configure(context));
@@ -35,7 +35,7 @@ async function configureProviders(context, providerPlugins, currentProviders) {
   const providerPluginList = Object.keys(providerPlugins);
   const { inputParams } = context.exeInfo;
   if (inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach((provider) => {
+    inputParams.amplify.providers.forEach(provider => {
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
         providers.push(provider);

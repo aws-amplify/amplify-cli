@@ -1,10 +1,10 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
 import {
-  initProjectWithProfile,
+  initJSProjectWithProfile,
   deleteProject,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
-  initNewEnvWithProfile
+  initNewEnvWithProfile,
 } from '../src/init';
 import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from '../src/utils';
 import { access } from 'fs';
@@ -22,7 +22,7 @@ describe('amplify init', () => {
   });
 
   it('should init the project and create new env', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
@@ -40,7 +40,7 @@ describe('amplify init', () => {
       UnauthRoleName: newEnvUnAuthRoleName,
       UnauthRoleArn: newEnvUnauthRoleArn,
       AuthRoleArn: newEnvAuthRoleArn,
-      DeploymentBucketName: newEnvDeploymentBucketName
+      DeploymentBucketName: newEnvDeploymentBucketName,
     } = newEnvMeta;
 
     expect(newEnvAuthRoleName).not.toEqual(AuthRoleName);
@@ -57,13 +57,11 @@ describe('amplify init', () => {
   it('should init project without profile', async () => {
     const { ACCESS_KEY_ID, SECRET_ACCESS_KEY } = getEnvVars();
     if (!ACCESS_KEY_ID || !SECRET_ACCESS_KEY) {
-      throw new Error(
-        'Set ACCESS_KEY_ID and SECRET_ACCESS_KEY either in .env file or as Environment variable'
-      );
+      throw new Error('Set ACCESS_KEY_ID and SECRET_ACCESS_KEY either in .env file or as Environment variable');
     }
     await initProjectWithAccessKey(projRoot, {
       accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY
+      secretAccessKey: SECRET_ACCESS_KEY,
     });
 
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
@@ -78,7 +76,7 @@ describe('amplify init', () => {
     await initNewEnvWithAccessKey(projRoot, {
       envName: 'foo',
       accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY
+      secretAccessKey: SECRET_ACCESS_KEY,
     });
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
 
@@ -87,7 +85,7 @@ describe('amplify init', () => {
       UnauthRoleName: newEnvUnAuthRoleName,
       UnauthRoleArn: newEnvUnauthRoleArn,
       AuthRoleArn: newEnvAuthRoleArn,
-      DeploymentBucketName: newEnvDeploymentBucketName
+      DeploymentBucketName: newEnvDeploymentBucketName,
     } = newEnvMeta;
 
     expect(newEnvAuthRoleName).not.toEqual(AuthRoleName);

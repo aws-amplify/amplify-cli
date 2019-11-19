@@ -6,7 +6,7 @@ function graphQlToAmplifyConfig(gqlConfig) {
   }
   const projects = gqlConfig.getProjects() || {};
 
-  Object.keys(projects).forEach((projectName) => {
+  Object.keys(projects).forEach(projectName => {
     const project = projects[projectName];
     cfg = getAmplifyConfig(project.config);
 

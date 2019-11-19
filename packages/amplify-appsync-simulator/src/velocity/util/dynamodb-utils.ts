@@ -81,7 +81,7 @@ export const dynamodbUtils = {
         ...sum,
         [key]: this.toDynamoDB(value),
       }),
-      {},
+      {}
     );
   },
   toMapValuesJson(values) {

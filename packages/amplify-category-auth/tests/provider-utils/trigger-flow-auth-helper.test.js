@@ -1,4 +1,3 @@
-
 const { handleTriggers } = require('../../provider-utils/awscloudformation/utils/trigger-flow-auth-helper');
 
 const defaults = {
@@ -8,7 +7,6 @@ const defaults = {
   updatedTrigger: {},
   addedTrigger: {},
 };
-
 
 const mockContext = (options = defaults) => {
   const contextObj = {

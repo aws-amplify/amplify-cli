@@ -23,6 +23,10 @@ describe('auth update: ', () => {
       pathManager: {
         getBackendDirPath: jest.fn(),
       },
+      // eslint-disable-next-line
+      getResourceStatus: () => {
+        return { allResources: [{ service: 'Cognito' }] };
+      }, //eslint-disable-line
     },
     print: {
       warning: jest.fn(),
@@ -54,7 +58,7 @@ describe('auth update: ', () => {
   });
 
   describe('case: resources may rely on auth', () => {
-    dependencies.forEach((d) => {
+    dependencies.forEach(d => {
       beforeEach(() => {
         const amplifyMeta = { auth: { foo: { bar: 'bar', Cognito: { provider: 'provider' } } } };
         amplifyMeta[d] = {};

@@ -18,31 +18,40 @@
 			"Type": "String"
 		},
 		"s3PublicPolicy": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "NONE"
 		},
 		"s3PrivatePolicy": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "NONE"
 		},
 		"s3ProtectedPolicy": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "NONE"
 		},
 		"s3UploadsPolicy": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "NONE"
 		},
 		"s3ReadPolicy": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "NONE"
 		},
 		"s3PermissionsAuthenticatedPublic": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "DISALLOW"
 		},
 		"s3PermissionsAuthenticatedProtected": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "DISALLOW"
 		},
 		"s3PermissionsAuthenticatedPrivate": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "DISALLOW"
 		},
 		"s3PermissionsAuthenticatedUploads": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "DISALLOW"
 		},
 		"s3PermissionsGuestPublic": {
 			"Type": "String",
@@ -52,17 +61,20 @@
 			"Type": "String",
 			"Default" : "DISALLOW"		},
 		"AuthenticatedAllowList": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "DISALLOW"
 		},
 		"GuestAllowList": {
 			"Type": "String",
 			"Default" : "DISALLOW"
 		},
 		"selectedGuestPermissions": {
-			"Type": "CommaDelimitedList"
+			"Type": "CommaDelimitedList",
+			"Default" : "NONE"
 		},
 		"selectedAuthenticatedPermissions": {
-			"Type": "CommaDelimitedList"
+			"Type": "CommaDelimitedList",
+			"Default" : "NONE"
 		},
 		"env": {
 			"Type": "String"
@@ -179,6 +191,19 @@
                                     {
                                         "Ref": "bucketName"
                                     },
+                                    {
+                                      "Fn::Select": [
+                                          3,
+                                          {
+                                              "Fn::Split": [
+                                                  "-",
+                                                  {
+                                                      "Ref": "AWS::StackName"
+                                                  }
+                                              ]
+                                          }
+                                      ]
+                                    },
                                     "-",
                                     {
                                         "Ref": "env"
@@ -235,51 +260,110 @@
 				}
 			}
 		},
+      <% if (props.groupList) { %>
+      <% for(var i=0; i < props.groupList.length; i++) { %>
+	    "<%= props.groupList[i] %>GroupPolicy": {
+	      "Type": "AWS::IAM::Policy",
+	      "Properties": {
+	        "PolicyName": "<%= props.groupList[i] %>-group-s3-policy",
+	        "Roles": [
+	        	{
+                    "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Ref": "auth<%= props.authResourceName%>UserPoolId"
+                          },
+                          "-<%= props.groupList[i] %>GroupRole"
+                        ]
+                    ]
+                }
+	        ],
+	        "PolicyDocument": {
+	          "Version": "2012-10-17",
+	          "Statement": [
+	            {
+	              "Effect": "Allow",
+	              "Action": <%- JSON.stringify(props.groupPolicyMap[props.groupList[i]]) %>,
+	              "Resource": [
+	                  {
+	                      "Fn::Join": [
+	                          "",
+	                          [
+	                              "arn:aws:s3:::",
+	                              {
+	                                  "Ref": "S3Bucket"
+	                              },
+	                              "/*"
+	                          ]
+	                      ]
+	                  }
+	              ]
+	            }
+	          ]
+	        }
+	      }
+	    },
+      <% } %>
+      <% } %>
 	    <% if (props.triggerFunction && props.triggerFunction != "NONE") { %> 
 	    "TriggerPermissions": {
-            "Type": "AWS::Lambda::Permission",
-            "Properties": {
-                "Action": "lambda:InvokeFunction",
-                "FunctionName": {
-                    "Ref": "function<%= props.triggerFunction %>Name"
-                },
-                "Principal": "s3.amazonaws.com",
-                "SourceAccount": {
-                    "Ref": "AWS::AccountId"
-                },
-                "SourceArn": {
-					"Fn::Join": [
-						"",
-						[
-							"arn:aws:s3:::",
-							{
-			                    "Fn::If": [
-			                        "ShouldNotCreateEnvResources",
-			                        {
-			                            "Ref": "bucketName"
-			                        },
-			                        {
-			                            "Fn::Join": [
-			                                "",
-			                                [
-			                                    {
-			                                        "Ref": "bucketName"
-			                                    },
-			                                    "-",
-			                                    {
-			                                        "Ref": "env"
-			                                    }
-			                                ]
-			                            ]
-			                        }
-			                    ]
-			                }
-						]
-					]
-                }
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+              "Action": "lambda:InvokeFunction",
+              "FunctionName": {
+                  "Ref": "function<%= props.triggerFunction %>Name"
+              },
+              "Principal": "s3.amazonaws.com",
+              "SourceAccount": {
+                  "Ref": "AWS::AccountId"
+              },
+              "SourceArn": {
+      					"Fn::Join": [
+      						"",
+      						[
+      							"arn:aws:s3:::",
+      							{
+                      "Fn::If": [
+                          "ShouldNotCreateEnvResources",
+                          {
+                              "Ref": "bucketName"
+                          },
+                          {
+                              "Fn::Join": [
+                                  "",
+                                  [
+                                      {
+                                          "Ref": "bucketName"
+                                      },
+                                      {
+                                        "Fn::Select": [
+                                          3,
+                                          {
+                                            "Fn::Split": [
+                                                "-",
+                                                {
+                                                    "Ref": "AWS::StackName"
+                                                }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      "-",
+                                      {
+                                          "Ref": "env"
+                                      }
+                                  ]
+                              ]
+                          }
+                      ]
+      			        }
+      						]
+				        ]
+              }
             }
-        },
-         "S3TriggerBucketPolicy": {
+          },
+          "S3TriggerBucketPolicy": {
             "DependsOn": [
                 "S3Bucket"
             ],

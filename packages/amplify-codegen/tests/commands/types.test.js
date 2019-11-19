@@ -6,11 +6,7 @@ const fs = require('fs-extra');
 const loadConfig = require('../../src/codegen-config');
 const generateTypes = require('../../src/commands/types');
 const constants = require('../../src/constants');
-const {
-  ensureIntrospectionSchema,
-  getFrontEndHandler,
-  getAppSyncAPIDetails,
-} = require('../../src/utils');
+const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../../src/utils');
 
 const MOCK_CONTEXT = {
   print: {
@@ -83,7 +79,7 @@ describe('command - types', () => {
       '',
       MOCK_TARGET,
       '',
-      { addTypename: true, complexObjectSupport: 'auto' },
+      { addTypename: true, complexObjectSupport: 'auto' }
     );
   });
 
@@ -102,7 +98,7 @@ describe('command - types', () => {
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_APIS[0],
       MOCK_REGION,
-      forceDownload,
+      forceDownload
     );
   });
 
@@ -115,7 +111,7 @@ describe('command - types', () => {
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_APIS[0],
       MOCK_REGION,
-      forceDownload,
+      forceDownload
     );
   });
 

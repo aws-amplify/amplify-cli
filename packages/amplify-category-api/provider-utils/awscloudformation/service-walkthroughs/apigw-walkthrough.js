@@ -30,9 +30,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
-  const resources = allResources
-    .filter(resource => resource.service === serviceName)
-    .map(resource => resource.resourceName);
+  const resources = allResources.filter(resource => resource.service === serviceName).map(resource => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {
@@ -45,22 +43,33 @@ async function updateWalkthrough(context, defaultValuesFilename) {
     paths: [],
   };
 
-  const question = [{
-    name: 'resourceName',
-    message: 'Please select the REST API you would want to update',
-    type: 'list',
-    choices: resources,
-  }, {
-    name: 'operation',
-    message: 'What would you like to do',
-    type: 'list',
-    choices: [
-      { name: 'Add another path', value: 'add' },
-      { name: 'Update path', value: 'update' },
-      { name: 'Remove path', value: 'remove' }],
-  }];
+  const question = [
+    {
+      name: 'resourceName',
+      message: 'Please select the REST API you would want to update',
+      type: 'list',
+      choices: resources,
+    },
+    {
+      name: 'operation',
+      message: 'What would you like to do',
+      type: 'list',
+      choices: [
+        { name: 'Add another path', value: 'add' },
+        { name: 'Update path', value: 'update' },
+        { name: 'Remove path', value: 'remove' },
+      ],
+    },
+  ];
 
   const updateApi = await inquirer.prompt(question);
+
+  if (updateApi.resourceName === 'AdminQueries') {
+    context.print.warning(
+      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`
+    );
+    process.exit(0);
+  }
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = pathLib.join(projectBackendDirPath, category, updateApi.resourceName);
@@ -94,7 +103,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
 
       answers.paths = answers.paths.filter(path => path.name !== pathToRemove.path);
 
-      const { dependsOn, functionArns } = findDependsOn(answers.paths);
+      const { dependsOn, functionArns } = await findDependsOn(answers.paths, context);
       answers.dependsOn = dependsOn;
       answers.functionArns = functionArns;
 
@@ -130,14 +139,14 @@ async function pathFlow(context, answers, currentPath) {
   const { dependsOn } = pathsAnswer;
 
   const privacy = {};
-  privacy.auth = pathsAnswer.paths
-    .filter(path => path.privacy.auth && path.privacy.auth.length > 0).length;
-  privacy.unauth = pathsAnswer.paths
-    .filter(path => path.privacy.unauth && path.privacy.unauth.length > 0).length;
+  privacy.auth = pathsAnswer.paths.filter(path => path.privacy.auth && path.privacy.auth.length > 0).length;
+  privacy.unauth = pathsAnswer.paths.filter(path => path.privacy.unauth && path.privacy.unauth.length > 0).length;
 
   answers = { ...answers, privacy, dependsOn };
 
-  if (context.amplify.getProjectDetails() && context.amplify.getProjectDetails().amplifyMeta &&
+  if (
+    context.amplify.getProjectDetails() &&
+    context.amplify.getProjectDetails().amplifyMeta &&
     context.amplify.getProjectDetails().amplifyMeta.providers &&
     context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
   ) {
@@ -182,7 +191,7 @@ async function askPrivacy(context, answers, currentPath) {
     const apiAccess = await inquirer.prompt({
       name: 'restrict',
       type: 'confirm',
-      default: !((currentPath && currentPath.open)),
+      default: !(currentPath && currentPath.open),
       message: 'Restrict API access',
     });
 
@@ -190,46 +199,119 @@ async function askPrivacy(context, answers, currentPath) {
       return { open: true };
     }
 
-    const answer = await inquirer.prompt({
-      name: 'privacy',
-      type: 'list',
-      message: 'Who should have access?',
-      choices: [
-        {
-          name: 'Authenticated users only',
-          value: 'private',
-        },
-        {
-          name: 'Authenticated and Guest users',
-          value: 'protected',
-        },
-      ],
-      default: (currentPath && currentPath.privacy && currentPath.privacy.protected) ? 'protected' : 'private',
-    });
+    const userPoolGroupList = await context.amplify.getUserPoolGroupList(context);
 
+    let permissionSelected = 'Auth/Guest Users';
+    let allowUnauthenticatedIdentities = false;
     const privacy = {};
-    privacy[answer.privacy] = true;
-
-    if (answer.privacy === 'open') { return privacy; }
-
     const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-    context.api = {
-      privacy: answer.privacy,
-    };
 
-    let { privacy: { auth: authPrivacy } } = currentPath || { privacy: {} };
-    let { privacy: { unauth: unauthPrivacy } } = currentPath || { privacy: {} };
+    if (userPoolGroupList.length > 0) {
+      do {
+        if (permissionSelected === 'Learn more') {
+          context.print.info('');
+          context.print.info(
+            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+          );
+          context.print.info('');
+        }
+        const permissionSelection = await inquirer.prompt({
+          name: 'selection',
+          type: 'list',
+          message: 'Restrict access by?',
+          choices: ['Auth/Guest Users', 'Individual Groups', 'Both', 'Learn more'],
+          default: 'Auth/Guest Users',
+        });
 
-    // convert legacy permissions to CRUD structure
-    if (authPrivacy && ['r', 'rw'].includes(authPrivacy)) {
-      authPrivacy = convertToCRUD(authPrivacy);
+        permissionSelected = permissionSelection.selection;
+      } while (permissionSelected === 'Learn more');
     }
-    if (unauthPrivacy && ['r', 'rw'].includes(unauthPrivacy)) {
-      unauthPrivacy = convertToCRUD(unauthPrivacy);
+
+    if (permissionSelected === 'Both' || permissionSelected === 'Auth/Guest Users') {
+      const answer = await inquirer.prompt({
+        name: 'privacy',
+        type: 'list',
+        message: 'Who should have access?',
+        choices: [
+          {
+            name: 'Authenticated users only',
+            value: 'private',
+          },
+          {
+            name: 'Authenticated and Guest users',
+            value: 'protected',
+          },
+        ],
+        default: currentPath && currentPath.privacy && currentPath.privacy.protected ? 'protected' : 'private',
+      });
+
+      privacy[answer.privacy] = true;
+
+      context.api = {
+        privacy: answer.privacy,
+      };
+
+      let {
+        privacy: { auth: authPrivacy },
+      } = currentPath || { privacy: {} };
+      let {
+        privacy: { unauth: unauthPrivacy },
+      } = currentPath || { privacy: {} };
+
+      // convert legacy permissions to CRUD structure
+      if (authPrivacy && ['r', 'rw'].includes(authPrivacy)) {
+        authPrivacy = convertToCRUD(authPrivacy);
+      }
+      if (unauthPrivacy && ['r', 'rw'].includes(unauthPrivacy)) {
+        unauthPrivacy = convertToCRUD(unauthPrivacy);
+      }
+
+      if (answer.privacy === 'private') {
+        privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
+
+        const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
+        // getting requirement satisfaction map
+        const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+        // checking to see if any requirements are unsatisfied
+        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+        // if requirements are unsatisfied, trigger auth
+
+        if (foundUnmetRequirements) {
+          try {
+            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+          } catch (e) {
+            context.print.error(e);
+            throw e;
+          }
+        }
+      }
+
+      if (answer.privacy === 'protected') {
+        privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
+        privacy.unauth = await askReadWrite('Guest', context, unauthPrivacy);
+        allowUnauthenticatedIdentities = true;
+        const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
+        // getting requirement satisfaction map
+        const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+        // checking to see if any requirements are unsatisfied
+        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+        // if requirements are unsatisfied, trigger auth
+
+        if (foundUnmetRequirements) {
+          try {
+            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+          } catch (e) {
+            context.print.error(e);
+            throw e;
+          }
+        }
+      }
     }
 
-    if (answer.privacy === 'private') {
-      privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
+    if (permissionSelected === 'Both' || permissionSelected === 'Individual Groups') {
+      // Enable Auth if not enabled
 
       const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
       // getting requirement satisfaction map
@@ -242,37 +324,56 @@ async function askPrivacy(context, answers, currentPath) {
       if (foundUnmetRequirements) {
         try {
           await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          return privacy;
         } catch (e) {
           context.print.error(e);
           throw e;
         }
       }
-    }
 
-    if (answer.privacy === 'protected') {
-      privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
-      privacy.unauth = await askReadWrite('Guest', context, unauthPrivacy);
+      // Get Auth resource name
+      const authResourceName = await getAuthResourceName(context);
+      answers.authResourceName = authResourceName;
 
-      const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
-      // getting requirement satisfaction map
-      const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
-      // checking to see if any requirements are unsatisfied
-      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+      let defaultSelectedGroups = [];
 
-      // if requirements are unsatisfied, trigger auth
+      if (currentPath && currentPath.privacy && currentPath.privacy.userPoolGroups) {
+        defaultSelectedGroups = Object.keys(currentPath.privacy.userPoolGroups);
+      }
 
-      if (foundUnmetRequirements) {
-        try {
-          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          return privacy;
-        } catch (e) {
-          context.print.error(e);
-          throw e;
+      const userPoolGroupSelection = await inquirer.prompt([
+        {
+          name: 'userpoolGroups',
+          type: 'checkbox',
+          message: 'Select groups:',
+          choices: userPoolGroupList,
+          default: defaultSelectedGroups,
+          validate: inputs => {
+            if (inputs.length === 0) {
+              return 'Select at least one option';
+            }
+            return true;
+          },
+        },
+      ]);
+
+      const selectedUserPoolGroupList = userPoolGroupSelection.userpoolGroups;
+
+      for (let i = 0; i < selectedUserPoolGroupList.length; i += 1) {
+        let defaults = [];
+        if (
+          currentPath &&
+          currentPath.privacy &&
+          currentPath.privacy.userPoolGroups &&
+          currentPath.privacy.userPoolGroups[selectedUserPoolGroupList[i]]
+        ) {
+          defaults = currentPath.privacy.userPoolGroups[selectedUserPoolGroupList[i]];
         }
+        if (!privacy.userPoolGroups) {
+          privacy.userPoolGroups = {};
+        }
+        privacy.userPoolGroups[selectedUserPoolGroupList[i]] = await askReadWrite(selectedUserPoolGroupList[i], context, defaults);
       }
     }
-
     return privacy;
   }
 }
@@ -294,11 +395,9 @@ async function askReadWrite(userType, context, privacy) {
     });
   }
 
-  return await context.amplify.crudFlow(
-    userType,
-    permissionMap,
-    defaults,
-  );
+  const crudAnswers = await context.amplify.crudFlow(userType, permissionMap, defaults);
+
+  return crudAnswers;
 }
 
 async function askPaths(context, answers, currentPath) {
@@ -376,6 +475,7 @@ async function askPaths(context, answers, currentPath) {
     if (currentPath) {
       break;
     }
+
     addAnotherPath = (await inquirer.prompt({
       name: 'anotherPath',
       type: 'confirm',
@@ -384,7 +484,7 @@ async function askPaths(context, answers, currentPath) {
     })).anotherPath;
   } while (addAnotherPath);
 
-  const { dependsOn, functionArns } = findDependsOn(paths);
+  const { dependsOn, functionArns } = await findDependsOn(paths, context);
 
   return { paths, dependsOn, functionArns };
 }
@@ -422,7 +522,7 @@ function validatePathName(name, paths) {
   // Create subpath from the beginning to find a match on existing paths
   const findSubPath = (path, subpath) => path.name === subpath;
   let subpath = '';
-  split.forEach((sub) => {
+  split.forEach(sub => {
     subpath = `${subpath}/${sub}`;
     const subpathFind = paths.find(path => findSubPath(path, subpath));
     if (subpathFind) {
@@ -439,28 +539,66 @@ function validatePathName(name, paths) {
   return err;
 }
 
-function findDependsOn(paths) {
+async function findDependsOn(paths, context) {
   // go thru all paths and add lambdaFunctions to dependsOn and functionArns uniquely
   const dependsOn = [];
   const functionArns = [];
-  paths.forEach((path) => {
-    if (path.lambdaFunction && !path.lambdaArn) {
-      if (!dependsOn.find(func => func.resourceName === path.lambdaFunction)) {
+
+  for (let i = 0; i < paths.length; i += 1) {
+    if (paths[i].lambdaFunction && !paths[i].lambdaArn) {
+      if (!dependsOn.find(func => func.resourceName === paths[i].lambdaFunction)) {
         dependsOn.push({
           category: 'function',
-          resourceName: path.lambdaFunction,
+          resourceName: paths[i].lambdaFunction,
           attributes: ['Name', 'Arn'],
         });
       }
     }
-    if (!functionArns.find(func => func.lambdaFunction === path.lambdaFunction)) {
+    if (!functionArns.find(func => func.lambdaFunction === paths[i].lambdaFunction)) {
       functionArns.push({
-        lambdaFunction: path.lambdaFunction,
-        lambdaArn: path.lambdaArn,
+        lambdaFunction: paths[i].lambdaFunction,
+        lambdaArn: paths[i].lambdaArn,
       });
     }
-  });
+    if (paths[i].privacy && paths[i].privacy.userPoolGroups) {
+      const userPoolGroups = Object.keys(paths[i].privacy.userPoolGroups);
+      if (userPoolGroups.length > 0) {
+        // Get auth resource name
+
+        const authResourceName = await getAuthResourceName(context);
+
+        if (!dependsOn.find(resource => resource.resourceName === authResourceName)) {
+          dependsOn.push({
+            category: 'auth',
+            resourceName: authResourceName,
+            attributes: ['UserPoolId'],
+          });
+        }
+
+        userPoolGroups.forEach(group => {
+          if (!dependsOn.find(resource => resource.attributes[0] === `${group}GroupRole`)) {
+            dependsOn.push({
+              category: 'auth',
+              resourceName: 'userPoolGroups',
+              attributes: [`${group}GroupRole`],
+            });
+          }
+        });
+      }
+    }
+  }
   return { dependsOn, functionArns };
+}
+
+async function getAuthResourceName(context) {
+  let authResources = (await context.amplify.getResourceStatus('auth')).allResources;
+  authResources = authResources.filter(resource => resource.service === 'Cognito');
+  if (authResources.length === 0) {
+    throw new Error('No auth resource found. Please add it using amplify add auth');
+  }
+
+  const authResourceName = authResources[0].resourceName;
+  return authResourceName;
 }
 
 function functionsExist(context) {
@@ -470,7 +608,7 @@ function functionsExist(context) {
 
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
-  Object.keys(functionResources).forEach((resourceName) => {
+  Object.keys(functionResources).forEach(resourceName => {
     if (functionResources[resourceName].service === 'Lambda') {
       lambdaFunctions.push(resourceName);
     }
@@ -485,10 +623,14 @@ function functionsExist(context) {
 
 async function askLambdaSource(context, functionType, path, currentPath) {
   switch (functionType) {
-    case 'arn': return askLambdaArn(context, currentPath);
-    case 'projectFunction': return askLambdaFromProject(context, currentPath);
-    case 'newFunction': return newLambdaFunction(context, path);
-    default: throw new Error('Type not supported');
+    case 'arn':
+      return askLambdaArn(context, currentPath);
+    case 'projectFunction':
+      return askLambdaFromProject(context, currentPath);
+    case 'newFunction':
+      return newLambdaFunction(context, path);
+    default:
+      throw new Error('Type not supported');
   }
 }
 
@@ -503,17 +645,16 @@ function newLambdaFunction(context, path) {
     path,
     functionTemplate: 'serverless',
   };
-  return add(context, 'awscloudformation', 'Lambda')
-    .then((resourceName) => {
-      context.print.success('Succesfully added the Lambda function locally');
-      return { lambdaFunction: resourceName };
-    });
+  return add(context, 'awscloudformation', 'Lambda').then(resourceName => {
+    context.print.success('Succesfully added the Lambda function locally');
+    return { lambdaFunction: resourceName };
+  });
 }
 
 async function askLambdaFromProject(context, currentPath) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
-  Object.keys(functionResources).forEach((resourceName) => {
+  Object.keys(functionResources).forEach(resourceName => {
     if (functionResources[resourceName].service === 'Lambda') {
       lambdaFunctions.push(resourceName);
     }
@@ -548,8 +689,7 @@ async function askLambdaArn(context, currentPath) {
     name: 'lambdaChoice',
     message: 'Please select a Lambda function',
     choices: lambdaOptions,
-    default: (currentPath && currentPath.lambdaArn) ?
-      `${currentPath.lambdaArn}` : `${lambdaOptions[0].value}`,
+    default: currentPath && currentPath.lambdaArn ? `${currentPath.lambdaArn}` : `${lambdaOptions[0].value}`,
   };
 
   let lambdaOption;
@@ -561,8 +701,7 @@ async function askLambdaArn(context, currentPath) {
     }
   }
 
-  const lambdaCloudOptionAnswer =
-    lambdaFunctions.find(lambda => lambda.FunctionArn === lambdaOption.lambdaChoice);
+  const lambdaCloudOptionAnswer = lambdaFunctions.find(lambda => lambda.FunctionArn === lambdaOption.lambdaChoice);
 
   return {
     lambdaArn: lambdaCloudOptionAnswer.FunctionArn,
@@ -637,28 +776,26 @@ function convertToCRUD(privacy) {
   return privacy;
 }
 
-
 function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach((crudOption) => {
+  crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create': actions.push(
-        'apigateway:POST',
-        'apigateway:PUT',
-      );
+      case 'create':
+        actions.push('apigateway:POST', 'apigateway:PUT');
         break;
-      case 'update': actions.push('apigateway:PATCH');
+      case 'update':
+        actions.push('apigateway:PATCH');
         break;
-      case 'read': actions.push(
-        'apigateway:GET', 'apigateway:HEAD',
-        'apigateway:OPTIONS',
-      );
+      case 'read':
+        actions.push('apigateway:GET', 'apigateway:HEAD', 'apigateway:OPTIONS');
         break;
-      case 'delete': actions.push('apigateway:DELETE');
+      case 'delete':
+        actions.push('apigateway:DELETE');
         break;
-      default: console.log(`${crudOption} not supported`);
+      default:
+        console.log(`${crudOption} not supported`);
     }
   });
 
@@ -691,5 +828,8 @@ function getIAMPolicies(resourceName, crudOptions) {
 }
 
 module.exports = {
-  serviceWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+  serviceWalkthrough,
+  updateWalkthrough,
+  migrate,
+  getIAMPolicies,
 };

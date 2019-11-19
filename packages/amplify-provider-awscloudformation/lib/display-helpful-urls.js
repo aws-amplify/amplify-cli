@@ -21,10 +21,8 @@ function showPinpointURL(context, resourcesToBeCreated) {
     if (!amplifyMeta[category][resourceName].output) {
       return;
     }
-    const { Id, Region } =
-        amplifyMeta[category][resourceName].output;
-    const consoleUrl =
-      `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
+    const { Id, Region } = amplifyMeta[category][resourceName].output;
+    const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
     context.print.info(chalk`Pinpoint URL to track events {blue.underline ${consoleUrl}}`);
   }
 }
@@ -39,10 +37,7 @@ function showGraphQLURL(context, resourcesToBeCreated) {
     if (!amplifyMeta[category][resourceName].output) {
       return;
     }
-    const {
-      GraphQLAPIEndpointOutput, securityType, authConfig, GraphQLAPIKeyOutput,
-    }
-      = amplifyMeta[category][resourceName].output;
+    const { GraphQLAPIEndpointOutput, securityType, authConfig, GraphQLAPIKeyOutput } = amplifyMeta[category][resourceName].output;
 
     if (!GraphQLAPIEndpointOutput) {
       return;
@@ -53,16 +48,22 @@ function showGraphQLURL(context, resourcesToBeCreated) {
     if (securityType) {
       hasApiKey = securityType === 'API_KEY';
     } else {
-      const apiKeyProvider = [...(authConfig.additionalAuthenticationProviders || []),
-        authConfig.defaultAuthentication]
-        .find(provider => provider.authenticationType === 'API_KEY');
+      const apiKeyProvider = [...(authConfig.additionalAuthenticationProviders || []), authConfig.defaultAuthentication].find(
+        provider => provider.authenticationType === 'API_KEY'
+      );
 
       hasApiKey = !!apiKeyProvider;
     }
 
     context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
     if (hasApiKey) {
-      context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
+      if (GraphQLAPIKeyOutput) {
+        context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
+      } else {
+        context.print.warning(
+          chalk`GraphQL API is configured to use API_KEY authentication, but API Key deployment is disabled, don't forget to create one.`
+        );
+      }
     }
   }
 }
@@ -77,8 +78,7 @@ function showHostingURL(context, resourcesToBeCreated) {
     if (!amplifyMeta[category][resourceName].output) {
       return;
     }
-    const { CloudFrontSecureURL, WebsiteURL } =
-        amplifyMeta[category][resourceName].output;
+    const { CloudFrontSecureURL, WebsiteURL } = amplifyMeta[category][resourceName].output;
 
     const hostingEndpoint = CloudFrontSecureURL || WebsiteURL;
 
@@ -98,9 +98,7 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
     }
     const { Region } = amplifyMeta.providers.awscloudformation;
 
-    const { HostedUIDomain, AppClientIDWeb, OAuthMetadata } =
-    amplifyMeta[category][resourceName].output;
-
+    const { HostedUIDomain, AppClientIDWeb, OAuthMetadata } = amplifyMeta[category][resourceName].output;
 
     if (OAuthMetadata) {
       const oAuthMetadata = JSON.parse(OAuthMetadata);
@@ -108,7 +106,9 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
       context.print.info(chalk`Hosted UI Endpoint: {blue.underline ${hostedUIEndpoint}}`);
       const redirectURIs = oAuthMetadata.CallbackURLs.concat(oAuthMetadata.LogoutURLs);
       if (redirectURIs.length > 0) {
-        const testHostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=code&client_id=${AppClientIDWeb}&redirect_uri=${redirectURIs[0]}\n`;
+        const testHostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=code&client_id=${AppClientIDWeb}&redirect_uri=${
+          redirectURIs[0]
+        }\n`;
         context.print.info(chalk`Test Your Hosted UI Endpoint: {blue.underline ${testHostedUIEndpoint}}`);
       }
     }
@@ -116,7 +116,7 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
 }
 
 async function showRekognitionURLS(context, resourcesToBeCreated) {
-  const resource = resourcesToBeCreated.find((resource) => {
+  const resource = resourcesToBeCreated.find(resource => {
     if (resource.identifyType && resource.identifyType === 'identifyEntities') {
       return true;
     }

@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const _ = require('lodash');
 const BottleNeck = require('bottleneck');
@@ -10,16 +10,13 @@ const S3 = require('./aws-s3');
 const providerName = require('../../lib/constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../../lib/configuration-manager');
+const { S3BackendZipFileName } = require('../../lib/constants');
+const { downloadZip, extractZip } = require('../../lib/zip-util');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
 
-const CFN_SUCCESS_STATUS = [
-  'UPDATE_COMPLETE',
-  'CREATE_COMPLETE',
-  'DELETE_COMPLETE',
-  'DELETE_SKIPPED',
-];
+const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
 const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
 class CloudFormation {
@@ -61,27 +58,22 @@ class CloudFormation {
     self.eventStartTime = new Date();
 
     return new Promise((resolve, reject) => {
-      cfnModel.createStack(cfnParentStackParams, (createErr) => {
+      cfnModel.createStack(cfnParentStackParams, createErr => {
         this.readStackEvents(cfnParentStackParams.StackName);
         if (createErr) {
           context.print.error('An error occurred when creating the CloudFormation stack');
           reject(createErr);
         }
-        cfnModel.waitFor(
-          cfnCompleteStatus,
-          cfnStackCheckParams,
-          (completeErr, waitForStackdata) => {
-            if (self.pollForEvents) {
-              clearInterval(self.pollForEvents);
-            }
-            if (completeErr) {
-              context.print.error('An error occurred when  creating the CloudFormation stack');
-              this.collectStackErrors(cfnParentStackParams.StackName).then(() =>
-                reject(completeErr));
-            }
-            resolve(waitForStackdata);
-          },
-        );
+        cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr, waitForStackdata) => {
+          if (self.pollForEvents) {
+            clearInterval(self.pollForEvents);
+          }
+          if (completeErr) {
+            context.print.error('An error occurred when  creating the CloudFormation stack');
+            this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
+          }
+          resolve(waitForStackdata);
+        });
       });
     });
   }
@@ -90,14 +82,13 @@ class CloudFormation {
     // add root stack to see the new stacks
     this.readStackEvents(stackName);
     // wait for the poll queue to drain
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.pollQueue.once('empty', () => {
-        const failedStacks = this.stackEvents.filter(ev =>
-          CNF_ERROR_STATUS.includes(ev.ResourceStatus));
+        const failedStacks = this.stackEvents.filter(ev => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
           console.log(`\n\n${chalk.reset.red.bold('Following resources failed')}\n`);
-          trace.forEach((t) => {
+          trace.forEach(t => {
             console.log(t);
             console.log('\n');
           });
@@ -114,10 +105,9 @@ class CloudFormation {
     const envRegExp = new RegExp(`(-|_)${envName}`);
     const stackTrees = eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
-      .map((event) => {
+      .map(event => {
         const err = [];
-        const resourceName =
-          event.PhysicalResourceId.replace(envRegExp, '') || event.LogicalResourceId;
+        const resourceName = event.PhysicalResourceId.replace(envRegExp, '') || event.LogicalResourceId;
         const cfnURL = getCFNConsoleLink(event, this.cfn);
         err.push(`${chalk.bold('Resource Name:')} ${resourceName} (${event.ResourceType})`);
         err.push(`${chalk.bold('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
@@ -136,18 +126,18 @@ class CloudFormation {
 
   pollStack(stackName) {
     return this.getStackEvents(stackName)
-      .then((stackEvents) => {
+      .then(stackEvents => {
         const uniqueEvents = getUniqueStacksEvents(stackEvents);
         const nestedStacks = filterNestedStacks(uniqueEvents);
 
-        nestedStacks.forEach((stackId) => {
+        nestedStacks.forEach(stackId => {
           if (stackId !== stackName) {
             this.addToPollQueue(stackId);
           }
         });
         this.showNewEvents(stackEvents);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   }
@@ -187,12 +177,12 @@ class CloudFormation {
     return this.cfn
       .describeStackEvents({ StackName: stackName })
       .promise()
-      .then((data) => {
+      .then(data => {
         let events = data.StackEvents;
         events = events.filter(event => self.eventStartTime < new Date(event.Timestamp));
         return Promise.resolve(events);
       })
-      .catch((e) => {
+      .catch(e => {
         if (e && e.code === 'Throttling') {
           return Promise.resolve([]);
         }
@@ -203,18 +193,12 @@ class CloudFormation {
   updateResourceStack(dir, cfnFile) {
     const filePath = path.normalize(path.join(dir, cfnFile));
     const projectDetails = this.context.amplify.getProjectDetails();
-    const stackName = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].StackName
-      : '';
+    const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
     const deploymentBucketName = projectDetails.amplifyMeta.providers
       ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
       : '';
-    const authRoleName = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName
-      : '';
-    const unauthRoleName = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName
-      : '';
+    const authRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName : '';
+    const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
 
     if (!stackName) {
       throw new Error('Project stack has not been created yet. Use amplify init to initialize the project.');
@@ -224,14 +208,14 @@ class CloudFormation {
     }
 
     return new S3(this.context)
-      .then((s3) => {
+      .then(s3 => {
         const s3Params = {
           Body: fs.createReadStream(filePath),
           Key: cfnFile,
         };
         return s3.uploadFile(s3Params);
       })
-      .then((bucketName) => {
+      .then(bucketName => {
         const templateURL = `https://s3.amazonaws.com/${bucketName}/${cfnFile}`;
         const cfnStackCheckParams = {
           StackName: stackName,
@@ -243,7 +227,7 @@ class CloudFormation {
         this.eventStartTime = new Date();
 
         return new Promise((resolve, reject) => {
-          cfnModel.describeStacks(cfnStackCheckParams, (err) => {
+          cfnModel.describeStacks(cfnStackCheckParams, err => {
             if (err) {
               reject(new Error("Project stack doesn't exist"));
               context.print.info(err.stack);
@@ -268,7 +252,7 @@ class CloudFormation {
               ],
             };
 
-            cfnModel.updateStack(cfnParentStackParams, (updateErr) => {
+            cfnModel.updateStack(cfnParentStackParams, updateErr => {
               self.readStackEvents(stackName);
 
               const cfnCompleteStatus = 'stackUpdateComplete';
@@ -276,18 +260,15 @@ class CloudFormation {
                 console.error('Error updating cloudformation stack');
                 reject(updateErr);
               }
-              cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
+              cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, completeErr => {
                 if (self.pollForEvents) {
                   clearInterval(self.pollForEvents);
                 }
                 if (completeErr) {
                   console.error('Error updating cloudformation stack');
-                  this.collectStackErrors(cfnParentStackParams.StackName).then(() =>
-                    reject(completeErr));
+                  this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
                 } else {
-                  return self
-                    .updateamplifyMetaFileWithStackOutputs(stackName)
-                    .then(() => resolve());
+                  return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
                 }
               });
             });
@@ -307,15 +288,19 @@ class CloudFormation {
     return cfnModel
       .describeStackResources(cfnParentStackParams)
       .promise()
-      .then((result) => {
+      .then(result => {
         let resources = result.StackResources;
-        resources = resources.filter(resource =>
-          !['DeploymentBucket',
-            'AuthRole',
-            'UnauthRole',
-            'UpdateRolesWithIDPFunction',
-            'UpdateRolesWithIDPFunctionOutputs',
-            'UpdateRolesWithIDPFunctionRole'].includes(resource.LogicalResourceId));
+        resources = resources.filter(
+          resource =>
+            ![
+              'DeploymentBucket',
+              'AuthRole',
+              'UnauthRole',
+              'UpdateRolesWithIDPFunction',
+              'UpdateRolesWithIDPFunctionOutputs',
+              'UpdateRolesWithIDPFunctionRole',
+            ].includes(resource.LogicalResourceId)
+        );
 
         const promises = [];
 
@@ -326,19 +311,42 @@ class CloudFormation {
           promises.push(this.describeStack(cfnNestedStackParams));
         }
 
-        return Promise.all(promises).then((stackResult) => {
-          Object.keys(amplifyMeta).forEach((category) => {
-            Object.keys(amplifyMeta[category]).forEach((resource) => {
+        return Promise.all(promises).then(stackResult => {
+          Object.keys(amplifyMeta).forEach(category => {
+            Object.keys(amplifyMeta[category]).forEach(resource => {
               const logicalResourceId = category + resource;
-              const index = resources
-                .findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
+              const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
               if (index !== -1) {
-                this.context.amplify.updateamplifyMetaAfterResourceUpdate(
+                const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
+
+                const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(
                   category,
                   resource,
                   'output',
-                  formatOutputs(stackResult[index].Stacks[0].Outputs),
+                  formattedOutputs
                 );
+
+                // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
+                if (amplifyMeta[category][resource]) {
+                  const resourceObject = amplifyMeta[category][resource];
+
+                  if (
+                    resourceObject.service === 'AppSync' &&
+                    resourceObject.output &&
+                    resourceObject.output.GraphQLAPIKeyOutput &&
+                    !formattedOutputs.GraphQLAPIKeyOutput
+                  ) {
+                    const updatedResourceObject = updatedMeta[category][resource];
+
+                    if (updatedResourceObject.output.GraphQLAPIKeyOutput) {
+                      delete updatedResourceObject.output.GraphQLAPIKeyOutput;
+                    }
+                  }
+
+                  const amplifyMetaFilePath = this.context.amplify.pathManager.getAmplifyMetaFilePath();
+                  const jsonString = JSON.stringify(updatedMeta, null, 4);
+                  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+                }
               }
             });
           });
@@ -353,7 +361,7 @@ class CloudFormation {
         .describeStacks(cfnNestedStackParams)
         .promise()
         .then(result => resolve(result))
-        .catch((e) => {
+        .catch(e => {
           if (e.code === 'Throttling' && e.retryable) {
             setTimeout(() => {
               resolve(this.describeStack(cfnNestedStackParams, maxTry - 1, timeout));
@@ -365,10 +373,10 @@ class CloudFormation {
     });
   }
 
-  deleteResourceStack(envName) {
+  deleteResourceStack(envName, deleteS3) {
     const { teamProviderInfo } = this.context.amplify.getProjectDetails();
-    const stackName = teamProviderInfo[envName][providerName].StackName;
-
+    const teamProvider = teamProviderInfo[envName][providerName];
+    const stackName = teamProvider.StackName;
     if (!stackName) {
       throw new Error('Stack not defined for the environment.');
     }
@@ -380,19 +388,19 @@ class CloudFormation {
     const cfnModel = this.cfn;
 
     return new Promise((resolve, reject) => {
-      cfnModel.describeStacks(cfnStackParams, (err) => {
+      cfnModel.describeStacks(cfnStackParams, err => {
         const cfnDeleteStatus = 'stackDeleteComplete';
         if (err === null) {
-          cfnModel.deleteStack(cfnStackParams, (deleteErr) => {
+          cfnModel.deleteStack(cfnStackParams, deleteErr => {
             if (deleteErr) {
               console.log(`Error deleting stack ${stackName}`);
               reject(deleteErr);
             }
-            cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, (completeErr) => {
+            cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, completeErr => {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
                 this.collectStackErrors(stackName).then(() => reject(completeErr));
-              } else {
+              } else if (!deleteS3) {
                 resolve();
               }
             });
@@ -401,6 +409,39 @@ class CloudFormation {
           reject(err);
         }
       });
+      if (deleteS3) {
+        new S3(this.context, {}).then(s3 => {
+          const amplifyDir = this.context.amplify.pathManager.getAmplifyDirPath();
+          const tempDir = path.join(amplifyDir, envName, '.temp');
+          downloadZip(s3, tempDir, S3BackendZipFileName, envName).then((sourceZipFile, err) => {
+            if (err) reject(err);
+
+            extractZip(tempDir, sourceZipFile).then((unZippedDir, err) => {
+              if (err) reject(err);
+
+              const amplifyMeta = this.context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
+              const deploymentBucketName = amplifyMeta.providers.awscloudformation.DeploymentBucketName;
+
+              const storage = amplifyMeta.storage || {};
+              const buckets = [
+                ...Object.keys(storage)
+                  .filter(r => storage[r].service === 'S3' && storage[r].output)
+                  .map(r => storage[r].output.BucketName),
+                deploymentBucketName,
+              ];
+              Promise.all(buckets.map(r => s3.deleteS3Bucket(r))).then((results, errors) => {
+                if (_.compact(errors).length) {
+                  reject(errors);
+                } else {
+                  fs.removeSync(sourceZipFile);
+                  fs.removeSync(unZippedDir);
+                  resolve(results);
+                }
+              });
+            });
+          });
+        });
+      }
     });
   }
 }
@@ -419,15 +460,9 @@ function showEvents(events) {
 
   if (events.length > 0) {
     console.log('\n');
-    const COLUMNS = [
-      'ResourceStatus',
-      'LogicalResourceId',
-      'ResourceType',
-      'Timestamp',
-      'ResourceStatusReason',
-    ];
+    const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
 
-    const e = events.map((ev) => {
+    const e = events.map(ev => {
       const res = {};
       const { ResourceStatus: resourceStatus } = ev;
 
@@ -438,17 +473,19 @@ function showEvents(events) {
         colorFn = chalk.green;
       }
 
-      COLUMNS.forEach((col) => {
+      COLUMNS.forEach(col => {
         if (ev[col]) {
           res[col] = colorFn(ev[col]);
         }
       });
       return res;
     });
-    console.log(columnify(e, {
-      columns: COLUMNS,
-      showHeaders: false,
-    }));
+    console.log(
+      columnify(e, {
+        columns: COLUMNS,
+        showHeaders: false,
+      })
+    );
   }
 }
 
@@ -459,18 +496,10 @@ function getUniqueStacksEvents(events) {
   return _.uniqBy(sortedEvents, 'PhysicalResourceId');
 }
 
-function filterNestedStacks(
-  uniqueEvents,
-  excludeWithStatus = CFN_SUCCESS_STATUS,
-  includeWithStatus = [],
-) {
+function filterNestedStacks(uniqueEvents, excludeWithStatus = CFN_SUCCESS_STATUS, includeWithStatus = []) {
   const nestedStacks = [];
   for (let i = 0; i < uniqueEvents.length; i += 1) {
-    const {
-      PhysicalResourceId: physicalResourceId,
-      ResourceType: resourceType,
-      ResourceStatus: status,
-    } = uniqueEvents[i];
+    const { PhysicalResourceId: physicalResourceId, ResourceType: resourceType, ResourceStatus: status } = uniqueEvents[i];
     if (physicalResourceId && !nestedStacks.includes(physicalResourceId)) {
       if (resourceType === 'AWS::CloudFormation::Stack') {
         if (includeWithStatus.includes(status)) {

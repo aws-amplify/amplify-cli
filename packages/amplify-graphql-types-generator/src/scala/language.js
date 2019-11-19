@@ -1,12 +1,9 @@
-import {
-  join,
-  wrap,
-} from '../utilities/printing';
+import { join, wrap } from '../utilities/printing';
 
 export function comment(generator, comment) {
   const split = comment ? comment.split('\n') : [];
   if (split.length > 0) {
-    generator.printOnNewline('/**')
+    generator.printOnNewline('/**');
     split.forEach(line => {
       generator.printOnNewline(` * ${line.trim()}`);
     });
@@ -32,13 +29,16 @@ export function objectDeclaration(generator, { objectName, superclass, propertie
 export function caseClassDeclaration(generator, { caseClassName, description, superclass, params }, closure) {
   generator.printNewlineIfNeeded();
   comment(generator, description);
-  generator.printOnNewline(`case class ${caseClassName}(${(params || []).map(v => v.name + ": " + v.type).join(', ')})` + (superclass ? ` extends ${superclass}` : ''));
+  generator.printOnNewline(
+    `case class ${caseClassName}(${(params || []).map(v => v.name + ': ' + v.type).join(', ')})` +
+      (superclass ? ` extends ${superclass}` : '')
+  );
   generator.pushScope({ typeName: caseClassName });
   generator.withinBlock(closure);
   generator.popScope();
 }
 
-export function propertyDeclaration(generator, { propertyName, typeName, description}, closure) {
+export function propertyDeclaration(generator, { propertyName, typeName, description }, closure) {
   comment(generator, description);
   generator.printOnNewline(`val ${propertyName}: ${typeName} =`);
   generator.withinBlock(closure);
@@ -51,10 +51,29 @@ export function propertyDeclarations(generator, declarations) {
 }
 
 const reservedKeywords = new Set(
-  'case', 'catch', 'class', 'def', 'do', 'else',
-  'extends', 'false', 'final', 'for', 'if', 'match',
-  'new', 'null', 'throw', 'trait', 'true', 'try', 'until',
-  'val', 'var', 'while', 'with'
+  'case',
+  'catch',
+  'class',
+  'def',
+  'do',
+  'else',
+  'extends',
+  'false',
+  'final',
+  'for',
+  'if',
+  'match',
+  'new',
+  'null',
+  'throw',
+  'trait',
+  'true',
+  'try',
+  'until',
+  'val',
+  'var',
+  'while',
+  'with'
 );
 
 export function escapeIdentifierIfNeeded(identifier) {

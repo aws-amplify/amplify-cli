@@ -6,7 +6,7 @@ const which = require('which');
  * Determine the package manager of the current project
  *
  * @return {string} 'yarn' if yarn.lock exists, 'npm' if package.json exists, undefined otherwise
-*/
+ */
 async function getPackageManager() {
   const yarnLock = './yarn.lock';
   const yarnLockDir = path.join(process.cwd(), yarnLock);

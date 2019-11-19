@@ -1,14 +1,13 @@
 const path = require('path');
 const fs = require('fs-extra');
 const Ora = require('ora');
-const statementsGen = require('amplify-graphql-docs-generator').default;
+const { generate } = require('amplify-graphql-docs-generator');
 
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
-async function generateStatements(context, forceDownloadSchema,
-  maxDepth, withoutInit = false, decoupleFrontend = '') {
+async function generateStatements(context, forceDownloadSchema, maxDepth, withoutInit = false, decoupleFrontend = '') {
   try {
     context.amplify.getProjectMeta();
   } catch (e) {
@@ -34,7 +33,7 @@ async function generateStatements(context, forceDownloadSchema,
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
-  await projects.forEach(async (cfg) => {
+  await projects.forEach(async cfg => {
     const includeFiles = path.join(projectPath, cfg.includes[0]);
     const opsGenDirectory = cfg.amplifyExtension.docsFilePath
       ? path.join(projectPath, cfg.amplifyExtension.docsFilePath)
@@ -53,14 +52,12 @@ async function generateStatements(context, forceDownloadSchema,
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
     fs.ensureDirSync(opsGenDirectory);
-    await statementsGen(schemaPath, opsGenDirectory, {
+    await generate(schemaPath, opsGenDirectory, {
       separateFiles: true,
       language,
       maxDepth: maxDepth || cfg.amplifyExtension.maxDepth,
     });
-    opsGenSpinner.succeed(
-      constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory),
-    );
+    opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory));
   });
 }
 module.exports = generateStatements;

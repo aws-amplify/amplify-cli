@@ -9,7 +9,7 @@ const defaultSettings = {
 };
 
 function readSchemaDocument(schemaName: string): string {
-  const docPath = `${__dirname}/../../schemas/${schemaName}.graphql`
+  const docPath = `${__dirname}/../../schemas/${schemaName}.graphql`;
   if (fs.existsSync(docPath)) {
     return fs.readFileSync(docPath).toString();
   } else {
@@ -18,19 +18,53 @@ function readSchemaDocument(schemaName: string): string {
 }
 
 function getSchemaPath(schemaName: string): string {
-  return  `${__dirname}/../../schemas/${schemaName}`;
+  return `${__dirname}/../../schemas/${schemaName}`;
 }
 
-export function addApiWithSchema(
-  cwd: string,
-  schemaFile: string,
-  verbose: boolean = !isCI()
-) {
+export function addApiWithoutSchema(cwd: string, verbose: boolean = !isCI()) {
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+      .wait('Please select from one of the below mentioned services:')
+      .sendline('\r')
+      .wait('Provide API name:')
+      .sendline('\r')
+      .wait(/.*Choose the default authorization type for the API.*/)
+      .sendline('\r')
+      .wait(/.*Enter a description for the API key.*/)
+      .sendline('\r')
+      .wait(/.*After how many days from now the API key should expire.*/)
+      .sendline('\r')
+      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
+      .sendline('\r')
+      .wait('Do you have an annotated GraphQL schema?')
+      .sendline('n')
+      .wait('Do you want a guided schema creation')
+      .sendline('y')
+      .wait('What best describes your project')
+      .sendline('\r')
+      .wait('Do you want to edit the schema now?')
+      .sendline('n')
+      // tslint:disable-next-line
+      .wait(
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+      )
+      .run(function(err: Error) {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addApiWithSchema(cwd: string, schemaFile: string, verbose: boolean = !isCI()) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .sendline('\r')
       .wait('Provide API name:')
       .sendline('\r')
@@ -47,36 +81,30 @@ export function addApiWithSchema(
       .wait('Provide your schema file path:')
       .sendline(schemaPath)
       // tslint:disable-next-line
-      .wait('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud')
+      .wait(
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+      )
       .run(function(err: Error) {
         if (!err) {
           resolve();
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }
 
-export function updateApiSchema(
-  cwd: string,
-  projectName: string,
-  schemaName: string
-) {
+export function updateApiSchema(cwd: string, projectName: string, schemaName: string) {
   const testSchemaPath = getSchemaPath(schemaName);
   const schemaText = fs.readFileSync(testSchemaPath).toString();
   updateSchema(cwd, projectName, schemaText);
 }
 
-export function updateApiWithMultiAuth(
-  cwd: string,
-  settings: any,
-  verbose: boolean = !isCI()
-) {
+export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .sendline('')
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendline('')
@@ -86,6 +114,8 @@ export function updateApiWithMultiAuth(
       .sendline('300')
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendline('\x1b[B') // Down
+      .wait(/.*Configure additional auth types.*/)
+      .sendline('')
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
       .sendline('a\r') // All items
       // Cognito
@@ -114,6 +144,6 @@ export function updateApiWithMultiAuth(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }

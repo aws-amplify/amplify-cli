@@ -6,40 +6,42 @@ const AppSync = require('../src/aws-utils/aws-appsync');
 const Lex = require('../src/aws-utils/aws-lex');
 const Polly = require('../src/aws-utils/aws-polly');
 const SageMaker = require('../src/aws-utils/aws-sagemaker');
-const { transformGraphQLSchema } = require('./transform-graphql-schema');
+const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
 
 module.exports = {
   compileSchema: async (context, options) => {
     const category = 'api';
-    const {
-      resourcesToBeCreated,
-      resourcesToBeUpdated,
-      allResources,
-    } = await context.amplify.getResourceStatus(category);
-    let resources = resourcesToBeCreated.concat(resourcesToBeUpdated).concat(allResources);
-    resources = resources.filter(resource => resource.service === 'AppSync');
-    resources = resources.map(resource => resource.resourceName);
-    const optionsWithUpdateHandler = {
-      ...options,
-      handleMigration: resources.length ?
-        (opts => updateStackForAPIMigration(context, category, resources[0], opts)) :
-        undefined,
-    };
+    let optionsWithUpdateHandler = { ...options };
+
+    if (!options.dryRun) {
+      const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
+      let resources = resourcesToBeCreated.concat(resourcesToBeUpdated).concat(allResources);
+      resources = resources.filter(resource => resource.service === 'AppSync');
+      resources = resources.map(resource => resource.resourceName);
+      optionsWithUpdateHandler = {
+        ...options,
+        handleMigration: resources.length ? opts => updateStackForAPIMigration(context, category, resources[0], opts) : undefined,
+      };
+    }
+
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
+  },
+  getTransformerDirectives: async (context, options) => {
+    const { resourceDir } = options;
+    if (!resourceDir) {
+      throw new Error('missing resource directory');
+    }
+    return getDirectiveDefinitions(context, resourceDir);
   },
   getRegions: () => awsRegions.regions,
   getRegionMappings: () => awsRegions.regionMappings,
   /*eslint-disable*/
   staticRoles: context => ({
-    unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
-      .UnauthRoleName,
-    authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
-      .AuthRoleName,
-    unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
-      .UnauthRoleArn,
-    authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
-      .AuthRoleArn,
+    unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleName,
+    authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleName,
+    unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleArn,
+    authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleArn,
   }),
   /* eslint-enable */
   getUserPools: (context, options) =>
@@ -48,18 +50,19 @@ module.exports = {
         cognitoModel.cognito
           .listUserPools({ MaxResults: 60 })
           .promise()
-          .then((result) => {
+          .then(result => {
             let userPools = result.UserPools;
             if (options && options.region) {
               userPools = userPools.filter(userPool => userPool.Id.startsWith(options.region));
             }
             return userPools;
-          }))
-      .catch((err) => {
+          })
+      )
+      .catch(err => {
         context.print.error('Failed to fetch user pools');
         throw err;
       }),
-  getLambdaFunctions: async (context) => {
+  getLambdaFunctions: async context => {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
     const lambdafunctions = [];
@@ -82,19 +85,18 @@ module.exports = {
     }
     return lambdafunctions;
   },
-  getPollyVoices: async (context) => {
+  getPollyVoices: async context => {
     const pollyModel = await new Polly(context);
     let listOfVoices = [];
     try {
-      listOfVoices = await pollyModel.polly.describeVoices()
-        .promise();
+      listOfVoices = await pollyModel.polly.describeVoices().promise();
     } catch (err) {
       context.print.error('Failed to load voices');
       throw err;
     }
     return listOfVoices;
   },
-  getDynamoDBTables: async (context) => {
+  getDynamoDBTables: async context => {
     const dynamodbModel = await new DynamoDB(context);
 
     let nextToken;
@@ -102,17 +104,17 @@ module.exports = {
 
     try {
       do {
-        const paginatedTables = await dynamodbModel.dynamodb
-          .listTables({ Limit: 100, ExclusiveStartTableName: nextToken })
-          .promise();
+        const paginatedTables = await dynamodbModel.dynamodb.listTables({ Limit: 100, ExclusiveStartTableName: nextToken }).promise();
         const dynamodbTables = paginatedTables.TableNames;
         nextToken = paginatedTables.LastEvaluatedTableName;
         for (let i = 0; i < dynamodbTables.length; i += 1) {
-          describeTablePromises.push(dynamodbModel.dynamodb
-            .describeTable({
-              TableName: dynamodbTables[i],
-            })
-            .promise());
+          describeTablePromises.push(
+            dynamodbModel.dynamodb
+              .describeTable({
+                TableName: dynamodbTables[i],
+              })
+              .promise()
+          );
         }
       } while (nextToken);
 
@@ -140,7 +142,7 @@ module.exports = {
   },
   getAppSyncAPIs: context =>
     new AppSync(context)
-      .then((result) => {
+      .then(result => {
         const appSyncModel = result;
         context.print.debug(result);
         return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
@@ -152,11 +154,9 @@ module.exports = {
       awsOptions.region = options.region;
     }
     return new AppSync(context, awsOptions)
-      .then((result) => {
+      .then(result => {
         const appSyncModel = result;
-        return appSyncModel.appSync
-          .getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' })
-          .promise();
+        return appSyncModel.appSync.getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' }).promise();
       })
       .then(result => result.schema.toString() || null);
   },
@@ -165,7 +165,7 @@ module.exports = {
     if (options.region) {
       awsOptions.region = options.region;
     }
-    return new AppSync(context, awsOptions).then((result) => {
+    return new AppSync(context, awsOptions).then(result => {
       const appSyncModel = result;
       return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
     });
@@ -178,32 +178,29 @@ module.exports = {
     if (options) {
       params.nextToken = options;
     }
-    return new Lex(context)
-      .then(result => result.lex.getBuiltinSlotTypes(params).promise());
+    return new Lex(context).then(result => result.lex.getBuiltinSlotTypes(params).promise());
   },
-  getSlotTypes: (context) => {
+  getSlotTypes: context => {
     const params = {
       maxResults: 50,
     };
-    return new Lex(context)
-      .then(result => result.lex.getSlotTypes(params).promise());
+    return new Lex(context).then(result => result.lex.getSlotTypes(params).promise());
   },
   getAppSyncApiKeys: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
-    return new AppSync(context, awsOptions).then((result) => {
+    return new AppSync(context, awsOptions).then(result => {
       const appSyncModel = result;
       return appSyncModel.appSync.listApiKeys({ apiId: options.apiId }).promise();
     });
   },
-  getEndpoints: async (context) => {
+  getEndpoints: async context => {
     const sagemakerModel = await new SageMaker(context);
     let listOfEndpoints;
     try {
-      listOfEndpoints = await sagemakerModel.sageMaker.listEndpoints()
-        .promise();
+      listOfEndpoints = await sagemakerModel.sageMaker.listEndpoints().promise();
     } catch (err) {
       context.print.error('Failed to load endpoints');
       throw err;

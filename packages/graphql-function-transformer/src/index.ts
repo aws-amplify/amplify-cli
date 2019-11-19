@@ -1,2 +1,1 @@
-import FunctionTransformer from './FunctionTransformer';
-export default FunctionTransformer;
+export * from './FunctionTransformer';

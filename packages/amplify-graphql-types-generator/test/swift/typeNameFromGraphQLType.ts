@@ -6,7 +6,7 @@ import {
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLScalarType
+  GraphQLScalarType,
 } from 'graphql';
 
 import { Helpers } from '../../src/swift/helpers';
@@ -32,35 +32,23 @@ describe('Swift code generation: Types', () => {
     });
 
     it('should return [String?] for GraphQLNonNull(GraphQLList(GraphQLString))', () => {
-      expect(helpers.typeNameFromGraphQLType(new GraphQLNonNull(new GraphQLList(GraphQLString)))).toBe(
-        '[String?]'
-      );
+      expect(helpers.typeNameFromGraphQLType(new GraphQLNonNull(new GraphQLList(GraphQLString)))).toBe('[String?]');
     });
 
     it('should return [String]? for GraphQLList(GraphQLNonNull(GraphQLString))', () => {
-      expect(helpers.typeNameFromGraphQLType(new GraphQLList(new GraphQLNonNull(GraphQLString)))).toBe(
-        '[String]?'
-      );
+      expect(helpers.typeNameFromGraphQLType(new GraphQLList(new GraphQLNonNull(GraphQLString)))).toBe('[String]?');
     });
 
     it('should return [String] for GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))', () => {
-      expect(
-        helpers.typeNameFromGraphQLType(
-          new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
-        )
-      ).toBe('[String]');
+      expect(helpers.typeNameFromGraphQLType(new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))))).toBe('[String]');
     });
 
     it('should return [[String?]?]? for GraphQLList(GraphQLList(GraphQLString))', () => {
-      expect(helpers.typeNameFromGraphQLType(new GraphQLList(new GraphQLList(GraphQLString)))).toBe(
-        '[[String?]?]?'
-      );
+      expect(helpers.typeNameFromGraphQLType(new GraphQLList(new GraphQLList(GraphQLString)))).toBe('[[String?]?]?');
     });
 
     it('should return [[String?]]? for GraphQLList(GraphQLNonNull(GraphQLList(GraphQLString)))', () => {
-      expect(
-        helpers.typeNameFromGraphQLType(new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLString))))
-      ).toBe('[[String?]]?');
+      expect(helpers.typeNameFromGraphQLType(new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLString))))).toBe('[[String?]]?');
     });
 
     it('should return Int? for GraphQLInt', () => {
@@ -80,33 +68,25 @@ describe('Swift code generation: Types', () => {
     });
 
     it('should return String? for a custom scalar type', () => {
-      expect(
-        helpers.typeNameFromGraphQLType(
-          new GraphQLScalarType({ name: 'CustomScalarType', serialize: String })
-        )
-      ).toBe('String?');
+      expect(helpers.typeNameFromGraphQLType(new GraphQLScalarType({ name: 'CustomScalarType', serialize: String }))).toBe('String?');
     });
 
     it('should return a passed through custom scalar type with the passthroughCustomScalars option', () => {
       helpers.options.passthroughCustomScalars = true;
       helpers.options.customScalarsPrefix = '';
 
-      expect(
-        helpers.typeNameFromGraphQLType(
-          new GraphQLScalarType({ name: 'CustomScalarType', serialize: String })
-        )
-      ).toBe('CustomScalarType?');
+      expect(helpers.typeNameFromGraphQLType(new GraphQLScalarType({ name: 'CustomScalarType', serialize: String }))).toBe(
+        'CustomScalarType?'
+      );
     });
 
     it('should return a passed through custom scalar type with a prefix with the customScalarsPrefix option', () => {
       helpers.options.passthroughCustomScalars = true;
       helpers.options.customScalarsPrefix = 'My';
 
-      expect(
-        helpers.typeNameFromGraphQLType(
-          new GraphQLScalarType({ name: 'CustomScalarType', serialize: String })
-        )
-      ).toBe('MyCustomScalarType?');
+      expect(helpers.typeNameFromGraphQLType(new GraphQLScalarType({ name: 'CustomScalarType', serialize: String }))).toBe(
+        'MyCustomScalarType?'
+      );
     });
   });
 });

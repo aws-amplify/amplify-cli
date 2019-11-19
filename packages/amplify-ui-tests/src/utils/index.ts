@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import { writeFile } from 'fs';
-export { default as getProjectMeta } from './projectMeta'
+export { default as getProjectMeta } from './projectMeta';
 
 // run dotenv config to update env variable
 config();
@@ -18,11 +18,7 @@ export function getAwsCLIPath() {
 
 export function createNewProjectDir(root?: string): string {
   if (!root) {
-    root = join(
-      __dirname,
-      '../../../../..',
-      `amplify-integ-${Math.round(Math.random() * 100)}-test-${Math.round(Math.random() * 1000)}`
-    );
+    root = join(__dirname, '../../../../..', `amplify-integ-${Math.round(Math.random() * 100)}-test-${Math.round(Math.random() * 1000)}`);
   }
   mkdirSync(root);
   return root;
@@ -36,13 +32,13 @@ export function isCI(): Boolean {
   return process.env.CI ? true : false;
 }
 
-export function getEnvVars(): { } {
+export function getEnvVars(): {} {
   return { ...process.env };
 }
 
-export function getSampleRootPath() : string {
+export function getSampleRootPath(): string {
   //return join(__dirname, '../../../../..', 'amplify-js-samples-staging')
-  return join(__dirname, '../../../../..', 'photo-albums')
+  return join(__dirname, '../../../../..', 'photo-albums');
 }
 
 export function getUITestConfig() {
@@ -57,15 +53,16 @@ export function createTestMetaFile(destRoot: string, settings: any) {
       COGNITO_SIGN_IN_USERNAME: settings.username,
       COGNITO_SIGN_IN_PASSWORD: settings.password,
       COGNITO_SIGN_IN_EMAIL: settings.email,
-      COGNITO_SIGN_IN_PHONE_NUMBER: settings.phone
+      COGNITO_SIGN_IN_PHONE_NUMBER: settings.phone,
     },
-    testFiles: settings.testFiles
+    testFiles: settings.testFiles,
   };
   if (isCI()) {
-    testEnv = {...testEnv,
-      videosFolder: "/root/videos/" + settings.name,
-      screenshotsFolder: "/root/screenshots/" + settings.name,
-      video: true
+    testEnv = {
+      ...testEnv,
+      videosFolder: '/root/videos/' + settings.name,
+      screenshotsFolder: '/root/screenshots/' + settings.name,
+      video: true,
     };
   }
   const outputPath = join(destRoot, 'cypress.json');
@@ -75,4 +72,3 @@ export function createTestMetaFile(destRoot: string, settings: any) {
     }
   });
 }
-

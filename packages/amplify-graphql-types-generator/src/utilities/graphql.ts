@@ -24,14 +24,11 @@ import {
   DocumentNode,
   DirectiveNode,
   isListType,
-  isNonNullType
+  isNonNullType,
 } from 'graphql';
 
 declare module 'graphql/utilities/buildASTSchema' {
-  function buildASTSchema(
-    ast: DocumentNode,
-    options?: { assumeValid?: boolean; commentDescriptions?: boolean }
-  ): GraphQLSchema;
+  function buildASTSchema(ast: DocumentNode, options?: { assumeValid?: boolean; commentDescriptions?: boolean }): GraphQLSchema;
 }
 
 export function sortEnumValues(values: GraphQLEnumValue[]): GraphQLEnumValue[] {
@@ -51,29 +48,28 @@ export function removeConnectionDirectives(ast: ASTNode) {
     Directive(node: DirectiveNode): DirectiveNode | null {
       if (node.name.value === 'connection') return null;
       return node;
-    }
+    },
   });
 }
 
 export function removeClientDirectives(ast: ASTNode) {
   return visit(ast, {
     Field(node: FieldNode): FieldNode | null {
-      if (node.directives && node.directives.find(directive => directive.name.value === 'client'))
-        return null;
+      if (node.directives && node.directives.find(directive => directive.name.value === 'client')) return null;
       return node;
     },
     OperationDefinition: {
       leave(node: OperationDefinitionNode): OperationDefinitionNode | null {
         if (!node.selectionSet.selections.length) return null;
         return node;
-      }
-    }
+      },
+    },
   });
 }
 
 const typenameField = {
   kind: Kind.FIELD,
-  name: { kind: Kind.NAME, value: '__typename' }
+  name: { kind: Kind.NAME, value: '__typename' },
 };
 
 export function withTypenameFieldAddedWhereNeeded(ast: ASTNode) {
@@ -83,11 +79,10 @@ export function withTypenameFieldAddedWhereNeeded(ast: ASTNode) {
         return {
           ...node,
           selections: node.selections.filter(
-            selection =>
-              !(selection.kind === 'Field' && (selection as FieldNode).name.value === '__typename')
-          )
+            selection => !(selection.kind === 'Field' && (selection as FieldNode).name.value === '__typename')
+          ),
         };
-      }
+      },
     },
     leave(node: ASTNode) {
       if (!(node.kind === 'Field' || node.kind === 'FragmentDefinition')) return undefined;
@@ -98,13 +93,13 @@ export function withTypenameFieldAddedWhereNeeded(ast: ASTNode) {
           ...node,
           selectionSet: {
             ...node.selectionSet,
-            selections: [typenameField, ...node.selectionSet.selections]
-          }
+            selections: [typenameField, ...node.selectionSet.selections],
+          },
         };
       } else {
         return undefined;
       }
-    }
+    },
   });
 }
 
@@ -120,9 +115,7 @@ export function filePathForNode(node: ASTNode): string {
   return name;
 }
 
-export function valueFromValueNode(
-  valueNode: ValueNode
-): any | { kind: 'Variable'; variableName: string } {
+export function valueFromValueNode(valueNode: ValueNode): any | { kind: 'Variable'; variableName: string } {
   switch (valueNode.kind) {
     case 'IntValue':
     case 'FloatValue':
@@ -146,15 +139,10 @@ export function valueFromValueNode(
   }
 }
 
-export function isTypeProperSuperTypeOf(
-  schema: GraphQLSchema,
-  maybeSuperType: GraphQLCompositeType,
-  subType: GraphQLCompositeType
-) {
+export function isTypeProperSuperTypeOf(schema: GraphQLSchema, maybeSuperType: GraphQLCompositeType, subType: GraphQLCompositeType) {
   return (
     isEqualType(maybeSuperType, subType) ||
-    (subType instanceof GraphQLObjectType &&
-      (isAbstractType(maybeSuperType) && schema.isPossibleType(maybeSuperType, subType)))
+    (subType instanceof GraphQLObjectType && (isAbstractType(maybeSuperType) && schema.isPossibleType(maybeSuperType, subType)))
   );
 }
 
@@ -203,9 +191,7 @@ export function getFieldDef(
   }
   if (
     name === TypeNameMetaFieldDef.name &&
-    (parentType instanceof GraphQLObjectType ||
-      parentType instanceof GraphQLInterfaceType ||
-      parentType instanceof GraphQLUnionType)
+    (parentType instanceof GraphQLObjectType || parentType instanceof GraphQLInterfaceType || parentType instanceof GraphQLUnionType)
   ) {
     return TypeNameMetaFieldDef;
   }
