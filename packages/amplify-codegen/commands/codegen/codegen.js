@@ -38,8 +38,8 @@ module.exports = {
 
     try {
       const forceDownloadSchema = !context.parameters.options.nodownload;
-      const { 'max-depth': maxDepth } = context.parameters.options;
-      await codeGen.generate(context, forceDownloadSchema, maxDepth);
+      const { 'max-depth': maxDepth, 'add-typename': addTypename } = context.parameters.options;
+      await codeGen.generate(context, forceDownloadSchema, maxDepth, addTypename);
     } catch (e) {
       context.print.info(e.message);
       process.exit(1);
