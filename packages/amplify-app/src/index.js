@@ -340,30 +340,30 @@ async function createAndroidHelperFiles() {
 }
 
 async function createIosHelperFiles() {
-  const configDir = path.join(process.cwd(), '/amplifyxc.config');
+  const configFile = path.join(process.cwd(), '/amplifyxc.config');
   const configStr = 'push=false\nmodelgen=false\nprofile=default\nenvName=amplify';
-  const awsConfigDir = path.join(process.cwd(), '/awsconfiguration.json');
-  const amplifyConfigDir = path.join(process.cwd(), '/amplifyconfiguration.json');
+  const awsConfigFile = path.join(process.cwd(), '/awsconfiguration.json');
+  const amplifyConfigFile = path.join(process.cwd(), '/amplifyconfiguration.json');
   const amplifyDir = path.join(process.cwd(), '/amplify');
   const configJsonData = '{}';
   const configJsonObj = JSON.parse(configJsonData);
   const configJsonStr = JSON.stringify(configJsonObj);
 
   // Write files if needed and them to xcode project if one exists
-  if (await !fs.existsSync(configDir)) {
-    await fs.writeFileSync(configDir, configStr);
+  if (!fs.existsSync(configFile)) {
+    fs.writeFileSync(configFile, configStr);
   }
-  await addFileToXcodeProj(configDir);
-  if (await !fs.existsSync(awsConfigDir)) {
-    await fs.writeFileSync(awsConfigDir, configJsonStr);
+  await addFileToXcodeProj(configFile);
+  if (!fs.existsSync(awsConfigFile)) {
+    fs.writeFileSync(awsConfigFile, configJsonStr);
   }
-  await addFileToXcodeProj(awsConfigDir);
-  if (await !fs.existsSync(amplifyConfigDir)) {
-    await fs.writeFileSync(amplifyConfigDir, configJsonStr);
+  await addFileToXcodeProj(awsConfigFile);
+  if (!fs.existsSync(amplifyConfigFile)) {
+    fs.writeFileSync(amplifyConfigFile, configJsonStr);
   }
-  await addFileToXcodeProj(amplifyConfigDir);
+  await addFileToXcodeProj(amplifyConfigFile);
 
-  if (await fs.existsSync(amplifyDir)) {
+  if (fs.existsSync(amplifyDir)) {
     await addFileToXcodeProj(amplifyDir);
   }
 }
