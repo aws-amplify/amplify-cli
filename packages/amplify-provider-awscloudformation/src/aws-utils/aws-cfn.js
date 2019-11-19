@@ -317,12 +317,36 @@ class CloudFormation {
               const logicalResourceId = category + resource;
               const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
               if (index !== -1) {
-                this.context.amplify.updateamplifyMetaAfterResourceUpdate(
+                const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
+
+                const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(
                   category,
                   resource,
                   'output',
-                  formatOutputs(stackResult[index].Stacks[0].Outputs)
+                  formattedOutputs
                 );
+
+                // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
+                if (amplifyMeta[category][resource]) {
+                  const resourceObject = amplifyMeta[category][resource];
+
+                  if (
+                    resourceObject.service === 'AppSync' &&
+                    resourceObject.output &&
+                    resourceObject.output.GraphQLAPIKeyOutput &&
+                    !formattedOutputs.GraphQLAPIKeyOutput
+                  ) {
+                    const updatedResourceObject = updatedMeta[category][resource];
+
+                    if (updatedResourceObject.output.GraphQLAPIKeyOutput) {
+                      delete updatedResourceObject.output.GraphQLAPIKeyOutput;
+                    }
+                  }
+
+                  const amplifyMetaFilePath = this.context.amplify.pathManager.getAmplifyMetaFilePath();
+                  const jsonString = JSON.stringify(updatedMeta, null, 4);
+                  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+                }
               }
             });
           });
