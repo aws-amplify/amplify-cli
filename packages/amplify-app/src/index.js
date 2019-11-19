@@ -345,8 +345,7 @@ async function createIosHelperFiles() {
   const awsConfigFile = path.join(process.cwd(), '/awsconfiguration.json');
   const amplifyConfigFile = path.join(process.cwd(), '/amplifyconfiguration.json');
   const amplifyDir = path.join(process.cwd(), '/amplify');
-  const configJsonData = '{}';
-  const configJsonObj = JSON.parse(configJsonData);
+  const configJsonObj = {};
   const configJsonStr = JSON.stringify(configJsonObj);
 
   // Write files if needed and them to xcode project if one exists
