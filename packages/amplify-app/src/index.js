@@ -329,10 +329,24 @@ async function createJSHelperFiles() {
   });
 }
 
+async function createAndroidHelperFiles() {
+  const configJsonObj = { profile: 'default', envName: 'amplify' };
+  const configJsonStr = JSON.stringify(configJsonObj);
+  const configFile = path.join(process.cwd(), './amplify-gradle-config.json');
+  if (!fs.existsSync(configFile)) {
+    fs.writeFileSync(configFile, configJsonStr);
+  }
+}
+
 async function createAmplifyHelperFiles(frontend) {
   if (frontend === 'javascript') {
     await createJSHelperFiles();
   }
+
+  if (frontend === 'android') {
+    await createAndroidHelperFiles();
+  }
+
   return frontend;
 }
 
@@ -354,12 +368,20 @@ async function showJSHelpText() {
   console.log();
   console.log(chalk.green('Some next steps:'));
   console.log('"npm run amplify-modelgen" will allow you to generate models/entities for your GraphQL models');
-  console.log('"npm run amplify-push" will build all your local backend resources and provision it in the cloud');
+  console.log('"npm run amplify-push" will build all your local backend resources and provision them in the cloud');
   console.log('');
 }
 
 async function showAndroidHelpText() {
-  // TBD
+  console.log();
+  console.log(chalk.green('Some next steps:'));
+  console.log(
+    'Running the "modelgen" task provided in the amplifytools plugin will allow you to generate models/entities for your GraphQL models'
+  );
+  console.log(
+    'Running the "amplifyPush" task provided in the amplifytools plugin will build all your local backend resources and provision them in the cloud'
+  );
+  console.log('');
 }
 
 async function showIOSHelpText() {
