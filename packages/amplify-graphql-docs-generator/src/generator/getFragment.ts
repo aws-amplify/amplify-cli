@@ -7,6 +7,7 @@ export default function getFragment(
   typeObj: GraphQLObjectType,
   schema: GraphQLSchema,
   depth: number,
+  addTypename: boolean,
   filterFields: Array<GQLTemplateField> = [],
   name?: string,
   external: boolean = false,
@@ -15,7 +16,7 @@ export default function getFragment(
   const subFields = (typeObj && typeObj.getFields && typeObj.getFields()) || [];
   const filterFieldNames = filterFields.map(f => f.name);
   const fields: Array<GQLTemplateField> = Object.keys(subFields)
-    .map(field => getFields(subFields[field], schema, depth - 1, options))
+    .map(field => getFields(subFields[field], schema, depth - 1, addTypename, options))
     .filter(field => field && !filterFieldNames.includes(field.name));
   if (fields.length) {
     return {
