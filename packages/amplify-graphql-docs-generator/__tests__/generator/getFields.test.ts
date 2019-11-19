@@ -1,8 +1,10 @@
-import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLInterfaceType, GraphQLUnionType } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLInterfaceType, GraphQLUnionType, GraphQLList } from 'graphql';
 
 import getFields from '../../src/generator/getFields';
 import getFragment from '../../src/generator/getFragment';
 import getType from '../../src/generator/utils/getType';
+
+const addTypename = false;
 
 jest.mock('../../src/generator/getFragment');
 describe('getField', () => {
@@ -26,7 +28,7 @@ describe('getField', () => {
 
   it('should support simple scalar', () => {
     const queries = schema.getQueryType().getFields();
-    expect(getFields(queries.foo, schema, 3, { useExternalFragmentForS3Object: false })).toEqual({
+    expect(getFields(queries.foo, schema, 3, addTypename, { useExternalFragmentForS3Object: false })).toEqual({
       name: 'foo',
       fields: [],
       fragments: [],
@@ -37,7 +39,7 @@ describe('getField', () => {
 
   it('it should recursively resolve fields up to max depth', () => {
     const queries = schema.getQueryType().getFields();
-    expect(getFields(queries.nested, schema, 2, { useExternalFragmentForS3Object: false })).toEqual({
+    expect(getFields(queries.nested, schema, 2, addTypename, { useExternalFragmentForS3Object: false })).toEqual({
       name: 'nested',
       fields: [
         {
@@ -67,7 +69,7 @@ describe('getField', () => {
 
   it('should not return anything for complex type when the depth is < 1', () => {
     const queries = schema.getQueryType().getFields();
-    expect(getFields(queries.nested, schema, 0, { useExternalFragmentForS3Object: false })).toBeUndefined();
+    expect(getFields(queries.nested, schema, 0, addTypename, { useExternalFragmentForS3Object: false })).toBeUndefined();
   });
   describe('When type is an Interface', () => {
     beforeEach(() => {
@@ -111,7 +113,7 @@ describe('getField', () => {
     it('interface - should return fragments of all the implementations', () => {
       const maxDepth = 2;
       const getPossibleTypeSpy = jest.spyOn(schema, 'getPossibleTypes');
-      getFields(schema.getQueryType().getFields().shapeInterface, schema, maxDepth, { useExternalFragmentForS3Object: false });
+      getFields(schema.getQueryType().getFields().shapeInterface, schema, maxDepth, addTypename, { useExternalFragmentForS3Object: false });
       expect(getPossibleTypeSpy).toHaveBeenCalled();
       expect(getFragment).toHaveBeenCalled();
 
@@ -125,14 +127,116 @@ describe('getField', () => {
       expect(getFragment.mock.calls[0][0]).toEqual(circleType);
       expect(getFragment.mock.calls[0][1]).toEqual(schema);
       expect(getFragment.mock.calls[0][2]).toEqual(maxDepth);
-      expect(getFragment.mock.calls[0][3]).toEqual([commonField]);
+      expect(getFragment.mock.calls[0][3]).toEqual(addTypename);
+      expect(getFragment.mock.calls[0][4]).toEqual([commonField]);
 
       expect(getFragment.mock.calls[1][0]).toEqual(rectangleType);
       expect(getFragment.mock.calls[1][1]).toEqual(schema);
       expect(getFragment.mock.calls[1][2]).toEqual(maxDepth);
-      expect(getFragment.mock.calls[1][3]).toEqual([commonField]);
+      expect(getFragment.mock.calls[1][3]).toEqual(addTypename);
+      expect(getFragment.mock.calls[1][4]).toEqual([commonField]);
     });
   });
+
+  describe("When 'addTypename'", () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    const maxDepth = 2;
+
+    const addressType = new GraphQLObjectType({
+      name: 'Address',
+      fields: {
+        address: { type: GraphQLString },
+        city: { type: GraphQLString },
+        state: { type: GraphQLString },
+        zip: { type: GraphQLString },
+      },
+    });
+
+    const userType = new GraphQLObjectType({
+      name: 'User',
+      fields: {
+        name: { type: GraphQLString },
+        address: { type: addressType },
+      },
+    });
+
+    const schema = new GraphQLSchema({
+      query: new GraphQLObjectType({
+        name: 'Query',
+        fields: {
+          getUsers: { type: new GraphQLList(userType) },
+        },
+      }),
+    });
+
+    it("is true the '__typename' field should be included", () => {
+      const queries = schema.getQueryType().getFields();
+      const trueAddTypename = true;
+      expect(getFields(queries.getUsers, schema, maxDepth, trueAddTypename, { useExternalFragmentForS3Object: false })).toEqual({
+        name: 'getUsers',
+        fields: [
+          {
+            name: '__typename',
+            fields: [],
+            fragments: [],
+            hasBody: false,
+          },
+          {
+            name: 'name',
+            fields: [],
+            fragments: [],
+            hasBody: false,
+          },
+          {
+            name: 'address',
+            fields: [
+              { name: '__typename', fields: [], fragments: [], hasBody: false },
+              { name: 'address', fields: [], fragments: [], hasBody: false },
+              { name: 'city', fields: [], fragments: [], hasBody: false },
+              { name: 'state', fields: [], fragments: [], hasBody: false },
+              { name: 'zip', fields: [], fragments: [], hasBody: false },
+            ],
+            fragments: [],
+            hasBody: true,
+          },
+        ],
+        fragments: [],
+        hasBody: true,
+      });
+    });
+
+    it("is false the '__typename' field should *not* be included", () => {
+      const queries = schema.getQueryType().getFields();
+      expect(getFields(queries.getUsers, schema, maxDepth, addTypename, { useExternalFragmentForS3Object: false })).toEqual({
+        name: 'getUsers',
+        fields: [
+          {
+            name: 'name',
+            fields: [],
+            fragments: [],
+            hasBody: false,
+          },
+          {
+            name: 'address',
+            fields: [
+              { name: 'address', fields: [], fragments: [], hasBody: false },
+              { name: 'city', fields: [], fragments: [], hasBody: false },
+              { name: 'state', fields: [], fragments: [], hasBody: false },
+              { name: 'zip', fields: [], fragments: [], hasBody: false },
+            ],
+            fragments: [],
+            hasBody: true,
+          },
+        ],
+        fragments: [],
+        hasBody: true,
+      });
+    });
+  });
+
   describe('When type is an union', () => {
     beforeEach(() => {
       jest.resetAllMocks();
@@ -168,7 +272,7 @@ describe('getField', () => {
     it('union - should return fragments of all the types', () => {
       const maxDepth = 2;
       const getPossibleTypeSpy = jest.spyOn(schema, 'getPossibleTypes');
-      getFields(schema.getQueryType().getFields().shapeResult, schema, maxDepth, { useExternalFragmentForS3Object: false });
+      getFields(schema.getQueryType().getFields().shapeResult, schema, maxDepth, addTypename, { useExternalFragmentForS3Object: false });
       expect(getPossibleTypeSpy).toHaveBeenCalled();
       expect(getFragment).toHaveBeenCalled();
 
@@ -177,12 +281,14 @@ describe('getField', () => {
       expect(getFragment.mock.calls[0][0]).toEqual(circleType);
       expect(getFragment.mock.calls[0][1]).toEqual(schema);
       expect(getFragment.mock.calls[0][2]).toEqual(maxDepth);
-      expect(getFragment.mock.calls[0][3]).toEqual(commonField);
+      expect(getFragment.mock.calls[0][3]).toEqual(addTypename);
+      expect(getFragment.mock.calls[0][4]).toEqual(commonField);
 
       expect(getFragment.mock.calls[1][0]).toEqual(rectangleType);
       expect(getFragment.mock.calls[1][1]).toEqual(schema);
       expect(getFragment.mock.calls[1][2]).toEqual(maxDepth);
-      expect(getFragment.mock.calls[1][3]).toEqual(commonField);
+      expect(getFragment.mock.calls[1][3]).toEqual(addTypename);
+      expect(getFragment.mock.calls[1][4]).toEqual(commonField);
     });
   });
 });

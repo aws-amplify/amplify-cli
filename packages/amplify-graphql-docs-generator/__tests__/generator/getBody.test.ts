@@ -6,6 +6,7 @@ import getBody from '../../src/generator/getBody';
 
 jest.mock('../../src/generator/getFields');
 const maxDepth = 2;
+const addTypename = false;
 
 describe('getBody', () => {
   const arg: GraphQLArgument = {
@@ -42,10 +43,10 @@ describe('getBody', () => {
 
   it('should return a list of arguments', () => {
     const query = schema.getQueryType().getFields().article;
-    expect(getBody(query, schema, maxDepth, { useExternalFragmentForS3Object: true })).toEqual({
+    expect(getBody(query, schema, maxDepth, addTypename, { useExternalFragmentForS3Object: true })).toEqual({
       args: [{ name: 'id', value: '$id' }],
       ...mockFields,
     });
-    expect(getFields).toHaveBeenCalledWith(query, schema, maxDepth, { useExternalFragmentForS3Object: true });
+    expect(getFields).toHaveBeenCalledWith(query, schema, maxDepth, addTypename, { useExternalFragmentForS3Object: true });
   });
 });

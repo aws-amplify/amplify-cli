@@ -7,6 +7,8 @@ jest.mock('../../src/generator/getArgs');
 jest.mock('../../src/generator/getBody');
 
 const maxDepth = 4;
+const addTypename = false;
+
 const generateOption: GQLDocsGenOptions = { useExternalFragmentForS3Object: true };
 describe('generateOperation', () => {
   beforeEach(() => {
@@ -20,12 +22,12 @@ describe('generateOperation', () => {
       args: ['arg1'],
     };
     const doc = 'MOCK_DOCUMENT';
-    expect(generateOperation(op, 'MOCK_DOCUMENT', maxDepth, generateOption)).toEqual({
+    expect(generateOperation(op, 'MOCK_DOCUMENT', maxDepth, addTypename, generateOption)).toEqual({
       args: ['MOCK_ARG'],
       body: 'MOCK_BODY',
     });
 
     expect(getArgs).toHaveBeenCalledWith(op.args);
-    expect(getBody).toBeCalledWith(op, doc, maxDepth, generateOption);
+    expect(getBody).toBeCalledWith(op, doc, maxDepth, addTypename, generateOption);
   });
 });
