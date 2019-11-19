@@ -10,9 +10,7 @@ async function getXcodeProjectDir() {
   });
   let projDir;
   if (targetFiles.length) {
-    projDir = path.join(path.join(process.cwd(), targetFiles[0]), '/project.pbxproj');
-  } else {
-    projDir = undefined;
+    projDir = path.join(process.cwd(), targetFiles[0], '/project.pbxproj');
   }
   return projDir;
 }
