@@ -30,7 +30,7 @@ async function addFileToXcodeProj(file) {
       let hash = '';
       Object.entries(myProj.hash.project.objects.PBXGroup).forEach(entry => {
         const [key, value] = entry;
-        // only the root pbx group has no name, path or description
+        // only the root pbx group can have no name, path or description
         if (typeof value !== 'string' && value.name === undefined && value.path === undefined) {
           hash = key;
         }
