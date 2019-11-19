@@ -2,9 +2,10 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 import { Kind, TypeDefinitionNode } from 'graphql';
 import { join } from 'path';
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
+import { LOADER_CLASS_NAME } from './configs/java-config';
 
 const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
-const JAVA_PACKAGE_NAME = 'com.amplify.datastore.generated';
+const JAVA_PACKAGE_NAME = 'com.amplifyframework.datastore.generated.model';
 
 export type AppSyncModelCodeGenPresetConfig = {
   /**
@@ -47,11 +48,22 @@ const generateJavaPreset = (
       config: {
         ...options.config,
         scalars: { ...JAVA_SCALAR_MAP, ...options.config.scalars },
-        metadata: false,
         selectedType: modelName,
       },
     });
   });
+
+  // Class loader
+  config.push({
+    ...options,
+    filename: join(...baseOutputDir, `${LOADER_CLASS_NAME}.java`),
+    config: {
+      ...options.config,
+      scalars: { ...JAVA_SCALAR_MAP, ...options.config.scalars },
+      generate: 'loader',
+    },
+  });
+
   return config;
 };
 

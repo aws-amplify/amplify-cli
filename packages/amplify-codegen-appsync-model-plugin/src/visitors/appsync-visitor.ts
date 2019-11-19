@@ -185,7 +185,7 @@ export abstract class AppSyncModelVisitor<
       // @key check if fields listed in directives are present in the Object
       //
       const model: CodeGenModel = {
-        name: this.convertName(node),
+        name: node.name.value,
         type: 'model',
         directives,
         fields,

@@ -25,6 +25,7 @@ export const plugin: PluginFunction<RawAppSyncModelConfig> = (
     case 'android':
       visitor = new AppSyncModelJavaVisitor(schema, config, {
         selectedType: config.selectedType,
+        generate: config.generate,
       });
       break;
     case 'metadata':
