@@ -19,6 +19,8 @@ const {
   readTransformerConfiguration,
   writeTransformerConfiguration,
   TRANSFORM_CONFIG_FILE_NAME,
+  TRANSFORM_BASE_VERSION,
+  CLOUDFORMATION_FILE_NAME,
 } = TransformPackage;
 
 const category = 'api';
@@ -91,7 +93,7 @@ function getTransformerFactory(context, resourceDir, authConfig) {
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
   const versionChangeMessage =
-    'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+    'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
   const checkVersionExist = config => config && config.Version;
 
   // this is where we check if there is a prev version of the transformer being used
@@ -126,8 +128,10 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   }
 
   // Only touch the file if it misses the Version property
+  // Always set to the base version, to not to break existing projects when coming
+  // from an older version of the CLI.
   if (!localTransformerConfig.Version) {
-    localTransformerConfig.Version = 4.0;
+    localTransformerConfig.Version = TRANSFORM_BASE_VERSION;
     await writeTransformerConfiguration(resourceDir, localTransformerConfig);
   }
 }
@@ -137,7 +141,7 @@ function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
   if (!pathToProject || resources.length > 0) {
     return false;
   }
-  return fs.existsSync(`${pathToProject}/cloudformation-template.json`) && !fs.existsSync(`${pathToProject}/transform.conf.json`);
+  return fs.existsSync(`${pathToProject}/${CLOUDFORMATION_FILE_NAME}`) && !fs.existsSync(`${pathToProject}/${TRANSFORM_CONFIG_FILE_NAME}`);
 }
 
 /**

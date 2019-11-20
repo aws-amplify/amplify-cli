@@ -14,7 +14,12 @@ const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
 const defaultStackName = 'CustomResources.json';
 
-const { collectDirectivesByTypeNames, readTransformerConfiguration, writeTransformerConfiguration } = TransformPackage;
+const {
+  collectDirectivesByTypeNames,
+  readTransformerConfiguration,
+  writeTransformerConfiguration,
+  TRANSFORM_CURRENT_VERSION,
+} = TransformPackage;
 
 const authProviderChoices = [
   {
@@ -136,6 +141,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   if (!fs.existsSync(stacksDirectoryPath)) {
     fs.mkdirSync(stacksDirectoryPath);
   }
+
+  // During API add, make sure we're creating a transform.conf.json file with the latest version the CLI supports.
+  await updateTransformerConfigVersion(resourceDir);
 
   // Write the default custom resources stack out to disk.
   const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
@@ -287,6 +295,12 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 async function writeResolverConfig(context, syncConfig, resourceDir) {
   const localTransformerConfig = await readTransformerConfiguration(resourceDir);
   localTransformerConfig.ResolverConfig = syncConfig;
+  await writeTransformerConfiguration(resourceDir, localTransformerConfig);
+}
+
+async function updateTransformerConfigVersion(resourceDir) {
+  const localTransformerConfig = await readTransformerConfiguration(resourceDir);
+  localTransformerConfig.Version = TRANSFORM_CURRENT_VERSION;
   await writeTransformerConfiguration(resourceDir, localTransformerConfig);
 }
 
