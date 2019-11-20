@@ -1,5 +1,5 @@
 import { indent, indentMultiline, transformComment } from '@graphql-codegen/visitor-plugin-common';
-import { pascalCase, constantCase, camelCase, param } from 'change-case';
+import { pascalCase, constantCase, camelCase } from 'change-case';
 import dedent from 'ts-dedent';
 import { isArray } from 'util';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
