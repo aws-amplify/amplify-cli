@@ -350,8 +350,7 @@ async function createIosHelperFiles() {
 
   // Write files if needed and them to xcode project if one exists
   if (!fs.existsSync(configFile)) {
-    fs.writeFileSync(configFile, '');
-    const configxc = ini.parse(fs.readFileSync(configFile, 'utf-8'));
+    const configxc = ini.parse('');
     configxc.push = false;
     configxc.modelgen = false;
     configxc.profile = 'default';
