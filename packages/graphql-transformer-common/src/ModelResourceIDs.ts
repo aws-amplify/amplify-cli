@@ -66,6 +66,10 @@ export class ModelResourceIDs {
   }
 
   static ModelScalarFilterInputTypeName(name: string, includeFilter: Boolean): string {
+    const nameOverride = DEFAULT_SCALARS[name];
+    if (nameOverride) {
+      return `Model${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
+    }
     return `Model${name}${includeFilter ? 'Filter' : ''}Input`;
   }
   static ModelConnectionTypeName(typeName: string): string {
