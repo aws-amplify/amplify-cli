@@ -47,22 +47,20 @@ function getSrcDir(context) {
 function createAmplifyConfig(context) {
   const { amplify } = context;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
+  const srcDirPath = path.join(projectPath);
 
-  fs.ensureDirSync(srcDirPath);
+  if (fs.existsSync(srcDirPath)) {
+    const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
+    let amplifyConfig;
+    if (fs.existsSync(targetFilePath)) {
+      amplifyConfig = context.amplify.readJsonFile(targetFilePath);
+    }
 
-  const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-  let amplifyConfig;
-  if (fs.existsSync(targetFilePath)) {
-    amplifyConfig = context.amplify.readJsonFile(targetFilePath);
+    amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig);
+
+    const jsonString = JSON.stringify(amplifyConfig, null, 4);
+    fs.writeFileSync(targetFilePath, jsonString, 'utf8');
   }
-
-  amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig);
-
-  const jsonString = JSON.stringify(amplifyConfig, null, 4);
-  fs.writeFileSync(targetFilePath, jsonString, 'utf8');
 }
 
 function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
