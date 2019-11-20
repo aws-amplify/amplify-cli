@@ -1,10 +1,13 @@
 const { join } = require('path');
+
 const askCodeGenTargetLanguage = require('./questions/languageTarget');
 const askCodeGenQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askShouldGenerateCode = require('./questions/generateCode');
 const askShouldGenerateDocs = require('./questions/generateDocs');
 const askMaxDepth = require('./questions/maxDepth');
+const askAddTypename = require('./questions/addTypename');
+
 const { normalizeInputParams } = require('../utils/input-params-manager');
 const constants = require('../constants');
 const { getOutputFileName } = require('../utils');
@@ -70,6 +73,10 @@ async function addWalkThrough(context, skip = [], withoutInit, decoupleFrontend,
 
   if (answers.shouldGenerateDocs && !skip.includes('maxDepth')) {
     answers.maxDepth = await determineValue(inputParams, yesFlag, 'maxDepth', true, askMaxDepth);
+  }
+
+  if (answers.shouldGenerateDocs && !skip.includes('addTypename')) {
+    answers.addTypename = await determineValue(inputParams, yesFlag, 'addTypename', true, askAddTypename);
   }
 
   if (!(frontend === 'android' || answers.target === 'javascript')) {
