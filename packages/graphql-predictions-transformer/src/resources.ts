@@ -72,26 +72,30 @@ export class ResourceFactory {
   }
 
   private getStorageARN(name: string) {
-    const substitutions = {};
+    const substitutions = {
+      hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName')))
+    };
     if (this.referencesEnv(name)) {
       substitutions['env'] = Fn.Ref(ResourceConstants.PARAMETERS.Env);
     }
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Sub(this.s3ArnKey(name), substitutions),
-      Fn.Sub(this.s3ArnKey(this.removeEnvReference(name)), {})
+      Fn.Sub(this.s3ArnKey(this.removeEnvReference(name)), { hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))) })
     );
   }
 
   private addStorageInStash(storage: string) {
-    const substitutions = {};
+    const substitutions = {
+      hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName')))
+    };
     if (this.referencesEnv(storage)) {
       substitutions['env'] = Fn.Ref(ResourceConstants.PARAMETERS.Env);
     }
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Sub(`$util.qr($ctx.stash.put("s3Bucket", "${storage}"))`, substitutions),
-      Fn.Sub(`$util.qr($ctx.stash.put("s3Bucket", "${this.removeEnvReference(storage)}"))`, {})
+      Fn.Sub(`$util.qr($ctx.stash.put("s3Bucket", "${this.removeEnvReference(storage)}"))`, { hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))) })
     );
   }
 
@@ -321,7 +325,7 @@ export class ResourceFactory {
               set(ref('results'), ref('util.parseJson($ctx.result.body)')),
               set(ref('finalResult'), str('')),
               forEach(/** for */ ref('item'), /** in */ ref('results.TextDetections'), [
-                iff(raw('$item.Type == "LINE"'), set(ref('finalResult'), str('$finalResult$item.DetectedText'))),
+                iff(raw('$item.Type == "LINE"'), set(ref('finalResult'), str('$finalResult$item.DetectedText '))),
               ]),
               ref('util.toJson($finalResult.trim())'),
             ]),
@@ -332,7 +336,7 @@ export class ResourceFactory {
       identifyLabels: {
         request: compoundExpression([
           set(ref('bucketName'), ref('ctx.stash.get("s3Bucket")')),
-          qref('$ctx.stash.put("isList", false)'),
+          qref('$ctx.stash.put("isList", true)'),
           obj({
             version: str('2018-05-29'),
             method: str('POST'),

@@ -3624,6 +3624,36 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+amplify-frontend-android@1.31.0:
+  version "1.31.0"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-android/-/amplify-frontend-android-1.31.0.tgz#cbab66b75675faed5a49eceb51a254cbb3b63484"
+  integrity sha512-NL7vd54CoyV5NyVIpzEUJfuOHp470amBNaUYPLL2WO/Y+yNeT+ivkywAFbGnNG2xBYHLClCYszufHzgSVTFkfA==
+  dependencies:
+    chalk "^2.4.2"
+    fs-extra "^8.1.0"
+    inquirer "^6.5.1"
+    path "^0.12.7"
+
+amplify-frontend-ios@1.31.0:
+  version "1.31.0"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-ios/-/amplify-frontend-ios-1.31.0.tgz#2dcd57d3943006564d284850d12036fc0d2230a8"
+  integrity sha512-BVr8ZruUmj8yNcheUfw6wd1Ay8mKB3vVH5T0PtoVDUbvVp7wnwye6RQA+YohwyrNlKYC3bJeXLhDJ/PCUDDbRw==
+  dependencies:
+    chalk "^2.4.2"
+    fs-extra "^8.1.0"
+    inquirer "^6.5.1"
+    path "^0.12.7"
+
+amplify-frontend-javascript@1.29.0:
+  version "1.29.0"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-javascript/-/amplify-frontend-javascript-1.29.0.tgz#022d9ab2eccd4916bb10942bfbf366b9eaf58fdf"
+  integrity sha512-Ls3C98aIlsDlE8w+RhfHXHCL0wWDy8q+YsYfBTQ3LssuIKMOQvQaHyKGyp+sTS+kpO7ixJRi+XRGfZzNi1PpXA==
+  dependencies:
+    chalk "^2.4.2"
+    fs-extra "^8.1.0"
+    inquirer "^6.5.1"
+    path "^0.12.7"
+
 ansi-align@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-2.0.0.tgz#c36aeccba563b89ceb556f3690f0b1d9e3547f7f"
@@ -4813,6 +4843,11 @@ bestzip@^2.0.0, bestzip@^2.1.5:
     glob "^7.1.3"
     which "^1.3.1"
     yargs "^13.2.4"
+
+big-integer@^1.6.44:
+  version "1.6.48"
+  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.48.tgz#8fd88bd1632cba4a1c8c3e3d7159f08bb95b4b9e"
+  integrity sha512-j51egjPa7/i+RdiRuJbPdJ2FIUYYPhvYLjzoYbcMMm62ooO6F94fETG4MTs46zPAF9Brs04OajboA/qTGuz78w==
 
 big.js@^5.2.2:
   version "5.2.2"

@@ -24,11 +24,13 @@ const {
   CLOUDFORMATION_FILE_NAME,
 } = TransformPackage;
 
-const category = 'api';
+const apiCategory = 'api';
+const storageCategory = 'storage';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
+const s3ServiceName = 'S3';
 
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
@@ -49,6 +51,7 @@ function getTransformerFactory(context, resourceDir, authConfig) {
       new HttpTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
+      new PredictionsTransformer({}),
     ];
 
     if (addSearchableTransformer) {
@@ -206,7 +209,7 @@ async function transformGraphQLSchema(context, options) {
   const { forceCompile } = options;
 
   // Compilation during the push step
-  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
+  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(apiCategory);
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   // When build folder is missing include the API
@@ -216,7 +219,7 @@ async function transformGraphQLSchema(context, options) {
   const resourceNeedCompile = allResources
     .filter(r => !resources.includes(r))
     .filter(r => {
-      const buildDir = path.normalize(path.join(backEndDir, category, r.resourceName, 'build'));
+      const buildDir = path.normalize(path.join(backEndDir, apiCategory, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
   resources = resources.concat(resourceNeedCompile);
@@ -329,6 +332,10 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 
+  // for the predictions directive get storage config
+  const s3Resource = s3ResourceAlreadyExists(context);
+  const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : {};
+
   const buildDir = path.normalize(path.join(resourceDir, 'build'));
   const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
   const schemaDirPath = path.normalize(path.join(resourceDir, schemaDirName));
@@ -364,7 +371,7 @@ async function transformGraphQLSchema(context, options) {
       new HttpTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
-      new PredictionsTransformer(),
+      new PredictionsTransformer(storageConfig),
     ];
 
     if (addSearchableTransformer) {
@@ -483,6 +490,31 @@ async function getDirectiveDefinitions(context, resourceDir) {
   const transformList = await getTransformerFactory(context, resourceDir)(true);
   return transformList.map(transformPluginInst => transformPluginInst.getDirective()).join('\n');
 }
+
+function s3ResourceAlreadyExists(context) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  let resourceName;
+
+  if (amplifyMeta[storageCategory]) {
+    const categoryResources = amplifyMeta[storageCategory];
+    Object.keys(categoryResources).forEach(resource => {
+      if (categoryResources[resource].service === s3ServiceName) {
+        resourceName = resource;
+      }
+    });
+  }
+
+  return resourceName;
+}
+
+function getBucketName(context, s3ResourceName, backEndDir) {
+  const resourceDirPath = path.join(backEndDir, storageCategory, s3ResourceName);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
+  return { bucketName: `${bucketParameters.bucketName}\${hash}-\${env}` };
+}
+
 module.exports = {
   transformGraphQLSchema,
   getDirectiveDefinitions,

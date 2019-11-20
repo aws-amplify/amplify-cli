@@ -9,7 +9,7 @@ import {
 } from 'graphql';
 import { Transformer, gql, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core';
 import { ResolverResourceIDs, PredictionsResourceIDs, makeNamedType, makeNonNullType, makeListType } from 'graphql-transformer-common';
-import { actionInputFunctions, makeActionInputObject, getActionInputName } from './definitions';
+import { getActionInputType, makeActionInputObject, getActionInputName, capitalizeFirstLetter } from './definitions';
 import { allowedActions } from './predictions_utils';
 import { Fn } from 'cloudform-types';
 import { ResourceFactory, ActionPolicyMap } from './resources';
@@ -17,15 +17,20 @@ import path = require('path');
 
 const PREDICTIONS_DIRECTIVE_STACK = 'PredictionsDirectiveStack';
 
+export type PredictionsConfig = {
+  bucketName: string;
+};
+
 export class PredictionsTransformer extends Transformer {
   resources: ResourceFactory;
+  predictionsConfig: PredictionsConfig;
 
-  constructor() {
+  constructor(predictionsConfig: PredictionsConfig) {
     super(
       'PredictionsTransformer',
       gql`
         # where the parent this field is defined on is a query type
-        directive @predictions(actions: [PredictionsActions!]!, storage: String!) on FIELD_DEFINITION
+        directive @predictions(actions: [PredictionsActions!]!) on FIELD_DEFINITION
         enum PredictionsActions {
           identifyText
           identifyLabels
@@ -35,6 +40,7 @@ export class PredictionsTransformer extends Transformer {
       `
     );
     this.resources = new ResourceFactory();
+    this.predictionsConfig = predictionsConfig;
   }
 
   public field = (parent: ObjectTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
@@ -45,7 +51,7 @@ export class PredictionsTransformer extends Transformer {
 
     // get input arguments
     const actions = this.getActions(directive);
-    const storage = this.getStorage(directive);
+    const storage = this.predictionsConfig.bucketName;
 
     // validate that that order the transformers are correct
     this.validate(actions, storage);
@@ -53,7 +59,7 @@ export class PredictionsTransformer extends Transformer {
     // make changes to the schema to create the input/output types
     // generate action datasources and add functions
     this.createResources(ctx, definition, actions, storage);
-  };
+  }
 
   private validate(actions: string[], storage: string) {
     // validate actions
@@ -66,11 +72,9 @@ export class PredictionsTransformer extends Transformer {
         throw new InvalidDirectiveError(`${action} is not supported!`);
       }
     });
-    // validate storage name without env reference
-    const regexp = new RegExp('^[a-z0-9-]+$');
-    const storageNameWithoutEnv = this.resources.removeEnvReference(storage);
-    if (!regexp.test(storageNameWithoutEnv)) {
-      throw new InvalidDirectiveError(`Storage name can only use the following characters: a-z 0-9 -`);
+    // validate that storage is added in the project
+    if(!storage) {
+      throw new InvalidDirectiveError('Storage must be enabled before using @predictions');
     }
   }
 
@@ -101,7 +105,7 @@ export class PredictionsTransformer extends Transformer {
         ctx.setResource(actionDSConfig.id, this.resources.createPredictionsDataSource(actionDSConfig));
         ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, actionDSConfig.id);
         if (actionDSConfig.id === 'LambdaDataSource') {
-          // merge lambd permission
+          // merge lambda permission
           actionPolicyMap = this.resources.mergeLambdaActionRole(actionPolicyMap);
           // add lambda function in transformer context metadata
           ctx.metadata.set(PredictionsResourceIDs.getLambdaID(), path.resolve(`${__dirname}/../lib/predictionsLambdaFunction.zip`));
@@ -123,7 +127,7 @@ export class PredictionsTransformer extends Transformer {
       }
       // check if the input type exists in the schema
       if (!this.typeExist(getActionInputName(action, fieldName), ctx)) {
-        const actionInput = actionInputFunctions[action](getActionInputName(action, fieldName), isFirst);
+        const actionInput = getActionInputType(action, fieldName, isFirst);
         ctx.addInput(actionInput);
       }
     });
@@ -136,7 +140,7 @@ export class PredictionsTransformer extends Transformer {
     ctx.metadata.set(PredictionsResourceIDs.getActionMapID(), actionPolicyMap);
 
     // generate input type based on operation name
-    ctx.addInput(makeActionInputObject(this.capitalizeFirstLetter(fieldName), actionInputObjectFields));
+    ctx.addInput(makeActionInputObject(capitalizeFirstLetter(fieldName), actionInputObjectFields));
     // add arguments into operation
     const type = ctx.getType(ctx.getQueryTypeName()) as ObjectTypeDefinitionNode;
     if (type) {
@@ -167,15 +171,6 @@ export class PredictionsTransformer extends Transformer {
     return getArg('actions', []) as string[];
   }
 
-  private getStorage(directive: DirectiveNode): string {
-    const get = (s: string) => (arg: ArgumentNode) => arg.name.value === s;
-    const getArg = (arg: string, dflt?: any) => {
-      const argument = directive.arguments.find(get(arg));
-      return argument ? valueFromASTUntyped(argument.value) : dflt;
-    };
-    return getArg('storage', []) as string;
-  }
-
   private needsList(action: string, flag: boolean): boolean {
     switch (action) {
       case 'identifyLabels':
@@ -185,9 +180,6 @@ export class PredictionsTransformer extends Transformer {
       default:
         return flag;
     }
-  }
-  private capitalizeFirstLetter(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   private createInputValueAction(action: string, fieldName: string): InputValueDefinitionNode {
@@ -206,7 +198,7 @@ export class PredictionsTransformer extends Transformer {
         {
           kind: Kind.INPUT_VALUE_DEFINITION,
           name: { kind: 'Name' as 'Name', value: 'input' },
-          type: makeNonNullType(makeNamedType(`${this.capitalizeFirstLetter(fieldName)}Input`)),
+          type: makeNonNullType(makeNamedType(`${capitalizeFirstLetter(fieldName)}Input`)),
           directives: [],
         },
       ],
