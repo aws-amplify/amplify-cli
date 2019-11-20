@@ -2,10 +2,9 @@ import { Types } from '@graphql-codegen/plugin-helpers';
 import { Kind, TypeDefinitionNode } from 'graphql';
 import { join } from 'path';
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
-import { LOADER_CLASS_NAME } from './configs/java-config';
+import { LOADER_CLASS_NAME, GENERATED_PACKAGE_NAME } from './configs/java-config';
 
 const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
-const JAVA_PACKAGE_NAME = 'com.amplifyframework.datastore.generated.model';
 
 export type AppSyncModelCodeGenPresetConfig = {
   /**
@@ -39,7 +38,7 @@ const generateJavaPreset = (
   models: TypeDefinitionNode[]
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
-  const baseOutputDir = [options.baseOutputDir, ...JAVA_PACKAGE_NAME.split('.')];
+  const baseOutputDir = [options.baseOutputDir, ...GENERATED_PACKAGE_NAME.split('.')];
   models.forEach(model => {
     const modelName = model.name.value;
     config.push({
