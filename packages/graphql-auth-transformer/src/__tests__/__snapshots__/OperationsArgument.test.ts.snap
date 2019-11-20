@@ -59,7 +59,10 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
-  #set( $condition = $util.map.copyAndRemoveAllKeys($condition, [\\"expressionValues\\"]) )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 {
   \\"version\\": \\"2017-02-28\\",
@@ -215,7 +218,10 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
-  #set( $condition = $util.map.copyAndRemoveAllKeys($condition, [\\"expressionValues\\"]) )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 #set( $expNames = {} )
 #set( $expValues = {} )
@@ -435,7 +441,10 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
-  #set( $condition = $util.map.copyAndRemoveAllKeys($condition, [\\"expressionValues\\"]) )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 {
   \\"version\\": \\"2017-02-28\\",
@@ -677,7 +686,10 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
-  #set( $condition = $util.map.copyAndRemoveAllKeys($condition, [\\"expressionValues\\"]) )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 {
   \\"version\\": \\"2017-02-28\\",
@@ -833,7 +845,10 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
-  #set( $condition = $util.map.copyAndRemoveAllKeys($condition, [\\"expressionValues\\"]) )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 #set( $expNames = {} )
 #set( $expValues = {} )
@@ -1053,7 +1068,10 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
-  #set( $condition = $util.map.copyAndRemoveAllKeys($condition, [\\"expressionValues\\"]) )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 {
   \\"version\\": \\"2017-02-28\\",

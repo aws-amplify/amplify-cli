@@ -416,7 +416,13 @@ export class ResourceFactory {
           ),
           iff(
             and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
-            set(ref('condition'), ref('util.map.copyAndRemoveAllKeys($condition, ["expressionValues"])'))
+            set(
+              ref('condition'),
+              obj({
+                expression: ref('condition.expression'),
+                expressionNames: ref('condition.expressionNames'),
+              })
+            )
           ),
           DynamoDBMappingTemplate.putItem(
             {
@@ -529,7 +535,13 @@ export class ResourceFactory {
           ),
           iff(
             and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
-            set(ref('condition'), ref('util.map.copyAndRemoveAllKeys($condition, ["expressionValues"])'))
+            set(
+              ref('condition'),
+              obj({
+                expression: ref('condition.expression'),
+                expressionNames: ref('condition.expressionNames'),
+              })
+            )
           ),
           DynamoDBMappingTemplate.updateItem({
             key: ifElse(
@@ -794,7 +806,13 @@ export class ResourceFactory {
           ),
           iff(
             and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
-            set(ref('condition'), ref('util.map.copyAndRemoveAllKeys($condition, ["expressionValues"])'))
+            set(
+              ref('condition'),
+              obj({
+                expression: ref('condition.expression'),
+                expressionNames: ref('condition.expressionNames'),
+              })
+            )
           ),
           DynamoDBMappingTemplate.deleteItem({
             key: ifElse(

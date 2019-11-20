@@ -47,28 +47,7 @@ const INT_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType']);
 const FLOAT_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType']);
 const BOOLEAN_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType']);
 
-const ATTRIBUTE_TYPES = [
-  'B',
-  'BS',
-  'BOOL',
-  'L',
-  'M',
-  'N',
-  'NS',
-  'S',
-  'SS',
-  'NULL',
-  // 'binary',
-  // 'binarySet',
-  // 'bool',
-  // 'list',
-  // 'map',
-  // 'number',
-  // 'numberSet',
-  // 'string',
-  // 'stringSet',
-  // '_null'
-];
+const ATTRIBUTE_TYPES = ['binary', 'binarySet', 'bool', 'list', 'map', 'number', 'numberSet', 'string', 'stringSet', '_null'];
 
 export function getNonModelObjectArray(
   obj: ObjectTypeDefinitionNode,
