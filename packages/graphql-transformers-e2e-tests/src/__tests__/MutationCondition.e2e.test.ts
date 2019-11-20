@@ -1442,7 +1442,61 @@ describe(`Local V4-V5 Transformer tests`, () => {
     checkMutation('delete');
   });
 
-  it(`V${TRANSFORM_CURRENT_VERSION} transform result`, () => {
+  it(`V5 transform result`, () => {
+    const validSchema = `
+            type Post
+            @model
+            {
+                id: ID!
+                content: String
+                rating: Int
+                state: State
+                stateList: [State]
+            }
+
+            enum State {
+              DRAFT,
+              PUBLISHED
+            }
+        `;
+
+    const conditionFeatureVersion = 5;
+    const schema = transformAndParseSchema(validSchema, conditionFeatureVersion);
+
+    const filterType = getInputType(schema, 'ModelPostFilterInput');
+    expectFieldsOnInputType(filterType, ['id', 'content', 'rating', 'state', 'stateList', 'and', 'or', 'not']);
+
+    const conditionType = getInputType(schema, 'ModelPostConditionInput');
+    expectFieldsOnInputType(conditionType, ['content', 'rating', 'state', 'stateList', 'and', 'or', 'not']);
+
+    expectInputTypeDefined(schema, 'ModelStringInput');
+    expectInputTypeDefined(schema, 'ModelIDInput');
+    expectInputTypeDefined(schema, 'ModelIntInput');
+    expectInputTypeDefined(schema, 'ModelFloatInput');
+    expectInputTypeDefined(schema, 'ModelBooleanInput');
+    expectInputTypeDefined(schema, 'ModelStateInput');
+    expectInputTypeDefined(schema, 'ModelStateListInput');
+    expectInputTypeDefined(schema, 'ModelSizeInput');
+    expectEnumTypeDefined(schema, 'ModelAttributeTypes');
+
+    const mutation = <ObjectTypeDefinitionNode>(
+      schema.definitions.find((def: DefinitionNode) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === 'Mutation')
+    );
+    expect(mutation).toBeDefined();
+
+    const checkMutation = (name: string) => {
+      const field = <FieldDefinitionNode>mutation.fields.find(f => f.name.value === `${name}Post`);
+      expect(field).toBeDefined();
+      const conditionArg = field.arguments.find(a => a.name.value === 'condition');
+      expect(conditionArg).toBeDefined();
+    };
+
+    checkMutation('create');
+    checkMutation('update');
+    checkMutation('delete');
+  });
+
+  it(`Current version transform result`, () => {
     const validSchema = `
             type Post
             @model

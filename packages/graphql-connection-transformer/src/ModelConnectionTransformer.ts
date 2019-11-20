@@ -664,7 +664,7 @@ export class ModelConnectionTransformer extends Transformer {
     }
 
     // Create the ModelXFilterInput
-    const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx);
+    const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx, this.supportsConditions(ctx));
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
     }

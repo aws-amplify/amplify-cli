@@ -18,7 +18,7 @@
   "author": "Michael Paris",
   "license": "MIT",
   "devDependencies": {
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.0",
     "@types/node": "^8.10.51",

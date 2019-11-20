@@ -25,7 +25,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/global-prefix": "^3.0.0",
     "@types/ora": "^3.2.0",
     "amplify-category-analytics": "1.28.0",

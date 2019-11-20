@@ -302,7 +302,8 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode, isSync: boo
 
 export function makeModelXFilterInputObject(
   obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-  ctx: TransformerContext
+  ctx: TransformerContext,
+  supportsConditions: Boolean
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelFilterInputTypeName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -319,8 +320,8 @@ export function makeModelXFilterInputObject(
       const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
       const filterTypeName =
         isEnumType && isList
-          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !(ctx.getTransformerVersion() >= 5))
-          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !(ctx.getTransformerVersion() >= 5));
+          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !supportsConditions)
+          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !supportsConditions);
 
       return {
         kind: Kind.INPUT_VALUE_DEFINITION,
@@ -386,7 +387,8 @@ export function makeModelXFilterInputObject(
 
 export function makeModelXConditionInputObject(
   obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-  ctx: TransformerContext
+  ctx: TransformerContext,
+  supportsConditions: Boolean
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelConditionInputTypeName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -403,8 +405,8 @@ export function makeModelXConditionInputObject(
       const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
       const conditionTypeName =
         isEnumType && isList
-          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !(ctx.getTransformerVersion() >= 5))
-          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !(ctx.getTransformerVersion() >= 5));
+          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !supportsConditions)
+          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !supportsConditions);
 
       return {
         kind: Kind.INPUT_VALUE_DEFINITION,
@@ -468,7 +470,11 @@ export function makeModelXConditionInputObject(
   };
 }
 
-export function makeEnumFilterInputObjects(obj: ObjectTypeDefinitionNode, ctx: TransformerContext): InputObjectTypeDefinitionNode[] {
+export function makeEnumFilterInputObjects(
+  obj: ObjectTypeDefinitionNode,
+  ctx: TransformerContext,
+  supportsConditions: Boolean
+): InputObjectTypeDefinitionNode[] {
   return obj.fields
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
@@ -478,8 +484,8 @@ export function makeEnumFilterInputObjects(obj: ObjectTypeDefinitionNode, ctx: T
       const typeName = getBaseType(enumField.type);
       const isList = isListType(enumField.type);
       const name = isList
-        ? ModelResourceIDs.ModelFilterListInputTypeName(typeName, !(ctx.getTransformerVersion() >= 5))
-        : ModelResourceIDs.ModelScalarFilterInputTypeName(typeName, !(ctx.getTransformerVersion() >= 5));
+        ? ModelResourceIDs.ModelFilterListInputTypeName(typeName, !supportsConditions)
+        : ModelResourceIDs.ModelScalarFilterInputTypeName(typeName, !supportsConditions);
       const fields = [];
 
       fields.push({

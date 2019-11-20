@@ -466,7 +466,12 @@ test(`V${TRANSFORM_BASE_VERSION} transformer snapshot test`, () => {
   expect(schema).toMatchSnapshot();
 });
 
-test(`V${TRANSFORM_CURRENT_VERSION} transformer snapshot test`, () => {
+test(`V5 transformer snapshot test`, () => {
+  const schema = transformerVersionSnapshot(5);
+  expect(schema).toMatchSnapshot();
+});
+
+test(`Current version transformer snapshot test`, () => {
   const schema = transformerVersionSnapshot(TRANSFORM_CURRENT_VERSION);
   expect(schema).toMatchSnapshot();
 });

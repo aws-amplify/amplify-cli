@@ -507,7 +507,7 @@ export class DynamoDBModelTransformer extends Transformer {
     }
 
     // Create the Enum filters
-    const enumFilters = makeEnumFilterInputObjects(def, ctx);
+    const enumFilters = makeEnumFilterInputObjects(def, ctx, this.supportsConditions(ctx));
     for (const filter of enumFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
@@ -515,7 +515,7 @@ export class DynamoDBModelTransformer extends Transformer {
     }
 
     // Create the ModelXFilterInput
-    const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx);
+    const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx, this.supportsConditions(ctx));
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
     }
@@ -530,7 +530,7 @@ export class DynamoDBModelTransformer extends Transformer {
     }
 
     // Create the Enum filters
-    const enumFilters = makeEnumFilterInputObjects(def, ctx);
+    const enumFilters = makeEnumFilterInputObjects(def, ctx, this.supportsConditions(ctx));
     for (const filter of enumFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
@@ -539,7 +539,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
     if (this.supportsConditions(ctx)) {
       // Create the ModelXConditionInput
-      const tableXMutationConditionInput = makeModelXConditionInputObject(def, ctx);
+      const tableXMutationConditionInput = makeModelXConditionInputObject(def, ctx, this.supportsConditions(ctx));
       if (!this.typeExist(tableXMutationConditionInput.name.value, ctx)) {
         ctx.addInput(tableXMutationConditionInput);
       }
