@@ -7,6 +7,7 @@ const { spawnSync, spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
 const { addFileToXcodeProj } = require('./xcodeHelpers');
+const ini = require('ini');
 
 const amplifyCliPackageName = '@aws-amplify/cli@canary';
 
@@ -341,7 +342,6 @@ async function createAndroidHelperFiles() {
 
 async function createIosHelperFiles() {
   const configFile = path.join(process.cwd(), '/amplifyxc.config');
-  const configStr = 'push=false\nmodelgen=false\nprofile=default\nenvName=amplify';
   const awsConfigFile = path.join(process.cwd(), '/awsconfiguration.json');
   const amplifyConfigFile = path.join(process.cwd(), '/amplifyconfiguration.json');
   const amplifyDir = path.join(process.cwd(), '/amplify');
@@ -350,7 +350,13 @@ async function createIosHelperFiles() {
 
   // Write files if needed and them to xcode project if one exists
   if (!fs.existsSync(configFile)) {
-    fs.writeFileSync(configFile, configStr);
+    fs.writeFileSync(configFile, '');
+    const configxc = ini.parse(fs.readFileSync(configFile, 'utf-8'));
+    configxc.push = false;
+    configxc.modelgen = false;
+    configxc.profile = 'default';
+    configxc.envName = 'amplify';
+    fs.writeFileSync(configFile, ini.stringify(configxc));
   }
   await addFileToXcodeProj(configFile);
 
