@@ -7,7 +7,7 @@ module.exports = {
   name: featureName,
   run: async context => {
     if (context.parameters.options.help) {
-      const header = `amplify ${featureName} [subcommand] [[--nodownload] [--max-depth <number>]]\nDescriptions:
+      const header = `amplify ${featureName} [subcommand] [[--nodownload] [--max-depth <number>] [--add-typename]]\nDescriptions:
       Generates GraphQL statements (queries, mutations and subscriptions) and type annotations. \nSub Commands:`;
 
       const commands = [
@@ -16,7 +16,7 @@ module.exports = {
           description: constants.CMD_DESCRIPTION_GENERATE_TYPES,
         },
         {
-          name: 'statements [--nodownload] [--max-depth]',
+          name: 'statements [--nodownload] [--max-depth] [--add-typename]',
           description: constants.CMD_DESCRIPTION_GENERATE_STATEMENTS,
         },
         {
