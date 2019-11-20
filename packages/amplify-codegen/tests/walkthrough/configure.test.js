@@ -4,6 +4,8 @@ const askCodegenTargetLanguage = require('../../src/walkthrough/questions/langua
 const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/queryFilePattern');
 const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName');
 const askMaxDepth = require('../../src/walkthrough/questions/maxDepth');
+const askAddTypename = require('../../src/walkthrough/questions/addTypename');
+
 const configure = require('../../src/walkthrough/configure');
 const { getIncludePattern } = require('../../src/utils');
 
@@ -12,6 +14,8 @@ jest.mock('../../src/walkthrough/questions/languageTarget');
 jest.mock('../../src/walkthrough/questions/queryFilePattern');
 jest.mock('../../src/walkthrough/questions/generatedFileName');
 jest.mock('../../src/walkthrough/questions/maxDepth');
+jest.mock('../../src/walkthrough/questions/addTypename');
+
 jest.mock('../../src/utils');
 
 describe('configure walk-through', () => {
@@ -23,26 +27,29 @@ describe('configure walk-through', () => {
   const mockGraphQLDirectory = 'MOCK_GQL_DIR';
   const mockGraphQLExtension = 'MOCK_GQL_EXTENSION';
   const MOCK_MAX_DEPTH = 'MOCK_MAX_DEPTH';
+  const MOCK_ADD_TYPENAME = false;
 
   const mockConfigs = [
     {
       projectName: 'One',
-      includes: ['one/**/*.gql', 'one/**/*.graohql'],
+      includes: ['one/**/*.gql', 'one/**/*.graphql'],
       amplifyExtension: {
         graphQLApiId: 'one',
         generatedFileName: 'one-1.ts',
         codeGenTarget: 'language-one',
         maxDepth: 5,
+        addTypename: false,
       },
     },
     {
       projectName: 'Two',
-      includes: ['two/**/*.gql', 'two/**/*.graohql'],
+      includes: ['two/**/*.gql', 'two/**/*.graphql'],
       amplifyExtension: {
         graphQLApiId: 'two',
-        maxDepth: 10,
         generatedFileName: 'two-2.ts',
         codeGenTarget: 'language-two',
+        maxDepth: 10,
+        addTypename: true,
       },
     },
   ];
@@ -54,6 +61,7 @@ describe('configure walk-through', () => {
     askCodegneQueryFilePattern.mockReturnValue(mockIncludes);
     askGeneratedFileName.mockReturnValue(mockGeneratedFileName);
     askMaxDepth.mockReturnValue(MOCK_MAX_DEPTH);
+    askAddTypename.mockReturnValue(MOCK_ADD_TYPENAME);
     getIncludePattern.mockReturnValue({
       graphQLDirectory: mockGraphQLDirectory,
       graphQLExtension: mockGraphQLExtension,
@@ -83,6 +91,7 @@ describe('configure walk-through', () => {
     expect(askCodegneQueryFilePattern).toHaveBeenCalledWith([join(mockGraphQLDirectory, '**', mockGraphQLExtension)]);
     expect(askGeneratedFileName).toHaveBeenCalledWith(mockConfigs[1].amplifyExtension.generatedFileName, mockTargetLanguage);
     expect(askMaxDepth).toHaveBeenCalledWith(10);
+    expect(askAddTypename).toHaveBeenCalledWith(mockConfigs[1].amplifyExtension.addTypename);
     expect(results).toEqual({
       projectName: mockConfigs[1].projectName,
       includes: mockIncludes,
@@ -91,6 +100,7 @@ describe('configure walk-through', () => {
         generatedFileName: mockGeneratedFileName,
         codeGenTarget: mockTargetLanguage,
         maxDepth: MOCK_MAX_DEPTH,
+        addTypename: MOCK_ADD_TYPENAME,
       },
     });
   });

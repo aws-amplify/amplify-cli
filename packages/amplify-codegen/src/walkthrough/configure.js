@@ -5,6 +5,8 @@ const askCodeGenTargetLanguage = require('./questions/languageTarget');
 const askCodeGeneQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askMaxDepth = require('./questions/maxDepth');
+const askAddTypename = require('./questions/addTypename');
+
 const { getFrontEndHandler, getIncludePattern } = require('../utils/');
 
 function deepCopy(obj) {
@@ -57,6 +59,8 @@ async function configureProjectWalkThrough(context, amplifyConfig, withoutInit =
   amplifyExtension.codeGenTarget = targetLanguage;
 
   amplifyExtension.maxDepth = await askMaxDepth(amplifyExtension.maxDepth);
+
+  amplifyExtension.addTypename = await askAddTypename(amplifyExtension.addTypename);
 
   return selectedProjectConfig;
 }

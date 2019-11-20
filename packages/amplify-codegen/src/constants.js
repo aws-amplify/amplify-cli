@@ -15,6 +15,7 @@ module.exports = {
   PROMPT_MSG_CHANGE_REGION: 'Do you want to choose a different region',
   PROMPT_MSG_UPDATE_CODE: 'Do you want to update code for your updated GraphQL API',
   PROMPT_MSG_MAX_DEPTH: 'Enter maximum statement depth [increase from default if your schema is deeply nested]',
+  PROMPT_MSG_ADD_TYPENAME: "Do you want generated documents to include the '__typename' field",
   PROMPT_MSG_GENERATE_OPS: 'Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions',
   PROMPT_MSG_SELECT_PROJECT: 'Choose the AppSync API',
   PROMPT_MSG_SELECT_REGION: 'Choose AWS Region',

@@ -4,6 +4,8 @@ const askGeneratedFileName = require('../../src/walkthrough/questions/generatedF
 const askGenerateCode = require('../../src/walkthrough/questions/generateCode');
 const askShouldGenerateDocs = require('../../src/walkthrough/questions/generateDocs');
 const askMaxDepth = require('../../src/walkthrough/questions/maxDepth');
+const askAddTypename = require('../../src/walkthrough/questions/addTypename');
+
 const { getGraphQLDocPath, getSchemaDownloadLocation, getFrontEndHandler, getIncludePattern } = require('../../src/utils');
 const add = require('../../src/walkthrough/add');
 
@@ -14,6 +16,7 @@ jest.mock('../../src/utils');
 jest.mock('../../src/walkthrough/questions/generateCode');
 jest.mock('../../src/walkthrough/questions/generateDocs');
 jest.mock('../../src/walkthrough/questions/maxDepth');
+jest.mock('../../src/walkthrough/questions/addTypename');
 
 describe('Add walk-through', () => {
   const MOCK_TARGET_LANGUAGE = 'MOCK_TARGET_LANGUAGE';
@@ -42,6 +45,7 @@ describe('Add walk-through', () => {
       graphQLExtension: '*.js',
     });
     askMaxDepth.mockReturnValue(MOCK_MAX_DEPTH);
+    askAddTypename.mockReturnValue(false);
   });
 
   it('should show questions in walkthrough', async () => {
@@ -60,6 +64,7 @@ describe('Add walk-through', () => {
       docsFilePath: MOCK_DOCS_FILE_PATH,
       shouldGenerateDocs: true,
       maxDepth: MOCK_MAX_DEPTH,
+      addTypename: false,
     });
   });
 
@@ -76,6 +81,7 @@ describe('Add walk-through', () => {
       docsFilePath: MOCK_DOCS_FILE_PATH,
       shouldGenerateDocs: true,
       maxDepth: MOCK_MAX_DEPTH,
+      addTypename: false,
     });
   });
 
