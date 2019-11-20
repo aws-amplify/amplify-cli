@@ -8,7 +8,6 @@ import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirect
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 import * as Sanity from './sanity-check';
 
-export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
 
@@ -49,6 +48,7 @@ async function _buildProject(opts: ProjectOptions) {
   const transform = new GraphQLTransform({
     transformers,
     stackMapping,
+    transformConfig: userProjectConfig.config,
   });
   let transformOutput = transform.transform(userProjectConfig.schema.toString());
   if (userProjectConfig.config && userProjectConfig.config.Migration) {

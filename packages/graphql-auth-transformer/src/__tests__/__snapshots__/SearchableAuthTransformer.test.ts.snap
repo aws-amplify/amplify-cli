@@ -50,8 +50,6 @@ input ModelIntFilterInput {
   lt: Int
   ge: Int
   gt: Int
-  contains: Int
-  notContains: Int
   between: [Int]
 }
 
@@ -62,8 +60,6 @@ input ModelFloatFilterInput {
   lt: Float
   ge: Float
   gt: Float
-  contains: Float
-  notContains: Float
   between: [Float]
 }
 

@@ -6,6 +6,7 @@ const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
 const { getEnvInfo } = require('./get-env-info');
 const _ = require('lodash');
+const { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } = require('./get-cloud-init-status');
 const { readJsonFile } = require('./read-json-file');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
@@ -219,11 +220,22 @@ async function asyncForEach(array, callback) {
 }
 
 async function getResourceStatus(category, resourceName, providerName, filteredResources) {
-  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
-
-  const currentamplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
-  const currentamplifyMeta = readJsonFile(currentamplifyMetaFilePath);
+  const amplifyProjectInitStatus = getCloudInitStatus();
+  let amplifyMeta;
+  let currentamplifyMeta = {};
+  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
+    const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
+    amplifyMeta = readJsonFile(amplifyMetaFilePath);
+    const currentamplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
+    currentamplifyMeta = readJsonFile(currentamplifyMetaFilePath);
+  } else if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
+    const backendConfigFilePath = pathManager.getBackendConfigFilePath();
+    amplifyMeta = readJsonFile(backendConfigFilePath);
+  } else {
+    throw new Error(
+      "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
+    );
+  }
 
   let resourcesToBeCreated = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeUpdated = await getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
@@ -249,11 +261,13 @@ async function getResourceStatus(category, resourceName, providerName, filteredR
 }
 
 async function showResourceTable(category, resourceName, filteredResources) {
-  const { envName } = getEnvInfo();
-
-  print.info('');
-  print.info(`${chalk.green('Current Environment')}: ${envName}`);
-  print.info('');
+  const amplifyProjectInitStatus = getCloudInitStatus();
+  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
+    const { envName } = getEnvInfo();
+    print.info('');
+    print.info(`${chalk.green('Current Environment')}: ${envName}`);
+    print.info('');
+  }
 
   const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = await getResourceStatus(
     category,

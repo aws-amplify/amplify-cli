@@ -21,6 +21,20 @@ export class ModelResourceIDs {
     }
     return `Model${name}FilterInput`;
   }
+  static ModelFilterScalarInputTypeName(name: string, includeFilter: Boolean): string {
+    const nameOverride = DEFAULT_SCALARS[name];
+    if (nameOverride) {
+      return `Model${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
+    }
+    return `Model${name}${includeFilter ? 'Filter' : ''}Input`;
+  }
+  static ModelConditionInputTypeName(name: string): string {
+    const nameOverride = DEFAULT_SCALARS[name];
+    if (nameOverride) {
+      return `Model${nameOverride}ConditionInput`;
+    }
+    return `Model${name}ConditionInput`;
+  }
   static ModelKeyConditionInputTypeName(name: string): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
@@ -43,16 +57,20 @@ export class ModelResourceIDs {
   static ModelCompositeKeyInputTypeName(modelName: string, keyName: string): string {
     return `Model${modelName}${keyName}CompositeKeyInput`;
   }
-  static ModelFilterListInputTypeName(name: string): string {
+  static ModelFilterListInputTypeName(name: string, includeFilter: Boolean): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {
-      return `Model${nameOverride}ListFilterInput`;
+      return `Model${nameOverride}List${includeFilter ? 'Filter' : ''}Input`;
     }
-    return `Model${name}ListFilterInput`;
+    return `Model${name}List${includeFilter ? 'Filter' : ''}Input`;
   }
 
-  static ModelScalarFilterInputTypeName(name: string): string {
-    return `Model${name}FilterInput`;
+  static ModelScalarFilterInputTypeName(name: string, includeFilter: Boolean): string {
+    const nameOverride = DEFAULT_SCALARS[name];
+    if (nameOverride) {
+      return `Model${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
+    }
+    return `Model${name}${includeFilter ? 'Filter' : ''}Input`;
   }
   static ModelConnectionTypeName(typeName: string): string {
     return `Model${typeName}Connection`;
@@ -74,6 +92,12 @@ export class ModelResourceIDs {
   }
   static ModelOnDeleteSubscriptionName(typeName: string): string {
     return graphqlName(`onDelete` + toUpper(typeName));
+  }
+  static ModelAttributeTypesName(): string {
+    return `ModelAttributeTypes`;
+  }
+  static ModelSizeInputTypeName(): string {
+    return `ModelSizeInput`;
   }
   static NonModelInputObjectName(typeName: string): string {
     return graphqlName(toUpper(typeName) + 'Input');

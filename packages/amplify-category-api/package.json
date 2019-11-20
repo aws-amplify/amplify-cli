@@ -17,6 +17,7 @@
     "fs-extra": "^8.1.0",
     "graphql": "^0.13.2",
     "graphql-relational-schema-transformer": "1.24.0",
+    "graphql-transformer-core": "5.18.0",
     "graphql-tag-pluck": "^0.8.4",
     "inquirer": "^6.5.1",
     "merge-graphql-schemas": "^1.7.0",
