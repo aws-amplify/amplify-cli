@@ -42,7 +42,7 @@ export interface DynamoDBModelTransformerOptions {
 // flags and transformers should be feature and not version dependent.
 
 // To support generation of conditions and new naming, version 5 was introduced
-const CONDITIONS_MINIMUM_VERSION = 5;
+export const CONDITIONS_MINIMUM_VERSION = 5;
 
 /**
  * The @model transformer.

@@ -17,6 +17,7 @@ import {
   makeModelXFilterInputObject,
   makeModelSortDirectionEnumObject,
   SortKeyFieldInfoTypeName,
+  CONDITIONS_MINIMUM_VERSION,
 } from 'graphql-dynamodb-transformer';
 import {
   getBaseType,
@@ -655,7 +656,7 @@ export class ModelConnectionTransformer extends Transformer {
     field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     sortKeyInfo?: { fieldName: string; typeName: SortKeyFieldInfoTypeName }
   ): void {
-    const scalarFilters = makeScalarFilterInputs();
+    const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));
     for (const filter of scalarFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
@@ -677,6 +678,10 @@ export class ModelConnectionTransformer extends Transformer {
         ctx.addInput(sortKeyConditionInput);
       }
     }
+  }
+
+  private supportsConditions(context: TransformerContext) {
+    return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
   }
 
   private extendTypeWithConnection(
