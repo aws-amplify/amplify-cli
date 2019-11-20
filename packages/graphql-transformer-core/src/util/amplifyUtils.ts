@@ -8,7 +8,6 @@ import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirect
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 import * as Sanity from './sanity-check';
 
-export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
 

@@ -248,6 +248,9 @@ export class GraphQLTransform {
       context.setResolverConfig(this.transformConfig.ResolverConfig);
     }
 
+    // Transformer version is populated, store it in the transformer context, to make it accessible to transformers
+    context.setTransformerVersion(this.transformConfig.Version!);
+
     for (const transformer of this.transformers) {
       if (isFunction(transformer.before)) {
         transformer.before(context);
@@ -312,8 +315,8 @@ export class GraphQLTransform {
 
   private createResourcesForSyncEnabledProject(context: TransformerContext) {
     const syncResources = {
-      [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable()
-    }
+      [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable(),
+    };
     context.mergeResources(syncResources);
   }
 

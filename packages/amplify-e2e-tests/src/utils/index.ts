@@ -2,8 +2,9 @@ import { join } from 'path';
 import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
-export { default as getProjectMeta } from './projectMeta';
-export { default as getAWSExports } from './awsExports';
+export * from './projectMeta';
+export * from './transformConfig';
+export * from './awsExports';
 export * from './sdk-calls';
 export * from './api';
 

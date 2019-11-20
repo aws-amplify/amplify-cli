@@ -53,10 +53,16 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 } )
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
-  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 {
   \\"version\\": \\"2017-02-28\\",
@@ -206,10 +212,16 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
 #end
 #if( $context.args.condition )
-  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 #set( $expNames = {} )
 #set( $expValues = {} )
@@ -420,13 +432,19 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
   #set( $condition.expressionValues = $expressionValues )
 #end
 #if( $context.args.condition )
-  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   #set( $conditionExpressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
   $util.qr($conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues))
   #set( $condition.expressionValues = $conditionExpressionValues )
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 {
   \\"version\\": \\"2017-02-28\\",
@@ -662,10 +680,16 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 } )
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
-  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 {
   \\"version\\": \\"2017-02-28\\",
@@ -815,10 +839,16 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
 #end
 #if( $context.args.condition )
-  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 #set( $expNames = {} )
 #set( $expValues = {} )
@@ -1029,13 +1059,19 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
   #set( $condition.expressionValues = $expressionValues )
 #end
 #if( $context.args.condition )
-  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition)) )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   #set( $conditionExpressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
   $util.qr($conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues))
   #set( $condition.expressionValues = $conditionExpressionValues )
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
 #end
 {
   \\"version\\": \\"2017-02-28\\",

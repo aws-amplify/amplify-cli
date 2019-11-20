@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import { writeFile } from 'fs';
-export { default as getProjectMeta } from './projectMeta';
+export * from './projectMeta';
 
 // run dotenv config to update env variable
 config();

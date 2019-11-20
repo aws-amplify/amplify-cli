@@ -29,6 +29,7 @@ import {
   raw,
   comment,
   forEach,
+  and,
 } from 'graphql-mapping-template';
 import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs, SyncResourceIDs } from 'graphql-transformer-common';
 import { plural } from 'pluralize';
@@ -405,13 +406,23 @@ export class ResourceFactory {
               set(ref('condition.expressionValues'), obj({})),
               set(
                 ref('conditionFilterExpressions'),
-                raw('$util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition))')
+                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))')
               ),
               // tslint:disable-next-line
               qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
               qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
               qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
             ])
+          ),
+          iff(
+            and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
+            set(
+              ref('condition'),
+              obj({
+                expression: ref('condition.expression'),
+                expressionNames: ref('condition.expressionNames'),
+              })
+            )
           ),
           DynamoDBMappingTemplate.putItem(
             {
@@ -514,13 +525,23 @@ export class ResourceFactory {
             compoundExpression([
               set(
                 ref('conditionFilterExpressions'),
-                raw('$util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition))')
+                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))')
               ),
               // tslint:disable-next-line
               qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
               qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
               qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
             ])
+          ),
+          iff(
+            and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
+            set(
+              ref('condition'),
+              obj({
+                expression: ref('condition.expression'),
+                expressionNames: ref('condition.expressionNames'),
+              })
+            )
           ),
           DynamoDBMappingTemplate.updateItem({
             key: ifElse(
@@ -772,7 +793,7 @@ export class ResourceFactory {
             compoundExpression([
               set(
                 ref('conditionFilterExpressions'),
-                raw('$util.parseJson($util.transform.toDynamoDBFilterExpression($context.args.condition))')
+                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))')
               ),
               // tslint:disable-next-line
               qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
@@ -782,6 +803,16 @@ export class ResourceFactory {
               set(ref('condition.expressionValues'), ref('conditionExpressionValues')),
               qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
             ])
+          ),
+          iff(
+            and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
+            set(
+              ref('condition'),
+              obj({
+                expression: ref('condition.expression'),
+                expressionNames: ref('condition.expressionNames'),
+              })
+            )
           ),
           DynamoDBMappingTemplate.deleteItem({
             key: ifElse(
