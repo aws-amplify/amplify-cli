@@ -6,7 +6,7 @@ import {
   ParsedConfig,
   RawConfig,
 } from '@graphql-codegen/visitor-plugin-common';
-import { camelCase, pascalCase, upperCase } from 'change-case';
+import { pascalCase, upperCase } from 'change-case';
 import * as crypto from 'crypto';
 import {
   DefinitionNode,
@@ -209,13 +209,10 @@ export abstract class AppSyncModelVisitor<
     }
     const enumName = this.getEnumName(node.name.value);
     const values = node.values
-      ? node.values.reduce(
-          (acc, val) => {
-            acc[this.getEnumValue(val.name.value)] = val.name.value;
-            return acc;
-          },
-          {} as any
-        )
+      ? node.values.reduce((acc, val) => {
+          acc[this.getEnumValue(val.name.value)] = val.name.value;
+          return acc;
+        }, {} as any)
       : {};
     this.enumMap[node.name.value] = {
       name: enumName,

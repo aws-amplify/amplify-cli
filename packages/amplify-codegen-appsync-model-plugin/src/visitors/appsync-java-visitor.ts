@@ -1,17 +1,10 @@
 import { indent, indentMultiline, transformComment } from '@graphql-codegen/visitor-plugin-common';
-import { pascalCase, constantCase, camelCase } from 'change-case';
+import { camelCase, constantCase, pascalCase } from 'change-case';
 import dedent from 'ts-dedent';
 import { isArray } from 'util';
-import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
-
+import { CLASS_IMPORT_PACKAGES, GENERATED_PACKAGE_NAME, LOADER_CLASS_NAME, LOADER_IMPORT_PACKAGES } from '../configs/java-config';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
-import {
-  GENERATED_PACKAGE_NAME,
-  LOADER_CLASS_NAME,
-  CLASS_IMPORT_PACKAGES,
-  ENUM_IMPORT_PACKAGES,
-  LOADER_IMPORT_PACKAGES,
-} from '../configs/java-config';
+import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 
 export class AppSyncModelJavaVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
@@ -233,7 +226,6 @@ export class AppSyncModelJavaVisitor<
     const nullableFields = model.fields.filter(field => field.isNullable);
     const nonIdFields = nonNullableFields.filter((field: CodeGenField) => !this.READ_ONLY_FIELDS.includes(field.name));
     const interfaces = nonIdFields.map((field, idx) => {
-      const fieldName = this.getFieldName(field);
       const isLastField = nonIdFields.length - 1 === idx ? true : false;
       const returnType = isLastField ? 'Build' : nonIdFields[idx + 1].name;
       const interfaceName = this.getStepInterfaceName(field.name);
