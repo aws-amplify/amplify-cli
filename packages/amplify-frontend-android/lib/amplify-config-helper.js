@@ -70,6 +70,7 @@ function constructApi(metaData, amplifyConfig) {
 function constructPredictions(metaData, amplifyConfig) {
   const categoryName = 'predictions';
   const pluginName = 'awsPredictionsPlugin';
+  const region = metaData.providers.awscloudformation.Region;
   if (metaData[categoryName]) {
     Object.keys(metaData[categoryName]).forEach(r => {
       const resourceMeta = metaData[categoryName][r];
@@ -77,6 +78,8 @@ function constructPredictions(metaData, amplifyConfig) {
         amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
         amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins || {};
         amplifyConfig[categoryName].plugins[pluginName] = amplifyConfig[categoryName].plugins[pluginName] || {};
+        amplifyConfig[categoryName].plugins[pluginName].defaultRegion =
+          amplifyConfig[categoryName].plugins[pluginName].defaultRegion || region;
 
         const { serviceGroup, serviceType } = getPredictionsResourceNameAndType(resourceMeta);
         if (serviceGroup && serviceType) {
