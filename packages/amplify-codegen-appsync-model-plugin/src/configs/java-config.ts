@@ -10,12 +10,16 @@ export const CLASS_IMPORT_PACKAGES = [
   'java.util.UUID',
   'java.util.Objects',
   '',
+  'androidx.core.util.ObjectsCompat',
+  '',
   'com.amplifyframework.AmplifyException',
   'com.amplifyframework.core.model.Model',
   'com.amplifyframework.core.model.annotations.Index',
   'com.amplifyframework.core.model.annotations.ModelConfig',
   'com.amplifyframework.core.model.annotations.ModelField',
   'com.amplifyframework.core.model.query.predicate.QueryField',
+  '',
+  'static com.amplifyframework.core.model.query.predicate.QueryField.field',
   '',
 ];
 // packages to be imported in generated Enums
