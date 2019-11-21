@@ -299,7 +299,7 @@ export abstract class AppSyncModelVisitor<
   }
 
   protected getFieldName(field: CodeGenField): string {
-    return camelCase(field.name);
+    return field.name;
   }
 
   protected getEnumName(enumField: CodeGenEnum | string): string {
