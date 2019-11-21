@@ -183,6 +183,10 @@ export class AppSyncModelJavaVisitor<
     this.generateEqualsMethod(model, classDeclarationBlock);
     // hash code
     this.generateHashCodeMethod(model, classDeclarationBlock);
+
+    // builder
+    this.generateBuilderMethod(model, classDeclarationBlock);
+
     return classDeclarationBlock.string;
   }
 
@@ -292,18 +296,6 @@ export class AppSyncModelJavaVisitor<
     });
 
     // methods
-    // builder()
-    builderClassDeclaration.addClassMethod(
-      'builder',
-      this.getStepInterfaceName(stepFields[0].name),
-      indentMultiline(`return new Builder();`),
-      [],
-      [],
-      'public',
-      { static: true },
-      []
-    );
-
     // build();
     const buildImplementation = [`String id = this.id != null ? this.id : UUID.randomUUID().toString();`, ''];
     const buildParams = model.fields.map(field => this.getFieldName(field)).join(',\n');
@@ -327,7 +319,7 @@ export class AppSyncModelJavaVisitor<
       const returnType = isLastStep ? this.getStepInterfaceName('Build') : this.getStepInterfaceName(fields[idx + 1].name);
       const argumentType = this.getNativeType(field);
       const argumentName = this.getStepFunctionArgumentName(field);
-      const body = [`Objects.requireNonNull(${fieldName});`, `this.${fieldName} = ${argumentName};`, `return this;`].join('\n');
+      const body = [`Objects.requireNonNull(${argumentName});`, `this.${fieldName} = ${argumentName};`, `return this;`].join('\n');
       builderClassDeclaration.addClassMethod(
         methodName,
         returnType,
@@ -519,6 +511,27 @@ export class AppSyncModelJavaVisitor<
       '.hashCode();',
     ].join('\n');
     declarationBlock.addClassMethod('hashCode', 'int', indentMultiline(body).trimLeft(), [], [], 'public', {}, ['Override']);
+  }
+
+  /**
+   * Generate the builder method to get an instance of Builder class
+   * @param model
+   * @param classDeclaration
+   */
+  protected generateBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+    const requiredFields = model.fields.filter(field => !field.isNullable && !this.READ_ONLY_FIELDS.includes(field.name));
+    if (requiredFields.length) {
+      classDeclaration.addClassMethod(
+        'builder',
+        this.getStepInterfaceName(requiredFields[0].name),
+        indentMultiline(`return new Builder();`),
+        [],
+        [],
+        'public',
+        { static: true },
+        []
+      );
+    }
   }
 
   /**
