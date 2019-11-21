@@ -22,7 +22,7 @@ function constructInputParams(context) {
 }
 
 async function postPullCodeGenCheck(context) {
-  context.print.info('postPullCodeGenCheck');
+  context.print.info('');
 }
 
 module.exports = {

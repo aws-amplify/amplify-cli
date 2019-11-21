@@ -1,9 +1,10 @@
+const fs = require('fs-extra');
 const { initializeEnv } = require('./initialize-env');
-const { constructInputParams, postPullCodeGenCheck } = require('./amplify-service-helper');
+const { postPullCodeGenCheck } = require('./amplify-service-helper');
 
-async function pullBackend(context) {
+async function pullBackend(context, inputParams) {
   context.exeInfo = context.amplify.getProjectDetails();
-  context.exeInfo.inputParams = constructInputParams(context);
+  context.exeInfo.inputParams = inputParams;
   context.print.info('');
   context.print.info('Pre pull check:');
   const hasChanges = await context.amplify.showResourceTable();
@@ -25,12 +26,21 @@ async function pullBackend(context) {
   }
 
   await initializeEnv(context);
+  ensureBackendConfigFile(context);
   await postPullCodeGenCheck(context);
   context.print.success('Backend environment has been successfully pulled from the cloud.');
   context.print.info('');
   context.print.info('Post pull status:');
   await context.amplify.showResourceTable();
   context.print.info('');
+}
+
+function ensureBackendConfigFile(context) {
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
+  if (!fs.existsSync(backendConfigFilePath)) {
+    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
+  }
 }
 
 module.exports = {

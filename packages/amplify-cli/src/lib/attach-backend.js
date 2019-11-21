@@ -5,14 +5,14 @@ const queryProvider = require('./attach-backend-steps/a10-queryProvider');
 const analyzeProject = require('./attach-backend-steps/a20-analyzeProject');
 const initFrontend = require('./attach-backend-steps/a30-initFrontend');
 const generateFiles = require('./attach-backend-steps/a40-generateFiles');
-const { constructInputParams, postPullCodeGenCheck } = require('./amplify-service-helper');
+const { postPullCodeGenCheck } = require('./amplify-service-helper');
 
 const backupAmplifyDirName = 'amplify-backup';
 
-async function attachBackend(context) {
+async function attachBackend(context, inputParams) {
+  prepareContext(context, inputParams);
   backupAmplifyFolder(context);
   setupFolderStructure(context);
-  prepareContext(context);
   await queryProvider
     .run(context)
     .then(analyzeProject.run)
@@ -103,16 +103,26 @@ function removeFolderStructure(context) {
   fs.removeSync(amplifyDirPath);
 }
 
-function prepareContext(context) {
+function prepareContext(context, inputParams) {
   context.exeInfo = {
     isNewProject: true,
-    inputParams: constructInputParams(context),
+    inputParams,
     projectConfig: {},
     localEnvInfo: {
       projectPath: process.cwd(),
     },
     teamProviderInfo: {},
   };
+
+  const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(process.cwd());
+  if (fs.existsSync(projectConfigFilePath)) {
+    context.exeInfo.existingProjectConfig = context.amplify.readJsonFile(projectConfigFilePath);
+  }
+
+  const teamProviderInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(process.cwd());
+  if (fs.existsSync(teamProviderInfoFilePath)) {
+    context.exeInfo.existingTeamProviderInfo = context.amplify.readJsonFile(teamProviderInfoFilePath);
+  }
 }
 
 module.exports = {

@@ -75,21 +75,26 @@ function generateProjectConfigFile(context) {
 }
 
 function generateProviderInfoFile(context) {
-  const { projectPath } = context.exeInfo.localEnvInfo;
-  const { teamProviderInfo } = context.exeInfo;
+  const { projectPath, envName } = context.exeInfo.localEnvInfo;
+  const { existingTeamProviderInfo, teamProviderInfo } = context.exeInfo;
   const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
+
+  if (existingTeamProviderInfo) {
+    if (existingTeamProviderInfo[envName]) {
+      delete existingTeamProviderInfo[envName];
+    }
+    Object.assign(teamProviderInfo, existingTeamProviderInfo);
+  }
 
   const jsonString = JSON.stringify(teamProviderInfo, null, 4);
   fs.writeFileSync(providerInfoFilePath, jsonString, 'utf8');
 }
 
 function generateBackendConfigFile(context) {
-  if (context.exeInfo.isNewProject) {
-    const { projectPath } = context.exeInfo.localEnvInfo;
-    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
-    if (!fs.existsSync(backendConfigFilePath)) {
-      fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
-    }
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
+  if (!fs.existsSync(backendConfigFilePath)) {
+    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
   }
 }
 
