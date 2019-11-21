@@ -1,0 +1,28 @@
+{
+  "name": "amplify-codegen-appsync-model-plugin",
+  "version": "0.1.0",
+  "main": "lib/index.js",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@graphql-codegen/core": "^1.8.1",
+    "@graphql-codegen/java-common": "^1.8.2",
+    "@graphql-codegen/visitor-plugin-common": "^1.8.1",
+    "auto-bind": "^2.1.1",
+    "change-case": "^3.1.0",
+    "graphql-tag": "^2.10.1",
+    "graphql-toolkit": "^0.5.17",
+    "crypto": "^1.0.1",
+    "ts-dedent": "^1.1.0"
+  },
+  "peerDependencies": {
+    "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.6.4"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  }
+}

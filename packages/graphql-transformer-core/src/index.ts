@@ -17,6 +17,10 @@ import {
   loadConfig as readTransformerConfiguration,
   writeConfig as writeTransformerConfiguration,
   TRANSFORM_CONFIG_FILE_NAME,
+  TRANSFORM_BASE_VERSION,
+  TRANSFORM_CURRENT_VERSION,
+  TransformConfig,
+  SyncConfig,
 } from './util/transformConfig';
 
 export * from './errors';
@@ -24,6 +28,7 @@ export * from './util';
 
 export {
   GraphQLTransform,
+  TransformConfig,
   TransformerContext,
   Transformer,
   ITransformer,
@@ -39,4 +44,7 @@ export {
   writeTransformerConfiguration,
   revertAPIMigration,
   TRANSFORM_CONFIG_FILE_NAME,
+  TRANSFORM_BASE_VERSION,
+  TRANSFORM_CURRENT_VERSION,
+  SyncConfig,
 };

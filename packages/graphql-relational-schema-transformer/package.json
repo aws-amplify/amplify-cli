@@ -25,7 +25,7 @@
     "mysql": "^2.16.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.0.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.1",
     "@types/mysql": "^2.15.5",

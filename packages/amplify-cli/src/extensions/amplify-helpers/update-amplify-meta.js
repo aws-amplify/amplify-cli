@@ -32,6 +32,8 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
   const jsonString = JSON.stringify(amplifyMeta, null, 4);
 
   fs.writeFileSync(filePath, jsonString, 'utf8');
+
+  return amplifyMeta;
 }
 
 function moveBackendResourcesToCurrentCloudBackend(resources) {
@@ -107,10 +109,12 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
   if (attribute === 'dependsOn') {
     checkForCyclicDependencies(category, resourceName, value);
   }
-  updateAwsMetaFile(amplifyMetaFilePath, category, resourceName, attribute, value, currentTimestamp);
+  const updatedMeta = updateAwsMetaFile(amplifyMetaFilePath, category, resourceName, attribute, value, currentTimestamp);
   if (['dependsOn', 'service'].includes(attribute)) {
     updateBackendConfigDependsOn(category, resourceName, attribute, value);
   }
+
+  return updatedMeta;
 }
 
 async function updateamplifyMetaAfterPush(resources) {

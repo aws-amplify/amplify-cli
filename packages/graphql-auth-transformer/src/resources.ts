@@ -911,7 +911,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     ]);
   }
 
-  public getAuthModeDeterminationExpression(authProviders: Set<AuthProvider>): Expression {
+  public getAuthModeDeterminationExpression(authProviders: Set<AuthProvider>, isUserPoolTheDefault: boolean): Expression {
     if (!authProviders || authProviders.size === 0) {
       return comment(`No authentication mode determination needed`);
     }
@@ -920,19 +920,21 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
 
     for (const authProvider of authProviders) {
       if (authProvider === 'userPools') {
-        const userPoolsExpression = iff(
-          and([
-            raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthMode})`),
-            not(raw(`$util.isNull($ctx.identity)`)),
-            not(raw(`$util.isNull($ctx.identity.sub)`)),
-            not(raw(`$util.isNull($ctx.identity.issuer)`)),
-            not(raw(`$util.isNull($ctx.identity.username)`)),
-            not(raw(`$util.isNull($ctx.identity.claims)`)),
-            not(raw(`$util.isNull($ctx.identity.sourceIp)`)),
-            not(raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`)),
-          ]),
-          set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`userPools`))
-        );
+        const statements = [
+          raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthMode})`),
+          not(raw(`$util.isNull($ctx.identity)`)),
+          not(raw(`$util.isNull($ctx.identity.sub)`)),
+          not(raw(`$util.isNull($ctx.identity.issuer)`)),
+          not(raw(`$util.isNull($ctx.identity.username)`)),
+          not(raw(`$util.isNull($ctx.identity.claims)`)),
+          not(raw(`$util.isNull($ctx.identity.sourceIp)`)),
+        ];
+
+        if (isUserPoolTheDefault === true) {
+          statements.push(not(raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`)));
+        }
+
+        const userPoolsExpression = iff(and(statements), set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`userPools`)));
 
         expressions.push(userPoolsExpression);
       } else if (authProvider === 'oidc') {
@@ -945,7 +947,6 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             not(raw(`$util.isNull($ctx.identity.claims)`)),
             raw(`$util.isNull($ctx.identity.username)`),
             raw(`$util.isNull($ctx.identity.sourceIp)`),
-            raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`),
           ]),
           set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`oidc`))
         );

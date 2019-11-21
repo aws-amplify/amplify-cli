@@ -1,17 +1,11 @@
 {
-    "name": "codegen",
-    "type": "util",
-    "commands": [
-        "add",
-        "codegen",
-        "configure",
-        "remove",
-        "statements",
-        "types"
-    ],
-    "commandAliases":{
-        "update": "configure",
-        "statement": "statements"
-    },
-    "eventHandlers": []
+  "name": "codegen",
+  "type": "util",
+  "commands": ["add", "codegen", "configure", "remove", "statements", "types", "models"],
+  "commandAliases": {
+    "update": "configure",
+    "statement": "statements",
+    "model": "models"
+  },
+  "eventHandlers": []
 }
