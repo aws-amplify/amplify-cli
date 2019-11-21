@@ -15,7 +15,8 @@ async function init(amplifyServiceParams) {
 
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
 
-  if(!amplifyClient){ // This happens when the Amplify service is not available in the region
+  if (!amplifyClient) {
+    // This happens when the Amplify service is not available in the region
     return {
       amplifyAppId,
       verifiedStackName,
@@ -148,8 +149,9 @@ async function deleteEnv(context, envName, awsConfig) {
       teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel]
     ) {
       const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
-      if(!amplifyClient){ // This happens when the Amplify service is not available in the region
-        return; 
+      if (!amplifyClient) {
+        // This happens when the Amplify service is not available in the region
+        return;
       }
 
       const amplifyAppId = teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel];
@@ -173,8 +175,9 @@ async function postPushCheck(context) {
     let amplifyAppId;
 
     const amplifyClient = await getConfiguredAmplifyClient(context);
-    if(!amplifyClient){ // This happens when the Amplify service is not available in the region
-      return; 
+    if (!amplifyClient) {
+      // This happens when the Amplify service is not available in the region
+      return;
     }
 
     const searchAmplifyServiceResult = await searchAmplifyService(amplifyClient, stackName);

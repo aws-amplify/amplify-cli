@@ -3,22 +3,22 @@ const proxyAgent = require('proxy-agent');
 const configurationManager = require('../../lib/configuration-manager');
 
 const amplifyServiceRegions = [
-  us-east-1, 
-  us-east-2, 
-  us-west-2,
-  eu-west-1, 
-  eu-west-2,
-  eu-central-1, 
-  ap-northeast-1, 
-  ap-northeast-2, 
-  ap-south-1, 
-  ap-southeast-1, 
-  ap-southeast-2
-]; 
+  'us-east-1',
+  'us-east-2',
+  'us-west-2',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-central-1',
+  'ap-northeast-1',
+  'ap-northeast-2',
+  'ap-south-1',
+  'ap-southeast-1',
+  'ap-southeast-2',
+];
 
 async function getConfiguredAmplifyClient(context, options = {}) {
   let cred = {};
-  const defaultOptions = {}; 
+  let defaultOptions = {};
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const envVarEndpoint = process.env.AWS_AMPLIFY_ENDPOINT;
 
@@ -28,12 +28,12 @@ async function getConfiguredAmplifyClient(context, options = {}) {
     // ignore missing config
   }
 
-  if(envVarEndpoint){
+  if (envVarEndpoint) {
     defaultOptions = {
-      endpoint: envVarEndpoint
+      endpoint: envVarEndpoint,
     };
   }
-  
+
   if (httpProxy) {
     aws.config.update({
       httpOptions: {
@@ -42,13 +42,12 @@ async function getConfiguredAmplifyClient(context, options = {}) {
     });
   }
 
-  const config = { ...cred, ...defaultOptions, ...options }; 
+  const config = { ...cred, ...defaultOptions, ...options };
 
-  if(config.region && amplifyServiceRegions.includes(config.region)){
+  if (config.region && amplifyServiceRegions.includes(config.region)) {
     return new aws.Amplify(config);
-  }else{
-    return undefined; 
   }
+  return undefined;
 }
 
 module.exports = {
