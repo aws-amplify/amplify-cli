@@ -6,7 +6,7 @@ async function pullBackend(context, inputParams) {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = inputParams;
   context.print.info('');
-  context.print.info('Pre pull check:');
+  context.print.info('Pre-pull status:');
   const hasChanges = await context.amplify.showResourceTable();
   context.print.info('');
 
@@ -17,9 +17,11 @@ async function pullBackend(context, inputParams) {
     context.print.warning('Local changes detected.');
     context.print.warning('Amplify pull will override your local changes with what is currently in the cloud.');
     if (!context.exeInfo.inputParams.yes) {
-      context.print.info('It is recommended to perform a merge through codebase repository before you continue.');
       const confirmOverride = await context.amplify.confirmPrompt.run('Do you want to continue?', false);
       if (!confirmOverride) {
+        context.print.info(`Run an 'amplify push' to update your project upstream.`);
+        context.print.info('This will override changes made upstream.');
+        context.print.info('If you would like to merge changes with upstream, use Git to merge your backend code changes.');
         process.exit(0);
       }
     }
@@ -30,7 +32,7 @@ async function pullBackend(context, inputParams) {
   await postPullCodeGenCheck(context);
   context.print.success('Backend environment has been successfully pulled from the cloud.');
   context.print.info('');
-  context.print.info('Post pull status:');
+  context.print.info('Post-pull status:');
   await context.amplify.showResourceTable();
   context.print.info('');
 }

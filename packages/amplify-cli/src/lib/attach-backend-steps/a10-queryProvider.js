@@ -29,7 +29,6 @@ async function getProvider(context, providerPlugins) {
 
   if (providers.length === 0) {
     if ((inputParams && inputParams.yes) || providerPluginList.length === 1) {
-      context.print.info(`Using default provider  ${providerPluginList[0]}`);
       result = providerPluginList[0]; // eslint-disable-line
     } else {
       const selectProvider = {

@@ -9,7 +9,7 @@ module.exports = {
   name: 'pull',
   run: async context => {
     const inputParams = constructInputParams(context);
-    
+
     const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
     if (fs.existsSync(currentAmplifyMetaFilePath)) {
       const { appId: inputAppId, envName: inputEnvName } = inputParams.amplify;
