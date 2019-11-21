@@ -531,7 +531,7 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
     // Ask for per-model resolver override setting
 
     if (modelTypes && modelTypes.length > 0) {
-      if (await context.prompt.confirm('Do you want to override default per model settings?')) {
+      if (await context.prompt.confirm('Do you want to override default per model settings?', false)) {
         const modelTypeQuestion = {
           type: 'checkbox',
           name: 'selectedModelTypes',
