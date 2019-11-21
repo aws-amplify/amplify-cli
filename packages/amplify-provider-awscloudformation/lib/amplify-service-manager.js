@@ -9,9 +9,19 @@ const constants = require('./constants');
 async function init(amplifyServiceParams) {
   const { context, awsConfig, projectName, envName, stackName } = amplifyServiceParams;
 
+  let amplifyAppId;
+  let verifiedStackName = stackName;
+  let deploymentBucketName = `${stackName}-deployment`;
+
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
 
-  let amplifyAppId;
+  if(!amplifyClient){ // This happens when the Amplify service is not available in the region
+    return {
+      amplifyAppId,
+      verifiedStackName,
+      deploymentBucketName,
+    };
+  }
 
   if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.appId) {
     const inputAmplifyAppId = context.exeInfo.inputParams.amplify.appId;
@@ -91,9 +101,6 @@ async function init(amplifyServiceParams) {
     amplifyAppId = createAppResponse.app.appId;
   }
 
-  let verifiedStackName = stackName;
-  let deploymentBucketName = `${stackName}-deployment`;
-
   let needToCreateNewBackendEnv = false;
   try {
     const { backendEnvironment } = await amplifyClient
@@ -140,8 +147,12 @@ async function deleteEnv(context, envName, awsConfig) {
       teamProviderInfo[envName][constants.ProviderName] &&
       teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel]
     ) {
-      const amplifyAppId = teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel];
       const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
+      if(!amplifyClient){ // This happens when the Amplify service is not available in the region
+        return; 
+      }
+
+      const amplifyAppId = teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel];
       const deleteEnvParams = {
         appId: amplifyAppId,
         environmentName: envName,
@@ -162,6 +173,10 @@ async function postPushCheck(context) {
     let amplifyAppId;
 
     const amplifyClient = await getConfiguredAmplifyClient(context);
+    if(!amplifyClient){ // This happens when the Amplify service is not available in the region
+      return; 
+    }
+
     const searchAmplifyServiceResult = await searchAmplifyService(amplifyClient, stackName);
 
     if (searchAmplifyServiceResult.backendEnvExists) {

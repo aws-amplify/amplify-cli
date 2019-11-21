@@ -21,7 +21,7 @@ module.exports = {
       const { AmplifyAppId } = teamProviderInfo[envName].awscloudformation;
       const localEnvNames = Object.keys(teamProviderInfo);
 
-      if (inputAppId && inputAppId !== AmplifyAppId) {
+      if (inputAppId && AmplifyAppId && inputAppId !== AmplifyAppId) {
         context.print.error('Amplify appId mismatch.');
         context.print.info(`You are currently working in the amplify project with Id ${AmplifyAppId}`);
         process.exit(1);
@@ -35,7 +35,7 @@ module.exports = {
           context.parameters.first = inputEnvName;
           await envCheckout(context);
         } else {
-          inputParams.amplify.appId = AmplifyAppId;
+          inputParams.amplify.appId = inputAppId;
           await attachBackend(context, inputParams);
         }
       } else {
