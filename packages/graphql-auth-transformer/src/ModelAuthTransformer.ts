@@ -1636,7 +1636,7 @@ All @auth directives used on field definitions are performed when the field is r
     // create auth expression
     const authExpression = this.authorizationExpressionForListResult(rules);
     if (authExpression) {
-      const templateParts = [ print(authExpression), resolver.Properties.ResponseMappingTemplate ];
+      const templateParts = [print(authExpression), resolver.Properties.ResponseMappingTemplate];
       resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
       ctx.setResource(resolverResourceID, resolver);
     }
@@ -2246,7 +2246,7 @@ found '${rule.provider}' assigned.`
     if (resolverConfig && resolverConfig.project) {
       return true;
     }
-    if (resolverConfig && resolverConfig.models[typeName]) {
+    if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
       return true;
     }
     return false;
