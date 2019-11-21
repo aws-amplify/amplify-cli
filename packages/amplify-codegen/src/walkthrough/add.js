@@ -59,7 +59,7 @@ async function addWalkThrough(context, skip = [], withoutInit, decoupleFrontend,
   const includePathGlob = join(includePatternDefault.graphQLDirectory, '**', includePatternDefault.graphQLExtension);
 
   if (!skip.includes('includePattern')) {
-    answers.includePattern = await determineValue(inputParams, yesFlag, 'includePattern', includePathGlob, () =>
+    answers.includePattern = await determineValue(inputParams, yesFlag, 'includePattern', [includePathGlob], () =>
       askCodeGenQueryFilePattern([includePathGlob])
     );
   }

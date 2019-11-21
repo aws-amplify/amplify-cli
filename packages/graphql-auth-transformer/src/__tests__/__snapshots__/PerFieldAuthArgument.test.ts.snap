@@ -39,7 +39,7 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 #set( $context.result.operation = \\"Mutation\\" )
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+$util.toJson($ctx.result)"
 `;
 
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 3`] = `
@@ -47,7 +47,7 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 #set( $context.result.operation = \\"Mutation\\" )
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+$util.toJson($ctx.result)"
 `;
 
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 4`] = `
@@ -55,5 +55,5 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 #set( $context.result.operation = \\"Mutation\\" )
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+$util.toJson($ctx.result)"
 `;

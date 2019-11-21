@@ -58,6 +58,8 @@ export interface ITransformer {
     acc: TransformerContext
   ) => void;
 
+  getDirective(): string;
+
   /**
    * A transformer implements a single function per location that its directive can be applied.
    * This method handles transforming directives on object or input argument definitions.

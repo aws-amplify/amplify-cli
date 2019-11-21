@@ -57,7 +57,13 @@ function showGraphQLURL(context, resourcesToBeCreated) {
 
     context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
     if (hasApiKey) {
-      context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
+      if (GraphQLAPIKeyOutput) {
+        context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
+      } else {
+        context.print.warning(
+          chalk`GraphQL API is configured to use API_KEY authentication, but API Key deployment is disabled, don't forget to create one.`
+        );
+      }
     }
   }
 }
