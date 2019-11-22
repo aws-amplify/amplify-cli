@@ -50,7 +50,7 @@ async function run(context, resourceDefinition) {
     }
 
     await postPushGraphQLCodegen(context);
-    await amplifyServiceManager.postPushCheck(context);
+    await amplifyServiceManager.postPushCheck(context);
 
     if (resources.length > 0) {
       await context.amplify.updateamplifyMetaAfterPush(resources);
@@ -78,7 +78,7 @@ async function run(context, resourceDefinition) {
 
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
-    await amplifyServiceManager.storeArtifactsForAmplifyService(context);
+    await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
     spinner.succeed('All resources are updated in the cloud');
 

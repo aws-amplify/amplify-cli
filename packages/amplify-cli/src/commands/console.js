@@ -34,12 +34,10 @@ module.exports = {
 
 function constructStatusURL(appId, envName) {
   const prodURL = `https://console.aws.amazon.com/amplify/home#/${appId}/YmFja2VuZA/${envName}`; // eslint-disable-line
-  const betaURL = `https://aws-mobile-apphub-beta.corp.amazon.com/amplify/home#/${appId}/YmFja2VuZA/${envName}`;
-  return betaURL;
+  return prodURL;
 }
 
 function getDefaultURL() {
   const prodURL = `https://console.aws.amazon.com/amplify/home#/create`; // eslint-disable-line
-  const betaURL = `https://aws-mobile-apphub-beta.corp.amazon.com/amplify/home#/create`;
-  return betaURL;
+  return prodURL;
 }

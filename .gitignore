@@ -22,4 +22,3 @@ packages/*/package-lock.json
 amplify-integ*/
 packages/amplify-storage-simulator/lib
 packages/**/reports/junit/*
-aws-sdk/
