@@ -2,33 +2,26 @@ const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
 const extract = require('extract-zip');
-const proxyAgent = require('proxy-agent');
 const inquirer = require('inquirer');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
-const systemConfigManager = require('./system-config-manager');
 const constants = require('./constants');
 
 async function run(context) {
   await configurationManager.init(context);
-  const awsConfig = getAwsConfig(context);
+  const awsConfig = await configurationManager.getAwsConfig(context);
 
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
-    context.print.error(`Amplify service is not available in the region ${awsConfig.region ? awsConfig.region : ''}`);
-    process.exit(1);
+    const message = `Amplify service is not available in the region ${awsConfig.region ? awsConfig.region : ''}`;
+    context.print.error(message);
+    throw new Error(message);
   }
 
   const amplifyApp = await getAmplifyApp(context, amplifyClient);
-  if (!amplifyApp) {
-    process.exit(1);
-  }
 
   const backendEnv = await getBackendEnv(context, amplifyClient, amplifyApp);
-  if (!backendEnv) {
-    process.exit(1);
-  }
 
   await downloadBackend(context, backendEnv, awsConfig);
   const currentAmplifyMeta = await ensureAmplifyMeta(context, amplifyApp, awsConfig);
@@ -61,7 +54,7 @@ async function ensureAmplifyMeta(context, amplifyApp, awsConfig) {
 }
 
 async function storeArtifactsForAmplifyService(context, awsConfig, deploymentBucketName) {
-  const s3Client = getConfiguredS3Client(awsConfig);
+  const s3Client = new aws.S3(awsConfig);
   const amplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
   const backendConfigFilePath = context.amplify.pathManager.getCurrentBackendConfigFilePath(process.cwd());
   await uploadFile(s3Client, deploymentBucketName, amplifyMetaFilePath);
@@ -227,7 +220,7 @@ async function downloadBackend(context, backendEnv, awsConfig) {
   const backendDir = context.amplify.pathManager.getBackendDirPath(process.cwd());
   const zipFileName = constants.S3BackendZipFileName;
 
-  const s3Client = getConfiguredS3Client(awsConfig);
+  const s3Client = new aws.S3(awsConfig);
   const deploymentBucketName = backendEnv.deploymentArtifacts;
 
   const params = {
@@ -256,47 +249,6 @@ async function downloadBackend(context, backendEnv, awsConfig) {
   fs.copySync(unzippedDirPath, currentCloudBackendDir);
   fs.copySync(unzippedDirPath, backendDir);
   fs.removeSync(tempDirPath);
-}
-
-async function getAwsConfig(context) {
-  const { awsConfigInfo } = context.exeInfo;
-  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-
-  let awsConfig;
-  if (awsConfigInfo.configLevel === 'project') {
-    if (awsConfigInfo.config.useProfile) {
-      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
-    } else {
-      awsConfig = {
-        accessKeyId: awsConfigInfo.config.accessKeyId,
-        secretAccessKey: awsConfigInfo.config.secretAccessKey,
-        region: awsConfigInfo.config.region,
-      };
-    }
-  }
-
-  if (httpProxy) {
-    awsConfig = {
-      ...awsConfig,
-      httpOptions: { agent: proxyAgent(httpProxy) },
-    };
-  }
-
-  return awsConfig;
-}
-
-function getConfiguredS3Client(awsConfig) {
-  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-
-  if (httpProxy) {
-    aws.config.update({
-      httpOptions: {
-        agent: proxyAgent(httpProxy),
-      },
-    });
-  }
-
-  return new aws.S3({ ...awsConfig });
 }
 
 module.exports = {

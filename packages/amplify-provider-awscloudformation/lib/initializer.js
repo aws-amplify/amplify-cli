@@ -8,9 +8,7 @@ const Cloudformation = require('../src/aws-utils/aws-cfn');
 const S3 = require('../src/aws-utils/aws-s3');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
-const systemConfigManager = require('./system-config-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
-const proxyAgent = require('proxy-agent');
 
 async function run(context) {
   await configurationManager.init(context);
@@ -21,7 +19,7 @@ async function run(context) {
     const timeStamp = `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
-    const awsConfig = await getAwsConfig(context);
+    const awsConfig = await configurationManager.getAwsConfig(context);
 
     const amplifyServiceParams = {
       context,
@@ -69,33 +67,6 @@ async function run(context) {
         throw e;
       });
   }
-}
-
-async function getAwsConfig(context) {
-  const { awsConfigInfo } = context.exeInfo;
-  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-
-  let awsConfig;
-  if (awsConfigInfo.configLevel === 'project') {
-    if (awsConfigInfo.config.useProfile) {
-      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
-    } else {
-      awsConfig = {
-        accessKeyId: awsConfigInfo.config.accessKeyId,
-        secretAccessKey: awsConfigInfo.config.secretAccessKey,
-        region: awsConfigInfo.config.region,
-      };
-    }
-  }
-
-  if (httpProxy) {
-    awsConfig = {
-      ...awsConfig,
-      httpOptions: { agent: proxyAgent(httpProxy) },
-    };
-  }
-
-  return awsConfig;
 }
 
 function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {

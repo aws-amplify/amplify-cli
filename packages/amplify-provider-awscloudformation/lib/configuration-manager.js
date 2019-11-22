@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const proxyAgent = require('proxy-agent');
 const awsRegions = require('./aws-regions');
 const constants = require('./constants');
 const setupNewUser = require('./setup-new-user');
@@ -624,6 +625,33 @@ function getConfigLevel(context) {
   return configLevel;
 }
 
+async function getAwsConfig(context) {
+  const { awsConfigInfo } = context.exeInfo;
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+
+  let awsConfig;
+  if (awsConfigInfo.configLevel === 'project') {
+    if (awsConfigInfo.config.useProfile) {
+      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
+    } else {
+      awsConfig = {
+        accessKeyId: awsConfigInfo.config.accessKeyId,
+        secretAccessKey: awsConfigInfo.config.secretAccessKey,
+        region: awsConfigInfo.config.region,
+      };
+    }
+  }
+
+  if (httpProxy) {
+    awsConfig = {
+      ...awsConfig,
+      httpOptions: { agent: proxyAgent(httpProxy) },
+    };
+  }
+
+  return awsConfig;
+}
+
 module.exports = {
   init,
   onInitSuccessful,
@@ -632,4 +660,5 @@ module.exports = {
   resetCache,
   resolveRegion,
   loadConfigurationForEnv,
+  getAwsConfig,
 };
