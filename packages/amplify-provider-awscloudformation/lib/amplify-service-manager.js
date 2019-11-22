@@ -32,11 +32,12 @@ async function init(amplifyServiceParams) {
           appId: inputAmplifyAppId,
         })
         .promise();
-      context.print.info(`Input Amplify appId is verified: ${inputAmplifyAppId}`);
-      context.print.info(`Amplify App name is: ${getAppResult.app.name}`);
+      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
-      context.print.error(`Input Amplify appId is invalild: ${inputAmplifyAppId}`);
+      context.print.error(
+        `Amplify AppID: ${inputAmplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`
+      );
       context.print.info(e);
       throw e;
     }
@@ -122,7 +123,7 @@ async function init(amplifyServiceParams) {
   }
 
   if (needToCreateNewBackendEnv) {
-    context.print.info(`New Amplify Service backend environemnt ${envName} will be created under project: ${amplifyAppId}`);
+    context.print.info(`Adding backend environment ${envName} to AWS Amplify Console app: ${amplifyAppId}`);
     const createEnvParams = {
       appId: amplifyAppId,
       environmentName: envName,
@@ -273,11 +274,10 @@ async function SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRe
 function displayAppIdSelectionLearnMore(context) {
   // this should rarely happen
   context.print.info('');
-  context.print.green("AWS Amplify Service stores information of your project's the backend environments in the cloud.");
-  context.print.green("It facilitates the team collaboration workflow of your project's development.");
   context.print.green(
-    'You can select to associate this environment with an existing AWS Amplify Service App that other backend environements of the project are associated with.'
+    'The AWS Amplify Console stores information on your backend environment in the cloud to facilitate collaboration workflows for your team.'
   );
+  context.print.green('Select an existing AWS Amplify Console app to associate this backend environment with the app.');
   context.print.green(
     'Select None will lead to the creation of a new AWS Amplify Service App that this backend environment will be associated with.'
   );

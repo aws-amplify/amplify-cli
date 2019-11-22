@@ -44,11 +44,11 @@ async function onSuccess(context) {
   await postPullCodeGenCheck(context);
 
   if (!inputParams.yes) {
-    const confirmKeepCodebase = await context.amplify.confirmPrompt.run('Do you plan on modifying your backend?', true);
+    const confirmKeepCodebase = await context.amplify.confirmPrompt.run('Do you plan on modifying this backend?', true);
     if (confirmKeepCodebase) {
       const { envName } = context.exeInfo.localEnvInfo;
       context.print.info('');
-      context.print.success(`Successfully pulled backend environment ${envName}`);
+      context.print.success(`Successfully pulled backend environment ${envName} from the cloud.`);
       context.print.info(`Run 'amplify pull' to sync upstream changes.`);
       context.print.info('');
     } else {

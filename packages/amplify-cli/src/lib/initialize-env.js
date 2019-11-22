@@ -58,9 +58,13 @@ async function initializeEnv(context, currentAmplifyMeta) {
       initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
 
-    spinner.start(isPulling ? `Pulling current backend for environment: ${currentEnv}` : `Initializing your environment: ${currentEnv}`);
+    spinner.start(
+      isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`
+    );
     await sequential(initializationTasks);
-    spinner.succeed(isPulling ? 'Successfully pulled your current backend environment.' : 'Initialized provider successfully.');
+    spinner.succeed(
+      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.'
+    );
 
     const projectDetails = context.amplify.getProjectDetails();
     context.exeInfo = context.exeInfo || {};
@@ -85,7 +89,9 @@ async function initializeEnv(context, currentAmplifyMeta) {
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
     context.print.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
-    spinner.fail(isPulling ? 'There was an error pulling your environment.' : 'There was an error initializing your environment.');
+    spinner.fail(
+      isPulling ? `There was an error pulling the backend environment ${currentEnv}.` : 'There was an error initializing your environment.'
+    );
     throw e;
   }
 }

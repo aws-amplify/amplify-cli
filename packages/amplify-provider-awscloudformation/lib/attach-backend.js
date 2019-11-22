@@ -80,18 +80,19 @@ async function getAmplifyApp(context, amplifyClient) {
   // If appId is in the inputParams, verify it
   const { inputParams } = context.exeInfo;
   if (inputParams.amplify && inputParams.amplify.appId) {
-    const inputAppId = inputParams.amplify.appId;
+    const inputAmplifyAppId = inputParams.amplify.appId;
     try {
       const getAppResult = await amplifyClient
         .getApp({
-          appId: inputAppId,
+          appId: inputAmplifyAppId,
         })
         .promise();
-      context.print.info(`Input Amplify appId is verified: ${inputAppId}`);
-      context.print.info(`Amplify App name is: ${getAppResult.app.name}`);
+      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}}`);
       return getAppResult.app;
     } catch (e) {
-      context.print.error(`Input Amplify appId is invalild: ${inputAppId}`);
+      context.print.error(
+        `Amplify AppID: ${inputAmplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`
+      );
       context.print.info(e);
       throw e;
     }
@@ -111,11 +112,11 @@ async function getAmplifyApp(context, amplifyClient) {
     apps = apps.concat(listAppsResponse.apps);
   } while (listAppsResponse.nextToken);
 
-  if (apps.length > 1) {
+  if (apps.length >= 1) {
     const options = [];
     apps.forEach(app => {
       const option = {
-        name: `${app.name} / ${app.appId}`,
+        name: `${app.name}`,
         value: app,
         short: app.appId,
       };
@@ -130,17 +131,10 @@ async function getAmplifyApp(context, amplifyClient) {
     });
 
     return selection;
-  } else if (apps.length === 1) {
-    context.print.info(`Found one amplify project '${apps[0].name} / ${apps[0].appId}'`);
-    const confirmMigrateMessage = 'Do you want to choose it?';
-    if (await context.prompt.confirm(confirmMigrateMessage)) {
-      return apps[0];
-    }
-  } else {
-    const errorMessage = `Found no currently existing amplify project.`;
-    context.print.error(errorMessage);
-    throw new Error(errorMessage);
   }
+  const errorMessage = `No Amplify apps found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`;
+  context.print.error(errorMessage);
+  throw new Error(errorMessage);
 }
 
 async function getBackendEnv(context, amplifyClient, amplifyApp) {
@@ -155,10 +149,10 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
           environmentName: inputEnvName,
         })
         .promise();
-      context.print.info(`Input envName ${inputEnvName} is verified in Amplify service project ${amplifyApp.name}.`);
+      context.print.info(`Backend environment ${inputEnvName} found in Amplify Console app: ${amplifyApp.name}`);
       return getBackendEnvironmentResult.backendEnvironment;
     } catch (e) {
-      context.print.error(`Input envName ${inputEnvName} is invalid in Amplify service project ${amplifyApp.name}.`);
+      context.print.error(`Cannot find backend environment ${inputEnvName} in Amplify Console app: ${amplifyApp.name}`);
       context.print.info(e);
       throw e;
     }
@@ -198,16 +192,12 @@ async function getBackendEnv(context, amplifyClient, amplifyApp) {
 
     return selection;
   } else if (backendEnvs.length === 1) {
-    context.print.info(`Found one backend environment '${backendEnvs[0].environmentName}'`);
-    const confirmMigrateMessage = 'Do you want to choose it?';
-    if (await context.prompt.confirm(confirmMigrateMessage)) {
-      return backendEnvs[0];
-    }
-  } else {
-    const errorMessage = `Found no currently existing backend environment in the amplify project: ${amplifyApp.name}.`;
-    context.print.error(errorMessage);
-    throw new Error(errorMessage);
+    context.print.info(`Backend environment '${backendEnvs[0].environmentName}' found. Initializing...`);
+    return backendEnvs[0];
   }
+  const errorMessage = `Cannot find any backend environment in the Amplify Console App ${amplifyApp.name}.`;
+  context.print.error(errorMessage);
+  throw new Error(errorMessage);
 }
 
 async function downloadBackend(context, backendEnv, awsConfig) {
