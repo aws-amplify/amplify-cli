@@ -90,7 +90,7 @@ async function createAmplifySkeletonProject() {
     console.log(`${emoji.get('guitar')} Creating base Amplify project`);
 
     return new Promise((resolve, reject) => {
-      const createSkeletonAmplifyProject = spawn('amplify-dev', ['init', '--quickstart'], {
+      const createSkeletonAmplifyProject = spawn('amplify', ['init', '--quickstart'], {
         cwd: process.cwd(),
         env: process.env,
         stdio: 'inherit',
