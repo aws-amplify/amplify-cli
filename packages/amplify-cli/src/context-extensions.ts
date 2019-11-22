@@ -52,7 +52,7 @@ function attachPrompt(context: Context) {
         name: 'yesno',
         type: 'confirm',
         message,
-        default: defaultValue !== false,
+        default: defaultValue,
       });
       return yesno;
     },
