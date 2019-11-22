@@ -54,9 +54,13 @@ async function checkNodeVersion() {
 
 async function installAmplifyCLI() {
   const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
+  const amplifyCLIVersion = amplifyCLIVersionCheck.stdout.toString();
+  const cliSemVer = amplifyCLIVersion.split('.');
+  const cliMajor = cliSemVer[0];
+  const cliMinor = cliSemVer[1];
 
-  if (amplifyCLIVersionCheck.stderr !== null) {
-    console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersionCheck.stdout.toString()}`);
+  if (amplifyCLIVersionCheck.stderr !== null && !(cliMajor < 3 || (cliMajor == 3 && cliMinor < 17))) {
+    console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersion}`);
   } else {
     // Install the CLI
     console.log(`${emoji.get('worried')} Amplify CLI not found on your system.`);
