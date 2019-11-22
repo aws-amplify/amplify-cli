@@ -3,6 +3,7 @@ const path = require('path');
 const os = require('os');
 const ini = require('ini');
 const { spawn } = require('child_process');
+const inquirer = require('inquirer');
 
 const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
 const configFilePath = path.join(dotAWSDirPath, 'config');
@@ -24,13 +25,20 @@ function getNamedProfiles() {
   return namedProfiles;
 }
 
-function checkIfProfileExists(profileToUse) {
+async function checkIfProfileExists(profileToUse) {
   const namedProfiles = getNamedProfiles();
-  if (Object.keys(namedProfiles)) {
+  if (Object.keys(namedProfiles).length) {
     if (namedProfiles[profileToUse]) {
       return profileToUse;
     }
-    return Object.keys(namedProfiles)[0];
+    const profileQuestion = {
+      type: 'list',
+      name: 'profile',
+      message: 'Choose the profile you would like to use',
+      choices: Object.keys(namedProfiles),
+    };
+    const profileAnswer = await inquirer.prompt(profileQuestion);
+    return profileAnswer;
   }
   console.log(`Profiles not found. Please create one`);
   return undefined;
@@ -66,7 +74,7 @@ async function run() {
     /* Check if profile exists - if not run `amplify configure` */
     let foundProfile;
     while (!foundProfile) {
-      foundProfile = checkIfProfileExists(profileToUse);
+      foundProfile = await checkIfProfileExists(profileToUse);
       if (!foundProfile) {
         console.log('Attempting to configure the profile');
         await configureProfile();
