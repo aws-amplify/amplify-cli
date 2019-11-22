@@ -476,12 +476,14 @@ async function askPaths(context, answers, currentPath) {
       break;
     }
 
-    addAnotherPath = (await inquirer.prompt({
-      name: 'anotherPath',
-      type: 'confirm',
-      message: 'Do you want to add another path?',
-      default: false,
-    })).anotherPath;
+    addAnotherPath = (
+      await inquirer.prompt({
+        name: 'anotherPath',
+        type: 'confirm',
+        message: 'Do you want to add another path?',
+        default: false,
+      })
+    ).anotherPath;
   } while (addAnotherPath);
 
   const { dependsOn, functionArns } = await findDependsOn(paths, context);

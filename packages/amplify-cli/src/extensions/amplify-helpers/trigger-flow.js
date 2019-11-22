@@ -326,9 +326,10 @@ const learnMoreLoop = async (key, map, metaData, question) => {
   ) {
     let prefix;
     if (metaData.URL) {
-      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(null, chalk.blue.underline)(
-        metaData.URL
-      )}\n`;
+      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(
+        null,
+        chalk.blue.underline
+      )(metaData.URL)}\n`;
       prefix = prefix.concat('\n');
     } else {
       prefix = `\nThe following ${key} are available in ${map}\n`;
