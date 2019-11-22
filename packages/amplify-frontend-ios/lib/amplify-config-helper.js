@@ -1,23 +1,23 @@
 function generateConfig(context, amplifyConfig) {
-  const metaData = context.amplify.getProjectMeta();
+  const metadata = context.amplify.getProjectMeta();
   amplifyConfig = amplifyConfig || {
     UserAgent: 'aws-amplify-cli/2.0',
     Version: '1.0',
   };
-  constructAnalytics(metaData, amplifyConfig);
-  constructApi(metaData, amplifyConfig);
-  constructPredictions(metaData, amplifyConfig);
-  constructStorage(metaData, amplifyConfig);
+  constructAnalytics(metadata, amplifyConfig);
+  constructApi(metadata, amplifyConfig);
+  constructPredictions(metadata, amplifyConfig);
+  constructStorage(metadata, amplifyConfig);
 
   return amplifyConfig;
 }
 
-function constructAnalytics(metaData, amplifyConfig) {
+function constructAnalytics(metadata, amplifyConfig) {
   const categoryName = 'analytics';
   const pluginName = 'awsPinpointAnalyticsPlugin';
-  if (metaData[categoryName] && Object.keys(metaData[categoryName]).length > 0) {
-    const r = Object.keys(metaData[categoryName])[0]; // only one resource in analytics
-    const resourceMeta = metaData[categoryName][r];
+  if (metadata[categoryName] && Object.keys(metadata[categoryName]).length > 0) {
+    const r = Object.keys(metadata[categoryName])[0]; // only one resource in analytics
+    const resourceMeta = metadata[categoryName][r];
     if (resourceMeta.output) {
       amplifyConfig[categoryName] = {};
       amplifyConfig[categoryName].plugins = {};
@@ -34,13 +34,13 @@ function constructAnalytics(metaData, amplifyConfig) {
   }
 }
 
-function constructApi(metaData, amplifyConfig) {
+function constructApi(metadata, amplifyConfig) {
   const categoryName = 'api';
   const pluginName = 'awsAPIPlugin';
-  const region = metaData.providers.awscloudformation.Region;
-  if (metaData[categoryName]) {
-    Object.keys(metaData[categoryName]).forEach(r => {
-      const resourceMeta = metaData[categoryName][r];
+  const region = metadata.providers.awscloudformation.Region;
+  if (metadata[categoryName]) {
+    Object.keys(metadata[categoryName]).forEach(r => {
+      const resourceMeta = metadata[categoryName][r];
       if (resourceMeta.output) {
         amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
         amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins || {};
@@ -67,13 +67,13 @@ function constructApi(metaData, amplifyConfig) {
   }
 }
 
-function constructPredictions(metaData, amplifyConfig) {
+function constructPredictions(metadata, amplifyConfig) {
   const categoryName = 'predictions';
   const pluginName = 'awsPredictionsPlugin';
-  const region = metaData.providers.awscloudformation.Region;
-  if (metaData[categoryName]) {
-    Object.keys(metaData[categoryName]).forEach(r => {
-      const resourceMeta = metaData[categoryName][r];
+  const region = metadata.providers.awscloudformation.Region;
+  if (metadata[categoryName]) {
+    Object.keys(metadata[categoryName]).forEach(r => {
+      const resourceMeta = metadata[categoryName][r];
       if (resourceMeta.output) {
         amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
         amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins || {};
@@ -123,13 +123,13 @@ function getPredictionsResourceNameAndType(resourceMeta) {
   return result;
 }
 
-function constructStorage(metaData, amplifyConfig) {
+function constructStorage(metadata, amplifyConfig) {
   const categoryName = 'storage';
   const s3PluginName = 'awsS3StoragePlugin';
   const dynamoDbPluginName = 'awsDynamoDbStoragePlugin';
-  if (metaData[categoryName]) {
-    Object.keys(metaData[categoryName]).forEach(r => {
-      const resourceMeta = metaData[categoryName][r];
+  if (metadata[categoryName]) {
+    Object.keys(metadata[categoryName]).forEach(r => {
+      const resourceMeta = metadata[categoryName][r];
       if (resourceMeta.output) {
         amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
         amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins || {};
@@ -151,8 +151,8 @@ function constructStorage(metaData, amplifyConfig) {
           };
         } else if (resourceMeta.service === 'DynamoDB') {
           amplifyConfig[categoryName].plugins[dynamoDbPluginName] = {};
-          Object.keys(metaData[categoryName][r].output).forEach(key => {
-            const value = metaData[categoryName][r].output[key];
+          Object.keys(metadata[categoryName][r].output).forEach(key => {
+            const value = metadata[categoryName][r].output[key];
             key = key[0].toLowerCase() + key.slice(1);
             amplifyConfig[categoryName].plugins[dynamoDbPluginName][key] = value;
           });
