@@ -19,6 +19,7 @@
     "extract-zip": "^1.6.7",
     "folder-hash": "^2.0.0",
     "fs-extra": "^8.1.0",
+    "graphql": "^0.13.2",
     "graphql-auth-transformer": "5.18.0",
     "graphql-connection-transformer": "3.29.0",
     "graphql-dynamodb-transformer": "5.18.0",
