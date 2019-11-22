@@ -26,12 +26,14 @@ function getNamedProfiles() {
 
 function checkIfProfileExists(profileToUse) {
   const namedProfiles = getNamedProfiles();
-
-  if (!namedProfiles || !namedProfiles[profileToUse]) {
-    console.log(`Profile with name ${profileToUse} not found. Please create one`);
-    return false;
+  if (Object.keys(namedProfiles)) {
+    if (namedProfiles[profileToUse]) {
+      return profileToUse;
+    }
+    return Object.keys(namedProfiles)[0];
   }
-  return true;
+  console.log(`Profiles not found. Please create one`);
+  return undefined;
 }
 
 async function configureProfile() {
@@ -57,19 +59,20 @@ async function run() {
     buildConfig = JSON.parse(fs.readFileSync(buildConfigFilepath));
   }
 
-  const profileToUse = buildConfig.profile || 'default';
+  let profileToUse = buildConfig.profile || 'default';
 
   // If accessKeyId and secretKey not provided in buildConfig, profile needs to exists
   if (!buildConfig.accessKeyId) {
     /* Check if profile exists - if not run `amplify configure` */
-    let foundProfile = false;
+    let foundProfile;
     while (!foundProfile) {
       foundProfile = checkIfProfileExists(profileToUse);
       if (!foundProfile) {
-        console.log(`${profileToUse} not found. Attempting to configure the profile`);
+        console.log('Attempting to configure the profile');
         await configureProfile();
       }
     }
+    profileToUse = foundProfile;
   }
 
   const PROJECT_CONFIG = `{\
