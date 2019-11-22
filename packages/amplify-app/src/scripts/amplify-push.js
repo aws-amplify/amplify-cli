@@ -30,6 +30,8 @@ async function checkIfProfileExists(profileToUse) {
   if (Object.keys(namedProfiles).length) {
     if (namedProfiles[profileToUse]) {
       return profileToUse;
+    } else if (Object.keys(namedProfiles).length === 1) {
+      return Object.keys(namedProfiles)[0];
     }
     const profileQuestion = {
       type: 'list',
