@@ -29,6 +29,8 @@
     "inquirer": "^6.5.1",
     "node-emoji": "^1.10.0",
     "rimraf": "^3.0.0",
+    "semver": "^6.3.0",
+    "strip-ansi": "^6.0.0",
     "xcode": "^2.0.0",
     "yargs": "^14.2.0"
   },
