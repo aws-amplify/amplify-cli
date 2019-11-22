@@ -13,6 +13,7 @@ const { KeyTransformer } = require('graphql-key-transformer');
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 const { hashElement } = require('folder-hash');
+const { print } = require('graphql');
 
 const {
   collectDirectivesByTypeNames,
@@ -62,9 +63,49 @@ function getTransformerFactory(context, resourceDir, authConfig) {
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
         const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
-        // handle 'cannot find module'
+
+        if (!modulePath) {
+          throw new Error(`Invalid value specified for transformer: '${transformer}'`);
+        }
+
+        // The loading of transformer can happen multiple ways in the following order:
+        // - modulePath is an absolute path to an NPM package
+        // - modulePath is a package name, then it will be loaded from the project's root's node_modules with createRequireFromPath.
+        // - modulePath is a name of a globally installed package
+        let importedModule;
+        const tempModulePath = modulePath.toString();
+
         try {
-          return require(modulePath);
+          if (path.isAbsolute(tempModulePath)) {
+            // Load it by absolute path
+            importedModule = require(modulePath);
+          } else {
+            const projectRootPath = context.amplify.pathManager.searchProjectRootPath();
+            const { createRequireFromPath } = require('module');
+            const projectRequire = createRequireFromPath(projectRootPath);
+
+            if (tempModulePath.startsWith('./')) {
+              // Lookup 'locally' within project's node_modules with require mechanism
+              importedModule = projectRequire(tempModulePath);
+            } else {
+              const prefixedModuleName = `./${tempModulePath}`;
+
+              try {
+                // Lookup 'locally' within project's node_modules with require mechanism
+                importedModule = projectRequire(prefixedModuleName);
+              } catch (_) {
+                // Intentionally left blank to try global
+              }
+
+              if (!importedModule) {
+                // Lookup in global with require
+                importedModule = require(tempModulePath);
+              }
+            }
+          }
+
+          // At this point we've to have an imported module, otherwise module loader, threw an error.
+          return importedModule;
         } catch (error) {
           context.print.error(`Unable to import custom transformer module(${modulePath}).`);
           context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
@@ -73,7 +114,14 @@ function getTransformerFactory(context, resourceDir, authConfig) {
       })
       .map(imported => {
         const CustomTransformer = imported.default;
-        return CustomTransformer.call({});
+
+        if (typeof CustomTransformer === 'function') {
+          return new CustomTransformer();
+        } else if (typeof CustomTransformer === 'object') {
+          return CustomTransformer;
+        }
+
+        throw new Error("Custom Transformers' default export must be a function or an object");
       })
       .filter(customTransformer => customTransformer);
 
@@ -432,7 +480,9 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 
 async function getDirectiveDefinitions(context, resourceDir) {
   const transformList = await getTransformerFactory(context, resourceDir)(true);
-  return transformList.map(transformPluginInst => transformPluginInst.getDirective()).join('\n');
+  return transformList
+    .map(transformPluginInst => [transformPluginInst.directive, ...transformPluginInst.typeDefinitions].map(node => print(node)).join('\n'))
+    .join('\n');
 }
 module.exports = {
   transformGraphQLSchema,
