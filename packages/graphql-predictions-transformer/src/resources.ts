@@ -1,43 +1,32 @@
-import { IAM, Fn, AppSync, Lambda } from 'cloudform-types';
 import { ResourceConstants, PredictionsResourceIDs } from 'graphql-transformer-common';
-import { iamActions } from './predictions_utils';
-import { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
-// import { RoleProperties } from 'cloudform-types/types/iam/role';
 import {
-  obj,
-  str,
-  print,
-  int,
-  ref,
-  iff,
-  compoundExpression,
-  ifElse,
-  raw,
-  set,
-  forEach,
-  ObjectNode,
-  CompoundExpressionNode,
-  printBlock,
-  qref,
-  toJson,
+  obj, str, print,
+  int, ref, iff,
+  compoundExpression, ifElse, raw,
+  set, forEach, ObjectNode,
+  CompoundExpressionNode, qref, toJson,
   comment,
 } from 'graphql-mapping-template';
+import { iamActions } from './predictions_utils';
+import { IAM, Fn, AppSync, Lambda } from 'cloudform-types';
+import { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
 import DataSource from 'cloudform-types/types/appSync/dataSource';
+import { Policy } from 'cloudform-types/types/iam/group';
 
 // tslint:disable: no-magic-numbers
 export interface PredictionsDSConfig {
-  id: string;
+  id: 'RekognitionDataSource' | 'TranslateDataSource' | 'LambdaDataSource';
   httpConfig?: HttpConfig;
   lambdaConfig?: LambdaConfig;
 }
 export type ActionPolicyMap = {
-  [action: string]: any;
+  [action: string]: Policy;
 };
 export class ResourceFactory {
   public createIAMRole(map: ActionPolicyMap, bucketName: string) {
     return new IAM.Role({
       RoleName: this.joinWithEnv('-', [
-        PredictionsResourceIDs.getIAMRole(),
+        PredictionsResourceIDs.iamRole,
         Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       ]),
       AssumeRolePolicyDocument: {
@@ -59,7 +48,7 @@ export class ResourceFactory {
             Version: '2012-10-17',
             Statement: [
               {
-                Action: ['s3:GetObject', 's3:PutObject'],
+                Action: ['s3:GetObject'],
                 Effect: 'Allow',
                 Resource: this.getStorageARN(bucketName),
               },
@@ -100,7 +89,7 @@ export class ResourceFactory {
   }
 
   private s3ArnKey(name: string) {
-    return `arn:aws:s3:::${name}/*`;
+    return `arn:aws:s3:::${name}/public/*`;
   }
 
   public mergeActionRole(map: ActionPolicyMap, action: string) {
@@ -111,7 +100,7 @@ export class ResourceFactory {
           Version: '2012-10-17',
           Statement: [
             {
-              Action: iamActions[action],
+              Action: [iamActions[action]],
               Effect: 'Allow',
               Resource: '*',
             },
@@ -132,7 +121,7 @@ export class ResourceFactory {
             {
               Action: ['lambda:InvokeFunction'],
               Effect: 'Allow',
-              Resource: Fn.GetAtt(PredictionsResourceIDs.getLambdaID(), 'Arn'),
+              Resource: Fn.GetAtt(PredictionsResourceIDs.lambdaID, 'Arn'),
             },
           ],
         },
@@ -144,7 +133,7 @@ export class ResourceFactory {
   public createLambdaIAMRole(bucketName: string) {
     return new IAM.Role({
       RoleName: this.joinWithEnv('-', [
-        PredictionsResourceIDs.getLambdaIAMRole(),
+        PredictionsResourceIDs.lambdaIAMRole,
         Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       ]),
       AssumeRolePolicyDocument: {
@@ -160,19 +149,6 @@ export class ResourceFactory {
         ],
       },
       Policies: [
-        new IAM.Role.Policy({
-          PolicyName: 'StorageAccess',
-          PolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Action: ['s3:PutObject', 's3:GetObject'],
-                Effect: 'Allow',
-                Resource: this.getStorageARN(bucketName),
-              },
-            ],
-          },
-        }),
         new IAM.Role.Policy({
           PolicyName: 'PollyAccess',
           PolicyDocument: {
@@ -197,18 +173,18 @@ export class ResourceFactory {
         ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
         Name: config.id,
         Type: 'HTTP',
-        ServiceRoleArn: Fn.GetAtt(PredictionsResourceIDs.getIAMRole(), 'Arn'),
+        ServiceRoleArn: Fn.GetAtt(PredictionsResourceIDs.iamRole, 'Arn'),
         HttpConfig: config.httpConfig,
-      }).dependsOn(PredictionsResourceIDs.getIAMRole());
+      }).dependsOn(PredictionsResourceIDs.iamRole);
     }
     if (config.lambdaConfig) {
       dataSource = new AppSync.DataSource({
         ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
         Name: config.id,
         Type: 'AWS_LAMBDA',
-        ServiceRoleArn: Fn.GetAtt(PredictionsResourceIDs.getIAMRole(), 'Arn'),
+        ServiceRoleArn: Fn.GetAtt(PredictionsResourceIDs.iamRole, 'Arn'),
         LambdaConfig: config.lambdaConfig,
-      }).dependsOn([PredictionsResourceIDs.getIAMRole(), PredictionsResourceIDs.getLambdaID()]);
+      }).dependsOn([PredictionsResourceIDs.iamRole, PredictionsResourceIDs.lambdaID]);
     }
     return dataSource;
   }
@@ -249,7 +225,7 @@ export class ResourceFactory {
         return {
           id: 'LambdaDataSource',
           lambdaConfig: {
-            LambdaFunctionArn: Fn.GetAtt(PredictionsResourceIDs.getLambdaID(), 'Arn'),
+            LambdaFunctionArn: Fn.GetAtt(PredictionsResourceIDs.lambdaID, 'Arn'),
           },
         };
       default:
@@ -306,7 +282,7 @@ export class ResourceFactory {
                 Image: obj({
                   S3Object: obj({
                     Bucket: str('$bucketName'),
-                    Name: str('$ctx.args.input.identifyText.key'),
+                    Name: str('public/$ctx.args.input.identifyText.key'),
                   }),
                 }),
               }),
@@ -346,7 +322,7 @@ export class ResourceFactory {
                 Image: obj({
                   S3Object: obj({
                     Bucket: str('$bucketName'),
-                    Name: str('$ctx.args.input.identifyLabels.key'),
+                    Name: str('public/$ctx.args.input.identifyLabels.key'),
                   }),
                 }),
                 MaxLabels: int(10),
@@ -414,7 +390,6 @@ export class ResourceFactory {
               obj({
                 uuid: str('$util.autoId()'),
                 action: str('convertTextToSpeech'),
-                bucket: str('$bucketName'),
                 voiceID: str('$ctx.args.input.convertTextToSpeech.voiceID'),
                 text: str('$text'),
               })
@@ -428,7 +403,7 @@ export class ResourceFactory {
         ]),
       },
     };
-    return this.genericFunction(action, datasourceName, PredictionsResourceIDs.getIAMRole(), actionFunctionResolvers[action]);
+    return this.genericFunction(action, datasourceName, PredictionsResourceIDs.iamRole, actionFunctionResolvers[action]);
   }
 
   private genericFunction(
@@ -450,7 +425,7 @@ export class ResourceFactory {
     }).dependsOn([iamRole, datasourceName]);
   }
 
-  // Predictions Lambda Functions
+  // Predictions Lambda Function
   public createPredictionsLambda() {
     return new Lambda.Function({
       Code: {
@@ -458,17 +433,18 @@ export class ResourceFactory {
         S3Key: Fn.Join('/', [
           Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
           'functions',
-          Fn.Join('.', [PredictionsResourceIDs.getLambdaID(), 'zip']),
+          Fn.Join('.', [PredictionsResourceIDs.lambdaID, 'zip']),
         ]),
       },
       FunctionName: this.joinWithEnv('-', [
-        PredictionsResourceIDs.getLambdaName(),
+        PredictionsResourceIDs.lambdaName,
         Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       ]),
-      Handler: PredictionsResourceIDs.getLambdaHandlerName(),
-      Role: Fn.GetAtt(PredictionsResourceIDs.getLambdaIAMRole(), 'Arn'),
-      Runtime: PredictionsResourceIDs.getLambdaRuntime(),
-    }).dependsOn([PredictionsResourceIDs.getLambdaIAMRole()]);
+      Handler: PredictionsResourceIDs.lambdaHandlerName,
+      Role: Fn.GetAtt(PredictionsResourceIDs.lambdaIAMRole, 'Arn'),
+      Runtime: PredictionsResourceIDs.lambdaRuntime,
+      Timeout: PredictionsResourceIDs.lambdaTimeout,
+    }).dependsOn([PredictionsResourceIDs.lambdaIAMRole]);
   }
 
   // storage env ref

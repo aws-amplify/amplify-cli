@@ -5,14 +5,13 @@ import {
   valueFromASTUntyped,
   ArgumentNode,
   InputValueDefinitionNode,
-  Kind,
 } from 'graphql';
+import { getActionInputType, makeActionInputObject, getActionInputName, addInputArgument, createInputValueAction } from './definitions';
 import { Transformer, gql, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core';
-import { ResolverResourceIDs, PredictionsResourceIDs, makeNamedType, makeNonNullType, makeListType } from 'graphql-transformer-common';
-import { getActionInputType, makeActionInputObject, getActionInputName, capitalizeFirstLetter } from './definitions';
+import { ResolverResourceIDs, PredictionsResourceIDs } from 'graphql-transformer-common';
+import { ResourceFactory, ActionPolicyMap } from './resources';
 import { allowedActions } from './predictions_utils';
 import { Fn } from 'cloudform-types';
-import { ResourceFactory, ActionPolicyMap } from './resources';
 import path = require('path');
 
 const PREDICTIONS_DIRECTIVE_STACK = 'PredictionsDirectiveStack';
@@ -72,7 +71,7 @@ export class PredictionsTransformer extends Transformer {
         throw new InvalidDirectiveError(`${action} is not supported!`);
       }
     });
-    // validate that storage is added in the project
+    // validate that storage is added in the config
     if(!storage) {
       throw new InvalidDirectiveError('Storage must be enabled before using @predictions');
     }
@@ -84,8 +83,8 @@ export class PredictionsTransformer extends Transformer {
     const actionInputObjectFields: InputValueDefinitionNode[] = [];
     let isList: boolean = false;
     let actionPolicyMap: ActionPolicyMap = {};
-    if (ctx.metadata.has(PredictionsResourceIDs.getActionMapID())) {
-      actionPolicyMap = ctx.metadata.get(PredictionsResourceIDs.getActionMapID());
+    if (ctx.metadata.has(PredictionsResourceIDs.actionMapID)) {
+      actionPolicyMap = ctx.metadata.get(PredictionsResourceIDs.actionMapID);
     }
     actions.forEach((action, index) => {
       // boolean to check if the action specified is the first action
@@ -93,7 +92,7 @@ export class PredictionsTransformer extends Transformer {
       // check if action should return a list
       isList = this.needsList(action, isList);
       // create input object fields which will end up in the input object
-      actionInputObjectFields.push(this.createInputValueAction(action, fieldName));
+      actionInputObjectFields.push(createInputValueAction(action, fieldName));
       // create policy for action if it doesn't exist
       actionPolicyMap = this.resources.mergeActionRole(actionPolicyMap, action);
       // grab datasource config for the action
@@ -105,16 +104,16 @@ export class PredictionsTransformer extends Transformer {
         ctx.setResource(actionDSConfig.id, this.resources.createPredictionsDataSource(actionDSConfig));
         ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, actionDSConfig.id);
         if (actionDSConfig.id === 'LambdaDataSource') {
-          // merge lambda permission
+          // merge lambda permissions
           actionPolicyMap = this.resources.mergeLambdaActionRole(actionPolicyMap);
           // add lambda function in transformer context metadata
-          ctx.metadata.set(PredictionsResourceIDs.getLambdaID(), path.resolve(`${__dirname}/../lib/predictionsLambdaFunction.zip`));
+          ctx.metadata.set(PredictionsResourceIDs.lambdaID, path.resolve(`${__dirname}/../lib/predictionsLambdaFunction.zip`));
           // TODO: If other actions should use a lambda function then the iam role should add as needed policies per action
-          ctx.setResource(PredictionsResourceIDs.getLambdaIAMRole(), this.resources.createLambdaIAMRole(storage));
-          ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, PredictionsResourceIDs.getLambdaIAMRole());
+          ctx.setResource(PredictionsResourceIDs.lambdaIAMRole, this.resources.createLambdaIAMRole(storage));
+          ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, PredictionsResourceIDs.lambdaIAMRole);
           // create lambda function
-          ctx.setResource(PredictionsResourceIDs.getLambdaID(), this.resources.createPredictionsLambda());
-          ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, PredictionsResourceIDs.getLambdaID());
+          ctx.setResource(PredictionsResourceIDs.lambdaID, this.resources.createPredictionsLambda());
+          ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, PredictionsResourceIDs.lambdaID);
         }
       }
       // add function configuration resource if it does not exist
@@ -134,19 +133,19 @@ export class PredictionsTransformer extends Transformer {
 
     // create iam policy
     const iamRole = this.resources.createIAMRole(actionPolicyMap, storage);
-    ctx.setResource(PredictionsResourceIDs.getIAMRole(), iamRole);
-    ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, PredictionsResourceIDs.getIAMRole());
+    ctx.setResource(PredictionsResourceIDs.iamRole, iamRole);
+    ctx.mapResourceToStack(PREDICTIONS_DIRECTIVE_STACK, PredictionsResourceIDs.iamRole);
     // save map config in the context
-    ctx.metadata.set(PredictionsResourceIDs.getActionMapID(), actionPolicyMap);
+    ctx.metadata.set(PredictionsResourceIDs.actionMapID, actionPolicyMap);
 
     // generate input type based on operation name
-    ctx.addInput(makeActionInputObject(capitalizeFirstLetter(fieldName), actionInputObjectFields));
+    ctx.addInput(makeActionInputObject(fieldName, actionInputObjectFields));
     // add arguments into operation
     const type = ctx.getType(ctx.getQueryTypeName()) as ObjectTypeDefinitionNode;
     if (type) {
       const field = type.fields.find(f => f.name.value === fieldName);
       if (field) {
-        const newFields = [...type.fields.filter(f => f.name.value !== field.name.value), this.addInputArgument(field, fieldName, isList)];
+        const newFields = [...type.fields.filter(f => f.name.value !== field.name.value), addInputArgument(field, fieldName, isList)];
         const newMutation = {
           ...type,
           fields: newFields,
@@ -180,30 +179,6 @@ export class PredictionsTransformer extends Transformer {
       default:
         return flag;
     }
-  }
-
-  private createInputValueAction(action: string, fieldName: string): InputValueDefinitionNode {
-    return {
-      kind: Kind.INPUT_VALUE_DEFINITION,
-      name: { kind: 'Name' as 'Name', value: `${action}` },
-      type: makeNonNullType(makeNamedType(getActionInputName(action, fieldName))),
-      directives: [],
-    };
-  }
-
-  private addInputArgument(field: FieldDefinitionNode, fieldName: string, isList: boolean): FieldDefinitionNode {
-    return {
-      ...field,
-      arguments: [
-        {
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: { kind: 'Name' as 'Name', value: 'input' },
-          type: makeNonNullType(makeNamedType(`${capitalizeFirstLetter(fieldName)}Input`)),
-          directives: [],
-        },
-      ],
-      type: isList ? makeListType(makeNamedType('String')) : makeNamedType('String'),
-    };
   }
 
   private typeExist(type: string, ctx: TransformerContext): boolean {

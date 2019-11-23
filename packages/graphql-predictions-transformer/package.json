@@ -11,6 +11,7 @@
   "scripts": {
     "build": "tsc && cd lambdaFunction && bestzip --force node ../lib/predictionsLambdaFunction.zip predictionsLambda.js",
     "watch": "tsc -w",
+    "test": "jest",
     "clean": "rm -rf ./lib"
   },
   "dependencies": {
@@ -35,7 +36,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*.test.*)$",
+    "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
