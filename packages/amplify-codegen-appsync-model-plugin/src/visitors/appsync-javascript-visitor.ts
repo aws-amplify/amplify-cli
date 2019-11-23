@@ -64,7 +64,7 @@ export class AppSyncModelJavascriptVisitor<
 
       const modelInitialization = this.generateModelInitialization(Object.values(this.typeMap), false);
 
-      const modelExports = this.generateExports(Object.values(this.typeMap));
+      const modelExports = this.generateExports([...Object.values(this.typeMap), ...Object.values(this.enumMap)]);
       return [imports, '', enumDeclarations, '', modelInitialization, '', modelExports].join('\n');
     }
   }

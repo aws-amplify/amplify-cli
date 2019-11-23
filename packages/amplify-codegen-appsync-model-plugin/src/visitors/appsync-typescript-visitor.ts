@@ -1,5 +1,6 @@
 import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
+import { camelCase } from 'change-case';
 import {
   AppSyncModelVisitor,
   CodeGenEnum,
@@ -147,12 +148,15 @@ export class AppSyncModelTypeScriptVisitor<
     return `${initializationResult.join(' ')};`;
   }
 
-  protected generateExports(models: CodeGenModel[]): string {
-    const exportStr = models
+  protected generateExports(modelsOrEnum: (CodeGenModel | CodeGenEnum)[]): string {
+    const exportStr = modelsOrEnum
       .map(model => {
-        const modelClassName = this.generateModelImportAlias(model);
-        const exportClassName = this.getModelName(model);
-        return modelClassName !== exportClassName ? `${modelClassName} as ${exportClassName}` : modelClassName;
+        if (model.type === 'model') {
+          const modelClassName = this.generateModelImportAlias(model);
+          const exportClassName = this.getModelName(model);
+          return modelClassName !== exportClassName ? `${modelClassName} as ${exportClassName}` : modelClassName;
+        }
+        return model.name;
       })
       .join(',\n');
     return ['export {', indentMultiline(exportStr), '};'].join('\n');
@@ -193,6 +197,10 @@ export class AppSyncModelTypeScriptVisitor<
 
   protected getListType(typeStr: string): string {
     return `${typeStr}[]`;
+  }
+
+  protected getFieldName(field: CodeGenField): string {
+    return camelCase(field.name);
   }
 
   protected getNativeType(field: CodeGenField): string {
