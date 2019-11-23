@@ -5,6 +5,7 @@ const sequential = require('promise-sequential');
 const S3 = require('../src/aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
 const constants = require('./constants');
+const { authDryRun } = require('./amplify-service-auth-check');
 
 async function init(amplifyServiceParams) {
   const { context, awsConfig, projectName, envName, stackName } = amplifyServiceParams;
@@ -14,9 +15,17 @@ async function init(amplifyServiceParams) {
   let deploymentBucketName = `${stackName}-deployment`;
 
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
-
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
+    return {
+      amplifyAppId,
+      verifiedStackName,
+      deploymentBucketName,
+    };
+  }
+
+  const hasPermission = await authDryRun(context, amplifyClient);
+  if (!hasPermission) {
     return {
       amplifyAppId,
       verifiedStackName,
@@ -99,8 +108,29 @@ async function init(amplifyServiceParams) {
     const createAppParams = {
       name: projectName,
     };
-    const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
-    amplifyAppId = createAppResponse.app.appId;
+    try {
+      const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
+      amplifyAppId = createAppResponse.app.appId;
+    } catch (e) {
+      if (e.code === 'LimitExceededException') {
+        // Do nothing
+      } else if (
+        e.code === 'BadRequestException' &&
+        e.message.includes('Rate exceeded while calling CreateApp, please slow down or try again later.')
+      ) {
+        // Do nothing
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  if (!amplifyAppId) {
+    return {
+      amplifyAppId,
+      verifiedStackName,
+      deploymentBucketName,
+    };
   }
 
   let needToCreateNewBackendEnv = false;
@@ -155,6 +185,11 @@ async function deleteEnv(context, envName, awsConfig) {
         return;
       }
 
+      const hasPermission = await authDryRun(context, amplifyClient);
+      if (!hasPermission) {
+        return;
+      }
+
       const amplifyAppId = teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel];
       const deleteEnvParams = {
         appId: amplifyAppId,
@@ -178,6 +213,11 @@ async function postPushCheck(context) {
     const amplifyClient = await getConfiguredAmplifyClient(context);
     if (!amplifyClient) {
       // This happens when the Amplify service is not available in the region
+      return;
+    }
+
+    const hasPermission = await authDryRun(context, amplifyClient);
+    if (!hasPermission) {
       return;
     }
 
@@ -214,8 +254,26 @@ async function postPushCheck(context) {
         const createAppParams = {
           name: projectConfig.projectName,
         };
-        const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
-        amplifyAppId = createAppResponse.app.appId;
+
+        try {
+          const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
+          amplifyAppId = createAppResponse.app.appId;
+        } catch (e) {
+          if (e.code === 'LimitExceededException') {
+            // Do nothing
+          } else if (
+            e.code === 'BadRequestException' &&
+            e.message.includes('Rate exceeded while calling CreateApp, please slow down or try again later.')
+          ) {
+            // Do nothing
+          } else {
+            throw e;
+          }
+        }
+      }
+
+      if (!amplifyAppId) {
+        return;
       }
 
       const createEnvParams = {
