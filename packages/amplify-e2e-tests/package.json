@@ -57,10 +57,12 @@
     ]
   },
   "dependencies": {
-    "aws-sdk": "^2.510.0",
+    "aws-sdk": "^2.577.0",
     "esm": "^3.2.25",
+    "fs-extra": "^8.1.0",
     "mime-types": "^2.1.24",
-    "ora": "^3.4.0"
+    "ora": "^3.4.0",
+    "graphql-transformer-core": "^5.18.0"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

@@ -11,7 +11,7 @@ export function addSimpleDDB(cwd: string, settings: any, verbose: boolean = !isC
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services:')
+      .wait('Please select from one of the below mentioned services')
       // j = down arrow
       .sendline('j')
       .sendline('\r')
@@ -54,7 +54,7 @@ export function addDDBWithTrigger(cwd: string, settings: any, verbose: boolean =
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services:')
+      .wait('Please select from one of the below mentioned services')
       // j = down arrow
       .sendline('j')
       .sendline('\r')
@@ -104,7 +104,7 @@ export function updateDDBWithTrigger(cwd: string, settings: any, verbose: boolea
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services:')
+      .wait('Please select from one of the below mentioned services')
       // j = down arrow
       .sendline('j')
       .sendline('\r')
@@ -142,7 +142,7 @@ export function addS3WithTrigger(cwd: string, settings: any, verbose: boolean = 
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services:')
+      .wait('Please select from one of the below mentioned services')
       .sendline('\r')
       .wait('Please provide a friendly name')
       .sendline('\r')
@@ -151,6 +151,7 @@ export function addS3WithTrigger(cwd: string, settings: any, verbose: boolean = 
       .wait('Who should have access')
       .sendline('\r')
       .wait('What kind of access do you want')
+      .send(' ')
       .sendline('\r')
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendline('y')

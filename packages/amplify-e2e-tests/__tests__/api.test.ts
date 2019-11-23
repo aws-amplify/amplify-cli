@@ -1,9 +1,19 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
-import { initProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../src/init';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import { addApiWithSchema, updateApiSchema, updateApiWithMultiAuth } from '../src/categories/api';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, updateConfig, getTable, deleteTable, getAppSyncApi } from '../src/utils';
+import {
+  createNewProjectDir,
+  deleteProjectDir,
+  getProjectMeta,
+  getTransformConfig,
+  updateConfig,
+  getTable,
+  deleteTable,
+  getAppSyncApi,
+} from '../src/utils';
+import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 
 describe('amplify add api', () => {
   let projRoot: string;
@@ -21,7 +31,7 @@ describe('amplify add api', () => {
   });
 
   it('init a project and add the simple_model api', async () => {
-    await initProjectWithProfile(projRoot, { name: 'simplemodel' });
+    await initJSProjectWithProfile(projRoot, { name: 'simplemodel' });
     await addApiWithSchema(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
@@ -42,7 +52,7 @@ describe('amplify add api', () => {
     const projectName = 'blogapp';
     const initialSchema = 'initial_key_blog.graphql';
     const nextSchema = 'next_key_blog.graphql';
-    await initProjectWithProfile(projRoot, { name: projectName });
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
@@ -56,7 +66,7 @@ describe('amplify add api', () => {
   });
 
   it('init a project and add the simple_model api with multiple authorization providers', async () => {
-    await initProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
     await addApiWithSchema(projRoot, 'simple_model.graphql');
     await updateApiWithMultiAuth(projRoot, {});
     await amplifyPush(projRoot);
@@ -97,12 +107,65 @@ describe('amplify add api', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 
+  it('init a project and add the simple_model api, match transformer version to current version', async () => {
+    const name = `simplemodelv${TRANSFORM_CURRENT_VERSION}`;
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api[name];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+    const transformConfig = getTransformConfig(projRoot, name);
+    expect(transformConfig).toBeDefined();
+    expect(transformConfig.Version).toBeDefined();
+    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
+  });
+
+  it('init a project and add the simple_model api, change transformer version to base version and push', async () => {
+    const name = `simplemodelv${TRANSFORM_BASE_VERSION}`;
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+
+    const transformConfig = getTransformConfig(projRoot, name);
+    expect(transformConfig).toBeDefined();
+    expect(transformConfig.Version).toBeDefined();
+    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
+
+    transformConfig.Version = TRANSFORM_BASE_VERSION;
+    const apiRoot = path.join(projRoot, 'amplify', 'backend', 'api', name);
+    writeTransformerConfiguration(apiRoot, transformConfig);
+
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api[name];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+  });
+
   // TODO: Disabling for now until further conversation.
   // it('inits a project with a simple model with deletion protection enabled and then migrates the api', async () => {
   //   const projectName = 'retaintables';
   //   const initialSchema = 'simple_model.graphql';
   //   console.log(projRoot);
-  //   await initProjectWithProfile(projRoot, { name: projectName });
+  //   await initJSProjectWithProfile(projRoot, { name: projectName });
   //   await addApiWithSchema(projRoot, initialSchema);
   //   updateConfig(projRoot, projectName, {
   //     TransformerOptions: {

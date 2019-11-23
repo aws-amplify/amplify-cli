@@ -638,7 +638,7 @@ async function addTrigger(context, resourceName, triggerList) {
       DependsOn: ['LambdaExecutionRole'],
       Type: 'AWS::IAM::Policy',
       Properties: {
-        PolicyName: 'lambda-execution-policy',
+        PolicyName: 'lambda-trigger-policy',
         Roles: [
           {
             Ref: 'LambdaExecutionRole',

@@ -1,0 +1,59 @@
+{
+  "name": "amplify-app",
+  "version": "1.0.0",
+  "description": "Amplify CLI",
+  "main": "src/index.js",
+  "bin": {
+    "amplify-app": "bin/amplify-app"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "clean": "rimraf ./lib"
+  },
+  "engines": {
+    "node": ">=8.12.0"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "amplify-frontend-android": "1.31.0",
+    "amplify-frontend-ios": "1.31.0",
+    "amplify-frontend-javascript": "1.29.0",
+    "chalk": "^2.4.2",
+    "fs-extra": "^8.1.0",
+    "ini": "^1.3.5",
+    "inquirer": "^6.5.1",
+    "node-emoji": "^1.10.0",
+    "rimraf": "^3.0.0",
+    "xcode": "^2.0.0",
+    "yargs": "^14.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "jest": "^23.5.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}

@@ -1,15 +1,64 @@
 const constants = require('./constants');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
+const graphQLConfig = require('graphql-config');
+const amplifyConfigHelper = require('./amplify-config-helper');
 
-function createAmplifyConfig(context, amplifyResources) {
+const FILE_EXTENSION_MAP = {
+  javascript: 'js',
+  graphql: 'graphql',
+  flow: 'js',
+  typescript: 'ts',
+  angular: 'graphql',
+  swift: 'graphql',
+};
+
+const fileNames = ['queries', 'mutations', 'subscriptions'];
+
+function deleteAmplifyConfig(context) {
+  const srcDirPath = getSrcDir(context);
+  if (fs.existsSync(srcDirPath)) {
+    const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
+    fs.removeSync(targetFilePath);
+  }
+
+  if (!fs.existsSync(path.join(srcDirPath, '.graphqlconfig.yml'))) return;
+  const gqlConfig = graphQLConfig.getGraphQLConfig(srcDirPath);
+  if (gqlConfig && gqlConfig.config) {
+    const { projects } = gqlConfig.config;
+    Object.keys(projects).forEach(project => {
+      const { codeGenTarget, docsFilePath, generatedFileName } = projects[project].extensions.amplify;
+      fileNames.forEach(filename => {
+        const file = path.join(srcDirPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget]}`);
+        if (fs.existsSync(file)) fs.removeSync(file);
+      });
+
+      fs.removeSync(path.join(srcDirPath, generatedFileName));
+    });
+  }
+}
+
+function getSrcDir(context) {
+  const { amplify } = context;
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  return path.join(projectPath);
+}
+
+function createAmplifyConfig(context) {
   const { amplify } = context;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const srcDirPath = path.join(projectPath);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-    const jsonString = JSON.stringify(amplifyResources, null, 4);
+    let amplifyConfig;
+    if (fs.existsSync(targetFilePath)) {
+      amplifyConfig = context.amplify.readJsonFile(targetFilePath);
+    }
+
+    amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig);
+
+    const jsonString = JSON.stringify(amplifyConfig, null, 4);
     fs.writeFileSync(targetFilePath, jsonString, 'utf8');
   }
 }
@@ -313,4 +362,4 @@ function getSumerianConfig(sumerianResources) {
   };
 }
 
-module.exports = { createAWSConfig, createAmplifyConfig };
+module.exports = { createAWSConfig, createAmplifyConfig, deleteAmplifyConfig };

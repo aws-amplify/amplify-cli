@@ -1,6 +1,6 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
 import {
-  initProjectWithProfile,
+  initJSProjectWithProfile,
   deleteProject,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
@@ -22,7 +22,7 @@ describe('amplify init', () => {
   });
 
   it('should init the project and create new env', async () => {
-    await initProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;

@@ -22,6 +22,8 @@ import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
+import { TransformConfig, SyncConfig, SyncUtils } from './util';
+import { SyncResourceIDs } from 'graphql-transformer-common';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';
@@ -187,11 +189,14 @@ export interface GraphQLTransformOptions {
   // migrations as all the input/export/ref/getatt changes will be made
   // automatically.
   stackMapping?: StackMapping;
+  // transform config which can change the behavior of the transformer
+  transformConfig?: TransformConfig;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: ITransformer[];
   private stackMappingOverrides: StackMapping;
+  private transformConfig: TransformConfig;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -204,6 +209,8 @@ export class GraphQLTransform {
     }
     this.transformers = options.transformers;
     this.stackMappingOverrides = options.stackMapping || {};
+    this.transformConfig = options.transformConfig || {};
+    // check if this is an sync enabled project
   }
 
   /**
@@ -234,6 +241,15 @@ export class GraphQLTransform {
     if (errors && errors.length) {
       throw new SchemaValidationError(errors.slice(0));
     }
+
+    // check if the project is sync enabled
+    if (this.transformConfig.ResolverConfig) {
+      this.createResourcesForSyncEnabledProject(context);
+      context.setResolverConfig(this.transformConfig.ResolverConfig);
+    }
+
+    // Transformer version is populated, store it in the transformer context, to make it accessible to transformers
+    context.setTransformerVersion(this.transformConfig.Version!);
 
     for (const transformer of this.transformers) {
       if (isFunction(transformer.before)) {
@@ -295,6 +311,13 @@ export class GraphQLTransform {
     for (const resourceId of Object.keys(this.stackMappingOverrides)) {
       context.mapResourceToStack(this.stackMappingOverrides[resourceId], resourceId);
     }
+  }
+
+  private createResourcesForSyncEnabledProject(context: TransformerContext) {
+    const syncResources = {
+      [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable(),
+    };
+    context.mergeResources(syncResources);
   }
 
   private transformObject(

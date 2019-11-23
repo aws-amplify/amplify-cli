@@ -21,6 +21,7 @@ module.exports = {
       .then(() => context.print.success('Successfully updated resource'))
       .catch(err => {
         context.print.error(err.message);
+        console.log(err.stack);
       });
   },
 };
