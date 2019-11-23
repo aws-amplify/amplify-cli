@@ -509,10 +509,16 @@ function s3ResourceAlreadyExists(context) {
 }
 
 function getBucketName(context, s3ResourceName, backEndDir) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  const stackName = amplifyMeta.providers.awscloudformation.StackName;
   const resourceDirPath = path.join(backEndDir, storageCategory, s3ResourceName);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
-  return { bucketName: `${bucketParameters.bucketName}\${hash}-\${env}` };
+  if (stackName.startsWith('amplify-')) {
+    return { bucketName: `${bucketParameters.bucketName}\${hash}-\${env}` };
+  }
+  return { bucketName: `${bucketParameters.bucketName}${s3ResourceName}-\${env}` };
 }
 
 module.exports = {
