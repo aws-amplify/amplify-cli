@@ -25,21 +25,24 @@ function getNamedProfiles() {
   return namedProfiles;
 }
 
-async function checkIfProfileExists(profileToUse) {
+async function askForProfile(namedProfiles) {
+  const profileQuestion = {
+    type: 'list',
+    name: 'profile',
+    message: 'Choose the profile you would like to use',
+    choices: Object.keys(namedProfiles),
+  };
+  const profileAnswer = await inquirer.prompt(profileQuestion);
+  return profileAnswer;
+}
+
+async function getValidProfile(profileToUse) {
   const namedProfiles = getNamedProfiles();
   if (Object.keys(namedProfiles).length) {
     if (namedProfiles[profileToUse]) {
       return profileToUse;
-    } else if (Object.keys(namedProfiles).length === 1) {
-      return Object.keys(namedProfiles)[0];
     }
-    const profileQuestion = {
-      type: 'list',
-      name: 'profile',
-      message: 'Choose the profile you would like to use',
-      choices: Object.keys(namedProfiles),
-    };
-    const profileAnswer = await inquirer.prompt(profileQuestion);
+    const profileAnswer = await askForProfile(namedProfiles);
     return profileAnswer;
   }
   console.log(`Profiles not found. Please create one`);
@@ -76,7 +79,7 @@ async function run() {
     /* Check if profile exists - if not run `amplify configure` */
     let foundProfile;
     while (!foundProfile) {
-      foundProfile = await checkIfProfileExists(profileToUse);
+      foundProfile = await getValidProfile(profileToUse);
       if (!foundProfile) {
         console.log('Attempting to configure the profile');
         await configureProfile();
