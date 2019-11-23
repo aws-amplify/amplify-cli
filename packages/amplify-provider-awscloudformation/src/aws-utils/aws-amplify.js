@@ -50,6 +50,15 @@ async function getConfiguredAmplifyClient(context, options = {}) {
   return undefined;
 }
 
+function printAuthErrorMessage(context) {
+  context.print.warning('As of Amplify CLI version 4.0');
+  context.print.warning('A cloud project in the Amplify Console will be created to view your resources.');
+  context.print.warning('Please update your IAM policy accordingly based on the following doc.');
+  context.print.green('https://aws-amplify.github.io/docs/cli-toolchain/usage#iam-policy-for-the-cli');
+  context.print.warning('These permissions will be required in a future CLI release.');
+}
+
 module.exports = {
   getConfiguredAmplifyClient,
+  printAuthErrorMessage,
 };

@@ -5,6 +5,7 @@ const extract = require('extract-zip');
 const inquirer = require('inquirer');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
+const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const constants = require('./constants');
 
 async function run(context) {
@@ -15,6 +16,13 @@ async function run(context) {
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
     const message = `Amplify service is not available in the region ${awsConfig.region ? awsConfig.region : ''}`;
+    context.print.error(message);
+    throw new Error(message);
+  }
+
+  const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
+  if (!hasPermission) {
+    const message = 'Permssions to access Amplify service is required.';
     context.print.error(message);
     throw new Error(message);
   }
