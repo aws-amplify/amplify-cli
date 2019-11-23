@@ -1,46 +1,12 @@
 export class PredictionsResourceIDs {
-  static PredictionsDataSourceID(action: string) {
-    switch (action) {
-      case 'identifyEntities':
-      case 'identifyText':
-      case 'identifyLabels':
-        return 'rekognitionDataSource';
-      case 'translateText':
-        return 'translateDataSource';
-      case 'convertTextToSpeech':
-        return 'pollyDataSource';
-      default:
-        break;
-    }
-  }
-
-  static getActionMapID() {
-    return 'predictionsActionMap';
-  }
-
-  static getIAMRole() {
-    return 'predictionsIAMRole';
-  }
-
-  static getLambdaIAMRole() {
-    return 'predictionsLambdaIAMRole';
-  }
-
-  static getLambdaName() {
-    return 'predictionsLambda';
-  }
-
-  static getLambdaID() {
-    return 'predictionsLambdaFunction';
-  }
-
-  static getLambdaHandlerName() {
-    return 'predictionsLambda.handler';
-  }
-
-  static getLambdaRuntime() {
-    return 'nodejs10.x';
-  }
+  static actionMapID = 'predictionsActionMap';
+  static iamRole = 'predictionsIAMRole';
+  static lambdaIAMRole = 'predictionsLambdaIAMRole'
+  static lambdaName = 'predictionsLambda';
+  static lambdaID = 'predictionsLambdaFunction'
+  static lambdaHandlerName = 'predictionsLambda.handler';
+  static lambdaRuntime = 'nodejs10.x';
+  static lambdaTimeout = 60;
 
   static getPredictionFunctionName(action: string) {
     return `${action}Function`;
