@@ -5,7 +5,7 @@ const sequential = require('promise-sequential');
 const S3 = require('../src/aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
 const constants = require('./constants');
-const { authDryRun } = require('./amplify-service-auth-check');
+const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 
 async function init(amplifyServiceParams) {
   const { context, awsConfig, projectName, envName, stackName } = amplifyServiceParams;
@@ -24,7 +24,7 @@ async function init(amplifyServiceParams) {
     };
   }
 
-  const hasPermission = await authDryRun(context, amplifyClient);
+  const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
     return {
       amplifyAppId,
@@ -185,7 +185,7 @@ async function deleteEnv(context, envName, awsConfig) {
         return;
       }
 
-      const hasPermission = await authDryRun(context, amplifyClient);
+      const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
       if (!hasPermission) {
         return;
       }
@@ -216,7 +216,7 @@ async function postPushCheck(context) {
       return;
     }
 
-    const hasPermission = await authDryRun(context, amplifyClient);
+    const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
     if (!hasPermission) {
       return;
     }

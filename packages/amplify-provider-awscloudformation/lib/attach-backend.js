@@ -5,7 +5,7 @@ const extract = require('extract-zip');
 const inquirer = require('inquirer');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
-const { authDryRun } = require('./amplify-service-auth-check');
+const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const constants = require('./constants');
 
 async function run(context) {
@@ -20,7 +20,7 @@ async function run(context) {
     throw new Error(message);
   }
 
-  const hasPermission = await authDryRun(context, amplifyClient);
+  const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
     const message = 'Permssions to access Amplify service is required.';
     context.print.error(message);

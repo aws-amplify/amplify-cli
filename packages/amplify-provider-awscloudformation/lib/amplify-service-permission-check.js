@@ -1,6 +1,6 @@
 const { printAuthErrorMessage } = require('../src/aws-utils/aws-amplify');
 
-async function authDryRun(context, amplifyClient) {
+async function checkAmplifyServiceIAMPermission(context, amplifyClient) {
   let hasAmplifyServicePermission = true;
   try {
     await amplifyClient.listApps().promise();
@@ -14,5 +14,5 @@ async function authDryRun(context, amplifyClient) {
 }
 
 module.exports = {
-  authDryRun,
+  checkAmplifyServiceIAMPermission,
 };
