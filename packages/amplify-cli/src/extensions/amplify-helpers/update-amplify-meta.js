@@ -38,7 +38,7 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
 
 function moveBackendResourcesToCurrentCloudBackend(resources) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyCloudMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
+  const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
 
@@ -104,7 +104,7 @@ function updateProvideramplifyMeta(providerName, options) {
 
 function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute, value) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  // let amplifyCloudMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
+  // let amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const currentTimestamp = new Date();
   if (attribute === 'dependsOn') {
     checkForCyclicDependencies(category, resourceName, value);
@@ -174,7 +174,7 @@ function updateAmplifyMetaAfterPackage(resource, zipFilename) {
 }
 
 function updateamplifyMetaAfterResourceDelete(category, resourceName) {
-  const amplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const amplifyMeta = readJsonFile(amplifyMetaFilePath);
 
   const resourceDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));

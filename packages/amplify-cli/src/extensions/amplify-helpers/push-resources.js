@@ -57,7 +57,7 @@ async function pushResources(context, category, resourceName, filteredResources)
   if (continueToPush) {
     try {
       // Get current-cloud-backend's amplify-meta
-      const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+      const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
       const currentAmplifyMeta = readJsonFile(currentAmplifyMetaFilePath);
 
       await providersPush(context, category, resourceName, filteredResources);

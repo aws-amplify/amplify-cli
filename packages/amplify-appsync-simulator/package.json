@@ -61,7 +61,7 @@
     "@types/node": "^8.10.51",
     "@types/pino": "4.7.1",
     "amplify-graphiql-explorer": "0.23.0",
-    "aws-sdk": "^2.510.0",
+    "aws-sdk": "^2.577.0",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",

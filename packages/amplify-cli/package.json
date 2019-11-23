@@ -62,6 +62,7 @@
     "lodash": "^4.17.15",
     "mime-types": "^2.1.24",
     "moment": "^2.24.0",
+    "open": "^6.4.0",
     "optionator": "^0.8.2",
     "ora": "^3.4.0",
     "promise-sequential": "^1.1.1",

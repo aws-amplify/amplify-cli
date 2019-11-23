@@ -226,7 +226,7 @@ async function getResourceStatus(category, resourceName, providerName, filteredR
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
     const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
     amplifyMeta = readJsonFile(amplifyMetaFilePath);
-    const currentamplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
+    const currentamplifyMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
     currentamplifyMeta = readJsonFile(currentamplifyMetaFilePath);
   } else if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
     const backendConfigFilePath = pathManager.getBackendConfigFilePath();
