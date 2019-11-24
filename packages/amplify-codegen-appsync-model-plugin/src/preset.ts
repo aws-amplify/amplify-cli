@@ -3,6 +3,7 @@ import { Kind, TypeDefinitionNode } from 'graphql';
 import { join } from 'path';
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
 import { LOADER_CLASS_NAME, GENERATED_PACKAGE_NAME } from './configs/java-config';
+import { pascalCase } from 'change-case';
 
 const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
 
@@ -43,7 +44,7 @@ const generateJavaPreset = (
     const modelName = model.name.value;
     config.push({
       ...options,
-      filename: join(...baseOutputDir, `${modelName}.java`),
+      filename: join(...baseOutputDir, `${pascalCase(modelName)}.java`),
       config: {
         ...options.config,
         scalars: { ...JAVA_SCALAR_MAP, ...options.config.scalars },
