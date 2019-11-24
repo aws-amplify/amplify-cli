@@ -1678,6 +1678,17 @@
     import-from "3.0.0"
     tslib "1.10.0"
 
+"@graphql-codegen/testing@1.8.3":
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/testing/-/testing-1.8.3.tgz#a0c57aa051d681d54a78e824b80e10676ff1e083"
+  integrity sha512-DCZgZftMb18InfMTjzKSjl8O4x52dBOo5eUAvUZKhytm1TrPcBgoetTZbXrMZrBnp+zEgpodYDxoDpuuEAO6qg==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "1.8.3"
+    common-tags "1.8.0"
+    lz-string "1.4.4"
+    open "7.0.0"
+    tslib "1.10.0"
+
 "@graphql-codegen/visitor-plugin-common@1.8.3", "@graphql-codegen/visitor-plugin-common@^1.8.1":
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-1.8.3.tgz#3a3ce7a942839995a6fff01ef959b4c80f4c5d48"
@@ -3729,6 +3740,11 @@ ansistyles@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/ansistyles/-/ansistyles-0.1.3.tgz#5de60415bda071bb37127854c864f41b23254539"
   integrity sha1-XeYEFb2gcbs3EnhUyGT0GyMlRTk=
+
+antlr4ts@^0.4.1-alpha.0:
+  version "0.4.1-alpha.0"
+  resolved "https://registry.yarnpkg.com/antlr4ts/-/antlr4ts-0.4.1-alpha.0.tgz#ac5717f30f3efa3617b004e8ff4f860b9c7d4d20"
+  integrity sha1-rFcX8w8++jYXsATo/0+GC5x9TSA=
 
 any-promise@^1.0.0:
   version "1.3.0"
@@ -11253,6 +11269,11 @@ is-wsl@^1.1.0:
   resolved "https://registry.yarnpkg.com/is-wsl/-/is-wsl-1.1.0.tgz#1f16e4aa22b04d1336b66188a66af3c600c3a66d"
   integrity sha1-HxbkqiKwTRM2tmGIpmrzxgDDpm0=
 
+is-wsl@^2.1.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/is-wsl/-/is-wsl-2.1.1.tgz#4a1c152d429df3d441669498e2486d3596ebaf1d"
+  integrity sha512-umZHcSrwlDHo2TGMXv0DZ8dIUGunZ2Iv68YZnrmCiBPkZ4aaOhtv7pXJKeki9k3qJ3RJr0cDyitcl5wEH3AYog==
+
 isarray@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-0.0.1.tgz#8a18acfca9a8f4177e09abfc6038939b05d1eedf"
@@ -11455,6 +11476,13 @@ iterall@^1.1.3, iterall@^1.2.1, iterall@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.2.2.tgz#92d70deb8028e0c39ff3164fdbf4d8b088130cd7"
   integrity sha512-yynBb1g+RFUPY64fTrFv7nsjRrENBQJaX2UL+2Szc9REFrSNm1rpSXHGzhmAy7a9uv3vlvgBlXnf9RqmPH1/DA==
+
+java-ast@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/java-ast/-/java-ast-0.1.0.tgz#1b7ea2addbe18f60ccc3f33f1d58f96b7df22fad"
+  integrity sha512-xa0fksWutSf2cDlhbd6yztYbDB7cChFAk5qZcN7onsOIPxT/xUtIJy3v9wgsUhiIi5+Q4vZg0lFIr7SAkkxADg==
+  dependencies:
+    antlr4ts "^0.4.1-alpha.0"
 
 jest-changed-files@^21.2.0:
   version "21.2.0"
@@ -13553,6 +13581,11 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
+lz-string@1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/lz-string/-/lz-string-1.4.4.tgz#c0d8eaf36059f705796e1e344811cf4c498d3a26"
+  integrity sha1-wNjq82BZ9wV5bh40SBHPTEmNOiY=
+
 macos-release@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/macos-release/-/macos-release-2.3.0.tgz#eb1930b036c0800adebccd5f17bc4c12de8bb71f"
@@ -15021,6 +15054,13 @@ onetime@^5.1.0:
   integrity sha512-5NcSkPHhwTVFIQN+TUqXoS5+dlElHXdpAWu9I0HP20YOtIi+aZ0Ct82jdlILDxjLEAWwvm+qj1m6aEtsDVmm6Q==
   dependencies:
     mimic-fn "^2.1.0"
+
+open@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.0.0.tgz#7e52999b14eb73f90f0f0807fe93897c4ae73ec9"
+  integrity sha512-K6EKzYqnwQzk+/dzJAQSBORub3xlBTxMz+ntpZpH/LyCa1o6KjXhuN+2npAaI9jaSmU3R1Q8NWf4KUWcyytGsQ==
+  dependencies:
+    is-wsl "^2.1.0"
 
 open@^6.3.0, open@^6.4.0:
   version "6.4.0"
@@ -19424,7 +19464,7 @@ ts-jest@22.4.6, ts-jest@^22.4.6:
     source-map-support "^0.5.5"
     yargs "^11.0.0"
 
-ts-jest@^24.0.2:
+ts-jest@24.1.0, ts-jest@^24.0.2:
   version "24.1.0"
   resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-24.1.0.tgz#2eaa813271a2987b7e6c3fefbda196301c131734"
   integrity sha512-HEGfrIEAZKfu1pkaxB9au17b1d9b56YZSqz5eCVE8mX68+5reOvlM93xGOzzCREIov9mdH7JBG+s0UyNAqr0tQ==

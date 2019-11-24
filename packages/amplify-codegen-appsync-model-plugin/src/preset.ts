@@ -97,16 +97,6 @@ const generateSwiftPreset = (
       });
     }
   });
-  // metadata
-  config.push({
-    ...options,
-    filename: join(options.baseOutputDir, `metadata.json`),
-    config: {
-      ...options.config,
-      scalars: { ...SWIFT_SCALAR_MAP, ...options.config.scalars },
-      target: 'metadata',
-    },
-  });
 
   // class loader
   config.push({
@@ -198,7 +188,7 @@ const generateJavasScriptPreset = (
       ...options.config,
       scalars: { ...TYPESCRIPT_SCALAR_MAP, ...options.config.scalars },
       target: 'metadata',
-      metaDataTarget: 'typedeclaration',
+      metaDataTarget: 'typescript',
     },
   });
   return config;

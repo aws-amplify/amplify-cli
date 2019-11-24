@@ -18,11 +18,38 @@
   "peerDependencies": {
     "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
   },
+  "typescript": {
+    "definition": "lib/index.d.ts"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "testRegex": "(src/__tests__/.*.test.*)$",
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    },    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
+  },
   "devDependencies": {
-    "typescript": "^3.6.4"
+    "typescript": "^3.6.4",
+    "@graphql-codegen/testing": "1.8.3",
+    "graphql": "^0.13.2",
+    "java-ast": "0.1.0",
+    "jest": "24.9.0",
+    "ts-jest": "24.1.0"
   },
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "test-watch": "jest --watch"
   }
 }

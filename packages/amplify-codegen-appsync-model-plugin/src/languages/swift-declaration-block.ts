@@ -259,13 +259,12 @@ export class SwiftDeclarationBlock {
 
   private generatePropertiesStr(prop: StructProperty): string {
     const propertyTypeName = prop.flags.isList ? `[${prop.type}]` : prop.type;
-    const propertyType = propertyTypeName ? `:${propertyTypeName}${prop.flags.optional && !prop.flags.isList ? '?' : ''}` : '';
+    const propertyType = propertyTypeName ? `: ${propertyTypeName}${prop.flags.optional && !prop.flags.isList ? '?' : ''}` : '';
     let resultArr: string[] = [
       prop.access,
       prop.flags.static ? 'static' : '',
       prop.flags.variable ? 'var' : 'let',
-      `${prop.name}`,
-      propertyType,
+      `${prop.name}${propertyType}`,
     ];
 
     const getterStr = prop.getter ? `{\n${indentMultiline(prop.getter)} \n}` : null;
