@@ -1,6 +1,7 @@
 import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-plugin-common';
 import { GraphQLSchema } from 'graphql';
-import { AppSyncModelVisitor, CodeGenDirective, CodeGenField, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
+import { CodeGenConnectionType } from '../utils/process-connections';
+import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 
 type JSONSchema = {
   models: JSONSchemaModels;
@@ -77,18 +78,18 @@ export class AppSyncJSONVisitor<
     defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS
   ) {
     super(schema, rawConfig, additionalConfig, defaultScalars);
-    this._parsedConfig.metaDataTarget = rawConfig.metaDataTarget || 'json';
+    this._parsedConfig.metaDataTarget = rawConfig.metaDataTarget || 'javascript';
   }
   generate(): string {
+    this.processConnectionDirective();
     if (this._parsedConfig.metaDataTarget === 'typescript') {
       return this.generateTypeScriptMetaData();
     } else if (this._parsedConfig.metaDataTarget === 'javascript') {
       return this.generateJavaScriptMetaData();
-    } else if (this._parsedConfig.metaDataTarget === 'typedeclaration') {
+    } else if (this._parsedConfig.metaDataTarget === 'typescript') {
       return this.generateTypeDeclaration();
     }
-
-    return this.generateJSONMetaData();
+    throw new Error(`Unsupported metaDataTarget ${this._parsedConfig.metaDataTarget}. Supported targets are javascript and typescript`);
   }
 
   protected generateTypeScriptMetaData(): string {
@@ -125,7 +126,8 @@ export class AppSyncJSONVisitor<
       const model = {
         syncable: true,
         name: this.getModelName(obj),
-        attributes: this.generateAttributes(obj.directives),
+        targetName: obj.name,
+        attributes: this.generateModelAttributes(obj),
         fields: obj.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
           acc[this.getFieldName(field)] = {
             name: this.getFieldName(field),
@@ -133,7 +135,7 @@ export class AppSyncJSONVisitor<
             isArray: field.isList,
             type: this.getType(field.type),
             isRequired: !field.isNullable,
-            attributes: this.generateAttributes(field.directives),
+            attributes: this.generateFieldAttributes(field),
           };
           return acc;
         }, {}),
@@ -151,8 +153,22 @@ export class AppSyncJSONVisitor<
     return result;
   }
 
-  private generateAttributes(directives: CodeGenDirective[]): JSONModelAttributes {
-    return directives.map(d => ({
+  private generateFieldAttributes(field: CodeGenField): JSONModelAttributes {
+    const result: JSONModelAttributes = [];
+    if (field.connectionInfo) {
+      const { connectionInfo } = field;
+      const connectionAttribute: any = { connectionType: connectionInfo.kind };
+      if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY || connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
+        connectionAttribute.associatedWith = this.getFieldName(connectionInfo.associatedWith);
+      }
+
+      result.push({ type: 'connection', properties: connectionAttribute });
+    }
+    return result;
+  }
+
+  private generateModelAttributes(model: CodeGenModel): JSONModelAttributes {
+    return model.directives.map(d => ({
       type: d.name,
       properties: d.arguments,
     }));
