@@ -5,6 +5,7 @@ import { isArray } from 'util';
 import { CLASS_IMPORT_PACKAGES, GENERATED_PACKAGE_NAME, LOADER_CLASS_NAME, LOADER_IMPORT_PACKAGES } from '../configs/java-config';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
+import { CodeGenConnectionType } from '../utils/process-connections';
 
 export class AppSyncModelJavaVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
@@ -13,6 +14,7 @@ export class AppSyncModelJavaVisitor<
   protected additionalPackages: Set<string> = new Set();
 
   generate(): string {
+    this.processConnectionDirective();
     if (this._parsedConfig.generate === 'loader') {
       return this.generateClassLoader();
     }
@@ -557,36 +559,40 @@ export class AppSyncModelJavaVisitor<
 
   protected generateFieldAnnotations(field: CodeGenField): string[] {
     const annotations: string[] = [];
+    annotations.push(this.generateModelFieldAnnotation(field));
+    annotations.push(this.generateConnectionAnnotation(field));
+    return annotations.filter(annotation => annotation);
+  }
+
+  protected generateModelFieldAnnotation(field: CodeGenField): string {
     const annotationArgs: string[] = [
       `targetName="${field.name}"`,
       `targetType="${field.type}"`,
       !field.isNullable ? 'isRequired = true' : '',
     ].filter(arg => arg);
 
-    annotations.push(`ModelField(${annotationArgs.join(', ')})`);
+    return `ModelField(${annotationArgs.join(', ')})`;
+  }
+  protected generateConnectionAnnotation(field: CodeGenField): string {
+    if (!field.connectionInfo) return '';
+    let connectionDirectiveName: string = '';
+    const connectionArguments: string[] = [];
+    const { connectionInfo } = field;
+    switch (connectionInfo.kind) {
+      case CodeGenConnectionType.HAS_ONE:
+        connectionDirectiveName = 'HasOne';
+        connectionArguments.push(`associatedWith = "${this.getFieldName(connectionInfo.associatedWith)}"`);
+        break;
+      case CodeGenConnectionType.HAS_MANY:
+        connectionDirectiveName = 'HasMany';
+        connectionArguments.push(`associatedWith = "${this.getFieldName(connectionInfo.associatedWith)}"`);
+        break;
+      case CodeGenConnectionType.BELONGS_TO:
+        connectionDirectiveName = 'BelogsTo';
+        break;
+    }
+    connectionArguments.push(`type = ${this.getModelName(connectionInfo.connectedModel)}.class`);
 
-    field.directives.forEach(annotation => {
-      switch (annotation.name) {
-        case 'connection':
-          const connectionArgs: string[] = [];
-          Object.keys(annotation.arguments).forEach(argName => {
-            if (['name', 'keyField', 'sortField', 'keyName'].includes(argName)) {
-              connectionArgs.push(`${argName} = "${annotation.arguments[argName]}"`);
-            }
-          });
-          if (annotation.arguments.limit) {
-            connectionArgs.push(`limit = ${annotation.arguments.limit}`);
-          }
-          if (annotation.arguments.fields && isArray(annotation.arguments.fields)) {
-            const fieldArgs = (annotation.arguments.fields as string[]).map(f => `"${f}"`).join(', ');
-            connectionArgs.push(`fields = {{${fieldArgs}}`);
-          }
-
-          if (connectionArgs.length) {
-            annotations.push(`Connection(${connectionArgs.join(', ')})`);
-          }
-      }
-    });
-    return annotations;
+    return `${connectionDirectiveName}${connectionArguments.length ? `(${connectionArguments.join(', ')})` : ''}`;
   }
 }
