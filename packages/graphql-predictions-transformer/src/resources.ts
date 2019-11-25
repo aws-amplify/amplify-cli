@@ -294,7 +294,7 @@ export class ResourceFactory {
           }),
         ]),
         response: compoundExpression([
-          iff(ref('ctx.error'), ref('$util.error($ctx.error.message)')),
+          iff(ref('ctx.error'), ref('util.error($ctx.error.message)')),
           ifElse(
             raw('$ctx.result.statusCode == 200'),
             compoundExpression([

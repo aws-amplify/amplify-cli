@@ -51,7 +51,7 @@ function getTransformerFactory(context, resourceDir, authConfig) {
       new HttpTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
-      new PredictionsTransformer({}),
+      new PredictionsTransformer(),
     ];
 
     if (addSearchableTransformer) {
@@ -334,7 +334,7 @@ async function transformGraphQLSchema(context, options) {
 
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
-  const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : {};
+  const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
 
   const buildDir = path.normalize(path.join(resourceDir, 'build'));
   const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
@@ -495,7 +495,6 @@ function s3ResourceAlreadyExists(context) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let resourceName;
-
   if (amplifyMeta[storageCategory]) {
     const categoryResources = amplifyMeta[storageCategory];
     Object.keys(categoryResources).forEach(resource => {
@@ -512,13 +511,12 @@ function getBucketName(context, s3ResourceName, backEndDir) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   const stackName = amplifyMeta.providers.awscloudformation.StackName;
-  const resourceDirPath = path.join(backEndDir, storageCategory, s3ResourceName);
-  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  const parametersFilePath = path.join(backEndDir, storageCategory, s3ResourceName, parametersFileName);
   const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
-  if (stackName.startsWith('amplify-')) {
-    return { bucketName: `${bucketParameters.bucketName}\${hash}-\${env}` };
-  }
-  return { bucketName: `${bucketParameters.bucketName}${s3ResourceName}-\${env}` };
+  const bucketName = stackName.startsWith('amplify-')
+    ? `${bucketParameters.bucketName}\${hash}-\${env}`
+    : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
+  return { bucketName };
 }
 
 module.exports = {

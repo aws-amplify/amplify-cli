@@ -1,10 +1,10 @@
-import { predictionsRegionMapping as regionMap } from 'amplify-provider-awscloudformation';
+import { predictionsRegionMap } from 'amplify-provider-awscloudformation';
 
 function getRegionMapping(service, type) {
   const Mappings = {
     RegionMapping: {},
   };
-  const regionMapping = regionMap[service];
+  const regionMapping = predictionsRegionMap[service];
   Object.keys(regionMapping).forEach(region => {
     Mappings.RegionMapping[region] = {
       [type]: regionMapping[region],
@@ -14,7 +14,7 @@ function getRegionMapping(service, type) {
 }
 
 function getAvailableRegion(service, region) {
-  return regionMap[service][region];
+  return predictionsRegionMap[service][region];
 }
 
 export default {

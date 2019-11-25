@@ -24,7 +24,7 @@ export class PredictionsTransformer extends Transformer {
   resources: ResourceFactory;
   predictionsConfig: PredictionsConfig;
 
-  constructor(predictionsConfig: PredictionsConfig) {
+  constructor(predictionsConfig?: PredictionsConfig) {
     super(
       'PredictionsTransformer',
       gql`
@@ -47,20 +47,21 @@ export class PredictionsTransformer extends Transformer {
     if (parent.name.value !== ctx.getQueryTypeName()) {
       throw new InvalidDirectiveError('@predictions directive only works under Query operations.');
     }
-
     // get input arguments
     const actions = this.getActions(directive);
-    const storage = this.predictionsConfig.bucketName;
-
     // validate that that order the transformers are correct
-    this.validate(actions, storage);
+    this.validateActions(actions);
+    // validate storage is in the config
+    if ( !(this.predictionsConfig) || !(this.predictionsConfig.bucketName) ) {
+      throw new InvalidDirectiveError('Please configure storage in your project in order to use @predictions directive');
+    }
 
     // make changes to the schema to create the input/output types
     // generate action datasources and add functions
-    this.createResources(ctx, definition, actions, storage);
+    this.createResources(ctx, definition, actions, this.predictionsConfig.bucketName);
   }
 
-  private validate(actions: string[], storage: string) {
+  private validateActions(actions: string[]) {
     // validate actions
     const supportedPredictions = allowedActions;
     const allowed = [];
@@ -72,9 +73,9 @@ export class PredictionsTransformer extends Transformer {
       }
     });
     // validate that storage is added in the config
-    if(!storage) {
-      throw new InvalidDirectiveError('Storage must be enabled before using @predictions');
-    }
+    // if(!storage) {
+    //   throw new InvalidDirectiveError('Storage must be enabled before using @predictions');
+    // }
   }
 
   private createResources(ctx: TransformerContext, def: FieldDefinitionNode, actions: string[], storage: string) {

@@ -130,7 +130,6 @@ export class TransformFormatter {
         const functionConfigMap = this.replaceFunctionConfigurationRecord(resourceName, ctx);
         pipelineFunctionMap = { ...pipelineFunctionMap, ...functionConfigMap };
       } else if (resource.Type === 'AWS::Lambda::Function') {
-        // TODO: We only use the one function for now. Generalize this.
         functionsMap = {
           ...functionsMap,
           [`${resourceName}.zip`]: ctx.metadata.get(resourceName),
