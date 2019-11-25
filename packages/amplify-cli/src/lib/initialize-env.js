@@ -9,10 +9,7 @@ const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provid
 
 async function initializeEnv(context, currentAmplifyMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  const isPulling =
-    context.input.command === 'pull' ||
-    context.input.command === 'push' ||
-    (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
 
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;

@@ -54,23 +54,4 @@ function amplifyPushAuth(cwd: string, verbose: Boolean = isCI() ? false : true) 
   });
 }
 
-function amplifyPushAuthWithLambdaTriggers(cwd: string, verbose: Boolean = isCI() ? false : true) {
-  return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
-      .wait('Do you want to configure Lambda Triggers')
-      .sendline('n')
-      .wait('Are you sure you want to continue?')
-      .sendline('y')
-      .wait(/.*/)
-      .run(function(err: Error) {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
-export { amplifyPush, amplifyPushUpdate, amplifyPushAuth, amplifyPushAuthWithLambdaTriggers };
+export { amplifyPush, amplifyPushUpdate, amplifyPushAuth };
