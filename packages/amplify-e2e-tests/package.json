@@ -37,11 +37,15 @@
       "/node_modules/",
       "src"
     ],
+    "testEnvironment": "node",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
       "!__tests__/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      "!**/*.d.ts"
     ],
     "reporters": [
       "default",

@@ -55,11 +55,15 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "testEnvironment": "node",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
       "!src/__tests__/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      "!**/*.d.ts"
     ],
     "reporters": [
       "default",
