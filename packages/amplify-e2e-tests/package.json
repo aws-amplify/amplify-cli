@@ -43,7 +43,7 @@
       "src/**/*.ts",
       "!**/node_modules/**",
       "!__tests__/**",
-      "!**/*.d.ts"      
+      "!**/*.d.ts"
     ],
     "reporters": [
       "default",
@@ -56,7 +56,10 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "window": {}
+    }
   },
   "dependencies": {
     "aws-sdk": "^2.577.0",

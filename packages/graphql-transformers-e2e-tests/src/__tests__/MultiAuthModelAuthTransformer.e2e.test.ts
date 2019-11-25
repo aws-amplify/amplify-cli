@@ -23,6 +23,7 @@ import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 import AWS = require('aws-sdk');
+import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

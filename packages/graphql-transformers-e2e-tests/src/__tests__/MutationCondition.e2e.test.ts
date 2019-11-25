@@ -35,6 +35,7 @@ import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 import AWS = require('aws-sdk');
+import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 
