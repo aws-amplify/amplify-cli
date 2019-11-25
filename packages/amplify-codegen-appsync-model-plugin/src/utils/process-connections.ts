@@ -13,6 +13,7 @@ export type CodeGenConnectionTypeBase = {
 };
 export type CodeGenFieldConnectionBelongsTo = CodeGenConnectionTypeBase & {
   kind: CodeGenConnectionType.BELONGS_TO;
+  targetName: string;
 };
 export type CodeGenFieldConnectionHasOne = CodeGenConnectionTypeBase & {
   kind: CodeGenConnectionType.HAS_ONE;
@@ -41,6 +42,7 @@ export function processConnections(
   if (connectionDirective) {
     const otherSide = modelMap[field.type];
     const connectionName = connectionDirective.name;
+    const connectionFields = connectionDirective.arguments.fields || [];
     const otherSideField = otherSide.fields.find(f => {
       if (f.type === model.name) {
         const otherSideConnection = f.directives.find(d => d.name === 'connection');
@@ -59,7 +61,15 @@ export function processConnections(
         };
       } else if (!field.isList && otherSideField.isList) {
         //  One to Many
-        return { kind: CodeGenConnectionType.BELONGS_TO, connectedModel: otherSide };
+        if (connectionFields.length > 1) {
+          // Todo: Move to a common function and update the error message
+          throw new Error('DataStore only support one key in field');
+        }
+        return {
+          kind: CodeGenConnectionType.BELONGS_TO,
+          connectedModel: otherSide,
+          targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
+        };
       } else if (!field.isList && !otherSideField.isList) {
         // One to One
         //  Data store can only support models where 1:1 connection, one of the connection side should be
@@ -75,7 +85,11 @@ export function processConnections(
             person: Person!
           }
           */
-          return { kind: CodeGenConnectionType.BELONGS_TO, connectedModel: otherSide };
+          return {
+            kind: CodeGenConnectionType.BELONGS_TO,
+            connectedModel: otherSide,
+            targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
+          };
         } else if (field.isNullable && !otherSideField.isNullable) {
           /*
           # model
@@ -119,9 +133,14 @@ export function processConnections(
           },
         };
       } else {
+        if (connectionFields.length > 1) {
+          // Todo: Update the message
+          throw new Error('DataStore only support one key in field');
+        }
         return {
           kind: CodeGenConnectionType.BELONGS_TO,
           connectedModel: otherSide,
+          targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
         };
       }
     }

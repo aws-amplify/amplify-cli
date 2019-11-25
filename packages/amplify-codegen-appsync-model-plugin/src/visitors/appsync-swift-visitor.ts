@@ -52,8 +52,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
           flags: { optional: field.isNullable, isList: field.isList },
         })),
         'public',
-        {},
-        'MARK: constructor'
+        {}
       );
       result.push(structBlock.string);
     });
@@ -149,11 +148,12 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       .withName('AmplifyModels')
       .asKind('class')
       .final()
+      .withProtocols(['DataStoreModelRegistration'])
       .withComment('Contains the set of classes that conforms to the `Model` protocol.');
 
-    classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', { static: true });
-    const impl: string = ['return [', indentMultiline(structList.join(',\n')), ']'].join('\n');
-    classDeclaration.addClassMethod('get', '[Model.Type]', impl, undefined, 'public', { static: true });
+    classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', {  });
+    const body = structList.map(modelClass => `ModelRegistry.register(modelType: ${modelClass})`).join('\n');
+    classDeclaration.addClassMethod('registerModels', null, body, undefined, 'public', { });
 
     result.push(classDeclaration.string);
 
@@ -162,7 +162,8 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   private getInitBody(fields: CodeGenField[]): string {
     let result = fields.map(field => {
-      return indent(`self.${field.name} = ${field.name}`);
+      const fieldName = this.getFieldName(field);
+      return indent(`self.${fieldName} = ${fieldName}`);
     });
 
     return result.join('\n');
@@ -184,18 +185,18 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     // connected field
     if (connectionInfo) {
       const res = [];
-      if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY && connectionInfo.associatedWith) {
+      if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
         return `.hasMany(${name}, ofType: ${typeName}, associatedWith: ${this.getModelName(
           connectionInfo.connectedModel
         )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
       }
-      if (connectionInfo.kind === CodeGenConnectionType.HAS_ONE && connectionInfo.associatedWith) {
+      if (connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
         return `.hasOne(${name}, ofType: ${typeName}, associatedWith: ${this.getModelName(
           connectionInfo.connectedModel
         )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
       }
       if (connectionInfo.kind === CodeGenConnectionType.BELONGS_TO) {
-        return `.belongsTo(${name}, ofType: ${typeName}))`;
+        return `.belongsTo(${name}, ofType: ${typeName}, targetName: "${connectionInfo.targetName}")`;
       }
     }
 
@@ -232,5 +233,9 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   protected getEnumValue(value: string): string {
     return camelCase(value);
+  }
+
+  protected getFieldName(field: CodeGenField): string {
+    return camelCase(field.name);
   }
 }

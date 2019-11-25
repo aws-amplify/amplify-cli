@@ -296,6 +296,6 @@ export class SwiftDeclarationBlock {
       .filter(section => !!section)
       .map(section => (insertNewLine ? `${section}\n` : section))
       .join(joinStr)
-      .trimEnd();
+      .trim();
   }
 }

@@ -214,10 +214,11 @@ describe('process connection', () => {
       };
 
       const commentsField = modelMap.Comment.fields[0];
-      const connectionInfo = (processConnections(commentsField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionBelongsTo;
+      const connectionInfo = (processConnections(commentsField, modelMap.Comment, modelMap) as any) as CodeGenFieldConnectionBelongsTo;
       expect(connectionInfo).toBeDefined();
 
       expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+      expect(connectionInfo.targetName).toEqual('commentPostId');
     });
   });
 });

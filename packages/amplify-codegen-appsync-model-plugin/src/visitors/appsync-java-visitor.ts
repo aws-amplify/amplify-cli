@@ -168,6 +168,8 @@ export class AppSyncModelJavaVisitor<
     // builder
     this.generateBuilderClass(model, classDeclarationBlock);
 
+    // newBuilder for used for updating existing instance
+    this.generateNewBuilderClass(model, classDeclarationBlock);
     // getters
     this.generateGetters(model, classDeclarationBlock);
 
@@ -181,6 +183,9 @@ export class AppSyncModelJavaVisitor<
 
     // builder
     this.generateBuilderMethod(model, classDeclarationBlock);
+
+    // newBuilder method
+    this.generateNewBuilderMethod(model, classDeclarationBlock);
 
     return classDeclarationBlock.string;
   }
@@ -223,6 +228,10 @@ export class AppSyncModelJavaVisitor<
     });
   }
 
+  /**
+   * Generate step builder interfaces for each non-null field in the model
+   *
+   */
   protected generateStepBuilderInterfaces(model: CodeGenModel): JavaDeclarationBlock[] {
     const nonNullableFields = model.fields.filter(field => !field.isNullable);
     const nullableFields = model.fields.filter(field => field.isNullable);
@@ -385,6 +394,71 @@ export class AppSyncModelJavaVisitor<
   }
 
   /**
+   * * Generate a NewBuilder class that will be used to create copy of the current model.
+   * This is needed to mutate the object as all the generated models are immuteable and can
+   * be update only by creating a new instance using newBuilder
+   * @param model
+   * @param classDeclaration
+   */
+  protected generateNewBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+    const newBuilderClassDeclaration = new JavaDeclarationBlock()
+      .access('public')
+      .static()
+      .asKind('class')
+      .withName('NewBuilder')
+      .implements(['Builder']);
+
+    const nonNullableFields = model.fields.filter(field => !field.isNullable).filter(field => field.name !== 'id');
+    const nullableFields = model.fields.filter(field => field.isNullable);
+
+    // constructor
+    const constructorArguments = model.fields.map(field => {
+      return { name: this.getFieldName(field), type: this.getNativeType(field) };
+    });
+    const stepBuilderInvocation = [...nonNullableFields, ...nullableFields].map(field => {
+      const methodName = this.getStepFunctionName(field);
+      const argumentName = this.getStepFunctionArgumentName(field);
+      return `.${methodName}(${argumentName})`;
+    });
+    const invocations = ['super', indentMultiline(stepBuilderInvocation.join('\n')).trim(), ';'].join('');
+    const body = ['super.id(id);', invocations].join('\n');
+    newBuilderClassDeclaration.addClassMethod('NewBuilder', null, body, constructorArguments, [], 'private');
+
+    // Non-nullable field setters need to be added to NewClass as this is not a step builder
+    nonNullableFields.forEach(field => {
+      const methodName = this.getStepFunctionName(field);
+      const argumentName = this.getStepFunctionArgumentName(field);
+      const argumentType = this.getNativeType(field);
+      const implementation = `return (NewBuilder) super.${methodName}(${argumentName});`;
+      newBuilderClassDeclaration.addClassMethod(
+        methodName,
+        'NewBuilder',
+        implementation,
+        [
+          {
+            name: argumentName,
+            type: argumentType,
+          },
+        ],
+        [],
+        'public',
+        {},
+        ['Override']
+      );
+    });
+    classDeclaration.nestedClass(newBuilderClassDeclaration);
+  }
+
+  /**
+   * adds a newBuilder method to the Model class. This method is used to create a copy of the model to mutate it
+   */
+  protected generateNewBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+    const args = indentMultiline(model.fields.map(field => this.getFieldName(field)).join(',\n')).trim();
+    const methodBody = `return new NewBuilder(${args});`;
+    classDeclaration.addClassMethod('newBuilder', 'NewBuilder', methodBody, [], [], 'public');
+  }
+
+  /**
    * Generate getters for all the fields declared in the model. All the getter methods are added
    * to the declaration block passed
    * @param model
@@ -534,7 +608,7 @@ export class AppSyncModelJavaVisitor<
    * @returns string
    */
   private getStepInterfaceName(nextFieldName: string): string {
-    return `I${pascalCase(nextFieldName)}Step`;
+    return `${pascalCase(nextFieldName)}Step`;
   }
 
   protected generateModelAnnotations(model: CodeGenModel): string[] {
