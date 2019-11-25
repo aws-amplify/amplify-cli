@@ -189,7 +189,7 @@ const generateJavasScriptPreset = (
       ...options.config,
       scalars: { ...TYPESCRIPT_SCALAR_MAP, ...options.config.scalars },
       target: 'metadata',
-      metaDataTarget: 'typescript',
+      metaDataTarget: 'typedeclaration',
     },
   });
   return config;

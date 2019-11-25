@@ -2,6 +2,8 @@ import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-
 import { GraphQLSchema } from 'graphql';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
+import { plural } from 'pluralize';
+import { upperCaseFirst } from 'change-case';
 
 type JSONSchema = {
   models: JSONSchemaModels;
@@ -13,6 +15,7 @@ type JSONSchemaModel = {
   name: string;
   attributes?: JSONModelAttributes;
   fields: JSONModelFields;
+  pluralTargetName: String;
   syncable?: boolean;
 };
 type JSONSchemaEnums = Record<string, JSONSchemaEnum>;
@@ -59,7 +62,7 @@ export interface RawAppSyncModelMetadataConfig extends RawAppSyncModelConfig {
    *  plugins:
    *    - amplify-codegen-appsync-model-plugin
    * ```
-   * metaDataTarget: 'javascript'| 'typescript'
+   * metaDataTarget: 'javascript'| 'typescript' | 'typedeclration'
    */
   metaDataTarget?: string;
 }
@@ -86,7 +89,7 @@ export class AppSyncJSONVisitor<
       return this.generateTypeScriptMetaData();
     } else if (this._parsedConfig.metaDataTarget === 'javascript') {
       return this.generateJavaScriptMetaData();
-    } else if (this._parsedConfig.metaDataTarget === 'typescript') {
+    } else if (this._parsedConfig.metaDataTarget === 'typedeclaration') {
       return this.generateTypeDeclaration();
     }
     throw new Error(`Unsupported metaDataTarget ${this._parsedConfig.metaDataTarget}. Supported targets are javascript and typescript`);
@@ -127,6 +130,7 @@ export class AppSyncJSONVisitor<
         syncable: true,
         name: this.getModelName(obj),
         targetName: obj.name,
+        pluralTargetName: this.pluralizeModelName(obj),
         attributes: this.generateModelAttributes(obj),
         fields: obj.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
           acc[this.getFieldName(field)] = {
@@ -160,6 +164,8 @@ export class AppSyncJSONVisitor<
       const connectionAttribute: any = { connectionType: connectionInfo.kind };
       if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY || connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
         connectionAttribute.associatedWith = this.getFieldName(connectionInfo.associatedWith);
+      } else {
+        connectionAttribute.targetName = connectionInfo.targetName;
       }
 
       result.push({ type: 'connection', properties: connectionAttribute });
@@ -183,5 +189,9 @@ export class AppSyncJSONVisitor<
       return { enum: this.enumMap[gqlType].name };
     }
     return { model: gqlType };
+  }
+
+  protected pluralizeModelName(model: CodeGenModel): string {
+    return plural(upperCaseFirst(model.name));
   }
 }
