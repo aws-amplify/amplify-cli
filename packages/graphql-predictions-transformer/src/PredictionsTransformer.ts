@@ -72,10 +72,6 @@ export class PredictionsTransformer extends Transformer {
         throw new InvalidDirectiveError(`${action} is not supported!`);
       }
     });
-    // validate that storage is added in the config
-    // if(!storage) {
-    //   throw new InvalidDirectiveError('Storage must be enabled before using @predictions');
-    // }
   }
 
   private createResources(ctx: TransformerContext, def: FieldDefinitionNode, actions: string[], storage: string) {
