@@ -37,11 +37,13 @@
       "/node_modules/",
       "src"
     ],
+    "testEnvironment": "node",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
-      "!__tests__/**"
+      "!__tests__/**",
+      "!**/*.d.ts"      
     ],
     "reporters": [
       "default",
