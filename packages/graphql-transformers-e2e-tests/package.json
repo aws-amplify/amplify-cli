@@ -60,9 +60,7 @@
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
-      "!src/__tests__/**"
-    ],
-    "coveragePathIgnorePatterns": [
+      "!src/__tests__/**",
       "!**/*.d.ts"
     ],
     "reporters": [
