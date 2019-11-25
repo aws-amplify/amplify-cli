@@ -10,10 +10,9 @@ const { addFileToXcodeProj } = require('./xcodeHelpers');
 const ini = require('ini');
 const semver = require('semver');
 const stripAnsi = require('strip-ansi');
+const { engines } = require('../package.json');
 
-const amplifyCliPackageName = '@aws-amplify/cli@canary';
-const minCLIVersion = '>=3.17.1';
-const minNodeVersion = '>=8.12.0';
+const amplifyCliPackageName = '@aws-amplify/cli';
 
 function run() {
   const projpath = args.path;
@@ -42,10 +41,11 @@ function run() {
 // Node version check
 async function checkNodeVersion() {
   const currentNodeVersion = process.versions.node;
-  if (semver.satisfies(currentNodeVersion, minNodeVersion)) {
+  const minNodeVersion = engines.node;
+  if (!semver.satisfies(currentNodeVersion, minNodeVersion)) {
     console.error(
       `You are running Node ${currentNodeVersion}.\n` +
-        `Amplify CLI requires Node 8.12.0 or higher. \n` +
+        `Amplify CLI requires Node ${minNodeVersion}. \n` +
         `Please update your version of Node.`
     );
     process.exit(1);
@@ -55,12 +55,12 @@ async function checkNodeVersion() {
 async function installAmplifyCLI() {
   const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
   const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionCheck.stdout.toString()));
-
+  const minCLIVersion = engines['@aws-amplify/cli'];
   if (amplifyCLIVersionCheck.stderr !== null && semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
     console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersion}`);
   } else {
     // Install the CLI
-    console.log(`${emoji.get('worried')} Amplify CLI not found on your system.`);
+    console.log(`${emoji.get('worried')} Amplify CLI version ${minCLIVersion} not found.`);
     console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
 
     return new Promise((resolve, reject) => {

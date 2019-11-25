@@ -15,7 +15,8 @@
     "clean": "rimraf ./lib"
   },
   "engines": {
-    "node": ">=8.12.0"
+    "node": ">=8.12.0",
+    "@aws-amplify/cli": ">=4.0.0"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
