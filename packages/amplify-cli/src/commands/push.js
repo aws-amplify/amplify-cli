@@ -12,7 +12,7 @@ module.exports = {
     try {
       context.amplify.constructExeInfo(context);
       await syncCurrentCloudBackend(context);
-      await context.amplify.pushResources(context);
+      return await context.amplify.pushResources(context);
     } catch (e) {
       if (e.name !== 'InvalidDirectiveError') {
         context.print.error(`An error occured during the push operation: ${e.message}`);
