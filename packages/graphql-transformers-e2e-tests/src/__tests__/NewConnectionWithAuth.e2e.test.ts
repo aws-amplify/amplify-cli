@@ -24,6 +24,7 @@ import {
   addUserToGroup,
   configureAmplify,
 } from '../cognitoUtils';
+import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

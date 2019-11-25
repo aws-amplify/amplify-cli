@@ -80,7 +80,10 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "window": {}
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
