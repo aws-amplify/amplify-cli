@@ -39,7 +39,6 @@
     "graphql-transformer-common": "3.32.0",
     "graphql-transformer-core": "5.18.0",
     "graphql-versioned-transformer": "3.28.0",
-    "isomorphic-fetch": "^2.2.1",
     "jest": "^24.8.0",
     "jest-environment-node": "^24.8.0",
     "jest-junit": "^8.0.0",
