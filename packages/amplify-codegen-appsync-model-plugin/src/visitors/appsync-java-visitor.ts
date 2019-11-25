@@ -2,7 +2,13 @@ import { indent, indentMultiline, transformComment } from '@graphql-codegen/visi
 import { camelCase, constantCase, pascalCase } from 'change-case';
 import dedent from 'ts-dedent';
 import { isArray } from 'util';
-import { CLASS_IMPORT_PACKAGES, GENERATED_PACKAGE_NAME, LOADER_CLASS_NAME, LOADER_IMPORT_PACKAGES } from '../configs/java-config';
+import {
+  CLASS_IMPORT_PACKAGES,
+  GENERATED_PACKAGE_NAME,
+  LOADER_CLASS_NAME,
+  LOADER_IMPORT_PACKAGES,
+  CONNECTION_RELATIONSHIP_IMPORTS,
+} from '../configs/java-config';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 import { CodeGenConnectionType } from '../utils/process-connections';
@@ -261,7 +267,7 @@ export class AppSyncModelJavaVisitor<
     builderBody.push(`${this.getModelName(model)} build();`);
 
     // id method. Special case as this can throw exception
-    builderBody.push(`${this.getStepInterfaceName('Build')} id(String id) throws AmplifyException;`);
+    builderBody.push(`${this.getStepInterfaceName('Build')} id(String id) throws IllegalArgumentException;`);
 
     nullableFields.forEach(field => {
       const fieldName = this.getFieldName(field);
@@ -361,13 +367,8 @@ export class AppSyncModelJavaVisitor<
     try {
         UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
     } catch (Exception exception) {
-        throw new AmplifyException("Model IDs must be unique in the format of UUID.",
-                exception,
-                "If you are creating a new object, leave ID blank and one will be auto generated for you. " +
-                "Otherwise, if you are referencing an existing object, be sure you are getting the correct " +
-                "id for it. It's also possible you are referring to an item created outside of Amplify." +
-                "It is currently not supported.",
-                false);
+      throw new IllegalArgumentException("Model IDs must be unique in the format of UUID.",
+                exception);
     }
 
     return this;`;
@@ -376,7 +377,7 @@ export class AppSyncModelJavaVisitor<
     This should only be set when referring to an already existing object.
     @param id id
     @return Current Builder instance, for fluent method chaining
-    @throws AmplifyException Checks that ID is in the proper format`;
+    @throws IllegalArgumentException Checks that ID is in the proper format`;
 
     builderClassDeclaration.addClassMethod(
       'id',
@@ -387,7 +388,7 @@ export class AppSyncModelJavaVisitor<
       'public',
       {},
       [],
-      ['AmplifyException'],
+      ['IllegalArgumentException'],
       idComment
     );
     classDeclaration.nestedClass(builderClassDeclaration);
@@ -403,17 +404,17 @@ export class AppSyncModelJavaVisitor<
   protected generateNewBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
     const newBuilderClassDeclaration = new JavaDeclarationBlock()
       .access('public')
-      .static()
+      .final()
       .asKind('class')
       .withName('NewBuilder')
-      .implements(['Builder']);
+      .extends(['Builder']);
 
     const nonNullableFields = model.fields.filter(field => !field.isNullable).filter(field => field.name !== 'id');
     const nullableFields = model.fields.filter(field => field.isNullable);
 
     // constructor
     const constructorArguments = model.fields.map(field => {
-      return { name: this.getFieldName(field), type: this.getNativeType(field) };
+      return { name: this.getStepFunctionArgumentName(field), type: this.getNativeType(field) };
     });
     const stepBuilderInvocation = [...nonNullableFields, ...nullableFields].map(field => {
       const methodName = this.getStepFunctionName(field);
@@ -425,7 +426,7 @@ export class AppSyncModelJavaVisitor<
     newBuilderClassDeclaration.addClassMethod('NewBuilder', null, body, constructorArguments, [], 'private');
 
     // Non-nullable field setters need to be added to NewClass as this is not a step builder
-    nonNullableFields.forEach(field => {
+    [...nonNullableFields, ...nullableFields].forEach(field => {
       const methodName = this.getStepFunctionName(field);
       const argumentName = this.getStepFunctionArgumentName(field);
       const argumentType = this.getNativeType(field);
@@ -555,7 +556,7 @@ export class AppSyncModelJavaVisitor<
         })
         .join(' &&\n'),
       4
-    ).trimStart();
+    ).trim();
 
     body.push(`return ${propCheck};`);
     body.push('}');
@@ -649,9 +650,13 @@ export class AppSyncModelJavaVisitor<
   }
   protected generateConnectionAnnotation(field: CodeGenField): string {
     if (!field.connectionInfo) return '';
+    const { connectionInfo } = field;
+    // Add annotation to import
+    this.additionalPackages.add(CONNECTION_RELATIONSHIP_IMPORTS[connectionInfo.kind]);
+
     let connectionDirectiveName: string = '';
     const connectionArguments: string[] = [];
-    const { connectionInfo } = field;
+
     switch (connectionInfo.kind) {
       case CodeGenConnectionType.HAS_ONE:
         connectionDirectiveName = 'HasOne';
@@ -662,7 +667,8 @@ export class AppSyncModelJavaVisitor<
         connectionArguments.push(`associatedWith = "${this.getFieldName(connectionInfo.associatedWith)}"`);
         break;
       case CodeGenConnectionType.BELONGS_TO:
-        connectionDirectiveName = 'BelogsTo';
+        connectionDirectiveName = 'BelongsTo';
+        connectionArguments.push(`targetName = "${connectionInfo.targetName}"`);
         break;
     }
     connectionArguments.push(`type = ${this.getModelName(connectionInfo.connectedModel)}.class`);
