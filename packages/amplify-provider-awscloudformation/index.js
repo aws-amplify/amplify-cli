@@ -15,6 +15,7 @@ const amplifyService = require('./src/aws-utils/aws-amplify');
 const consoleCommand = require('./lib/console');
 const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
 const { formUserAgentParam } = require('./src/aws-utils/user-agent');
+const predictionsRegionMap = require('./lib/aws-predictions-regions');
 
 function init(context) {
   return initializer.run(context);
@@ -106,5 +107,6 @@ module.exports = {
   deleteEnv,
   loadResourceParameters,
   saveResourceParameters,
+  predictionsRegionMap,
   ...require('./amplify-plugin-index'),
 };

@@ -18,7 +18,7 @@ import {
   makeInputValueDefinition,
 } from 'graphql-transformer-common';
 import { Expression, str } from 'graphql-mapping-template';
-import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType } from 'graphql-transformer-common';
+import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
 import path = require('path');
 
 const STACK_NAME = 'SearchableStack';
@@ -57,7 +57,8 @@ export class SearchableModelTransformer extends Transformer {
     ctx.mergeParameters(template.Parameters);
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeMappings(template.Mappings);
-    ctx.metadata.set('ElasticsearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`));
+    ctx.metadata.set(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID,
+      path.resolve(`${__dirname}/../lib/streaming-lambda.zip`));
     for (const resourceId of Object.keys(template.Resources)) {
       ctx.mapResourceToStack(STACK_NAME, resourceId);
     }

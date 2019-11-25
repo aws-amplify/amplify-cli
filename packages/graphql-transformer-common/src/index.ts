@@ -10,3 +10,4 @@ export * from './FunctionResourceIDs';
 export * from './connectionUtils';
 export * from './dynamodbUtils';
 export * from './SyncResourceIDs';
+export * from './PredictionsResourceIDs';

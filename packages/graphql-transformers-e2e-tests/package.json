@@ -39,6 +39,7 @@
     "graphql-elasticsearch-transformer": "3.30.0",
     "graphql-function-transformer": "1.25.0",
     "graphql-key-transformer": "1.25.0",
+    "graphql-predictions-transformer": "^1.0.0",
     "graphql-tag": "^2.10.1",
     "graphql-versioned-transformer": "3.28.0",
     "isomorphic-fetch": "^2.2.1",

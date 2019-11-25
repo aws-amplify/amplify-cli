@@ -9,6 +9,7 @@ const { SearchableModelTransformer } = require('graphql-elasticsearch-transforme
 const { VersionedModelTransformer } = require('graphql-versioned-transformer');
 const { FunctionTransformer } = require('graphql-function-transformer');
 const { HttpTransformer } = require('graphql-http-transformer');
+const { PredictionsTransformer } = require('graphql-predictions-transformer');
 const { KeyTransformer } = require('graphql-key-transformer');
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
@@ -23,11 +24,13 @@ const {
   CLOUDFORMATION_FILE_NAME,
 } = TransformPackage;
 
-const category = 'api';
+const apiCategory = 'api';
+const storageCategory = 'storage';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
+const s3ServiceName = 'S3';
 
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
@@ -48,6 +51,7 @@ function getTransformerFactory(context, resourceDir, authConfig) {
       new HttpTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
+      new PredictionsTransformer(),
     ];
 
     if (addSearchableTransformer) {
@@ -205,7 +209,7 @@ async function transformGraphQLSchema(context, options) {
   const { forceCompile } = options;
 
   // Compilation during the push step
-  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(category);
+  const { resourcesToBeCreated, resourcesToBeUpdated, allResources } = await context.amplify.getResourceStatus(apiCategory);
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   // When build folder is missing include the API
@@ -215,7 +219,7 @@ async function transformGraphQLSchema(context, options) {
   const resourceNeedCompile = allResources
     .filter(r => !resources.includes(r))
     .filter(r => {
-      const buildDir = path.normalize(path.join(backEndDir, category, r.resourceName, 'build'));
+      const buildDir = path.normalize(path.join(backEndDir, apiCategory, r.resourceName, 'build'));
       return !fs.existsSync(buildDir);
     });
   resources = resources.concat(resourceNeedCompile);
@@ -328,6 +332,10 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 
+  // for the predictions directive get storage config
+  const s3Resource = s3ResourceAlreadyExists(context);
+  const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
+
   const buildDir = path.normalize(path.join(resourceDir, 'build'));
   const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
   const schemaDirPath = path.normalize(path.join(resourceDir, schemaDirName));
@@ -354,7 +362,55 @@ async function transformGraphQLSchema(context, options) {
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = getTransformerFactory(context, resourceDir, authConfig);
+  const transformerListFactory = async addSearchableTransformer => {
+    const transformerList = [
+      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
+      new DynamoDBModelTransformer(),
+      new VersionedModelTransformer(),
+      new FunctionTransformer(),
+      new HttpTransformer(),
+      new KeyTransformer(),
+      new ModelConnectionTransformer(),
+      new PredictionsTransformer(storageConfig),
+    ];
+
+    if (addSearchableTransformer) {
+      transformerList.push(new SearchableModelTransformer());
+    }
+
+    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
+    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
+      ? customTransformersConfig.transformers
+      : []
+    )
+      .map(transformer => {
+        const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
+        const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
+        // handle 'cannot find module'
+        try {
+          return require(modulePath);
+        } catch (error) {
+          context.print.error(`Unable to import custom transformer module(${modulePath}).`);
+          context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
+          throw error;
+        }
+      })
+      .map(imported => {
+        const CustomTransformer = imported.default;
+        return CustomTransformer.call({});
+      })
+      .filter(customTransformer => customTransformer);
+
+    if (customTransformers.length > 0) {
+      transformerList.push(...customTransformers);
+    }
+
+    // TODO: Build dependency mechanism into transformers. Auth runs last
+    // so any resolvers that need to be protected will already be created.
+    transformerList.push(new ModelAuthTransformer({ authConfig }));
+
+    return transformerList;
+  };
 
   let searchableTransformerFlag = false;
 
@@ -434,6 +490,35 @@ async function getDirectiveDefinitions(context, resourceDir) {
   const transformList = await getTransformerFactory(context, resourceDir)(true);
   return transformList.map(transformPluginInst => transformPluginInst.getDirective()).join('\n');
 }
+
+function s3ResourceAlreadyExists(context) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  let resourceName;
+  if (amplifyMeta[storageCategory]) {
+    const categoryResources = amplifyMeta[storageCategory];
+    Object.keys(categoryResources).forEach(resource => {
+      if (categoryResources[resource].service === s3ServiceName) {
+        resourceName = resource;
+      }
+    });
+  }
+
+  return resourceName;
+}
+
+function getBucketName(context, s3ResourceName, backEndDir) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  const stackName = amplifyMeta.providers.awscloudformation.StackName;
+  const parametersFilePath = path.join(backEndDir, storageCategory, s3ResourceName, parametersFileName);
+  const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
+  const bucketName = stackName.startsWith('amplify-')
+    ? `${bucketParameters.bucketName}\${hash}-\${env}`
+    : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
+  return { bucketName };
+}
+
 module.exports = {
   transformGraphQLSchema,
   getDirectiveDefinitions,
