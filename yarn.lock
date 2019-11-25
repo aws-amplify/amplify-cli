@@ -4671,7 +4671,7 @@ before-after-hook@^2.0.0:
   resolved "https://registry.yarnpkg.com/before-after-hook/-/before-after-hook-2.1.0.tgz#b6c03487f44e24200dd30ca5e6a1979c5d2fb635"
   integrity sha512-IWIbu7pMqyw3EAJHzzHbWa85b6oud/yfKYg5rqB5hNE8CeMi3nX+2C2sj0HswfblST86hpVEOAb9x34NZd6P7A==
 
-bestzip@^2.0.0:
+bestzip@^2.0.0, bestzip@^2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/bestzip/-/bestzip-2.1.5.tgz#815980248bbbd907fa724d5c5e5cb9fd295619d3"
   integrity sha512-ieNnkUNC4iF3eC8L+00Gd/niBqyjqZ28UnKYOSozWDBluqht3NMlQXLJVi47mehwgSsvGq+GqvEmVWZHQy2nrQ==
@@ -12363,7 +12363,7 @@ jest@23.1.0:
     import-local "^1.0.0"
     jest-cli "^23.1.0"
 
-jest@24.9.0, jest@^24.8.0:
+jest@24.9.0, jest@^24.8.0, jest@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest/-/jest-24.9.0.tgz#987d290c05a08b52c56188c1002e368edb007171"
   integrity sha512-YvkBL1Zm7d2B1+h5fHEOdyjCG+sGMz4f8D86/0HiqJ6MB4MnDc8FgP5vdWsGnemOQro7lnYo8UakZ3+5A0jxGw==

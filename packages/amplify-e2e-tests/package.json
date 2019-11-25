@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "1.30.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -37,11 +37,13 @@
       "/node_modules/",
       "src"
     ],
+    "testEnvironment": "node",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
-      "!__tests__/**"
+      "!__tests__/**",
+      "!**/*.d.ts"
     ],
     "reporters": [
       "default",
@@ -54,15 +56,18 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "window": {}
+    }
   },
   "dependencies": {
     "aws-sdk": "^2.577.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
+    "graphql-transformer-core": "6.0.0",
     "mime-types": "^2.1.24",
-    "ora": "^3.4.0",
-    "graphql-transformer-core": "^5.18.0"
+    "ora": "^3.4.0"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

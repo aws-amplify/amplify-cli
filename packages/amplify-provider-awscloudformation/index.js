@@ -15,6 +15,7 @@ const amplifyService = require('./src/aws-utils/aws-amplify');
 const consoleCommand = require('./lib/console');
 const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
 const { formUserAgentParam } = require('./src/aws-utils/user-agent');
+const predictionsRegionMap = require('./lib/aws-predictions-regions');
 
 function init(context) {
   return initializer.run(context);
@@ -36,6 +37,10 @@ function onInitSuccessful(context) {
 
 function pushResources(context, resourceList) {
   return resourcePusher.run(context, resourceList);
+}
+
+function storeCurrentCloudBackend(context) {
+  return resourcePusher.storeCurrentCloudBackend(context);
 }
 
 function deleteEnv(context, envName, deleteS3) {
@@ -95,6 +100,7 @@ module.exports = {
   configureNewUser,
   constants,
   pushResources,
+  storeCurrentCloudBackend,
   buildResources,
   providerUtils,
   setupNewUser,
@@ -106,5 +112,6 @@ module.exports = {
   deleteEnv,
   loadResourceParameters,
   saveResourceParameters,
+  predictionsRegionMap,
   ...require('./amplify-plugin-index'),
 };
