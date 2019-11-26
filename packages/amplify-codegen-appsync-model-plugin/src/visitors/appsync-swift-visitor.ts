@@ -35,9 +35,11 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
         .withProtocols(['Model']);
       Object.entries(obj.fields).forEach(([fieldName, field]) => {
         const fieldType = this.getNativeType(field);
+        const isVariable = field.name !== 'id';
         structBlock.addProperty(field.name, fieldType, undefined, 'public', {
           optional: field.isNullable,
           isList: field.isList,
+          variable: isVariable,
         });
       });
       const initImpl: string = this.getInitBody(obj.fields);
@@ -151,9 +153,9 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       .withProtocols(['DataStoreModelRegistration'])
       .withComment('Contains the set of classes that conforms to the `Model` protocol.');
 
-    classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', {  });
+    classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', {});
     const body = structList.map(modelClass => `ModelRegistry.register(modelType: ${modelClass})`).join('\n');
-    classDeclaration.addClassMethod('registerModels', null, body, undefined, 'public', { });
+    classDeclaration.addClassMethod('registerModels', null, body, undefined, 'public', {});
 
     result.push(classDeclaration.string);
 
