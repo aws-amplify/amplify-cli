@@ -126,6 +126,8 @@ export function updateDDBWithTrigger(cwd: string, settings: any, verbose: boolea
       .wait('Do you want to edit the local')
       .sendline('n')
       .sendline('\r')
+      .wait('overwrite')
+      .sendline('y')
       .sendEof()
       // tslint:disable-next-line
       .run(function(err: Error) {
