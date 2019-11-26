@@ -30,7 +30,7 @@
     "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.1",
     "@types/node": "^8.10.51",
-    "aws-amplify": "^1.1.36",
+    "aws-amplify": "^2.1.0",
     "aws-appsync": "^1.8.1",
     "aws-sdk": "^2.577.0",
     "graphql-auth-transformer": "6.0.0",
