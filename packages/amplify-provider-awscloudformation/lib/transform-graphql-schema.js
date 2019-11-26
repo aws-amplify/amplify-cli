@@ -540,21 +540,26 @@ async function getDirectiveDefinitions(context, resourceDir) {
     .map(transformPluginInst => [transformPluginInst.directive, ...transformPluginInst.typeDefinitions].map(node => print(node)).join('\n'))
     .join('\n');
 }
-
+/**
+ * Check if storage exists in the project if not return undefined
+ */
 function s3ResourceAlreadyExists(context) {
   const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let resourceName;
-  if (amplifyMeta[storageCategory]) {
-    const categoryResources = amplifyMeta[storageCategory];
-    Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === s3ServiceName) {
-        resourceName = resource;
-      }
-    });
+  try {
+    let resourceName;
+    const { amplifyMeta } = amplify.getProjectDetails();
+    if (amplifyMeta[storageCategory]) {
+      const categoryResources = amplifyMeta[storageCategory];
+      Object.keys(categoryResources).forEach(resource => {
+        if (categoryResources[resource].service === s3ServiceName) {
+          resourceName = resource;
+        }
+      });
+    }
+    return resourceName;
+  } catch (error) {
+    return undefined;
   }
-
-  return resourceName;
 }
 
 function getBucketName(context, s3ResourceName, backEndDir) {
