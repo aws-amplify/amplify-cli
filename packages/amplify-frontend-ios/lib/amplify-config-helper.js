@@ -47,11 +47,17 @@ function constructApi(metadata, amplifyConfig) {
         amplifyConfig[categoryName].plugins[pluginName] = amplifyConfig[categoryName].plugins[pluginName] || {};
 
         if (resourceMeta.service === 'AppSync') {
+          let authorizationType;
+          if (resourceMeta.output.authConfig && resourceMeta.output.authConfig.defaultAuthentication) {
+            authorizationType = resourceMeta.output.authConfig.defaultAuthentication.authenticationType;
+          } else if (resourceMeta.output.securityType) {
+            authorizationType = resourceMeta.output.securityType;
+          }
           amplifyConfig[categoryName].plugins[pluginName][r] = {
             endpointType: 'GraphQL',
             endpoint: resourceMeta.output.GraphQLAPIEndpointOutput,
             region,
-            authorizationType: resourceMeta.output.authConfig.defaultAuthentication.authenticationType,
+            authorizationType,
             apiKey: resourceMeta.output.GraphQLAPIKeyOutput,
           };
         } else if (resourceMeta.service === 'API Gateway') {
