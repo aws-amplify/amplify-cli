@@ -48,7 +48,7 @@ type JSONModelFieldAttribute = JSONModelAttribute;
 
 export interface RawAppSyncModelMetadataConfig extends RawAppSyncModelConfig {
   /**
-   * @name metaDataTarget
+   * @name metadataTarget
    * @type string
    * @description required, the language target for generated code
    *
@@ -58,17 +58,17 @@ export interface RawAppSyncModelMetadataConfig extends RawAppSyncModelConfig {
    * Models:
    * config:
    *    target: 'metadata'
-   *    metaDataTarget: 'typescript'
+   *    metadataTarget: 'typescript'
    *  plugins:
    *    - amplify-codegen-appsync-model-plugin
    * ```
-   * metaDataTarget: 'javascript'| 'typescript' | 'typedeclration'
+   * metadataTarget: 'javascript'| 'typescript' | 'typedeclration'
    */
-  metaDataTarget?: string;
+  metadataTarget?: string;
 }
 
 export interface ParsedAppSyncModelMetadataConfig extends ParsedAppSyncModelConfig {
-  metaDataTarget: string;
+  metadataTarget: string;
 }
 export class AppSyncJSONVisitor<
   TRawConfig extends RawAppSyncModelMetadataConfig = RawAppSyncModelMetadataConfig,
@@ -81,18 +81,18 @@ export class AppSyncJSONVisitor<
     defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS
   ) {
     super(schema, rawConfig, additionalConfig, defaultScalars);
-    this._parsedConfig.metaDataTarget = rawConfig.metaDataTarget || 'javascript';
+    this._parsedConfig.metadataTarget = rawConfig.metadataTarget || 'javascript';
   }
   generate(): string {
     this.processConnectionDirective();
-    if (this._parsedConfig.metaDataTarget === 'typescript') {
+    if (this._parsedConfig.metadataTarget === 'typescript') {
       return this.generateTypeScriptMetaData();
-    } else if (this._parsedConfig.metaDataTarget === 'javascript') {
+    } else if (this._parsedConfig.metadataTarget === 'javascript') {
       return this.generateJavaScriptMetaData();
-    } else if (this._parsedConfig.metaDataTarget === 'typedeclaration') {
+    } else if (this._parsedConfig.metadataTarget === 'typeDeclaration') {
       return this.generateTypeDeclaration();
     }
-    throw new Error(`Unsupported metaDataTarget ${this._parsedConfig.metaDataTarget}. Supported targets are javascript and typescript`);
+    throw new Error(`Unsupported metadataTarget ${this._parsedConfig.metadataTarget}. Supported targets are javascript and typescript`);
   }
 
   protected generateTypeScriptMetaData(): string {

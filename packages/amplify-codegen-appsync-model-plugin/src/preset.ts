@@ -136,7 +136,7 @@ const generateTypeScriptPreset = (
       ...options.config,
       scalars: { ...TYPESCRIPT_SCALAR_MAP, ...options.config.scalars },
       target: 'metadata',
-      metaDataTarget: 'typescript',
+      metadataTarget: 'typescript',
     },
   });
   return config;
@@ -177,7 +177,7 @@ const generateJavasScriptPreset = (
       ...options.config,
       scalars: { ...TYPESCRIPT_SCALAR_MAP, ...options.config.scalars },
       target: 'metadata',
-      metaDataTarget: 'javascript',
+      metadataTarget: 'javascript',
     },
   });
 
@@ -189,7 +189,7 @@ const generateJavasScriptPreset = (
       ...options.config,
       scalars: { ...TYPESCRIPT_SCALAR_MAP, ...options.config.scalars },
       target: 'metadata',
-      metaDataTarget: 'typedeclaration',
+      metadataTarget: 'typeDeclaration',
     },
   });
   return config;
