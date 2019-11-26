@@ -32,8 +32,6 @@ async function pullBackend(context, inputParams) {
   await initializeEnv(context);
   ensureBackendConfigFile(context);
   await postPullCodeGenCheck(context);
-  context.print.success('Successfully pulled backend environment from the cloud.');
-  context.print.info('');
   context.print.info('Post-pull status:');
   await context.amplify.showResourceTable();
   context.print.info('');
