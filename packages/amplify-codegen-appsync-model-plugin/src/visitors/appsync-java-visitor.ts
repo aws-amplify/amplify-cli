@@ -189,6 +189,9 @@ export class AppSyncModelJavaVisitor<
     // builder
     this.generateBuilderMethod(model, classDeclarationBlock);
 
+    // newFromId method
+    this.generateFromNewIdMethod(model, classDeclarationBlock);
+
     // newBuilder method
     this.generateNewBuilderMethod(model, classDeclarationBlock);
 
@@ -588,18 +591,17 @@ export class AppSyncModelJavaVisitor<
    */
   protected generateBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
     const requiredFields = model.fields.filter(field => !field.isNullable && !this.READ_ONLY_FIELDS.includes(field.name));
-    if (requiredFields.length) {
-      classDeclaration.addClassMethod(
-        'builder',
-        this.getStepInterfaceName(requiredFields[0].name),
-        indentMultiline(`return new Builder();`),
-        [],
-        [],
-        'public',
-        { static: true },
-        []
-      );
-    }
+    const returnType = requiredFields.length ? this.getStepInterfaceName(requiredFields[0].name) : this.getStepInterfaceName('Build');
+    classDeclaration.addClassMethod(
+      'builder',
+      returnType,
+      indentMultiline(`return new Builder();`),
+      [],
+      [],
+      'public',
+      { static: true },
+      []
+    );
   }
 
   /**
@@ -673,5 +675,39 @@ export class AppSyncModelJavaVisitor<
     connectionArguments.push(`type = ${this.getModelName(connectionInfo.connectedModel)}.class`);
 
     return `${connectionDirectiveName}${connectionArguments.length ? `(${connectionArguments.join(', ')})` : ''}`;
+  }
+  protected generateFromNewIdMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+    const returnType = this.getModelName(model);
+    const comment = dedent`WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+        This is a convenience method to return an instance of the object with only its ID populated
+        to be used in the context of a parameter in a delete mutation or referencing a foreign key
+        in a relationship.
+        @param id the id of the existing item this instance will represent
+        @return an instance of this model with only ID populated
+        @throws IllegalArgumentException Checks that ID is in the proper format`;
+    const exceptionBlock = dedent`
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              "Model IDs must be unique in the format of UUID. This method is for creating instances " +
+              "of an existing object with only its ID field for sending as a mutation parameter. When " +
+              "creating a new object, use the standard builder method and leave the ID field blank."
+      );
+    }`;
+    const initArgs = indentMultiline(['id', ...new Array(model.fields.length - 1).fill('null')].join(',\n'));
+    const initBlock = `return new ${returnType}(\n${initArgs}\n);`;
+    classDeclaration.addClassMethod(
+      'fromId',
+      returnType,
+      [exceptionBlock, initBlock].join('\n'),
+      [{ name: 'id', type: 'String' }],
+      [],
+      'public',
+      { static: true },
+      [],
+      [],
+      comment
+    );
   }
 }
