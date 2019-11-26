@@ -3,6 +3,7 @@ const path = require('path');
 const os = require('os');
 const ini = require('ini');
 const { spawn } = require('child_process');
+const inquirer = require('inquirer');
 
 const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
 const configFilePath = path.join(dotAWSDirPath, 'config');
@@ -24,14 +25,28 @@ function getNamedProfiles() {
   return namedProfiles;
 }
 
-function checkIfProfileExists(profileToUse) {
-  const namedProfiles = getNamedProfiles();
+async function askForProfile(namedProfiles) {
+  const profileQuestion = {
+    type: 'list',
+    name: 'profile',
+    message: 'Choose the profile you would like to use',
+    choices: Object.keys(namedProfiles),
+  };
+  const profileAnswer = await inquirer.prompt(profileQuestion);
+  return profileAnswer;
+}
 
-  if (!namedProfiles || !namedProfiles[profileToUse]) {
-    console.log(`Profile with name ${profileToUse} not found. Please create one`);
-    return false;
+async function getValidProfile(profileToUse) {
+  const namedProfiles = getNamedProfiles();
+  if (Object.keys(namedProfiles).length) {
+    if (namedProfiles[profileToUse]) {
+      return profileToUse;
+    }
+    const profileAnswer = await askForProfile(namedProfiles);
+    return profileAnswer;
   }
-  return true;
+  console.log(`Profiles not found. Please create one`);
+  return undefined;
 }
 
 async function configureProfile() {
@@ -57,19 +72,20 @@ async function run() {
     buildConfig = JSON.parse(fs.readFileSync(buildConfigFilepath));
   }
 
-  const profileToUse = buildConfig.profile || 'default';
+  let profileToUse = buildConfig.profile || 'default';
 
   // If accessKeyId and secretKey not provided in buildConfig, profile needs to exists
   if (!buildConfig.accessKeyId) {
     /* Check if profile exists - if not run `amplify configure` */
-    let foundProfile = false;
+    let foundProfile;
     while (!foundProfile) {
-      foundProfile = checkIfProfileExists(profileToUse);
+      foundProfile = await getValidProfile(profileToUse);
       if (!foundProfile) {
-        console.log(`${profileToUse} not found. Attempting to configure the profile`);
+        console.log('Attempting to configure the profile');
         await configureProfile();
       }
     }
+    profileToUse = foundProfile;
   }
 
   const PROJECT_CONFIG = `{\

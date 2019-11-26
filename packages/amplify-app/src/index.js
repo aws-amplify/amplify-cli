@@ -308,6 +308,7 @@ async function createJSHelperFiles() {
 
   const devDependencies = {
     ini: '^1.3.5',
+    inquirer: '^6.5.1',
   };
 
   Object.assign(packageJSON.scripts, runScripts);
