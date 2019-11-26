@@ -115,7 +115,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: bool
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendline('\x1b[B') // Down
       .wait(/.*Configure additional auth types.*/)
-      .sendline('')
+      .sendline('y')
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
       .sendline('a\r') // All items
       // Cognito
