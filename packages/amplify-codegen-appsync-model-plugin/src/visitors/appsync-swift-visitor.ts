@@ -186,7 +186,6 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     const { connectionInfo } = field;
     // connected field
     if (connectionInfo) {
-      const res = [];
       if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
         return `.hasMany(${name}, ofType: ${typeName}, associatedWith: ${this.getModelName(
           connectionInfo.connectedModel

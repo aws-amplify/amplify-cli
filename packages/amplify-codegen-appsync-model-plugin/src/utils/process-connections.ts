@@ -38,7 +38,6 @@ export function processConnections(
   modelMap: CodeGenModelMap
 ): CodeGenFieldConnection | undefined {
   const connectionDirective = field.directives.find(d => d.name === 'connection');
-  let connectionType: CodeGenConnectionType;
   if (connectionDirective) {
     const otherSide = modelMap[field.type];
     const connectionName = connectionDirective.name;

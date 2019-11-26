@@ -1,7 +1,6 @@
 import { indent, indentMultiline, transformComment } from '@graphql-codegen/visitor-plugin-common';
 import { camelCase, constantCase, pascalCase } from 'change-case';
 import dedent from 'ts-dedent';
-import { isArray } from 'util';
 import {
   CLASS_IMPORT_PACKAGES,
   GENERATED_PACKAGE_NAME,

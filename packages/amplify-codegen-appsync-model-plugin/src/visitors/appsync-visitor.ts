@@ -5,9 +5,8 @@ import {
   NormalizedScalarsMap,
   ParsedConfig,
   RawConfig,
-  getBaseTypeNode,
 } from '@graphql-codegen/visitor-plugin-common';
-import { pascalCase, upperCase, constantCase } from 'change-case';
+import { constantCase, pascalCase } from 'change-case';
 import * as crypto from 'crypto';
 import {
   DefinitionNode,
@@ -21,10 +20,10 @@ import {
   parse,
   valueFromASTUntyped,
 } from 'graphql';
-import { getTypeInfo } from '../utils/get-type-info';
-import { sortFields } from '../utils/sort';
-import { processConnections, CodeGenConnectionType, CodeGenFieldConnection } from '../utils/process-connections';
 import { addFieldToModel } from '../utils/addFieldToType';
+import { getTypeInfo } from '../utils/get-type-info';
+import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
+import { sortFields } from '../utils/sort';
 
 export enum CodeGenGenerateEnum {
   metadata = 'metadata',
@@ -215,10 +214,13 @@ export class AppSyncModelVisitor<
     }
     const enumName = this.getEnumName(node.name.value);
     const values = node.values
-      ? node.values.reduce((acc, val) => {
-          acc[this.getEnumValue(val.name.value)] = val.name.value;
-          return acc;
-        }, {} as any)
+      ? node.values.reduce(
+          (acc, val) => {
+            acc[this.getEnumValue(val.name.value)] = val.name.value;
+            return acc;
+          },
+          {} as any
+        )
       : {};
     this.enumMap[node.name.value] = {
       name: enumName,

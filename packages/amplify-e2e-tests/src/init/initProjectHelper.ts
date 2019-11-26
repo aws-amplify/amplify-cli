@@ -18,7 +18,6 @@ const defaultSettings = {
 
 export default function initJSProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
   const s = { ...defaultSettings, ...settings };
-  const outputFileName = 'initJSProjectWithProfile.log';
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
