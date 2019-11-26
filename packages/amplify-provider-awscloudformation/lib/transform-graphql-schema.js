@@ -558,7 +558,10 @@ function s3ResourceAlreadyExists(context) {
     }
     return resourceName;
   } catch (error) {
-    return undefined;
+    if (error.name === 'UndeterminedEnvironmentError') {
+      return undefined;
+    }
+    throw error;
   }
 }
 
