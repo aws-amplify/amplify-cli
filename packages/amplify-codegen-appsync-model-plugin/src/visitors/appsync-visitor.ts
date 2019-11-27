@@ -20,7 +20,7 @@ import {
   parse,
   valueFromASTUntyped,
 } from 'graphql';
-import { addFieldToModel } from '../utils/addFieldToType';
+import { addFieldToModel, removeFieldFromModel } from '../utils/fieldUtils';
 import { getTypeInfo } from '../utils/get-type-info';
 import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
 import { sortFields } from '../utils/sort';
@@ -393,6 +393,9 @@ export class AppSyncModelVisitor<
           if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY || connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
             // Need to update the other side of the connection even if there is no connection directive
             addFieldToModel(connectionInfo.connectedModel, connectionInfo.associatedWith);
+          } else {
+            // Need to remove the field that is targetName
+            removeFieldFromModel(model, connectionInfo.targetName);
           }
           field.connectionInfo = connectionInfo;
         }
