@@ -27,7 +27,6 @@
   "dependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/global-prefix": "^3.0.0",
-    "@types/ora": "^3.2.0",
     "amplify-category-analytics": "2.2.0",
     "amplify-category-api": "2.2.0",
     "amplify-category-auth": "2.2.0",
@@ -81,7 +80,7 @@
     "ts-jest": "^24.0.2",
     "tslint": "^5.17.0",
     "tslint-config-airbnb-base": "^0.3.0",
-    "typescript": "^3.6.4"
+    "typescript": "~3.6.4"
   },
   "jest": {
     "transform": {

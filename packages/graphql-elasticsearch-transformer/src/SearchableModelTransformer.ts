@@ -57,8 +57,10 @@ export class SearchableModelTransformer extends Transformer {
     ctx.mergeParameters(template.Parameters);
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeMappings(template.Mappings);
-    ctx.metadata.set(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID,
-      path.resolve(`${__dirname}/../lib/streaming-lambda.zip`));
+    ctx.metadata.set(
+      ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID,
+      path.resolve(`${__dirname}/../lib/streaming-lambda.zip`)
+    );
     for (const resourceId of Object.keys(template.Resources)) {
       ctx.mapResourceToStack(STACK_NAME, resourceId);
     }
@@ -128,7 +130,7 @@ export class SearchableModelTransformer extends Transformer {
       ctx.mapResourceToStack(STACK_NAME, ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value));
       queryFields.push(
         makeField(
-          searchResolver.Properties.FieldName,
+          searchResolver.Properties.FieldName.toString(),
           [
             makeInputValueDefinition('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
             makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),

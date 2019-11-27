@@ -27,7 +27,12 @@ import {
   newline,
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
-import GraphQLApi, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, AdditionalAuthenticationProvider } from './graphQlApi';
+import GraphQLApi, {
+  GraphQLApiProperties,
+  UserPoolConfig,
+  AdditionalAuthenticationProvider,
+  OpenIDConnectConfig,
+} from 'cloudform-types/types/appSync/graphQlApi';
 import * as Transformer from './ModelAuthTransformer';
 import { FieldDefinitionNode } from 'graphql';
 
