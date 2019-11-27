@@ -7,6 +7,8 @@ import {
   RawConfig,
 } from '@graphql-codegen/visitor-plugin-common';
 import { constantCase, pascalCase } from 'change-case';
+import { plural } from 'pluralize';
+import { upperCaseFirst } from 'change-case';
 import * as crypto from 'crypto';
 import {
   DefinitionNode,
@@ -20,7 +22,7 @@ import {
   parse,
   valueFromASTUntyped,
 } from 'graphql';
-import { addFieldToModel } from '../utils/addFieldToType';
+import { addFieldToModel, removeFieldFromModel } from '../utils/fieldUtils';
 import { getTypeInfo } from '../utils/get-type-info';
 import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
 import { sortFields } from '../utils/sort';
@@ -214,13 +216,10 @@ export class AppSyncModelVisitor<
     }
     const enumName = this.getEnumName(node.name.value);
     const values = node.values
-      ? node.values.reduce(
-          (acc, val) => {
-            acc[this.getEnumValue(val.name.value)] = val.name.value;
-            return acc;
-          },
-          {} as any
-        )
+      ? node.values.reduce((acc, val) => {
+          acc[this.getEnumValue(val.name.value)] = val.name.value;
+          return acc;
+        }, {} as any)
       : {};
     this.enumMap[node.name.value] = {
       name: enumName,
@@ -393,11 +392,18 @@ export class AppSyncModelVisitor<
           if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY || connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
             // Need to update the other side of the connection even if there is no connection directive
             addFieldToModel(connectionInfo.connectedModel, connectionInfo.associatedWith);
+          } else {
+            // Need to remove the field that is targetName
+            removeFieldFromModel(model, connectionInfo.targetName);
           }
           field.connectionInfo = connectionInfo;
         }
       });
     });
+  }
+
+  protected pluralizeModelName(model: CodeGenModel): string {
+    return plural(upperCaseFirst(model.name));
   }
 
   get types() {

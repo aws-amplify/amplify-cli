@@ -173,8 +173,8 @@ export class AppSyncModelJavaVisitor<
     // builder
     this.generateBuilderClass(model, classDeclarationBlock);
 
-    // newBuilder for used for updating existing instance
-    this.generateNewBuilderClass(model, classDeclarationBlock);
+    // copyOfBuilder for used for updating existing instance
+    this.generateCopyOfBuilderClass(model, classDeclarationBlock);
     // getters
     this.generateGetters(model, classDeclarationBlock);
 
@@ -189,11 +189,11 @@ export class AppSyncModelJavaVisitor<
     // builder
     this.generateBuilderMethod(model, classDeclarationBlock);
 
-    // newFromId method
-    this.generateFromNewIdMethod(model, classDeclarationBlock);
+    // justId method
+    this.generateJustIdMethod(model, classDeclarationBlock);
 
-    // newBuilder method
-    this.generateNewBuilderMethod(model, classDeclarationBlock);
+    // copyBuilder method
+    this.generateCopyOfBuilderMethod(model, classDeclarationBlock);
 
     return classDeclarationBlock.string;
   }
@@ -397,18 +397,19 @@ export class AppSyncModelJavaVisitor<
   }
 
   /**
-   * * Generate a NewBuilder class that will be used to create copy of the current model.
+   * * Generate a CopyOfBuilder class that will be used to create copy of the current model.
    * This is needed to mutate the object as all the generated models are immuteable and can
-   * be update only by creating a new instance using newBuilder
+   * be update only by creating a new instance using copyOfBuilder
    * @param model
    * @param classDeclaration
    */
-  protected generateNewBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
-    const newBuilderClassDeclaration = new JavaDeclarationBlock()
+  protected generateCopyOfBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+    const builderName = 'CopyOfBuilder';
+    const copyOfBuilderClassDeclaration = new JavaDeclarationBlock()
       .access('public')
       .final()
       .asKind('class')
-      .withName('NewBuilder')
+      .withName(builderName)
       .extends(['Builder']);
 
     const nonNullableFields = model.fields.filter(field => !field.isNullable).filter(field => field.name !== 'id');
@@ -425,17 +426,17 @@ export class AppSyncModelJavaVisitor<
     });
     const invocations = ['super', indentMultiline(stepBuilderInvocation.join('\n')).trim(), ';'].join('');
     const body = ['super.id(id);', invocations].join('\n');
-    newBuilderClassDeclaration.addClassMethod('NewBuilder', null, body, constructorArguments, [], 'private');
+    copyOfBuilderClassDeclaration.addClassMethod(builderName, null, body, constructorArguments, [], 'private');
 
     // Non-nullable field setters need to be added to NewClass as this is not a step builder
     [...nonNullableFields, ...nullableFields].forEach(field => {
       const methodName = this.getStepFunctionName(field);
       const argumentName = this.getStepFunctionArgumentName(field);
       const argumentType = this.getNativeType(field);
-      const implementation = `return (NewBuilder) super.${methodName}(${argumentName});`;
-      newBuilderClassDeclaration.addClassMethod(
+      const implementation = `return (${builderName}) super.${methodName}(${argumentName});`;
+      copyOfBuilderClassDeclaration.addClassMethod(
         methodName,
-        'NewBuilder',
+        builderName,
         implementation,
         [
           {
@@ -449,16 +450,16 @@ export class AppSyncModelJavaVisitor<
         ['Override']
       );
     });
-    classDeclaration.nestedClass(newBuilderClassDeclaration);
+    classDeclaration.nestedClass(copyOfBuilderClassDeclaration);
   }
 
   /**
-   * adds a newBuilder method to the Model class. This method is used to create a copy of the model to mutate it
+   * adds a copyOfBuilder method to the Model class. This method is used to create a copy of the model to mutate it
    */
-  protected generateNewBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+  protected generateCopyOfBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
     const args = indentMultiline(model.fields.map(field => this.getFieldName(field)).join(',\n')).trim();
-    const methodBody = `return new NewBuilder(${args});`;
-    classDeclaration.addClassMethod('newBuilder', 'NewBuilder', methodBody, [], [], 'public');
+    const methodBody = `return new CopyOfBuilder(${args});`;
+    classDeclaration.addClassMethod('copyOfBuilder', 'CopyOfBuilder', methodBody, [], [], 'public');
   }
 
   /**
@@ -676,7 +677,7 @@ export class AppSyncModelJavaVisitor<
 
     return `${connectionDirectiveName}${connectionArguments.length ? `(${connectionArguments.join(', ')})` : ''}`;
   }
-  protected generateFromNewIdMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+  protected generateJustIdMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
     const returnType = this.getModelName(model);
     const comment = dedent`WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
         This is a convenience method to return an instance of the object with only its ID populated
@@ -698,7 +699,7 @@ export class AppSyncModelJavaVisitor<
     const initArgs = indentMultiline(['id', ...new Array(model.fields.length - 1).fill('null')].join(',\n'));
     const initBlock = `return new ${returnType}(\n${initArgs}\n);`;
     classDeclaration.addClassMethod(
-      'fromId',
+      'justId',
       returnType,
       [exceptionBlock, initBlock].join('\n'),
       [{ name: 'id', type: 'String' }],

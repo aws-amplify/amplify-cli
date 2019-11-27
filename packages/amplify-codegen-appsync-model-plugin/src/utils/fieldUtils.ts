@@ -6,3 +6,7 @@ export function addFieldToModel(model: CodeGenModel, field: CodeGenField): void 
     model.fields.push(field);
   }
 }
+
+export function removeFieldFromModel(model: CodeGenModel, fieldName: string): void {
+  model.fields= model.fields.filter(field => field.name !== fieldName);
+}
