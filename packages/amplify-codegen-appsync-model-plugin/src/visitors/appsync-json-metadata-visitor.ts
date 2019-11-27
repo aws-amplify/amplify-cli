@@ -34,6 +34,24 @@ enum JSONGraphQLScalarType {
   Boolean = 'Boolean',
 }
 
+type AssociationBaseType = {
+  connectionType: CodeGenConnectionType;
+};
+
+type AssociationHasMany = AssociationBaseType & {
+  connectionType: CodeGenConnectionType.HAS_MANY;
+  associatedWith: string;
+};
+type AssociationHasOne = AssociationHasMany & {
+  connectionType: CodeGenConnectionType.HAS_ONE;
+};
+
+type AssociationBelongsTo = AssociationBaseType & {
+  targetName: string;
+};
+
+type AssociationType = AssociationHasMany | AssociationHasOne | AssociationBelongsTo;
+
 type JSONModelFieldType = JSONGraphQLScalarType | keyof typeof JSONGraphQLScalarType | { model: string } | { enum: string };
 type JSONModelField = {
   name: string;
@@ -41,6 +59,7 @@ type JSONModelField = {
   isArray: boolean;
   isRequired?: boolean;
   attributes?: JSONModelFieldAttributes;
+  association?: AssociationType;
 };
 type JSONModelFieldAttributes = JSONModelFieldAttribute[];
 type JSONModelFieldAttribute = JSONModelAttribute;
@@ -132,13 +151,18 @@ export class AppSyncJSONVisitor<
         pluralTargetName: this.pluralizeModelName(obj),
         attributes: this.generateModelAttributes(obj),
         fields: obj.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
-          acc[this.getFieldName(field)] = {
+          const fieldMeta: JSONModelField = {
             name: this.getFieldName(field),
             isArray: field.isList,
             type: this.getType(field.type),
             isRequired: !field.isNullable,
-            attributes: this.generateFieldAttributes(field),
+            attributes: [],
           };
+          const association: AssociationType | void = this.getFieldAssociation(field);
+          if (association) {
+            fieldMeta.association = association;
+          }
+          acc[this.getFieldName(field)] = fieldMeta;
           return acc;
         }, {}),
       };
@@ -155,8 +179,7 @@ export class AppSyncJSONVisitor<
     return result;
   }
 
-  private generateFieldAttributes(field: CodeGenField): JSONModelAttributes {
-    const result: JSONModelAttributes = [];
+  private getFieldAssociation(field: CodeGenField): AssociationType | void {
     if (field.connectionInfo) {
       const { connectionInfo } = field;
       const connectionAttribute: any = { connectionType: connectionInfo.kind };
@@ -165,10 +188,8 @@ export class AppSyncJSONVisitor<
       } else {
         connectionAttribute.targetName = connectionInfo.targetName;
       }
-
-      result.push({ type: 'connection', properties: connectionAttribute });
+      return connectionAttribute;
     }
-    return result;
   }
 
   private generateModelAttributes(model: CodeGenModel): JSONModelAttributes {
