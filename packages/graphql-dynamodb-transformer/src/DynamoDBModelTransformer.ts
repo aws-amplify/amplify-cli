@@ -244,7 +244,7 @@ export class DynamoDBModelTransformer extends Transformer {
       if (this.supportsConditions(ctx)) {
         args.push(makeInputValueDefinition('condition', makeNamedType(conditionInputName)));
       }
-      mutationFields.push(makeField(createResolver.Properties.FieldName, args, makeNamedType(def.name.value)));
+      mutationFields.push(makeField(createResolver.Properties.FieldName.toString(), args, makeNamedType(def.name.value)));
     }
 
     if (shouldMakeUpdate) {
@@ -264,7 +264,7 @@ export class DynamoDBModelTransformer extends Transformer {
       if (this.supportsConditions(ctx)) {
         args.push(makeInputValueDefinition('condition', makeNamedType(conditionInputName)));
       }
-      mutationFields.push(makeField(updateResolver.Properties.FieldName, args, makeNamedType(def.name.value)));
+      mutationFields.push(makeField(updateResolver.Properties.FieldName.toString(), args, makeNamedType(def.name.value)));
     }
 
     if (shouldMakeDelete) {
@@ -284,7 +284,7 @@ export class DynamoDBModelTransformer extends Transformer {
       if (this.supportsConditions(ctx)) {
         args.push(makeInputValueDefinition('condition', makeNamedType(conditionInputName)));
       }
-      mutationFields.push(makeField(deleteResolver.Properties.FieldName, args, makeNamedType(def.name.value)));
+      mutationFields.push(makeField(deleteResolver.Properties.FieldName.toString(), args, makeNamedType(def.name.value)));
     }
     ctx.addMutationFields(mutationFields);
 
@@ -342,7 +342,7 @@ export class DynamoDBModelTransformer extends Transformer {
       this.generateFilterInputs(ctx, def);
       queryFields.push(
         makeField(
-          syncResolver.Properties.FieldName,
+          syncResolver.Properties.FieldName.toString(),
           [
             makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(def.name.value))),
             makeInputValueDefinition('limit', makeNamedType('Int')),
@@ -363,7 +363,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
       queryFields.push(
         makeField(
-          getResolver.Properties.FieldName,
+          getResolver.Properties.FieldName.toString(),
           [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))],
           makeNamedType(def.name.value)
         )
@@ -379,7 +379,7 @@ export class DynamoDBModelTransformer extends Transformer {
       ctx.setResource(resourceId, listResolver);
       ctx.mapResourceToStack(typeName, resourceId);
 
-      queryFields.push(makeConnectionField(listResolver.Properties.FieldName, def.name.value));
+      queryFields.push(makeConnectionField(listResolver.Properties.FieldName.toString(), def.name.value));
     }
     this.generateFilterInputs(ctx, def);
 

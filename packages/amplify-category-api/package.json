@@ -13,7 +13,7 @@
     "amplify-category-auth": "2.1.1",
     "amplify-category-function": "2.1.1",
     "amplify-category-storage": "2.0.2",
-    "aws-sdk": "^2.577.0",
+    "aws-sdk": "^2.580.0",
     "fs-extra": "^8.1.0",
     "graphql": "^0.13.2",
     "graphql-relational-schema-transformer": "2.1.1",

@@ -27,16 +27,16 @@
   "devDependencies": {
     "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.1",
-    "@types/node": "^8.10.51",
-    "cloudform": "^3.5.0",
-    "cloudform-types": "^3.7.0",
+    "@types/node": "^8.10.59",
+    "cloudform": "^4.1.0",
+    "cloudform-types": "^4.1.0",
     "graphql-dynamodb-transformer": "6.1.1",
     "graphql-elasticsearch-transformer": "3.23.0",
     "jest": "^23.1.0",
     "rimraf": "^3.0.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
-    "typescript": "^3.6.4"
+    "typescript": "~3.6.4"
   },
   "jest": {
     "testURL": "http://localhost",

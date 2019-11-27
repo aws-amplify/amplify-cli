@@ -19,7 +19,7 @@
     "@types/nexpect": "0.4.30",
     "@types/node": "10.3.4",
     "aws-amplify": "1.1.4",
-    "aws-sdk": "^2.577.0",
+    "aws-sdk": "^2.580.0",
     "dotenv": "6.2.0",
     "jest": "23.1.0",
     "jest-junit": "^8.0.0",
@@ -28,7 +28,7 @@
     "rimraf": "2.6.2",
     "ts-jest": "22.4.6",
     "tslint": "5.10.0",
-    "typescript": "^3.6.4"
+    "typescript": "~3.6.4"
   },
   "jest": {
     "transform": {
