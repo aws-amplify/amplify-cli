@@ -1,15 +1,13 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
-import { initJSProjectWithProfile } from '../src/init';
-import { addAnalytics, removeAnalytics } from '../src/categories/analytics';
-import { createNewProjectDir, deleteProjectDir } from '../src/utils';
-import * as fs from 'fs';
+import { initJSProjectWithProfile } from '../init';
+import { addAnalytics, removeAnalytics } from '../categories/analytics';
+import { createNewProjectDir, deleteProjectDir } from '../utils';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 
 describe('amplify add analytics', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {

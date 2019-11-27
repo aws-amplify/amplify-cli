@@ -1,13 +1,11 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
-import { addSampleInteraction } from '../src/categories/interactions';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getBot } from '../src/utils';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../init';
+import { addSampleInteraction } from '../categories/interactions';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getBot } from '../utils';
 
 describe('amplify add interactions', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {

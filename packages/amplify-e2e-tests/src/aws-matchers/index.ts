@@ -1,2 +1,2 @@
-require('./s3matcher');
-require('./iamMatcher');
+import './iamMatcher';
+import './s3matcher';

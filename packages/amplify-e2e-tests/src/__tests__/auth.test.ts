@@ -1,6 +1,5 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
-const fs = require('fs');
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../src/init';
+import * as fs from 'fs-extra';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../init';
 import {
   addAuthWithDefault,
   addAuthWithDefaultSocial,
@@ -10,8 +9,8 @@ import {
   updateAuthWithoutCustomTrigger,
   addAuthViaAPIWithTrigger,
   addAuthWithMaxOptions,
-} from '../src/categories/auth';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getUserPoolClients, getLambdaFunction } from '../src/utils';
+} from '../categories/auth';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getUserPoolClients, getLambdaFunction } from '../utils';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -21,7 +20,6 @@ describe('amplify add auth...', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {
@@ -36,7 +34,7 @@ describe('amplify add auth...', () => {
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    await expect(userPool.UserPool).toBeDefined();
+    expect(userPool.UserPool).toBeDefined();
   });
 
   it('...should init a project and add auth with defaultSocial', async () => {
@@ -47,11 +45,11 @@ describe('amplify add auth...', () => {
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
-    await expect(userPool.UserPool).toBeDefined();
-    await expect(clients).toHaveLength(2);
-    await expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
-    await expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
-    await expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(4);
+    expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
+    expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
+    expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(4);
   });
 
   it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {
@@ -65,10 +63,10 @@ describe('amplify add auth...', () => {
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
-    await expect(userPool.UserPool).toBeDefined();
-    await expect(clients).toHaveLength(2);
-    await expect(lambdaFunction).toBeDefined();
-    await expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+    expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(lambdaFunction).toBeDefined();
+    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
   });
 
   it('...should allow the user to add auth via API category, with a trigger', async () => {
@@ -82,10 +80,10 @@ describe('amplify add auth...', () => {
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
-    await expect(userPool.UserPool).toBeDefined();
-    await expect(clients).toHaveLength(2);
-    await expect(lambdaFunction).toBeDefined();
-    await expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+    expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(lambdaFunction).toBeDefined();
+    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
   });
 
   it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {
@@ -103,12 +101,12 @@ describe('amplify add auth...', () => {
     const defineFunction = await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region);
     const verifyFunction = await getLambdaFunction(verifyFunctionName, meta.providers.awscloudformation.Region);
 
-    await expect(userPool.UserPool).toBeDefined();
-    await expect(clients).toHaveLength(2);
-    await expect(createFunction).toBeDefined();
-    await expect(defineFunction).toBeDefined();
-    await expect(verifyFunction).toBeDefined();
-    await expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual('dummykey');
+    expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(createFunction).toBeDefined();
+    expect(defineFunction).toBeDefined();
+    expect(verifyFunction).toBeDefined();
+    expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual('dummykey');
   });
 
   it('...should init a project where all possible options are selected', async () => {
@@ -124,13 +122,13 @@ describe('amplify add auth...', () => {
     const createFunction = await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region);
     const defineFunction = await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region);
 
-    await expect(userPool.UserPool).toBeDefined();
-    await expect(clients).toHaveLength(2);
-    await expect(createFunction).toBeDefined();
-    await expect(defineFunction).toBeDefined();
+    expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(createFunction).toBeDefined();
+    expect(defineFunction).toBeDefined();
 
-    await expect(createFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
-    await expect(defineFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
+    expect(createFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
+    expect(defineFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
   });
 });
 
@@ -138,7 +136,6 @@ describe('amplify updating auth...', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {
@@ -157,18 +154,18 @@ describe('amplify updating auth...', () => {
     const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const dirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
-    await expect(dirContents.includes('custom.js')).toBeTruthy();
-    await expect(userPool.UserPool).toBeDefined();
-    await expect(clients).toHaveLength(2);
-    await expect(lambdaFunction).toBeDefined();
-    await expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist,custom');
+    expect(dirContents.includes('custom.js')).toBeTruthy();
+    expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(lambdaFunction).toBeDefined();
+    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist,custom');
 
     await updateAuthWithoutCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
-    await expect(updatedDirContents.includes('custom.js')).toBeFalsy();
-    await expect(updatedDirContents.includes('email-filter-blacklist.js')).toBeTruthy();
-    await expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist');
+    expect(updatedDirContents.includes('custom.js')).toBeFalsy();
+    expect(updatedDirContents.includes('email-filter-blacklist.js')).toBeTruthy();
+    expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist');
   });
 });
