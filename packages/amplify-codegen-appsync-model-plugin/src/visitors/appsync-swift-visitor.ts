@@ -14,17 +14,17 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected imports: string[] = ['import Amplify', 'import Foundation'];
   generate(): string {
     this.processConnectionDirective();
+    const code = [`// swiftlint:disable all`];
     if (this._parsedConfig.generate === CodeGenGenerateEnum.metadata) {
-      return this.generateSchema();
+      code.push(this.generateSchema());
+    } else if (this._parsedConfig.generate === CodeGenGenerateEnum.loader) {
+      code.push(this.generateClassLoader());
+    } else if (this.selectedTypeIsEnum()) {
+      code.push(this.generateEnums());
+    } else {
+      code.push(this.generateStruct());
     }
-    if (this._parsedConfig.generate === CodeGenGenerateEnum.loader) {
-      return this.generateClassLoader();
-    }
-
-    if (this.selectedTypeIsEnum()) {
-      return this.generateEnums();
-    }
-    return this.generateStruct();
+    return code.join('\n');
   }
   generateStruct(): string {
     let result: string[] = [...this.imports, ''];
@@ -36,7 +36,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       Object.entries(obj.fields).forEach(([fieldName, field]) => {
         const fieldType = this.getNativeType(field);
         const isVariable = field.name !== 'id';
-        structBlock.addProperty(field.name, fieldType, undefined, 'public', {
+        structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'public', {
           optional: field.isNullable,
           isList: field.isList,
           variable: isVariable,
