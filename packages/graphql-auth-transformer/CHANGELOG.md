@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@5.18.0...graphql-auth-transformer@6.1.0) (2019-11-27)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** include ApiKeyConfig in additional providers ([#2744](https://github.com/aws-amplify/amplify-cli/issues/2744)) ([d1dc7ac](https://github.com/aws-amplify/amplify-cli/commit/d1dc7acbbf27a567df6c250ae4428943ca2f66d0)), closes [#2741](https://github.com/aws-amplify/amplify-cli/issues/2741)
+* [#2727](https://github.com/aws-amplify/amplify-cli/issues/2727) ([#2754](https://github.com/aws-amplify/amplify-cli/issues/2754)) ([44a7b54](https://github.com/aws-amplify/amplify-cli/commit/44a7b549f84ff8d752fd0dc87d6d689a609a579d))
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
 # [5.0.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@3.7.5...graphql-auth-transformer@5.0.0) (2019-08-30)
 
 

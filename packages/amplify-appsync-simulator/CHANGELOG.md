@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@0.23.0...amplify-appsync-simulator@1.1.0) (2019-11-27)
+
+
+### Features
+
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* add the length support for strings in mock ([#2823](https://github.com/aws-amplify/amplify-cli/issues/2823)) ([c366246](https://github.com/aws-amplify/amplify-cli/commit/c3662463b97d387968cd2ad60c94e3e27b97ea7c))
+
+
+
+
+
 # 0.5.0 (2019-08-30)
 
 
