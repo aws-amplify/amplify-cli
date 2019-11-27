@@ -204,7 +204,8 @@ export class AppSyncModelTypeScriptVisitor<
     const typeName = field.type;
     if (this.isModelType(field)) {
       const modelType = this.typeMap[typeName];
-      return this.generateModelTypeDeclarationName(modelType);
+      const typeNameStr = this.generateModelTypeDeclarationName(modelType);
+      return field.isList ? this.getListType(typeNameStr) : typeNameStr;
     }
 
     let nativeType = super.getNativeType(field);

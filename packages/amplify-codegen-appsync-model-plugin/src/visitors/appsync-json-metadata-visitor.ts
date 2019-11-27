@@ -13,7 +13,7 @@ type JSONSchemaModel = {
   name: string;
   attributes?: JSONModelAttributes;
   fields: JSONModelFields;
-  pluralTargetName: String;
+  pluralName: String;
   syncable?: boolean;
 };
 type JSONSchemaEnums = Record<string, JSONSchemaEnum>;
@@ -145,8 +145,7 @@ export class AppSyncJSONVisitor<
       const model = {
         syncable: true,
         name: this.getModelName(obj),
-        targetName: obj.name,
-        pluralTargetName: this.pluralizeModelName(obj),
+        pluralName: this.pluralizeModelName(obj),
         attributes: this.generateModelAttributes(obj),
         fields: obj.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
           const fieldMeta: JSONModelField = {
