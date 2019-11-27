@@ -32,7 +32,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
         const fieldType = this.getNativeType(field);
         const isVariable = field.name !== 'id';
         structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'public', {
-          optional: field.isNullable,
+          optional: !this.isFieldRequired(field),
           isList: field.isList,
           variable: isVariable,
         });
@@ -179,7 +179,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     const name = `${modelKeysName}.${this.getFieldName(field)}`;
     const typeName = this.getSwiftModelTypeName(field);
     const { connectionInfo } = field;
-    const isRequired = field.isNullable ? '.optional' : '.required';
+    const isRequired = this.isFieldRequired(field) ? '.required' : '.optional';
     // connected field
     if (connectionInfo) {
       if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
@@ -229,5 +229,20 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   protected getEnumValue(value: string): string {
     return camelCase(value);
+  }
+
+  /**
+   * checks if a field is required or optional field
+   * There is a special case for fields which have hasMany connection
+   * Swift needs to unwrap the object and when its possible that a hasMany field may not
+   * be in the graphql selection set which means its null/undefined. To handle this
+   * the struct needs the field to be optional even when the field is required in GraphQL schema
+   * @param field field
+   */
+  protected isFieldRequired(field: CodeGenField): boolean {
+    if (field.connectionInfo && field.connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
+      return false;
+    }
+    return !field.isNullable;
   }
 }
