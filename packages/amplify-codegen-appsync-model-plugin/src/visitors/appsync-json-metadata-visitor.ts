@@ -37,7 +37,6 @@ enum JSONGraphQLScalarType {
 type JSONModelFieldType = JSONGraphQLScalarType | keyof typeof JSONGraphQLScalarType | { model: string } | { enum: string };
 type JSONModelField = {
   name: string;
-  targetName: string;
   type: JSONModelFieldType;
   isArray: boolean;
   isRequired?: boolean;
@@ -96,16 +95,16 @@ export class AppSyncJSONVisitor<
   }
 
   protected generateTypeScriptMetaData(): string {
-    const metadatObj = this.generateMetaData();
+    const metadataObj = this.generateMetaData();
     const metaData: string[] = [`import { Schema } from "@aws-amplify/datastore";`, ''];
-    metaData.push(`export const schema: Schema = ${JSON.stringify(metadatObj, null, 4)};`);
+    metaData.push(`export const schema: Schema = ${JSON.stringify(metadataObj, null, 4)};`);
     return metaData.join('\n');
   }
 
   protected generateJavaScriptMetaData(): string {
-    const metadatObj = this.generateMetaData();
+    const metadataObj = this.generateMetaData();
     const metaData: string[] = [];
-    metaData.push(`export const schema = ${JSON.stringify(metadatObj, null, 4)};`);
+    metaData.push(`export const schema = ${JSON.stringify(metadataObj, null, 4)};`);
     return metaData.join('\n');
   }
 
@@ -135,7 +134,6 @@ export class AppSyncJSONVisitor<
         fields: obj.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
           acc[this.getFieldName(field)] = {
             name: this.getFieldName(field),
-            targetName: field.name,
             isArray: field.isList,
             type: this.getType(field.type),
             isRequired: !field.isNullable,

@@ -235,8 +235,4 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected getEnumValue(value: string): string {
     return camelCase(value);
   }
-
-  protected getFieldName(field: CodeGenField): string {
-    return camelCase(field.name);
-  }
 }

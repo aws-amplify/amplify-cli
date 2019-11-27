@@ -35,6 +35,7 @@ export class AppSyncModelTypeScriptVisitor<
   ];
 
   generate(): string {
+    this.processConnectionDirective();
     const imports = this.generateImports();
     const enumDeclarations = Object.values(this.enumMap)
       .map(enumObj => this.generateEnumDeclarations(enumObj))
@@ -197,10 +198,6 @@ export class AppSyncModelTypeScriptVisitor<
 
   protected getListType(typeStr: string): string {
     return `${typeStr}[]`;
-  }
-
-  protected getFieldName(field: CodeGenField): string {
-    return camelCase(field.name);
   }
 
   protected getNativeType(field: CodeGenField): string {
