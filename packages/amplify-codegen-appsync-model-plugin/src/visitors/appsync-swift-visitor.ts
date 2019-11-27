@@ -3,12 +3,7 @@ import { camelCase, lowerCaseFirst } from 'change-case';
 import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
 import { CodeGenConnectionType } from '../utils/process-connections';
-const schemaTypeMap: Record<string, string> = {
-  String: '.string',
-  AWSDate: '.dateTime',
-  AWSTime: '.dateTime',
-  Boolean: '.bool',
-};
+import { schemaTypeMap } from '../configs/swift-config';
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
   protected imports: string[] = ['import Amplify', 'import Foundation'];
@@ -184,20 +179,21 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     const name = `${modelKeysName}.${this.getFieldName(field)}`;
     const typeName = this.getSwiftModelTypeName(field);
     const { connectionInfo } = field;
+    const isRequired = field.isNullable ? '.optional' : '.required';
     // connected field
     if (connectionInfo) {
       if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
-        return `.hasMany(${name}, ofType: ${typeName}, associatedWith: ${this.getModelName(
+        return `.hasMany(${name}, is: ${isRequired}, ofType: ${typeName}, associatedWith: ${this.getModelName(
           connectionInfo.connectedModel
         )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
       }
       if (connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
-        return `.hasOne(${name}, ofType: ${typeName}, associatedWith: ${this.getModelName(
+        return `.hasOne(${name}, is: ${isRequired}, ofType: ${typeName}, associatedWith: ${this.getModelName(
           connectionInfo.connectedModel
         )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
       }
       if (connectionInfo.kind === CodeGenConnectionType.BELONGS_TO) {
-        return `.belongsTo(${name}, ofType: ${typeName}, targetName: "${connectionInfo.targetName}")`;
+        return `.belongsTo(${name}, is: ${isRequired}, ofType: ${typeName}, targetName: "${connectionInfo.targetName}")`;
       }
     }
 
@@ -213,7 +209,6 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       }
     }
 
-    const isRequired = field.isNullable ? '.optional' : '.required';
     const args = [`${name}`, `is: ${isRequired}`, `ofType: ${ofType}`].filter(arg => arg).join(', ');
     return `.field(${args})`;
   }
