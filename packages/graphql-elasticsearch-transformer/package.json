@@ -16,8 +16,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "cloudform": "^3.5.0",
-    "cloudform-types": "^3.7.0",
+    "cloudform": "^4.1.0",
+    "cloudform-types": "^4.1.0",
     "graphql": "^0.13.2",
     "graphql-mapping-template": "4.1.1",
     "graphql-transformer-common": "4.1.1",
@@ -25,13 +25,13 @@
   },
   "devDependencies": {
     "@types/jest": "23.1.1",
-    "@types/node": "^8.10.51",
+    "@types/node": "^8.10.59",
     "bestzip": "^2.0.0",
     "graphql-dynamodb-transformer": "6.1.1",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
-    "typescript": "^3.6.4"
+    "typescript": "~3.6.4"
   },
   "jest": {
     "transform": {

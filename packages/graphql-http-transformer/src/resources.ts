@@ -1,6 +1,4 @@
-import { AppSync, Fn } from 'cloudform-types';
-import { Value } from 'cloudform-types/types/dataTypes';
-import Template from 'cloudform-types/types/template';
+import { AppSync, Fn, Value } from 'cloudform-types';
 import {
   and,
   comment,
@@ -19,6 +17,7 @@ import {
 } from 'graphql-mapping-template';
 import { HttpResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { HttpHeader } from './HttpTransformer';
+import Template from 'cloudform-types/types/template';
 export class ResourceFactory {
   public makeParams() {
     return {};

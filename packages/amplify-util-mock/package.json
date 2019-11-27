@@ -26,9 +26,9 @@
   "devDependencies": {
     "@types/jest": "^24.0.16",
     "@types/lodash": "^4.14.129",
-    "@types/node": "^8.10.51",
+    "@types/node": "^8.10.59",
     "aws-amplify": "^1.1.36",
-    "aws-sdk": "^2.577.0",
+    "aws-sdk": "^2.580.0",
     "axios": "^0.19.0",
     "graphql-auth-transformer": "6.1.1",
     "graphql-connection-transformer": "4.1.1",
@@ -46,7 +46,7 @@
     "node-fetch": "^2.6.0",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
-    "typescript": "^3.6.4",
+    "typescript": "~3.6.4",
     "uuid": "^3.3.3",
     "ws": "4.0.0"
   },
