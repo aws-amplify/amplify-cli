@@ -8,8 +8,11 @@ const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
 const { addFileToXcodeProj } = require('./xcodeHelpers');
 const ini = require('ini');
+const semver = require('semver');
+const stripAnsi = require('strip-ansi');
+const { engines } = require('../package.json');
 
-const amplifyCliPackageName = '@aws-amplify/cli@canary';
+const amplifyCliPackageName = '@aws-amplify/cli';
 
 function run() {
   const projpath = args.path;
@@ -38,14 +41,11 @@ function run() {
 // Node version check
 async function checkNodeVersion() {
   const currentNodeVersion = process.versions.node;
-  const semver = currentNodeVersion.split('.');
-  const major = semver[0];
-  const minor = semver[1];
-
-  if (major < 8 || (major === 8 && minor < 12)) {
+  const minNodeVersion = engines.node;
+  if (!semver.satisfies(currentNodeVersion, minNodeVersion)) {
     console.error(
       `You are running Node ${currentNodeVersion}.\n` +
-        `Amplify CLI requires Node 8.12.0 or higher. \n` +
+        `Amplify CLI requires Node ${minNodeVersion}. \n` +
         `Please update your version of Node.`
     );
     process.exit(1);
@@ -54,12 +54,13 @@ async function checkNodeVersion() {
 
 async function installAmplifyCLI() {
   const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
-
-  if (amplifyCLIVersionCheck.stderr !== null) {
-    console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersionCheck.stdout.toString()}`);
+  const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionCheck.stdout.toString()));
+  const minCLIVersion = engines['@aws-amplify/cli'];
+  if (amplifyCLIVersionCheck.stderr !== null && semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
+    console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersion}`);
   } else {
     // Install the CLI
-    console.log(`${emoji.get('worried')} Amplify CLI not found on your system.`);
+    console.log(`${emoji.get('worried')} Amplify CLI version ${minCLIVersion} not found.`);
     console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
 
     return new Promise((resolve, reject) => {
@@ -308,6 +309,7 @@ async function createJSHelperFiles() {
 
   const devDependencies = {
     ini: '^1.3.5',
+    inquirer: '^6.5.1',
   };
 
   Object.assign(packageJSON.scripts, runScripts);

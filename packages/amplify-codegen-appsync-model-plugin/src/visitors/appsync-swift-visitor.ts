@@ -2,27 +2,24 @@ import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common'
 import { camelCase, lowerCaseFirst } from 'change-case';
 import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
-const schemaTypeMap: Record<string, string> = {
-  String: '.string',
-  AWSDate: '.dateTime',
-  AWSTime: '.dateTime',
-  Boolean: '.bool',
-};
+import { CodeGenConnectionType } from '../utils/process-connections';
+import { schemaTypeMap } from '../configs/swift-config';
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
-  protected imports: string[] = ['import Foundation'];
+  protected imports: string[] = ['import Amplify', 'import Foundation'];
   generate(): string {
+    this.processConnectionDirective();
+    const code = [`// swiftlint:disable all`];
     if (this._parsedConfig.generate === CodeGenGenerateEnum.metadata) {
-      return this.generateSchema();
+      code.push(this.generateSchema());
+    } else if (this._parsedConfig.generate === CodeGenGenerateEnum.loader) {
+      code.push(this.generateClassLoader());
+    } else if (this.selectedTypeIsEnum()) {
+      code.push(this.generateEnums());
+    } else {
+      code.push(this.generateStruct());
     }
-    if (this._parsedConfig.generate === CodeGenGenerateEnum.loader) {
-      return this.generateClassLoader();
-    }
-
-    if (this.selectedTypeIsEnum()) {
-      return this.generateEnums();
-    }
-    return this.generateStruct();
+    return code.join('\n');
   }
   generateStruct(): string {
     let result: string[] = [...this.imports, ''];
@@ -33,9 +30,11 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
         .withProtocols(['Model']);
       Object.entries(obj.fields).forEach(([fieldName, field]) => {
         const fieldType = this.getNativeType(field);
-        structBlock.addProperty(field.name, fieldType, undefined, 'public', {
-          optional: field.isNullable,
+        const isVariable = field.name !== 'id';
+        structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'public', {
+          optional: !this.isFieldRequired(field),
           isList: field.isList,
+          variable: isVariable,
         });
       });
       const initImpl: string = this.getInitBody(obj.fields);
@@ -50,8 +49,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
           flags: { optional: field.isNullable, isList: field.isList },
         })),
         'public',
-        {},
-        'MARK: constructor'
+        {}
       );
       result.push(structBlock.string);
     });
@@ -78,9 +76,9 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   generateSchema(): string {
     let result: string[] = [...this.modelExtensionImports, ''];
 
-    Object.entries(this.getSelectedModels())
-      .filter(([_, m]) => m.type === 'model')
-      .forEach(([_, model]) => {
+    Object.values(this.getSelectedModels())
+      .filter(m => m.type === 'model')
+      .forEach(model => {
         const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getModelName(model));
 
         this.generateCodingKeys(this.getModelName(model), model, schemaDeclarations),
@@ -120,6 +118,8 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       '{ model in',
       `let ${keysName} = ${this.getModelName(model)}.keys`,
       '',
+      `model.pluralName = "${this.pluralizeModelName(model)}"`,
+      '',
       'model.fields(',
       indentMultiline(fields.join(',\n')),
       ')',
@@ -147,11 +147,12 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       .withName('AmplifyModels')
       .asKind('class')
       .final()
+      .withProtocols(['DataStoreModelRegistration'])
       .withComment('Contains the set of classes that conforms to the `Model` protocol.');
 
-    classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', { static: true });
-    const impl: string = ['return [', indentMultiline(structList.join(',\n')), ']'].join('\n');
-    classDeclaration.addClassMethod('get', '[Model.Type]', impl, undefined, 'public', { static: true });
+    classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', {});
+    const body = structList.map(modelClass => `ModelRegistry.register(modelType: ${modelClass})`).join('\n');
+    classDeclaration.addClassMethod('registerModels', null, body, undefined, 'public', {});
 
     result.push(classDeclaration.string);
 
@@ -160,7 +161,8 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   private getInitBody(fields: CodeGenField[]): string {
     let result = fields.map(field => {
-      return indent(`self.${field.name} = ${field.name}`);
+      const fieldName = this.getFieldName(field);
+      return indent(`self.${fieldName} = ${fieldName}`);
     });
 
     return result.join('\n');
@@ -170,16 +172,36 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   }
 
   private generateFieldSchema(field: CodeGenField, modelKeysName: string): string {
-    if (field.type === 'ID') {
+    if (field.type === 'ID' && field.name === 'id') {
       return `.id()`;
     }
     let ofType;
     const isEnumType = this.isEnumType(field);
     const isModelType = this.isModelType(field);
+    const name = `${modelKeysName}.${this.getFieldName(field)}`;
+    const typeName = this.getSwiftModelTypeName(field);
+    const { connectionInfo } = field;
+    const isRequired = this.isFieldRequired(field) ? '.required' : '.optional';
+    // connected field
+    if (connectionInfo) {
+      if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
+        return `.hasMany(${name}, is: ${isRequired}, ofType: ${typeName}, associatedWith: ${this.getModelName(
+          connectionInfo.connectedModel
+        )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
+      }
+      if (connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
+        return `.hasOne(${name}, is: ${isRequired}, ofType: ${typeName}, associatedWith: ${this.getModelName(
+          connectionInfo.connectedModel
+        )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
+      }
+      if (connectionInfo.kind === CodeGenConnectionType.BELONGS_TO) {
+        return `.belongsTo(${name}, is: ${isRequired}, ofType: ${typeName}, targetName: "${connectionInfo.targetName}")`;
+      }
+    }
+
     if (field.isList) {
       ofType = `.collection(of: ${this.getSwiftModelTypeName(field)})`;
     } else {
-      const typeName = this.getSwiftModelTypeName(field);
       if (isEnumType) {
         ofType = `.enum(${typeName})`;
       } else if (isModelType) {
@@ -189,10 +211,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       }
     }
 
-    const name = `${modelKeysName}.${this.getFieldName(field)}`;
-    const isRequired = field.isNullable ? '.optional' : '.required';
-    const connection = this.getFieldConnection(field);
-    const args = [`${name}`, `is: ${isRequired}`, `ofType: ${ofType}`, connection].filter(arg => arg).join(', ');
+    const args = [`${name}`, `is: ${isRequired}`, `ofType: ${ofType}`].filter(arg => arg).join(', ');
     return `.field(${args})`;
   }
 
@@ -210,18 +229,22 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     return '.string';
   }
 
-  private getFieldConnection(field: CodeGenField): string | void {
-    //connection
-    const connectionDirective = field.directives.find(d => d.name === 'connection');
-    if (connectionDirective) {
-      const connectionArgs = Object.entries(connectionDirective.arguments).map(([name, value]) => {
-        return `${name}: "${value}"`;
-      });
-      return `.connected(${connectionArgs.join(', ')})`;
-    }
-  }
-
   protected getEnumValue(value: string): string {
     return camelCase(value);
+  }
+
+  /**
+   * checks if a field is required or optional field
+   * There is a special case for fields which have hasMany connection
+   * Swift needs to unwrap the object and when its possible that a hasMany field may not
+   * be in the graphql selection set which means its null/undefined. To handle this
+   * the struct needs the field to be optional even when the field is required in GraphQL schema
+   * @param field field
+   */
+  protected isFieldRequired(field: CodeGenField): boolean {
+    if (field.connectionInfo && field.connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
+      return false;
+    }
+    return !field.isNullable;
   }
 }

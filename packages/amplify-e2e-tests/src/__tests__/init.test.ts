@@ -1,19 +1,10 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
-import {
-  initJSProjectWithProfile,
-  deleteProject,
-  initProjectWithAccessKey,
-  initNewEnvWithAccessKey,
-  initNewEnvWithProfile,
-} from '../src/init';
-import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from '../src/utils';
-import { access } from 'fs';
+import { initJSProjectWithProfile, deleteProject, initProjectWithAccessKey, initNewEnvWithAccessKey, initNewEnvWithProfile } from '../init';
+import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from '../utils';
 
 describe('amplify init', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {
@@ -27,9 +18,9 @@ describe('amplify init', () => {
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
-    await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
-    await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
-    await expect(DeploymentBucketName).toBeAS3Bucket();
+    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // init new env
     await initNewEnvWithProfile(projRoot, { envName: 'foo' });
@@ -49,9 +40,9 @@ describe('amplify init', () => {
     expect(AuthRoleArn).not.toEqual(newEnvAuthRoleArn);
     expect(DeploymentBucketName).not.toEqual(newEnvDeploymentBucketName);
 
-    await expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
-    await expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
-    await expect(newEnvDeploymentBucketName).toBeAS3Bucket();
+    expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
+    expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
+    expect(newEnvDeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
   });
 
   it('should init project without profile', async () => {
@@ -68,9 +59,9 @@ describe('amplify init', () => {
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
-    await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
-    await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
-    await expect(DeploymentBucketName).toBeAS3Bucket();
+    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // init new env
     await initNewEnvWithAccessKey(projRoot, {
@@ -94,8 +85,8 @@ describe('amplify init', () => {
     expect(AuthRoleArn).not.toEqual(newEnvAuthRoleArn);
     expect(DeploymentBucketName).not.toEqual(newEnvDeploymentBucketName);
 
-    await expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
-    await expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
-    await expect(newEnvDeploymentBucketName).toBeAS3Bucket();
+    expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
+    expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
+    expect(newEnvDeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
   });
 });

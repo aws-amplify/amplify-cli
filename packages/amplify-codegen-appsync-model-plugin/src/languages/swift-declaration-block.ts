@@ -249,8 +249,8 @@ export class SwiftDeclarationBlock {
   private generateArgsStr(args: MethodArgument[]): string {
     const res: string[] = args.reduce((acc: string[], arg) => {
       const val: string | null = arg.value ? arg.value : arg.flags.isList ? '[]' : arg.flags.optional ? 'nil' : null;
-      const type = arg.flags.isList ? `[${arg.type}]` : arg.type;
-      acc.push([arg.name, ': ', type, !arg.flags.isList && arg.flags.optional ? '?' : '', val ? ` = ${val}` : ''].join(''));
+      const type = arg.flags.isList ? `List<${arg.type}>` : arg.type;
+      acc.push([arg.name, ': ', type, arg.flags.optional ? '?' : '', val ? ` = ${val}` : ''].join(''));
       return acc;
     }, []);
 
@@ -258,14 +258,13 @@ export class SwiftDeclarationBlock {
   }
 
   private generatePropertiesStr(prop: StructProperty): string {
-    const propertyTypeName = prop.flags.isList ? `[${prop.type}]` : prop.type;
-    const propertyType = propertyTypeName ? `:${propertyTypeName}${prop.flags.optional && !prop.flags.isList ? '?' : ''}` : '';
+    const propertyTypeName = prop.flags.isList ? `List<${prop.type}>` : prop.type;
+    const propertyType = propertyTypeName ? `: ${propertyTypeName}${prop.flags.optional ? '?' : ''}` : '';
     let resultArr: string[] = [
       prop.access,
       prop.flags.static ? 'static' : '',
       prop.flags.variable ? 'var' : 'let',
-      `${prop.name}`,
-      propertyType,
+      `${prop.name}${propertyType}`,
     ];
 
     const getterStr = prop.getter ? `{\n${indentMultiline(prop.getter)} \n}` : null;
@@ -297,6 +296,6 @@ export class SwiftDeclarationBlock {
       .filter(section => !!section)
       .map(section => (insertNewLine ? `${section}\n` : section))
       .join(joinStr)
-      .trimEnd();
+      .trim();
   }
 }

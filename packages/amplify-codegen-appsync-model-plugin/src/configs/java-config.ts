@@ -1,3 +1,5 @@
+import { CodeGenConnectionType } from '../utils/process-connections';
+
 // Name of the Generated Java Package
 export const GENERATED_PACKAGE_NAME = 'com.amplifyframework.datastore.generated.model';
 
@@ -12,7 +14,6 @@ export const CLASS_IMPORT_PACKAGES = [
   '',
   'androidx.core.util.ObjectsCompat',
   '',
-  'com.amplifyframework.AmplifyException',
   'com.amplifyframework.core.model.Model',
   'com.amplifyframework.core.model.annotations.Index',
   'com.amplifyframework.core.model.annotations.ModelConfig',
@@ -35,3 +36,9 @@ export const LOADER_IMPORT_PACKAGES = [
   'java.util.HashSet',
   'java.util.Set',
 ];
+
+export const CONNECTION_RELATIONSHIP_IMPORTS: { [key in CodeGenConnectionType]: string } = {
+  BELONGS_TO: 'com.amplifyframework.core.model.annotations.BelongsTo',
+  HAS_MANY: 'com.amplifyframework.core.model.annotations.HasMany',
+  HAS_ONE: 'com.amplifyframework.core.model.annotations.HasOne',
+};

@@ -1,4 +1,4 @@
-import * as nexpect from 'nexpect';
+import * as nexpect from '../utils/nexpect-modified';
 import { getCLIPath, isCI } from '../utils';
 
 export function addAnalytics(cwd: string, settings: any, verbose: boolean = !isCI()) {
@@ -16,8 +16,11 @@ export function addAnalytics(cwd: string, settings: any, verbose: boolean = !isC
       .wait(`Successfully added resource ${settings.rightName} locally`)
       .sendEof()
       .run((err: Error) => {
-        if (!err) resolve();
-        else reject(err);
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
       });
   });
 }
@@ -30,13 +33,16 @@ export function removeAnalytics(cwd: string, settings: any, verbose: boolean = !
       .send('j')
       .sendline('\r')
       .wait('Are you sure you want to delete the resource?')
-      .send('Y')
+      .send('y')
       .sendline('\r')
       .wait('Successfully removed resource')
       .sendEof()
       .run((err: Error) => {
-        if (!err) resolve();
-        else reject(err);
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
       });
   });
 }

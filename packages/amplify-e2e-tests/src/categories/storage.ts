@@ -1,11 +1,5 @@
-import * as nexpect from 'nexpect';
-import { join } from 'path';
-import * as fs from 'fs';
-
-import { getCLIPath, isCI, getEnvVars } from '../utils';
-const defaultSettings = {
-  projectName: 'CLI Storage test',
-};
+import * as nexpect from '../utils/nexpect-modified';
+import { getCLIPath, isCI } from '../utils';
 
 export function addSimpleDDB(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
@@ -39,8 +33,7 @@ export function addSimpleDDB(cwd: string, settings: any, verbose: boolean = !isC
       .sendline('n')
       .sendline('\r')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -89,8 +82,7 @@ export function addDDBWithTrigger(cwd: string, settings: any, verbose: boolean =
       .sendline('n')
       .sendline('\r')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -126,9 +118,10 @@ export function updateDDBWithTrigger(cwd: string, settings: any, verbose: boolea
       .wait('Do you want to edit the local')
       .sendline('n')
       .sendline('\r')
+      .wait('overwrite')
+      .sendline('y')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -164,8 +157,7 @@ export function addS3WithTrigger(cwd: string, settings: any, verbose: boolean = 
       .sendline('n')
       .sendline('\r')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -217,11 +209,11 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any, verbose: bool
       .sendline('y')
       .sendline('\r')
       .sendEof()
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
-          reject();
+          reject(err);
         }
       });
   });
@@ -274,8 +266,7 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any, verbose: boolean
       .sendline('n')
       .sendline('\r')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

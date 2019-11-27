@@ -7,7 +7,10 @@ jest.mock('inquirer');
 describe('askAppSyncAPITarget', () => {
   const mockContext = 'MOCK_CONTEXT';
   const selectedAPI = 'appsync-selected-api';
-  const appSyncAPIs = [{ name: 'api1', id: selectedAPI }, { name: 'api2', id: 'non-selected-api' }];
+  const appSyncAPIs = [
+    { name: 'api1', id: selectedAPI },
+    { name: 'api2', id: 'non-selected-api' },
+  ];
 
   beforeEach(() => {
     jest.resetAllMocks();

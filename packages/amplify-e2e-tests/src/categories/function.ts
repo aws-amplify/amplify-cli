@@ -1,11 +1,5 @@
 import * as nexpect from 'nexpect';
-import { join } from 'path';
-import * as fs from 'fs';
-
-import { getCLIPath, isCI, getEnvVars } from '../utils';
-const defaultSettings = {
-  projectName: 'CLI Function test',
-};
+import { getCLIPath, isCI } from '../utils';
 
 export function addHelloWorldFunction(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
@@ -22,8 +16,7 @@ export function addHelloWorldFunction(cwd: string, settings: any, verbose: boole
       .wait('Do you want to edit the local lambda function now')
       .sendline('n')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -40,8 +33,7 @@ export function functionBuild(cwd: string, settings: any, verbose: boolean = !is
       .wait('Are you sure you want to continue building the resources?')
       .sendline('Y')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

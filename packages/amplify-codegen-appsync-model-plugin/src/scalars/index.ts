@@ -18,10 +18,10 @@ export const JAVA_SCALAR_MAP: NormalizedScalarsMap = {
 };
 
 export const SWIFT_SCALAR_MAP: NormalizedScalarsMap = {
-  ID: 'Identifier',
+  ID: 'String',
   String: 'String',
   Int: 'Int',
-  Float: 'Decimal',
+  Float: 'Double',
   Boolean: 'Bool',
   AWSDate: 'Date',
   AWSTime: 'Date',

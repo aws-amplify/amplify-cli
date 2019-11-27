@@ -45,6 +45,8 @@ interface RelationArguments {
 }
 
 function makeConnectionAttributeName(type: string, field?: string) {
+  // The same logic is used in amplify-codegen-appsync-model-plugin package to generate association field
+  // Make sure the logic gets update in that package
   return field ? toCamelCase([type, field, 'id']) : toCamelCase([type, 'id']);
 }
 

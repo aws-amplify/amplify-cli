@@ -1,10 +1,16 @@
 import { indent, indentMultiline, transformComment } from '@graphql-codegen/visitor-plugin-common';
 import { camelCase, constantCase, pascalCase } from 'change-case';
 import dedent from 'ts-dedent';
-import { isArray } from 'util';
-import { CLASS_IMPORT_PACKAGES, GENERATED_PACKAGE_NAME, LOADER_CLASS_NAME, LOADER_IMPORT_PACKAGES } from '../configs/java-config';
+import {
+  CLASS_IMPORT_PACKAGES,
+  GENERATED_PACKAGE_NAME,
+  LOADER_CLASS_NAME,
+  LOADER_IMPORT_PACKAGES,
+  CONNECTION_RELATIONSHIP_IMPORTS,
+} from '../configs/java-config';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
+import { CodeGenConnectionType } from '../utils/process-connections';
 
 export class AppSyncModelJavaVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
@@ -13,6 +19,7 @@ export class AppSyncModelJavaVisitor<
   protected additionalPackages: Set<string> = new Set();
 
   generate(): string {
+    this.processConnectionDirective();
     if (this._parsedConfig.generate === 'loader') {
       return this.generateClassLoader();
     }
@@ -166,6 +173,8 @@ export class AppSyncModelJavaVisitor<
     // builder
     this.generateBuilderClass(model, classDeclarationBlock);
 
+    // copyOfBuilder for used for updating existing instance
+    this.generateCopyOfBuilderClass(model, classDeclarationBlock);
     // getters
     this.generateGetters(model, classDeclarationBlock);
 
@@ -179,6 +188,12 @@ export class AppSyncModelJavaVisitor<
 
     // builder
     this.generateBuilderMethod(model, classDeclarationBlock);
+
+    // justId method
+    this.generateJustIdMethod(model, classDeclarationBlock);
+
+    // copyBuilder method
+    this.generateCopyOfBuilderMethod(model, classDeclarationBlock);
 
     return classDeclarationBlock.string;
   }
@@ -221,6 +236,10 @@ export class AppSyncModelJavaVisitor<
     });
   }
 
+  /**
+   * Generate step builder interfaces for each non-null field in the model
+   *
+   */
   protected generateStepBuilderInterfaces(model: CodeGenModel): JavaDeclarationBlock[] {
     const nonNullableFields = model.fields.filter(field => !field.isNullable);
     const nullableFields = model.fields.filter(field => field.isNullable);
@@ -250,7 +269,7 @@ export class AppSyncModelJavaVisitor<
     builderBody.push(`${this.getModelName(model)} build();`);
 
     // id method. Special case as this can throw exception
-    builderBody.push(`${this.getStepInterfaceName('Build')} id(String id) throws AmplifyException;`);
+    builderBody.push(`${this.getStepInterfaceName('Build')} id(String id) throws IllegalArgumentException;`);
 
     nullableFields.forEach(field => {
       const fieldName = this.getFieldName(field);
@@ -350,13 +369,8 @@ export class AppSyncModelJavaVisitor<
     try {
         UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
     } catch (Exception exception) {
-        throw new AmplifyException("Model IDs must be unique in the format of UUID.",
-                exception,
-                "If you are creating a new object, leave ID blank and one will be auto generated for you. " +
-                "Otherwise, if you are referencing an existing object, be sure you are getting the correct " +
-                "id for it. It's also possible you are referring to an item created outside of Amplify." +
-                "It is currently not supported.",
-                false);
+      throw new IllegalArgumentException("Model IDs must be unique in the format of UUID.",
+                exception);
     }
 
     return this;`;
@@ -365,7 +379,7 @@ export class AppSyncModelJavaVisitor<
     This should only be set when referring to an already existing object.
     @param id id
     @return Current Builder instance, for fluent method chaining
-    @throws AmplifyException Checks that ID is in the proper format`;
+    @throws IllegalArgumentException Checks that ID is in the proper format`;
 
     builderClassDeclaration.addClassMethod(
       'id',
@@ -376,10 +390,76 @@ export class AppSyncModelJavaVisitor<
       'public',
       {},
       [],
-      ['AmplifyException'],
+      ['IllegalArgumentException'],
       idComment
     );
     classDeclaration.nestedClass(builderClassDeclaration);
+  }
+
+  /**
+   * * Generate a CopyOfBuilder class that will be used to create copy of the current model.
+   * This is needed to mutate the object as all the generated models are immuteable and can
+   * be update only by creating a new instance using copyOfBuilder
+   * @param model
+   * @param classDeclaration
+   */
+  protected generateCopyOfBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+    const builderName = 'CopyOfBuilder';
+    const copyOfBuilderClassDeclaration = new JavaDeclarationBlock()
+      .access('public')
+      .final()
+      .asKind('class')
+      .withName(builderName)
+      .extends(['Builder']);
+
+    const nonNullableFields = model.fields.filter(field => !field.isNullable).filter(field => field.name !== 'id');
+    const nullableFields = model.fields.filter(field => field.isNullable);
+
+    // constructor
+    const constructorArguments = model.fields.map(field => {
+      return { name: this.getStepFunctionArgumentName(field), type: this.getNativeType(field) };
+    });
+    const stepBuilderInvocation = [...nonNullableFields, ...nullableFields].map(field => {
+      const methodName = this.getStepFunctionName(field);
+      const argumentName = this.getStepFunctionArgumentName(field);
+      return `.${methodName}(${argumentName})`;
+    });
+    const invocations = ['super', indentMultiline(stepBuilderInvocation.join('\n')).trim(), ';'].join('');
+    const body = ['super.id(id);', invocations].join('\n');
+    copyOfBuilderClassDeclaration.addClassMethod(builderName, null, body, constructorArguments, [], 'private');
+
+    // Non-nullable field setters need to be added to NewClass as this is not a step builder
+    [...nonNullableFields, ...nullableFields].forEach(field => {
+      const methodName = this.getStepFunctionName(field);
+      const argumentName = this.getStepFunctionArgumentName(field);
+      const argumentType = this.getNativeType(field);
+      const implementation = `return (${builderName}) super.${methodName}(${argumentName});`;
+      copyOfBuilderClassDeclaration.addClassMethod(
+        methodName,
+        builderName,
+        implementation,
+        [
+          {
+            name: argumentName,
+            type: argumentType,
+          },
+        ],
+        [],
+        'public',
+        {},
+        ['Override']
+      );
+    });
+    classDeclaration.nestedClass(copyOfBuilderClassDeclaration);
+  }
+
+  /**
+   * adds a copyOfBuilder method to the Model class. This method is used to create a copy of the model to mutate it
+   */
+  protected generateCopyOfBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+    const args = indentMultiline(model.fields.map(field => this.getFieldName(field)).join(',\n')).trim();
+    const methodBody = `return new CopyOfBuilder(${args});`;
+    classDeclaration.addClassMethod('copyOfBuilder', 'CopyOfBuilder', methodBody, [], [], 'public');
   }
 
   /**
@@ -479,7 +559,7 @@ export class AppSyncModelJavaVisitor<
         })
         .join(' &&\n'),
       4
-    ).trimStart();
+    ).trim();
 
     body.push(`return ${propCheck};`);
     body.push('}');
@@ -512,18 +592,17 @@ export class AppSyncModelJavaVisitor<
    */
   protected generateBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
     const requiredFields = model.fields.filter(field => !field.isNullable && !this.READ_ONLY_FIELDS.includes(field.name));
-    if (requiredFields.length) {
-      classDeclaration.addClassMethod(
-        'builder',
-        this.getStepInterfaceName(requiredFields[0].name),
-        indentMultiline(`return new Builder();`),
-        [],
-        [],
-        'public',
-        { static: true },
-        []
-      );
-    }
+    const returnType = requiredFields.length ? this.getStepInterfaceName(requiredFields[0].name) : this.getStepInterfaceName('Build');
+    classDeclaration.addClassMethod(
+      'builder',
+      returnType,
+      indentMultiline(`return new Builder();`),
+      [],
+      [],
+      'public',
+      { static: true },
+      []
+    );
   }
 
   /**
@@ -532,7 +611,7 @@ export class AppSyncModelJavaVisitor<
    * @returns string
    */
   private getStepInterfaceName(nextFieldName: string): string {
-    return `I${pascalCase(nextFieldName)}Step`;
+    return `${pascalCase(nextFieldName)}Step`;
   }
 
   protected generateModelAnnotations(model: CodeGenModel): string[] {
@@ -557,36 +636,79 @@ export class AppSyncModelJavaVisitor<
 
   protected generateFieldAnnotations(field: CodeGenField): string[] {
     const annotations: string[] = [];
+    annotations.push(this.generateModelFieldAnnotation(field));
+    annotations.push(this.generateConnectionAnnotation(field));
+    return annotations.filter(annotation => annotation);
+  }
+
+  protected generateModelFieldAnnotation(field: CodeGenField): string {
     const annotationArgs: string[] = [
       `targetName="${field.name}"`,
       `targetType="${field.type}"`,
       !field.isNullable ? 'isRequired = true' : '',
     ].filter(arg => arg);
 
-    annotations.push(`ModelField(${annotationArgs.join(', ')})`);
+    return `ModelField(${annotationArgs.join(', ')})`;
+  }
+  protected generateConnectionAnnotation(field: CodeGenField): string {
+    if (!field.connectionInfo) return '';
+    const { connectionInfo } = field;
+    // Add annotation to import
+    this.additionalPackages.add(CONNECTION_RELATIONSHIP_IMPORTS[connectionInfo.kind]);
 
-    field.directives.forEach(annotation => {
-      switch (annotation.name) {
-        case 'connection':
-          const connectionArgs: string[] = [];
-          Object.keys(annotation.arguments).forEach(argName => {
-            if (['name', 'keyField', 'sortField', 'keyName'].includes(argName)) {
-              connectionArgs.push(`${argName} = "${annotation.arguments[argName]}"`);
-            }
-          });
-          if (annotation.arguments.limit) {
-            connectionArgs.push(`limit = ${annotation.arguments.limit}`);
-          }
-          if (annotation.arguments.fields && isArray(annotation.arguments.fields)) {
-            const fieldArgs = (annotation.arguments.fields as string[]).map(f => `"${f}"`).join(', ');
-            connectionArgs.push(`fields = {{${fieldArgs}}`);
-          }
+    let connectionDirectiveName: string = '';
+    const connectionArguments: string[] = [];
 
-          if (connectionArgs.length) {
-            annotations.push(`Connection(${connectionArgs.join(', ')})`);
-          }
-      }
-    });
-    return annotations;
+    switch (connectionInfo.kind) {
+      case CodeGenConnectionType.HAS_ONE:
+        connectionDirectiveName = 'HasOne';
+        connectionArguments.push(`associatedWith = "${this.getFieldName(connectionInfo.associatedWith)}"`);
+        break;
+      case CodeGenConnectionType.HAS_MANY:
+        connectionDirectiveName = 'HasMany';
+        connectionArguments.push(`associatedWith = "${this.getFieldName(connectionInfo.associatedWith)}"`);
+        break;
+      case CodeGenConnectionType.BELONGS_TO:
+        connectionDirectiveName = 'BelongsTo';
+        connectionArguments.push(`targetName = "${connectionInfo.targetName}"`);
+        break;
+    }
+    connectionArguments.push(`type = ${this.getModelName(connectionInfo.connectedModel)}.class`);
+
+    return `${connectionDirectiveName}${connectionArguments.length ? `(${connectionArguments.join(', ')})` : ''}`;
+  }
+  protected generateJustIdMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+    const returnType = this.getModelName(model);
+    const comment = dedent`WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+        This is a convenience method to return an instance of the object with only its ID populated
+        to be used in the context of a parameter in a delete mutation or referencing a foreign key
+        in a relationship.
+        @param id the id of the existing item this instance will represent
+        @return an instance of this model with only ID populated
+        @throws IllegalArgumentException Checks that ID is in the proper format`;
+    const exceptionBlock = dedent`
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              "Model IDs must be unique in the format of UUID. This method is for creating instances " +
+              "of an existing object with only its ID field for sending as a mutation parameter. When " +
+              "creating a new object, use the standard builder method and leave the ID field blank."
+      );
+    }`;
+    const initArgs = indentMultiline(['id', ...new Array(model.fields.length - 1).fill('null')].join(',\n'));
+    const initBlock = `return new ${returnType}(\n${initArgs}\n);`;
+    classDeclaration.addClassMethod(
+      'justId',
+      returnType,
+      [exceptionBlock, initBlock].join('\n'),
+      [{ name: 'id', type: 'String' }],
+      [],
+      'public',
+      { static: true },
+      [],
+      [],
+      comment
+    );
   }
 }

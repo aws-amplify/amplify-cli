@@ -1,5 +1,5 @@
-import { isCI } from '../utils';
 import * as nexpect from 'nexpect';
+import { isCI } from '../utils';
 import { getCLIPath } from '../utils/index';
 
 // add convert resource
@@ -24,10 +24,9 @@ export function addConvert(cwd: string, settings: any, verbose: boolean = !isCI(
       .sendline('j')
       .sendline('\r')
       .sendEof()
-      // .send
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
-          resolve(resourceName);
+          resolve();
         } else {
           reject(err);
         }
@@ -42,8 +41,6 @@ export function addIdentifyCollection(cwd: string, settings: any, verbose: boole
     nexpect
       .spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the categories below')
-      // j = down arrow
-      // .sendline('j')
       .sendline('\r')
       .wait('What would you like to identify?')
       .sendline('j')
@@ -66,10 +63,9 @@ export function addIdentifyCollection(cwd: string, settings: any, verbose: boole
       .wait('The CLI would be provisioning an S3 bucket')
       .sendline('\r')
       .sendEof()
-      // .send
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
-          resolve(resourceName);
+          resolve();
         } else {
           reject(err);
         }
@@ -95,9 +91,9 @@ export function addInterpret(cwd: string, settings: any, verbose: boolean = !isC
       .wait('Who should have access?')
       .sendline('j')
       .sendEof()
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
-          resolve(resourceName);
+          resolve();
         } else {
           reject(err);
         }

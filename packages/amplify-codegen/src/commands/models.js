@@ -3,7 +3,7 @@ const { parse } = require('graphql');
 const { readFileSync, writeFileSync, ensureFileSync, pathExistsSync, lstatSync, readdirSync } = require('fs-extra');
 const gqlCodeGen = require('@graphql-codegen/core');
 
-const appSyncLocalCodeGen = require('amplify-codegen-appsync-model-plugin');
+const appSyncDataStoreCodeGen = require('amplify-codegen-appsync-model-plugin');
 
 async function generateModels(context) {
   // steps:
@@ -41,7 +41,7 @@ async function generateModels(context) {
   const schema = parse(schemaContent);
   const projectConfig = context.amplify.getProjectConfig();
 
-  const appsyncLocalConfig = await appSyncLocalCodeGen.preset.buildGeneratesSection({
+  const appsyncLocalConfig = await appSyncDataStoreCodeGen.preset.buildGeneratesSection({
     baseOutputDir: outputPath,
     schema,
     config: {
@@ -59,7 +59,7 @@ async function generateModels(context) {
         },
       ],
       pluginMap: {
-        appSyncLocalCodeGen,
+        appSyncLocalCodeGen: appSyncDataStoreCodeGen,
       },
     });
   });
@@ -105,7 +105,7 @@ function getModelOutputPath(context) {
     case 'javascript':
       return 'src';
     case 'android':
-      return projectConfig.android.config.ResDir;
+      return 'app/src/main/java/';
     case 'ios':
       return 'amplify/generated/models';
     default:

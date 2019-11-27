@@ -45,6 +45,7 @@ export class AppSyncModelJavascriptVisitor<
   }
 
   generate(): string {
+    this.processConnectionDirective();
     if (this._parsedConfig.isDeclaration) {
       const imports = this.generateImports();
       const enumDeclarations = Object.values(this.enumMap)

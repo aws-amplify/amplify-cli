@@ -1,6 +1,7 @@
 import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-plugin-common';
 import { GraphQLSchema } from 'graphql';
-import { AppSyncModelVisitor, CodeGenDirective, CodeGenField, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
+import { CodeGenConnectionType } from '../utils/process-connections';
+import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 
 type JSONSchema = {
   models: JSONSchemaModels;
@@ -12,6 +13,7 @@ type JSONSchemaModel = {
   name: string;
   attributes?: JSONModelAttributes;
   fields: JSONModelFields;
+  pluralName: String;
   syncable?: boolean;
 };
 type JSONSchemaEnums = Record<string, JSONSchemaEnum>;
@@ -30,21 +32,39 @@ enum JSONGraphQLScalarType {
   Boolean = 'Boolean',
 }
 
+type AssociationBaseType = {
+  connectionType: CodeGenConnectionType;
+};
+
+type AssociationHasMany = AssociationBaseType & {
+  connectionType: CodeGenConnectionType.HAS_MANY;
+  associatedWith: string;
+};
+type AssociationHasOne = AssociationHasMany & {
+  connectionType: CodeGenConnectionType.HAS_ONE;
+};
+
+type AssociationBelongsTo = AssociationBaseType & {
+  targetName: string;
+};
+
+type AssociationType = AssociationHasMany | AssociationHasOne | AssociationBelongsTo;
+
 type JSONModelFieldType = JSONGraphQLScalarType | keyof typeof JSONGraphQLScalarType | { model: string } | { enum: string };
 type JSONModelField = {
   name: string;
-  targetName: string;
   type: JSONModelFieldType;
   isArray: boolean;
   isRequired?: boolean;
   attributes?: JSONModelFieldAttributes;
+  association?: AssociationType;
 };
 type JSONModelFieldAttributes = JSONModelFieldAttribute[];
 type JSONModelFieldAttribute = JSONModelAttribute;
 
 export interface RawAppSyncModelMetadataConfig extends RawAppSyncModelConfig {
   /**
-   * @name metaDataTarget
+   * @name metadataTarget
    * @type string
    * @description required, the language target for generated code
    *
@@ -54,17 +74,17 @@ export interface RawAppSyncModelMetadataConfig extends RawAppSyncModelConfig {
    * Models:
    * config:
    *    target: 'metadata'
-   *    metaDataTarget: 'typescript'
+   *    metadataTarget: 'typescript'
    *  plugins:
    *    - amplify-codegen-appsync-model-plugin
    * ```
-   * metaDataTarget: 'javascript'| 'typescript'
+   * metadataTarget: 'javascript'| 'typescript' | 'typedeclration'
    */
-  metaDataTarget?: string;
+  metadataTarget?: string;
 }
 
 export interface ParsedAppSyncModelMetadataConfig extends ParsedAppSyncModelConfig {
-  metaDataTarget: string;
+  metadataTarget: string;
 }
 export class AppSyncJSONVisitor<
   TRawConfig extends RawAppSyncModelMetadataConfig = RawAppSyncModelMetadataConfig,
@@ -77,31 +97,31 @@ export class AppSyncJSONVisitor<
     defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS
   ) {
     super(schema, rawConfig, additionalConfig, defaultScalars);
-    this._parsedConfig.metaDataTarget = rawConfig.metaDataTarget || 'json';
+    this._parsedConfig.metadataTarget = rawConfig.metadataTarget || 'javascript';
   }
   generate(): string {
-    if (this._parsedConfig.metaDataTarget === 'typescript') {
+    this.processConnectionDirective();
+    if (this._parsedConfig.metadataTarget === 'typescript') {
       return this.generateTypeScriptMetaData();
-    } else if (this._parsedConfig.metaDataTarget === 'javascript') {
+    } else if (this._parsedConfig.metadataTarget === 'javascript') {
       return this.generateJavaScriptMetaData();
-    } else if (this._parsedConfig.metaDataTarget === 'typedeclaration') {
+    } else if (this._parsedConfig.metadataTarget === 'typeDeclaration') {
       return this.generateTypeDeclaration();
     }
-
-    return this.generateJSONMetaData();
+    throw new Error(`Unsupported metadataTarget ${this._parsedConfig.metadataTarget}. Supported targets are javascript and typescript`);
   }
 
   protected generateTypeScriptMetaData(): string {
-    const metadatObj = this.generateMetaData();
+    const metadataObj = this.generateMetaData();
     const metaData: string[] = [`import { Schema } from "@aws-amplify/datastore";`, ''];
-    metaData.push(`export const schema: Schema = ${JSON.stringify(metadatObj, null, 4)};`);
+    metaData.push(`export const schema: Schema = ${JSON.stringify(metadataObj, null, 4)};`);
     return metaData.join('\n');
   }
 
   protected generateJavaScriptMetaData(): string {
-    const metadatObj = this.generateMetaData();
+    const metadataObj = this.generateMetaData();
     const metaData: string[] = [];
-    metaData.push(`export const schema = ${JSON.stringify(metadatObj, null, 4)};`);
+    metaData.push(`export const schema = ${JSON.stringify(metadataObj, null, 4)};`);
     return metaData.join('\n');
   }
 
@@ -125,16 +145,21 @@ export class AppSyncJSONVisitor<
       const model = {
         syncable: true,
         name: this.getModelName(obj),
-        attributes: this.generateAttributes(obj.directives),
+        pluralName: this.pluralizeModelName(obj),
+        attributes: this.generateModelAttributes(obj),
         fields: obj.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
-          acc[this.getFieldName(field)] = {
+          const fieldMeta: JSONModelField = {
             name: this.getFieldName(field),
-            targetName: field.name,
             isArray: field.isList,
             type: this.getType(field.type),
             isRequired: !field.isNullable,
-            attributes: this.generateAttributes(field.directives),
+            attributes: [],
           };
+          const association: AssociationType | void = this.getFieldAssociation(field);
+          if (association) {
+            fieldMeta.association = association;
+          }
+          acc[this.getFieldName(field)] = fieldMeta;
           return acc;
         }, {}),
       };
@@ -151,8 +176,21 @@ export class AppSyncJSONVisitor<
     return result;
   }
 
-  private generateAttributes(directives: CodeGenDirective[]): JSONModelAttributes {
-    return directives.map(d => ({
+  private getFieldAssociation(field: CodeGenField): AssociationType | void {
+    if (field.connectionInfo) {
+      const { connectionInfo } = field;
+      const connectionAttribute: any = { connectionType: connectionInfo.kind };
+      if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY || connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
+        connectionAttribute.associatedWith = this.getFieldName(connectionInfo.associatedWith);
+      } else {
+        connectionAttribute.targetName = connectionInfo.targetName;
+      }
+      return connectionAttribute;
+    }
+  }
+
+  private generateModelAttributes(model: CodeGenModel): JSONModelAttributes {
+    return model.directives.map(d => ({
       type: d.name,
       properties: d.arguments,
     }));

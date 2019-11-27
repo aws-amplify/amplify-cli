@@ -15,9 +15,7 @@ import {
   InputValueDefinitionNode,
   EnumValueDefinitionNode,
   TypeDefinitionNode,
-  DefinitionNode,
   DocumentNode,
-  print,
 } from 'graphql';
 import { InvalidTransformerError } from './errors';
 
@@ -90,10 +88,6 @@ export class Transformer implements ITransformer {
     directive: DirectiveNode,
     acc: TransformerContext
   ) => void;
-
-  getDirective(): string {
-    return [this.directive, ...this.typeDefinitions].map(node => print(node)).join('\n');
-  }
 
   /**
    * A transformer implements a single function per location that its directive can be applied.
