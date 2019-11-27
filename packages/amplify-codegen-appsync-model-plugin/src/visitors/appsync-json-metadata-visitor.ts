@@ -2,8 +2,6 @@ import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-
 import { GraphQLSchema } from 'graphql';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
-import { plural } from 'pluralize';
-import { upperCaseFirst } from 'change-case';
 
 type JSONSchema = {
   models: JSONSchemaModels;
@@ -208,9 +206,5 @@ export class AppSyncJSONVisitor<
       return { enum: this.enumMap[gqlType].name };
     }
     return { model: gqlType };
-  }
-
-  protected pluralizeModelName(model: CodeGenModel): string {
-    return plural(upperCaseFirst(model.name));
   }
 }

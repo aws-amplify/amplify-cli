@@ -7,6 +7,8 @@ import {
   RawConfig,
 } from '@graphql-codegen/visitor-plugin-common';
 import { constantCase, pascalCase } from 'change-case';
+import { plural } from 'pluralize';
+import { upperCaseFirst } from 'change-case';
 import * as crypto from 'crypto';
 import {
   DefinitionNode,
@@ -214,13 +216,10 @@ export class AppSyncModelVisitor<
     }
     const enumName = this.getEnumName(node.name.value);
     const values = node.values
-      ? node.values.reduce(
-          (acc, val) => {
-            acc[this.getEnumValue(val.name.value)] = val.name.value;
-            return acc;
-          },
-          {} as any
-        )
+      ? node.values.reduce((acc, val) => {
+          acc[this.getEnumValue(val.name.value)] = val.name.value;
+          return acc;
+        }, {} as any)
       : {};
     this.enumMap[node.name.value] = {
       name: enumName,
@@ -401,6 +400,10 @@ export class AppSyncModelVisitor<
         }
       });
     });
+  }
+
+  protected pluralizeModelName(model: CodeGenModel): string {
+    return plural(upperCaseFirst(model.name));
   }
 
   get types() {

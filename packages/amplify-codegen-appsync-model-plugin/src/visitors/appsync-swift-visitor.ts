@@ -118,6 +118,8 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       '{ model in',
       `let ${keysName} = ${this.getModelName(model)}.keys`,
       '',
+      `model.pluralName = "${this.pluralizeModelName(model)}"`,
+      '',
       'model.fields(',
       indentMultiline(fields.join(',\n')),
       ')',
