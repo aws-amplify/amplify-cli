@@ -75,10 +75,10 @@ async function installAmplifyCLI() {
 
 // Check the amplify CLI version, install latest CLI if it does not exist or is too old
 async function amplifyCLIVersionCheck() {
-  const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
+  const amplifyCLIVersionSpawn = spawnSync('amplify', ['-v']);
   const minCLIVersion = engines['@aws-amplify/cli'];
-  if (amplifyCLIVersionCheck.stderr !== null) {
-    const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionCheck.stdout.toString()));
+  if (amplifyCLIVersionSpawn.stderr !== null) {
+    const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionSpawn.stdout.toString()));
     if (semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
       console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersion}`);
     }
