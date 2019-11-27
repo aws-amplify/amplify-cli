@@ -618,7 +618,7 @@ export class AppSyncModelJavaVisitor<
     const annotations: string[] = model.directives.map(directive => {
       switch (directive.name) {
         case 'model':
-          return `ModelConfig(targetName = "${model.name}")`;
+          return `ModelConfig(pluralName = "${this.pluralizeModelName(model)}")`;
           break;
         case 'key':
           const args: string[] = [];
@@ -642,11 +642,7 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateModelFieldAnnotation(field: CodeGenField): string {
-    const annotationArgs: string[] = [
-      `targetName="${field.name}"`,
-      `targetType="${field.type}"`,
-      !field.isNullable ? 'isRequired = true' : '',
-    ].filter(arg => arg);
+    const annotationArgs: string[] = [`targetType="${field.type}"`, !field.isNullable ? 'isRequired = true' : ''].filter(arg => arg);
 
     return `ModelField(${annotationArgs.join(', ')})`;
   }

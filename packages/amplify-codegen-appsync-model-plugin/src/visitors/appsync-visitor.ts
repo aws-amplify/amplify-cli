@@ -8,7 +8,6 @@ import {
 } from '@graphql-codegen/visitor-plugin-common';
 import { constantCase, pascalCase } from 'change-case';
 import { plural } from 'pluralize';
-import { upperCaseFirst } from 'change-case';
 import * as crypto from 'crypto';
 import {
   DefinitionNode,
@@ -317,7 +316,7 @@ export class AppSyncModelVisitor<
   }
 
   protected getModelName(model: CodeGenModel) {
-    return pascalCase(model.name);
+    return model.name;
   }
 
   protected getEnumValue(value: string): string {
@@ -403,7 +402,7 @@ export class AppSyncModelVisitor<
   }
 
   protected pluralizeModelName(model: CodeGenModel): string {
-    return plural(upperCaseFirst(model.name));
+    return plural(model.name);
   }
 
   get types() {
