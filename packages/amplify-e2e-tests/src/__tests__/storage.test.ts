@@ -1,6 +1,5 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
-import { addAuthWithDefault } from '../src/categories/auth';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../init';
+import { addAuthWithDefault } from '../categories/auth';
 import {
   addSimpleDDB,
   addDDBWithTrigger,
@@ -8,14 +7,13 @@ import {
   addS3WithTrigger,
   addSimpleDDBwithGSI,
   updateSimpleDDBwithGSI,
-} from '../src/categories/storage';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from '../src/utils';
+} from '../categories/storage';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from '../utils';
 
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {
@@ -44,7 +42,6 @@ describe('amplify add/update storage(DDB) with GSI', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {
@@ -65,7 +62,6 @@ describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {

@@ -1,14 +1,12 @@
-require('../src/aws-matchers');
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getAWSExports, getCollection } from '../src/utils';
-import { addConvert, addInterpret, addIdentifyCollection } from '../src/categories/predictions';
-import { addAuthWithDefault } from '../src/categories/auth';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../init';
+import { createNewProjectDir, deleteProjectDir, getAWSExports, getCollection } from '../utils';
+import { addConvert, addInterpret, addIdentifyCollection } from '../categories/predictions';
+import { addAuthWithDefault } from '../categories/auth';
 
 describe('amplify add predictions', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {

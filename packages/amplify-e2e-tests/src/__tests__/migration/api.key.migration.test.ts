@@ -1,13 +1,11 @@
-require('../../src/aws-matchers/'); // custom matcher for assertion
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../src/init';
-import { addApiWithSchema, updateApiSchema } from '../../src/categories/api';
-import { createNewProjectDir, deleteProjectDir } from '../../src/utils';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../init';
+import { addApiWithSchema, updateApiSchema } from '../../categories/api';
+import { createNewProjectDir, deleteProjectDir } from '../../utils';
 
 describe('amplify add api', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {

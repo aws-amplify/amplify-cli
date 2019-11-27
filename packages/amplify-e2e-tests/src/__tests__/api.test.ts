@@ -1,25 +1,14 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../init';
 import * as path from 'path';
 import { existsSync } from 'fs';
-import { addApiWithSchema, updateApiSchema, updateApiWithMultiAuth } from '../src/categories/api';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-  getProjectMeta,
-  getTransformConfig,
-  updateConfig,
-  getTable,
-  deleteTable,
-  getAppSyncApi,
-} from '../src/utils';
+import { addApiWithSchema, updateApiSchema, updateApiWithMultiAuth } from '../categories/api';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getTransformConfig, getAppSyncApi } from '../utils';
 import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 
 describe('amplify add api', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {
@@ -60,9 +49,9 @@ describe('amplify add api', () => {
     const { output } = getProjectMeta(projRoot).api[projectName];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
 
-    await expect(GraphQLAPIIdOutput).toBeDefined();
-    await expect(GraphQLAPIEndpointOutput).toBeDefined();
-    await expect(GraphQLAPIKeyOutput).toBeDefined();
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
   });
 
   it('init a project and add the simple_model api with multiple authorization providers', async () => {

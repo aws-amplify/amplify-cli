@@ -1,13 +1,11 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../src/init';
-import { addHelloWorldFunction, functionBuild } from '../src/categories/function';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction } from '../src/utils';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../init';
+import { addHelloWorldFunction, functionBuild } from '../categories/function';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction } from '../utils';
 
 describe('amplify add function', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {

@@ -1,23 +1,13 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
-const path = require('path');
-import fs from 'fs-extra';
-import * as AWS from 'aws-sdk';
-import {
-  initJSProjectWithProfile,
-  initIosProjectWithProfile,
-  initAndroidProjectWithProfile,
-  deleteProject,
-  amplifyPush,
-} from '../src/init';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../src/utils';
-import { addEnvironment } from '../src/environment/add-env';
-import { addApiWithoutSchema } from '../src/categories/api';
-import { addCodegen } from '../src/codegen/add';
+import { S3 } from 'aws-sdk';
+import { initJSProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject } from '../init';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
+import { addEnvironment } from '../environment/add-env';
+import { addApiWithoutSchema } from '../categories/api';
+import { addCodegen } from '../codegen/add';
 
 describe('amplify delete', () => {
   let projRoot: string;
   beforeEach(async () => {
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
     projRoot = createNewProjectDir();
   });
 
@@ -41,7 +31,7 @@ describe('amplify delete', () => {
   });
 });
 
-async function testDeletion(projRoot, settings) {
+async function testDeletion(projRoot: string, settings: { ios?: Boolean; android?: Boolean }) {
   const amplifyMeta = getProjectMeta(projRoot);
   const meta = amplifyMeta.providers.awscloudformation;
   const deploymentBucketName1 = meta.DeploymentBucketName;
@@ -56,12 +46,12 @@ async function testDeletion(projRoot, settings) {
   await deleteProject(projRoot, true);
   await expect(await bucketExists(deploymentBucketName1)).toBe(false);
   await expect(await bucketExists(deploymentBucketName2)).toBe(false);
-  await expect(AuthRoleName).not.toBeIAMRoleWithArn();
-  await expect(UnauthRoleName).not.toBeIAMRoleWithArn();
+  await expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
+  await expect(UnauthRoleName).not.toBeIAMRoleWithArn(UnauthRoleName);
 }
 
 async function bucketExists(bucket: string) {
-  const s3 = new AWS.S3();
+  const s3 = new S3();
   const options = {
     Bucket: bucket,
   };

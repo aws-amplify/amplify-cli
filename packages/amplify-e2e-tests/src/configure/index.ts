@@ -1,5 +1,4 @@
 import * as nexpect from 'nexpect';
-import { join } from 'path';
 
 import { getCLIPath, isCI } from '../utils';
 type AmplifyConfiguration = {
@@ -7,6 +6,7 @@ type AmplifyConfiguration = {
   secretAccessKey: string;
   profileName?: string;
 };
+
 const defaultSettings = {
   profileName: 'amplify-integ-test-user',
   region: '\r',
@@ -40,7 +40,7 @@ export default function amplifyConfigure(settings: AmplifyConfiguration, verbose
       .wait('Profile Name:')
       .sendline(s.profileName)
       .wait('Successfully set up the new user.')
-      .run(function(err) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

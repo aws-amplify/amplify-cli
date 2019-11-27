@@ -1,19 +1,10 @@
-import { config } from 'dotenv';
-import { existsSync } from 'fs';
-import { homedir } from 'os';
-import { join } from 'path';
-
 import configure from './configure';
 import { isCI } from './utils';
 
-const AWS_CREDENTIAL_PATH = join(homedir(), '.aws', 'credentials');
-
-async function setUpAmplify() {
+async function setupAmplify() {
   if (isCI()) {
-    let AWS_ACCESS_KEY_ID;
-    let AWS_SECRET_ACCESS_KEY;
-    AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-    AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+    const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+    const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
       throw new Error('Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env');
     }
@@ -29,7 +20,7 @@ async function setUpAmplify() {
 
 process.nextTick(async () => {
   try {
-    await setUpAmplify();
+    await setupAmplify();
   } catch (e) {
     console.log(e.stack);
     process.exit(1);
