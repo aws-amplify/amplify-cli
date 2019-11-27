@@ -18,7 +18,7 @@
     "jest": "^24.9.0",
     "jest-circus": "^24.9.0",
     "jest-junit": "^9.0.0",
-    "nexpect": "./src/utils/nexpect-modified",
+    "nexpect": "file:./src/utils/nexpect-modified",
     "node-fetch": "^2.6.0",
     "rimraf": "^3.0.0",
     "ts-jest": "^24.2.0",
