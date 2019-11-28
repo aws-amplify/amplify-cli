@@ -36,3 +36,22 @@ export const directives = /* GraphQL */ `
     fields: [String!]
   ) on FIELD_DEFINITION
 `;
+
+export const scalars = [
+  'ID',
+  'String',
+  'Int',
+  'Float',
+  'Boolean',
+  'AWSDate',
+  'AWSDateTime',
+  'AWSTime',
+  'AWSTimestamp',
+  'AWSEmail',
+  'AWSJSON',
+  'AWSURL',
+  'AWSPhone',
+  'AWSIPAddress',
+]
+  .map(typeName => `scalar ${typeName}`)
+  .join();
