@@ -1,6 +1,6 @@
 import { transformComment, indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { StringValueNode, NameNode } from 'graphql';
-const stripIndent = require('strip-indent');
+import stripIndent from 'strip-indent';
 
 // Todo: PR to @graphql-codegen/java-common to support method exceptions and comment
 export type Access = 'private' | 'public' | 'protected';
