@@ -72,7 +72,8 @@ async function init(amplifyServiceParams) {
         if (
           env !== envName &&
           teamProviderInfo[env][constants.ProviderName].Region === awsConfig.region &&
-          teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel]
+          teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel] &&
+          !appIdsInTheSameLocalProjectAndRegion.includes(teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel])
         ) {
           appIdsInTheSameLocalProjectAndRegion.push(teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel]);
         }
@@ -306,8 +307,8 @@ async function SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRe
   const NONE = 'None';
 
   const options = appIdsInTheSameLocalProjectAndRegion.slice(0);
-  options.Push(NONE);
-  options.Push(LEARNMORE);
+  options.push(NONE);
+  options.push(LEARNMORE);
 
   const answer = await inquirer.prompt({
     type: 'list',
