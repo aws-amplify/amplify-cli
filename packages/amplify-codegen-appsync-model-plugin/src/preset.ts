@@ -44,7 +44,7 @@ const generateJavaPreset = (
     const modelName = model.name.value;
     config.push({
       ...options,
-      filename: join(...baseOutputDir, `${pascalCase(modelName)}.java`),
+      filename: join(...baseOutputDir, `${modelName}.java`),
       config: {
         ...options.config,
         scalars: { ...JAVA_SCALAR_MAP, ...options.config.scalars },
