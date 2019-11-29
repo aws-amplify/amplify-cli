@@ -160,7 +160,7 @@ export class AppSyncModelJavaVisitor<
     const annotations = this.generateModelAnnotations(model);
     classDeclarationBlock.annotate(annotations);
 
-    model.fields.forEach(field => this.generateQueryFields(field, classDeclarationBlock));
+    this.getNonConnectedField(model).forEach(field => this.generateQueryFields(field, classDeclarationBlock));
     model.fields.forEach(field => {
       this.generateField(field, classDeclarationBlock);
     });
@@ -241,12 +241,12 @@ export class AppSyncModelJavaVisitor<
    *
    */
   protected generateStepBuilderInterfaces(model: CodeGenModel): JavaDeclarationBlock[] {
-    const nonNullableFields = model.fields.filter(field => !field.isNullable);
-    const nullableFields = model.fields.filter(field => field.isNullable);
-    const nonIdFields = nonNullableFields.filter((field: CodeGenField) => !this.READ_ONLY_FIELDS.includes(field.name));
-    const interfaces = nonIdFields.map((field, idx) => {
-      const isLastField = nonIdFields.length - 1 === idx ? true : false;
-      const returnType = isLastField ? 'Build' : nonIdFields[idx + 1].name;
+    const nonNullableFields = this.getNonConnectedField(model).filter(field => !field.isNullable);
+    const nullableFields = this.getNonConnectedField(model).filter(field => field.isNullable);
+    const requiredInterfaces = nonNullableFields.filter((field: CodeGenField) => !this.READ_ONLY_FIELDS.includes(field.name));
+    const interfaces = requiredInterfaces.map((field, idx) => {
+      const isLastField = requiredInterfaces.length - 1 === idx ? true : false;
+      const returnType = isLastField ? 'Build' : requiredInterfaces[idx + 1].name;
       const interfaceName = this.getStepInterfaceName(field.name);
       const methodName = this.getStepFunctionName(field);
       const argumentType = this.getNativeType(field);
@@ -286,8 +286,8 @@ export class AppSyncModelJavaVisitor<
    * @returns JavaDeclarationBlock
    */
   protected generateBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
-    const nonNullableFields = model.fields.filter(field => !field.isNullable);
-    const nullableFields = model.fields.filter(field => field.isNullable);
+    const nonNullableFields = this.getNonConnectedField(model).filter(field => !field.isNullable);
+    const nullableFields = this.getNonConnectedField(model).filter(field => field.isNullable);
     const stepFields = nonNullableFields.filter((field: CodeGenField) => !this.READ_ONLY_FIELDS.includes(field.name));
     const stepInterfaces = stepFields.map((field: CodeGenField) => {
       return this.getStepInterfaceName(field.name);
@@ -309,7 +309,9 @@ export class AppSyncModelJavaVisitor<
     // methods
     // build();
     const buildImplementation = [`String id = this.id != null ? this.id : UUID.randomUUID().toString();`, ''];
-    const buildParams = model.fields.map(field => this.getFieldName(field)).join(',\n');
+    const buildParams = this.getNonConnectedField(model)
+      .map(field => this.getFieldName(field))
+      .join(',\n');
     buildImplementation.push(`return new ${this.getModelName(model)}(\n${indentMultiline(buildParams)});`);
     builderClassDeclaration.addClassMethod(
       'build',
@@ -412,11 +414,13 @@ export class AppSyncModelJavaVisitor<
       .withName(builderName)
       .extends(['Builder']);
 
-    const nonNullableFields = model.fields.filter(field => !field.isNullable).filter(field => field.name !== 'id');
-    const nullableFields = model.fields.filter(field => field.isNullable);
+    const nonNullableFields = this.getNonConnectedField(model)
+      .filter(field => !field.isNullable)
+      .filter(f => f.name !== 'id');
+    const nullableFields = this.getNonConnectedField(model).filter(field => field.isNullable);
 
     // constructor
-    const constructorArguments = model.fields.map(field => {
+    const constructorArguments = this.getNonConnectedField(model).map(field => {
       return { name: this.getStepFunctionArgumentName(field), type: this.getNativeType(field) };
     });
     const stepBuilderInvocation = [...nonNullableFields, ...nullableFields].map(field => {
@@ -457,7 +461,11 @@ export class AppSyncModelJavaVisitor<
    * adds a copyOfBuilder method to the Model class. This method is used to create a copy of the model to mutate it
    */
   protected generateCopyOfBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
-    const args = indentMultiline(model.fields.map(field => this.getFieldName(field)).join(',\n')).trim();
+    const args = indentMultiline(
+      this.getNonConnectedField(model)
+        .map(field => this.getFieldName(field))
+        .join(',\n')
+    ).trim();
     const methodBody = `return new CopyOfBuilder(${args});`;
     classDeclaration.addClassMethod('copyOfBuilder', 'CopyOfBuilder', methodBody, [], [], 'public');
   }
@@ -509,14 +517,14 @@ export class AppSyncModelJavaVisitor<
    */
   protected generateConstructor(model: CodeGenModel, declarationsBlock: JavaDeclarationBlock): void {
     const name = this.getModelName(model);
-    const body = model.fields
+    const body = this.getNonConnectedField(model)
       .map((field: CodeGenField) => {
         const fieldName = this.getFieldName(field);
         return `this.${fieldName} = ${fieldName};`;
       })
       .join('\n');
 
-    const constructorArguments = model.fields.map(field => {
+    const constructorArguments = this.getNonConnectedField(model).map(field => {
       return { name: this.getFieldName(field), type: this.getNativeType(field) };
     });
     declarationsBlock.addClassMethod(name, null, body, constructorArguments, undefined, 'private');
@@ -552,7 +560,7 @@ export class AppSyncModelJavaVisitor<
 
     body.push(`${className} ${instanceName} = (${className}) ${paramName};`);
     const propCheck = indentMultiline(
-      model.fields
+      this.getNonConnectedField(model)
         .map(field => {
           const getterName = this.getFieldGetterName(field);
           return `ObjectsCompat.equals(${getterName}(), ${instanceName}.${getterName}())`;
@@ -579,7 +587,7 @@ export class AppSyncModelJavaVisitor<
   protected generateHashCodeMethod(model: CodeGenModel, declarationBlock: JavaDeclarationBlock): void {
     const body = [
       'return new StringBuilder()',
-      ...model.fields.map(field => `.append(${this.getFieldGetterName(field)}())`),
+      ...this.getNonConnectedField(model).map(field => `.append(${this.getFieldGetterName(field)}())`),
       '.hashCode();',
     ].join('\n');
     declarationBlock.addClassMethod('hashCode', 'int', indentMultiline(body).trimLeft(), [], [], 'public', {}, ['Override']);
@@ -591,7 +599,9 @@ export class AppSyncModelJavaVisitor<
    * @param classDeclaration
    */
   protected generateBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
-    const requiredFields = model.fields.filter(field => !field.isNullable && !this.READ_ONLY_FIELDS.includes(field.name));
+    const requiredFields = this.getNonConnectedField(model).filter(
+      field => !field.isNullable && !this.READ_ONLY_FIELDS.includes(field.name)
+    );
     const returnType = requiredFields.length ? this.getStepInterfaceName(requiredFields[0].name) : this.getStepInterfaceName('Build');
     classDeclaration.addClassMethod(
       'builder',
@@ -692,7 +702,7 @@ export class AppSyncModelJavaVisitor<
               "creating a new object, use the standard builder method and leave the ID field blank."
       );
     }`;
-    const initArgs = indentMultiline(['id', ...new Array(model.fields.length - 1).fill('null')].join(',\n'));
+    const initArgs = indentMultiline(['id', ...new Array(this.getNonConnectedField(model).length - 1).fill('null')].join(',\n'));
     const initBlock = `return new ${returnType}(\n${initArgs}\n);`;
     classDeclaration.addClassMethod(
       'justId',
@@ -706,5 +716,18 @@ export class AppSyncModelJavaVisitor<
       [],
       comment
     );
+  }
+  /**
+   * Get the list of fields that can be are writeable. These fields should exclude the following
+   * fields that are connected and are either HAS_ONE or HAS_MANY
+   * @param model
+   */
+  protected getNonConnectedField(model: CodeGenModel): CodeGenField[] {
+    return model.fields.filter(f => {
+      if (!f.connectionInfo) return true;
+      if (f.connectionInfo.kind == CodeGenConnectionType.BELONGS_TO) {
+        return true;
+      }
+    });
   }
 }
