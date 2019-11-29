@@ -1,4 +1,4 @@
-import { CodeGenModel, CodeGenModelMap, CodeGenField } from '../visitors/appsync-visitor';
+import { CodeGenModel, CodeGenModelMap, CodeGenField, CodeGenDirective } from '../visitors/appsync-visitor';
 import { camelCase } from 'change-case';
 
 export enum CodeGenConnectionType {
@@ -27,11 +27,73 @@ export type CodeGenFieldConnectionHasMany = CodeGenConnectionTypeBase & {
 
 export type CodeGenFieldConnection = CodeGenFieldConnectionBelongsTo | CodeGenFieldConnectionHasOne | CodeGenFieldConnectionHasMany;
 
+function getDirective(fieldOrModel: CodeGenField | CodeGenModel) {
+  return (directiveName: string): CodeGenDirective | undefined => {
+    return fieldOrModel.directives.find(d => d.name === directiveName);
+  };
+}
 export function makeConnectionAttributeName(type: string, field?: string) {
   // The same logic is used graphql-connection-transformer package to generate association field
   // Make sure the logic gets update in that package
   return field ? camelCase([type, field, 'id'].join('_')) : camelCase([type, 'id'].join('_'));
 }
+
+export function getConnectedField(field: CodeGenField, model: CodeGenModel, connectedModel: CodeGenModel): CodeGenField {
+  const connectionInfo = getDirective(field)('connection');
+  if (!connectionInfo) {
+    throw new Error(`The ${field.name} on model ${model.name} is not connected`);
+  }
+  const connectionName = connectionInfo.arguments.name;
+  const keyName = connectionInfo.arguments.keyName;
+  if (keyName) {
+    const keyDirective = connectedModel.directives.find(dir => {
+      return dir.name === 'key' && dir.arguments.name === keyName;
+    });
+
+    if (keyDirective) {
+      // when there is a keyName in the connection
+      const connectedFieldName = keyDirective.arguments.fields[0];
+      // Find a field on the other side which connected by a @connection and has the same fields[0] as keyName field
+      const otherSideConnectedField = connectedModel.fields.find(f => {
+        return f.directives.find(d => {
+          return d.name === 'connection' && d.arguments.fields && d.arguments.fields[0] === connectedFieldName;
+        });
+      });
+      if (otherSideConnectedField) {
+        return otherSideConnectedField;
+      }
+      // If there are no field with @connection with keyName then try to find a field that has same name as connection name
+      const connectedField = connectedModel.fields.find(f => f.name === connectedFieldName);
+
+      if (!connectedField) {
+        throw new Error('Can not find key field ${connectedFieldName} in ${connectedModel}');
+      }
+      return connectedField;
+    }
+  } else if (connectionName) {
+    // when the connection is named
+    const connectedField = connectedModel.fields.find(f =>
+      f.directives.find(d => d.name === 'connection' && d.arguments.name === connectionName)
+    );
+    if (!connectedField) {
+      throw new Error('Can not find key field ${connectedFieldName} in ${connectedModel}');
+    }
+    return connectedField;
+  }
+  // un-named connection. Use an existing field or generate a new field
+  const connectedFieldName = makeConnectionAttributeName(model.name, field.name);
+  const connectedField = connectedModel.fields.find(f => f.name === connectedFieldName);
+  return connectedField
+    ? connectedField
+    : {
+        name: connectedFieldName,
+        directives: [],
+        type: 'ID',
+        isList: false,
+        isNullable: true,
+      };
+}
+
 export function processConnections(
   field: CodeGenField,
   model: CodeGenModel,
@@ -40,16 +102,12 @@ export function processConnections(
   const connectionDirective = field.directives.find(d => d.name === 'connection');
   if (connectionDirective) {
     const otherSide = modelMap[field.type];
-    const connectionName = connectionDirective.name;
     const connectionFields = connectionDirective.arguments.fields || [];
-    const otherSideField = otherSide.fields.find(f => {
-      if (f.type === model.name) {
-        const otherSideConnection = f.directives.find(d => d.name === 'connection');
-        return otherSideConnection && connectionName == otherSideConnection.name;
-      }
-    });
+    const otherSideField = getConnectedField(field, model, otherSide);
 
-    if (otherSideField) {
+    const isNewField = !otherSide.fields.includes(otherSideField);
+
+    if (!isNewField) {
       // 2 way connection
       if (field.isList && !otherSideField.isList) {
         // Many to One

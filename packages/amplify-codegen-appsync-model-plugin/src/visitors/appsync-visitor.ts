@@ -101,9 +101,8 @@ export interface ParsedAppSyncModelConfig extends ParsedConfig {
   selectedType?: string;
   generate?: CodeGenGenerateEnum;
 }
-export type CodeGenArgumentsMap = {
-  [argumentName: string]: any;
-};
+export type CodeGenArgumentsMap = Record<string, any>;
+
 export type CodeGenDirective = {
   name: string;
   arguments: CodeGenArgumentsMap;
