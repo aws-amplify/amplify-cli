@@ -397,6 +397,20 @@ export class AppSyncModelVisitor<
           field.connectionInfo = connectionInfo;
         }
       });
+
+      // Should remove the fields that are of Model type and are not connected to ensure there are no phantom input fields
+      const modelTypes = Object.values(this.typeMap).map(model => model.name);
+      model.fields = model.fields.filter(field => {
+        const fieldType = field.type;
+        const connectionInfo = field.connectionInfo;
+        if (modelTypes.includes(fieldType) && connectionInfo === undefined) {
+          console.warn(
+            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Please add @connection directive to connect them`
+          );
+          return false;
+        }
+        return true;
+      });
     });
   }
 

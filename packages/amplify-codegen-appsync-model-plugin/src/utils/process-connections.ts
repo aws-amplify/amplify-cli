@@ -66,7 +66,7 @@ export function getConnectedField(field: CodeGenField, model: CodeGenModel, conn
       const connectedField = connectedModel.fields.find(f => f.name === connectedFieldName);
 
       if (!connectedField) {
-        throw new Error('Can not find key field ${connectedFieldName} in ${connectedModel}');
+        throw new Error(`Can not find key field ${connectedFieldName} in ${connectedModel}`);
       }
       return connectedField;
     }
@@ -76,7 +76,7 @@ export function getConnectedField(field: CodeGenField, model: CodeGenModel, conn
       f.directives.find(d => d.name === 'connection' && d.arguments.name === connectionName)
     );
     if (!connectedField) {
-      throw new Error('Can not find key field ${connectedFieldName} in ${connectedModel}');
+      throw new Error(`Can not find key field with connection name ${connectionName} in ${connectedModel}`);
     }
     return connectedField;
   }

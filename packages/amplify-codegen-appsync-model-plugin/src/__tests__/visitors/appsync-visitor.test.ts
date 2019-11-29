@@ -145,4 +145,49 @@ describe('AppSyncModelVisitor', () => {
       expect(connectionInfo.connectedModel).toEqual(visitor.types.Post);
     });
   });
+
+  it('should not include a comments in Post when comments field does not have connection directive', () => {
+    const schema = /* GraphQL */ `
+      type Post @model {
+        title: String!
+        content: String
+        comments: [Comment]
+      }
+
+      type Comment @model {
+        comment: String!
+        post: Post @connection
+      }
+    `;
+    const ast = parse(schema);
+    const builtSchema = buildSchemaWithDirectives(schema);
+    const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+    visit(ast, { leave: visitor });
+    visitor.generate();
+    const postFields = visitor.types.Post.fields.map(field => field.name);
+    expect(postFields).not.toContain('comments');
+  });
+
+  it('should not include a post when post field in Comment when post does not have connection directive', () => {
+    const schema = /* GraphQL */ `
+      type Post @model {
+        title: String!
+        content: String
+        comments: [Comment] @connection
+      }
+
+      type Comment @model {
+        comment: String!
+        post: Post
+      }
+    `;
+    const ast = parse(schema);
+    const builtSchema = buildSchemaWithDirectives(schema);
+    const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+    visit(ast, { leave: visitor });
+    visitor.generate();
+    const commentsField = visitor.types.Comment.fields.map(field => field.name);
+    expect(commentsField).not.toContain('post');
+    expect(commentsField).toContain('postCommentsId'); // because of connection from Post.comments
+  });
 });
