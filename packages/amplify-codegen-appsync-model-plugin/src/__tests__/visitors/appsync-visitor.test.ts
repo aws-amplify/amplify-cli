@@ -106,12 +106,12 @@ describe('AppSyncModelVisitor', () => {
       type Post @model {
         title: String!
         content: String
-        comments: [Comment] @connection
+        comments: [Comment] @connection(name: "PostComment")
       }
 
       type Comment @model {
         comment: String!
-        post: Post @connection
+        post: Post @connection(name: "PostComment")
       }
     `;
     it('one to many connection', () => {

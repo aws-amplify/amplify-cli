@@ -1,49 +1,59 @@
-import { processConnections, CodeGenConnectionType, CodeGenFieldConnection, CodeGenFieldConnectionHasMany, CodeGenFieldConnectionBelongsTo, CodeGenFieldConnectionHasOne } from '../../utils/process-connections';
-import { CodeGenModelMap } from '../../visitors/appsync-visitor';
+import {
+  processConnections,
+  CodeGenConnectionType,
+  CodeGenFieldConnection,
+  CodeGenFieldConnectionHasMany,
+  CodeGenFieldConnectionBelongsTo,
+  CodeGenFieldConnectionHasOne,
+} from '../../utils/process-connections';
+import { CodeGenModelMap, CodeGenModel } from '../../visitors/appsync-visitor';
 import { directive } from 'babel-types';
 
 describe('process connection', () => {
-  describe('Bi-Directional connection', () => {
+  describe('Bi-Directional connection (named connection)', () => {
     describe('One:Many', () => {
-      const schema = /* GraphQL */ `
-        type Post @model {
-          comments: [Comment] @connection
-        }
+      let modelMap: CodeGenModelMap;
+      beforeEach(() => {
+        const schema = /* GraphQL */ `
+          type Post @model {
+            comments: [Comment] @connection(name: "postConnection")
+          }
 
-        type Comment @model {
-          post: Post @connection
-        }
-      `;
-      const modelMap: CodeGenModelMap = {
-        Post: {
-          name: 'Post',
-          type: 'model',
-          directives: [],
-          fields: [
-            {
-              type: 'Comment',
-              isNullable: true,
-              isList: true,
-              name: 'comments',
-              directives: [{ name: 'connection', arguments: [] }],
-            },
-          ],
-        },
-        Comment: {
-          name: 'Comment',
-          type: 'model',
-          directives: [],
-          fields: [
-            {
-              type: 'Post',
-              isNullable: true,
-              isList: false,
-              name: 'post',
-              directives: [{ name: 'connection', arguments: [] }],
-            },
-          ],
-        },
-      };
+          type Comment @model {
+            post: Post @connection(name: "postConnection")
+          }
+        `;
+        modelMap = {
+          Post: {
+            name: 'Post',
+            type: 'model',
+            directives: [],
+            fields: [
+              {
+                type: 'Comment',
+                isNullable: true,
+                isList: true,
+                name: 'comments',
+                directives: [{ name: 'connection', arguments: { name: 'postConnection' } }],
+              },
+            ],
+          },
+          Comment: {
+            name: 'Comment',
+            type: 'model',
+            directives: [],
+            fields: [
+              {
+                type: 'Post',
+                isNullable: true,
+                isList: false,
+                name: 'post',
+                directives: [{ name: 'connection', arguments: { name: 'postConnection' } }],
+              },
+            ],
+          },
+        };
+      });
 
       it('should return HAS_MANY for Post.comments field connection info', () => {
         const commentsField = modelMap.Post.fields[0];
@@ -67,11 +77,11 @@ describe('process connection', () => {
       beforeEach(() => {
         const schema = /* GraphQL */ `
           type Person @model {
-            license: License @connection
+            license: License @connection(name: "PersonLicense")
           }
 
           type License @model {
-            person: Person!
+            person: Person! @connection(name: "PersonLicense")
           }
         `;
 
@@ -86,7 +96,7 @@ describe('process connection', () => {
                 isNullable: true,
                 isList: false,
                 name: 'license',
-                directives: [{ name: 'connection', arguments: [] }],
+                directives: [{ name: 'connection', arguments: { name: 'PersonLicense' } }],
               },
             ],
           },
@@ -100,7 +110,7 @@ describe('process connection', () => {
                 isNullable: false,
                 isList: false,
                 name: 'person',
-                directives: [{ name: 'connection', arguments: [] }],
+                directives: [{ name: 'connection', arguments: { name: 'PersonLicense' } }],
               },
             ],
           },
@@ -132,18 +142,19 @@ describe('process connection', () => {
       });
     });
   });
-  describe('Uni-directional connection', () => {
-    it('should return HAS_MANY for Post.comments', () => {
+  describe('Uni-directional connection (unnamed connection)', () => {
+    let modelMap: CodeGenModelMap;
+    beforeEach(() => {
       const schema = /* GraphQL */ `
         type Post @model {
           comments: [Comment] @connection
         }
 
         type Comment @model {
-          post: Post
+          post: Post @connection
         }
       `;
-      const modelMap: CodeGenModelMap = {
+      modelMap = {
         Post: {
           name: 'Post',
           type: 'model',
@@ -154,7 +165,7 @@ describe('process connection', () => {
               isNullable: true,
               isList: true,
               name: 'comments',
-              directives: [{ name: 'connection', arguments: [] }],
+              directives: [{ name: 'connection', arguments: {} }],
             },
           ],
         },
@@ -162,10 +173,20 @@ describe('process connection', () => {
           name: 'Comment',
           type: 'model',
           directives: [],
-          fields: [],
+          fields: [
+            {
+              type: 'Post',
+              isNullable: true,
+              isList: false,
+              name: 'post',
+              directives: [{ name: 'connection', arguments: {} }],
+            },
+          ],
         },
       };
+    });
 
+    it('should return HAS_MANY for Post.comments', () => {
       const commentsField = modelMap.Post.fields[0];
       const connectionInfo = (processConnections(commentsField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionHasMany;
       expect(connectionInfo).toBeDefined();
@@ -181,44 +202,99 @@ describe('process connection', () => {
     });
 
     it('should return BELONGS_TO for Comment.post', () => {
-      const schema = /* GraphQL */ `
-        type Post @model {
-          comments: [Comment] @connection
-        }
-
-        type Comment @model {
-          post: Post
-        }
-      `;
-      const modelMap: CodeGenModelMap = {
-        Post: {
-          name: 'Post',
-          type: 'model',
-          directives: [],
-          fields: [],
-        },
-        Comment: {
-          name: 'Comment',
-          type: 'model',
-          directives: [],
-          fields: [
-            {
-              type: 'Post',
-              isNullable: true,
-              isList: false,
-              name: 'post',
-              directives: [{ name: 'connection', arguments: [] }],
-            },
-          ],
-        },
-      };
-
       const commentsField = modelMap.Comment.fields[0];
       const connectionInfo = (processConnections(commentsField, modelMap.Comment, modelMap) as any) as CodeGenFieldConnectionBelongsTo;
       expect(connectionInfo).toBeDefined();
 
       expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
       expect(connectionInfo.targetName).toEqual('commentPostId');
+    });
+  });
+
+  describe('connection v2', () => {
+    let modelMap: CodeGenModelMap;
+
+    beforeEach(() => {
+      const schema = /* GraphQL */ `
+        type Post @model {
+          comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
+        }
+
+        type Comment @model @key(name: "byPost", fields: ["postID", "content"]) {
+          postID: ID!
+          content: String!
+          post: Post @connection(fields:['postID'])
+        }
+      `;
+      modelMap = {
+        Post: {
+          name: 'Post',
+          type: 'model',
+          directives: [],
+          fields: [
+            {
+              type: 'Comment',
+              isNullable: true,
+              isList: true,
+              name: 'comments',
+              directives: [{ name: 'connection', arguments: { keyName: 'byPost', fields: ['id'] } }],
+            },
+          ],
+        },
+        Comment: {
+          name: 'Comment',
+          type: 'model',
+          directives: [{ name: 'key', arguments: { name: 'byPost', fields: ['postID', 'content'] } }],
+          fields: [
+            {
+              type: 'id',
+              isNullable: false,
+              isList: false,
+              name: 'postID',
+              directives: [],
+            },
+            {
+              type: 'String',
+              isNullable: false,
+              isList: false,
+              name: 'content',
+              directives: [],
+            },
+            {
+              type: 'Post',
+              isNullable: false,
+              isList: false,
+              name: 'post',
+              directives: [{ name: 'connection', arguments: { fields: ['postID'] } }],
+            },
+          ],
+        },
+      };
+    });
+    it('should support connection with keyName on HAS_MANY side', () => {
+      const commentsField = modelMap.Post.fields[0];
+      const connectionInfo = (processConnections(commentsField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionHasMany;
+      expect(connectionInfo).toBeDefined();
+      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
+      expect(connectionInfo.associatedWith).toEqual(modelMap.Comment.fields[2]);
+    });
+
+    it('should support connection with keyName on HAS_MANY side with no corresponding connection on other side ', () => {
+      // remove post: Post @connection(fields:['postID']) field
+      modelMap.Comment.fields.splice(2);
+      const commentsField = modelMap.Post.fields[0];
+      const connectionInfo = (processConnections(commentsField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionHasMany;
+      expect(connectionInfo).toBeDefined();
+      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
+      expect(connectionInfo.associatedWith).toEqual(modelMap.Comment.fields[0]);
+    });
+
+    it('should support connection with @key on BELONGS_TO side', () => {
+      const postField = modelMap.Comment.fields[2];
+      const connectionInfo = (processConnections(postField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionBelongsTo;
+      expect(connectionInfo).toBeDefined();
+      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+      expect(connectionInfo.targetName).toEqual(modelMap.Comment.fields[0].name);
     });
   });
 });
