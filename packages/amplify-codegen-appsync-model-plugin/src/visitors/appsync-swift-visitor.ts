@@ -4,6 +4,7 @@ import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { schemaTypeMap } from '../configs/swift-config';
+import dedent from 'ts-dedent';
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
   protected imports: string[] = ['import Amplify', 'import Foundation'];
@@ -146,15 +147,30 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       .access('public')
       .withName('AmplifyModels')
       .asKind('class')
+      .withProtocols(['DataStoreModelRegistration'])
       .final()
       .withProtocols(['DataStoreModelRegistration'])
       .withComment('Contains the set of classes that conforms to the `Model` protocol.');
 
     classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', {});
     const body = structList.map(modelClass => `ModelRegistry.register(modelType: ${modelClass})`).join('\n');
-    classDeclaration.addClassMethod('registerModels', null, body, undefined, 'public', {});
-
+    classDeclaration.addClassMethod(
+      'registerModels',
+      null,
+      body,
+      [{ type: 'ModelRegistry.Type', name: 'registry', flags: {}, value: undefined }],
+      'public',
+      {}
+    );
     result.push(classDeclaration.string);
+
+    const extensionDeclaration = new SwiftDeclarationBlock().withName('Amplify').asKind('extension');
+    const extensionBody = dedent`
+    static func addDataStore() throws {
+      try Amplify.add(plugin: AWSDataStoreCategoryPlugin(modelRegistration: AmplifyModels()))
+    }`;
+    extensionDeclaration.withBlock(extensionBody);
+    result.push(extensionDeclaration.string);
 
     return result.join('\n');
   }
