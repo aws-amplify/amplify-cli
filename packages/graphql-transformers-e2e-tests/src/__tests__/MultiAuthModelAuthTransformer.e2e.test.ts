@@ -429,10 +429,27 @@ beforeAll(async () => {
 
     // Since we're doing the policy here we've to remove the transformer generated artifacts from
     // the generated stack.
-    delete out.rootStack.Resources[ResourceConstants.RESOURCES.UnauthRolePolicy];
-    delete out.rootStack.Parameters.unauthRoleName;
-    delete out.rootStack.Resources[ResourceConstants.RESOURCES.AuthRolePolicy];
-    delete out.rootStack.Parameters.authRoleName;
+    if (out.rootStack.Resources.UnauthRolePolicy01) {
+      delete out.rootStack.Resources.UnauthRolePolicy01;
+      delete out.rootStack.Parameters.unauthRoleName;
+    }
+    if (out.rootStack.Resources.UnauthRolePolicy02) {
+      delete out.rootStack.Resources.UnauthRolePolicy02;
+    }
+    if (out.rootStack.Resources.UnauthRolePolicy03) {
+      delete out.rootStack.Resources.UnauthRolePolicy03;
+    }
+
+    if (out.rootStack.Resources.AuthRolePolicy01) {
+      delete out.rootStack.Resources.AuthRolePolicy01;
+      delete out.rootStack.Parameters.authRoleName;
+    }
+    if (out.rootStack.Resources.AuthRolePolicy02) {
+      delete out.rootStack.Resources.AuthRolePolicy02;
+    }
+    if (out.rootStack.Resources.AuthRolePolicy03) {
+      delete out.rootStack.Resources.AuthRolePolicy03;
+    }
 
     for (const key of Object.keys(out.rootStack.Resources)) {
       if (
