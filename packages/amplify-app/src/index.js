@@ -22,7 +22,7 @@ function run() {
   }
 
   return checkNodeVersion()
-    .then(() => installAmplifyCLI())
+    .then(() => amplifyCLIVersionCheck())
     .then(() => createAmplifySkeletonProject())
     .then(frontend => createAmplifyHelperFiles(frontend))
     .then(frontend => {
@@ -52,34 +52,40 @@ async function checkNodeVersion() {
   }
 }
 
+// Install CLI using npm
 async function installAmplifyCLI() {
-  const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
-  const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionCheck.stdout.toString()));
+  return new Promise((resolve, reject) => {
+    const amplifyCLIInstall = spawn('npm', ['install', '-g', `${amplifyCliPackageName}`], {
+      cwd: process.cwd(),
+      env: process.env,
+      stdio: 'inherit',
+    });
+
+    amplifyCLIInstall.on('exit', code => {
+      if (code === 0) {
+        console.log(`${emoji.get('white_check_mark')} Successfully installed Amplify CLI.`);
+        resolve();
+      } else {
+        console.log(`${emoji.get('x')} Failed to install Amplify CLI.`);
+        reject();
+      }
+    });
+  });
+}
+
+// Check the amplify CLI version, install latest CLI if it does not exist or is too old
+async function amplifyCLIVersionCheck() {
+  const amplifyCLIVersionSpawn = spawnSync('amplify', ['-v']);
   const minCLIVersion = engines['@aws-amplify/cli'];
-  if (amplifyCLIVersionCheck.stderr !== null && semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
-    console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersion}`);
+  if (amplifyCLIVersionSpawn.stderr !== null) {
+    const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionSpawn.stdout.toString()));
+    if (semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
+      console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersion}`);
+    }
   } else {
-    // Install the CLI
     console.log(`${emoji.get('worried')} Amplify CLI version ${minCLIVersion} not found.`);
     console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
-
-    return new Promise((resolve, reject) => {
-      const amplifyCLIInstall = spawn('npm', ['install', '-g', `${amplifyCliPackageName}`], {
-        cwd: process.cwd(),
-        env: process.env,
-        stdio: 'inherit',
-      });
-
-      amplifyCLIInstall.on('exit', code => {
-        if (code === 0) {
-          console.log(`${emoji.get('white_check_mark')} Successfully installed Amplify CLI.`);
-          resolve();
-        } else {
-          console.log(`${emoji.get('x')} Failed to install Amplify CLI.`);
-          reject();
-        }
-      });
-    });
+    await installAmplifyCLI();
   }
 }
 
