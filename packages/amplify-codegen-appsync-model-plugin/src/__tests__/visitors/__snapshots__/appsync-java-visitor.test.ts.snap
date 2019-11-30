@@ -572,7 +572,7 @@ public final class task implements Model {
   public static final QueryField ID = field(\\"id\\");
   public static final QueryField TITLE = field(\\"title\\");
   public static final QueryField DONE = field(\\"done\\");
-  public static final QueryField TODO = field(\\"todo\\");
+  public static final QueryField TODO = field(\\"taskTodoId\\");
   public static final QueryField TIME = field(\\"time\\");
   public static final QueryField CREATED_ON = field(\\"createdOn\\");
   private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
@@ -854,7 +854,7 @@ public final class Todo implements Model {
   private final @ModelField(targetType=\\"String\\") String due_date;
   private final @ModelField(targetType=\\"Int\\", isRequired = true) Int version;
   private final @ModelField(targetType=\\"Float\\") Float value;
-  private final @ModelField(targetType=\\"task\\") @HasMany(associatedWith = \\"todo\\", type = task.class) List<task> tasks;
+  private final @ModelField(targetType=\\"task\\") @HasMany(associatedWith = \\"todo\\", type = task.class) List<task> tasks = null;
   public ID getId() {
       return id;
   }

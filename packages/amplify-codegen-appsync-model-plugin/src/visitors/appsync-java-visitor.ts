@@ -160,9 +160,11 @@ export class AppSyncModelJavaVisitor<
     const annotations = this.generateModelAnnotations(model);
     classDeclarationBlock.annotate(annotations);
 
-    this.getNonConnectedField(model).forEach(field => this.generateQueryFields(field, classDeclarationBlock));
+    const nonConnectedFields = this.getNonConnectedField(model);
+    nonConnectedFields.forEach(field => this.generateQueryFields(field, classDeclarationBlock));
     model.fields.forEach(field => {
-      this.generateField(field, classDeclarationBlock);
+      const value = nonConnectedFields.includes(field) ? '' : 'null';
+      this.generateField(field, value, classDeclarationBlock);
     });
 
     // step interface declarations
@@ -217,7 +219,12 @@ export class AppSyncModelJavaVisitor<
    */
   protected generateQueryFields(field: CodeGenField, classDeclarationBlock: JavaDeclarationBlock): void {
     const queryFieldName = constantCase(field.name);
-    classDeclarationBlock.addClassMember(queryFieldName, 'QueryField', `field("${this.getFieldName(field)}")`, [], 'public', {
+    // belongsTo field is computed field. the value needed to query the field is in targetName
+    const fieldName =
+      field.connectionInfo && field.connectionInfo.kind === CodeGenConnectionType.BELONGS_TO
+        ? field.connectionInfo.targetName
+        : this.getFieldName(field);
+    classDeclarationBlock.addClassMember(queryFieldName, 'QueryField', `field("${fieldName}")`, [], 'public', {
       final: true,
       static: true,
     });
@@ -227,11 +234,11 @@ export class AppSyncModelJavaVisitor<
    * @param field
    * @param classDeclarationBlock
    */
-  protected generateField(field: CodeGenField, classDeclarationBlock: JavaDeclarationBlock): void {
+  protected generateField(field: CodeGenField, value: string, classDeclarationBlock: JavaDeclarationBlock): void {
     const annotations = this.generateFieldAnnotations(field);
     const fieldType = this.getNativeType(field);
     const fieldName = this.getFieldName(field);
-    classDeclarationBlock.addClassMember(fieldName, fieldType, '', annotations, 'private', {
+    classDeclarationBlock.addClassMember(fieldName, fieldType, value, annotations, 'private', {
       final: true,
     });
   }
