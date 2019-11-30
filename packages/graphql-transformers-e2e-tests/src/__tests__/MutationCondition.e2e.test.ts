@@ -799,8 +799,6 @@ describe(`Deployed Mutation Condition tests`, () => {
       // Since we're doing the policy here we've to remove the transformer generated artifacts from
       // the generated stack.
       const maxPolicyCount = 10;
-      let hasAuthPolicy = false;
-      let hasUnauthPolicy = false;
       for (let i = 0; i < maxPolicyCount; i++) {
         const paddedIndex = `${i + 1}`.padStart(2, '0');
         const authResourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
@@ -808,14 +806,10 @@ describe(`Deployed Mutation Condition tests`, () => {
 
         if (out.rootStack.Resources[authResourceName]) {
           delete out.rootStack.Resources[authResourceName];
-
-          hasAuthPolicy = true;
         }
 
         if (out.rootStack.Resources[unauthResourceName]) {
           delete out.rootStack.Resources[unauthResourceName];
-
-          hasUnauthPolicy = true;
         }
       }
 
