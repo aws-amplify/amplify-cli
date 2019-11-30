@@ -429,27 +429,29 @@ beforeAll(async () => {
 
     // Since we're doing the policy here we've to remove the transformer generated artifacts from
     // the generated stack.
-    if (out.rootStack.Resources.UnauthRolePolicy01) {
-      delete out.rootStack.Resources.UnauthRolePolicy01;
-      delete out.rootStack.Parameters.unauthRoleName;
-    }
-    if (out.rootStack.Resources.UnauthRolePolicy02) {
-      delete out.rootStack.Resources.UnauthRolePolicy02;
-    }
-    if (out.rootStack.Resources.UnauthRolePolicy03) {
-      delete out.rootStack.Resources.UnauthRolePolicy03;
+    const maxPolicyCount = 10;
+    let hasAuthPolicy = false;
+    let hasUnauthPolicy = false;
+    for (let i = 0; i < maxPolicyCount; i++) {
+      const paddedIndex = `${i + 1}`.padStart(2, '0');
+      const authResourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
+      const unauthResourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
+
+      if (out.rootStack.Resources[authResourceName]) {
+        delete out.rootStack.Resources[authResourceName];
+
+        hasAuthPolicy = true;
+      }
+
+      if (out.rootStack.Resources[unauthResourceName]) {
+        delete out.rootStack.Resources[unauthResourceName];
+
+        hasUnauthPolicy = true;
+      }
     }
 
-    if (out.rootStack.Resources.AuthRolePolicy01) {
-      delete out.rootStack.Resources.AuthRolePolicy01;
-      delete out.rootStack.Parameters.authRoleName;
-    }
-    if (out.rootStack.Resources.AuthRolePolicy02) {
-      delete out.rootStack.Resources.AuthRolePolicy02;
-    }
-    if (out.rootStack.Resources.AuthRolePolicy03) {
-      delete out.rootStack.Resources.AuthRolePolicy03;
-    }
+    delete out.rootStack.Parameters.authRoleName;
+    delete out.rootStack.Parameters.unauthRoleName;
 
     for (const key of Object.keys(out.rootStack.Resources)) {
       if (
