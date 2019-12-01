@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "amplify-cli api plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -10,15 +10,15 @@
     "lint-fix": "eslint . --fix"
   },
   "dependencies": {
-    "amplify-category-auth": "2.2.0",
-    "amplify-category-function": "2.2.0",
-    "amplify-category-storage": "2.0.3",
+    "amplify-category-auth": "2.3.0",
+    "amplify-category-function": "2.3.0",
+    "amplify-category-storage": "2.0.4",
     "aws-sdk": "^2.580.0",
     "fs-extra": "^8.1.0",
     "graphql": "^0.13.2",
-    "graphql-relational-schema-transformer": "2.2.0",
+    "graphql-relational-schema-transformer": "2.3.0",
     "graphql-tag-pluck": "^0.8.4",
-    "graphql-transformer-core": "6.2.0",
+    "graphql-transformer-core": "6.3.0",
     "inquirer": "^6.5.1",
     "merge-graphql-schemas": "^1.7.0",
     "moment": "^2.24.0",
