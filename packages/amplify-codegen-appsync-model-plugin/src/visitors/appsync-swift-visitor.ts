@@ -164,14 +164,6 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     );
     result.push(classDeclaration.string);
 
-    const extensionDeclaration = new SwiftDeclarationBlock().withName('Amplify').asKind('extension');
-    const extensionBody = dedent`
-    static func addDataStore() throws {
-      try Amplify.add(plugin: AWSDataStoreCategoryPlugin(modelRegistration: AmplifyModels()))
-    }`;
-    extensionDeclaration.withBlock(extensionBody);
-    result.push(extensionDeclaration.string);
-
     return result.join('\n');
   }
 
