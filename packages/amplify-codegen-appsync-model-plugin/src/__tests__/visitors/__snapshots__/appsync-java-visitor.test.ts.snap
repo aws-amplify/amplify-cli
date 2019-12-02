@@ -66,6 +66,7 @@ public final class SimpleModel implements Model {
       .append(getId())
       .append(getName())
       .append(getBar())
+      .toString()
       .hashCode();
   }
   
@@ -248,6 +249,7 @@ public final class SimpleModel implements Model {
       .append(getId())
       .append(getName())
       .append(getBar())
+      .toString()
       .hashCode();
   }
   
@@ -430,6 +432,7 @@ public final class SimpleModel implements Model {
       .append(getId())
       .append(getName())
       .append(getBar())
+      .toString()
       .hashCode();
   }
   
@@ -640,6 +643,7 @@ public final class task implements Model {
       .append(getTodo())
       .append(getTime())
       .append(getCreatedOn())
+      .toString()
       .hashCode();
   }
   
@@ -925,6 +929,7 @@ public final class Todo implements Model {
       .append(getDueDate())
       .append(getVersion())
       .append(getValue())
+      .toString()
       .hashCode();
   }
   
@@ -1221,6 +1226,7 @@ public final class authorBook implements Model {
       .append(getBookId())
       .append(getAuthor())
       .append(getBook())
+      .toString()
       .hashCode();
   }
   
@@ -1438,6 +1444,7 @@ public final class snake_case implements Model {
     return new StringBuilder()
       .append(getId())
       .append(getName())
+      .toString()
       .hashCode();
   }
   
@@ -1594,6 +1601,7 @@ public final class SnakeCaseField implements Model {
     return new StringBuilder()
       .append(getId())
       .append(getFirstName())
+      .toString()
       .hashCode();
   }
   
