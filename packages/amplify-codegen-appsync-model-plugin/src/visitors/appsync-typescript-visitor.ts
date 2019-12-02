@@ -28,7 +28,7 @@ export class AppSyncModelTypeScriptVisitor<
   };
 
   protected IMPORT_STATEMENTS = [
-    'import { ModelInit, MutableModel, PersistentModelConstructor } from "@aws-amplify/datastore";',
+    'import { ModelInit, MutableModel, PersistentModelConstructor, LazyCollection } from "@aws-amplify/datastore";',
     'import { initSchema } from "@aws-amplify/datastore";',
     '',
     'import { schema } from "./schema";',
@@ -196,7 +196,8 @@ export class AppSyncModelTypeScriptVisitor<
     return this.getModelName(model);
   }
 
-  protected getListType(typeStr: string): string {
+  protected getListType(typeStr: string, field: CodeGenField): string {
+    if (this.isModelType(field)) return `LazyCollection<${typeStr}>`;
     return `${typeStr}[]`;
   }
 
@@ -205,7 +206,7 @@ export class AppSyncModelTypeScriptVisitor<
     if (this.isModelType(field)) {
       const modelType = this.typeMap[typeName];
       const typeNameStr = this.generateModelTypeDeclarationName(modelType);
-      return field.isList ? this.getListType(typeNameStr) : typeNameStr;
+      return field.isList ? this.getListType(typeNameStr, field) : typeNameStr;
     }
 
     let nativeType = super.getNativeType(field);

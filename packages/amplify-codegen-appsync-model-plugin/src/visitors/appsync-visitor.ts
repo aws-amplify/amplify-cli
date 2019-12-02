@@ -25,6 +25,7 @@ import { addFieldToModel, removeFieldFromModel } from '../utils/fieldUtils';
 import { getTypeInfo } from '../utils/get-type-info';
 import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
 import { sortFields } from '../utils/sort';
+import { printWarning } from '../utils/warn';
 
 export enum CodeGenGenerateEnum {
   metadata = 'metadata',
@@ -293,13 +294,13 @@ export class AppSyncModelVisitor<
     } else if (this.isEnumType(field)) {
       typeNameStr = this.getEnumName(this.enumMap[typeName]);
     } else {
-      throw new Error(`Unknown type ${typeName} for field ${field.name}`);
+      throw new Error(`Unknown type ${typeName} for field ${field.name}. Did you miss adding @model directive?`);
     }
 
-    return field.isList ? this.getListType(typeNameStr) : typeNameStr;
+    return field.isList ? this.getListType(typeNameStr, field) : typeNameStr;
   }
 
-  protected getListType(typeStr: string): string {
+  protected getListType(typeStr: string, field: CodeGenField): string {
     return `List<${typeStr}>`;
   }
 
@@ -404,8 +405,8 @@ export class AppSyncModelVisitor<
         const fieldType = field.type;
         const connectionInfo = field.connectionInfo;
         if (modelTypes.includes(fieldType) && connectionInfo === undefined) {
-          console.warn(
-            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Please add @connection directive to connect them`
+          printWarning(
+            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Add @connection directive if want to connect them.`
           );
           return false;
         }

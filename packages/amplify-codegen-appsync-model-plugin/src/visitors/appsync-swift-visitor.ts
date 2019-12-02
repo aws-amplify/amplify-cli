@@ -175,7 +175,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
     return result.join('\n');
   }
-  protected getListType(typeStr: string): string {
+  protected getListType(typeStr: string, field: CodeGenField): string {
     return `${typeStr}`;
   }
 
