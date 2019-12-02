@@ -406,7 +406,7 @@ export class AppSyncModelVisitor<
         const connectionInfo = field.connectionInfo;
         if (modelTypes.includes(fieldType) && connectionInfo === undefined) {
           printWarning(
-            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Add @connection directive if want to connect them.`
+            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Add a @connection directive if want to connect them.`
           );
           return false;
         }
