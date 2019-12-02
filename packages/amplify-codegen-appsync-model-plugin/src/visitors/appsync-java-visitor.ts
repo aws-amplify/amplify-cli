@@ -595,6 +595,7 @@ export class AppSyncModelJavaVisitor<
     const body = [
       'return new StringBuilder()',
       ...this.getNonConnectedField(model).map(field => `.append(${this.getFieldGetterName(field)}())`),
+      '.toString()',
       '.hashCode();',
     ].join('\n');
     declarationBlock.addClassMethod('hashCode', 'int', indentMultiline(body).trimLeft(), [], [], 'public', {}, ['Override']);
