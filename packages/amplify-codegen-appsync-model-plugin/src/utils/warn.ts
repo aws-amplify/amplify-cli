@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-const renderedWarnings: string[] = [];
+const printedWarnings: string[] = [];
 
 export function printWarning(message: string): void {
-  if (!renderedWarnings.includes(message)) {
+  if (!printedWarnings.includes(message)) {
     console.warn(`${chalk.bgYellow.black('warning:')} ${message}`);
-    renderedWarnings.push(message);
+    printedWarnings.push(message);
   }
 }

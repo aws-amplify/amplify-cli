@@ -294,7 +294,7 @@ export class AppSyncModelVisitor<
     } else if (this.isEnumType(field)) {
       typeNameStr = this.getEnumName(this.enumMap[typeName]);
     } else {
-      throw new Error(`Unknown type ${typeName} for field ${field.name}. Did you miss adding @model directive?`);
+      throw new Error(`Unknown type ${typeName} for field ${field.name}. Did you forget to add the @model directive`);
     }
 
     return field.isList ? this.getListType(typeNameStr, field) : typeNameStr;
