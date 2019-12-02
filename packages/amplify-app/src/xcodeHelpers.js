@@ -33,7 +33,7 @@ async function addFileToXcodeProj(file) {
           hash = key;
         }
       });
-      myProj.addSourceFile(file, null, hash);
+      myProj.addResourceFile(file, null, hash);
       fs.writeFileSync(projectPath, myProj.writeSync());
       if (err) {
         reject(err);
