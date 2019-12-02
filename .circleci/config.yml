@@ -86,6 +86,9 @@ jobs:
       - restore_cache:
           key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run:
+          name: 'Set environment variables'
+          command: echo 'export AMPLIFY_DATASTORE_SYNC=true' >> $BASH_ENV
+      - run:
           command: 'cd packages/amplify-e2e-tests && yarn run e2e --maxWorkers=3'
           name: 'Run Amplify end-to-end tests'
           no_output_timeout: 90m

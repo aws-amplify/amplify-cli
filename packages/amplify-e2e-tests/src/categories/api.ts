@@ -121,6 +121,8 @@ export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: bool
       .sendline('1000')
       .wait(/.*Enter the number of milliseconds a token is valid after being authenticated.*/)
       .sendline('2000')
+      .wait('Configure conflict detection?')
+      .sendline('n')
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {
