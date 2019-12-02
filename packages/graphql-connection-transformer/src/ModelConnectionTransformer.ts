@@ -67,15 +67,123 @@ function validateKeyField(field: FieldDefinitionNode): void {
  * (Not a list and of type ID or String)
  * @param field: the field to be checked.
  */
-function validateKeyFieldConnectionWithKey(field: FieldDefinitionNode, ctx: TransformerContext): void {
+function validateKeyFieldConnectionWithKey(
+  parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+  field: FieldDefinitionNode,
+  ctx: TransformerContext
+): void {
   const isNonNull = isNonNullType(field.type);
   const isAList = isListType(field.type);
   const isAScalarOrEnum = isScalarOrEnum(field.type, ctx.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[]);
 
+  // check whether the field always assigned by auth rules.
+  let isAutoAssigned = false;
+  parent.directives.find((dir: DirectiveNode) => {
+    if (dir.name.value === 'auth') {
+      dir.arguments.forEach(arg => {
+        if (arg.name.value === 'rules') {
+          if (arg.value.kind !== 'ListValue') {
+            throw new Error('unreachable');
+          }
+
+          const rets = [];
+
+          arg.value.values.forEach(rule => {
+            let allow = null;
+            let fieldName = null;
+            let canCreateOrUpdate = true;
+
+            if (rule.kind !== 'ObjectValue') {
+              throw new Error('unreachable');
+            }
+
+            rule.fields.forEach(f => {
+              switch (f.name.value) {
+                case 'allow':
+                  if (f.value.kind !== 'EnumValue') {
+                    throw new Error('unreachable');
+                  }
+
+                  allow = f.value.value;
+                  break;
+                case 'operations':
+                  canCreateOrUpdate = false;
+
+                  if (f.value.kind !== 'ListValue') {
+                    throw new Error('unreachable');
+                  }
+
+                  f.value.values.forEach(op => {
+                    if (op.kind !== 'EnumValue') {
+                      throw new Error('unreachable');
+                    }
+
+                    switch (op.value) {
+                      case 'create':
+                        canCreateOrUpdate = true;
+                        break;
+                      case 'update':
+                        canCreateOrUpdate = true;
+                        break;
+                      default:
+                        break;
+                    }
+                  });
+                  break;
+                case 'ownerField':
+                  if (f.value.kind !== 'StringValue') {
+                    throw new Error('unreachable');
+                  }
+
+                  fieldName = f.value.value;
+                  break;
+                case 'groupsField':
+                  if (f.value.kind !== 'StringValue') {
+                    throw new Error('unreachable');
+                  }
+
+                  fieldName = f.value.value;
+                  break;
+                case 'groups':
+                  fieldName = '!'; // static authorization shouldn't be allowed. set invalid field name on purpose.
+                  break;
+                default:
+                  break;
+              }
+            });
+
+            if (!canCreateOrUpdate) {
+              return;
+            }
+
+            // use default field name if empty.
+            if (!fieldName) {
+              switch (allow) {
+                case 'owner':
+                  fieldName = 'owner';
+                  break;
+                case 'groups':
+                  fieldName = 'groups';
+                  break;
+                default:
+                  break;
+              }
+            }
+
+            rets.push(fieldName === field.name.value);
+          });
+
+          isAutoAssigned = rets && rets.every(b => b);
+        }
+      });
+    }
+  });
+
   // The only valid key fields are single non-null fields.
-  if (!isAList && isNonNull && isAScalarOrEnum) {
+  if (!isAList && isAScalarOrEnum && (isNonNull || isAutoAssigned)) {
     return;
   }
+
   throw new InvalidDirectiveError(`All fields provided to an @connection must be non-null scalar or enum fields.`);
 }
 
@@ -544,7 +652,7 @@ export class ModelConnectionTransformer extends Transformer {
         throw new InvalidDirectiveError(`${item} is not a field in ${parentTypeName}`);
       }
 
-      validateKeyFieldConnectionWithKey(inputFields[fieldsArrayLength], ctx);
+      validateKeyFieldConnectionWithKey(parent, inputFields[fieldsArrayLength], ctx);
     });
 
     let index: GlobalSecondaryIndex = undefined;
@@ -578,13 +686,9 @@ export class ModelConnectionTransformer extends Transformer {
       }
 
       // Start with GetItem resolver for case where the connection is to a single object.
-      const getResolver = this.resources.makeGetItemConnectionWithKeyResolver(
-        parentTypeName,
-        fieldName,
-        relatedTypeName,
-        args.fields,
-        <KeySchema[]>tableResource.Properties.KeySchema
-      );
+      const getResolver = this.resources.makeGetItemConnectionWithKeyResolver(parentTypeName, fieldName, relatedTypeName, args.fields, <
+        KeySchema[]
+      >tableResource.Properties.KeySchema);
 
       ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver);
     } else {
