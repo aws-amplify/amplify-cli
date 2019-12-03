@@ -28,7 +28,7 @@ export class AppSyncModelTypeScriptVisitor<
   };
 
   protected IMPORT_STATEMENTS = [
-    'import { ModelInit, MutableModel, PersistentModelConstructor, LazyCollection } from "@aws-amplify/datastore";',
+    'import { ModelInit, MutableModel, PersistentModelConstructor } from "@aws-amplify/datastore";',
     'import { initSchema } from "@aws-amplify/datastore";',
     '',
     'import { schema } from "./schema";',
@@ -197,7 +197,6 @@ export class AppSyncModelTypeScriptVisitor<
   }
 
   protected getListType(typeStr: string, field: CodeGenField): string {
-    if (this.isModelType(field)) return `LazyCollection<${typeStr}>`;
     return `${typeStr}[]`;
   }
 
