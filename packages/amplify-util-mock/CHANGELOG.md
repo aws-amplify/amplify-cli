@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@2.17.0...amplify-util-mock@3.4.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* **mock:** [#2606](https://github.com/aws-amplify/amplify-cli/issues/2606) - mocking does not start when there are LSIs in DynamoDB table ([#2667](https://github.com/aws-amplify/amplify-cli/issues/2667)) ([914470e](https://github.com/aws-amplify/amplify-cli/commit/914470e304391fbff756138d381754021aec6528))
+* e2e test failures with node env ([#2831](https://github.com/aws-amplify/amplify-cli/issues/2831)) ([377dfa7](https://github.com/aws-amplify/amplify-cli/commit/377dfa7c78d97408d53ba3611045d19d477c163d))
+
+
+### Features
+
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
 # [3.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@2.17.0...amplify-util-mock@3.3.0) (2019-12-01)
 
 

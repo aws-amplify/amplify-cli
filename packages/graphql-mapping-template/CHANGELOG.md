@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.4.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
 # [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.3.0) (2019-12-01)
 
 

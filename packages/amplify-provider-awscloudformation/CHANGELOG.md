@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@3.17.0...amplify-provider-awscloudformation@4.4.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* api key creation/deletion logic ([#2678](https://github.com/aws-amplify/amplify-cli/issues/2678)) ([e1d111d](https://github.com/aws-amplify/amplify-cli/commit/e1d111d87cbe71f9c7a41a61e243f6d907905878))
+* fixing delete all when no resources present ([#2685](https://github.com/aws-amplify/amplify-cli/issues/2685)) ([3dabb5f](https://github.com/aws-amplify/amplify-cli/commit/3dabb5f7e6216cf2b1dc943b09c8487c693a037c))
+* include api build directory in cloud zip ([#2819](https://github.com/aws-amplify/amplify-cli/issues/2819)) ([f26fea4](https://github.com/aws-amplify/amplify-cli/commit/f26fea4138ec20847ae9e577f9315aa865d9679a))
+* **amplify-category-notifications:** fix notifications env change issue ([#2669](https://github.com/aws-amplify/amplify-cli/issues/2669)) ([54d4d64](https://github.com/aws-amplify/amplify-cli/commit/54d4d64e03dc246e42ba3e2d19b1789d2dbeaddc)), closes [#2616](https://github.com/aws-amplify/amplify-cli/issues/2616)
+* **amplify-provider-awscloudformation:** fix multi env creation bug ([#2872](https://github.com/aws-amplify/amplify-cli/issues/2872)) ([007a8d1](https://github.com/aws-amplify/amplify-cli/commit/007a8d12da802c822b20a4351cb074b49f01bd23)), closes [#2868](https://github.com/aws-amplify/amplify-cli/issues/2868)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
 # [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@3.17.0...amplify-provider-awscloudformation@4.3.0) (2019-12-01)
 
 

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.31.0...amplify-category-storage@2.0.5) (2019-12-03)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** validate max length of bucket name ([ace68a9](https://github.com/aws-amplify/amplify-cli/commit/ace68a9a41adf29e924a5eee2f7970d041c24feb))
+* give ddb trigger different policy name from lambda execution ([#2801](https://github.com/aws-amplify/amplify-cli/issues/2801)) ([b97a7db](https://github.com/aws-amplify/amplify-cli/commit/b97a7db7e856d9bd6a5568b8b7a4ea7ef27c57f9))
+* randomize role-names and bucket-name for auth and storage category ([#2709](https://github.com/aws-amplify/amplify-cli/issues/2709)) ([fe0e979](https://github.com/aws-amplify/amplify-cli/commit/fe0e979812bd3142a56a62bf15444cbb3dbbb6bb))
+
+
+
+
+
 ## [2.0.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.31.0...amplify-category-storage@2.0.4) (2019-12-01)
 
 
