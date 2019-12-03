@@ -464,9 +464,7 @@ async function askAdditionalQuestions(context, parameters, authConfig, defaultAu
 
   if (advancedSettingsAnswer.advancedSettings) {
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
-    if (process.env.AMPLIFY_DATASTORE_SYNC === 'true') {
-      resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
-    }
+    resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
   }
 
   return { authConfig, resolverConfig };
