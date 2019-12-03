@@ -50,3 +50,20 @@ export const TYPESCRIPT_SCALAR_MAP: NormalizedScalarsMap = {
   AWSPhone: 'string',
   AWSIPAddress: 'string',
 };
+
+export const METADATA_SCALAR_MAP: NormalizedScalarsMap = {
+  ID: 'ID',
+  Boolean: 'Boolean',
+  String: 'string',
+  AWSDate: 'AWSDate',
+  AWSTime: 'AWSTime',
+  AWSDateTime: 'AWSDateTime',
+  AWSEmail: 'AWSEmail',
+  AWSJSON: 'AWSJSON',
+  AWSURL: 'AWSURL',
+  AWSPhone: 'AWSPhone',
+  AWSIPAddress: 'AWSIPAddress',
+  Int: 'Int',
+  Float: 'Float',
+  AWSTimestamp: 'AWSTimestamp',
+};
