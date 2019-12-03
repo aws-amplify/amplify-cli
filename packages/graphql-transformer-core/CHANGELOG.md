@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@5.18.0...graphql-transformer-core@6.4.0) (2019-12-03)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
 # [6.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@5.18.0...graphql-transformer-core@6.3.0) (2019-12-01)
 
 

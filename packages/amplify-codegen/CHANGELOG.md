@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.29.0...amplify-codegen@2.4.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** fix headless push with codegen ([#2743](https://github.com/aws-amplify/amplify-cli/issues/2743)) ([da248a4](https://github.com/aws-amplify/amplify-cli/commit/da248a456d96ed37533f964c066651ae22459166))
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** modelgen connection support ([#2836](https://github.com/aws-amplify/amplify-cli/issues/2836)) ([353749c](https://github.com/aws-amplify/amplify-cli/commit/353749ce6643a07206a1f4c30d00beb775db169e))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
 # [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.29.0...amplify-codegen@2.3.0) (2019-12-01)
 
 
