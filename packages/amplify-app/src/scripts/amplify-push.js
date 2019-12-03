@@ -11,9 +11,10 @@ const configFilePath = path.join(dotAWSDirPath, 'config');
 run();
 
 function getNamedProfiles() {
-  const namedProfiles = {};
+  let namedProfiles;
   if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
+    namedProfiles = {};
     Object.keys(config).forEach(key => {
       const profileName = key.replace('profile', '').trim();
       if (!namedProfiles[profileName]) {
