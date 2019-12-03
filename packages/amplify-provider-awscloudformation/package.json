@@ -1,15 +1,15 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "4.3.1-beta.1",
+  "version": "4.3.1-beta.2",
   "description": "AWS CloudFormation Provider",
   "main": "index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-auth": "2.3.1-beta.0",
-    "amplify-category-predictions": "2.0.5-beta.1",
+    "amplify-category-predictions": "2.0.5-beta.2",
     "amplify-category-storage": "2.0.5-beta.0",
-    "amplify-codegen": "2.3.1-beta.1",
+    "amplify-codegen": "2.3.1-beta.2",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.580.0",
     "bottleneck": "2.16.2",
