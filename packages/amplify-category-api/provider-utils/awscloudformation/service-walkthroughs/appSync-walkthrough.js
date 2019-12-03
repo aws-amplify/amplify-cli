@@ -1,3 +1,5 @@
+import { getDataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
+
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const uuid = require('uuid');
@@ -462,9 +464,7 @@ async function askAdditionalQuestions(context, parameters, authConfig, defaultAu
 
   if (advancedSettingsAnswer.advancedSettings) {
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
-    if (process.env.AMPLIFY_DATASTORE_SYNC === 'true') {
-      resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
-    }
+    resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
   }
 
   return { authConfig, resolverConfig };
@@ -478,13 +478,6 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
       let conflictResolutionStrategy;
 
       do {
-        if (conflictResolutionStrategy === 'Learn More') {
-          // Todo: Update the help text
-          context.print.info('');
-          context.print.info('DataStore help text');
-          context.print.info('');
-        }
-
         const conflictResolutionQuestion = {
           type: 'list',
           name: 'conflictResolutionStrategy',
@@ -509,6 +502,9 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
             },
           ],
         };
+        if (conflictResolutionStrategy === 'Learn More') {
+          conflictResolutionQuestion.prefix = getDataStoreLearnMore();
+        }
         ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
       } while (conflictResolutionStrategy === 'Learn More');
 

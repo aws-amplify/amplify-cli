@@ -370,12 +370,12 @@ async function createIosHelperFiles() {
   if (!fs.existsSync(awsConfigFile)) {
     fs.writeFileSync(awsConfigFile, configJsonStr);
   }
-  await addFileToXcodeProj(awsConfigFile);
+  await addFileToXcodeProj(awsConfigFile, true);
 
   if (!fs.existsSync(amplifyConfigFile)) {
     fs.writeFileSync(amplifyConfigFile, configJsonStr);
   }
-  await addFileToXcodeProj(amplifyConfigFile);
+  await addFileToXcodeProj(amplifyConfigFile, true);
 
   if (fs.existsSync(amplifyDir)) {
     await addFileToXcodeProj(amplifyDir);
