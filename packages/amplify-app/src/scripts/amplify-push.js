@@ -11,10 +11,9 @@ const configFilePath = path.join(dotAWSDirPath, 'config');
 run();
 
 function getNamedProfiles() {
-  let namedProfiles;
+  let namedProfiles = {};
   if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
-    namedProfiles = {};
     Object.keys(config).forEach(key => {
       const profileName = key.replace('profile', '').trim();
       if (!namedProfiles[profileName]) {
@@ -38,7 +37,7 @@ async function askForProfile(namedProfiles) {
 
 async function getValidProfile(profileToUse) {
   const namedProfiles = getNamedProfiles();
-  if (Object.keys(namedProfiles).length) {
+  if (namedProfiles && Object.keys(namedProfiles).length) {
     if (namedProfiles[profileToUse]) {
       return profileToUse;
     }
