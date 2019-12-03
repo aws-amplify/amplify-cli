@@ -147,9 +147,8 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       .access('public')
       .withName('AmplifyModels')
       .asKind('class')
-      .withProtocols(['DataStoreModelRegistration'])
+      .withProtocols(['AmplifyModelRegistration'])
       .final()
-      .withProtocols(['DataStoreModelRegistration'])
       .withComment('Contains the set of classes that conforms to the `Model` protocol.');
 
     classDeclaration.addProperty('version', 'String', `"${this.computeVersion()}"`, 'public', {});
