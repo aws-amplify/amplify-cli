@@ -14,6 +14,8 @@
     "amplify-category-function": "2.3.0",
     "amplify-category-storage": "2.0.4",
     "aws-sdk": "^2.580.0",
+    "chalk": "^3.0.0",
+    "chalk-pipe": "^3.0.0",
     "fs-extra": "^8.1.0",
     "graphql": "^0.13.2",
     "graphql-relational-schema-transformer": "2.3.0",
