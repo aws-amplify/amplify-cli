@@ -79,8 +79,6 @@ export function getOfficialPlugins() {
   const packageJson = readJsonFileSync(packageJsonFilePath);
   const { officialPlugins } = packageJson.amplify;
 
-  const coreVersion = packageJson.version;
-  officialPlugins.core.packageVersion = coreVersion;
 
   const dependencies: { [key: string]: string } = packageJson.dependencies;
 
@@ -93,6 +91,9 @@ export function getOfficialPlugins() {
       delete officialPlugins[plugin].packageVersion;
     }
   });
+
+  const coreVersion = packageJson.version;
+  officialPlugins.core.packageVersion = coreVersion;
 
   return officialPlugins;
 }
