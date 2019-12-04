@@ -8,7 +8,7 @@ import {
 } from '@graphql-codegen/visitor-plugin-common';
 import { constantCase, pascalCase } from 'change-case';
 import { plural } from 'pluralize';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import {
   DefinitionNode,
   DirectiveNode,
