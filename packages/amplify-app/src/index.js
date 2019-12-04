@@ -340,7 +340,7 @@ async function createJSHelperFiles() {
 }
 
 async function createAndroidHelperFiles() {
-  const configJsonObj = { profile: 'default', envName: 'amplify' };
+  const configJsonObj = { profile: 'default', envName: 'amplify', syncEnabled: true };
   const configJsonStr = JSON.stringify(configJsonObj);
   const configFile = path.join(process.cwd(), './amplify-gradle-config.json');
   if (!fs.existsSync(configFile)) {
