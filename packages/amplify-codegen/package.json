@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
@@ -14,9 +14,9 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@graphql-codegen/core": "^1.8.3",
-    "amplify-codegen-appsync-model-plugin": "1.4.0",
-    "amplify-graphql-docs-generator": "2.0.5",
-    "amplify-graphql-types-generator": "2.0.5",
+    "amplify-codegen-appsync-model-plugin": "1.5.0",
+    "amplify-graphql-docs-generator": "2.0.6",
+    "amplify-graphql-types-generator": "2.0.6",
     "aws-appsync-codegen": "^0.17.4",
     "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",

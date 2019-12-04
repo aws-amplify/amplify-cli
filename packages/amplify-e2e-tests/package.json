@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -70,7 +70,7 @@
     "aws-sdk": "^2.580.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "6.4.0"
+    "graphql-transformer-core": "6.5.0"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

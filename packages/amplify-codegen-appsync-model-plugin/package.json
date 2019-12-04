@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen-appsync-model-plugin",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "main": "lib/index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
