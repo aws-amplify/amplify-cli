@@ -361,7 +361,6 @@ async function createIosHelperFiles() {
     const configxc = ini.parse('');
     configxc.push = false;
     configxc.modelgen = false;
-    configxc.datastoreSync = false;
     configxc.profile = 'default';
     configxc.envName = 'amplify';
     fs.writeFileSync(configFile, ini.stringify(configxc));
