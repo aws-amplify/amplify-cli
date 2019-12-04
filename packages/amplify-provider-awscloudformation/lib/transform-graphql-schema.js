@@ -43,7 +43,7 @@ function warnOnAuth(context, map) {
 }
 
 function getTransformerFactory(context, resourceDir, authConfig) {
-  return async addSearchableTransformer => {
+  return async (addSearchableTransformer, storageConfig) => {
     const transformerList = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),
@@ -52,7 +52,7 @@ function getTransformerFactory(context, resourceDir, authConfig) {
       new HttpTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
-      new PredictionsTransformer(),
+      new PredictionsTransformer(storageConfig),
     ];
 
     if (addSearchableTransformer) {
@@ -410,55 +410,7 @@ async function transformGraphQLSchema(context, options) {
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
-  const transformerListFactory = async addSearchableTransformer => {
-    const transformerList = [
-      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
-      new DynamoDBModelTransformer(),
-      new VersionedModelTransformer(),
-      new FunctionTransformer(),
-      new HttpTransformer(),
-      new KeyTransformer(),
-      new ModelConnectionTransformer(),
-      new PredictionsTransformer(storageConfig),
-    ];
-
-    if (addSearchableTransformer) {
-      transformerList.push(new SearchableModelTransformer());
-    }
-
-    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
-    )
-      .map(transformer => {
-        const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
-        const modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
-        // handle 'cannot find module'
-        try {
-          return require(modulePath);
-        } catch (error) {
-          context.print.error(`Unable to import custom transformer module(${modulePath}).`);
-          context.print.error(`You may fix this error by editing transformers at ${path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME)}`);
-          throw error;
-        }
-      })
-      .map(imported => {
-        const CustomTransformer = imported.default;
-        return CustomTransformer.call({});
-      })
-      .filter(customTransformer => customTransformer);
-
-    if (customTransformers.length > 0) {
-      transformerList.push(...customTransformers);
-    }
-
-    // TODO: Build dependency mechanism into transformers. Auth runs last
-    // so any resolvers that need to be protected will already be created.
-    transformerList.push(new ModelAuthTransformer({ authConfig }));
-
-    return transformerList;
-  };
+  const transformerListFactory = getTransformerFactory(context, resourceDir, authConfig);
 
   let searchableTransformerFlag = false;
 
@@ -470,7 +422,7 @@ async function transformGraphQLSchema(context, options) {
     buildParameters,
     projectDirectory: options.dryrun ? false : resourceDir,
     transformersFactory: transformerListFactory,
-    transformersFactoryArgs: [searchableTransformerFlag],
+    transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     disableResolverOverrides: options.disableResolverOverrides,
