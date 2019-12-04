@@ -99,5 +99,94 @@
       "node"
     ],
     "collectCoverage": true
+  },
+  "amplify": {
+    "officialPlugins": {
+      "core": {
+        "name": "core",
+        "type": "core",
+        "packageName": "@aws-amplify/cli" 
+      },
+      "awscloudformation": {
+        "name": "awscloudformation",
+        "type": "provider",
+        "packageName": "amplify-provider-awscloudformation"
+      },
+      "analytics": {
+        "name": "analytics",
+        "type": "category",
+        "packageName": "amplify-category-analytics" 
+      },
+      "api": {
+        "name": "api",
+        "type": "category",
+        "packageName": "amplify-category-api" 
+      },
+      "auth": {
+        "name": "auth",
+        "type": "category",
+        "packageName": "amplify-category-auth" 
+      },
+      "function": {
+        "name": "function",
+        "type": "category",
+        "packageName": "amplify-category-function" 
+      },
+      "hosting": {
+        "name": "hosting",
+        "type": "category",
+        "packageName": "amplify-category-hosting" 
+      },
+      "interactions": {
+        "name": "interactions",
+        "type": "category",
+        "packageName": "amplify-category-interactions" 
+      },
+      "notifications": {
+        "name": "notifications",
+        "type": "category",
+        "packageName": "amplify-category-notifications" 
+      },
+      "predictions": {
+        "name": "predictions",
+        "type": "category",
+        "packageName": "amplify-category-predictions" 
+      },
+      "storage": {
+        "name": "storage",
+        "type": "category",
+        "packageName": "amplify-category-storage" 
+      },
+      "xr": {
+        "name": "xr",
+        "type": "category",
+        "packageName": "amplify-category-xr" 
+      },
+      "codegen": {
+        "name": "codegen",
+        "type": "util",
+        "packageName": "amplify-codegen" 
+      },
+      "android": {
+        "name": "android",
+        "type": "frontend",
+        "packageName": "amplify-frontend-android" 
+      },
+      "ios": {
+        "name": "ios",
+        "type": "frontend",
+        "packageName": "amplify-frontend-ios" 
+      },
+      "javascript": {
+        "name": "javascript",
+        "type": "frontend",
+        "packageName": "amplify-frontend-javascript" 
+      },
+      "mock": {
+        "name": "mock",
+        "type": "util",
+        "packageName": "amplify-util-mock" 
+      }
+    }
   }
 }
