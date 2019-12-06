@@ -1,15 +1,4 @@
-import {
-  DynamoDB,
-  AppSync,
-  IAM,
-  Template,
-  Fn,
-  StringParameter,
-  NumberParameter,
-  Refs,
-  IntrinsicFunction,
-  DeletionPolicy,
-} from 'cloudform-types';
+import { DynamoDB, AppSync, IAM, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction, DeletionPolicy } from 'cloudform-types';
 import Output from 'cloudform-types/types/output';
 import {
   DynamoDBMappingTemplate,
@@ -34,6 +23,7 @@ import {
 import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs, SyncResourceIDs } from 'graphql-transformer-common';
 import { plural } from 'pluralize';
 import { SyncConfig, SyncUtils } from 'graphql-transformer-core';
+import Template from 'cloudform-types/types/template';
 
 type MutationResolverInput = {
   type: string;

@@ -3,6 +3,7 @@ import { Kind, TypeDefinitionNode } from 'graphql';
 import { join } from 'path';
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
 import { LOADER_CLASS_NAME, GENERATED_PACKAGE_NAME } from './configs/java-config';
+import { pascalCase } from 'change-case';
 
 const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
 
@@ -97,16 +98,6 @@ const generateSwiftPreset = (
       });
     }
   });
-  // metadata
-  config.push({
-    ...options,
-    filename: join(options.baseOutputDir, `metadata.json`),
-    config: {
-      ...options.config,
-      scalars: { ...SWIFT_SCALAR_MAP, ...options.config.scalars },
-      target: 'metadata',
-    },
-  });
 
   // class loader
   config.push({
@@ -145,7 +136,7 @@ const generateTypeScriptPreset = (
       ...options.config,
       scalars: { ...TYPESCRIPT_SCALAR_MAP, ...options.config.scalars },
       target: 'metadata',
-      metaDataTarget: 'typescript',
+      metadataTarget: 'typescript',
     },
   });
   return config;
@@ -186,7 +177,7 @@ const generateJavasScriptPreset = (
       ...options.config,
       scalars: { ...TYPESCRIPT_SCALAR_MAP, ...options.config.scalars },
       target: 'metadata',
-      metaDataTarget: 'javascript',
+      metadataTarget: 'javascript',
     },
   });
 
@@ -198,7 +189,7 @@ const generateJavasScriptPreset = (
       ...options.config,
       scalars: { ...TYPESCRIPT_SCALAR_MAP, ...options.config.scalars },
       target: 'metadata',
-      metaDataTarget: 'typedeclaration',
+      metadataTarget: 'typeDeclaration',
     },
   });
   return config;

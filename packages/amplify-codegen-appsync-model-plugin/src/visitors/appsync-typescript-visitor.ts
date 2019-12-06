@@ -1,5 +1,6 @@
 import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
+import { camelCase } from 'change-case';
 import {
   AppSyncModelVisitor,
   CodeGenEnum,
@@ -34,6 +35,7 @@ export class AppSyncModelTypeScriptVisitor<
   ];
 
   generate(): string {
+    this.processConnectionDirective();
     const imports = this.generateImports();
     const enumDeclarations = Object.values(this.enumMap)
       .map(enumObj => this.generateEnumDeclarations(enumObj))
@@ -147,12 +149,15 @@ export class AppSyncModelTypeScriptVisitor<
     return `${initializationResult.join(' ')};`;
   }
 
-  protected generateExports(models: CodeGenModel[]): string {
-    const exportStr = models
+  protected generateExports(modelsOrEnum: (CodeGenModel | CodeGenEnum)[]): string {
+    const exportStr = modelsOrEnum
       .map(model => {
-        const modelClassName = this.generateModelImportAlias(model);
-        const exportClassName = this.getModelName(model);
-        return modelClassName !== exportClassName ? `${modelClassName} as ${exportClassName}` : modelClassName;
+        if (model.type === 'model') {
+          const modelClassName = this.generateModelImportAlias(model);
+          const exportClassName = this.getModelName(model);
+          return modelClassName !== exportClassName ? `${modelClassName} as ${exportClassName}` : modelClassName;
+        }
+        return model.name;
       })
       .join(',\n');
     return ['export {', indentMultiline(exportStr), '};'].join('\n');
@@ -191,7 +196,7 @@ export class AppSyncModelTypeScriptVisitor<
     return this.getModelName(model);
   }
 
-  protected getListType(typeStr: string): string {
+  protected getListType(typeStr: string, field: CodeGenField): string {
     return `${typeStr}[]`;
   }
 
@@ -199,7 +204,8 @@ export class AppSyncModelTypeScriptVisitor<
     const typeName = field.type;
     if (this.isModelType(field)) {
       const modelType = this.typeMap[typeName];
-      return this.generateModelTypeDeclarationName(modelType);
+      const typeNameStr = this.generateModelTypeDeclarationName(modelType);
+      return field.isList ? this.getListType(typeNameStr, field) : typeNameStr;
     }
 
     let nativeType = super.getNativeType(field);

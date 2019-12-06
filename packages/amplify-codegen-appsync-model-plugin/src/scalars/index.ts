@@ -18,10 +18,10 @@ export const JAVA_SCALAR_MAP: NormalizedScalarsMap = {
 };
 
 export const SWIFT_SCALAR_MAP: NormalizedScalarsMap = {
-  ID: 'Identifier',
+  ID: 'String',
   String: 'String',
   Int: 'Int',
-  Float: 'Decimal',
+  Float: 'Double',
   Boolean: 'Bool',
   AWSDate: 'Date',
   AWSTime: 'Date',
@@ -49,4 +49,21 @@ export const TYPESCRIPT_SCALAR_MAP: NormalizedScalarsMap = {
   AWSURL: 'string',
   AWSPhone: 'string',
   AWSIPAddress: 'string',
+};
+
+export const METADATA_SCALAR_MAP: NormalizedScalarsMap = {
+  ID: 'ID',
+  Boolean: 'Boolean',
+  String: 'string',
+  AWSDate: 'AWSDate',
+  AWSTime: 'AWSTime',
+  AWSDateTime: 'AWSDateTime',
+  AWSEmail: 'AWSEmail',
+  AWSJSON: 'AWSJSON',
+  AWSURL: 'AWSURL',
+  AWSPhone: 'AWSPhone',
+  AWSIPAddress: 'AWSIPAddress',
+  Int: 'Int',
+  Float: 'Float',
+  AWSTimestamp: 'AWSTimestamp',
 };

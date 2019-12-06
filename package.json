@@ -18,8 +18,8 @@
     "setup-dev": "yarn dev-build && yarn rm-dev-link && yarn link-dev && yarn link-caa",
     "setup-dev-win": "lerna exec -- del /f package-lock.json && lerna bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link && cd ../.. && lerna run build",
     "publish:master": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --yes",
-    "publish:beta": "lerna publish prerelease --exact  --dist-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --yes",
-    "publish:release": "lerna publish  minor --exact  --yes --message 'chore(release): Publish [ci skip]'",
+    "publish:beta": "lerna publish prerelease --exact --dist-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --yes",
+    "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]'",
     "postpublish:release": "git fetch . release:master && git push origin master",
     "commit": "git-cz",
     "coverage": "codecov || exit 0"

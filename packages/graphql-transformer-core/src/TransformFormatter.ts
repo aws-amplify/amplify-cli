@@ -1,7 +1,6 @@
 import { TransformerContext } from './TransformerContext';
-import { StringParameter } from 'cloudform-types';
+import { Fn, StringParameter } from 'cloudform-types';
 import Resource from 'cloudform-types/types/resource';
-import { Fn } from 'cloudform-types';
 import { makeOperationType, makeSchema } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, print } from 'graphql';
 import { stripDirectives } from './stripDirectives';
@@ -130,10 +129,9 @@ export class TransformFormatter {
         const functionConfigMap = this.replaceFunctionConfigurationRecord(resourceName, ctx);
         pipelineFunctionMap = { ...pipelineFunctionMap, ...functionConfigMap };
       } else if (resource.Type === 'AWS::Lambda::Function') {
-        // TODO: We only use the one function for now. Generalize this.
         functionsMap = {
           ...functionsMap,
-          [`${resourceName}.zip`]: ctx.metadata.get('ElasticsearchPathToStreamingLambda'),
+          [`${resourceName}.zip`]: ctx.metadata.get(resourceName),
         };
       }
     }

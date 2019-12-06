@@ -1,6 +1,6 @@
 {
   "name": "graphql-mapping-template",
-  "version": "3.25.0",
+  "version": "4.4.0",
   "description": "An AST wrapper around AWS AppSync resolvers",
   "main": "lib/index.js",
   "scripts": {
@@ -17,14 +17,14 @@
     "aws"
   ],
   "dependencies": {
-    "cloudform": "^3.5.0"
+    "cloudform": "^4.1.0"
   },
   "devDependencies": {
     "@types/jest": "22.2.3",
     "jest": "^23.0.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
-    "typescript": "^3.6.4"
+    "typescript": "~3.6.4"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",

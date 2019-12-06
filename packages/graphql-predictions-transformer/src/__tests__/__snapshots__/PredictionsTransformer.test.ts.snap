@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lambda function is added to pipeline when lambda dependent action is added 1`] = `
+"type Query {
+  speakTranslatedText(input: SpeakTranslatedTextInput!): String
+}
+
+input SpeakTranslatedTextTranslateTextInput {
+  sourceLanguage: String!
+  targetLanguage: String!
+  text: String!
+}
+
+input SpeakTranslatedTextConvertTextToSpeechInput {
+  voiceID: String!
+}
+
+input SpeakTranslatedTextInput {
+  translateText: SpeakTranslatedTextTranslateTextInput!
+  convertTextToSpeech: SpeakTranslatedTextConvertTextToSpeechInput!
+}
+"
+`;
+
+exports[`return type is a list based on the action 1`] = `
+"type Query {
+  translateLabels(input: TranslateLabelsInput!): [String]
+}
+
+input TranslateLabelsIdentifyLabelsInput {
+  key: String!
+}
+
+input TranslateLabelsTranslateTextInput {
+  sourceLanguage: String!
+  targetLanguage: String!
+}
+
+input TranslateLabelsInput {
+  identifyLabels: TranslateLabelsIdentifyLabelsInput!
+  translateText: TranslateLabelsTranslateTextInput!
+}
+"
+`;

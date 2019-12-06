@@ -1,3 +1,5 @@
+const pushCommand = require('./push');
+
 module.exports = {
   name: 'publish',
   run: async context => {
@@ -26,7 +28,7 @@ module.exports = {
       return continueToCheckNext;
     });
 
-    const didPush = await context.amplify.pushResources(context);
+    const didPush = await pushCommand.run(context);
 
     let continueToPublish = didPush;
     if (!continueToPublish && isHostingAlreadyPushed) {

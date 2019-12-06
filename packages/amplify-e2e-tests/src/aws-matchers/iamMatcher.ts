@@ -1,4 +1,5 @@
-import { IAM, AWSError } from 'aws-sdk';
+import { IAM } from 'aws-sdk';
+
 expect.extend({
   async toBeIAMRoleWithArn(roleName: string, arn?: string) {
     const iam = new IAM();

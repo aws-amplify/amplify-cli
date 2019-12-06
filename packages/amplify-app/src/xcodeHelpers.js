@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 async function getXcodeProjectDir() {
   const EXTENSION = '.xcodeproj';
   const files = fs.readdirSync(process.cwd());
-  const targetFiles = files.filter(function(file) {
+  const targetFiles = files.filter(function extenstionFilter(file) {
     return path.extname(file).toLowerCase() === EXTENSION;
   });
   let projDir;
@@ -15,7 +15,7 @@ async function getXcodeProjectDir() {
   return projDir;
 }
 
-async function addFileToXcodeProj(file) {
+async function addFileToXcodeProj(file, isResource) {
   const projectPath = await getXcodeProjectDir();
   // Silently return if not in same directory as xcode project
   if (!projectPath) {
@@ -23,7 +23,7 @@ async function addFileToXcodeProj(file) {
   }
   const myProj = xcode.project(projectPath);
   return new Promise((resolve, reject) =>
-    myProj.parse(function(err) {
+    myProj.parse(function parseCallback(err) {
       // hash of the group we add the files to, in this case the root of the xcode project
       let hash = '';
       Object.entries(myProj.hash.project.objects.PBXGroup).forEach(entry => {
@@ -33,7 +33,15 @@ async function addFileToXcodeProj(file) {
           hash = key;
         }
       });
-      myProj.addSourceFile(file, null, hash);
+
+      if (isResource) {
+        myProj.addPbxGroup([], 'Resources', 'Resources', '"<group>"');
+        myProj.addResourceFile(file, null, hash);
+        myProj.removePbxGroup('Resources');
+      } else {
+        myProj.addFile(file, hash, null);
+      }
+
       fs.writeFileSync(projectPath, myProj.writeSync());
       if (err) {
         reject(err);

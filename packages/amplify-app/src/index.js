@@ -8,8 +8,11 @@ const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
 const { addFileToXcodeProj } = require('./xcodeHelpers');
 const ini = require('ini');
+const semver = require('semver');
+const stripAnsi = require('strip-ansi');
+const { engines } = require('../package.json');
 
-const amplifyCliPackageName = '@aws-amplify/cli@canary';
+const amplifyCliPackageName = '@aws-amplify/cli';
 
 function run() {
   const projpath = args.path;
@@ -19,7 +22,7 @@ function run() {
   }
 
   return checkNodeVersion()
-    .then(() => installAmplifyCLI())
+    .then(() => amplifyCLIVersionCheck())
     .then(() => createAmplifySkeletonProject())
     .then(frontend => createAmplifyHelperFiles(frontend))
     .then(frontend => {
@@ -38,47 +41,51 @@ function run() {
 // Node version check
 async function checkNodeVersion() {
   const currentNodeVersion = process.versions.node;
-  const semver = currentNodeVersion.split('.');
-  const major = semver[0];
-  const minor = semver[1];
-
-  if (major < 8 || (major === 8 && minor < 12)) {
+  const minNodeVersion = engines.node;
+  if (!semver.satisfies(currentNodeVersion, minNodeVersion)) {
     console.error(
       `You are running Node ${currentNodeVersion}.\n` +
-        `Amplify CLI requires Node 8.12.0 or higher. \n` +
+        `Amplify CLI requires Node ${minNodeVersion}. \n` +
         `Please update your version of Node.`
     );
     process.exit(1);
   }
 }
 
+// Install CLI using npm
 async function installAmplifyCLI() {
-  const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
-
-  if (amplifyCLIVersionCheck.stderr !== null) {
-    console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersionCheck.stdout.toString()}`);
-  } else {
-    // Install the CLI
-    console.log(`${emoji.get('worried')} Amplify CLI not found on your system.`);
-    console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
-
-    return new Promise((resolve, reject) => {
-      const amplifyCLIInstall = spawn('npm', ['install', '-g', `${amplifyCliPackageName}`], {
-        cwd: process.cwd(),
-        env: process.env,
-        stdio: 'inherit',
-      });
-
-      amplifyCLIInstall.on('exit', code => {
-        if (code === 0) {
-          console.log(`${emoji.get('white_check_mark')} Successfully installed Amplify CLI.`);
-          resolve();
-        } else {
-          console.log(`${emoji.get('x')} Failed to install Amplify CLI.`);
-          reject();
-        }
-      });
+  return new Promise((resolve, reject) => {
+    const amplifyCLIInstall = spawn('npm', ['install', '-g', `${amplifyCliPackageName}`], {
+      cwd: process.cwd(),
+      env: process.env,
+      stdio: 'inherit',
     });
+
+    amplifyCLIInstall.on('exit', code => {
+      if (code === 0) {
+        console.log(`${emoji.get('white_check_mark')} Successfully installed Amplify CLI.`);
+        resolve();
+      } else {
+        console.log(`${emoji.get('x')} Failed to install Amplify CLI.`);
+        reject();
+      }
+    });
+  });
+}
+
+// Check the amplify CLI version, install latest CLI if it does not exist or is too old
+async function amplifyCLIVersionCheck() {
+  const amplifyCLIVersionSpawn = spawnSync('amplify', ['-v']);
+  const minCLIVersion = engines['@aws-amplify/cli'];
+  if (amplifyCLIVersionSpawn.stderr !== null) {
+    const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionSpawn.stdout.toString()));
+    if (semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
+      console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersion}`);
+    }
+  } else {
+    console.log(`${emoji.get('worried')} Amplify CLI version ${minCLIVersion} not found.`);
+    console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
+    await installAmplifyCLI();
   }
 }
 
@@ -308,6 +315,7 @@ async function createJSHelperFiles() {
 
   const devDependencies = {
     ini: '^1.3.5',
+    inquirer: '^6.5.1',
   };
 
   Object.assign(packageJSON.scripts, runScripts);
@@ -332,7 +340,7 @@ async function createJSHelperFiles() {
 }
 
 async function createAndroidHelperFiles() {
-  const configJsonObj = { profile: 'default', envName: 'amplify' };
+  const configJsonObj = { profile: 'default', envName: 'amplify', syncEnabled: true };
   const configJsonStr = JSON.stringify(configJsonObj);
   const configFile = path.join(process.cwd(), './amplify-gradle-config.json');
   if (!fs.existsSync(configFile)) {
@@ -362,12 +370,12 @@ async function createIosHelperFiles() {
   if (!fs.existsSync(awsConfigFile)) {
     fs.writeFileSync(awsConfigFile, configJsonStr);
   }
-  await addFileToXcodeProj(awsConfigFile);
+  await addFileToXcodeProj(awsConfigFile, true);
 
   if (!fs.existsSync(amplifyConfigFile)) {
     fs.writeFileSync(amplifyConfigFile, configJsonStr);
   }
-  await addFileToXcodeProj(amplifyConfigFile);
+  await addFileToXcodeProj(amplifyConfigFile, true);
 
   if (fs.existsSync(amplifyDir)) {
     await addFileToXcodeProj(amplifyDir);

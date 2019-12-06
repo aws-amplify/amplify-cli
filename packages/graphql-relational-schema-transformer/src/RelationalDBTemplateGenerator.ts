@@ -1,11 +1,11 @@
 import { ResourceConstants } from './ResourceConstants';
 import DataSource from 'cloudform-types/types/appSync/dataSource';
 import IAM from 'cloudform-types/types/iam';
-
-import cloudform, { Fn, StringParameter, Refs } from 'cloudform';
-import Template from 'cloudform-types/types/template';
+import { default as cloudform } from 'cloudform';
+import { Fn, StringParameter } from 'cloudform-types';
 import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { RelationalDBResolverGenerator } from './RelationalDBResolverGenerator';
+import Template from 'cloudform-types/types/template';
 
 /**
  * This is the Class responsible for generating and managing the CloudForm template

@@ -6,8 +6,9 @@ import {
   ParsedConfig,
   RawConfig,
 } from '@graphql-codegen/visitor-plugin-common';
-import { camelCase, pascalCase, upperCase } from 'change-case';
-import * as crypto from 'crypto';
+import { constantCase, pascalCase } from 'change-case';
+import { plural } from 'pluralize';
+import crypto from 'crypto';
 import {
   DefinitionNode,
   DirectiveNode,
@@ -20,8 +21,11 @@ import {
   parse,
   valueFromASTUntyped,
 } from 'graphql';
+import { addFieldToModel, removeFieldFromModel } from '../utils/fieldUtils';
 import { getTypeInfo } from '../utils/get-type-info';
+import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
 import { sortFields } from '../utils/sort';
+import { printWarning } from '../utils/warn';
 
 export enum CodeGenGenerateEnum {
   metadata = 'metadata',
@@ -63,7 +67,7 @@ export interface RawAppSyncModelConfig extends RawConfig {
    *    - amplify-codegen-appsync-model-plugin
    * ```
    */
-  selectedType: string;
+  selectedType?: string;
 
   /**
    * @name generate
@@ -84,7 +88,7 @@ export interface RawAppSyncModelConfig extends RawConfig {
    *    - amplify-codegen-appsync-model-plugin
    * ```
    */
-  generate: CodeGenGenerateEnum;
+  generate?: CodeGenGenerateEnum;
   /**
    * @name directives
    * @type string
@@ -98,17 +102,18 @@ export interface ParsedAppSyncModelConfig extends ParsedConfig {
   selectedType?: string;
   generate?: CodeGenGenerateEnum;
 }
-export type CodeGenArgumentsMap = {
-  [argumentName: string]: any;
-};
+export type CodeGenArgumentsMap = Record<string, any>;
+
 export type CodeGenDirective = {
   name: string;
   arguments: CodeGenArgumentsMap;
 };
+
 export type CodeGenDirectives = CodeGenDirective[];
 export type CodeGenField = TypeInfo & {
   name: string;
   directives: CodeGenDirectives;
+  connectionInfo?: CodeGenFieldConnection;
 };
 export type TypeInfo = {
   type: string;
@@ -136,7 +141,7 @@ export type CodeGenEnumValueMap = { [enumConvertedName: string]: string };
 
 export type CodeGenEnumMap = Record<string, CodeGenEnum>;
 
-export abstract class AppSyncModelVisitor<
+export class AppSyncModelVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
   TPluginConfig extends ParsedAppSyncModelConfig = ParsedAppSyncModelConfig
 > extends BaseVisitor<TRawConfig, TPluginConfig> {
@@ -191,6 +196,7 @@ export abstract class AppSyncModelVisitor<
         fields,
       };
       this.ensureIdField(model);
+      this.sortFields(model);
       this.typeMap[node.name.value] = model;
     }
   }
@@ -202,6 +208,7 @@ export abstract class AppSyncModelVisitor<
       ...getTypeInfo(node.type, this._schema),
     };
   }
+
   EnumTypeDefinition(node: EnumTypeDefinitionNode): void {
     if (this.typesToSkip.includes(node.name.value)) {
       // Skip Query, mutation and subscription type and additional
@@ -209,13 +216,10 @@ export abstract class AppSyncModelVisitor<
     }
     const enumName = this.getEnumName(node.name.value);
     const values = node.values
-      ? node.values.reduce(
-          (acc, val) => {
-            acc[this.getEnumValue(val.name.value)] = val.name.value;
-            return acc;
-          },
-          {} as any
-        )
+      ? node.values.reduce((acc, val) => {
+          acc[this.getEnumValue(val.name.value)] = val.name.value;
+          return acc;
+        }, {} as any)
       : {};
     this.enumMap[node.name.value] = {
       name: enumName,
@@ -223,7 +227,10 @@ export abstract class AppSyncModelVisitor<
       values,
     };
   }
-  abstract generate(): string;
+  generate(): string {
+    this.processConnectionDirective();
+    return '';
+  }
 
   private getDirectives(directives: readonly DirectiveNode[] | undefined): CodeGenDirectives {
     if (directives) {
@@ -288,18 +295,18 @@ export abstract class AppSyncModelVisitor<
     } else if (this.isEnumType(field)) {
       typeNameStr = this.getEnumName(this.enumMap[typeName]);
     } else {
-      throw new Error(`Unknown type ${typeName} for field ${field.name}`);
+      throw new Error(`Unknown type ${typeName} for field ${field.name}. Did you forget to add the @model directive`);
     }
 
-    return field.isList ? this.getListType(typeNameStr) : typeNameStr;
+    return field.isList ? this.getListType(typeNameStr, field) : typeNameStr;
   }
 
-  protected getListType(typeStr: string): string {
+  protected getListType(typeStr: string, field: CodeGenField): string {
     return `List<${typeStr}>`;
   }
 
   protected getFieldName(field: CodeGenField): string {
-    return camelCase(field.name);
+    return field.name;
   }
 
   protected getEnumName(enumField: CodeGenEnum | string): string {
@@ -310,11 +317,11 @@ export abstract class AppSyncModelVisitor<
   }
 
   protected getModelName(model: CodeGenModel) {
-    return pascalCase(model.name);
+    return model.name;
   }
 
   protected getEnumValue(value: string): string {
-    return upperCase(value);
+    return constantCase(value);
   }
 
   protected isEnumType(field: CodeGenField): boolean {
@@ -358,6 +365,22 @@ export abstract class AppSyncModelVisitor<
       .toString('hex');
   }
 
+  /**
+   * Sort the fields to ensure id is always the first field
+   * @param model
+   */
+  protected sortFields(model: CodeGenModel) {
+    // sort has different behavior in node 10 and 11. Using reduce instead
+    model.fields = model.fields.reduce((acc, field) => {
+      if (field.name === 'id') {
+        acc.unshift(field);
+      } else {
+        acc.push(field);
+      }
+      return acc;
+    }, [] as CodeGenField[]);
+  }
+
   protected ensureIdField(model: CodeGenModel) {
     const idField = model.fields.find(field => field.name === 'id');
     if (idField) {
@@ -375,5 +398,49 @@ export abstract class AppSyncModelVisitor<
         directives: [],
       });
     }
+  }
+
+  protected processConnectionDirective(): void {
+    Object.values(this.typeMap).forEach(model => {
+      model.fields.forEach(field => {
+        const connectionInfo = processConnections(field, model, this.typeMap);
+        if (connectionInfo) {
+          if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY || connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
+            // Need to update the other side of the connection even if there is no connection directive
+            addFieldToModel(connectionInfo.connectedModel, connectionInfo.associatedWith);
+          } else {
+            // Need to remove the field that is targetName
+            removeFieldFromModel(model, connectionInfo.targetName);
+          }
+          field.connectionInfo = connectionInfo;
+        }
+      });
+
+      // Should remove the fields that are of Model type and are not connected to ensure there are no phantom input fields
+      const modelTypes = Object.values(this.typeMap).map(model => model.name);
+      model.fields = model.fields.filter(field => {
+        const fieldType = field.type;
+        const connectionInfo = field.connectionInfo;
+        if (modelTypes.includes(fieldType) && connectionInfo === undefined) {
+          printWarning(
+            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Add a @connection directive if want to connect them.`
+          );
+          return false;
+        }
+        return true;
+      });
+    });
+  }
+
+  protected pluralizeModelName(model: CodeGenModel): string {
+    return plural(model.name);
+  }
+
+  get types() {
+    return this.typeMap;
+  }
+
+  get enums() {
+    return this.enumMap;
   }
 }

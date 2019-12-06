@@ -17,10 +17,7 @@ type DeltaSyncConfig = {
 export module SyncUtils {
   export function createSyncTable() {
     return new DynamoDB.Table({
-      TableName: joinWithEnv('-', [
-        SyncResourceIDs.syncTableName,
-        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-      ]),
+      TableName: joinWithEnv('-', [SyncResourceIDs.syncTableName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
       AttributeDefinitions: [
         {
           AttributeName: SyncResourceIDs.syncPrimaryKey,
@@ -49,10 +46,7 @@ export module SyncUtils {
   export function createSyncIAMRole() {
     const roleName = SyncResourceIDs.syncIAMRoleName;
     return new IAM.Role({
-      RoleName: joinWithEnv('-', [
-        roleName,
-        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-      ]),
+      RoleName: joinWithEnv('-', [roleName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -125,7 +119,7 @@ export module SyncUtils {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Join(separator, [...listToJoin, Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
-      Fn.Join(separator, listToJoin),
+      Fn.Join(separator, listToJoin)
     );
   }
   export function syncLambdaIAMRole({ name, region }: { name: string; region?: string }) {
@@ -198,10 +192,10 @@ export module SyncUtils {
     return {
       DeltaSyncTableName: joinWithEnv('-', [
         SyncResourceIDs.syncTableName,
-        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       ]),
       DeltaSyncTableTTL: 30,
-      BaseTableTTL: 30,
+      BaseTableTTL: 43200, // 30 days
     };
     // default values for deltasync
   }

@@ -45,6 +45,7 @@ export class AppSyncModelJavascriptVisitor<
   }
 
   generate(): string {
+    this.processConnectionDirective();
     if (this._parsedConfig.isDeclaration) {
       const imports = this.generateImports();
       const enumDeclarations = Object.values(this.enumMap)
@@ -64,7 +65,7 @@ export class AppSyncModelJavascriptVisitor<
 
       const modelInitialization = this.generateModelInitialization(Object.values(this.typeMap), false);
 
-      const modelExports = this.generateExports(Object.values(this.typeMap));
+      const modelExports = this.generateExports([...Object.values(this.typeMap), ...Object.values(this.enumMap)]);
       return [imports, '', enumDeclarations, '', modelInitialization, '', modelExports].join('\n');
     }
   }

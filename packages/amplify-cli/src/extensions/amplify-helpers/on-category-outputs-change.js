@@ -7,7 +7,7 @@ const sequential = require('promise-sequential');
 
 async function onCategoryOutputsChange(context, cloudAmplifyMeta, localMeta) {
   if (!cloudAmplifyMeta) {
-    const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+    const currentAmplifyMetafilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
     if (fs.existsSync(currentAmplifyMetafilePath)) {
       cloudAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);
     } else {

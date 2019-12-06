@@ -27,7 +27,6 @@ import {
   ResolverResourceIDs,
   isListType,
   getBaseType,
-  getDirectiveArgument,
   makeDirective,
   makeNamedType,
   makeInputValueDefinition,
@@ -38,23 +37,7 @@ import {
   makeField,
   ModelResourceIDs,
 } from 'graphql-transformer-common';
-import {
-  Expression,
-  print,
-  raw,
-  iff,
-  forEach,
-  set,
-  ref,
-  list,
-  compoundExpression,
-  or,
-  newline,
-  comment,
-  and,
-  not,
-  parens,
-} from 'graphql-mapping-template';
+import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
@@ -296,9 +279,15 @@ export class ModelAuthTransformer extends Transformer {
         }),
       });
 
-      ctx.mergeResources({
-        [ResourceConstants.RESOURCES.AuthRolePolicy]: this.resources.makeIAMPolicyForRole(true, this.authPolicyResources),
-      });
+      const authPolicies = this.resources.makeIAMPolicyForRole(true, this.authPolicyResources);
+
+      for (let i = 0; i < authPolicies.length; i++) {
+        const paddedIndex = `${i + 1}`.padStart(2, '0');
+        const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
+        ctx.mergeResources({
+          [resourceName]: authPolicies[i],
+        });
+      }
     }
 
     if (this.generateIAMPolicyforUnauthRole === true) {
@@ -313,9 +302,15 @@ export class ModelAuthTransformer extends Transformer {
         }),
       });
 
-      ctx.mergeResources({
-        [ResourceConstants.RESOURCES.UnauthRolePolicy]: this.resources.makeIAMPolicyForRole(false, this.unauthPolicyResources),
-      });
+      const unauthPolicies = this.resources.makeIAMPolicyForRole(false, this.unauthPolicyResources);
+
+      for (let i = 0; i < unauthPolicies.length; i++) {
+        const paddedIndex = `${i + 1}`.padStart(2, '0');
+        const resourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
+        ctx.mergeResources({
+          [resourceName]: unauthPolicies[i],
+        });
+      }
     }
   };
 
@@ -1636,7 +1631,7 @@ All @auth directives used on field definitions are performed when the field is r
     // create auth expression
     const authExpression = this.authorizationExpressionForListResult(rules);
     if (authExpression) {
-      const templateParts = [ print(authExpression), resolver.Properties.ResponseMappingTemplate ];
+      const templateParts = [print(authExpression), resolver.Properties.ResponseMappingTemplate];
       resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
       ctx.setResource(resolverResourceID, resolver);
     }
@@ -2246,7 +2241,7 @@ found '${rule.provider}' assigned.`
     if (resolverConfig && resolverConfig.project) {
       return true;
     }
-    if (resolverConfig && resolverConfig.models[typeName]) {
+    if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
       return true;
     }
     return false;

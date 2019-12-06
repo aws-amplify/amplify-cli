@@ -48,7 +48,10 @@ describe('getAppSyncAPIs', () => {
   };
 
   it('should return the projects array with name', () => {
-    const expectedApiList = [{ ...apiMeta.appSync1, name: 'appSync1' }, { ...apiMeta.appSync2, name: 'appSync2' }];
+    const expectedApiList = [
+      { ...apiMeta.appSync1, name: 'appSync1' },
+      { ...apiMeta.appSync2, name: 'appSync2' },
+    ];
     expect(getAppSyncAPIs(apiMeta)).toEqual(expectedApiList);
   });
 
