@@ -1,5 +1,4 @@
-import { getDataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
-
+const syncAssets = require('../sync-conflict-handler-assets/syncAssets');
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const uuid = require('uuid');
@@ -503,7 +502,7 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
           ],
         };
         if (conflictResolutionStrategy === 'Learn More') {
-          conflictResolutionQuestion.prefix = getDataStoreLearnMore();
+          conflictResolutionQuestion.prefix = syncAssets.getDataStoreLearnMore();
         }
         ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
       } while (conflictResolutionStrategy === 'Learn More');

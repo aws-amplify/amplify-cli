@@ -13,8 +13,10 @@ Other writers are rejected and must handle merges through other means, such as a
 Finally you can also also configure a Lambda Function to resolve conflicts depending on your custom business need, such as letting specific users in a system have priority on making updates to data.
 `;
 
-export function getDataStoreLearnMore() {
+function getDataStoreLearnMore() {
   return chalk.green(learnMore);
 }
 
-export default {};
+module.exports = {
+  getDataStoreLearnMore,
+};
