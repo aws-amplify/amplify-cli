@@ -82,12 +82,12 @@ async function amplifyCLIVersionCheck() {
     if (semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
       console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersion}`);
     } else {
-      console.log(`${emoji.get('worried')} Amplify CLI version ${minCLIVersion} not found.`);
+      console.log(`${emoji.get('worried')} Found Amplify CLI v${amplifyCLIVersion}. The minimum required version is ${minCLIVersion}`);
       console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
       await installAmplifyCLI();
     }
   } else {
-    console.log(`${emoji.get('worried')} Amplify CLI version ${minCLIVersion} not found.`);
+    console.log(`${emoji.get('worried')} Amplify CLI was not found.`);
     console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
     await installAmplifyCLI();
   }
