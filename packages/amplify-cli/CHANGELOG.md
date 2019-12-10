@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@3.17.0...@aws-amplify/cli@4.4.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* api key creation/deletion logic ([#2678](https://github.com/aws-amplify/amplify-cli/issues/2678)) ([e1d111d](https://github.com/aws-amplify/amplify-cli/commit/e1d111d87cbe71f9c7a41a61e243f6d907905878))
+* **amplify-category-notifications:** fix notifications env change issue ([#2669](https://github.com/aws-amplify/amplify-cli/issues/2669)) ([54d4d64](https://github.com/aws-amplify/amplify-cli/commit/54d4d64e03dc246e42ba3e2d19b1789d2dbeaddc)), closes [#2616](https://github.com/aws-amplify/amplify-cli/issues/2616)
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+* e2e tests, lint error ([#2846](https://github.com/aws-amplify/amplify-cli/issues/2846)) ([b581294](https://github.com/aws-amplify/amplify-cli/commit/b5812945f90d8a423698bbe7d5378a65452a27d3))
+* update transformer conf version to 5 ([#2812](https://github.com/aws-amplify/amplify-cli/issues/2812)) ([c8dd1c9](https://github.com/aws-amplify/amplify-cli/commit/c8dd1c968ebcda9bc1f96b4ed8af3304c5b94c22))
+* **cli:** print correct message if no provider plugins are active ([#2886](https://github.com/aws-amplify/amplify-cli/issues/2886)) ([37405b1](https://github.com/aws-amplify/amplify-cli/commit/37405b1ecc4c3818570b541d17e132bebaca5553))
+* **cli:** remove extra prompt in the new push workflow ([#2824](https://github.com/aws-amplify/amplify-cli/issues/2824)) ([7609018](https://github.com/aws-amplify/amplify-cli/commit/760901856f78e92ffcf8705cb1794fb957b9e4ed))
+
+
+### Features
+
+* add amplify-app command ([#2761](https://github.com/aws-amplify/amplify-cli/issues/2761)) ([c46cdd4](https://github.com/aws-amplify/amplify-cli/commit/c46cdd421bce40d7995b3e75f0ea7f4f646d2308))
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* **cli:** update publish command to use the updated push command ([#2826](https://github.com/aws-amplify/amplify-cli/issues/2826)) ([9fead0e](https://github.com/aws-amplify/amplify-cli/commit/9fead0e8b981a4d32b46bcf0c90cff88d16c5e70))
+
+
+### Reverts
+
+* revert 37405b1ecc4c3818570b541d17e132bebaca5553 (#2902) ([374937f](https://github.com/aws-amplify/amplify-cli/commit/374937fe071a531ca506da42d37037e5c1aca010)), closes [#2902](https://github.com/aws-amplify/amplify-cli/issues/2902) [#2886](https://github.com/aws-amplify/amplify-cli/issues/2886)
+
+
+
+
+
 # [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@3.17.0...@aws-amplify/cli@4.3.0) (2019-12-01)
 
 

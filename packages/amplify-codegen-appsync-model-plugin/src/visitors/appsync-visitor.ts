@@ -8,7 +8,7 @@ import {
 } from '@graphql-codegen/visitor-plugin-common';
 import { constantCase, pascalCase } from 'change-case';
 import { plural } from 'pluralize';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import {
   DefinitionNode,
   DirectiveNode,
@@ -25,6 +25,7 @@ import { addFieldToModel, removeFieldFromModel } from '../utils/fieldUtils';
 import { getTypeInfo } from '../utils/get-type-info';
 import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
 import { sortFields } from '../utils/sort';
+import { printWarning } from '../utils/warn';
 
 export enum CodeGenGenerateEnum {
   metadata = 'metadata',
@@ -195,6 +196,7 @@ export class AppSyncModelVisitor<
         fields,
       };
       this.ensureIdField(model);
+      this.sortFields(model);
       this.typeMap[node.name.value] = model;
     }
   }
@@ -293,13 +295,13 @@ export class AppSyncModelVisitor<
     } else if (this.isEnumType(field)) {
       typeNameStr = this.getEnumName(this.enumMap[typeName]);
     } else {
-      throw new Error(`Unknown type ${typeName} for field ${field.name}`);
+      throw new Error(`Unknown type ${typeName} for field ${field.name}. Did you forget to add the @model directive`);
     }
 
-    return field.isList ? this.getListType(typeNameStr) : typeNameStr;
+    return field.isList ? this.getListType(typeNameStr, field) : typeNameStr;
   }
 
-  protected getListType(typeStr: string): string {
+  protected getListType(typeStr: string, field: CodeGenField): string {
     return `List<${typeStr}>`;
   }
 
@@ -363,6 +365,22 @@ export class AppSyncModelVisitor<
       .toString('hex');
   }
 
+  /**
+   * Sort the fields to ensure id is always the first field
+   * @param model
+   */
+  protected sortFields(model: CodeGenModel) {
+    // sort has different behavior in node 10 and 11. Using reduce instead
+    model.fields = model.fields.reduce((acc, field) => {
+      if (field.name === 'id') {
+        acc.unshift(field);
+      } else {
+        acc.push(field);
+      }
+      return acc;
+    }, [] as CodeGenField[]);
+  }
+
   protected ensureIdField(model: CodeGenModel) {
     const idField = model.fields.find(field => field.name === 'id');
     if (idField) {
@@ -404,8 +422,8 @@ export class AppSyncModelVisitor<
         const fieldType = field.type;
         const connectionInfo = field.connectionInfo;
         if (modelTypes.includes(fieldType) && connectionInfo === undefined) {
-          console.warn(
-            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Please add @connection directive to connect them`
+          printWarning(
+            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Add a @connection directive if want to connect them.`
           );
           return false;
         }

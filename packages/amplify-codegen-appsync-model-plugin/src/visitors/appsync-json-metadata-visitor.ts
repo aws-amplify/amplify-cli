@@ -2,7 +2,7 @@ import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-
 import { GraphQLSchema } from 'graphql';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
-
+import { METADATA_SCALAR_MAP } from '../scalars';
 type JSONSchema = {
   models: JSONSchemaModels;
   enums: JSONSchemaEnums;
@@ -24,13 +24,6 @@ type JSONSchemaEnum = {
 type JSONModelAttributes = JSONModelAttribute[];
 type JSONModelAttribute = { type: string; properties?: Record<string, any> };
 type JSONModelFields = Record<string, JSONModelField>;
-enum JSONGraphQLScalarType {
-  ID = 'ID',
-  String = 'String',
-  Int = 'Int',
-  Float = 'Float',
-  Boolean = 'Boolean',
-}
 
 type AssociationBaseType = {
   connectionType: CodeGenConnectionType;
@@ -50,7 +43,7 @@ type AssociationBelongsTo = AssociationBaseType & {
 
 type AssociationType = AssociationHasMany | AssociationHasOne | AssociationBelongsTo;
 
-type JSONModelFieldType = JSONGraphQLScalarType | keyof typeof JSONGraphQLScalarType | { model: string } | { enum: string };
+type JSONModelFieldType = keyof typeof METADATA_SCALAR_MAP | { model: string } | { enum: string };
 type JSONModelField = {
   name: string;
   type: JSONModelFieldType;
@@ -198,8 +191,8 @@ export class AppSyncJSONVisitor<
 
   private getType(gqlType: string): JSONModelFieldType {
     // Todo: Handle unlisted scalars
-    if (gqlType in JSONGraphQLScalarType) {
-      return JSONGraphQLScalarType[gqlType as keyof typeof JSONGraphQLScalarType];
+    if (gqlType in METADATA_SCALAR_MAP) {
+      return METADATA_SCALAR_MAP[gqlType as keyof typeof METADATA_SCALAR_MAP];
     }
     if (gqlType in this.enumMap) {
       return { enum: this.enumMap[gqlType].name };

@@ -15,7 +15,7 @@ async function getXcodeProjectDir() {
   return projDir;
 }
 
-async function addFileToXcodeProj(file) {
+async function addFileToXcodeProj(file, isResource) {
   const projectPath = await getXcodeProjectDir();
   // Silently return if not in same directory as xcode project
   if (!projectPath) {
@@ -33,7 +33,15 @@ async function addFileToXcodeProj(file) {
           hash = key;
         }
       });
-      myProj.addSourceFile(file, null, hash);
+
+      if (isResource) {
+        myProj.addPbxGroup([], 'Resources', 'Resources', '"<group>"');
+        myProj.addResourceFile(file, null, hash);
+        myProj.removePbxGroup('Resources');
+      } else {
+        myProj.addFile(file, hash, null);
+      }
+
       fs.writeFileSync(projectPath, myProj.writeSync());
       if (err) {
         reject(err);

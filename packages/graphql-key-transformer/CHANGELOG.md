@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@1.25.0...graphql-key-transformer@2.4.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* build break after recent merges ([#2758](https://github.com/aws-amplify/amplify-cli/issues/2758)) ([7155787](https://github.com/aws-amplify/amplify-cli/commit/7155787d74306e9708fe7115648ab6f702dc2093))
+* **graphql-key-transformer:** fix merge errors ([#2762](https://github.com/aws-amplify/amplify-cli/issues/2762)) ([edf4c76](https://github.com/aws-amplify/amplify-cli/commit/edf4c76aae130f300f520787168db7cd2782c324))
+* **graphql-key-transformer:** update deleteInput logic to hadle ID ([2856c9e](https://github.com/aws-amplify/amplify-cli/commit/2856c9e72be1e9ac8d5be33a44dc26e893f29ee0))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
 # [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@1.25.0...graphql-key-transformer@2.3.0) (2019-12-01)
 
 

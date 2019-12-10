@@ -196,7 +196,7 @@ export class AppSyncModelTypeScriptVisitor<
     return this.getModelName(model);
   }
 
-  protected getListType(typeStr: string): string {
+  protected getListType(typeStr: string, field: CodeGenField): string {
     return `${typeStr}[]`;
   }
 
@@ -205,7 +205,7 @@ export class AppSyncModelTypeScriptVisitor<
     if (this.isModelType(field)) {
       const modelType = this.typeMap[typeName];
       const typeNameStr = this.generateModelTypeDeclarationName(modelType);
-      return field.isList ? this.getListType(typeNameStr) : typeNameStr;
+      return field.isList ? this.getListType(typeNameStr, field) : typeNameStr;
     }
 
     let nativeType = super.getNativeType(field);
