@@ -20,6 +20,8 @@ async function getProvider(context, providerPlugins) {
 
   if (providerPluginList.length === 0) {
     const errorMessage = 'Found no provider plugins';
+    context.print.error(errorMessage); 
+    context.print.info("Run 'amplify plugin scan' to scan your system for provider plugins.");
     throw new Error(errorMessage);
   }
 
