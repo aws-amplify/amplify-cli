@@ -40,6 +40,8 @@ module.exports = {
         spinner.start();
         await context.amplify.removeEnvFromCloud(context, envName, confirmation.deleteS3);
         spinner.succeed('Successfully removed environment from the cloud');
+      } else {
+        return;
       }
 
       // Remove from team-provider-info
