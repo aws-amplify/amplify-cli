@@ -145,7 +145,7 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
               missingStackMappings[resourceId] = stackName;
             }
           }
-          const outputIdsInStack = lastDeployedStack.Outputs ? Object.keys(lastDeployedStack.Outputs) : [];
+          const outputIdsInStack = Object.keys(lastDeployedStack.Outputs || {});
           for (const outputId of outputIdsInStack) {
             if (stackMapping[outputId] && stackName !== stackMapping[outputId]) {
               missingStackMappings[outputId] = stackName;
