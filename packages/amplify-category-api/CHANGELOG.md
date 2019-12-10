@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.30.0...amplify-category-api@2.6.0) (2019-12-10)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** fix conflict resolution learn more ([#2954](https://github.com/aws-amplify/amplify-cli/issues/2954)) ([5b0825a](https://github.com/aws-amplify/amplify-cli/commit/5b0825a44ad0b64180eb5cc373944ef82829eb06))
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
 # [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.30.0...amplify-category-api@2.4.0) (2019-12-03)
 
 
