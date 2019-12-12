@@ -20,6 +20,11 @@ function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN) {
 
     const zip = archiver.create('zip', {});
     zip.pipe(output);
+    // Include the build directory of APIs because sanity check requires it.
+    zip.glob('api/*/build/**', {
+      cwd: folder,
+      dot: true,
+    });
     zip.glob('**', {
       cwd: folder,
       ignore: ignorePattern,

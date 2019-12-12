@@ -158,7 +158,7 @@ async function pushChanges(context, pinpointNotificationsMeta) {
     }
   });
 
-  await pinpointHelper.ensurePinpointApp(context, pinpointNotificationsMeta.resourceName);
+  await pinpointHelper.ensurePinpointApp(context, pinpointNotificationsMeta);
 
   const tasks = [];
   channelsToEnable.forEach(channel => {
@@ -206,7 +206,8 @@ async function writeData(context) {
   writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
   writeBackendConfig(context, pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
   writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
-  writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getCurentAmplifyMetaFilePath());
+  writeAmplifyMeta(context, categoryMeta, context.amplify.pathManager.getCurrentAmplifyMetaFilePath());
+  await context.amplify.storeCurrentCloudBackend(context);
   await context.amplify.onCategoryOutputsChange(context);
 }
 

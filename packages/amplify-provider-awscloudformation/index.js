@@ -1,3 +1,4 @@
+const attachBackendWorker = require('./lib/attach-backend');
 const initializer = require('./lib/initializer');
 const initializeEnv = require('./lib/initialize-env');
 const resourcePusher = require('./lib/push-resources');
@@ -10,9 +11,11 @@ const setupNewUser = require('./lib/setup-new-user');
 const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
 const pinpoint = require('./src/aws-utils/aws-pinpoint');
+const amplifyService = require('./src/aws-utils/aws-amplify');
 const consoleCommand = require('./lib/console');
 const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
 const { formUserAgentParam } = require('./src/aws-utils/user-agent');
+const predictionsRegionMap = require('./lib/aws-predictions-regions');
 
 function init(context) {
   return initializer.run(context);
@@ -20,6 +23,10 @@ function init(context) {
 
 function initEnv(context, providerMetadata) {
   return initializeEnv.run(context, providerMetadata);
+}
+
+async function attachBackend(context) {
+  await attachBackendWorker.run(context);
 }
 
 // TODO: Change fn name to afterInit or onInitSuccess
@@ -30,6 +37,10 @@ function onInitSuccessful(context) {
 
 function pushResources(context, resourceList) {
   return resourcePusher.run(context, resourceList);
+}
+
+function storeCurrentCloudBackend(context) {
+  return resourcePusher.storeCurrentCloudBackend(context);
 }
 
 function deleteEnv(context, envName, deleteS3) {
@@ -55,12 +66,16 @@ async function getConfiguredAWSClient(context, category, action) {
   return aws;
 }
 
-function getConfiguredPinpointClient(context) {
-  return pinpoint.getConfiguredPinpointClient(context);
+function getConfiguredPinpointClient(context, category, action, options = {}) {
+  return pinpoint.getConfiguredPinpointClient(context, category, action, options);
 }
 
-function getPinpointRegionMapping(context) {
-  return pinpoint.getPinpointRegionMapping(context);
+function getPinpointRegionMapping() {
+  return pinpoint.getPinpointRegionMapping();
+}
+
+function getConfiguredAmplifyClient(context, category, action, options = {}) {
+  return amplifyService.getConfiguredAmplifyClient(context, category, action, options);
 }
 
 function showHelpfulLinks(context, resources) {
@@ -77,6 +92,7 @@ function console(context) {
 
 module.exports = {
   console,
+  attachBackend,
   init,
   initEnv,
   onInitSuccessful,
@@ -84,15 +100,18 @@ module.exports = {
   configureNewUser,
   constants,
   pushResources,
+  storeCurrentCloudBackend,
   buildResources,
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
   getPinpointRegionMapping,
   getConfiguredPinpointClient,
+  getConfiguredAmplifyClient,
   showHelpfulLinks,
   deleteEnv,
   loadResourceParameters,
   saveResourceParameters,
+  predictionsRegionMap,
   ...require('./amplify-plugin-index'),
 };

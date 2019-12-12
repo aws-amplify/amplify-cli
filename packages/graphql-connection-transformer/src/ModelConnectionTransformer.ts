@@ -1,5 +1,4 @@
 import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments } from 'graphql-transformer-core';
-import Table from 'cloudform-types/types/dynamoDb/table';
 import {
   DirectiveNode,
   ObjectTypeDefinitionNode,
@@ -17,6 +16,7 @@ import {
   makeModelXFilterInputObject,
   makeModelSortDirectionEnumObject,
   SortKeyFieldInfoTypeName,
+  CONDITIONS_MINIMUM_VERSION,
 } from 'graphql-dynamodb-transformer';
 import {
   getBaseType,
@@ -34,7 +34,7 @@ import {
 } from 'graphql-transformer-common';
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
-import { KeySchema, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import Table, { KeySchema, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
 const CONNECTION_STACK_NAME = 'ConnectionStack';
 
@@ -44,6 +44,8 @@ interface RelationArguments {
 }
 
 function makeConnectionAttributeName(type: string, field?: string) {
+  // The same logic is used in amplify-codegen-appsync-model-plugin package to generate association field
+  // Make sure the logic gets update in that package
   return field ? toCamelCase([type, field, 'id']) : toCamelCase([type, 'id']);
 }
 
@@ -549,14 +551,14 @@ export class ModelConnectionTransformer extends Transformer {
     // If no index is provided use the default index for the related model type and
     // check that the query fields match the PK/SK of the table. Else confirm that index exists.
     if (!args.keyName) {
-      checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, tableResource.Properties.KeySchema);
+      checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, <KeySchema[]>tableResource.Properties.KeySchema);
     } else {
       index =
         (tableResource.Properties.GlobalSecondaryIndexes
-          ? tableResource.Properties.GlobalSecondaryIndexes.find(GSI => GSI.IndexName === args.keyName)
+          ? (<GlobalSecondaryIndex[]>tableResource.Properties.GlobalSecondaryIndexes).find(GSI => GSI.IndexName === args.keyName)
           : null) ||
         (tableResource.Properties.LocalSecondaryIndexes
-          ? tableResource.Properties.LocalSecondaryIndexes.find(LSI => LSI.IndexName === args.keyName)
+          ? (<LocalSecondaryIndex[]>tableResource.Properties.LocalSecondaryIndexes).find(LSI => LSI.IndexName === args.keyName)
           : null);
       if (!index) {
         throw new InvalidDirectiveError(`Key ${args.keyName} does not exist for model ${relatedTypeName}`);
@@ -581,12 +583,12 @@ export class ModelConnectionTransformer extends Transformer {
         fieldName,
         relatedTypeName,
         args.fields,
-        tableResource.Properties.KeySchema
+        <KeySchema[]>tableResource.Properties.KeySchema
       );
 
       ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver);
     } else {
-      const keySchema: KeySchema[] = index ? index.KeySchema : tableResource.Properties.KeySchema;
+      const keySchema: KeySchema[] = index ? <KeySchema[]>index.KeySchema : <KeySchema[]>tableResource.Properties.KeySchema;
 
       const queryResolver = this.resources.makeQueryConnectionWithKeyResolver(
         parentTypeName,
@@ -655,7 +657,7 @@ export class ModelConnectionTransformer extends Transformer {
     field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     sortKeyInfo?: { fieldName: string; typeName: SortKeyFieldInfoTypeName }
   ): void {
-    const scalarFilters = makeScalarFilterInputs();
+    const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));
     for (const filter of scalarFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
@@ -663,7 +665,7 @@ export class ModelConnectionTransformer extends Transformer {
     }
 
     // Create the ModelXFilterInput
-    const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx);
+    const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx, this.supportsConditions(ctx));
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
     }
@@ -677,6 +679,10 @@ export class ModelConnectionTransformer extends Transformer {
         ctx.addInput(sortKeyConditionInput);
       }
     }
+  }
+
+  private supportsConditions(context: TransformerContext) {
+    return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
   }
 
   private extendTypeWithConnection(

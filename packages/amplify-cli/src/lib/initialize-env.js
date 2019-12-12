@@ -9,6 +9,8 @@ const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provid
 
 async function initializeEnv(context, currentAmplifyMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
@@ -17,7 +19,7 @@ async function initializeEnv(context, currentAmplifyMeta) {
 
     if (!currentAmplifyMeta) {
       // Get current-cloud-backend's amplify-meta
-      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
 
       if (fs.existsSync(currentAmplifyMetafilePath)) {
         currentAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);
@@ -53,9 +55,13 @@ async function initializeEnv(context, currentAmplifyMeta) {
       initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));
     });
 
-    spinner.start(`Initializing your environment: ${currentEnv}`);
+    spinner.start(
+      isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`
+    );
     await sequential(initializationTasks);
-    spinner.succeed('Initialized provider successfully.');
+    spinner.succeed(
+      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.'
+    );
 
     const projectDetails = context.amplify.getProjectDetails();
     context.exeInfo = context.exeInfo || {};
@@ -78,9 +84,11 @@ async function initializeEnv(context, currentAmplifyMeta) {
     }
     // Generate AWS exports/configurtion file
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
-    context.print.success('Initialized your environment successfully.');
+    context.print.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
-    spinner.fail('There was an error initializing your environment.');
+    spinner.fail(
+      isPulling ? `There was an error pulling the backend environment ${currentEnv}.` : 'There was an error initializing your environment.'
+    );
     throw e;
   }
 }

@@ -32,6 +32,7 @@ export class AmplifyToolkit {
   private _pathManager: any;
   private _pressEnterToContinue: any;
   private _pushResources: any;
+  private _storeCurrentCloudBackend: any;
   private _readJsonFile: any;
   private _removeEnvFromCloud: any;
   private _removeResource: any;
@@ -204,6 +205,11 @@ export class AmplifyToolkit {
   get pushResources(): any {
     this._pushResources = this._pushResources || require(path.join(this._amplifyHelpersDirPath, 'push-resources')).pushResources;
     return this._pushResources;
+  }
+  get storeCurrentCloudBackend(): any {
+    this._storeCurrentCloudBackend = this._storeCurrentCloudBackend ||
+      require(path.join(this._amplifyHelpersDirPath, 'push-resources')).storeCurrentCloudBackend;
+    return this._storeCurrentCloudBackend;
   }
   get readJsonFile(): any {
     this._readJsonFile = this._readJsonFile || require(path.join(this._amplifyHelpersDirPath, 'read-json-file')).readJsonFile;

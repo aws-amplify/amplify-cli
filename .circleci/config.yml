@@ -474,21 +474,21 @@ workflows:
                 - release
                 - master
                 - beta
-      - integration_test_js:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - build
-            - test
-            - mock_e2e_tests
-      - integration_test_ios:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - build
-            - test
-            - mock_e2e_tests
+      # - integration_test_js:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - build
+      #       - test
+      #       - mock_e2e_tests
+      # - integration_test_ios:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - build
+      #       - test
+      #       - mock_e2e_tests

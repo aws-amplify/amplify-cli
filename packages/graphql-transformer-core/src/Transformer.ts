@@ -15,7 +15,6 @@ import {
   InputValueDefinitionNode,
   EnumValueDefinitionNode,
   TypeDefinitionNode,
-  DefinitionNode,
   DocumentNode,
 } from 'graphql';
 import { InvalidTransformerError } from './errors';

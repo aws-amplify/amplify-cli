@@ -1,6 +1,6 @@
 import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { DocumentNode } from 'graphql';
-import { Fn } from 'cloudform';
+import { Fn } from 'cloudform-types';
 import AppSync from 'cloudform-types/types/appSync';
 import { print, obj, set, str, list, forEach, ref, compoundExpression } from 'graphql-mapping-template';
 import { graphqlName, toUpper, plurality } from 'graphql-transformer-common';

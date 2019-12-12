@@ -1,0 +1,60 @@
+{
+  "name": "amplify-codegen-appsync-model-plugin",
+  "version": "1.6.0",
+  "main": "lib/index.js",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@graphql-codegen/core": "~1.8.1",
+    "@graphql-codegen/java-common": "~1.8.2",
+    "@graphql-codegen/visitor-plugin-common": "~1.8.1",
+    "auto-bind": "^2.1.1",
+    "chalk": "^2.4.2",
+    "change-case": "^3.1.0",
+    "graphql-tag": "^2.10.1",
+    "graphql-toolkit": "^0.5.17",
+    "pluralize": "^8.0.0",
+    "strip-indent": "^3.0.0",
+    "ts-dedent": "^1.1.0"
+  },
+  "peerDependencies": {
+    "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
+  },
+  "typescript": {
+    "definition": "lib/index.d.ts"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "testRegex": "(src/__tests__/.*.test.ts)$",
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
+  },
+  "devDependencies": {
+    "@graphql-codegen/testing": "1.8.3",
+    "graphql": "^0.13.2",
+    "java-ast": "^0.1.0",
+    "jest": "24.9.0",
+    "ts-jest": "24.1.0",
+    "typescript": "~3.6.4"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test-watch": "jest --watch",
+    "test": "jest",
+    "test-ci": "jest --ci"
+  }
+}

@@ -17,25 +17,54 @@ function getPinpointApp(context) {
   return pinpointApp;
 }
 
-async function ensurePinpointApp(context, resourceName) {
+async function ensurePinpointApp(context, pinpointNotificationsMeta) {
+  let pinpointApp;
+  let resourceName;
   const { amplifyMeta, localEnvInfo } = context.exeInfo;
-  const scanOptions = {
-    isRegulatingResourceName: true,
-    envName: localEnvInfo.envName,
-  };
-  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName], scanOptions);
-  if (pinpointApp) {
-    resourceName = scanOptions.regulatedResourceName;
-  } else {
+
+  if (pinpointNotificationsMeta) {
+    if (
+      pinpointNotificationsMeta.service === constants.PinpointName &&
+      pinpointNotificationsMeta.output &&
+      pinpointNotificationsMeta.output.Id
+    ) {
+      if (pinpointNotificationsMeta.resourceName) {
+        resourceName = pinpointNotificationsMeta.resourceName; //eslint-disable-line
+      } else {
+        resourceName = generateResourceName(pinpointNotificationsMeta.Name, localEnvInfo.envName);
+      }
+
+      pinpointApp = pinpointNotificationsMeta.output;
+      constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+    } else {
+      resourceName = pinpointNotificationsMeta.resourceName; //eslint-disable-line
+    }
+  }
+
+  if (!pinpointApp) {
+    const scanOptions = {
+      isRegulatingResourceName: true,
+      envName: localEnvInfo.envName,
+    };
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName], scanOptions);
+    if (pinpointApp) {
+      resourceName = scanOptions.regulatedResourceName;
+    }
+  }
+
+  if (!pinpointApp) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
     if (pinpointApp) {
       resourceName = generateResourceName(pinpointApp.Name, localEnvInfo.envName);
       constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
-    } else {
-      context.print.info('');
-      resourceName = await createPinpointApp(context, resourceName);
     }
   }
+
+  if (!pinpointApp) {
+    context.print.info('');
+    resourceName = await createPinpointApp(context, resourceName);
+  }
+
   context.exeInfo.serviceMeta = context.exeInfo.amplifyMeta[constants.CategoryName][resourceName];
   context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
 }
@@ -96,11 +125,7 @@ function constructResourceMeta(amplifyMeta, resourceName, pinpointApp) {
   amplifyMeta[constants.CategoryName] = amplifyMeta[constants.CategoryName] || {};
   amplifyMeta[constants.CategoryName][resourceName] = {
     service: constants.PinpointName,
-    output: {
-      Name: pinpointApp.Name,
-      Id: pinpointApp.Id,
-      Region: pinpointApp.Region,
-    },
+    output: pinpointApp,
     lastPushTimeStamp: new Date(),
   };
 }

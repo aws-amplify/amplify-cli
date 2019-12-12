@@ -1,4 +1,3 @@
-import { Template } from 'cloudform-types';
 import { NestedStacks } from './util/splitStack';
 
 export type StringMap = {

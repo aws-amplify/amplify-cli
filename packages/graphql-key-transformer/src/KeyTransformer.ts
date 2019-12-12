@@ -1,18 +1,10 @@
-import {
-  Transformer,
-  gql,
-  TransformerContext,
-  getDirectiveArguments,
-  TransformerContractError,
-  InvalidDirectiveError,
-} from 'graphql-transformer-core';
+import { Transformer, gql, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
 import {
   obj,
   str,
   ref,
   printBlock,
   compoundExpression,
-  newline,
   raw,
   qref,
   set,
@@ -46,6 +38,7 @@ import {
   toCamelCase,
   graphqlName,
   toUpper,
+  getDirectiveArgument,
 } from 'graphql-transformer-common';
 import { makeModelConnectionType } from 'graphql-dynamodb-transformer';
 import {
@@ -58,7 +51,7 @@ import {
   InputValueDefinitionNode,
   EnumTypeDefinitionNode,
 } from 'graphql';
-import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types';
+import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
 interface KeyArguments {
@@ -86,6 +79,8 @@ export class KeyTransformer extends Transformer {
     this.updateSchema(definition, directive, ctx);
     this.updateResolvers(definition, directive, ctx);
     this.addKeyConditionInputs(definition, directive, ctx);
+    // Update ModelXConditionInput type
+    this.updateMutationConditionInput(ctx, definition, directive);
   };
 
   /**
@@ -346,10 +341,6 @@ export class KeyTransformer extends Transformer {
     ctx.addObjectExtension(makeModelConnectionType(def.name.value));
   }
 
-  private typeExist(type: string, ctx: TransformerContext): boolean {
-    return Boolean(type in ctx.nodeMap);
-  }
-
   // Update the create, update, and delete input objects to account for any changes to the primary key.
   private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     if (this.isPrimaryKey(directive)) {
@@ -578,6 +569,55 @@ export class KeyTransformer extends Transformer {
       }
     }
   };
+
+  private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode, directive: DirectiveNode): void {
+    // Get the existing ModelXConditionInput
+    const tableXMutationConditionInputName = ModelResourceIDs.ModelConditionInputTypeName(type.name.value);
+
+    if (this.typeExist(tableXMutationConditionInputName, ctx)) {
+      const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
+
+      const fieldNames = new Set<String>();
+
+      // Get PK for the type from @key directive or default to 'id'
+      const getKeyFieldNames = (): void => {
+        let fields: Array<FieldDefinitionNode>;
+
+        if (getDirectiveArgument(directive, 'name') === undefined) {
+          const fieldsArg = <Array<string>>getDirectiveArgument(directive, 'fields');
+
+          if (fieldsArg && fieldsArg.length && fieldsArg.length > 0) {
+            fields = type.fields.filter(f => fieldsArg.includes(f.name.value));
+          }
+        }
+
+        fieldNames.add('id');
+
+        if (fields && fields.length > 0) {
+          fields.forEach(f => fieldNames.add(f.name.value));
+        } else {
+          // Add default named key for exclusion from input type
+          fieldNames.add('id');
+        }
+      };
+
+      getKeyFieldNames();
+
+      if (fieldNames.size > 0) {
+        const reducedFields = tableXMutationConditionInput.fields.filter(field => !fieldNames.has(field.name.value));
+
+        const updatedInput = {
+          ...tableXMutationConditionInput,
+          fields: reducedFields,
+        };
+
+        ctx.putType(updatedInput);
+      }
+    }
+  }
+  private typeExist(type: string, ctx: TransformerContext): boolean {
+    return Boolean(type in ctx.nodeMap);
+  }
 }
 
 /**
@@ -587,7 +627,10 @@ export class KeyTransformer extends Transformer {
 function keySchema(args: KeyArguments) {
   if (args.fields.length > 1) {
     const condensedSortKey = condenseRangeKey(args.fields.slice(1));
-    return [{ AttributeName: args.fields[0], KeyType: 'HASH' }, { AttributeName: condensedSortKey, KeyType: 'RANGE' }];
+    return [
+      { AttributeName: args.fields[0], KeyType: 'HASH' },
+      { AttributeName: condensedSortKey, KeyType: 'RANGE' },
+    ];
   } else {
     return [{ AttributeName: args.fields[0], KeyType: 'HASH' }];
   }
@@ -683,9 +726,9 @@ function replaceUpdateInput(
     fields: input.fields.map(f => {
       if (keyFields.find(k => k === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
-      } else {
-        return f;
       }
+
+      return f;
     }),
   };
 }
@@ -696,9 +739,18 @@ function replaceDeleteInput(
   input: InputObjectTypeDefinitionNode,
   keyFields: string[]
 ): InputObjectTypeDefinitionNode {
+  const idFields = primaryIdFields(definition, keyFields);
+  // Existing fields will contain extra fields in input type that was added/updated by other transformers
+  // like @versioned adds expectedVersion.
+  // field id of type ID is a special case that we need to filter as this is automatically inserted to input by dynamo db transformer
+  // Todo: Find out a better way to handle input types
+  const existingFields = input.fields.filter(
+    f => !(idFields.find(pf => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id'))
+  );
+
   return {
     ...input,
-    fields: primaryIdFields(definition, keyFields),
+    fields: [...idFields, ...existingFields],
   };
 }
 

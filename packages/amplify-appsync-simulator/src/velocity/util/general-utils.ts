@@ -3,12 +3,13 @@ import * as autoId from 'uuid/v4';
 import { JavaString } from '../value-mapper/string';
 import { JavaArray } from '../value-mapper/array';
 import { JavaMap } from '../value-mapper/map';
+import * as jsStringEscape from 'js-string-escape';
 export const generalUtils = {
   errors: [],
   quiet: () => '',
   qr: () => '',
   escapeJavaScript(value) {
-    return require('js-string-escape')(value);
+    return jsStringEscape(value);
   },
   urlEncode(value) {
     return encodeURI(value);
