@@ -18,7 +18,7 @@ from boto3.dynamodb.types import TypeDeserializer
 # The following parameters are required to configure the ES cluster
 ES_ENDPOINT = os.environ['ES_ENDPOINT']
 ES_REGION = os.environ['ES_REGION']
-DEBUG = True if os.environ.get('DEBUG') not in ['0', 'False', 'false', None] else False
+DEBUG = True if os.environ.get('DEBUG') == 1 else False
 
 # ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
 DOC_TYPE = 'doc'
