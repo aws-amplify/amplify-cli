@@ -18,16 +18,15 @@ from boto3.dynamodb.types import TypeDeserializer
 # The following parameters are required to configure the ES cluster
 ES_ENDPOINT = os.environ['ES_ENDPOINT']
 ES_REGION = os.environ['ES_REGION']
-DEBUG = True if os.environ['DEBUG'] is not None else False
+DEBUG = True if os.environ.get('DEBUG') == 1 else False
 
 # ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
 DOC_TYPE = 'doc'
 ES_MAX_RETRIES = 3              # Max number of retries for exponential backoff
 
-print("Streaming to ElasticSearch")
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
-
+logger.info("Streaming to ElasticSearch")
 
 # Subclass of boto's TypeDeserializer for DynamoDB to adjust for DynamoDB Stream format.
 class StreamTypeDeserializer(TypeDeserializer):
@@ -186,7 +185,7 @@ def _lambda_handler(event, context):
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
 
-        print(doc_fields)
+        logger.debug('Deserialized doc_fields: ' + doc_fields)
 
         doc_id = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
             ddb['Keys'], ddb_deserializer)
