@@ -346,19 +346,23 @@ async function createJSHelperFiles() {
 }
 
 async function createAndroidHelperFiles() {
-  const configJsonObj = { profile: 'default', envName: 'amplify', syncEnabled: true };
-  const configJsonStr = JSON.stringify(configJsonObj);
-  const configFile = path.join(process.cwd(), './amplify-gradle-config.json');
+  const configJsonObj = {
+    profile: 'default',
+    envName: 'amplify',
+    syncEnabled: true,
+  };
+  const configJsonStr = JSON.stringify(configJsonObj, null, 4);
+  const configFile = './amplify-gradle-config.json';
   if (!fs.existsSync(configFile)) {
     fs.writeFileSync(configFile, configJsonStr);
   }
 }
 
 async function createIosHelperFiles() {
-  const configFile = path.join(process.cwd(), '/amplifyxc.config');
-  const awsConfigFile = path.join(process.cwd(), '/awsconfiguration.json');
-  const amplifyConfigFile = path.join(process.cwd(), '/amplifyconfiguration.json');
-  const amplifyDir = path.join(process.cwd(), '/amplify');
+  const configFile = './amplifyxc.config';
+  const awsConfigFile = './awsconfiguration.json';
+  const amplifyConfigFile = './amplifyconfiguration.json';
+  const amplifyDir = './amplify';
   const configJsonObj = {};
   const configJsonStr = JSON.stringify(configJsonObj);
 
