@@ -545,7 +545,6 @@ export function addAuthWithMaxOptions(cwd: string, settings: any, verbose: boole
       .send('\r')
       .wait('Do you want to edit your custom function now')
       .send('n')
-      .send('\r')
       .sendEof()
       .run((err: Error) => {
         if (!err) {

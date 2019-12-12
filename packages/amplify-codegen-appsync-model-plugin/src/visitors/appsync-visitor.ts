@@ -8,7 +8,7 @@ import {
 } from '@graphql-codegen/visitor-plugin-common';
 import { constantCase, pascalCase } from 'change-case';
 import { plural } from 'pluralize';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import {
   DefinitionNode,
   DirectiveNode,
@@ -196,6 +196,7 @@ export class AppSyncModelVisitor<
         fields,
       };
       this.ensureIdField(model);
+      this.sortFields(model);
       this.typeMap[node.name.value] = model;
     }
   }
@@ -362,6 +363,22 @@ export class AppSyncModelVisitor<
       .update(JSON.stringify(typeArr))
       .digest()
       .toString('hex');
+  }
+
+  /**
+   * Sort the fields to ensure id is always the first field
+   * @param model
+   */
+  protected sortFields(model: CodeGenModel) {
+    // sort has different behavior in node 10 and 11. Using reduce instead
+    model.fields = model.fields.reduce((acc, field) => {
+      if (field.name === 'id') {
+        acc.unshift(field);
+      } else {
+        acc.push(field);
+      }
+      return acc;
+    }, [] as CodeGenField[]);
   }
 
   protected ensureIdField(model: CodeGenModel) {

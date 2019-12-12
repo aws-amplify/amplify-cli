@@ -100,6 +100,24 @@ describe('AppSyncModelVisitor', () => {
     const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
     expect(() => visit(ast, { leave: visitor })).toThrowError();
   });
+  it('should have id as the first field to ensure arity of constructors', () => {
+    const schema = /* GraphQL */ `
+      type Post @model {
+        title: String!
+        content: String!
+        id: ID!
+      }
+    `;
+    const ast = parse(schema);
+    const builtSchema = buildSchemaWithDirectives(schema);
+    const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+    visit(ast, { leave: visitor });
+    const postFields = visitor.types.Post.fields;
+    expect(postFields[0].name).toEqual('id');
+    expect(postFields[0].type).toEqual('ID');
+    expect(postFields[0].isNullable).toEqual(false);
+    expect(postFields[0].isList).toEqual(false);
+  });
 
   describe(' 2 Way Connection', () => {
     const schema = /* GraphQL */ `

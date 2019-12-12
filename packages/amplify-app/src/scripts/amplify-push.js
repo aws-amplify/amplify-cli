@@ -38,7 +38,7 @@ async function askForProfile(namedProfiles) {
 
 async function getValidProfile(profileToUse) {
   const namedProfiles = getNamedProfiles();
-  if (Object.keys(namedProfiles).length) {
+  if (namedProfiles && Object.keys(namedProfiles).length) {
     if (namedProfiles[profileToUse]) {
       return profileToUse;
     }
