@@ -95,9 +95,9 @@ def post_to_es(payload):
                     'ES post unsuccessful, errors present, took=%sms', es_ret['took'])
                 # Filter errors
                 es_errors = [item for item in es_ret['items']
-                             if item.get('index').get('error')]
+                            if item.get('index').get('error')]
                 logger.error('List of items with errors: %s',
-                             json.dumps(es_errors))
+                            json.dumps(es_errors))
             else:
                 logger.info('ES post successful, took=%sms', es_ret['took'])
             break  # Sending to ES was ok, break retry loop
@@ -145,7 +145,7 @@ def _lambda_handler(event, context):
             doc_seq = record['kinesis']['sequenceNumber']
         else:
             logger.error('Ignoring non-DynamoDB event sources: %s',
-                         record.get('eventSource'))
+                        record.get('eventSource'))
             continue
 
         # Compute DynamoDB table, type and index for item
@@ -157,7 +157,7 @@ def _lambda_handler(event, context):
         # Dispatch according to event TYPE
         event_name = record['eventName'].upper()  # INSERT, MODIFY, REMOVE
         logger.debug('doc_table=%s, event_name=%s, seq=%s',
-                     doc_table, event_name, doc_seq)
+                    doc_table, event_name, doc_seq)
 
         # Treat events from a Kinesis stream as INSERTs
         if event_name == 'AWS:KINESIS:RECORD':
@@ -185,7 +185,7 @@ def _lambda_handler(event, context):
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
 
-        logger.debug('Deserialized doc_fields: ' + doc_fields)
+        logger.debug('Deserialized doc_fields: ', doc_fields)
 
         doc_id = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
             ddb['Keys'], ddb_deserializer)
@@ -206,7 +206,7 @@ def _lambda_handler(event, context):
         # If DynamoDB REMOVE, send 'delete' to ES
         elif is_ddb_delete:
             action = {'delete': {'_index': doc_es_index_name,
-                                 '_type': doc_type, '_id': doc_id}}
+                                '_type': doc_type, '_id': doc_id}}
             # Action line with 'index' directive
             es_actions.append(json.dumps(action))
 
