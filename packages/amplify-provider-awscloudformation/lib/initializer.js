@@ -9,6 +9,7 @@ const S3 = require('../src/aws-utils/aws-s3');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
+const amplifyServiceMigrate = require('./amplify-service-migrate');
 
 async function run(context) {
   await configurationManager.init(context);
@@ -66,6 +67,13 @@ async function run(context) {
         spinner.fail('Root stack creation failed');
         throw e;
       });
+  } else if (
+    !context.exeInfo.isNewProject &&
+    context.exeInfo.inputParams &&
+    context.exeInfo.inputParams.amplify &&
+    context.exeInfo.inputParams.amplify.appId
+  ) {
+    await amplifyServiceMigrate.run(context);
   }
 }
 
