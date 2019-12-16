@@ -5,7 +5,6 @@ const { generateLocalEnvInfoFile } = require('./s9-onSuccess');
 const url = require('url');
 const fs = require('fs-extra');
 const path = require('path');
-const extract = require('extract-zip');
 
 async function run(context) {
   if (context.parameters.options.app) {
@@ -19,7 +18,6 @@ async function run(context) {
   }
   if (context.parameters.options.quickstart) {
     await createAmplifySkeleton();
-    await cleanAmplifySkeleton();
     process.exit(0);
   }
   return context;
@@ -97,29 +95,9 @@ async function setLocalEnvDefaults(context) {
  * Extract amplify project structure with backend-config and project-config
  */
 async function createAmplifySkeleton() {
-  const skeletonLocalDir = path.join(__dirname, '/../../../src/lib/amplify-skeleton.zip');
-  const skeletonProjectZipDir = path.join(process.cwd(), '/amplify-skeleton.zip');
-  const skeletonProjectDir = path.join(process.cwd(), '/amplify-skeleton');
-  await fs.copySync(skeletonLocalDir, skeletonProjectZipDir);
-  return new Promise((resolve, reject) => {
-    extract(skeletonProjectZipDir, { dir: skeletonProjectDir }, err => {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
-/**
- * Move amplify folder and remove zip
- */
-async function cleanAmplifySkeleton() {
-  const skeletonProjectDir = path.join(process.cwd(), '/amplify-skeleton');
-  const skeletonZip = path.join(process.cwd(), '/amplify-skeleton.zip');
-  await fs.copySync(skeletonProjectDir, process.cwd());
-  await fs.removeSync(skeletonProjectDir);
-  await fs.removeSync(skeletonZip);
+  const skeletonLocalDir = path.join(__dirname, '/../../../src/lib/amplify-skeleton');
+  const skeletonProjectDir = path.join(process.cwd(), '/amplify');
+  await fs.copySync(skeletonLocalDir, skeletonProjectDir);
 }
 
 module.exports = {

@@ -837,7 +837,20 @@ function getIAMPolicies(resourceName, crudOptions) {
   policy = {
     Effect: 'Allow',
     Action: actions,
-    Resource: [{ Ref: `${category}${resourceName}Arn` }],
+    Resource: [
+      { Ref: `${category}${resourceName}Arn` },
+      {
+        'Fn::Join': [
+          '/',
+          [
+            {
+              Ref: `${category}${resourceName}Arn`,
+            },
+            'index/*',
+          ],
+        ],
+      },
+    ],
   };
   const attributes = ['Name', 'Arn'];
 

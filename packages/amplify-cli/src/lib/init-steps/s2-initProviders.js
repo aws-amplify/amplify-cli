@@ -22,6 +22,14 @@ async function run(context) {
 async function getProviders(context, providerPlugins) {
   let providers = [];
   const providerPluginList = Object.keys(providerPlugins);
+
+  if (providerPluginList.length === 0) {
+    const errorMessage = 'Found no provider plugins';
+    context.print.error(errorMessage);
+    context.print.info("Run 'amplify plugin scan' to scan your system for provider plugins.");
+    throw new Error(errorMessage);
+  }
+
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify && inputParams.amplify.providers) {
     inputParams.amplify.providers.forEach(provider => {
