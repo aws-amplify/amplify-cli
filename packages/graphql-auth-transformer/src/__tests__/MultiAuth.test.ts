@@ -502,11 +502,11 @@ describe(`Policy slicing tests`, () => {
     const out = transformer.transform(schema);
 
     expect(out.rootStack.Resources.AuthRolePolicy01).toBeTruthy();
-    expect(out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(27);
+    expect(out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(26);
     expect(out.rootStack.Resources.AuthRolePolicy02).toBeTruthy();
-    expect(out.rootStack.Resources.AuthRolePolicy02.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(27);
+    expect(out.rootStack.Resources.AuthRolePolicy02.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(26);
     expect(out.rootStack.Resources.AuthRolePolicy03).toBeTruthy();
-    expect(out.rootStack.Resources.AuthRolePolicy03.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(2);
+    expect(out.rootStack.Resources.AuthRolePolicy03.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(4);
     expect(out.rootStack.Resources.UnauthRolePolicy01).toBeFalsy();
   });
 });
