@@ -1,7 +1,13 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../init';
 import * as path from 'path';
 import { existsSync } from 'fs';
-import { addApiWithSchema, updateApiSchema, updateApiWithMultiAuth } from '../categories/api';
+import {
+  addApiWithSchema,
+  updateApiSchema,
+  updateApiWithMultiAuth,
+  updateAPIWithResolutionStrategy,
+  addApiWithSchemaAndConflictDetection,
+} from '../categories/api';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getTransformConfig, getAppSyncApi } from '../utils';
 import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 
@@ -136,6 +142,67 @@ describe('amplify add api', () => {
 
     await amplifyPush(projRoot);
 
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api[name];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+  });
+
+  it('init a project with conflict detection enabled', async () => {
+    const name = `conflictdetection`;
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApiWithSchemaAndConflictDetection(projRoot, 'simple_model.graphql');
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api[name];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+    const transformConfig = getTransformConfig(projRoot, name);
+    expect(transformConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig.project).toBeDefined();
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+  });
+
+  it('init a sync enabled project and update conflict resolution strategy', async () => {
+    const name = `syncenabled`;
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApiWithSchemaAndConflictDetection(projRoot, 'simple_model.graphql');
+
+    let transformConfig = getTransformConfig(projRoot, name);
+    expect(transformConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig.project).toBeDefined();
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+
+    await updateAPIWithResolutionStrategy(projRoot, {});
+
+    transformConfig = getTransformConfig(projRoot, name);
+    expect(transformConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig).toBeDefined();
+    expect(transformConfig.ResolverConfig.project).toBeDefined();
+    expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
+    expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('OPTIMISTIC_CONCURRENCY');
+
+    await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
     const { output } = meta.api[name];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
