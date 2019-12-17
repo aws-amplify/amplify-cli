@@ -17,7 +17,6 @@
     "amplify-codegen-appsync-model-plugin": "1.6.0",
     "amplify-graphql-docs-generator": "2.1.1",
     "amplify-graphql-types-generator": "2.1.1",
-    "aws-appsync-codegen": "^0.17.4",
     "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",
     "glob-all": "^3.1.0",
