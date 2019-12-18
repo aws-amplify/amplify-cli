@@ -146,7 +146,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   // During API add, make sure we're creating a transform.conf.json file with the latest version the CLI supports.
   await updateTransformerConfigVersion(resourceDir);
 
-  if (resolverConfig.project || resolverConfig.project) {
+  if (resolverConfig.project || resolverConfig.models) {
     await writeResolverConfig(context, resolverConfig, resourceDir);
   }
 
