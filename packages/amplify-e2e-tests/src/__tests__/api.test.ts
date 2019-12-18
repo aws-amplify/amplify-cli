@@ -175,6 +175,8 @@ describe('amplify add api', () => {
 
     const transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
+    expect(transformConfig.Version).toBeDefined();
+    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
     expect(transformConfig.ResolverConfig).toBeDefined();
     expect(transformConfig.ResolverConfig.project).toBeDefined();
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
@@ -197,6 +199,8 @@ describe('amplify add api', () => {
 
     transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
+    expect(transformConfig.Version).toBeDefined();
+    expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
     expect(transformConfig.ResolverConfig).toBeDefined();
     expect(transformConfig.ResolverConfig.project).toBeDefined();
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
