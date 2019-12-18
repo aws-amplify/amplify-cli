@@ -8,6 +8,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
+    "watch": "tsc -w",
     "clean": "rm -rf ./lib"
   },
   "dependencies": {
