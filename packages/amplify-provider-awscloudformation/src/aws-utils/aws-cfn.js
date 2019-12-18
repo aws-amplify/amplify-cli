@@ -225,54 +225,54 @@ class CloudFormation {
         const self = this;
 
         this.eventStartTime = new Date();
-
         return new Promise((resolve, reject) => {
-          cfnModel.describeStacks(cfnStackCheckParams, err => {
-            if (err) {
+          this.describeStack(cfnStackCheckParams)
+            .then(() => {
+              const cfnParentStackParams = {
+                StackName: stackName,
+                TemplateURL: templateURL,
+                Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+                Parameters: [
+                  {
+                    ParameterKey: 'DeploymentBucketName',
+                    ParameterValue: deploymentBucketName,
+                  },
+                  {
+                    ParameterKey: 'AuthRoleName',
+                    ParameterValue: authRoleName,
+                  },
+                  {
+                    ParameterKey: 'UnauthRoleName',
+                    ParameterValue: unauthRoleName,
+                  },
+                ],
+              };
+
+              cfnModel.updateStack(cfnParentStackParams, updateErr => {
+                self.readStackEvents(stackName);
+
+                const cfnCompleteStatus = 'stackUpdateComplete';
+                if (updateErr) {
+                  console.error('Error updating cloudformation stack');
+                  reject(updateErr);
+                }
+                cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, completeErr => {
+                  if (self.pollForEvents) {
+                    clearInterval(self.pollForEvents);
+                  }
+                  if (completeErr) {
+                    console.error('Error updating cloudformation stack');
+                    this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
+                  } else {
+                    return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
+                  }
+                });
+              });
+            })
+            .catch(err => {
               reject(new Error("Project stack doesn't exist"));
               context.print.info(err.stack);
-            }
-            const cfnParentStackParams = {
-              StackName: stackName,
-              TemplateURL: templateURL,
-              Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
-              Parameters: [
-                {
-                  ParameterKey: 'DeploymentBucketName',
-                  ParameterValue: deploymentBucketName,
-                },
-                {
-                  ParameterKey: 'AuthRoleName',
-                  ParameterValue: authRoleName,
-                },
-                {
-                  ParameterKey: 'UnauthRoleName',
-                  ParameterValue: unauthRoleName,
-                },
-              ],
-            };
-
-            cfnModel.updateStack(cfnParentStackParams, updateErr => {
-              self.readStackEvents(stackName);
-
-              const cfnCompleteStatus = 'stackUpdateComplete';
-              if (updateErr) {
-                console.error('Error updating cloudformation stack');
-                reject(updateErr);
-              }
-              cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, completeErr => {
-                if (self.pollForEvents) {
-                  clearInterval(self.pollForEvents);
-                }
-                if (completeErr) {
-                  console.error('Error updating cloudformation stack');
-                  this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
-                } else {
-                  return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
-                }
-              });
             });
-          });
         });
       });
   }
