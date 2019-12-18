@@ -982,7 +982,10 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     // 6144 bytes is the maximum policy payload size, but there is structural overhead, hence the 6000 bytes
     const MAX_BUILT_SIZE_BYTES = 6000;
     // The overhead is the amount of static policy arn contents like region, accountid, etc.
-    const RESOURCE_OVERHEAD = 90;
+    // arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/fields/${fieldName}
+    // 16              15             13                5    27       6     X+1         7      Y
+    // 89 + 11 extra = 100
+    const RESOURCE_OVERHEAD = 100;
 
     const createPolicy = newPolicyResources =>
       new IAM.ManagedPolicy({

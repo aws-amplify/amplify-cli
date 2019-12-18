@@ -25,6 +25,7 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 * [Tutorials](#tutorials)
 * [Contributing](#contributing)
 * [Start building your app](https://aws-amplify.github.io/docs)
+* [Changelog](https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-cli/CHANGELOG.md)
 
 
 ## Install the CLI
