@@ -146,6 +146,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   // During API add, make sure we're creating a transform.conf.json file with the latest version the CLI supports.
   await updateTransformerConfigVersion(resourceDir);
 
+  if (resolverConfig.project || resolverConfig.models) {
+    await writeResolverConfig(context, resolverConfig, resourceDir);
+  }
+
   // Write the default custom resources stack out to disk.
   const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
   fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
@@ -429,7 +433,7 @@ async function updateWalkthrough(context) {
   jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
-  if (resolverConfig) {
+  if (resolverConfig.project || resolverConfig.models) {
     await writeResolverConfig(context, resolverConfig, resourceDir);
   }
 
