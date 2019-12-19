@@ -11,6 +11,7 @@ import { deploy } from '../deployNestedStacks';
 import * as moment from 'moment';
 import * as S3 from 'aws-sdk/clients/s3';
 import emptyBucket from '../emptyBucket';
+import addStringSets from '../stringSetMutations';
 
 jest.setTimeout(60000 * 60);
 
@@ -57,6 +58,13 @@ const runQuery = async (query: string, logContent: string) => {
   }
 };
 
+const createUsers = async () => {
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery('user1', ['thing1', 'thing2']), {});
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery('user1', ['thing3', 'thing4']), {});
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery('user1', ['thing5', 'thing6']), {});
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery('user1', ['thing7', 'thing8']), {});
+};
+
 let GRAPHQL_CLIENT = undefined;
 
 beforeAll(async () => {
@@ -79,6 +87,12 @@ beforeAll(async () => {
         isPublished: Boolean
         jsonField: AWSJSON
     }
+
+    type User @model @searchable {
+      id: ID!
+      name: String!
+      userItems: [String]
+    }
     `;
   const transformer = new GraphQLTransform({
     transformers: [
@@ -100,7 +114,8 @@ beforeAll(async () => {
     console.error(`Failed to create bucket: ${e}`);
   }
   try {
-    const out = transformer.transform(validSchema);
+    // change create/update to create string sets
+    const out = addStringSets(transformer.transform(validSchema));
     // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4))
     // create stack with additional params
     // const additionalParams = generateParams()
@@ -130,6 +145,8 @@ beforeAll(async () => {
 
     // Create sample mutations to test search queries
     await createPosts();
+    // Create sample mutations to test search queries with sets in ddb
+    await createUsers();
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -675,14 +692,33 @@ test('Test updatePost syncing with Elasticsearch', async () => {
   expect(items2[0].isPublished).toEqual(isPublished);
 });
 
-function generateParams() {
-  const params = {
-    [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: 'ElasticsearchAccessIAMRoleTest',
-    [ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName]: 'ElasticsearchStreamingIAMRoleTest',
-  };
+test('query users knowing userItems is a string set in ddb but should be a list in es', async () => {
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query SearchUsers {
+      searchUsers {
+        items {
+          id
+          name
+          userItems
+        }
+        nextToken
+        total
+      }
+    }`
+  );
+  expect(searchResponse).toBeDefined();
+  const items = searchResponse.data.searchUsers.items;
+  expect(items.length).toEqual(4);
+});
 
-  return params;
-}
+// function generateParams() {
+//   const params = {
+//     [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: 'ElasticsearchAccessIAMRoleTest',
+//     [ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName]: 'ElasticsearchStreamingIAMRoleTest',
+//   };
+
+//   return params;
+// }
 
 function getCreatePostsQuery(
   author: string,
@@ -702,6 +738,19 @@ function getCreatePostsQuery(
             isPublished: ${isPublished}
         }) { ...FullPost }
     }`;
+}
+
+function getCreateUsersQuery(name: String, userItems: String[]) {
+  return `mutation CreateUser {
+    createUser(input: {
+      name: "${name}"
+      userItems: ${userItems}
+    }) {
+      id
+      name
+      userItems
+    }
+  }`;
 }
 
 function outputValueSelector(key: string) {
