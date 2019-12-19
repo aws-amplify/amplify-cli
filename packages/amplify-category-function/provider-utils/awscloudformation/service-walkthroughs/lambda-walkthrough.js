@@ -785,13 +785,6 @@ async function askAPICategoryDynamoDBQuestions(context, inputs) {
     targetResourceName = answer.dynamoDbAPIResourceName;
   }
 
-  const targetResource = appSynchResources.find(resource => resource.resourceName === targetResourceName);
-  const resourceOutput = targetResource.output;
-  const graphqlAPIId = resourceOutput.GraphQLAPIIdOutput;
-  if (!graphqlAPIId) {
-    throw Error(`Unable to find graphql api id for ${targetResourceName} resource`);
-  }
-
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(backendDir, 'api', targetResourceName);
   const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
