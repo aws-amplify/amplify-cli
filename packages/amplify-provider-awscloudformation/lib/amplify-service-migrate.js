@@ -82,7 +82,7 @@ async function run(context) {
     }
 
     // Add the appId to the meta data and team provider info and write the files
-    const { amplifyMeta, teamProviderInfo } = projectDetails; // context.exeInfo;
+    const { amplifyMeta, teamProviderInfo } = projectDetails;
 
     teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
     amplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
