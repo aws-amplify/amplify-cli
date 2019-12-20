@@ -32,6 +32,10 @@
       "src/**/*.ts"
     ],
     "testRegex": "(src/__tests__/.*.test.ts)$",
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
     "globals": {
       "ts-jest": {
         "diagnostics": false
@@ -42,13 +46,20 @@
       "js"
     ]
   },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
+  },
   "devDependencies": {
     "@graphql-codegen/testing": "1.8.3",
     "graphql": "^0.13.2",
     "java-ast": "^0.1.0",
     "jest": "24.9.0",
     "ts-jest": "24.1.0",
-    "typescript": "~3.6.4"
+    "typescript": "~3.6.4",
+    "jest-junit": "^8.0.0"
   },
   "scripts": {
     "build": "tsc",
