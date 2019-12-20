@@ -1,4 +1,4 @@
-import { CodeGenModel, CodeGenDirectives } from '../visitors/appsync-visitor';
+import { CodeGenDirectives } from '../visitors/appsync-visitor';
 export enum AuthProvider {
   apiKey = 'apiKey',
   iam = 'iam',
