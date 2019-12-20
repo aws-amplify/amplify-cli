@@ -146,10 +146,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   // During API add, make sure we're creating a transform.conf.json file with the latest version the CLI supports.
   await updateTransformerConfigVersion(resourceDir);
 
-  // resolverConfig exists and it has a model or project sync config write it to the transformer
-  if (resolverConfig && (resolverConfig.project || resolverConfig.models)) {
-    await writeResolverConfig(context, resolverConfig, resourceDir);
-  }
+  await writeResolverConfig(resolverConfig, resourceDir);
 
   // Write the default custom resources stack out to disk.
   const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
@@ -257,10 +254,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
-  if (resolverConfig) {
-    await writeResolverConfig(context, resolverConfig, resourceDir);
-  }
-
   if (editSchemaChoice) {
     return context.amplify.openEditor(context, targetSchemaFilePath).then(async () => {
       let notCompiled = true;
@@ -297,11 +290,13 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
 }
-
-async function writeResolverConfig(context, syncConfig, resourceDir) {
-  const localTransformerConfig = await readTransformerConfiguration(resourceDir);
-  localTransformerConfig.ResolverConfig = syncConfig;
-  await writeTransformerConfiguration(resourceDir, localTransformerConfig);
+// write to the transformer conf if the resolverConfig is valid
+async function writeResolverConfig(resolverConfig, resourceDir) {
+  if (resolverConfig && (resolverConfig.project || resolverConfig.models)) {
+    const localTransformerConfig = await readTransformerConfiguration(resourceDir);
+    localTransformerConfig.ResolverConfig = resolverConfig;
+    await writeTransformerConfiguration(resourceDir, localTransformerConfig);
+  }
 }
 
 async function updateTransformerConfigVersion(resourceDir) {
@@ -434,10 +429,7 @@ async function updateWalkthrough(context) {
   jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
-  // resolverConfig exists and it has a model or project sync config write it to the transformer
-  if (resolverConfig && (resolverConfig.project || resolverConfig.models)) {
-    await writeResolverConfig(context, resolverConfig, resourceDir);
-  }
+  await writeResolverConfig(resolverConfig, resourceDir);
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     resourceDir,
