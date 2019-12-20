@@ -35,7 +35,7 @@ export class AppSyncModelTypeScriptVisitor<
   ];
 
   generate(): string {
-    this.processConnectionDirective();
+    this.processDirectives();
     const imports = this.generateImports();
     const enumDeclarations = Object.values(this.enumMap)
       .map(enumObj => this.generateEnumDeclarations(enumObj))

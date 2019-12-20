@@ -26,6 +26,7 @@ import { getTypeInfo } from '../utils/get-type-info';
 import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
 import { sortFields } from '../utils/sort';
 import { printWarning } from '../utils/warn';
+import { processAuthDirective } from '../utils/process-auth';
 
 export enum CodeGenGenerateEnum {
   metadata = 'metadata',
@@ -227,8 +228,12 @@ export class AppSyncModelVisitor<
       values,
     };
   }
-  generate(): string {
+  processDirectives() {
     this.processConnectionDirective();
+    this.processAuthDirectives();
+  }
+  generate(): string {
+    this.processDirectives();
     return '';
   }
 
@@ -429,6 +434,14 @@ export class AppSyncModelVisitor<
         }
         return true;
       });
+    });
+  }
+
+  protected processAuthDirectives(): void {
+    Object.values(this.typeMap).forEach(model => {
+      const filteredDirectives = model.directives.filter(d => d.name !== 'auth');
+      const authDirectives = processAuthDirective(model.directives);
+      model.directives = [...filteredDirectives, ...authDirectives];
     });
   }
 

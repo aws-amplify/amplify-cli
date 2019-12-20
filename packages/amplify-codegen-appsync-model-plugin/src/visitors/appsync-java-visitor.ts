@@ -19,7 +19,7 @@ export class AppSyncModelJavaVisitor<
   protected additionalPackages: Set<string> = new Set();
 
   generate(): string {
-    this.processConnectionDirective();
+    this.processDirectives();
     if (this._parsedConfig.generate === 'loader') {
       return this.generateClassLoader();
     }
