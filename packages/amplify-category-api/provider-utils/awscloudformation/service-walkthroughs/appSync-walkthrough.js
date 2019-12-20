@@ -146,7 +146,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   // During API add, make sure we're creating a transform.conf.json file with the latest version the CLI supports.
   await updateTransformerConfigVersion(resourceDir);
 
-  if (resolverConfig.project || resolverConfig.models) {
+  // resolverConfig exists and it has a model or project sync config write it to the transformer
+  if (resolverConfig && (resolverConfig.project || resolverConfig.models)) {
     await writeResolverConfig(context, resolverConfig, resourceDir);
   }
 
@@ -433,7 +434,8 @@ async function updateWalkthrough(context) {
   jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
-  if (resolverConfig.project || resolverConfig.models) {
+  // resolverConfig exists and it has a model or project sync config write it to the transformer
+  if (resolverConfig && (resolverConfig.project || resolverConfig.models)) {
     await writeResolverConfig(context, resolverConfig, resourceDir);
   }
 
