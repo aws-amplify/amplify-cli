@@ -86,12 +86,14 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
 
 function checkFileContent(fileString: string): boolean {
     let result = false;
-    prevLambdaRuntimeVersions.forEach((prevVersion) => {
-        if (fileString.includes(prevVersion)) {
+
+    for (let i = 0; i < prevLambdaRuntimeVersions.length; i++) {
+        if (fileString.includes(prevLambdaRuntimeVersions[i])) {
             result = true;
-            return false;
+            break;
         }
-    });
+    }
+
     return result;
 }
 
