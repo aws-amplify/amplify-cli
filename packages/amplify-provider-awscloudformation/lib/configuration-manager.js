@@ -49,6 +49,9 @@ function doesAwsConfigExists(context) {
   if (fs.existsSync(configInfoFilePath)) {
     const envAwsInfo = context.amplify.readJsonFile(configInfoFilePath);
     if (envAwsInfo[envName]) {
+      context.exeInfo = context.exeInfo || {};
+      context.exeInfo.awsConfigInfo = envAwsInfo[envName];
+      context.exeInfo.awsConfigInfo.config = envAwsInfo[envName];
       configExists = true;
     }
   }

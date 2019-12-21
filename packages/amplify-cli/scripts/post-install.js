@@ -1,3 +1,5 @@
+require = require('esm')(module);
+const fs = require('fs-extra');
 const chalk = require('chalk');
 
 console.log(chalk.bold('Ignore installation errors for optional dependencies: gyp, fs-ext'));
@@ -13,3 +15,7 @@ console.log(chalk.green('Android Getting Started - https://aws-amplify.github.io
 console.log('\n');
 console.log(chalk.green('iOS Getting Started - https://aws-amplify.github.io/docs/ios/start'));
 console.log('\n');
+
+if (fs.existsSync('../lib/plugin-manager.js')) {
+  require('../lib/plugin-manager').scan();
+}
