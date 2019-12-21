@@ -233,7 +233,7 @@ describe('AppSyncModelVisitor', () => {
       expect(ownerRule).toBeDefined();
 
       expect(ownerRule.provider).toEqual('userPools');
-      expect(ownerRule.userClaim).toEqual('username');
+      expect(ownerRule.identityClaim).toEqual('cognito:username');
       expect(ownerRule.ownerField).toEqual('owner');
       expect(ownerRule.operations).toEqual(['create', 'update', 'delete']);
     });

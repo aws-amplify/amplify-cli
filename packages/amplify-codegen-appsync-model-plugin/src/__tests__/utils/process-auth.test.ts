@@ -24,7 +24,7 @@ describe('process auth directive', () => {
   });
   describe('Owner auth', () => {
     it('should add default owner field when owner auth is missing ownerField', () => {
-      ownerAuthRule.userClaim = 'owner';
+      ownerAuthRule.identityClaim = 'owner';
       ownerAuthRule.operations = [AuthModelOperation.read];
       ownerAuthRule.provider = AuthProvider.userPools;
 
@@ -36,7 +36,7 @@ describe('process auth directive', () => {
       });
     });
 
-    it('should add default userClaim userName if the directive is missing it', () => {
+    it('should add default identityClaim cognito:userName if the directive is missing it', () => {
       ownerAuthRule.ownerField = 'username';
       ownerAuthRule.operations = [AuthModelOperation.read];
       ownerAuthRule.provider = AuthProvider.userPools;
@@ -45,14 +45,42 @@ describe('process auth directive', () => {
       const processedAuthDirective = processAuthDirective(directives);
       expect(processedAuthDirective[0].arguments.rules[0]).toEqual({
         ...ownerAuthRule,
-        userClaim: 'username',
+        identityClaim: 'cognito:username',
+      });
+    });
+
+    it('should change identityClaim to cognito:userName when its username', () => {
+      ownerAuthRule.ownerField = 'username';
+      ownerAuthRule.operations = [AuthModelOperation.read];
+      ownerAuthRule.provider = AuthProvider.userPools;
+      ownerAuthRule.identityClaim = 'username';
+
+      const directives: CodeGenDirectives = [buildAuthDirective(ownerAuthRule)];
+      const processedAuthDirective = processAuthDirective(directives);
+      expect(processedAuthDirective[0].arguments.rules[0]).toEqual({
+        ...ownerAuthRule,
+        identityClaim: 'cognito:username',
+      });
+    });
+
+    it('should change identityField to identityClaim', () => {
+      ownerAuthRule.ownerField = 'username';
+      ownerAuthRule.operations = [AuthModelOperation.read];
+      ownerAuthRule.provider = AuthProvider.userPools;
+      ownerAuthRule.identityField = 'username';
+
+      const directives: CodeGenDirectives = [buildAuthDirective(ownerAuthRule)];
+      const processedAuthDirective = processAuthDirective(directives);
+      expect(processedAuthDirective[0].arguments.rules[0]).toEqual({
+        ...ownerAuthRule,
+        identityClaim: 'cognito:username',
       });
     });
 
     it('should add operations when its missing', () => {
       ownerAuthRule.ownerField = 'username';
       ownerAuthRule.provider = AuthProvider.userPools;
-      ownerAuthRule.userClaim = 'user_name';
+      ownerAuthRule.identityClaim = 'user_name';
 
       const directives: CodeGenDirectives = [buildAuthDirective(ownerAuthRule)];
       const processedAuthDirective = processAuthDirective(directives);
@@ -65,7 +93,7 @@ describe('process auth directive', () => {
     it('should use deprecated mutation field value for operations', () => {
       ownerAuthRule.ownerField = 'username';
       ownerAuthRule.provider = AuthProvider.userPools;
-      ownerAuthRule.userClaim = 'user_name';
+      ownerAuthRule.identityClaim = 'user_name';
       ownerAuthRule.mutations = [AuthModelMutation.delete];
 
       const directives: CodeGenDirectives = [buildAuthDirective(ownerAuthRule)];
@@ -79,7 +107,7 @@ describe('process auth directive', () => {
     it('should add provider when its missing', () => {
       ownerAuthRule.ownerField = 'username';
       ownerAuthRule.operations = [AuthModelOperation.create, AuthModelOperation.update, AuthModelOperation.delete];
-      ownerAuthRule.userClaim = 'user_name';
+      ownerAuthRule.identityClaim = 'user_name';
 
       const directives: CodeGenDirectives = [buildAuthDirective(ownerAuthRule)];
       const processedAuthDirective = processAuthDirective(directives);
