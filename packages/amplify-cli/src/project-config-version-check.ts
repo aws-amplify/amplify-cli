@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { Context } from './domain/context';
 import inquirer from './domain/inquirer-helper';
 
-const prevLambdaRuntimeVersion = 'nodejs8.10';
+const prevLambdaRuntimeVersions = ['nodejs8.10'];
 const lambdaRuntimeVersion = 'nodejs10.x';
 const jsonIndentation = 4;
 
@@ -29,7 +29,7 @@ export async function checkProjectConfigVersion(context: Context): Promise<void>
 ////// check lambda custom resources nodejs runtime version ///////
 ///////////////////////////////////////////////////////////////////
 async function checkLambdaCustomResourceNodeVersion(context: Context, projectPath: string): Promise<void> {
-  const { pathManager, readJsonFile, constants } = context.amplify;
+  const { pathManager } = context.amplify;
   const backendDirPath = pathManager.getBackendDirPath(projectPath);
 
   const filesToUpdate: string[] = [];
@@ -55,10 +55,10 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
           if (!fs.statSync(filePath).isFile()) {
             return;
           }
-          const templateFileNamePattern = new RegExp('cloudformation-template');
+          const templateFileNamePattern = new RegExp('template');
           if (templateFileNamePattern.test(fileName)) {
             const fileString = fs.readFileSync(filePath, 'utf8');
-            if (fileString.includes(prevLambdaRuntimeVersion)) {
+            if (checkFileContent(fileString)) {
               filesToUpdate.push(filePath);
             }
           }
@@ -68,11 +68,13 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
   }
 
   if (filesToUpdate.length > 0) {
-    const confirmed = await promptForConfirmation(context, filesToUpdate);
+    let confirmed = context.input.options && context.input.options.yes;
+    confirmed = confirmed || await promptForConfirmation(context, filesToUpdate);
+
     if (confirmed) {
       filesToUpdate.forEach(filePath => {
         let fileString = fs.readFileSync(filePath, 'utf8');
-        fileString = fileString.replace(prevLambdaRuntimeVersion, lambdaRuntimeVersion);
+        fileString = updateFileContent(fileString);
         fs.writeFileSync(filePath, fileString, 'utf8');
       });
       context.print.info('');
@@ -82,17 +84,37 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
   }
 }
 
+function checkFileContent(fileString: string): boolean {
+    let result = false;
+    prevLambdaRuntimeVersions.forEach((prevVersion) => {
+        if (fileString.includes(prevVersion)) {
+            result = true;
+            return false;
+        }
+    });
+    return result;
+}
+
+function updateFileContent(fileString: string): string {
+    let result = fileString;
+    prevLambdaRuntimeVersions.forEach((prevVersion) => {
+        result = result.replace(prevVersion, lambdaRuntimeVersion);
+    });
+    return result;
+}
+
 async function promptForConfirmation(context: Context, filesToUpdate: string[]): Promise<boolean> {
   context.print.info('');
   context.print.info('Amplify CLI uses Lambda backed custom resources with CloudFormation to manage part of your backend resources.');
   context.print.info('In response to the Lambda Runtime support deprecation schedule');
   context.print.green('https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html');
   context.print.warning(
-    `Nodejs runtime need to be updated from ${prevLambdaRuntimeVersion}  to ${lambdaRuntimeVersion} in the following template files:`
+    `Nodejs runtime need to be updated from ${prevLambdaRuntimeVersions}  to ${lambdaRuntimeVersion} in the following template files:`
   );
   filesToUpdate.forEach(filePath => {
     context.print.info(filePath);
   });
+  context.print.info('');
 
   const question = {
     type: 'confirm',
