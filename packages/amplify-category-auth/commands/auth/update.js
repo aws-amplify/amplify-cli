@@ -61,9 +61,12 @@ module.exports = {
         if (authParameters.triggers) {
           const triggers = JSON.parse(authParameters.triggers);
           customAuthConfigured =
-            triggers.DefineAuthChallenge && triggers.DefineAuthChallenge.length > 0 &&
-            triggers.CreateAuthChallenge && triggers.CreateAuthChallenge.length > 0 &&
-            triggers.VerifyAuthChallengeResponse && triggers.VerifyAuthChallengeResponse.length > 0;
+            triggers.DefineAuthChallenge &&
+            triggers.DefineAuthChallenge.length > 0 &&
+            triggers.CreateAuthChallenge &&
+            triggers.CreateAuthChallenge.length > 0 &&
+            triggers.VerifyAuthChallengeResponse &&
+            triggers.VerifyAuthChallengeResponse.length > 0;
         }
         amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'customAuth', customAuthConfigured);
 
