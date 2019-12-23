@@ -183,7 +183,6 @@ function getCognitoConfig(cognitoResources, projectRegion) {
           AppClientSecret: cognitoResource.output.AppClientSecret,
           Region: projectRegion,
         },
-        CustomAuth: !!cognitoResources.find(i => i.customAuth),
       },
     });
   }
@@ -236,6 +235,16 @@ function getCognitoConfig(cognitoResources, projectRegion) {
         },
       },
     });
+  }
+
+  if (cognitoConfig.Auth && cognitoConfig.Auth.Default) {
+    cognitoConfig.Auth.Default.authenticationFlowType = cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH';
+  } else {
+    cognitoConfig.Auth = {
+      Default: {
+        authenticationFlowType: cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH',
+      },
+    };
   }
 
   return cognitoConfig;
