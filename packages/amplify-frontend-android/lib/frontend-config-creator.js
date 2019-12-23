@@ -194,6 +194,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
           Region: projectRegion,
         },
       },
+      CustomAuth: !!cognitoResources.find(i => i.customAuth),
     });
   }
 
