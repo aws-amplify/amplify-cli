@@ -278,6 +278,60 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose:
   });
 }
 
+export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
+      .wait('What do you want to do')
+      .send('j')
+      .send('\r')
+      .wait('Select the authentication/authorization services')
+      .send('\r')
+      .wait('Allow unauthenticated logins?')
+      .send('\r')
+      .wait('Do you want to enable 3rd party authentication providers')
+      .send('j')
+      .send('\r')
+      .wait('Do you want to add User Pool Groups?')
+      .send('j')
+      .send('\r')
+      .wait('Do you want to add an admin queries API?')
+      .send('j')
+      .send('\r')
+      .wait('Multifactor authentication (MFA) user login options')
+      .send('\r')
+      .wait('Email based user registration/forgot password')
+      .send('\r')
+      .wait('Please specify an email verification subject:')
+      .send('\r')
+      .wait('Please specify an email verification message')
+      .send('\r')
+      .wait('Do you want to override the default password policy for this')
+      .send('\r')
+      .wait('Specify the app')
+      .send('\r')
+      .wait('Do you want to specify the user attributes')
+      .send('\r')
+      .wait('Do you want to enable any of the following capabilities')
+      .send('a')
+      .send('a')
+      .send('\r')
+      .wait('Do you want to use an OAuth')
+      .send('j')
+      .send('\r')
+      .wait('Do you want to configure Lambda Triggers for Cognito')
+      .send('n')
+      .send('\r')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
