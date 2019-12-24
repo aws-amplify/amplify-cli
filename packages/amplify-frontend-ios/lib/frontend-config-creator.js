@@ -183,7 +183,6 @@ function getCognitoConfig(cognitoResources, projectRegion) {
           AppClientSecret: cognitoResource.output.AppClientSecret,
           Region: projectRegion,
         },
-        CustomAuth: !!cognitoResources.find(i => i.customAuth),
       },
     });
   }
