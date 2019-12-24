@@ -26,7 +26,7 @@ export enum AuthModelMutation {
 }
 
 const DEFAULT_GROUP_CLAIM = 'cognito:groups';
-const DEFAULT_USER_CLAIM = 'username';
+const DEFAULT_IDENTITY_CLAIM = 'username';
 const DEFAULT_OPERATIONS = [AuthModelOperation.create, AuthModelOperation.update, AuthModelOperation.delete];
 const DEFAULT_AUTH_PROVIDER = AuthProvider.userPools;
 const DEFAULT_OWNER_FIELD = 'owner';
@@ -38,9 +38,10 @@ export type AuthRule = {
   groupField?: string;
   ownerField?: string;
   groups?: string[];
-  userClaim?: string;
+  identityField?: string; // deprecated
+  identityClaim?: string;
   groupClaim?: string;
-  mutations?: AuthModelMutation[];
+  mutations?: AuthModelMutation[]; // deprecated
 };
 
 export function processAuthDirective(directives: CodeGenDirectives): CodeGenDirectives {
@@ -53,12 +54,15 @@ export function processAuthDirective(directives: CodeGenDirectives): CodeGenDire
       .filter((rule: AuthRule) => !(rule.allow === AuthStrategy.groups && rule.groupField))
       .map((rule: AuthRule) => {
         const operations = rule.operations || rule.mutations || DEFAULT_OPERATIONS;
+        const identityClaim = rule.identityClaim || rule.identityField || DEFAULT_IDENTITY_CLAIM;
+
         if (rule.allow === AuthStrategy.owner) {
           return {
-            userClaim: DEFAULT_USER_CLAIM,
+            // transformer looks for cognito:username when identityClaim is set to username
             provider: DEFAULT_AUTH_PROVIDER,
             ownerField: DEFAULT_OWNER_FIELD,
             ...rule,
+            identityClaim: identityClaim === 'username' ? 'cognito:username' : identityClaim,
             operations,
           };
         } else if (rule.allow === AuthStrategy.groups) {
