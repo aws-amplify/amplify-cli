@@ -7,6 +7,7 @@ import { print } from './context-extensions';
 import { executeCommand } from './execution-manager';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
+import { checkProjectConfigVersion } from './project-config-version-check';
 
 // entry from commandline
 export async function run(): Promise<number> {
@@ -35,6 +36,7 @@ export async function run(): Promise<number> {
     }
 
     const context = constructContext(pluginPlatform, input);
+    await checkProjectConfigVersion(context);
     await executeCommand(context);
     persistContext(context);
     return 0;
