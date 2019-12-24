@@ -191,14 +191,11 @@ describe('amplify updating auth...', () => {
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     let meta = getAwsAndroidConfig(projRoot);
-    console.log('meta1', meta);
-
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
     await updateAuthRemoveRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     meta = getAwsAndroidConfig(projRoot);
-    console.log('meta2', meta);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('USER_SRP_AUTH');
   });
@@ -208,14 +205,11 @@ describe('amplify updating auth...', () => {
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     let meta = getAwsIOSConfig(projRoot);
-    console.log('meta1', meta);
-
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
     await updateAuthRemoveRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     meta = getAwsIOSConfig(projRoot);
-    console.log('meta2', meta);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('USER_SRP_AUTH');
   });
