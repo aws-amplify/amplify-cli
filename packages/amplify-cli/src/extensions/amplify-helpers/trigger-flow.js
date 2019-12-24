@@ -97,8 +97,6 @@ const addTrigger = async triggerOptions => {
  */
 
 const updateTrigger = async triggerOptions => {
-  console.log('UPDATING TRIGGER BEGIN....');
-
   const {
     key,
     values,
