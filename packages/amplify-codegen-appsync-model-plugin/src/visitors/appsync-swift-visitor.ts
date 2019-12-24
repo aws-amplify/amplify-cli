@@ -9,7 +9,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
   protected imports: string[] = ['import Amplify', 'import Foundation'];
   generate(): string {
-    this.processConnectionDirective();
+    this.processDirectives();
     const code = [`// swiftlint:disable all`];
     if (this._parsedConfig.generate === CodeGenGenerateEnum.metadata) {
       code.push(this.generateSchema());

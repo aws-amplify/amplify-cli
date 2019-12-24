@@ -164,48 +164,103 @@ describe('AppSyncModelVisitor', () => {
     });
   });
 
-  it('should not include a comments in Post when comments field does not have connection directive', () => {
-    const schema = /* GraphQL */ `
-      type Post @model {
-        title: String!
-        content: String
-        comments: [Comment]
-      }
+  describe('one way connection', () => {
+    it('should not include a comments in Post when comments field does not have connection directive', () => {
+      const schema = /* GraphQL */ `
+        type Post @model {
+          title: String!
+          content: String
+          comments: [Comment]
+        }
 
-      type Comment @model {
-        comment: String!
-        post: Post @connection
-      }
-    `;
-    const ast = parse(schema);
-    const builtSchema = buildSchemaWithDirectives(schema);
-    const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
-    visit(ast, { leave: visitor });
-    visitor.generate();
-    const postFields = visitor.types.Post.fields.map(field => field.name);
-    expect(postFields).not.toContain('comments');
+        type Comment @model {
+          comment: String!
+          post: Post @connection
+        }
+      `;
+      const ast = parse(schema);
+      const builtSchema = buildSchemaWithDirectives(schema);
+      const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+      visit(ast, { leave: visitor });
+      visitor.generate();
+      const postFields = visitor.types.Post.fields.map(field => field.name);
+      expect(postFields).not.toContain('comments');
+    });
+
+    it('should not include a post when post field in Comment when post does not have connection directive', () => {
+      const schema = /* GraphQL */ `
+        type Post @model {
+          title: String!
+          content: String
+          comments: [Comment] @connection
+        }
+
+        type Comment @model {
+          comment: String!
+          post: Post
+        }
+      `;
+      const ast = parse(schema);
+      const builtSchema = buildSchemaWithDirectives(schema);
+      const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+      visit(ast, { leave: visitor });
+      visitor.generate();
+      const commentsField = visitor.types.Comment.fields.map(field => field.name);
+      expect(commentsField).not.toContain('post');
+      expect(commentsField).toContain('postCommentsId'); // because of connection from Post.comments
+    });
   });
+  describe('auth directive', () => {
+    it('should process auth with owner authorization', () => {
+      const schema = /* GraphQL */ `
+        type Post @searchable @model @auth(rules: [{ allow: owner }]) {
+          title: String!
+          content: String
+        }
+      `;
+      const ast = parse(schema);
+      const builtSchema = buildSchemaWithDirectives(schema);
+      const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+      visit(ast, { leave: visitor });
+      visitor.generate();
+      const postModel = visitor.types.Post;
+      const authDirective = postModel.directives.find(d => d.name === 'auth');
+      expect(authDirective).toBeDefined();
+      const authRules = authDirective!.arguments.rules;
+      expect(authRules).toBeDefined();
+      expect(authRules).toHaveLength(1);
+      const ownerRule = authRules[0];
+      expect(ownerRule).toBeDefined();
 
-  it('should not include a post when post field in Comment when post does not have connection directive', () => {
-    const schema = /* GraphQL */ `
-      type Post @model {
-        title: String!
-        content: String
-        comments: [Comment] @connection
-      }
+      expect(ownerRule.provider).toEqual('userPools');
+      expect(ownerRule.identityClaim).toEqual('cognito:username');
+      expect(ownerRule.ownerField).toEqual('owner');
+      expect(ownerRule.operations).toEqual(['create', 'update', 'delete']);
+    });
 
-      type Comment @model {
-        comment: String!
-        post: Post
-      }
-    `;
-    const ast = parse(schema);
-    const builtSchema = buildSchemaWithDirectives(schema);
-    const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
-    visit(ast, { leave: visitor });
-    visitor.generate();
-    const commentsField = visitor.types.Comment.fields.map(field => field.name);
-    expect(commentsField).not.toContain('post');
-    expect(commentsField).toContain('postCommentsId'); // because of connection from Post.comments
+    it('should process group with owner authorization', () => {
+      const schema = /* GraphQL */ `
+        type Post @model @searchable @auth(rules: [{ allow: groups, groups: ["admin", "moderator"] }]) {
+          title: String!
+          content: String
+        }
+      `;
+      const ast = parse(schema);
+      const builtSchema = buildSchemaWithDirectives(schema);
+      const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+      visit(ast, { leave: visitor });
+      visitor.generate();
+      const postModel = visitor.types.Post;
+      const authDirective = postModel.directives.find(d => d.name === 'auth');
+      expect(authDirective).toBeDefined();
+      const authRules = authDirective!.arguments.rules;
+      expect(authRules).toBeDefined();
+      expect(authRules).toHaveLength(1);
+      const groupRule = authRules[0];
+      expect(groupRule).toBeDefined();
+      expect(groupRule.provider).toEqual('userPools');
+      expect(groupRule.groupClaim).toEqual('cognito:groups');
+      expect(groupRule.operations).toEqual(['create', 'update', 'delete']);
+    });
   });
 });

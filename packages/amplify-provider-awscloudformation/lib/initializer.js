@@ -9,6 +9,7 @@ const S3 = require('../src/aws-utils/aws-s3');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
+const amplifyServiceMigrate = require('./amplify-service-migrate');
 
 async function run(context) {
   await configurationManager.init(context);
@@ -66,6 +67,17 @@ async function run(context) {
         spinner.fail('Root stack creation failed');
         throw e;
       });
+  } else if (
+    // This part of the code is invoked by the `amplify init --appId xxx` command
+    // for projects that are already setup by `amplify init` with the Amplify CLI version prior to 4.0.0.
+    // This allows the local project's env to be added to an existing Amplify Console project, as specified
+    // by the appId, without unneccessarily creating another Amplify Console project by the post push migration.
+    !context.exeInfo.isNewProject &&
+    context.exeInfo.inputParams &&
+    context.exeInfo.inputParams.amplify &&
+    context.exeInfo.inputParams.amplify.appId
+  ) {
+    await amplifyServiceMigrate.run(context);
   }
 }
 

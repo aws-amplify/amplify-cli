@@ -93,7 +93,7 @@ export class AppSyncJSONVisitor<
     this._parsedConfig.metadataTarget = rawConfig.metadataTarget || 'javascript';
   }
   generate(): string {
-    this.processConnectionDirective();
+    this.processDirectives();
     if (this._parsedConfig.metadataTarget === 'typescript') {
       return this.generateTypeScriptMetaData();
     } else if (this._parsedConfig.metadataTarget === 'javascript') {

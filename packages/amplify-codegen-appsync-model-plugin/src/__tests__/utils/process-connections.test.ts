@@ -5,6 +5,7 @@ import {
   CodeGenFieldConnectionHasMany,
   CodeGenFieldConnectionBelongsTo,
   CodeGenFieldConnectionHasOne,
+  getConnectedField,
 } from '../../utils/process-connections';
 import { CodeGenModelMap, CodeGenModel } from '../../visitors/appsync-visitor';
 import { directive } from 'babel-types';
@@ -295,6 +296,175 @@ describe('process connection', () => {
       expect(connectionInfo).toBeDefined();
       expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
       expect(connectionInfo.targetName).toEqual(modelMap.Comment.fields[0].name);
+    });
+  });
+  describe('getConnectedField', () => {
+    describe('One to Many', () => {
+      let modelMap: CodeGenModelMap;
+      beforeEach(() => {
+        const schema = /* GraphQL */ `
+          type Post @model {
+            comments: [Comment] @connection(name: "postConnection")
+          }
+
+          type Comment @model {
+            post: Post @connection(name: "postConnection")
+          }
+        `;
+
+        modelMap = {
+          Post: {
+            name: 'Post',
+            type: 'model',
+            directives: [],
+            fields: [
+              {
+                type: 'Comment',
+                isNullable: true,
+                isList: true,
+                name: 'comments',
+                directives: [{ name: 'connection', arguments: { name: 'postConnection' } }],
+              },
+            ],
+          },
+          Comment: {
+            name: 'Comment',
+            type: 'model',
+            directives: [],
+            fields: [
+              {
+                type: 'Post',
+                isNullable: true,
+                isList: false,
+                name: 'post',
+                directives: [{ name: 'connection', arguments: { name: 'postConnection' } }],
+              },
+            ],
+          },
+        };
+      });
+      it('should return connected field when connection is Many to one', () => {
+        const commentsField = modelMap.Post.fields[0];
+        const postField = modelMap.Comment.fields[0];
+        const commentModel = modelMap.Comment;
+        const postModel = modelMap.Post;
+        expect(getConnectedField(commentsField, postModel, commentModel)).toEqual(postField);
+      });
+
+      it('should return connected field when connection is One to Many', () => {
+        const commentsField = modelMap.Post.fields[0];
+        const postField = modelMap.Comment.fields[0];
+        const commentModel = modelMap.Comment;
+        const postModel = modelMap.Post;
+        expect(getConnectedField(postField, commentModel, postModel)).toEqual(commentsField);
+      });
+    });
+
+    describe('One to one', () => {
+      let modelMap: CodeGenModelMap;
+      beforeEach(() => {
+        const schema = /* GraphQL */ `
+          type Person @model {
+            license: License @connection(name: "person-license")
+          }
+
+          type License @model {
+            holder: Person! @connection(name: "person-license")
+          }
+        `;
+
+        modelMap = {
+          Person: {
+            name: 'Person',
+            type: 'model',
+            directives: [],
+            fields: [
+              {
+                type: 'License',
+                isNullable: true,
+                isList: false,
+                name: 'license',
+                directives: [{ name: 'connection', arguments: { name: 'person-license' } }],
+              },
+            ],
+          },
+          License: {
+            name: 'License',
+            type: 'model',
+            directives: [],
+            fields: [
+              {
+                type: 'Person',
+                isNullable: false,
+                isList: false,
+                name: 'holder',
+                directives: [{ name: 'connection', arguments: { name: 'person-license' } }],
+              },
+            ],
+          },
+        };
+      });
+
+      it('should return connected field when connection is One to One', () => {
+        const licenseField = modelMap.Person.fields[0];
+        const holderField = modelMap.License.fields[0];
+        const personModel = modelMap.Person;
+        const licenseModel = modelMap.License;
+        expect(getConnectedField(licenseField, personModel, licenseModel)).toEqual(holderField);
+        expect(getConnectedField(holderField, licenseModel, personModel)).toEqual(licenseField);
+      });
+    });
+  });
+
+  describe('self referencing models', () => {
+    let modelMap: CodeGenModelMap;
+    beforeEach(() => {
+      const schema = /* GraphQL */ `
+        type Employee @model {
+          name: String!
+          supervisor: Employee @connection(name: "supervisorConnection")
+          subordinates: [Employee] @connection(name: "supervisorConnection")
+        }
+      `;
+
+      modelMap = {
+        Employee: {
+          name: 'Employee',
+          type: 'model',
+          directives: [],
+          fields: [
+            {
+              type: 'String',
+              isNullable: false,
+              isList: false,
+              name: 'name',
+              directives: [],
+            },
+            {
+              type: 'Employee',
+              isNullable: true,
+              isList: false,
+              name: 'supervisor',
+              directives: [{ name: 'connection', arguments: { name: 'supervisorConnection' } }],
+            },
+            {
+              type: 'Employee',
+              isNullable: true,
+              isList: true,
+              name: 'subordinates',
+              directives: [{ name: 'connection', arguments: { name: 'supervisorConnection' } }],
+            },
+          ],
+        },
+      };
+    });
+
+    it('should return connected field', () => {
+      const supervisorField = modelMap.Employee.fields[1];
+      const subordinateField = modelMap.Employee.fields[2];
+      const employeeModel = modelMap.Employee;
+      expect(getConnectedField(supervisorField, employeeModel, employeeModel)).toEqual(subordinateField);
+      expect(getConnectedField(subordinateField, employeeModel, employeeModel)).toEqual(supervisorField);
     });
   });
 });
