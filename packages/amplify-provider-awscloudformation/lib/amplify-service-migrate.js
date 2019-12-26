@@ -8,6 +8,14 @@ const constants = require('./constants');
 async function run(context) {
   const projectDetails = context.amplify.getProjectDetails();
   const awsConfig = await configurationManager.getAwsConfig(context);
+  const { amplifyMeta, teamProviderInfo } = projectDetails;
+  const { envName } = projectDetails.localEnvInfo;
+
+  if (teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel]) {
+    // Migration is not needed if appId is already present in the team provider info
+    // This is needed to prevent an Amplify Console build error.
+    return;
+  }
 
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
   if (!amplifyClient) {
@@ -56,7 +64,6 @@ async function run(context) {
       backendEnvs = backendEnvs.concat(listEnvResponse.backendEnvironments);
     } while (listEnvResponse.nextToken);
 
-    const { envName } = projectDetails.localEnvInfo;
     const { StackName, DeploymentBucketName } = projectDetails.teamProviderInfo[envName][constants.ProviderName];
     if (!backendEnvs.includes(envName)) {
       context.print.info(`Adding backend environment ${envName} to AWS Amplify Console app: ${amplifyAppId}`);
@@ -82,8 +89,6 @@ async function run(context) {
     }
 
     // Add the appId to the meta data and team provider info and write the files
-    const { amplifyMeta, teamProviderInfo } = projectDetails;
-
     teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
     amplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
 
