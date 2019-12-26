@@ -53,7 +53,7 @@ async function run(context) {
         })
         .promise();
 
-      backendEnvs = backendEnvs.concat(listEnvResponse.backendEnvironments);
+      backendEnvs = backendEnvs.concat(listEnvResponse.backendEnvironments.map(env => env.environmentName));
     } while (listEnvResponse.nextToken);
 
     const { envName } = projectDetails.localEnvInfo;
