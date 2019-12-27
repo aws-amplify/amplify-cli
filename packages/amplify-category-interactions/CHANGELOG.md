@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.29.0...amplify-category-interactions@2.1.4) (2019-12-26)
+
+
+### Bug Fixes
+
+* fixed for interactions custom resource for node version change ([#3073](https://github.com/aws-amplify/amplify-cli/issues/3073)) ([5eafe4c](https://github.com/aws-amplify/amplify-cli/commit/5eafe4c03d965579b0691878c9e14b89435c3320)), closes [#2999](https://github.com/aws-amplify/amplify-cli/issues/2999)
+
+
+
+
+
 ## [2.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.29.0...amplify-category-interactions@2.1.3) (2019-12-25)
 
 
