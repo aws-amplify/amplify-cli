@@ -69,7 +69,7 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
 
   if (filesToUpdate.length > 0) {
     let confirmed = context.input.options && context.input.options.yes;
-    confirmed = confirmed || await promptForConfirmation(context, filesToUpdate);
+    confirmed = confirmed || (await promptForConfirmation(context, filesToUpdate));
 
     if (confirmed) {
       filesToUpdate.forEach(filePath => {
@@ -78,31 +78,31 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
         fs.writeFileSync(filePath, fileString, 'utf8');
       });
       context.print.info('');
-      context.print.success('The nodejs runtime are updated successfully in the CloudFormation templates.');
+      context.print.success('NodeJS runtime version updated successfully to 10.x in all the CloudFormation templates.');
       context.print.warning('Make sure the template changes are pushed to the cloud by "amplify push"');
     }
   }
 }
 
 function checkFileContent(fileString: string): boolean {
-    let result = false;
+  let result = false;
 
-    for (let i = 0; i < prevLambdaRuntimeVersions.length; i++) {
-        if (fileString.includes(prevLambdaRuntimeVersions[i])) {
-            result = true;
-            break;
-        }
+  for (let i = 0; i < prevLambdaRuntimeVersions.length; i++) {
+    if (fileString.includes(prevLambdaRuntimeVersions[i])) {
+      result = true;
+      break;
     }
+  }
 
-    return result;
+  return result;
 }
 
 function updateFileContent(fileString: string): string {
-    let result = fileString;
-    prevLambdaRuntimeVersions.forEach((prevVersion) => {
-        result = result.replace(prevVersion, lambdaRuntimeVersion);
-    });
-    return result;
+  let result = fileString;
+  prevLambdaRuntimeVersions.forEach(prevVersion => {
+    result = result.replace(prevVersion, lambdaRuntimeVersion);
+  });
+  return result;
 }
 
 async function promptForConfirmation(context: Context, filesToUpdate: string[]): Promise<boolean> {
@@ -118,10 +118,16 @@ async function promptForConfirmation(context: Context, filesToUpdate: string[]):
   });
   context.print.info('');
 
+  context.print.warning(
+    `There might be a need to update your Lambda function source code due to the NodeJS runtime update. Please take a look athttps://aws-amplify.github.io/docs/cli/lambda-node-version-update for more information`
+  );
+
+  context.print.info('');
+
   const question = {
     type: 'confirm',
     name: 'confirmUpdateNodeVersion',
-    message: 'Confirm to update the nodejs runtime version.',
+    message: 'Confirm to update the NodeJS runtime version to 10.x',
     default: true,
   };
   const answer = await inquirer.prompt(question);
@@ -131,7 +137,7 @@ Lambda might retire it completely at any time by disabling invocation. \
 Deprecated runtimes aren't eligible for security updates or technical support. \
 Before retiring a runtime, Lambda sends additional notifications to affected customers.`;
     context.print.warning(warningMessage);
-    context.print.info('You will need to manually update the nodejs runtime in the template files and push the udpates to the cloud.');
+    context.print.info('You will need to manually update the NodeJS runtime in the template files and push the udpates to the cloud.');
   }
 
   return answer.confirmUpdateNodeVersion;
