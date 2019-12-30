@@ -119,7 +119,7 @@ async function promptForConfirmation(context: Context, filesToUpdate: string[]):
   context.print.info('');
 
   context.print.warning(
-    `There might be a need to update your Lambda function source code due to the NodeJS runtime update. Please take a look athttps://aws-amplify.github.io/docs/cli/lambda-node-version-update for more information`
+    `Please test the changes in a test environment before pushing these changes to production. There might be a need to update your Lambda function source code due to the NodeJS runtime update. Please take a look at https://aws-amplify.github.io/docs/cli/lambda-node-version-update for more information`
   );
 
   context.print.info('');
