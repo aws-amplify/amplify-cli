@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.30.0...amplify-category-function@2.11.0) (2019-12-31)
+
+
+### Bug Fixes
+
+* **amplify-cli:** updating path in trigger indexes for node10 ([c4b1082](https://github.com/aws-amplify/amplify-cli/commit/c4b10820232e614a2951d840a6307031df73aebd)), closes [#3083](https://github.com/aws-amplify/amplify-cli/issues/3083)
+
+
+### Features
+
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* arrow function support in hello world lambda template ([#2802](https://github.com/aws-amplify/amplify-cli/issues/2802)) ([29c2ca1](https://github.com/aws-amplify/amplify-cli/commit/29c2ca18a58ce56cb2c17b8498af366fe1bbd34f))
+
+
+
+
+
 # [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.30.0...amplify-category-function@2.10.0) (2019-12-28)
 
 
