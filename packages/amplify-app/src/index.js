@@ -12,6 +12,7 @@ const semver = require('semver');
 const stripAnsi = require('strip-ansi');
 const { engines } = require('../package.json');
 
+const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplifyCliPackageName = '@aws-amplify/cli';
 
 function run() {
@@ -55,7 +56,7 @@ async function checkNodeVersion() {
 // Install CLI using npm
 async function installAmplifyCLI() {
   return new Promise((resolve, reject) => {
-    const amplifyCLIInstall = spawn('npm', ['install', '-g', `${amplifyCliPackageName}`], {
+    const amplifyCLIInstall = spawn(npm, ['install', '-g', `${amplifyCliPackageName}`], {
       cwd: process.cwd(),
       env: process.env,
       stdio: 'inherit',
@@ -332,7 +333,7 @@ async function createJSHelperFiles() {
   console.log(`${emoji.get('white_check_mark')} Successfully added helper npm run scripts to your package.json.`);
 
   return new Promise((resolve, reject) => {
-    const npmInstall = spawn('npm', ['install', '--only=dev'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+    const npmInstall = spawn(npm, ['install', '--only=dev'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
     npmInstall.on('exit', code => {
       if (code === 0) {
