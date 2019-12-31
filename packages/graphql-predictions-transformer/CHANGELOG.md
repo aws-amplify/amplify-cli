@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.1.6 (2019-12-31)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
 ## 2.1.5 (2019-12-28)
 
 **Note:** Version bump only for package graphql-predictions-transformer
