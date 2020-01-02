@@ -1,5 +1,12 @@
 import * as fs from 'fs-extra';
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../init';
+import {
+  initJSProjectWithProfile,
+  initAndroidProjectWithProfile,
+  initIosProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
+  amplifyPush,
+} from '../init';
 import {
   addAuthWithDefault,
   addAuthWithDefaultSocial,
@@ -7,10 +14,20 @@ import {
   addAuthWithRecaptchaTrigger,
   addAuthWithCustomTrigger,
   updateAuthWithoutCustomTrigger,
+  updateAuthRemoveRecaptchaTrigger,
   addAuthViaAPIWithTrigger,
   addAuthWithMaxOptions,
 } from '../categories/auth';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getUserPoolClients, getLambdaFunction } from '../utils';
+import {
+  createNewProjectDir,
+  deleteProjectDir,
+  getProjectMeta,
+  getAwsAndroidConfig,
+  getAwsIOSConfig,
+  getUserPool,
+  getUserPoolClients,
+  getLambdaFunction,
+} from '../utils';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -167,5 +184,33 @@ describe('amplify updating auth...', () => {
     expect(updatedDirContents.includes('custom.js')).toBeFalsy();
     expect(updatedDirContents.includes('email-filter-blacklist.js')).toBeTruthy();
     expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist');
+  });
+
+  it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
+    await initAndroidProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    let meta = getAwsAndroidConfig(projRoot);
+    expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
+    expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
+    await updateAuthRemoveRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    meta = getAwsAndroidConfig(projRoot);
+    expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
+    expect(meta.Auth.Default.authenticationFlowType).toEqual('USER_SRP_AUTH');
+  });
+
+  it('...should init an ios project and add customAuth flag, and remove the flag when custom auth triggers are removed upon update', async () => {
+    await initIosProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    let meta = getAwsIOSConfig(projRoot);
+    expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
+    expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
+    await updateAuthRemoveRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    meta = getAwsIOSConfig(projRoot);
+    expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
+    expect(meta.Auth.Default.authenticationFlowType).toEqual('USER_SRP_AUTH');
   });
 });
