@@ -5,6 +5,7 @@ import { ITransformer } from './ITransformer';
 import { GraphQLTransform } from './GraphQLTransform';
 import { collectDirectiveNames, collectDirectivesByTypeNames } from './collectDirectives';
 import { stripDirectives } from './stripDirectives';
+import { DeploymentResources } from './DeploymentResources';
 import {
   buildProject as buildAPIProject,
   uploadDeployment as uploadAPIProject,
@@ -47,4 +48,5 @@ export {
   TRANSFORM_BASE_VERSION,
   TRANSFORM_CURRENT_VERSION,
   SyncConfig,
+  DeploymentResources,
 };

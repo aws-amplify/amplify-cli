@@ -28,6 +28,14 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
 logger.info("Streaming to ElasticSearch")
 
+# custom encoder changes
+# - sets to lists
+class DDBTypesEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
+
 # Subclass of boto's TypeDeserializer for DynamoDB to adjust for DynamoDB Stream format.
 class StreamTypeDeserializer(TypeDeserializer):
     def _deserialize_n(self, value):
@@ -53,7 +61,7 @@ class ES_Exception(Exception):
 def post_data_to_es(payload, region, creds, host, path, method='POST', proto='https://'):
     '''Post data to ES endpoint with SigV4 signed http headers'''
     req = AWSRequest(method=method, url=proto + host +
-                     quote(path), data=payload, headers={'Host': host, 'Content-Type': 'application/json'})
+                    quote(path), data=payload, headers={'Host': host, 'Content-Type': 'application/json'})
     SigV4Auth(creds, 'es', region).add_auth(req)
     http_session = BotocoreHTTPSession()
     res = http_session.send(req.prepare())
@@ -191,7 +199,7 @@ def _lambda_handler(event, context):
             ddb['Keys'], ddb_deserializer)
 
         # Generate JSON payload
-        doc_json = json.dumps(doc_fields)
+        doc_json = json.dumps(doc_fields, cls=DDBTypesEncoder)
 
         # If DynamoDB INSERT or MODIFY, send 'index' to ES
         if is_ddb_insert_or_update:
