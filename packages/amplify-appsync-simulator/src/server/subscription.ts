@@ -1,9 +1,9 @@
 import { subscribe, DocumentNode, ExecutionResult } from 'graphql';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import { inspect } from 'util';
 import { createServer as createHTTPServer } from 'http';
-import * as e2p from 'event-to-promise';
-import * as portfinder from 'portfinder';
+import e2p from 'event-to-promise';
+import portfinder from 'portfinder';
 
 import { Server as CoreHTTPServer } from 'net';
 import { AddressInfo } from 'dgram';

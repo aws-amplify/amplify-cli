@@ -1,9 +1,9 @@
-import * as Connection from 'mqtt-connection';
-import * as ws from 'websocket-stream';
-import * as steed from 'steed';
-import * as pino from 'pino';
-import * as extend from 'extend';
-import * as nanoid from 'nanoid';
+import Connection from 'mqtt-connection';
+import ws from 'websocket-stream';
+import steed from 'steed';
+import pino from 'pino';
+import extend from 'extend';
+import nanoid from 'nanoid';
 import { TrieListener } from './trie-listener';
 import { Client } from './client';
 import { EventEmitter } from 'events';

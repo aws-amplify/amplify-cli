@@ -1,4 +1,5 @@
 import { Source, GraphQLSchema } from 'graphql';
+import slash from 'slash';
 import { generateResolvers } from './schema';
 import { VelocityTemplate } from './velocity';
 import { getDataLoader, AmplifyAppSyncSimulatorDataLoader } from './data-loader';
@@ -65,6 +66,8 @@ export class AmplifyAppSyncSimulator {
     try {
       this._appSyncConfig = config.appSync;
       this.mappingTemplates = config.mappingTemplates.reduce((map, template) => {
+        // Windows path normalization by replacing '\' with '/' as CFN referenes path with '/'
+        template.path = slash(template.path);
         map.set(template.path, new VelocityTemplate(template, this));
         return map;
       }, new Map());
