@@ -112,8 +112,6 @@ beforeAll(async () => {
     // change create/update to create string sets
     const out = addStringSets(transformer.transform(validSchema));
     // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4))
-    // create stack with additional params
-    // const additionalParams = generateParams()
     console.log('Creating Stack ' + STACK_NAME);
     const finishedStack = await deploy(
       customS3Client,
@@ -704,15 +702,6 @@ test('query users knowing userItems is a string set in ddb but should be a list 
   const items = searchResponse.data.searchUsers.items;
   expect(items.length).toEqual(4);
 });
-
-// function generateParams() {
-//   const params = {
-//     [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: 'ElasticsearchAccessIAMRoleTest',
-//     [ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName]: 'ElasticsearchStreamingIAMRoleTest',
-//   };
-
-//   return params;
-// }
 
 function getCreatePostsQuery(
   author: string,
