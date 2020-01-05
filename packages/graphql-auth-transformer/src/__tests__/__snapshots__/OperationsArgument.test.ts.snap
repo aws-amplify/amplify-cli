@@ -12,9 +12,10 @@ exports[`Test "create", "update", "delete" auth operations 3`] = `
 ## [End] Determine request authentication mode **
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = {} )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
@@ -84,9 +85,10 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
 ## [End] Determine request authentication mode **
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
@@ -132,7 +134,7 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
     #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
       #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
     #end
-    #if( $ownerAuthExpressions )
+    #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
       #foreach( $authExpr in $ownerAuthExpressions )
         #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
         #if( $foreach.hasNext )
@@ -140,18 +142,46 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
         #end
       #end
     #end
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+    #end
     #if( $ownerAuthExpressionNames )
       $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
     #end
     #if( $ownerAuthExpressionValues )
       $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
     #end
+    ## Add compound auth conditions if they exist **
+    #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+      #foreach( $entry in $compoundAuthExpressions.entrySet() )
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"(\\" )
+        #else
+          #set( $innerCompoundAuth = \\"\\" )
+        #end
+        #foreach( $authExpr in $entry.value )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+          #end
+        #end
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+        #end
+      #end
+    #end
     ## Set final expression if it has changed. **
     #if( $totalAuthExpression != \\"\\" )
       #if( $util.isNullOrEmpty($authCondition.expression) )
-        #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+        #set( $authCondition.expression = \\"$totalAuthExpression\\" )
       #else
-        #set( $authCondition.expression = \\"$authCondition.expression AND ($totalAuthExpression)\\" )
+        #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
       #end
     #end
     ## [End] Collect Auth Condition **
@@ -308,9 +338,10 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 ## [End] Determine request authentication mode **
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
@@ -356,7 +387,7 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
     #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
       #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
     #end
-    #if( $ownerAuthExpressions )
+    #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
       #foreach( $authExpr in $ownerAuthExpressions )
         #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
         #if( $foreach.hasNext )
@@ -364,18 +395,46 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
         #end
       #end
     #end
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+    #end
     #if( $ownerAuthExpressionNames )
       $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
     #end
     #if( $ownerAuthExpressionValues )
       $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
     #end
+    ## Add compound auth conditions if they exist **
+    #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+      #foreach( $entry in $compoundAuthExpressions.entrySet() )
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"(\\" )
+        #else
+          #set( $innerCompoundAuth = \\"\\" )
+        #end
+        #foreach( $authExpr in $entry.value )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+          #end
+        #end
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+        #end
+      #end
+    #end
     ## Set final expression if it has changed. **
     #if( $totalAuthExpression != \\"\\" )
       #if( $util.isNullOrEmpty($authCondition.expression) )
-        #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+        #set( $authCondition.expression = \\"$totalAuthExpression\\" )
       #else
-        #set( $authCondition.expression = \\"$authCondition.expression AND ($totalAuthExpression)\\" )
+        #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
       #end
     #end
     ## [End] Collect Auth Condition **
@@ -472,7 +531,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 1
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
@@ -487,7 +546,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 1
 
   ## [Start] Owner Authorization Checks **
   #set( $isOwnerAuthorized = false )
-  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\"} **
   #set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )
   #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"),
                         $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
@@ -527,7 +586,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 2
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
@@ -542,7 +601,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 2
 
   ## [Start] Owner Authorization Checks **
   #set( $isOwnerAuthorized = false )
-  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\"} **
   #set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )
   #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"),
                         $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
@@ -582,7 +641,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 3
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\"] )
@@ -597,7 +656,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 3
 
   ## [Start] Owner Authorization Checks **
   #set( $isOwnerAuthorized = false )
-  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\"} **
   #set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )
   #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"),
                         $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
@@ -639,9 +698,10 @@ exports[`Test that operation overwrites queries in auth operations 3`] = `
 ## [End] Determine request authentication mode **
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = {} )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
@@ -711,9 +771,10 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
 ## [End] Determine request authentication mode **
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
@@ -759,7 +820,7 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
     #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
       #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
     #end
-    #if( $ownerAuthExpressions )
+    #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
       #foreach( $authExpr in $ownerAuthExpressions )
         #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
         #if( $foreach.hasNext )
@@ -767,18 +828,46 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
         #end
       #end
     #end
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+    #end
     #if( $ownerAuthExpressionNames )
       $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
     #end
     #if( $ownerAuthExpressionValues )
       $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
     #end
+    ## Add compound auth conditions if they exist **
+    #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+      #foreach( $entry in $compoundAuthExpressions.entrySet() )
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"(\\" )
+        #else
+          #set( $innerCompoundAuth = \\"\\" )
+        #end
+        #foreach( $authExpr in $entry.value )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+          #end
+        #end
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+        #end
+      #end
+    #end
     ## Set final expression if it has changed. **
     #if( $totalAuthExpression != \\"\\" )
       #if( $util.isNullOrEmpty($authCondition.expression) )
-        #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+        #set( $authCondition.expression = \\"$totalAuthExpression\\" )
       #else
-        #set( $authCondition.expression = \\"$authCondition.expression AND ($totalAuthExpression)\\" )
+        #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
       #end
     #end
     ## [End] Collect Auth Condition **
@@ -935,9 +1024,10 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 ## [End] Determine request authentication mode **
 ## [Start] Check authMode and execute owner/group checks **
 #if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Admin\\",\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
@@ -983,7 +1073,7 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
     #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
       #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
     #end
-    #if( $ownerAuthExpressions )
+    #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
       #foreach( $authExpr in $ownerAuthExpressions )
         #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
         #if( $foreach.hasNext )
@@ -991,18 +1081,46 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
         #end
       #end
     #end
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+    #end
     #if( $ownerAuthExpressionNames )
       $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
     #end
     #if( $ownerAuthExpressionValues )
       $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
     #end
+    ## Add compound auth conditions if they exist **
+    #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+      #foreach( $entry in $compoundAuthExpressions.entrySet() )
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"(\\" )
+        #else
+          #set( $innerCompoundAuth = \\"\\" )
+        #end
+        #foreach( $authExpr in $entry.value )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+          #end
+        #end
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+        #end
+      #end
+    #end
     ## Set final expression if it has changed. **
     #if( $totalAuthExpression != \\"\\" )
       #if( $util.isNullOrEmpty($authCondition.expression) )
-        #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+        #set( $authCondition.expression = \\"$totalAuthExpression\\" )
       #else
-        #set( $authCondition.expression = \\"$authCondition.expression AND ($totalAuthExpression)\\" )
+        #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
       #end
     #end
     ## [End] Collect Auth Condition **
@@ -1093,7 +1211,7 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 #if( $authMode == \\"userPools\\" )
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
-            $isStaticGroupAuthorized, false))
+        $isStaticGroupAuthorized, false))
   ## Authorization rule: { allow: groups, groups: [\\"Moderator\\"], groupClaim: \\"cognito:groups\\" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
   #set( $allowedGroups = [\\"Moderator\\"] )
@@ -1108,7 +1226,7 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 
   ## [Start] Owner Authorization Checks **
   #set( $isOwnerAuthorized = false )
-  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\"} **
   #set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )
   #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"),
                         $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
@@ -1151,7 +1269,7 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 
   ## [Start] Owner Authorization Checks **
   #set( $isOwnerAuthorized = false )
-  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\"} **
   #set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )
   #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"),
                         $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )

@@ -192,6 +192,25 @@ describe(`ModelAuthTests`, async () => {
           id: ID!
           name: String!
       }
+      type CompoundProtected 
+          @model 
+          @auth(rules: [
+              {allow: owner, operations: [create, read, delete], and: "adminOwner"},
+              {allow: groups, groups: ["Admin"], operations: [create, read, delete], and: "adminOwner"},
+              {allow: owner, operations: [update], and: "staticOwnerUpdate"},
+              {allow: groups, groups: ["Devs"], operations: [update], and: "staticOwnerUpdate"},
+              {allow: groups, groupsField: "dynamicGroup", operations: [create, read, update], and: "dynamicGroupOwnerUpdate"},
+              {allow: owner, operations: [create, read, update], and: "dynamicGroupOwnerUpdate"},
+              {allow: owner, ownerField: "owner2", operations: [read], and: "doubleOwner"}
+              {allow: owner, operations: [read], and: "doubleOwner"}
+          ])
+      {
+        id: ID!
+        owner: String
+        owner2: String
+        other: String
+        dynamicGroup: String
+      }
       `;
     const transformer = new GraphQLTransform({
       transformers: [
@@ -234,6 +253,7 @@ describe(`ModelAuthTests`, async () => {
       const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
       const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
       GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs);
+      console.log('stack output', finishedStack);
       console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
       const apiKey = getApiKey(finishedStack.Outputs);
@@ -306,6 +326,461 @@ describe(`ModelAuthTests`, async () => {
     } catch (e) {
       console.error(`Failed to empty S3 bucket: ${e}`);
     }
+  });
+
+  test('Test createCompoundProtected as admin and owner', async () => {
+    const response = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createCompoundProtected(input: {owner: "${USERNAME1}"}) {
+            id
+          }
+      }`,
+      {}
+    ).catch(err => console.log(err));
+    console.log(response);
+    expect(response.data.createCompoundProtected.id).toBeDefined();
+  });
+
+  test('Test createCompoundProtected fails not authorised when not owner', async () => {
+    const response = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createCompoundProtected(input: {owner: "${USERNAME2}"}) {
+            id
+          }
+      }`,
+      {}
+    ).catch(err => console.log(err));
+
+    expect(response.data.createCompoundProtected).toEqual(null);
+    expect(response.errors.length).toEqual(1);
+    expect((response.errors[0] as any).errorType).toEqual('Unauthorized');
+  });
+
+  test('Test createCompoundProtected not authorised when not in static group', async () => {
+    const response = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          createCompoundProtected(input: {owner: "${USERNAME2}"}) {
+            id
+          }
+      }`,
+      {}
+    );
+
+    expect(response.data.createCompoundProtected).toEqual(null);
+    expect(response.errors.length).toEqual(1);
+    expect((response.errors[0] as any).errorType).toEqual('Unauthorized');
+  });
+
+  test('Test getCompoundProtected when authorised as static group and owner', async () => {
+    const response = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createCompoundProtected(input: {owner: "${USERNAME1}"}) {
+            id
+            owner
+          }
+      }`,
+      {}
+    );
+
+    console.log(response);
+    expect(response.data.createCompoundProtected.id).toBeDefined();
+    expect(response.data.createCompoundProtected.owner).toEqual(USERNAME1);
+
+    const getResponse = await GRAPHQL_CLIENT_1.query(
+      `query {
+        getCompoundProtected(id: "${response.data.createCompoundProtected.id}") {
+              id
+              owner
+          }
+      }`,
+      {}
+    );
+
+    console.log(getResponse);
+
+    expect(getResponse.data.getCompoundProtected.id).toBeDefined();
+    expect(getResponse.data.getCompoundProtected.owner).toEqual(USERNAME1);
+  });
+
+  test('Test getCompoundProtected when authorised as dynamic group and owner', async () => {
+    const response = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          createCompoundProtected(input: {dynamicGroup: "${DEVS_GROUP_NAME}"}) {
+            id
+            owner
+            dynamicGroup
+          }
+      }`,
+      {}
+    );
+
+    console.log(response);
+    expect(response.data.createCompoundProtected.id).toBeDefined();
+    expect(response.data.createCompoundProtected.owner).toEqual(USERNAME2);
+    expect(response.data.createCompoundProtected.dynamicGroup).toEqual(DEVS_GROUP_NAME);
+
+    const getResponse = await GRAPHQL_CLIENT_2.query(
+      `query {
+          getCompoundProtected(id: "${response.data.createCompoundProtected.id}") {
+              id
+              owner
+          }
+      }`,
+      {}
+    );
+
+    expect(getResponse.data.getCompoundProtected.id).toBeDefined();
+    expect(getResponse.data.getCompoundProtected.owner).toEqual(USERNAME2);
+  });
+
+  test('Test getCompoundProtected when authorised as owner on two fields', async () => {
+    const response = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          createCompoundProtected(input: {dynamicGroup: "${DEVS_GROUP_NAME}", owner2: "${USERNAME2}"}) {
+            id
+            owner
+            owner2
+            dynamicGroup
+          }
+      }`,
+      {}
+    );
+
+    console.log(response);
+    expect(response.data.createCompoundProtected.id).toBeDefined();
+    expect(response.data.createCompoundProtected.owner).toEqual(USERNAME2);
+    expect(response.data.createCompoundProtected.owner2).toEqual(USERNAME2);
+    expect(response.data.createCompoundProtected.dynamicGroup).toEqual(DEVS_GROUP_NAME);
+
+    await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          updateCompoundProtected(input: {id: "${response.data.createCompoundProtected.id}", dynamicGroup: "Nobody"}) {
+            id
+          }
+      }`,
+      {}
+    );
+
+    const getResponse = await GRAPHQL_CLIENT_2.query(
+      `query {
+          getCompoundProtected(id: "${response.data.createCompoundProtected.id}") {
+              id
+              owner
+              owner2
+              dynamicGroup
+          }
+      }`,
+      {}
+    );
+
+    expect(getResponse.data.getCompoundProtected.id).toBeDefined();
+    expect(getResponse.data.getCompoundProtected.owner).toEqual(USERNAME2);
+    expect(getResponse.data.getCompoundProtected.owner2).toEqual(USERNAME2);
+    expect(getResponse.data.getCompoundProtected.dynamicGroup).toEqual('Nobody');
+  });
+
+  test('Test listCompoundProtected when authorised as admin group and owner', async () => {
+    const response = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createCompoundProtected(input: {other: "one"}) {
+            id
+          }
+      }`,
+      {}
+    );
+
+    console.log(response);
+
+    const response2 = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createCompoundProtected(input: {other: "two"}) {
+            id
+          }
+      }`,
+      {}
+    );
+
+    console.log(response2);
+
+    const listResponse = await GRAPHQL_CLIENT_1.query(
+      `query {
+        listCompoundProtecteds(
+            limit: 100,
+            filter: {or:[{id:{eq:"${response.data.createCompoundProtected.id}"}},{id:{eq: "${response2.data.createCompoundProtected.id}"}}]}) {
+              items {
+                id
+                other
+              }
+          }
+      }`,
+      {}
+    );
+    console.log(listResponse);
+    expect(listResponse.data.listCompoundProtecteds.items.length).toEqual(2);
+  });
+
+  test('Test listCompoundProtected when authorised to view a single item', async () => {
+    const response = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createCompoundProtected(input: {other: "one"}) {
+            id
+          }
+      }`,
+      {}
+    );
+
+    const response2 = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          createCompoundProtected(input: {other: "two", dynamicGroup: "${DEVS_GROUP_NAME}"}) {
+            id
+          }
+      }`,
+      {}
+    );
+
+    const listResponse = await GRAPHQL_CLIENT_2.query(
+      `query {
+          listCompoundProtecteds(
+            limit: 100,
+            filter: {or:[{id:{eq:"${response.data.createCompoundProtected.id}"}},{id:{eq: "${response2.data.createCompoundProtected.id}"}}]}) {
+              items {
+                id
+                other
+              }
+          }
+      }`,
+      {}
+    );
+
+    expect(listResponse.data.listCompoundProtecteds.items.length).toEqual(1);
+    expect(listResponse.data.listCompoundProtecteds.items[0].other).toEqual('two');
+  });
+
+  test('Test updateCompoundProtected when authorised as static group and owner', async () => {
+    const createResponse = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          createCompoundProtected(input: {other: "one", dynamicGroup: "${DEVS_GROUP_NAME}"}) {
+            id
+          }
+      }`,
+      {}
+    );
+    const id = createResponse.data.createCompoundProtected.id;
+
+    await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          updateCompoundProtected(input: {id: "${id}", dynamicGroup: "Nobody"}) {
+              id
+              other
+          }
+      }`,
+      {}
+    );
+    await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          updateCompoundProtected(input: {id: "${id}", other: "two"}) {
+              id
+              other
+          }
+      }`,
+      {}
+    );
+    await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          updateCompoundProtected(input: {id: "${id}", dynamicGroup: "${DEVS_GROUP_NAME}"}) {
+              id
+              other
+          }
+      }`,
+      {}
+    );
+    const getResponse = await GRAPHQL_CLIENT_2.query(
+      `query {
+          getCompoundProtected(id: "${id}") {
+              id
+              other
+          }
+      }`,
+      {}
+    );
+    expect(getResponse.data.getCompoundProtected.id).toEqual(id);
+    expect(getResponse.data.getCompoundProtected.other).toEqual('two');
+  });
+
+  test('Test updateCompoundProtected when authorised as dynamic group and owner', async () => {
+    const response = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createCompoundProtected(input: {dynamicGroup: "${WATCHER_GROUP_NAME}", other: "one"}) {
+            id
+            dynamicGroup
+            owner
+            other
+          }
+      }`,
+      {}
+    );
+
+    console.log(response);
+    expect(response.data.createCompoundProtected.id).toBeDefined();
+    expect(response.data.createCompoundProtected.owner).toEqual(USERNAME1);
+    expect(response.data.createCompoundProtected.dynamicGroup).toEqual(WATCHER_GROUP_NAME);
+    expect(response.data.createCompoundProtected.other).toEqual('one');
+
+    const updateResponse = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          updateCompoundProtected(input: {id: "${response.data.createCompoundProtected.id}", other: "two"}) {
+              id
+              other
+          }
+      }`,
+      {}
+    );
+
+    console.log(JSON.stringify(updateResponse));
+    expect(updateResponse.data.updateCompoundProtected.id).toBeDefined();
+    expect(updateResponse.data.updateCompoundProtected.other).toEqual('two');
+  });
+
+  test('Test updateCompoundProtected not authorised as dynamic group', async () => {
+    const response = await GRAPHQL_CLIENT_1_ACCESS.query(
+      `mutation {
+          createCompoundProtected(input: {other: "one", dynamicGroup: "${DEVS_GROUP_NAME}"}) {
+            id
+            owner
+            other
+          }
+      }`,
+      {}
+    );
+
+    console.log(response);
+    expect(response.data.createCompoundProtected.id).toBeDefined();
+    expect(response.data.createCompoundProtected.owner).toEqual(USERNAME1);
+    expect(response.data.createCompoundProtected.other).toEqual('one');
+
+    const updateResponse = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          updateCompoundProtected(input: {id: "${response.data.createCompoundProtected.id}", other: "two"}) {
+              id
+              other
+          }
+      }`,
+      {}
+    );
+
+    console.log(updateResponse);
+
+    expect(updateResponse.data.updateCompoundProtected).toEqual(null);
+    expect(updateResponse.errors.length).toEqual(1);
+    expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
+  });
+
+  test('Test updateCompoundProtected not authorised as static group', async () => {
+    const response = await GRAPHQL_CLIENT_1_ACCESS.query(
+      `mutation {
+          createCompoundProtected(input: {other: "one"}) {
+            id
+            owner
+            other
+          }
+      }`,
+      {}
+    );
+
+    expect(response.data.createCompoundProtected.id).toBeDefined();
+    expect(response.data.createCompoundProtected.owner).toEqual(USERNAME1);
+    expect(response.data.createCompoundProtected.other).toEqual('one');
+
+    const updateResponse = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          updateCompoundProtected(input: {id: "${response.data.createCompoundProtected.id}", other: "two"}) {
+              id
+              other
+          }
+      }`,
+      {}
+    );
+    console.log(JSON.stringify(updateResponse));
+    expect(updateResponse.data.updateCompoundProtected).toEqual(null);
+    expect(updateResponse.errors.length).toEqual(1);
+    expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
+  });
+
+  // END COMPLETED
+  // TODO BELOW
+  test('Test deleteCompoundProtected when authorised as static group and owner', async () => {
+    const createResponse = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createCompoundProtected(input: {other: "one"}) {
+            id
+          }
+      }`,
+      {}
+    );
+
+    const deleteResponse = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          deleteCompoundProtected(input: {id: "${createResponse.data.createCompoundProtected.id}"}) {
+              id
+          }
+      }`,
+      {}
+    );
+    console.log(JSON.stringify(deleteResponse));
+    expect(deleteResponse.data.deleteCompoundProtected.id).toEqual(createResponse.data.createCompoundProtected.id);
+    expect(deleteResponse.errors).not.toBeDefined();
+  });
+
+  test('Test deleteCompoundProtected when not authorised as static group', async () => {
+    const response = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          createCompoundProtected(input: {dynamicGroup: "${DEVS_GROUP_NAME}", other: "one"}) {
+            id
+            dynamicGroup
+            other
+          }
+      }`,
+      {}
+    );
+    const deleteResponse = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          deleteCompoundProtected(input: {id: "${response.data.createCompoundProtected.id}"}) {
+              id
+          }
+      }`,
+      {}
+    );
+    console.log(JSON.stringify(deleteResponse));
+    expect(deleteResponse.data.deleteCompoundProtected).toEqual(null);
+    expect(deleteResponse.errors.length).toEqual(1);
+    expect((deleteResponse.errors[0] as any).errorType).toEqual('Unauthorized');
+  });
+
+  test('Test deleteCompoundProtected not authorised as owner', async () => {
+    const response = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          createCompoundProtected(input: {dynamicGroup: "${DEVS_GROUP_NAME}"}) {
+            id
+            owner
+            other
+          }
+      }`,
+      {}
+    );
+
+    const deleteResponse = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          deleteCompoundProtected(input: {id: "${response.data.createCompoundProtected.id}"}) {
+              id
+          }
+      }`,
+      {}
+    );
+    console.log(JSON.stringify(deleteResponse));
+
+    expect(deleteResponse.data.deleteCompoundProtected).toEqual(null);
+    expect(deleteResponse.errors.length).toEqual(1);
+    expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
   /**

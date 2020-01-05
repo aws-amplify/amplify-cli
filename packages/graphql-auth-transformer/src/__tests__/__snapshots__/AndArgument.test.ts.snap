@@ -1,0 +1,1980 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test "and" parameter forces all rules to pass for read 1`] = `
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = {} )
+  ## [Start] Static Group Authorization Checks **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+        $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Dev\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
+    #end
+  #end
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #break
+    #end
+  #end
+  ## [End] Static Group Authorization Checks **
+
+
+  ## [Start] Dynamic Group Authorization Checks **
+  #set( $isDynamicGroupAuthorized = $util.defaultIfNull($isDynamicGroupAuthorized, false) )
+  ## Authorization rule: { allow: groups, groupsField: \\"groupField\\", groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $allowedGroups = $util.defaultIfNull($ctx.result.groupField, []) )
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #foreach( $userGroup in $userGroups )
+    #if( $util.isList($allowedGroups) )
+      #if( $allowedGroups.contains($userGroup) )
+        #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #end
+    #end
+    #if( $util.isString($allowedGroups) )
+      #if( $allowedGroups == $userGroup )
+        #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #end
+    #end
+  #end
+  ## [End] Dynamic Group Authorization Checks **
+
+
+  ## [Start] Owner Authorization Checks **
+  #set( $isOwnerAuthorized = $util.defaultIfNull($isOwnerAuthorized, false) )
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", and: \\"testing\\" } **
+  #set( $allowedOwners0 = $ctx.result.owner )
+  #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+  #if( $util.isList($allowedOwners0) )
+    #foreach( $allowedOwner in $allowedOwners0 )
+      #if( $allowedOwner == $identityValue )
+        #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #end
+    #end
+  #end
+  #if( $util.isString($allowedOwners0) )
+    #if( $allowedOwners0 == $identityValue )
+      #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+    #end
+  #end
+  ## [End] Owner Authorization Checks **
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true || $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) == 3) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+$util.toJson($ctx.result)"
+`;
+
+exports[`Test "and" parameter forces all rules to pass for read 2`] = `
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = {} )
+  ## [Start] Static Group Authorization Checks **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+        $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Dev\\"], groupClaim: \\"cognito:groups\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Dev\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
+    #end
+  #end
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #break
+    #end
+  #end
+  ## [End] Static Group Authorization Checks **
+
+
+  ## [Start] If not static group authorized, filter items **
+  #if( true )
+    #set( $items = [] )
+    #foreach( $item in $ctx.result.items )
+      #set( $staticCompoundAuthRuleCounts = $util.parseJson($util.toJson($compoundAuthRuleCounts)) )
+      ## [Start] Dynamic Group Authorization Checks **
+      #set( $isLocalDynamicGroupAuthorized = false )
+      ## Authorization rule: { allow: groups, groupsField: \\"groupField\\", groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+      #set( $allowedGroups = $util.defaultIfNull($item.groupField, []) )
+      #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+      #foreach( $userGroup in $userGroups )
+        #if( $util.isList($allowedGroups) )
+          #if( $allowedGroups.contains($userGroup) )
+            #set( $staticCompoundAuthRuleCounts.testing = $util.defaultIfNull($staticCompoundAuthRuleCounts.testing, 0) + 1 )
+          #end
+        #end
+        #if( $util.isString($allowedGroups) )
+          #if( $allowedGroups == $userGroup )
+            #set( $staticCompoundAuthRuleCounts.testing = $util.defaultIfNull($staticCompoundAuthRuleCounts.testing, 0) + 1 )
+          #end
+        #end
+      #end
+      ## [End] Dynamic Group Authorization Checks **
+
+
+      ## [Start] Owner Authorization Checks **
+      #set( $isLocalOwnerAuthorized = false )
+      ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", and: \\"testing\\" } **
+      #set( $allowedOwners0 = $item.owner )
+      #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+      #if( $util.isList($allowedOwners0) )
+        #foreach( $allowedOwner in $allowedOwners0 )
+          #if( $allowedOwner == $identityValue )
+            #set( $staticCompoundAuthRuleCounts.testing = $util.defaultIfNull($staticCompoundAuthRuleCounts.testing, 0) + 1 )
+          #end
+        #end
+      #end
+      #if( $util.isString($allowedOwners0) )
+        #if( $allowedOwners0 == $identityValue )
+          #set( $staticCompoundAuthRuleCounts.testing = $util.defaultIfNull($staticCompoundAuthRuleCounts.testing, 0) + 1 )
+        #end
+      #end
+      ## [End] Owner Authorization Checks **
+
+
+      #if( $isStaticGroupAuthorized == true || $isLocalDynamicGroupAuthorized == true || $isLocalOwnerAuthorized == true || $util.defaultIfNull($staticCompoundAuthRuleCounts.testing, 0) == 3 )
+        $util.qr($items.add($item))
+      #end
+    #end
+    #set( $ctx.result.items = $items )
+  #end
+  ## [End] If not static group authorized, filter items **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+$util.toJson($ctx.result)"
+`;
+
+exports[`Test "create", "update", "delete" auth operations with "and" parameter forces all rules to pass 1`] = `
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = {} )
+  ## [Start] Static Group Authorization Checks **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+        $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #break
+    #end
+  #end
+  ## [End] Static Group Authorization Checks **
+
+
+  ## [Start] Dynamic Group Authorization Checks **
+  #set( $isDynamicGroupAuthorized = $util.defaultIfNull($isDynamicGroupAuthorized, false) )
+  ## Authorization rule: { allow: groups, groupsField: \\"groupField\\", groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $allowedGroups = $util.defaultIfNull($ctx.result.groupField, []) )
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #foreach( $userGroup in $userGroups )
+    #if( $util.isList($allowedGroups) )
+      #if( $allowedGroups.contains($userGroup) )
+        #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #end
+    #end
+    #if( $util.isString($allowedGroups) )
+      #if( $allowedGroups == $userGroup )
+        #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #end
+    #end
+  #end
+  ## [End] Dynamic Group Authorization Checks **
+
+
+  ## No Owner Authorization Rules **
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true || $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) == 2) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+$util.toJson($ctx.result)"
+`;
+
+exports[`Test "create", "update", "delete" auth operations with "and" parameter forces all rules to pass 2`] = `
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = {} )
+  ## [Start] Static Group Authorization Checks **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+        $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #break
+    #end
+  #end
+  ## [End] Static Group Authorization Checks **
+
+
+  ## [Start] If not static group authorized, filter items **
+  #if( true )
+    #set( $items = [] )
+    #foreach( $item in $ctx.result.items )
+      #set( $staticCompoundAuthRuleCounts = $util.parseJson($util.toJson($compoundAuthRuleCounts)) )
+      ## [Start] Dynamic Group Authorization Checks **
+      #set( $isLocalDynamicGroupAuthorized = false )
+      ## Authorization rule: { allow: groups, groupsField: \\"groupField\\", groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+      #set( $allowedGroups = $util.defaultIfNull($item.groupField, []) )
+      #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+      #foreach( $userGroup in $userGroups )
+        #if( $util.isList($allowedGroups) )
+          #if( $allowedGroups.contains($userGroup) )
+            #set( $staticCompoundAuthRuleCounts.testing = $util.defaultIfNull($staticCompoundAuthRuleCounts.testing, 0) + 1 )
+          #end
+        #end
+        #if( $util.isString($allowedGroups) )
+          #if( $allowedGroups == $userGroup )
+            #set( $staticCompoundAuthRuleCounts.testing = $util.defaultIfNull($staticCompoundAuthRuleCounts.testing, 0) + 1 )
+          #end
+        #end
+      #end
+      ## [End] Dynamic Group Authorization Checks **
+
+
+      ## No Owner Authorization Rules **
+
+
+      #if( $isStaticGroupAuthorized == true || $isLocalDynamicGroupAuthorized == true || $isLocalOwnerAuthorized == true || $util.defaultIfNull($staticCompoundAuthRuleCounts.testing, 0) == 2 )
+        $util.qr($items.add($item))
+      #end
+    #end
+    #set( $ctx.result.items = $items )
+  #end
+  ## [End] If not static group authorized, filter items **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+$util.toJson($ctx.result)"
+`;
+
+exports[`Test "create", "update", "delete" auth operations with "and" parameter forces all rules to pass 3`] = `
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = {} )
+  ## [Start] Static Group Authorization Checks **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+        $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #break
+    #end
+  #end
+  ## Authorization rule: { allow: groups, groups: [\\"Dev\\"], groupClaim: \\"cognito:groups\\", and: \\"testing2\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Dev\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing2 = $util.defaultIfNull($compoundAuthRuleCounts.testing2, 0) + 1 )
+      #break
+    #end
+  #end
+  ## [End] Static Group Authorization Checks **
+
+
+  ## [Start] Dynamic Group Authorization Checks **
+  ## Authorization rule: { allow: groups, groupsField: \\"groupField\\", groupClaim: \\"cognito:groups\\", and: \\"testing\\" **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $isDynamicGroupAuthorized = $util.defaultIfNull($isDynamicGroupAuthorized, false) )
+  #foreach( $userGroup in $userGroups )
+    #if( $util.isList($ctx.args.input.groupField) )
+      #if( $ctx.args.input.groupField.contains($userGroup) )
+        #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #end
+    #end
+    #if( $util.isString($ctx.args.input.groupField) )
+      #if( $ctx.args.input.groupField == $userGroup )
+        #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #end
+    #end
+  #end
+  ## [End] Dynamic Group Authorization Checks **
+
+
+  ## [Start] Owner Authorization Checks **
+  #set( $isOwnerAuthorized = false )
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", and: \\"testing2\\" } **
+  #set( $allowedOwners0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+  #if( $util.isList($allowedOwners0) )
+    #foreach( $allowedOwner in $allowedOwners0 )
+      #if( $allowedOwner == $identityValue )
+        #set( $compoundAuthRuleCounts.testing2 = $util.defaultIfNull($compoundAuthRuleCounts.testing2, 0) + 1 )
+      #end
+    #end
+  #end
+  #if( $util.isString($allowedOwners0) )
+    #if( $allowedOwners0 == $identityValue )
+      #set( $compoundAuthRuleCounts.testing2 = $util.defaultIfNull($compoundAuthRuleCounts.testing2, 0) + 1 )
+    #end
+  #end
+  #if( $util.isNull($allowedOwners0) && (! $ctx.args.input.containsKey(\\"owner\\")) )
+    $util.qr($ctx.args.input.put(\\"owner\\", $identityValue))
+    #set( $compoundAuthRuleCounts.testing2 = $util.defaultIfNull($compoundAuthRuleCounts.testing2, 0) + 1 )
+  #end
+  ## [End] Owner Authorization Checks **
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true || $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) == 2 || $util.defaultIfNull($compoundAuthRuleCounts.testing2, 0) == 2) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+## [Start] Prepare DynamoDB PutItem Request. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+#set( $condition = {
+  \\"expression\\": \\"attribute_not_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+#if( $context.args.condition )
+  #set( $condition.expressionValues = {} )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+} #end,
+  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
+  \\"condition\\": $util.toJson($condition)
+}
+## [End] Prepare DynamoDB PutItem Request. **"
+`;
+
+exports[`Test "create", "update", "delete" auth operations with "and" parameter forces all rules to pass 4`] = `
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+  ## [Start] Static Group Authorization Checks **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+        $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #break
+    #end
+  #end
+  ## Authorization rule: { allow: groups, groups: [\\"Dev\\"], groupClaim: \\"cognito:groups\\", and: \\"testing2\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Dev\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing2 = $util.defaultIfNull($compoundAuthRuleCounts.testing2, 0) + 1 )
+      #break
+    #end
+  #end
+  ## [End] Static Group Authorization Checks **
+
+
+  #if( ! $isStaticGroupAuthorized )
+    ## [Start] Dynamic group authorization checks **
+    #if( !$compoundAuthExpressions )
+      #set( $compoundAuthExpressions = {} )
+    #end
+    #set( $compoundAuthExpressions.testing = $util.defaultIfNull($compoundAuthExpressions.testing, []) )
+    #set( $groupAuthExpressions = [] )
+    #set( $groupAuthExpressionValues = {} )
+    #set( $groupAuthExpressionNames = {} )
+    #set( $groupCompoundAuthExpressionValues = [] )
+    ## Authorization rule: { allow: groups, groupsField: \\"groupField\\", groupClaim: \\"cognito:groups\\", and: \\"testing\\"} **
+    #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #foreach( $userGroup in $userGroups )
+      #if( $compoundAuthRuleCounts.testing == 1 )
+        $util.qr($groupCompoundAuthExpressionValues.add(\\"contains(#groupsAttribute0, :group0$foreach.count)\\"))
+      #end
+      #if( $compoundAuthRuleCounts.testing == 1 )
+        $util.qr($groupAuthExpressionValues.put(\\":group0$foreach.count\\", { \\"S\\": $userGroup }))
+      #end
+    #end
+    #if( $userGroups.size() > 0 && $compoundAuthRuleCounts.testing == 1 )
+      $util.qr($groupAuthExpressionNames.put(\\"#groupsAttribute0\\", \\"groupField\\"))
+    #end
+    #if( $groupCompoundAuthExpressionValues.size() > 1 )
+      #set( $groupCompoundAuthExpressionValuesCombined = \\"(\\" )
+    #else
+      #set( $groupCompoundAuthExpressionValuesCombined = \\"\\" )
+    #end
+    #foreach( $groupCompoundAuthExpressionValue in $groupCompoundAuthExpressionValues )
+      #set( $groupCompoundAuthExpressionValuesCombined = \\"$groupCompoundAuthExpressionValuesCombined $groupCompoundAuthExpressionValue\\" )
+      #if( $foreach.hasNext )
+        #set( $groupCompoundAuthExpressionValuesCombined = \\"$groupCompoundAuthExpressionValuesCombined OR\\" )
+      #end
+    #end
+    #if( $groupCompoundAuthExpressionValues.size() > 1 )
+      #set( $groupCompoundAuthExpressionValuesCombined = \\"$groupCompoundAuthExpressionValuesCombined )\\" )
+    #end
+    #if( ($groupCompoundAuthExpressionValuesCombined != \\"\\") )
+      $util.qr($compoundAuthExpressions.testing.add($groupCompoundAuthExpressionValuesCombined))
+    #end
+    ## [End] Dynamic group authorization checks **
+
+
+    ## [Start] Owner Authorization Checks **
+    #set( $ownerAuthExpressions = [] )
+    #if( !$compoundAuthExpressions )
+      #set( $compoundAuthExpressions = {} )
+    #end
+    #set( $compoundAuthExpressions.testing2 = $util.defaultIfNull($compoundAuthExpressions.testing2, []) )
+    #set( $ownerAuthExpressionValues = {} )
+    #set( $ownerAuthExpressionNames = {} )
+    ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", and: \\"testing2\\" } **
+    #if( $compoundAuthRuleCounts.testing2 == 1 )
+      $util.qr($compoundAuthExpressions.testing2.add(\\"#owner0 = :identity0\\"))
+    #end
+    #if( $compoundAuthRuleCounts.testing2 == 1 )
+      $util.qr($ownerAuthExpressionNames.put(\\"#owner0\\", \\"owner\\"))
+      $util.qr($ownerAuthExpressionValues.put(\\":identity0\\", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")))))
+    #end
+    ## [End] Owner Authorization Checks **
+
+
+    ## [Start] Collect Auth Condition **
+    #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+    #set( $totalAuthExpression = \\"\\" )
+    ## Add dynamic group auth conditions if they exist **
+    #if( $groupAuthExpressions )
+      #foreach( $authExpr in $groupAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+      #end
+    #end
+    #if( $groupAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+    #end
+    #if( $groupAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+    #end
+    ## Add owner auth conditions if they exist **
+    #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #end
+    #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #foreach( $authExpr in $ownerAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+      #end
+    #end
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+    #end
+    #if( $ownerAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+    #end
+    #if( $ownerAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+    #end
+    ## Add compound auth conditions if they exist **
+    #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+      #foreach( $entry in $compoundAuthExpressions.entrySet() )
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"(\\" )
+        #else
+          #set( $innerCompoundAuth = \\"\\" )
+        #end
+        #foreach( $authExpr in $entry.value )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+          #end
+        #end
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+        #end
+      #end
+    #end
+    ## Set final expression if it has changed. **
+    #if( $totalAuthExpression != \\"\\" )
+      #if( $util.isNullOrEmpty($authCondition.expression) )
+        #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+      #else
+        #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+      #end
+    #end
+    ## [End] Collect Auth Condition **
+  #end
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+#if( $authCondition && $authCondition.expression != \\"\\" )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  },
+  \\"expressionValues\\": {}
+} )
+  #end
+#end
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+## Update condition if type is @versioned **
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": {
+      \\"S\\": \\"$context.args.input.id\\"
+  }
+} #end,
+  \\"update\\": $util.toJson($update),
+  \\"condition\\": $util.toJson($condition)
+}"
+`;
+
+exports[`Test "create", "update", "delete" auth operations with "and" parameter forces all rules to pass 5`] = `
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+  ## [Start] Static Group Authorization Checks **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+        $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\", and: \\"testing\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing = $util.defaultIfNull($compoundAuthRuleCounts.testing, 0) + 1 )
+      #break
+    #end
+  #end
+  ## Authorization rule: { allow: groups, groups: [\\"Dev\\"], groupClaim: \\"cognito:groups\\", and: \\"testing2\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Dev\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $compoundAuthRuleCounts.testing2 = $util.defaultIfNull($compoundAuthRuleCounts.testing2, 0) + 1 )
+      #break
+    #end
+  #end
+  ## [End] Static Group Authorization Checks **
+
+
+  #if( ! $isStaticGroupAuthorized )
+    ## [Start] Dynamic group authorization checks **
+    #if( !$compoundAuthExpressions )
+      #set( $compoundAuthExpressions = {} )
+    #end
+    #set( $compoundAuthExpressions.testing = $util.defaultIfNull($compoundAuthExpressions.testing, []) )
+    #set( $groupAuthExpressions = [] )
+    #set( $groupAuthExpressionValues = {} )
+    #set( $groupAuthExpressionNames = {} )
+    #set( $groupCompoundAuthExpressionValues = [] )
+    ## Authorization rule: { allow: groups, groupsField: \\"groupField\\", groupClaim: \\"cognito:groups\\", and: \\"testing\\"} **
+    #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #foreach( $userGroup in $userGroups )
+      #if( $compoundAuthRuleCounts.testing == 1 )
+        $util.qr($groupCompoundAuthExpressionValues.add(\\"contains(#groupsAttribute0, :group0$foreach.count)\\"))
+      #end
+      #if( $compoundAuthRuleCounts.testing == 1 )
+        $util.qr($groupAuthExpressionValues.put(\\":group0$foreach.count\\", { \\"S\\": $userGroup }))
+      #end
+    #end
+    #if( $userGroups.size() > 0 && $compoundAuthRuleCounts.testing == 1 )
+      $util.qr($groupAuthExpressionNames.put(\\"#groupsAttribute0\\", \\"groupField\\"))
+    #end
+    #if( $groupCompoundAuthExpressionValues.size() > 1 )
+      #set( $groupCompoundAuthExpressionValuesCombined = \\"(\\" )
+    #else
+      #set( $groupCompoundAuthExpressionValuesCombined = \\"\\" )
+    #end
+    #foreach( $groupCompoundAuthExpressionValue in $groupCompoundAuthExpressionValues )
+      #set( $groupCompoundAuthExpressionValuesCombined = \\"$groupCompoundAuthExpressionValuesCombined $groupCompoundAuthExpressionValue\\" )
+      #if( $foreach.hasNext )
+        #set( $groupCompoundAuthExpressionValuesCombined = \\"$groupCompoundAuthExpressionValuesCombined OR\\" )
+      #end
+    #end
+    #if( $groupCompoundAuthExpressionValues.size() > 1 )
+      #set( $groupCompoundAuthExpressionValuesCombined = \\"$groupCompoundAuthExpressionValuesCombined )\\" )
+    #end
+    #if( ($groupCompoundAuthExpressionValuesCombined != \\"\\") )
+      $util.qr($compoundAuthExpressions.testing.add($groupCompoundAuthExpressionValuesCombined))
+    #end
+    ## [End] Dynamic group authorization checks **
+
+
+    ## [Start] Owner Authorization Checks **
+    #set( $ownerAuthExpressions = [] )
+    #if( !$compoundAuthExpressions )
+      #set( $compoundAuthExpressions = {} )
+    #end
+    #set( $compoundAuthExpressions.testing2 = $util.defaultIfNull($compoundAuthExpressions.testing2, []) )
+    #set( $ownerAuthExpressionValues = {} )
+    #set( $ownerAuthExpressionNames = {} )
+    ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", and: \\"testing2\\" } **
+    #if( $compoundAuthRuleCounts.testing2 == 1 )
+      $util.qr($compoundAuthExpressions.testing2.add(\\"#owner0 = :identity0\\"))
+    #end
+    #if( $compoundAuthRuleCounts.testing2 == 1 )
+      $util.qr($ownerAuthExpressionNames.put(\\"#owner0\\", \\"owner\\"))
+      $util.qr($ownerAuthExpressionValues.put(\\":identity0\\", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")))))
+    #end
+    ## [End] Owner Authorization Checks **
+
+
+    ## [Start] Collect Auth Condition **
+    #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+    #set( $totalAuthExpression = \\"\\" )
+    ## Add dynamic group auth conditions if they exist **
+    #if( $groupAuthExpressions )
+      #foreach( $authExpr in $groupAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+      #end
+    #end
+    #if( $groupAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+    #end
+    #if( $groupAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+    #end
+    ## Add owner auth conditions if they exist **
+    #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #end
+    #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #foreach( $authExpr in $ownerAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+      #end
+    #end
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+    #end
+    #if( $ownerAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+    #end
+    #if( $ownerAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+    #end
+    ## Add compound auth conditions if they exist **
+    #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+      #foreach( $entry in $compoundAuthExpressions.entrySet() )
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"(\\" )
+        #else
+          #set( $innerCompoundAuth = \\"\\" )
+        #end
+        #foreach( $authExpr in $entry.value )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+          #end
+        #end
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+        #end
+      #end
+    #end
+    ## Set final expression if it has changed. **
+    #if( $totalAuthExpression != \\"\\" )
+      #if( $util.isNullOrEmpty($authCondition.expression) )
+        #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+      #else
+        #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+      #end
+    #end
+    ## [End] Collect Auth Condition **
+  #end
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+#if( $authCondition )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+  #end
+#end
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  #set( $expressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($expressionValues.putAll($versionedCondition.expressionValues))
+  #set( $condition.expressionValues = $expressionValues )
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  #set( $conditionExpressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues))
+  #set( $condition.expressionValues = $conditionExpressionValues )
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"DeleteItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+} #end,
+  \\"condition\\": $util.toJson($condition)
+}"
+`;
+
+exports[`Test "update" auth operations with "and" parameter on fields prevents security bypass 1`] = `
+"#if( $ctx.args.input.containsKey(\\"protectedByC\\") )
+  ## [Start] Determine request authentication mode **
+  #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+    #set( $authMode = \\"userPools\\" )
+  #end
+  ## [End] Determine request authentication mode **
+  ## [Start] Check authMode and execute owner/group checks **
+  #if( $authMode == \\"userPools\\" )
+    #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+    ## [Start] Static Group Authorization Checks **
+    #set($protectedByC_isStaticGroupAuthorized = $util.defaultIfNull(
+        $protectedByC_isStaticGroupAuthorized, false))
+    ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\", and: \\"cRule\\" } **
+    #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #set( $allowedGroups = [\\"Admin\\"] )
+    #foreach( $userGroup in $userGroups )
+      #if( $allowedGroups.contains($userGroup) )
+        #set( $compoundAuthRuleCounts.cRule = $util.defaultIfNull($compoundAuthRuleCounts.cRule, 0) + 1 )
+        #break
+      #end
+    #end
+    ## [End] Static Group Authorization Checks **
+
+
+    #if( ! $protectedByC_isStaticGroupAuthorized )
+      ## No dynamic group authorization rules for field \\"protectedByC\\" **
+
+
+      ## No owner authorization rules for field \\"protectedByC\\" **
+
+
+      ## [Start] Collect Auth Condition **
+      #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+      #set( $totalAuthExpression = \\"\\" )
+      ## Add dynamic group auth conditions if they exist **
+      #if( $groupAuthExpressions )
+        #foreach( $authExpr in $groupAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $groupAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+      #end
+      #if( $groupAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+      #end
+      ## Add owner auth conditions if they exist **
+      #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+      #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #foreach( $authExpr in $ownerAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $totalAuthExpression != \\"\\" )
+        #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+      #end
+      #if( $ownerAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+      #end
+      #if( $ownerAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+      #end
+      ## Add compound auth conditions if they exist **
+      #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+        #foreach( $entry in $compoundAuthExpressions.entrySet() )
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"(\\" )
+          #else
+            #set( $innerCompoundAuth = \\"\\" )
+          #end
+          #foreach( $authExpr in $entry.value )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+            #if( $foreach.hasNext )
+              #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+            #end
+          #end
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+          #end
+        #end
+      #end
+      ## Set final expression if it has changed. **
+      #if( $totalAuthExpression != \\"\\" )
+        #if( $util.isNullOrEmpty($authCondition.expression) )
+          #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+        #else
+          #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+        #end
+      #end
+      ## [End] Collect Auth Condition **
+    #end
+
+
+    ## [Start] Throw if unauthorized **
+    #if( !($protectedByC_isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+      $util.unauthorized()
+    #end
+    ## [End] Throw if unauthorized **
+  #end
+  ## [End] Check authMode and execute owner/group checks **
+#end
+
+#if( $ctx.args.input.containsKey(\\"protectedByA\\") )
+  ## [Start] Determine request authentication mode **
+  #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+    #set( $authMode = \\"userPools\\" )
+  #end
+  ## [End] Determine request authentication mode **
+  ## [Start] Check authMode and execute owner/group checks **
+  #if( $authMode == \\"userPools\\" )
+    #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+    ## No Static Group Authorization Rules **
+
+
+    #if( ! $protectedByA_isStaticGroupAuthorized )
+      ## No dynamic group authorization rules for field \\"protectedByA\\" **
+
+
+      ## [Start] Owner Authorization Checks **
+      #set( $ownerAuthExpressions = [] )
+      #if( !$compoundAuthExpressions )
+        #set( $compoundAuthExpressions = {} )
+      #end
+      #set( $compoundAuthExpressions.aRule = $util.defaultIfNull($compoundAuthExpressions.aRule, []) )
+      #set( $ownerAuthExpressionValues = {} )
+      #set( $ownerAuthExpressionNames = {} )
+      ## Authorization rule for field \\"protectedByA\\": { allow: owner, ownerField: \\"id\\", identityClaim: \\"cognito:username\\", and: \\"aRule\\" } **
+      #if( true )
+        $util.qr($compoundAuthExpressions.aRule.add(\\"#protectedByA_owner0 = :protectedByA_identity0\\"))
+      #end
+      #if( true )
+        $util.qr($ownerAuthExpressionNames.put(\\"#protectedByA_owner0\\", \\"id\\"))
+        $util.qr($ownerAuthExpressionValues.put(\\":protectedByA_identity0\\", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")))))
+      #end
+      ## [End] Owner Authorization Checks **
+
+
+      ## [Start] Collect Auth Condition **
+      #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+      #set( $totalAuthExpression = \\"\\" )
+      ## Add dynamic group auth conditions if they exist **
+      #if( $groupAuthExpressions )
+        #foreach( $authExpr in $groupAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $groupAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+      #end
+      #if( $groupAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+      #end
+      ## Add owner auth conditions if they exist **
+      #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+      #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #foreach( $authExpr in $ownerAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $totalAuthExpression != \\"\\" )
+        #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+      #end
+      #if( $ownerAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+      #end
+      #if( $ownerAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+      #end
+      ## Add compound auth conditions if they exist **
+      #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+        #foreach( $entry in $compoundAuthExpressions.entrySet() )
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"(\\" )
+          #else
+            #set( $innerCompoundAuth = \\"\\" )
+          #end
+          #foreach( $authExpr in $entry.value )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+            #if( $foreach.hasNext )
+              #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+            #end
+          #end
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+          #end
+        #end
+      #end
+      ## Set final expression if it has changed. **
+      #if( $totalAuthExpression != \\"\\" )
+        #if( $util.isNullOrEmpty($authCondition.expression) )
+          #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+        #else
+          #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+        #end
+      #end
+      ## [End] Collect Auth Condition **
+    #end
+
+
+    ## [Start] Throw if unauthorized **
+    #if( !($protectedByA_isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+      $util.unauthorized()
+    #end
+    ## [End] Throw if unauthorized **
+  #end
+  ## [End] Check authMode and execute owner/group checks **
+#end
+
+#if( $ctx.args.input.containsKey(\\"protectedByB\\") )
+  ## [Start] Determine request authentication mode **
+  #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+    #set( $authMode = \\"userPools\\" )
+  #end
+  ## [End] Determine request authentication mode **
+  ## [Start] Check authMode and execute owner/group checks **
+  #if( $authMode == \\"userPools\\" )
+    #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+    ## No Static Group Authorization Rules **
+
+
+    #if( ! $protectedByB_isStaticGroupAuthorized )
+      ## No dynamic group authorization rules for field \\"protectedByB\\" **
+
+
+      ## [Start] Owner Authorization Checks **
+      #set( $ownerAuthExpressions = [] )
+      #if( !$compoundAuthExpressions )
+        #set( $compoundAuthExpressions = {} )
+      #end
+      #set( $compoundAuthExpressions.bRule = $util.defaultIfNull($compoundAuthExpressions.bRule, []) )
+      #set( $ownerAuthExpressionValues = {} )
+      #set( $ownerAuthExpressionNames = {} )
+      ## Authorization rule for field \\"protectedByB\\": { allow: owner, ownerField: \\"id\\", identityClaim: \\"cognito:username\\", and: \\"bRule\\" } **
+      #if( true )
+        $util.qr($compoundAuthExpressions.bRule.add(\\"#protectedByB_owner0 = :protectedByB_identity0\\"))
+      #end
+      #if( true )
+        $util.qr($ownerAuthExpressionNames.put(\\"#protectedByB_owner0\\", \\"id\\"))
+        $util.qr($ownerAuthExpressionValues.put(\\":protectedByB_identity0\\", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")))))
+      #end
+      ## [End] Owner Authorization Checks **
+
+
+      ## [Start] Collect Auth Condition **
+      #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+      #set( $totalAuthExpression = \\"\\" )
+      ## Add dynamic group auth conditions if they exist **
+      #if( $groupAuthExpressions )
+        #foreach( $authExpr in $groupAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $groupAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+      #end
+      #if( $groupAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+      #end
+      ## Add owner auth conditions if they exist **
+      #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+      #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #foreach( $authExpr in $ownerAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $totalAuthExpression != \\"\\" )
+        #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+      #end
+      #if( $ownerAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+      #end
+      #if( $ownerAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+      #end
+      ## Add compound auth conditions if they exist **
+      #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+        #foreach( $entry in $compoundAuthExpressions.entrySet() )
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"(\\" )
+          #else
+            #set( $innerCompoundAuth = \\"\\" )
+          #end
+          #foreach( $authExpr in $entry.value )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+            #if( $foreach.hasNext )
+              #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+            #end
+          #end
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+          #end
+        #end
+      #end
+      ## Set final expression if it has changed. **
+      #if( $totalAuthExpression != \\"\\" )
+        #if( $util.isNullOrEmpty($authCondition.expression) )
+          #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+        #else
+          #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+        #end
+      #end
+      ## [End] Collect Auth Condition **
+    #end
+
+
+    ## [Start] Throw if unauthorized **
+    #if( !($protectedByB_isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+      $util.unauthorized()
+    #end
+    ## [End] Throw if unauthorized **
+  #end
+  ## [End] Check authMode and execute owner/group checks **
+#end
+
+#if( $ctx.args.input.containsKey(\\"protectedByOwner\\") )
+  ## [Start] Determine request authentication mode **
+  #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+    #set( $authMode = \\"userPools\\" )
+  #end
+  ## [End] Determine request authentication mode **
+  ## [Start] Check authMode and execute owner/group checks **
+  #if( $authMode == \\"userPools\\" )
+    #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+    ## No Static Group Authorization Rules **
+
+
+    #if( ! $protectedByOwner_isStaticGroupAuthorized )
+      ## No dynamic group authorization rules for field \\"protectedByOwner\\" **
+
+
+      ## [Start] Owner Authorization Checks **
+      #set( $ownerAuthExpressions = [] )
+      #if( !$compoundAuthExpressions )
+        #set( $compoundAuthExpressions = {} )
+      #end
+      #set( $ownerAuthExpressionValues = {} )
+      #set( $ownerAuthExpressionNames = {} )
+      ## Authorization rule for field \\"protectedByOwner\\": { allow: owner, ownerField: \\"id\\", identityClaim: \\"cognito:username\\" } **
+      $util.qr($ownerAuthExpressions.add(\\"#protectedByOwner_owner0 = :protectedByOwner_identity0\\"))
+      #if( true )
+        $util.qr($ownerAuthExpressionNames.put(\\"#protectedByOwner_owner0\\", \\"id\\"))
+        $util.qr($ownerAuthExpressionValues.put(\\":protectedByOwner_identity0\\", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")))))
+      #end
+      ## [End] Owner Authorization Checks **
+
+
+      ## [Start] Collect Auth Condition **
+      #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+      #set( $totalAuthExpression = \\"\\" )
+      ## Add dynamic group auth conditions if they exist **
+      #if( $groupAuthExpressions )
+        #foreach( $authExpr in $groupAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $groupAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+      #end
+      #if( $groupAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+      #end
+      ## Add owner auth conditions if they exist **
+      #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+      #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #foreach( $authExpr in $ownerAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $totalAuthExpression != \\"\\" )
+        #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+      #end
+      #if( $ownerAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+      #end
+      #if( $ownerAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+      #end
+      ## Add compound auth conditions if they exist **
+      #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+        #foreach( $entry in $compoundAuthExpressions.entrySet() )
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"(\\" )
+          #else
+            #set( $innerCompoundAuth = \\"\\" )
+          #end
+          #foreach( $authExpr in $entry.value )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+            #if( $foreach.hasNext )
+              #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+            #end
+          #end
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+          #end
+        #end
+      #end
+      ## Set final expression if it has changed. **
+      #if( $totalAuthExpression != \\"\\" )
+        #if( $util.isNullOrEmpty($authCondition.expression) )
+          #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+        #else
+          #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+        #end
+      #end
+      ## [End] Collect Auth Condition **
+    #end
+
+
+    ## [Start] Throw if unauthorized **
+    #if( !($protectedByOwner_isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+      $util.unauthorized()
+    #end
+    ## [End] Throw if unauthorized **
+  #end
+  ## [End] Check authMode and execute owner/group checks **
+#end
+
+#if( $ctx.args.input.containsKey(\\"protectedByDynamocGroup\\") )
+  ## [Start] Determine request authentication mode **
+  #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+    #set( $authMode = \\"userPools\\" )
+  #end
+  ## [End] Determine request authentication mode **
+  ## [Start] Check authMode and execute owner/group checks **
+  #if( $authMode == \\"userPools\\" )
+    #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+    ## No Static Group Authorization Rules **
+
+
+    #if( ! $protectedByDynamocGroup_isStaticGroupAuthorized )
+      ## [Start] Dynamic group authorization checks **
+      #if( !$compoundAuthExpressions )
+        #set( $compoundAuthExpressions = {} )
+      #end
+      #set( $groupAuthExpressions = [] )
+      #set( $groupAuthExpressionValues = {} )
+      #set( $groupAuthExpressionNames = {} )
+      ## Authorization rule for field \\"protectedByDynamocGroup\\": { allow: groups, groupsField: \\"groupField\\", groupClaim: \\"cognito:groups\\"} **
+      #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+      #foreach( $userGroup in $userGroups )
+        $util.qr($groupAuthExpressions.add(\\"contains(#protectedByDynamocGroup_groupsAttribute0, :protectedByDynamocGroup_group0$foreach.count)\\"))
+        #if( true )
+          $util.qr($groupAuthExpressionValues.put(\\":protectedByDynamocGroup_group0$foreach.count\\", { \\"S\\": $userGroup }))
+        #end
+      #end
+      #if( $userGroups.size() > 0 && true )
+        $util.qr($groupAuthExpressionNames.put(\\"#protectedByDynamocGroup_groupsAttribute0\\", \\"groupField\\"))
+      #end
+      ## [End] Dynamic group authorization checks **
+
+
+      ## No owner authorization rules for field \\"protectedByDynamocGroup\\" **
+
+
+      ## [Start] Collect Auth Condition **
+      #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+      #set( $totalAuthExpression = \\"\\" )
+      ## Add dynamic group auth conditions if they exist **
+      #if( $groupAuthExpressions )
+        #foreach( $authExpr in $groupAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $groupAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+      #end
+      #if( $groupAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+      #end
+      ## Add owner auth conditions if they exist **
+      #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+      #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #foreach( $authExpr in $ownerAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $totalAuthExpression != \\"\\" )
+        #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+      #end
+      #if( $ownerAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+      #end
+      #if( $ownerAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+      #end
+      ## Add compound auth conditions if they exist **
+      #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+        #foreach( $entry in $compoundAuthExpressions.entrySet() )
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"(\\" )
+          #else
+            #set( $innerCompoundAuth = \\"\\" )
+          #end
+          #foreach( $authExpr in $entry.value )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+            #if( $foreach.hasNext )
+              #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+            #end
+          #end
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+          #end
+        #end
+      #end
+      ## Set final expression if it has changed. **
+      #if( $totalAuthExpression != \\"\\" )
+        #if( $util.isNullOrEmpty($authCondition.expression) )
+          #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+        #else
+          #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+        #end
+      #end
+      ## [End] Collect Auth Condition **
+    #end
+
+
+    ## [Start] Throw if unauthorized **
+    #if( !($protectedByDynamocGroup_isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+      $util.unauthorized()
+    #end
+    ## [End] Throw if unauthorized **
+  #end
+  ## [End] Check authMode and execute owner/group checks **
+#end
+
+#if( $ctx.args.input.containsKey(\\"protectedByStaticGroup\\") )
+  ## [Start] Determine request authentication mode **
+  #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+    #set( $authMode = \\"userPools\\" )
+  #end
+  ## [End] Determine request authentication mode **
+  ## [Start] Check authMode and execute owner/group checks **
+  #if( $authMode == \\"userPools\\" )
+    #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+    ## [Start] Static Group Authorization Checks **
+    #set($protectedByStaticGroup_isStaticGroupAuthorized = $util.defaultIfNull(
+        $protectedByStaticGroup_isStaticGroupAuthorized, false))
+    ## Authorization rule: { allow: groups, groups: [\\"Admin\\"], groupClaim: \\"cognito:groups\\" } **
+    #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #set( $allowedGroups = [\\"Admin\\"] )
+    #foreach( $userGroup in $userGroups )
+      #if( $allowedGroups.contains($userGroup) )
+        #set( $protectedByStaticGroup_isStaticGroupAuthorized = true )
+        #break
+      #end
+    #end
+    ## [End] Static Group Authorization Checks **
+
+
+    #if( ! $protectedByStaticGroup_isStaticGroupAuthorized )
+      ## No dynamic group authorization rules for field \\"protectedByStaticGroup\\" **
+
+
+      ## No owner authorization rules for field \\"protectedByStaticGroup\\" **
+
+
+      ## [Start] Collect Auth Condition **
+      #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+      #set( $totalAuthExpression = \\"\\" )
+      ## Add dynamic group auth conditions if they exist **
+      #if( $groupAuthExpressions )
+        #foreach( $authExpr in $groupAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $groupAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+      #end
+      #if( $groupAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+      #end
+      ## Add owner auth conditions if they exist **
+      #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+      #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+        #foreach( $authExpr in $ownerAuthExpressions )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+        #end
+      #end
+      #if( $totalAuthExpression != \\"\\" )
+        #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+      #end
+      #if( $ownerAuthExpressionNames )
+        $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+      #end
+      #if( $ownerAuthExpressionValues )
+        $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+      #end
+      ## Add compound auth conditions if they exist **
+      #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+        #foreach( $entry in $compoundAuthExpressions.entrySet() )
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"(\\" )
+          #else
+            #set( $innerCompoundAuth = \\"\\" )
+          #end
+          #foreach( $authExpr in $entry.value )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+            #if( $foreach.hasNext )
+              #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+            #end
+          #end
+          #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+          #end
+          #if( $innerCompoundAuth != \\"\\" )
+            #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+          #end
+        #end
+      #end
+      ## Set final expression if it has changed. **
+      #if( $totalAuthExpression != \\"\\" )
+        #if( $util.isNullOrEmpty($authCondition.expression) )
+          #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+        #else
+          #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+        #end
+      #end
+      ## [End] Collect Auth Condition **
+    #end
+
+
+    ## [Start] Throw if unauthorized **
+    #if( !($protectedByStaticGroup_isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+      $util.unauthorized()
+    #end
+    ## [End] Throw if unauthorized **
+  #end
+  ## [End] Check authMode and execute owner/group checks **
+#end
+
+## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  #set( $compoundAuthRuleCounts = $util.defaultIfNull($compoundAuthRuleCounts, {}) )
+  ## [Start] Static Group Authorization Checks **
+  #set($isStaticGroupAuthorized = $util.defaultIfNull(
+        $isStaticGroupAuthorized, false))
+  ## Authorization rule: { allow: groups, groups: [\\"Nobody\\"], groupClaim: \\"cognito:groups\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Nobody\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $isStaticGroupAuthorized = true )
+      #break
+    #end
+  #end
+  ## [End] Static Group Authorization Checks **
+
+
+  #if( ! $isStaticGroupAuthorized )
+    ## No dynamic group authorization rules **
+
+
+    ## No owner authorization rules **
+
+
+    ## [Start] Collect Auth Condition **
+    #set( $authCondition = $util.defaultIfNull($authCondition, {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+}) )
+    #set( $totalAuthExpression = \\"\\" )
+    ## Add dynamic group auth conditions if they exist **
+    #if( $groupAuthExpressions )
+      #foreach( $authExpr in $groupAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+      #end
+    #end
+    #if( $groupAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+    #end
+    #if( $groupAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+    #end
+    ## Add owner auth conditions if they exist **
+    #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #end
+    #if( $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #foreach( $authExpr in $ownerAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+      #end
+    #end
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $totalAuthExpression = \\"($totalAuthExpression)\\" )
+    #end
+    #if( $ownerAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+    #end
+    #if( $ownerAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+    #end
+    ## Add compound auth conditions if they exist **
+    #if( $compoundAuthExpressions && $compoundAuthExpressions.entrySet().size() > 0 )
+      #foreach( $entry in $compoundAuthExpressions.entrySet() )
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"(\\" )
+        #else
+          #set( $innerCompoundAuth = \\"\\" )
+        #end
+        #foreach( $authExpr in $entry.value )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth $authExpr\\" )
+          #if( $foreach.hasNext )
+            #set( $innerCompoundAuth = \\"$innerCompoundAuth AND\\" )
+          #end
+        #end
+        #if( $entry.value && $entry.value.size() > 1 && $compoundAuthExpressions.entrySet().size() > 1 )
+          #set( $innerCompoundAuth = \\"$innerCompoundAuth )\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" && $totalAuthExpression != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
+        #if( $innerCompoundAuth != \\"\\" )
+          #set( $totalAuthExpression = \\"$totalAuthExpression $innerCompoundAuth\\" )
+        #end
+      #end
+    #end
+    ## Set final expression if it has changed. **
+    #if( $totalAuthExpression != \\"\\" )
+      #if( $util.isNullOrEmpty($authCondition.expression) )
+        #set( $authCondition.expression = \\"$totalAuthExpression\\" )
+      #else
+        #set( $authCondition.expression = \\"$authCondition.expression AND $totalAuthExpression\\" )
+      #end
+    #end
+    ## [End] Collect Auth Condition **
+  #end
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || ($totalAuthExpression != \\"\\")) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+#if( $authCondition && $authCondition.expression != \\"\\" )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  },
+  \\"expressionValues\\": {}
+} )
+  #end
+#end
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+## Update condition if type is @versioned **
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": {
+      \\"S\\": \\"$context.args.input.id\\"
+  }
+} #end,
+  \\"update\\": $util.toJson($update),
+  \\"condition\\": $util.toJson($condition)
+}"
+`;
+
+exports[`Test "update" auth operations with "and" parameter on fields prevents security bypass 2`] = `undefined`;
+
+exports[`Test "update" auth operations with "and" parameter on fields prevents security bypass 3`] = `undefined`;
+
+exports[`Test "update" auth operations with "and" parameter on fields prevents security bypass 4`] = `"$util.toJson($ctx.result)"`;
+
+exports[`Test "update" auth operations with "and" parameter on fields prevents security bypass 5`] = `"$util.toJson($ctx.result)"`;

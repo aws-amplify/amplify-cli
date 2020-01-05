@@ -46,7 +46,7 @@ let GRAPHQL_ENDPOINT = undefined;
 let GRAPHQL_CLIENT_1 = undefined;
 
 /**
- * Client 2 is logged in and is a member of the Devs group.
+ * Client 2 is logged in and is a member of the Devs and Sales group.
  */
 let GRAPHQL_CLIENT_2 = undefined;
 
@@ -55,11 +55,17 @@ let GRAPHQL_CLIENT_2 = undefined;
  */
 let GRAPHQL_CLIENT_3 = undefined;
 
+/**
+ * Client 3 is logged in an is a member of the Manager group and Sales group.
+ */
+let GRAPHQL_CLIENT_4 = undefined;
+
 let USER_POOL_ID = undefined;
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
 const USERNAME3 = 'user3@test.com';
+const USERNAME4 = 'user4@test.com';
 const TMP_PASSWORD = 'Password123!';
 const REAL_PASSWORD = 'Password1234!';
 
@@ -68,6 +74,8 @@ const DEVS_GROUP_NAME = 'Devs';
 const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 const INSTRUCTOR_GROUP_NAME = 'Instructor';
+const MANAGER_GROUP_NAME = 'Manager';
+const SALES_GROUP_NAME = 'Sales';
 
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
 const customS3Client = new S3Client('us-west-2');
@@ -108,8 +116,9 @@ beforeAll(async () => {
     # Owners may update their owned records.
     # Admins may create Employee records.
     # Any authenticated user may view Employee ids & emails.
-    # Owners and members of "Admin" group may see employee salaries.
-    # Owners of "Admin" group may create and update employee salaries.
+    # Owners, members of both "Manager" and "Division" groups and members of "Admin" group may see employee salaries.
+    # Members of "Admin" group may create and update employee salaries.
+    # Members of both "Manager and "Division" groups may update employee salaries
     type Employee @model (
         subscriptions: {
             level: public
@@ -117,6 +126,8 @@ beforeAll(async () => {
     ) @auth(rules: [
         { allow: owner, ownerField: "email", operations: [update] },
         { allow: groups, groups: ["Admin"], operations: [create,update,delete]}
+        { allow: groups, groups: ["Manager"], operations: [update], and: "divisionManagement"}
+        { allow: groups, groupsField: "division", operations: [update], and: "divisionManagement"}
     ]) {
         id: ID!
 
@@ -132,10 +143,19 @@ beforeAll(async () => {
         email: String @auth(rules: [
             { allow: groups, groups: ["Admin"], operations: [create, update, read]}
             { allow: owner, ownerField: "email", operations: [read]}
+            { allow: groups, groups: ["Manager"], operations: [read, update], and: "divisionManager"}
+            { allow: groups, groupsField: "division", operations: [read, update], and: "divisionManager"}
         ])
 
-        # The owner & "Admin"s may view the salary. Only "Admins" may create/update.
+        division: String @auth(rules: [
+          { allow: groups, groups: ["Admin"], operations: [create, update, read]}
+          { allow: owner, ownerField: "email", operations: [read]}
+        ])
+
+        # The owner & "division Manager" & "Admin"s may view the salary. Only "division Manager" & "Admins" may create/update.
         salary: Int @auth(rules: [
+            { allow: groups, groups: ["Manager"], operations: [read, update], and: "divisionManager"}
+            { allow: groups, groupsField: "division", operations: [read, update], and: "divisionManager"}
             { allow: groups, groups: ["Admin"], operations: [create, update, read]}
             { allow: owner, ownerField: "email", operations: [read]}
         ])
@@ -213,17 +233,23 @@ beforeAll(async () => {
 
     await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
     await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME4, TMP_PASSWORD, REAL_PASSWORD);
     await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
     await createGroup(USER_POOL_ID, PARTICIPANT_GROUP_NAME);
     await createGroup(USER_POOL_ID, WATCHER_GROUP_NAME);
     await createGroup(USER_POOL_ID, DEVS_GROUP_NAME);
     await createGroup(USER_POOL_ID, INSTRUCTOR_GROUP_NAME);
+    await createGroup(USER_POOL_ID, MANAGER_GROUP_NAME);
+    await createGroup(USER_POOL_ID, SALES_GROUP_NAME);
     await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, USER_POOL_ID);
     await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, USER_POOL_ID);
     await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, USER_POOL_ID);
     await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, USER_POOL_ID);
     await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME1, USER_POOL_ID);
     await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME2, USER_POOL_ID);
+    await addUserToGroup(MANAGER_GROUP_NAME, USERNAME4, USER_POOL_ID);
+    await addUserToGroup(SALES_GROUP_NAME, USERNAME2, USER_POOL_ID);
+    await addUserToGroup(SALES_GROUP_NAME, USERNAME4, USER_POOL_ID);
 
     const authResAfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
     const idToken = authResAfterGroup.getIdToken().getJwtToken();
@@ -236,6 +262,10 @@ beforeAll(async () => {
     const authRes3: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
     const idToken3 = authRes3.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken3 });
+
+    const authRes4: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME4, TMP_PASSWORD, REAL_PASSWORD);
+    const idToken4 = authRes4.getIdToken().getJwtToken();
+    GRAPHQL_CLIENT_4 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken4 });
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
@@ -317,13 +347,14 @@ test('Test that only Admins can create Employee records.', async () => {
   expect(tryToCreateAsNonAdmin2.errors).toHaveLength(1);
 });
 
-test('Test that only Admins may update salary & email.', async () => {
+test('Test that only Admins and Managers may update salary & Admins may update email.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
-        createEmployee(input: { email: "user2@test.com", salary: 100 }) {
+        createEmployee(input: { email: "user2@test.com", salary: 100, division: "${SALES_GROUP_NAME}" }) {
             id
             email
             salary
+            division
         }
     }`,
     {}
@@ -333,8 +364,9 @@ test('Test that only Admins may update salary & email.', async () => {
   expect(employeeId).not.toBeNull();
   expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
   expect(createUser1.data.createEmployee.salary).toEqual(100);
+  expect(createUser1.data.createEmployee.division).toEqual(SALES_GROUP_NAME);
 
-  const tryToUpdateAsNonAdmin = await GRAPHQL_CLIENT_2.query(
+  const tryToUpdateAsNonAdminNonManager = await GRAPHQL_CLIENT_2.query(
     `mutation {
         updateEmployee(input: { id: "${employeeId}", salary: 101 }) {
             id
@@ -344,11 +376,11 @@ test('Test that only Admins may update salary & email.', async () => {
     }`,
     {}
   );
-  console.log(tryToUpdateAsNonAdmin);
-  expect(tryToUpdateAsNonAdmin.data.updateEmployee).toBeNull();
-  expect(tryToUpdateAsNonAdmin.errors).toHaveLength(1);
+  console.log(tryToUpdateAsNonAdminNonManager);
+  expect(tryToUpdateAsNonAdminNonManager.data.updateEmployee).toBeNull();
+  expect(tryToUpdateAsNonAdminNonManager.errors).toHaveLength(1);
 
-  const tryToUpdateAsNonAdmin2 = await GRAPHQL_CLIENT_2.query(
+  const tryToUpdateAsNonAdminNonManager2 = await GRAPHQL_CLIENT_2.query(
     `mutation {
         updateEmployee(input: { id: "${employeeId}", email: "someonelese@gmail.com" }) {
             id
@@ -358,11 +390,11 @@ test('Test that only Admins may update salary & email.', async () => {
     }`,
     {}
   );
-  console.log(tryToUpdateAsNonAdmin2);
-  expect(tryToUpdateAsNonAdmin2.data.updateEmployee).toBeNull();
-  expect(tryToUpdateAsNonAdmin2.errors).toHaveLength(1);
+  console.log(tryToUpdateAsNonAdminNonManager2);
+  expect(tryToUpdateAsNonAdminNonManager2.data.updateEmployee).toBeNull();
+  expect(tryToUpdateAsNonAdminNonManager2.errors).toHaveLength(1);
 
-  const tryToUpdateAsNonAdmin3 = await GRAPHQL_CLIENT_3.query(
+  const tryToUpdateAsNonAdminNonManager3 = await GRAPHQL_CLIENT_3.query(
     `mutation {
         updateEmployee(input: { id: "${employeeId}", email: "someonelese@gmail.com" }) {
             id
@@ -372,9 +404,9 @@ test('Test that only Admins may update salary & email.', async () => {
     }`,
     {}
   );
-  console.log(tryToUpdateAsNonAdmin3);
-  expect(tryToUpdateAsNonAdmin3.data.updateEmployee).toBeNull();
-  expect(tryToUpdateAsNonAdmin3.errors).toHaveLength(1);
+  console.log(tryToUpdateAsNonAdminNonManager3);
+  expect(tryToUpdateAsNonAdminNonManager3.data.updateEmployee).toBeNull();
+  expect(tryToUpdateAsNonAdminNonManager3.errors).toHaveLength(1);
 
   const updateAsAdmin = await GRAPHQL_CLIENT_1.query(
     `mutation {
@@ -403,6 +435,61 @@ test('Test that only Admins may update salary & email.', async () => {
   console.log(updateAsAdmin2);
   expect(updateAsAdmin2.data.updateEmployee.email).toEqual('someonelese@gmail.com');
   expect(updateAsAdmin2.data.updateEmployee.salary).toEqual(99);
+
+  const updateAsDivisionManager = await GRAPHQL_CLIENT_4.query(
+    `mutation {
+        updateEmployee(input: { id: "${employeeId}", salary: 101 }) {
+            id
+            email
+            salary
+        }
+    }`,
+    {}
+  );
+  console.log(updateAsDivisionManager);
+  expect(updateAsDivisionManager.data.updateEmployee.email).toEqual('someonelese@gmail.com');
+  expect(updateAsDivisionManager.data.updateEmployee.salary).toEqual(101);
+
+  const updateAsAdminToOtherDivision = await GRAPHQL_CLIENT_1.query(
+    `mutation {
+        updateEmployee(input: { id: "${employeeId}", division: "Marketing" }) {
+            id
+            email
+            salary
+        }
+    }`,
+    {}
+  );
+
+  const tryToUpdateAsNotDivisionManager = await GRAPHQL_CLIENT_4.query(
+    `mutation {
+        updateEmployee(input: { id: "${employeeId}", salary: 102 }) {
+            id
+            email
+            salary
+        }
+    }`,
+    {}
+  );
+
+  console.log(tryToUpdateAsNotDivisionManager);
+  expect(tryToUpdateAsNotDivisionManager.data.updateEmployee).toBeNull();
+  expect(tryToUpdateAsNotDivisionManager.errors).toHaveLength(1);
+
+  const tryToUpdateAsNotManager = await GRAPHQL_CLIENT_2.query(
+    `mutation {
+        updateEmployee(input: { id: "${employeeId}", salary: 102 }) {
+            id
+            email
+            salary
+        }
+    }`,
+    {}
+  );
+
+  console.log(tryToUpdateAsNotManager);
+  expect(tryToUpdateAsNotManager.data.updateEmployee).toBeNull();
+  expect(tryToUpdateAsNotManager.errors).toHaveLength(1);
 });
 
 test('Test that owners may update their bio.', async () => {
@@ -562,6 +649,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
     }`,
     {}
   );
+  console.log(JSON.stringify(deleteNotes));
   expect(deleteNotes.data.updateEmployee.notes).toBeNull();
 });
 

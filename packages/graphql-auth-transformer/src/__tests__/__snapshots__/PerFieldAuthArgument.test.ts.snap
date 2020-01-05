@@ -3,7 +3,7 @@
 exports[`Test per-field @auth without model 1`] = `
 "## [Start] Static Group Authorization Checks **
 #set($listContext_isStaticGroupAuthorized = $util.defaultIfNull(
-            $listContext_isStaticGroupAuthorized, false))
+        $listContext_isStaticGroupAuthorized, false))
 ## Authorization rule: { allow: groups, groups: [\\"Allowed\\"], groupClaim: \\"cognito:groups\\" } **
 #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
 #set( $allowedGroups = [\\"Allowed\\"] )
