@@ -16,6 +16,7 @@ import {
   AppSyncSimulatorPipelineResolverConfig,
   AppSyncSimulatorUnitResolverConfig,
   AmplifyAppSyncAPIConfig,
+  AppSyncSimulatorMappingTemplate,
 } from './type-definition';
 export * from './type-definition';
 
@@ -66,9 +67,11 @@ export class AmplifyAppSyncSimulator {
     try {
       this._appSyncConfig = config.appSync;
       this.mappingTemplates = (config.mappingTemplates || []).reduce((map, template) => {
-        const normalizedTemplate = { ...template }
-        // Windows path normalization by replacing '\' with '/' as CFN references path with '/'
-        normalizedTemplate.path = normalizedTemplate.path ? slash(normalizedTemplate.path) : normalizedTemplate.path;
+        const normalizedTemplate:AppSyncSimulatorMappingTemplate = { content: template.content };
+        if(template.path)  {
+          // Windows path normalization by replacing '\' with '/' as CFN references path with '/'
+          normalizedTemplate.path = slash(template.path);
+        }
         map.set(normalizedTemplate.path, new VelocityTemplate(normalizedTemplate, this));
         return map;
       }, new Map());
