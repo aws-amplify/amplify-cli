@@ -67,8 +67,8 @@ export class AmplifyAppSyncSimulator {
     try {
       this._appSyncConfig = config.appSync;
       this.mappingTemplates = (config.mappingTemplates || []).reduce((map, template) => {
-        const normalizedTemplate:AppSyncSimulatorMappingTemplate = { content: template.content };
-        if(template.path)  {
+        const normalizedTemplate: AppSyncSimulatorMappingTemplate = { content: template.content };
+        if (template.path) {
           // Windows path normalization by replacing '\' with '/' as CFN references path with '/'
           normalizedTemplate.path = slash(template.path);
         }
