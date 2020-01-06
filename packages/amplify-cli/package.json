@@ -20,7 +20,7 @@
     "clean": "rm -rf ./lib"
   },
   "engines": {
-    "node": ">=8.12.0"
+    "node": ">=10.0.0"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.15",
-    "@types/node": "^12.0.4",
+    "@types/node": "^10.17.13",
     "babel-eslint": "^8.0.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",

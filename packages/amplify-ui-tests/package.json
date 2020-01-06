@@ -17,7 +17,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.14",
     "@types/nexpect": "0.4.30",
-    "@types/node": "10.3.4",
+    "@types/node": "^10.17.13",
     "aws-amplify": "1.1.4",
     "aws-sdk": "^2.580.0",
     "dotenv": "6.2.0",

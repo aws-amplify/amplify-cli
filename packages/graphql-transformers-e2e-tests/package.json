@@ -29,7 +29,7 @@
   "devDependencies": {
     "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.1",
-    "@types/node": "^8.10.59",
+    "@types/node": "^10.17.13",
     "aws-amplify": "^2.1.0",
     "aws-appsync": "^1.8.1",
     "aws-sdk": "^2.580.0",
