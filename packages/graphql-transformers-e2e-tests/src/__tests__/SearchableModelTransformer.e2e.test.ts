@@ -53,10 +53,10 @@ const createEntries = async () => {
   await runQuery(getCreatePostsQuery('snvishna', 'test title', 160, 30, 97.6, false), logContent);
   await runQuery(getCreatePostsQuery('snvishna', 'test title', 170, 30, 77.7, true), logContent);
   // create users
-  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user1', userItems: ['thing1', 'thing2'] } });
-  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user2', userItems: ['thing3', 'thing4'] } });
-  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user3', userItems: ['thing5', 'thing6'] } });
-  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user4', userItems: ['thing7', 'thing8'] } });
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user1', userItems: ['thing1', 'thing2'], createdAt: '2016-07-20' } });
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user2', userItems: ['thing3', 'thing4'], createdAt: '2017-06-10' } });
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user3', userItems: ['thing5', 'thing6'], createdAt: '2017-08-22' } });
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user4', userItems: ['thing7', 'thing8'], createdAt: '2019-07-04' } });
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   console.log('Waiting for the ES Cluster + Streaming Lambda infra to be setup');
   await cf.wait(120, () => Promise.resolve());
@@ -86,6 +86,7 @@ beforeAll(async () => {
     type User @model @searchable {
       id: ID!
       name: String!
+      createdAt: AWSDate
       userItems: [String]
     }
     `;
@@ -685,7 +686,7 @@ test('Test updatePost syncing with Elasticsearch', async () => {
 
 test('query users knowing userItems is a string set in ddb but should be a list in es', async () => {
   const searchResponse = await GRAPHQL_CLIENT.query(
-    `query SearchUsers {
+    `query {
       searchUsers {
         items {
           id
@@ -701,6 +702,65 @@ test('query users knowing userItems is a string set in ddb but should be a list 
   expect(searchResponse).toBeDefined();
   const items = searchResponse.data.searchUsers.items;
   expect(items.length).toEqual(4);
+});
+
+test('query using string range between names', async () => {
+  // using string range queries
+  const expectedUsers = ['user2', 'user3'];
+  const expectedLength = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchUsers(filter: {
+        name: {
+          lt: "user4"
+          gt: "user1"
+        }
+      }) {
+        items {
+          id
+          name
+        }
+      }
+    }`,
+    {}
+  );
+  expect(searchResponse).toBeDefined();
+  const items = searchResponse.data.searchUsers.items;
+  console.log(items);
+  expect(items.length).toEqual(expectedLength);
+  items.forEach((item: any) => {
+    expect(expectedUsers).toContain(item.name);
+  });
+});
+
+test('query using date range for createdAt', async () => {
+  const expectedDates = ['2017-06-10', '2017-08-22'];
+  const expectedLength = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchUsers(filter: {
+        createdAt: {
+          lt: "2019-07-04"
+          gt: "2016-07-20"
+        }
+      }) {
+        items {
+          id
+          name
+          createdAt
+          userItems
+        }
+      }
+    }`,
+    {}
+  );
+  expect(searchResponse).toBeDefined();
+  const items = searchResponse.data.searchUsers.items;
+  console.log(items);
+  expect(items.length).toEqual(expectedLength);
+  items.forEach((item: any) => {
+    expect(expectedDates).toContain(item.createdAt);
+  });
 });
 
 function getCreatePostsQuery(
@@ -728,6 +788,7 @@ function getCreateUsersQuery() {
     createUser(input: $input) {
       id
       name
+      createdAt
       userItems
     }
   }`;
