@@ -1,7 +1,7 @@
 import v4 from 'uuid';
-import * as retimer from 'retimer';
-import * as Connection from 'mqtt-connection';
-import * as steed from 'steed';
+import retimer from 'retimer';
+import Connection from 'mqtt-connection';
+import steed from 'steed';
 
 import { MQTTServer } from './server';
 import { Logger } from 'pino';

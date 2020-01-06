@@ -1,5 +1,5 @@
 import { Compile, parse } from 'amplify-velocity-template';
-import * as JSON5 from 'json5';
+import JSON5 from 'json5';
 import { AmplifyAppSyncSimulator } from '..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
 import { create as createUtil, TemplateSentError } from './util';

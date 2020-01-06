@@ -1,11 +1,11 @@
-import * as cors from 'cors';
-import * as e2p from 'event-to-promise';
-import * as express from 'express';
+import cors from 'cors';
+import e2p from 'event-to-promise';
+import express from 'express';
 import { execute, parse, specifiedRules, validate } from 'graphql';
 import { address as getLocalIpAddress } from 'ip';
-import * as jwtDecode from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import { join } from 'path';
-import * as portfinder from 'portfinder';
+import portfinder from 'portfinder';
 import { AmplifyAppSyncSimulator } from '..';
 import {
   AmplifyAppSyncAuthenticationProviderOIDCConfig,
