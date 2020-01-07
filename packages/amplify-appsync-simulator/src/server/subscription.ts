@@ -5,11 +5,8 @@ import { createServer as createHTTPServer } from 'http';
 import e2p from 'event-to-promise';
 import portfinder from 'portfinder';
 
-import { Server as CoreHTTPServer } from 'net';
-import { AddressInfo } from 'dgram';
+import { Server as CoreHTTPServer, AddressInfo } from 'net';
 import { Server as MQTTServer } from '../mqtt-server';
-import { readFileSync } from 'fs-extra';
-import { join } from 'path';
 import { address as getLocalIpAddress } from 'ip';
 
 import { AmplifyAppSyncSimulator } from '..';
