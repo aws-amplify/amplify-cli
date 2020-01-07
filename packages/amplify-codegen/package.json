@@ -25,7 +25,7 @@
     "inquirer": "^6.5.1",
     "ora": "^3.4.0",
     "underscore": "^1.9.1",
-    "upath": "^1.2.0"
+    "slash": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
