@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "2.11.0",
+  "version": "2.11.1-beta.0",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
@@ -14,9 +14,9 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@graphql-codegen/core": "^1.8.3",
-    "amplify-codegen-appsync-model-plugin": "1.11.0",
-    "amplify-graphql-docs-generator": "2.1.6",
-    "amplify-graphql-types-generator": "2.1.6",
+    "amplify-codegen-appsync-model-plugin": "1.11.1-beta.0",
+    "amplify-graphql-docs-generator": "2.1.7-beta.0",
+    "amplify-graphql-types-generator": "2.1.7-beta.0",
     "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",
     "glob-all": "^3.1.0",
@@ -24,8 +24,8 @@
     "graphql-config": "^2.1.0",
     "inquirer": "^6.5.1",
     "ora": "^3.4.0",
-    "underscore": "^1.9.1",
-    "slash": "^3.0.0"
+    "slash": "^3.0.0",
+    "underscore": "^1.9.1"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
