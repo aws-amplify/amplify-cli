@@ -3,6 +3,7 @@ const path = require('path');
 const archiver = require('archiver');
 const { hashElement } = require('folder-hash');
 const childProcess = require('child_process');
+const { getTemplateFilePath } = require('./utility-functions');
 
 async function run(context, category, resourceName) {
   const { allResources } = await context.amplify.getResourceStatus(category, resourceName);
@@ -14,12 +15,25 @@ async function run(context, category, resourceName) {
   }
   return Promise.all(buildPromises);
 }
-async function buildResource(context, resource) {
+async function buildResource(context, resource, assetPath, isLayer) {
+  if (!assetPath) {
+    const cfnMeta = context.amplify.readJsonFile(getTemplateFilePath(context, resource));
+
+    const fn = cfnMeta.Resources.LambdaFunction || cfnMeta.Resources.LambdaLayer || cfnMeta.Resources.LambdaLayerVersion;
+
+    assetPath = 'src';
+    if (fn.Metadata && 'aws:asset:path' in fn.Metadata) {
+      assetPath = fn.Metadata['aws:asset:path'];
+    }
+
+    isLayer = fn.Type === 'AWS::Lambda::LayerVersion';
+  }
+
   const { category, resourceName } = resource;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const projectRoot = context.amplify.pathManager.searchProjectRootPath();
-  const resourceDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
-  const packageJsonPath = path.normalize(path.join(backEndDir, category, resourceName, 'src', 'package.json'));
+  const resourceDir = path.normalize(path.join(backEndDir, category, resourceName, assetPath));
+  const packageJsonPath = path.normalize(path.join(backEndDir, category, resourceName, assetPath, 'package.json'));
   const packageJsonMeta = fs.statSync(packageJsonPath);
   const distDir = path.normalize(path.join(backEndDir, category, resourceName, 'dist'));
 
@@ -61,7 +75,7 @@ async function buildResource(context, resource) {
       });
       const zip = archiver.create('zip', {});
       zip.pipe(output);
-      zip.directory(resourceDir, false);
+      zip.directory(resourceDir, isLayer ? 'nodejs' : false);
       zip.finalize();
     });
   }
