@@ -1,3 +1,5 @@
+const fs = require('fs-extra');
+const path = require('path');
 const awsRegions = require('./aws-regions');
 const Cognito = require('../src/aws-utils/aws-cognito');
 const Lambda = require('../src/aws-utils/aws-lambda');
@@ -206,5 +208,25 @@ module.exports = {
       throw err;
     }
     return listOfEndpoints;
+  },
+  getTemplateFilePath: (context, resource) => {
+    const { category, resourceName } = resource;
+    const backEndDir = context.amplify.pathManager.getBackendDirPath();
+    const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+
+    const files = fs.readdirSync(resourceDir);
+    // Fetch all the Cloudformation templates for the resource (can be json or yml)
+    const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
+
+    if (cfnFiles.length !== 1) {
+      context.print.error('Only one CloudFormation template is allowed in the resource directory');
+      context.print.error(resourceDir);
+      throw new Error('Only one CloudFormation template is allowed in the resource directory');
+    }
+
+    const cfnFile = cfnFiles[0];
+    const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
+
+    return cfnFilePath;
   },
 };

@@ -16,6 +16,7 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
+const { getTemplateFilePath } = require('./utility-functions');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -211,8 +212,23 @@ function packageResources(context, resources) {
   resources = resources.filter(resource => resource.build);
 
   const packageResource = (context, resource) => {
+    const cfnFilePath = getTemplateFilePath(context, resource);
+    const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
+
+    const fn = cfnMeta.Resources.LambdaFunction || cfnMeta.Resources.LambdaLayer || cfnMeta.Resources.LambdaLayerVersion;
+
+    let assetPath = 'src';
+    if (fn.Metadata && 'aws:asset:path' in fn.Metadata) {
+      assetPath = fn.Metadata['aws:asset:path'];
+    }
+
+    let assetProperty = 'Code';
+    if (fn.Metadata && 'aws:asset:property' in fn.Metadata) {
+      assetProperty = fn.Metadata['aws:asset:property'];
+    }
+
     let s3Key;
-    return buildResource(context, resource)
+    return buildResource(context, resource, assetPath, fn.Type === 'AWS::Lambda::LayerVersion')
       .then(result => {
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
@@ -225,36 +241,30 @@ function packageResources(context, resources) {
         });
       })
       .then(s3Bucket => {
-        // Update cfn template
-        const { category, resourceName } = resource;
-        const backEndDir = context.amplify.pathManager.getBackendDirPath();
-        const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-
-        const files = fs.readdirSync(resourceDir);
-        // Fetch all the Cloudformation templates for the resource (can be json or yml)
-        const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
-
-        if (cfnFiles.length !== 1) {
-          context.print.error('Only one CloudFormation template is allowed in the resource directory');
-          context.print.error(resourceDir);
-          throw new Error('Only one CloudFormation template is allowed in the resource directory');
-        }
-
-        const cfnFile = cfnFiles[0];
-        const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-
-        const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
-
-        if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-          cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-            Bucket: s3Bucket,
-            Key: s3Key,
-          };
-        } else {
-          cfnMeta.Resources.LambdaFunction.Properties.Code = {
-            S3Bucket: s3Bucket,
-            S3Key: s3Key,
-          };
+        switch (fn.Type) {
+          case 'AWS::Serverless::Function':
+            fn.Properties.CodeUri = {
+              Bucket: s3Bucket,
+              Key: s3Key,
+            };
+            break;
+          case 'AWS::Lambda::Function':
+            fn.Properties.Code = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+            break;
+          case 'AWS::Lambda::LayerVersion':
+            fn.Properties.Content = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+            break;
+          default:
+            fn.Properties[assetProperty] = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
         }
 
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
