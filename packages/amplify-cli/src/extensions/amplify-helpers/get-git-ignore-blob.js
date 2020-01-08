@@ -12,6 +12,7 @@ function getGitIgnoreBlob() {
     'aws-exports.js',
     'awsconfiguration.json',
     'amplifyconfiguration.json',
+    'team-provider-info.json',
   ];
 
   const toAppend = `${os.EOL + os.EOL}${ignoreList.join(os.EOL)}`;

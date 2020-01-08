@@ -53,6 +53,7 @@ function getGitIgnoreAppendString() {
     'amplifyconfiguration.json',
     'amplify-gradle-config.json',
     'amplifyxc.config',
+    'team-provider-info.json',
   ];
 
   const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}`;
