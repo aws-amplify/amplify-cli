@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/jest": "^24.0.16",
     "@types/lodash": "^4.14.129",
-    "@types/node": "^8.10.59",
+    "@types/node": "^10.17.13",
     "aws-amplify": "^1.1.36",
     "aws-sdk": "^2.580.0",
     "axios": "^0.19.0",

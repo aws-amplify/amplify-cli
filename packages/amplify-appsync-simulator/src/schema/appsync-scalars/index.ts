@@ -1,5 +1,5 @@
 import { GraphQLInt, GraphQLScalarType, GraphQLError, Kind, StringValueNode } from 'graphql';
-import * as GraphQLJSON from 'graphql-type-json';
+import GraphQLJSON from 'graphql-type-json';
 import { isValidNumber } from 'libphonenumber-js';
 
 import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';

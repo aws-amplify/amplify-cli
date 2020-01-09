@@ -44,10 +44,15 @@ async function getConfiguredAmplifyClient(context, options = {}) {
 
   const config = { ...cred, ...defaultOptions, ...options };
 
-  if (config.region && amplifyServiceRegions.includes(config.region)) {
-    return new aws.Amplify(config);
+  if (cred) {
+    // this is the "project" config level case, creds and region are explicitly set or retrieved from a profile
+    if (config.region && amplifyServiceRegions.includes(config.region)) {
+      return new aws.Amplify(config);
+    }
+    return undefined;
   }
-  return undefined;
+  // this is the "general" config level case, aws sdk will resolve creds and region from env variables etc.
+  return new aws.Amplify(config);
 }
 
 function printAuthErrorMessage(context) {

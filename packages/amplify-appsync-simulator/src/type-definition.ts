@@ -63,8 +63,10 @@ export interface AppSyncSimulatorDataSourceDDBConfig extends AppSyncSimulatorDat
     tableName: string;
   };
 }
-interface AppSyncSimulatorDataSourceNoneConfig extends AppSyncSimulatorDataSourceBaseConfig {}
-interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulatorDataSourceBaseConfig {
+export interface AppSyncSimulatorDataSourceNoneConfig extends AppSyncSimulatorDataSourceBaseConfig {
+  type: 'None';
+}
+export interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulatorDataSourceBaseConfig {
   type: 'AWS_LAMBDA';
   invoke: Function;
 }

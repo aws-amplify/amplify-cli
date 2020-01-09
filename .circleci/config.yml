@@ -6,7 +6,7 @@ machine:
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/node:10.16
+    - image: circleci/node:10.18
 
 jobs:
   build:
@@ -96,7 +96,7 @@ jobs:
   integration_test:
     working_directory: ~/repo
     docker:
-      - image: cypress/base:10
+      - image: cypress/base:10.18.0
         environment:
           TERM: dumb
     steps:
@@ -212,7 +212,7 @@ jobs:
   integration_test_js:
     working_directory: ~/repo
     docker:
-      - image: cypress/base:10
+      - image: cypress/base:10.18.0
         environment:
           TERM: dumb
     steps:

@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/jest": "23.1.1",
-    "@types/node": "^8.10.59",
+    "@types/node": "^10.17.13",
     "aws-sdk": "^2.580.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",

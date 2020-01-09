@@ -12,7 +12,7 @@ const KNOWN_DIRECTIVES: {
 
 export function generateResolvers(
   schema: Source,
-  resolversConfig: AppSyncSimulatorBaseResolverConfig[],
+  resolversConfig: AppSyncSimulatorBaseResolverConfig[] = [],
   simulatorContext: AmplifyAppSyncSimulator
 ) {
   const appSyncScalars = new Source(

@@ -1,9 +1,9 @@
 import { Unauthorized, ValidateError, TemplateSentError } from './errors';
-import * as autoId from 'uuid/v4';
+import autoId from 'uuid/v4';
 import { JavaString } from '../value-mapper/string';
 import { JavaArray } from '../value-mapper/array';
 import { JavaMap } from '../value-mapper/map';
-import * as jsStringEscape from 'js-string-escape';
+import jsStringEscape from 'js-string-escape';
 export const generalUtils = {
   errors: [],
   quiet: () => '',
