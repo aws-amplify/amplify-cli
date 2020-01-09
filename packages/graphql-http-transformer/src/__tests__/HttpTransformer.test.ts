@@ -1,5 +1,5 @@
 import { parse } from 'graphql';
-import GraphQLTransform from 'graphql-transformer-core';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { HttpTransformer } from '../HttpTransformer';
 

@@ -62,7 +62,7 @@ export class ResourceFactory {
     connectionAttributeName: string,
     sortField: { name: string; type: string } = null
   ): Table {
-    const gsis = table.Properties.GlobalSecondaryIndexes || ([] as GlobalSecondaryIndex[]);
+    const gsis = <GlobalSecondaryIndex[]>table.Properties.GlobalSecondaryIndexes || ([] as GlobalSecondaryIndex[]);
     if (gsis.length >= 20) {
       throw new InvalidDirectiveError(
         `Cannot create connection ${connectionName}. Table ${table.Properties.TableName} out of GSI capacity.`

@@ -16,7 +16,12 @@ export class JavaString {
   toString() {
     return this.value;
   }
+
   toIdString() {
     return this.value;
+  }
+
+  length() {
+    return this.value && this.value.length;
   }
 }

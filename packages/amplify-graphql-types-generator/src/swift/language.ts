@@ -1,4 +1,4 @@
-import CodeGenerator from '../utilities/CodeGenerator';
+import { CodeGenerator } from '../utilities/CodeGenerator';
 
 import { join, wrap } from '../utilities/printing';
 

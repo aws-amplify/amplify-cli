@@ -3,6 +3,86 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.1.6) (2019-12-31)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.1.5) (2019-12-28)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.1.4) (2019-12-26)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.1.3) (2019-12-25)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.1.2) (2019-12-20)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.1.1) (2019-12-10)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.0.5) (2019-12-03)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.0.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.0.4) (2019-12-01)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.0.3) (2019-11-27)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@0.23.0...amplify-storage-simulator@1.0.1) (2019-11-27)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
 # 0.5.0 (2019-08-30)
 
 

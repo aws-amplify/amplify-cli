@@ -1,11 +1,11 @@
 {
   "name": "amplify-graphql-docs-generator",
-  "version": "1.26.0",
+  "version": "2.1.6",
   "main": "lib/index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=8.12.0"
+    "node": ">=10.0.0"
   },
   "bin": {
     "amplify-graphql-docs-generator": "./bin/cli"
@@ -31,12 +31,12 @@
     "@types/ejs": "^2.6.0",
     "@types/graphql": "^0.13.4",
     "@types/jest": "23.3.1",
-    "@types/node": "^8.10.51",
+    "@types/node": "^10.17.13",
     "@types/prettier": "^1.13.2",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "~3.6.4"
   },
   "dependencies": {
     "camel-case": "^3.0.0",

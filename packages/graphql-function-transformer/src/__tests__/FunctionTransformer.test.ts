@@ -1,5 +1,5 @@
-import GraphQLTransform, { Transformer } from 'graphql-transformer-core';
-import FunctionTransformer from '../FunctionTransformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { FunctionTransformer } from '../FunctionTransformer';
 
 test('FunctionTransformer should add a datasource, IAM role and a resolver resources', () => {
   const validSchema = `
@@ -43,7 +43,7 @@ test('FunctionTransformer should add a datasource, IAM role and a resolver resou
 test('two @function directives for the same lambda should produce a single datasource, single role and two resolvers', () => {
   const validSchema = `
     type Query {
-        echo(msg: String): String @function(name: "echofunction-\${env}") 
+        echo(msg: String): String @function(name: "echofunction-\${env}")
         magic(msg: String): String @function(name: "echofunction-\${env}")
     }
     `;

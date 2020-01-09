@@ -1,0 +1,16 @@
+export const schemaTypeMap: Record<string, string> = {
+  ID: '.string',
+  String: '.string',
+  Int: '.int',
+  Float: '.double',
+  Boolean: '.bool',
+  AWSDate: '.date',
+  AWSTime: '.time',
+  AWSDateTime: '.dateTime',
+  AWSTimestamp: '.int',
+  AWSEmail: '.string',
+  AWSJSON: '.string',
+  AWSURL: '.string',
+  AWSPhone: '.string',
+  AWSIPAddress: '.string',
+};

@@ -3,6 +3,161 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.11.0) (2019-12-31)
+
+
+### Bug Fixes
+
+* **graphql-function-transformer:** add hash to function iam role name ([#3030](https://github.com/aws-amplify/amplify-cli/issues/3030)) ([e3c4a32](https://github.com/aws-amplify/amplify-cli/commit/e3c4a32135f3df6ffb06308d5250433aaf2c1ce9)), closes [#2468](https://github.com/aws-amplify/amplify-cli/issues/2468)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.10.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.10.0) (2019-12-28)
+
+
+### Bug Fixes
+
+* **graphql-function-transformer:** add hash to function iam role name ([#3030](https://github.com/aws-amplify/amplify-cli/issues/3030)) ([e3c4a32](https://github.com/aws-amplify/amplify-cli/commit/e3c4a32135f3df6ffb06308d5250433aaf2c1ce9)), closes [#2468](https://github.com/aws-amplify/amplify-cli/issues/2468)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.9.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.9.0) (2019-12-26)
+
+
+### Bug Fixes
+
+* **graphql-function-transformer:** add hash to function iam role name ([#3030](https://github.com/aws-amplify/amplify-cli/issues/3030)) ([e3c4a32](https://github.com/aws-amplify/amplify-cli/commit/e3c4a32135f3df6ffb06308d5250433aaf2c1ce9)), closes [#2468](https://github.com/aws-amplify/amplify-cli/issues/2468)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.8.0) (2019-12-25)
+
+
+### Bug Fixes
+
+* **graphql-function-transformer:** add hash to function iam role name ([#3030](https://github.com/aws-amplify/amplify-cli/issues/3030)) ([e3c4a32](https://github.com/aws-amplify/amplify-cli/commit/e3c4a32135f3df6ffb06308d5250433aaf2c1ce9)), closes [#2468](https://github.com/aws-amplify/amplify-cli/issues/2468)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.7.0) (2019-12-20)
+
+
+### Bug Fixes
+
+* **graphql-function-transformer:** add hash to function iam role name ([#3030](https://github.com/aws-amplify/amplify-cli/issues/3030)) ([e3c4a32](https://github.com/aws-amplify/amplify-cli/commit/e3c4a32135f3df6ffb06308d5250433aaf2c1ce9)), closes [#2468](https://github.com/aws-amplify/amplify-cli/issues/2468)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.6.0) (2019-12-10)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.4.0) (2019-12-03)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.3.0) (2019-12-01)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.2.0) (2019-11-27)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.1.0) (2019-11-27)
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
 # [3.14.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.8.3...graphql-transformer-common@3.14.0) (2019-08-30)
 
 

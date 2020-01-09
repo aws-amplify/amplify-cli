@@ -3,6 +3,166 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.11.0) (2019-12-31)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.10.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.10.0) (2019-12-28)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.9.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.9.0) (2019-12-26)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.8.0) (2019-12-25)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.7.0) (2019-12-20)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.6.0) (2019-12-10)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.4.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.3.0) (2019-12-01)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.2.0) (2019-11-27)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.25.0...graphql-mapping-template@4.1.0) (2019-11-27)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+
+
+### Features
+
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
 # [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.1.1...graphql-mapping-template@3.7.0) (2019-08-30)
 
 

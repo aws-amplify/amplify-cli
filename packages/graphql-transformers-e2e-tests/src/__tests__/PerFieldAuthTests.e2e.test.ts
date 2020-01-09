@@ -1,9 +1,8 @@
-import Amplify from 'aws-amplify';
 import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import ModelAuthTransformer from 'graphql-auth-transformer';
-import ModelConnectionTransformer from 'graphql-connection-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -12,7 +11,6 @@ import { CreateBucketRequest } from 'aws-sdk/clients/s3';
 import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
-import * as path from 'path';
 import { deploy } from '../deployNestedStacks';
 import * as moment from 'moment';
 import emptyBucket from '../emptyBucket';
@@ -25,6 +23,7 @@ import {
   addUserToGroup,
   configureAmplify,
 } from '../cognitoUtils';
+import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

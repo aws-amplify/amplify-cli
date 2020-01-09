@@ -1,7 +1,6 @@
-import * as nexpect from 'nexpect';
-import { join } from 'path';
-
+import * as nexpect from '../utils/nexpect-modified';
 import { getCLIPath, isCI } from '../utils';
+
 const defaultSettings = {
   name: '\r',
   envName: 'integtest',
@@ -16,7 +15,7 @@ const defaultSettings = {
   profileName: '\r',
 };
 
-export default function initProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
+export function initJSProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     nexpect
@@ -40,6 +39,67 @@ export default function initProjectWithProfile(cwd: string, settings: Object, ve
       .wait('Start Command:')
       .sendline('\r')
       .wait('Using default provider  awscloudformation')
+      .wait('Do you want to use an AWS profile?')
+      .sendline('y')
+      .wait('Please choose the profile you want to use')
+      .sendline(s.profileName)
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function initAndroidProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
+  const s = { ...defaultSettings, ...settings };
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+      .wait('Enter a name for the project')
+      .sendline(s.name)
+      .wait('Enter a name for the environment')
+      .sendline(s.envName)
+      .wait('Choose your default editor:')
+      .sendline(s.editor)
+      .wait("Choose the type of app that you're building")
+      .send('j')
+      .sendline('')
+      .wait('Where is your Res directory')
+      .sendline('')
+      .wait('Do you want to use an AWS profile?')
+      .sendline('y')
+      .wait('Please choose the profile you want to use')
+      .sendline(s.profileName)
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function initIosProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
+  const s = { ...defaultSettings, ...settings };
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+      .wait('Enter a name for the project')
+      .sendline(s.name)
+      .wait('Enter a name for the environment')
+      .sendline(s.envName)
+      .wait('Choose your default editor:')
+      .sendline(s.editor)
+      .wait("Choose the type of app that you're building")
+      .send('j')
+      .send('j')
+      .sendline('')
       .wait('Do you want to use an AWS profile?')
       .sendline('y')
       .wait('Please choose the profile you want to use')
@@ -148,7 +208,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }, verbo
       .wait('Please choose the profile you want to use')
       .sendline('\r')
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

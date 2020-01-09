@@ -862,6 +862,7 @@ async function askDynamoDBQuestions(context, inputs, currentProjectOnly = false)
     message: inputs[5].question,
     choices: inputs[5].options,
   };
+  // eslint-disable-next-line
   while (true) {
     //eslint-disable-line
     const dynamoDbTypeAnswer = currentProjectOnly ? { [inputs[5].key]: 'currentProject' } : await inquirer.prompt([dynamoDbTypeQuestion]);

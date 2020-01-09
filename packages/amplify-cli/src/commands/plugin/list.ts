@@ -1,6 +1,6 @@
-import Context from '../../domain/context';
+import { Context } from '../../domain/context';
 import inquirer from '../../domain/inquirer-helper';
-import PluginCollection from '../../domain/plugin-collection';
+import { PluginCollection } from '../../domain/plugin-collection';
 import { displayGeneralInfo, displayPluginCollection, displayPluginInfoArray } from '../../plugin-helpers/display-plugin-platform';
 
 export async function run(context: Context) {

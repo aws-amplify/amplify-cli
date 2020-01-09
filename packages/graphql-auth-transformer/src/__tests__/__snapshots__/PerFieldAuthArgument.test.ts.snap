@@ -1,5 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test per-field @auth without model 1`] = `
+"## [Start] Static Group Authorization Checks **
+#set($listContext_isStaticGroupAuthorized = $util.defaultIfNull(
+            $listContext_isStaticGroupAuthorized, false))
+## Authorization rule: { allow: groups, groups: [\\"Allowed\\"], groupClaim: \\"cognito:groups\\" } **
+#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+#set( $allowedGroups = [\\"Allowed\\"] )
+#foreach( $userGroup in $userGroups )
+  #if( $allowedGroups.contains($userGroup) )
+    #set( $listContext_isStaticGroupAuthorized = true )
+    #break
+  #end
+#end
+## [End] Static Group Authorization Checks **
+
+
+## [Start] Throw if unauthorized **
+#if( !($listContext_isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **"
+`;
+
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 1`] = `
 "## [Start] Checking for allowed operations which can return this field **
 #set( $operation = $util.defaultIfNull($context.source.operation, \\"null\\") )
@@ -16,7 +39,7 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 #set( $context.result.operation = \\"Mutation\\" )
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+$util.toJson($ctx.result)"
 `;
 
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 3`] = `
@@ -24,7 +47,7 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 #set( $context.result.operation = \\"Mutation\\" )
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+$util.toJson($ctx.result)"
 `;
 
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 4`] = `
@@ -32,5 +55,5 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 #set( $context.result.operation = \\"Mutation\\" )
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+$util.toJson($ctx.result)"
 `;

@@ -1,5 +1,5 @@
 const path = require('path');
-const { default: generate } = require('amplify-graphql-docs-generator');
+const { generate } = require('amplify-graphql-docs-generator');
 const fs = require('fs-extra');
 
 const loadConfig = require('../../src/codegen-config');

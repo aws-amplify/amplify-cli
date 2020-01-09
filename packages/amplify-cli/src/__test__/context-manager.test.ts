@@ -1,5 +1,5 @@
-import Input from '../domain/input';
-import PluginPlatform from '../domain/plugin-platform';
+import { Input } from '../domain/input';
+import { PluginPlatform } from '../domain/plugin-platform';
 
 import { constructContext } from '../context-manager';
 

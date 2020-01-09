@@ -191,7 +191,7 @@ function getTemplateMappings(context) {
   };
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  const regionMapping = provider.getPinpointRegionMapping(context);
+  const regionMapping = provider.getPinpointRegionMapping();
   Object.keys(regionMapping).forEach(region => {
     Mappings.RegionMapping[region] = {
       pinpointRegion: regionMapping[region],

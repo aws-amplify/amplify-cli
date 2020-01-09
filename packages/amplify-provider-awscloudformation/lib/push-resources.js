@@ -8,83 +8,85 @@ const providerName = require('./constants').ProviderName;
 const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
 const { prePushGraphQLCodegen, postPushGraphQLCodegen } = require('./graphql-codegen');
+const { prePushAuthTransform } = require('./auth-transform');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
 const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
+const amplifyServiceManager = require('./amplify-service-manager');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 const optionalBuildDirectoryName = 'build';
 
 async function run(context, resourceDefinition) {
-  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = resourceDefinition;
+  try {
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = resourceDefinition;
 
-  const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
-  let projectDetails = context.amplify.getProjectDetails();
+    const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+    let projectDetails = context.amplify.getProjectDetails();
 
-  validateCfnTemplates(context, resources);
+    validateCfnTemplates(context, resources);
 
-  return packageResources(context, resources)
-    .then(() =>
-      transformGraphQLSchema(context, {
-        handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
-      })
-    )
-    .then(() => uploadAppSyncFiles(context, resources, allResources))
-    .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
-    .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
-    .then(() => {
-      spinner.start();
-      projectDetails = context.amplify.getProjectDetails();
-      if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
-        return updateCloudFormationNestedStack(
-          context,
-          formNestedStack(context, projectDetails),
-          resourcesToBeCreated,
-          resourcesToBeUpdated
-        );
-      }
-    })
-    .then(() => postPushGraphQLCodegen(context))
-    .then(async () => {
-      if (resources.length > 0) {
-        await context.amplify.updateamplifyMetaAfterPush(resources);
-      }
-      for (let i = 0; i < resourcesToBeDeleted.length; i += 1) {
-        context.amplify.updateamplifyMetaAfterResourceDelete(resourcesToBeDeleted[i].category, resourcesToBeDeleted[i].resourceName);
-      }
-    })
-    .then(() => uploadAuthTriggerFiles(context, resourcesToBeCreated, resourcesToBeUpdated))
-    .then(async () => {
-      let { allResources } = await context.amplify.getResourceStatus();
+    await packageResources(context, resources);
 
-      const newAPIresources = [];
-
-      allResources = allResources.filter(resource => resource.service === 'API Gateway');
-
-      for (let i = 0; i < allResources.length; i += 1) {
-        if (resources.findIndex(resource => resource.resourceName === allResources[i].resourceName) > -1) {
-          newAPIresources.push(allResources[i]);
-        }
-      }
-
-      return downloadAPIModels(context, newAPIresources);
-    })
-    .then(() =>
-      // Store current cloud backend in S3 deployment bcuket
-      storeCurrentCloudBackend(context)
-    )
-    .then(() => {
-      spinner.succeed('All resources are updated in the cloud');
-      displayHelpfulURLs(context, resources);
-    })
-    .catch(err => {
-      spinner.fail('An error occurred when pushing the resources to the cloud');
-      throw err;
+    await transformGraphQLSchema(context, {
+      handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
     });
+
+    await uploadAppSyncFiles(context, resources, allResources);
+    await prePushAuthTransform(context, resources);
+    await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
+    await updateS3Templates(context, resources, projectDetails.amplifyMeta);
+
+    spinner.start();
+
+    projectDetails = context.amplify.getProjectDetails();
+
+    if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
+      await updateCloudFormationNestedStack(context, formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated);
+    }
+
+    await postPushGraphQLCodegen(context);
+    await amplifyServiceManager.postPushCheck(context);
+
+    if (resources.length > 0) {
+      await context.amplify.updateamplifyMetaAfterPush(resources);
+    }
+
+    for (let i = 0; i < resourcesToBeDeleted.length; i++) {
+      context.amplify.updateamplifyMetaAfterResourceDelete(resourcesToBeDeleted[i].category, resourcesToBeDeleted[i].resourceName);
+    }
+
+    await uploadAuthTriggerFiles(context, resourcesToBeCreated, resourcesToBeUpdated);
+
+    let updatedAllResources = (await context.amplify.getResourceStatus()).allResources;
+
+    const newAPIresources = [];
+
+    updatedAllResources = updatedAllResources.filter(resource => resource.service === 'API Gateway');
+
+    for (let i = 0; i < updatedAllResources.length; i++) {
+      if (resources.findIndex(resource => resource.resourceName === updatedAllResources[i].resourceName) > -1) {
+        newAPIresources.push(updatedAllResources[i]);
+      }
+    }
+
+    await downloadAPIModels(context, newAPIresources);
+
+    // Store current cloud backend in S3 deployment bcuket
+    await storeCurrentCloudBackend(context);
+    await amplifyServiceManager.storeArtifactsForAmplifyService(context);
+
+    spinner.succeed('All resources are updated in the cloud');
+
+    displayHelpfulURLs(context, resources);
+  } catch (err) {
+    spinner.fail('An error occurred when pushing the resources to the cloud');
+    throw err;
+  }
 }
 
 async function updateStackForAPIMigration(context, category, resourceName, options) {
@@ -268,7 +270,7 @@ function packageResources(context, resources) {
   return Promise.all(promises);
 }
 
-function updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated) {
+async function updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, nestedStackFileName));
 
@@ -299,9 +301,9 @@ function updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCrea
   const jsonString = JSON.stringify(nestedStack, null, '\t');
   context.filesystem.write(nestedStackFilepath, jsonString);
 
-  return new Cloudformation(context, userAgentAction).then(cfnItem =>
-    cfnItem.updateResourceStack(path.normalize(path.join(backEndDir, providerName)), nestedStackFileName)
-  );
+  const cfnItem = await new Cloudformation(context, userAgentAction);
+
+  await cfnItem.updateResourceStack(path.normalize(path.join(backEndDir, providerName)), nestedStackFileName);
 }
 
 function getAllUniqueCategories(resources) {
@@ -383,7 +385,7 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
     const resources = Object.keys(amplifyMeta[category]);
     resources.forEach(resource => {
       const resourceDetails = amplifyMeta[category][resource];
-      if (category === 'auth') {
+      if (category === 'auth' && resource !== 'userPoolGroups') {
         authResourceName = resource;
       }
       const resourceKey = category + resource;
@@ -462,4 +464,5 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
 module.exports = {
   run,
   updateStackForAPIMigration,
+  storeCurrentCloudBackend,
 };

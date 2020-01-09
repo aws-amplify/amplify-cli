@@ -1,6 +1,6 @@
-import GraphQLTransform, { Transformer, InvalidDirectiveError } from 'graphql-transformer-core';
-import ModelTransformer from 'graphql-dynamodb-transformer';
-import KeyTransformer from 'graphql-key-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
 import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, Kind, InputObjectTypeDefinitionNode } from 'graphql';
 import {
   expectArguments,
@@ -19,7 +19,7 @@ test('Test that a primary @key with a single field changes the hash key.', () =>
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
@@ -44,7 +44,7 @@ test('Test that a primary @key with 2 fields changes the hash and sort key.', ()
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
@@ -77,7 +77,7 @@ test('Test that a primary @key with 3 fields changes the hash and sort keys.', (
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
@@ -115,7 +115,7 @@ test('Test that a secondary @key with 3 fields changes the hash and sort keys an
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
@@ -163,7 +163,7 @@ test('Test that a secondary @key with a single field adds a GSI.', () => {
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
@@ -197,7 +197,7 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
@@ -237,8 +237,8 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
 
 test('Test that a secondary @key with a multiple field adds an LSI.', () => {
   const validSchema = `
-    type Test 
-        @model @key(fields: ["email", "createdAt"]) 
+    type Test
+        @model @key(fields: ["email", "createdAt"])
         @key(name: "GSI_Email_UpdatedAt", fields: ["email", "updatedAt"], queryField: "testsByEmailByUpdatedAt") {
         email: String!
         createdAt: String!
@@ -247,7 +247,7 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
@@ -283,7 +283,7 @@ test('Test that a primary @key with complex fields will update the input objects
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   const out = transformer.transform(validSchema);
@@ -330,4 +330,30 @@ test('Test that a primary @key with complex fields will update the input objects
   });
 
   expectNonNullInputValues(deleteInput, ['email']);
+});
+
+test('Test that connection type is generated for custom query when queries is set to null.', () => {
+  const validSchema = `
+    type ContentCategory @model(queries: null, mutations: { create: "addContentToCategory", delete: "deleteContentFromCategory"})
+    @key(name: "ContentByCategory", fields: ["category", "type", "language", "datetime"], queryField: "listContentByCategory")
+    {
+        id: ID!
+        category: Int!
+        datetime: String!
+        type: String!
+        language: String!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  const schema = parse(out.schema);
+  const modelContentCategoryConnection = schema.definitions.find(
+    (def: any) => def.name && def.name.value === 'ModelContentCategoryConnection'
+  ) as ObjectTypeDefinitionNode;
+
+  expect(modelContentCategoryConnection).toBeDefined();
 });

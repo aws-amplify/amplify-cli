@@ -1,5 +1,4 @@
 import Template from 'cloudform-types/types/template';
-import Policy from 'cloudform-types/types/iam/policy';
 import { AppSync, Fn, StringParameter, Refs, NumberParameter, IAM, Value } from 'cloudform-types';
 import { AuthRule, AuthProvider } from './AuthRule';
 import {
@@ -27,11 +26,17 @@ import {
   newline,
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
-import GraphQLAPI, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, AdditionalAuthenticationProvider } from './graphQlApi';
+import GraphQLApi, {
+  GraphQLApiProperties,
+  UserPoolConfig,
+  AdditionalAuthenticationProvider,
+  OpenIDConnectConfig,
+} from 'cloudform-types/types/appSync/graphQlApi';
 import * as Transformer from './ModelAuthTransformer';
 import { FieldDefinitionNode } from 'graphql';
 
 import { DEFAULT_OWNER_FIELD, DEFAULT_IDENTITY_FIELD, DEFAULT_GROUPS_FIELD, DEFAULT_GROUP_CLAIM } from './constants';
+import ManagedPolicy from 'cloudform-types/types/iam/managedPolicy';
 
 function replaceIfUsername(identityClaim: string): string {
   return identityClaim === 'username' ? 'cognito:username' : identityClaim;
@@ -126,7 +131,7 @@ export class ResourceFactory {
     };
   }
 
-  public updateGraphQLAPIWithAuth(apiRecord: GraphQLAPI, authConfig: Transformer.AppSyncAuthConfiguration) {
+  public updateGraphQLAPIWithAuth(apiRecord: GraphQLApi, authConfig: Transformer.AppSyncAuthConfiguration) {
     let properties: GraphQLApiProperties = {
       ...apiRecord.Properties,
       Name: apiRecord.Properties.Name,
@@ -197,7 +202,7 @@ export class ResourceFactory {
       properties.AdditionalAuthenticationProviders = additionalAuthenticationProviders;
     }
 
-    return new GraphQLAPI(properties);
+    return new GraphQLApi(properties);
   }
 
   private assignOpenIDConnectConfig(config: Transformer.OpenIDConnectConfig) {
@@ -911,7 +916,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     ]);
   }
 
-  public getAuthModeDeterminationExpression(authProviders: Set<AuthProvider>): Expression {
+  public getAuthModeDeterminationExpression(authProviders: Set<AuthProvider>, isUserPoolTheDefault: boolean): Expression {
     if (!authProviders || authProviders.size === 0) {
       return comment(`No authentication mode determination needed`);
     }
@@ -920,19 +925,21 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
 
     for (const authProvider of authProviders) {
       if (authProvider === 'userPools') {
-        const userPoolsExpression = iff(
-          and([
-            raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthMode})`),
-            not(raw(`$util.isNull($ctx.identity)`)),
-            not(raw(`$util.isNull($ctx.identity.sub)`)),
-            not(raw(`$util.isNull($ctx.identity.issuer)`)),
-            not(raw(`$util.isNull($ctx.identity.username)`)),
-            not(raw(`$util.isNull($ctx.identity.claims)`)),
-            not(raw(`$util.isNull($ctx.identity.sourceIp)`)),
-            not(raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`)),
-          ]),
-          set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`userPools`))
-        );
+        const statements = [
+          raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthMode})`),
+          not(raw(`$util.isNull($ctx.identity)`)),
+          not(raw(`$util.isNull($ctx.identity.sub)`)),
+          not(raw(`$util.isNull($ctx.identity.issuer)`)),
+          not(raw(`$util.isNull($ctx.identity.username)`)),
+          not(raw(`$util.isNull($ctx.identity.claims)`)),
+          not(raw(`$util.isNull($ctx.identity.sourceIp)`)),
+        ];
+
+        if (isUserPoolTheDefault === true) {
+          statements.push(not(raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`)));
+        }
+
+        const userPoolsExpression = iff(and(statements), set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`userPools`)));
 
         expressions.push(userPoolsExpression);
       } else if (authProvider === 'oidc') {
@@ -945,7 +952,6 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             not(raw(`$util.isNull($ctx.identity.claims)`)),
             raw(`$util.isNull($ctx.identity.username)`),
             raw(`$util.isNull($ctx.identity.sourceIp)`),
-            raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`),
           ]),
           set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`oidc`))
         );
@@ -967,9 +973,37 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       : ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable;
   }
 
-  public makeIAMPolicyForRole(isAuthPolicy: Boolean, resources: Set<string>): Policy {
+  public makeIAMPolicyForRole(isAuthPolicy: Boolean, resources: Set<string>): ManagedPolicy[] {
+    const policies = new Array<ManagedPolicy>();
     const authPiece = isAuthPolicy ? 'auth' : 'unauth';
-    const policyResources: object[] = [];
+    let policyResources: object[] = [];
+    let resourceSize = 0;
+
+    // 6144 bytes is the maximum policy payload size, but there is structural overhead, hence the 6000 bytes
+    const MAX_BUILT_SIZE_BYTES = 6000;
+    // The overhead is the amount of static policy arn contents like region, accountid, etc.
+    // arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/fields/${fieldName}
+    // 16              15             13                5    27       6     X+1         7      Y
+    // 89 + 11 extra = 100
+    const RESOURCE_OVERHEAD = 100;
+
+    const createPolicy = newPolicyResources =>
+      new IAM.ManagedPolicy({
+        Roles: [
+          //HACK double casting needed because it cannot except Ref
+          ({ Ref: `${authPiece}RoleName` } as unknown) as Value<string>,
+        ],
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: ['appsync:GraphQL'],
+              Resource: newPolicyResources,
+            },
+          ],
+        },
+      });
 
     for (const resource of resources) {
       // We always have 2 parts, no need to check
@@ -985,6 +1019,8 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             fieldName: resourceParts[1],
           })
         );
+
+        resourceSize += RESOURCE_OVERHEAD + resourceParts[0].length + resourceParts[1].length;
       } else {
         policyResources.push(
           Fn.Sub('arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/*', {
@@ -994,26 +1030,33 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             typeName: resourceParts[0],
           })
         );
+
+        resourceSize += RESOURCE_OVERHEAD + resourceParts[0].length;
+      }
+
+      //
+      // Check policy size and if needed create a new one and clear the resources, reset
+      // accumulated size
+      //
+
+      if (resourceSize > MAX_BUILT_SIZE_BYTES) {
+        const policy = createPolicy(policyResources.slice(0, policyResources.length - 1));
+
+        policies.push(policy);
+
+        // Remove all but the last item
+        policyResources = policyResources.slice(-1);
+        resourceSize = 0;
       }
     }
 
-    return new IAM.Policy({
-      PolicyName: `appsync-${authPiece}role-policy`,
-      Roles: [
-        //HACK double casting needed because it cannot except Ref
-        ({ Ref: `${authPiece}RoleName` } as unknown) as Value<string>,
-      ],
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: ['appsync:GraphQL'],
-            Resource: policyResources,
-          },
-        ],
-      },
-    });
+    if (policyResources.length > 0) {
+      const policy = createPolicy(policyResources);
+
+      policies.push(policy);
+    }
+
+    return policies;
   }
 
   /**

@@ -1,6 +1,6 @@
-import PluginManifest from './plugin-manifest';
+import { PluginManifest } from './plugin-manifest';
 
-export default class PluginVerificationResult {
+export class PluginVerificationResult {
   constructor(
     public verified: boolean = false,
     public error?: PluginVerificationError,

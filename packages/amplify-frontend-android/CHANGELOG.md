@@ -3,6 +3,176 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.11.0) (2019-12-31)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.10.0) (2019-12-28)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.9.0) (2019-12-26)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.8.0) (2019-12-25)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.7.0) (2019-12-20)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.6.0) (2019-12-10)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.4.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.3.0) (2019-12-01)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.2.0) (2019-11-27)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
+# [2.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.32.0...amplify-frontend-android@2.1.0) (2019-11-27)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
 # [1.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.8.2...amplify-frontend-android@1.14.0) (2019-08-30)
 
 

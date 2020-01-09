@@ -1,0 +1,1702 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppSyncModelVisitor Should generate a class a model with all optional fields 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the SimpleModel type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"SimpleModels\\")
+public final class SimpleModel implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public ID getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private SimpleModel(ID id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      SimpleModel simpleModel = (SimpleModel) obj;
+      return ObjectsCompat.equals(getId(), simpleModel.getId()) &&
+              ObjectsCompat.equals(getName(), simpleModel.getName()) &&
+              ObjectsCompat.equals(getBar(), simpleModel.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   **/
+  public static SimpleModel justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new SimpleModel(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    SimpleModel build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private ID id;
+    private String name;
+    private String bar;
+    @Override
+     public SimpleModel build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new SimpleModel(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     **/
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(ID id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Should generate a class for a Model 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the SimpleModel type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"SimpleModels\\")
+public final class SimpleModel implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public ID getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private SimpleModel(ID id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      SimpleModel simpleModel = (SimpleModel) obj;
+      return ObjectsCompat.equals(getId(), simpleModel.getId()) &&
+              ObjectsCompat.equals(getName(), simpleModel.getName()) &&
+              ObjectsCompat.equals(getBar(), simpleModel.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   **/
+  public static SimpleModel justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new SimpleModel(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    SimpleModel build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private ID id;
+    private String name;
+    private String bar;
+    @Override
+     public SimpleModel build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new SimpleModel(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     **/
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(ID id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Should generate a class for a Model 2`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the SimpleModel type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"SimpleModels\\")
+public final class SimpleModel implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public ID getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private SimpleModel(ID id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      SimpleModel simpleModel = (SimpleModel) obj;
+      return ObjectsCompat.equals(getId(), simpleModel.getId()) &&
+              ObjectsCompat.equals(getName(), simpleModel.getName()) &&
+              ObjectsCompat.equals(getBar(), simpleModel.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   **/
+  public static SimpleModel justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new SimpleModel(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    SimpleModel build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private ID id;
+    private String name;
+    private String bar;
+    @Override
+     public SimpleModel build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new SimpleModel(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     **/
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(ID id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor connection One to Many connection should generate many side of the connection 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+import com.amplifyframework.core.model.annotations.BelongsTo;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the task type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"tasks\\")
+public final class task implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField TITLE = field(\\"title\\");
+  public static final QueryField DONE = field(\\"done\\");
+  public static final QueryField TODO = field(\\"taskTodoId\\");
+  public static final QueryField TIME = field(\\"time\\");
+  public static final QueryField CREATED_ON = field(\\"createdOn\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
+  private final @ModelField(targetType=\\"String\\", isRequired = true) String title;
+  private final @ModelField(targetType=\\"Boolean\\", isRequired = true) Boolean done;
+  private final @ModelField(targetType=\\"Todo\\") @BelongsTo(targetName = \\"taskTodoId\\", type = Todo.class) Todo todo;
+  private final @ModelField(targetType=\\"AWSTime\\") AWSTime time;
+  private final @ModelField(targetType=\\"AWSDate\\") AWSDate createdOn;
+  public ID getId() {
+      return id;
+  }
+  
+  public String getTitle() {
+      return title;
+  }
+  
+  public Boolean getDone() {
+      return done;
+  }
+  
+  public Todo getTodo() {
+      return todo;
+  }
+  
+  public AWSTime getTime() {
+      return time;
+  }
+  
+  public AWSDate getCreatedOn() {
+      return createdOn;
+  }
+  
+  private task(ID id, String title, Boolean done, Todo todo, AWSTime time, AWSDate createdOn) {
+    this.id = id;
+    this.title = title;
+    this.done = done;
+    this.todo = todo;
+    this.time = time;
+    this.createdOn = createdOn;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      task task = (task) obj;
+      return ObjectsCompat.equals(getId(), task.getId()) &&
+              ObjectsCompat.equals(getTitle(), task.getTitle()) &&
+              ObjectsCompat.equals(getDone(), task.getDone()) &&
+              ObjectsCompat.equals(getTodo(), task.getTodo()) &&
+              ObjectsCompat.equals(getTime(), task.getTime()) &&
+              ObjectsCompat.equals(getCreatedOn(), task.getCreatedOn());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getTitle())
+      .append(getDone())
+      .append(getTodo())
+      .append(getTime())
+      .append(getCreatedOn())
+      .toString()
+      .hashCode();
+  }
+  
+  public static TitleStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   **/
+  public static task justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new task(
+      id,
+      null,
+      null,
+      null,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      title,
+      done,
+      todo,
+      time,
+      createdOn);
+  }
+  public interface TitleStep {
+    DoneStep title(String title);
+  }
+  
+
+  public interface DoneStep {
+    BuildStep done(Boolean done);
+  }
+  
+
+  public interface BuildStep {
+    task build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep todo(Todo todo);
+    BuildStep time(AWSTime time);
+    BuildStep createdOn(AWSDate createdOn);
+  }
+  
+
+  public static class Builder implements TitleStep, DoneStep, BuildStep {
+    private ID id;
+    private String title;
+    private Boolean done;
+    private Todo todo;
+    private AWSTime time;
+    private AWSDate createdOn;
+    @Override
+     public task build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new task(
+          id,
+          title,
+          done,
+          todo,
+          time,
+          createdOn);
+    }
+    
+    @Override
+     public DoneStep title(String title) {
+        Objects.requireNonNull(title);
+        this.title = title;
+        return this;
+    }
+    
+    @Override
+     public BuildStep done(Boolean done) {
+        Objects.requireNonNull(done);
+        this.done = done;
+        return this;
+    }
+    
+    @Override
+     public BuildStep todo(Todo todo) {
+        this.todo = todo;
+        return this;
+    }
+    
+    @Override
+     public BuildStep time(AWSTime time) {
+        this.time = time;
+        return this;
+    }
+    
+    @Override
+     public BuildStep createdOn(AWSDate createdOn) {
+        this.createdOn = createdOn;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     **/
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(ID id, String title, Boolean done, Todo todo, AWSTime time, AWSDate createdOn) {
+      super.id(id);
+      super.title(title)
+        .done(done)
+        .todo(todo)
+        .time(time)
+        .createdOn(createdOn);
+    }
+    
+    @Override
+     public CopyOfBuilder title(String title) {
+      return (CopyOfBuilder) super.title(title);
+    }
+    
+    @Override
+     public CopyOfBuilder done(Boolean done) {
+      return (CopyOfBuilder) super.done(done);
+    }
+    
+    @Override
+     public CopyOfBuilder todo(Todo todo) {
+      return (CopyOfBuilder) super.todo(todo);
+    }
+    
+    @Override
+     public CopyOfBuilder time(AWSTime time) {
+      return (CopyOfBuilder) super.time(time);
+    }
+    
+    @Override
+     public CopyOfBuilder createdOn(AWSDate createdOn) {
+      return (CopyOfBuilder) super.createdOn(createdOn);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor connection One to Many connection should generate one side of the connection 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+import com.amplifyframework.core.model.annotations.HasMany;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the Todo type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"Todos\\")
+public final class Todo implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField TITLE = field(\\"title\\");
+  public static final QueryField DONE = field(\\"done\\");
+  public static final QueryField DESCRIPTION = field(\\"description\\");
+  public static final QueryField DUE_DATE = field(\\"due_date\\");
+  public static final QueryField VERSION = field(\\"version\\");
+  public static final QueryField VALUE = field(\\"value\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
+  private final @ModelField(targetType=\\"String\\", isRequired = true) String title;
+  private final @ModelField(targetType=\\"Boolean\\", isRequired = true) Boolean done;
+  private final @ModelField(targetType=\\"String\\") String description;
+  private final @ModelField(targetType=\\"String\\") String due_date;
+  private final @ModelField(targetType=\\"Int\\", isRequired = true) Int version;
+  private final @ModelField(targetType=\\"Float\\") Float value;
+  private final @ModelField(targetType=\\"task\\") @HasMany(associatedWith = \\"todo\\", type = task.class) List<task> tasks = null;
+  public ID getId() {
+      return id;
+  }
+  
+  public String getTitle() {
+      return title;
+  }
+  
+  public Boolean getDone() {
+      return done;
+  }
+  
+  public String getDescription() {
+      return description;
+  }
+  
+  public String getDueDate() {
+      return due_date;
+  }
+  
+  public Int getVersion() {
+      return version;
+  }
+  
+  public Float getValue() {
+      return value;
+  }
+  
+  public List<task> getTasks() {
+      return tasks;
+  }
+  
+  private Todo(ID id, String title, Boolean done, String description, String due_date, Int version, Float value) {
+    this.id = id;
+    this.title = title;
+    this.done = done;
+    this.description = description;
+    this.due_date = due_date;
+    this.version = version;
+    this.value = value;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      Todo todo = (Todo) obj;
+      return ObjectsCompat.equals(getId(), todo.getId()) &&
+              ObjectsCompat.equals(getTitle(), todo.getTitle()) &&
+              ObjectsCompat.equals(getDone(), todo.getDone()) &&
+              ObjectsCompat.equals(getDescription(), todo.getDescription()) &&
+              ObjectsCompat.equals(getDueDate(), todo.getDueDate()) &&
+              ObjectsCompat.equals(getVersion(), todo.getVersion()) &&
+              ObjectsCompat.equals(getValue(), todo.getValue());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getTitle())
+      .append(getDone())
+      .append(getDescription())
+      .append(getDueDate())
+      .append(getVersion())
+      .append(getValue())
+      .toString()
+      .hashCode();
+  }
+  
+  public static TitleStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   **/
+  public static Todo justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new Todo(
+      id,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      title,
+      done,
+      description,
+      due_date,
+      version,
+      value);
+  }
+  public interface TitleStep {
+    DoneStep title(String title);
+  }
+  
+
+  public interface DoneStep {
+    VersionStep done(Boolean done);
+  }
+  
+
+  public interface VersionStep {
+    BuildStep version(Int version);
+  }
+  
+
+  public interface BuildStep {
+    Todo build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep description(String description);
+    BuildStep due_date(String due_date);
+    BuildStep value(Float value);
+  }
+  
+
+  public static class Builder implements TitleStep, DoneStep, VersionStep, BuildStep {
+    private ID id;
+    private String title;
+    private Boolean done;
+    private Int version;
+    private String description;
+    private String due_date;
+    private Float value;
+    @Override
+     public Todo build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new Todo(
+          id,
+          title,
+          done,
+          description,
+          due_date,
+          version,
+          value);
+    }
+    
+    @Override
+     public DoneStep title(String title) {
+        Objects.requireNonNull(title);
+        this.title = title;
+        return this;
+    }
+    
+    @Override
+     public VersionStep done(Boolean done) {
+        Objects.requireNonNull(done);
+        this.done = done;
+        return this;
+    }
+    
+    @Override
+     public BuildStep version(Int version) {
+        Objects.requireNonNull(version);
+        this.version = version;
+        return this;
+    }
+    
+    @Override
+     public BuildStep description(String description) {
+        this.description = description;
+        return this;
+    }
+    
+    @Override
+     public BuildStep dueDate(String dueDate) {
+        this.due_date = dueDate;
+        return this;
+    }
+    
+    @Override
+     public BuildStep value(Float value) {
+        this.value = value;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     **/
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(ID id, String title, Boolean done, String description, String dueDate, Int version, Float value) {
+      super.id(id);
+      super.title(title)
+        .done(done)
+        .version(version)
+        .description(description)
+        .dueDate(dueDate)
+        .value(value);
+    }
+    
+    @Override
+     public CopyOfBuilder title(String title) {
+      return (CopyOfBuilder) super.title(title);
+    }
+    
+    @Override
+     public CopyOfBuilder done(Boolean done) {
+      return (CopyOfBuilder) super.done(done);
+    }
+    
+    @Override
+     public CopyOfBuilder version(Int version) {
+      return (CopyOfBuilder) super.version(version);
+    }
+    
+    @Override
+     public CopyOfBuilder description(String description) {
+      return (CopyOfBuilder) super.description(description);
+    }
+    
+    @Override
+     public CopyOfBuilder dueDate(String dueDate) {
+      return (CopyOfBuilder) super.dueDate(dueDate);
+    }
+    
+    @Override
+     public CopyOfBuilder value(Float value) {
+      return (CopyOfBuilder) super.value(value);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor should generate an enum for enum type 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+/** Auto generated enum from GraphQL schema. */
+@SuppressWarnings(\\"all\\")
+public enum Status {
+  pending,
+  done
+}
+"
+`;
+
+exports[`AppSyncModelVisitor should generate model with key directive 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the authorBook type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"authorBooks\\")
+@Index(name = \\"byAuthor\\", fields = {\\"author_id\\"})
+@Index(name = \\"byBook\\", fields = {\\"book_id\\"})
+public final class authorBook implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField AUTHOR_ID = field(\\"author_id\\");
+  public static final QueryField BOOK_ID = field(\\"book_id\\");
+  public static final QueryField AUTHOR = field(\\"author\\");
+  public static final QueryField BOOK = field(\\"book\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID author_id;
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID book_id;
+  private final @ModelField(targetType=\\"String\\") String author;
+  private final @ModelField(targetType=\\"String\\") String book;
+  public ID getId() {
+      return id;
+  }
+  
+  public ID getAuthorId() {
+      return author_id;
+  }
+  
+  public ID getBookId() {
+      return book_id;
+  }
+  
+  public String getAuthor() {
+      return author;
+  }
+  
+  public String getBook() {
+      return book;
+  }
+  
+  private authorBook(ID id, ID author_id, ID book_id, String author, String book) {
+    this.id = id;
+    this.author_id = author_id;
+    this.book_id = book_id;
+    this.author = author;
+    this.book = book;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      authorBook authorBook = (authorBook) obj;
+      return ObjectsCompat.equals(getId(), authorBook.getId()) &&
+              ObjectsCompat.equals(getAuthorId(), authorBook.getAuthorId()) &&
+              ObjectsCompat.equals(getBookId(), authorBook.getBookId()) &&
+              ObjectsCompat.equals(getAuthor(), authorBook.getAuthor()) &&
+              ObjectsCompat.equals(getBook(), authorBook.getBook());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getAuthorId())
+      .append(getBookId())
+      .append(getAuthor())
+      .append(getBook())
+      .toString()
+      .hashCode();
+  }
+  
+  public static AuthorIdStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   **/
+  public static authorBook justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new authorBook(
+      id,
+      null,
+      null,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      author_id,
+      book_id,
+      author,
+      book);
+  }
+  public interface AuthorIdStep {
+    BookIdStep authorId(ID authorId);
+  }
+  
+
+  public interface BookIdStep {
+    BuildStep bookId(ID bookId);
+  }
+  
+
+  public interface BuildStep {
+    authorBook build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep author(String author);
+    BuildStep book(String book);
+  }
+  
+
+  public static class Builder implements AuthorIdStep, BookIdStep, BuildStep {
+    private ID id;
+    private ID author_id;
+    private ID book_id;
+    private String author;
+    private String book;
+    @Override
+     public authorBook build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new authorBook(
+          id,
+          author_id,
+          book_id,
+          author,
+          book);
+    }
+    
+    @Override
+     public BookIdStep authorId(ID authorId) {
+        Objects.requireNonNull(authorId);
+        this.author_id = authorId;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bookId(ID bookId) {
+        Objects.requireNonNull(bookId);
+        this.book_id = bookId;
+        return this;
+    }
+    
+    @Override
+     public BuildStep author(String author) {
+        this.author = author;
+        return this;
+    }
+    
+    @Override
+     public BuildStep book(String book) {
+        this.book = book;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     **/
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(ID id, ID authorId, ID bookId, String author, String book) {
+      super.id(id);
+      super.authorId(authorId)
+        .bookId(bookId)
+        .author(author)
+        .book(book);
+    }
+    
+    @Override
+     public CopyOfBuilder authorId(ID authorId) {
+      return (CopyOfBuilder) super.authorId(authorId);
+    }
+    
+    @Override
+     public CopyOfBuilder bookId(ID bookId) {
+      return (CopyOfBuilder) super.bookId(bookId);
+    }
+    
+    @Override
+     public CopyOfBuilder author(String author) {
+      return (CopyOfBuilder) super.author(author);
+    }
+    
+    @Override
+     public CopyOfBuilder book(String book) {
+      return (CopyOfBuilder) super.book(book);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor should generate model with snake case 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the snake_case type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"snake_cases\\")
+public final class snake_case implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  public ID getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  private snake_case(ID id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      snake_case snakeCase = (snake_case) obj;
+      return ObjectsCompat.equals(getId(), snakeCase.getId()) &&
+              ObjectsCompat.equals(getName(), snakeCase.getName());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .toString()
+      .hashCode();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   **/
+  public static snake_case justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new snake_case(
+      id,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name);
+  }
+  public interface BuildStep {
+    snake_case build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private ID id;
+    private String name;
+    @Override
+     public snake_case build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new snake_case(
+          id,
+          name);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     **/
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(ID id, String name) {
+      super.id(id);
+      super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor should generate model with with snake_case field 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the SnakeCaseField type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"SnakeCaseFields\\")
+public final class SnakeCaseField implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField FIRST_NAME = field(\\"first_name\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
+  private final @ModelField(targetType=\\"String\\") String first_name;
+  public ID getId() {
+      return id;
+  }
+  
+  public String getFirstName() {
+      return first_name;
+  }
+  
+  private SnakeCaseField(ID id, String first_name) {
+    this.id = id;
+    this.first_name = first_name;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      SnakeCaseField snakeCaseField = (SnakeCaseField) obj;
+      return ObjectsCompat.equals(getId(), snakeCaseField.getId()) &&
+              ObjectsCompat.equals(getFirstName(), snakeCaseField.getFirstName());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getFirstName())
+      .toString()
+      .hashCode();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   **/
+  public static SnakeCaseField justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new SnakeCaseField(
+      id,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      first_name);
+  }
+  public interface BuildStep {
+    SnakeCaseField build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep first_name(String first_name);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private ID id;
+    private String first_name;
+    @Override
+     public SnakeCaseField build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new SnakeCaseField(
+          id,
+          first_name);
+    }
+    
+    @Override
+     public BuildStep firstName(String firstName) {
+        this.first_name = firstName;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     **/
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(ID id, String firstName) {
+      super.id(id);
+      super.firstName(firstName);
+    }
+    
+    @Override
+     public CopyOfBuilder firstName(String firstName) {
+      return (CopyOfBuilder) super.firstName(firstName);
+    }
+  }
+  
+}
+"
+`;

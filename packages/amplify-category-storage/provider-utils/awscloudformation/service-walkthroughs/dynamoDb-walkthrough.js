@@ -638,7 +638,7 @@ async function addTrigger(context, resourceName, triggerList) {
       DependsOn: ['LambdaExecutionRole'],
       Type: 'AWS::IAM::Policy',
       Properties: {
-        PolicyName: 'lambda-execution-policy',
+        PolicyName: 'lambda-trigger-policy',
         Roles: [
           {
             Ref: 'LambdaExecutionRole',
@@ -837,7 +837,20 @@ function getIAMPolicies(resourceName, crudOptions) {
   policy = {
     Effect: 'Allow',
     Action: actions,
-    Resource: [{ Ref: `${category}${resourceName}Arn` }],
+    Resource: [
+      { Ref: `${category}${resourceName}Arn` },
+      {
+        'Fn::Join': [
+          '/',
+          [
+            {
+              Ref: `${category}${resourceName}Arn`,
+            },
+            'index/*',
+          ],
+        ],
+      },
+    ],
   };
   const attributes = ['Name', 'Arn'];
 

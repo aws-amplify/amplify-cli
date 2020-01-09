@@ -19,6 +19,9 @@ export class ResolverResourceIDs {
   static ElasticsearchSearchResolverResourceID(typeName: string): string {
     return `Search${typeName}Resolver`;
   }
+  static SyncResolverResourceID(typeName: string): string {
+    return `Sync${typeName}Resolver`
+  }
   static ResolverResourceID(typeName: string, fieldName: string): string {
     return `${typeName}${fieldName}Resolver`;
   }

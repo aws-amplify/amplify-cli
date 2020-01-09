@@ -1,6 +1,6 @@
-import ModelAuthTransformer from 'graphql-auth-transformer';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import GraphQLTransform from 'graphql-transformer-core';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
 

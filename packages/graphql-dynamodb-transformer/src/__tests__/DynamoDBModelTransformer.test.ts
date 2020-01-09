@@ -11,7 +11,7 @@ import {
   TypeNode,
   NamedTypeNode,
 } from 'graphql';
-import GraphQLTransform from 'graphql-transformer-core';
+import { GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
 
@@ -460,6 +460,42 @@ test('Test non model objects contain id as a type for fields', () => {
   const commentInputIDField = getFieldOnInputType(commentInputObject, 'id');
   verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
 });
+
+test(`V${TRANSFORM_BASE_VERSION} transformer snapshot test`, () => {
+  const schema = transformerVersionSnapshot(TRANSFORM_BASE_VERSION);
+  expect(schema).toMatchSnapshot();
+});
+
+test(`V5 transformer snapshot test`, () => {
+  const schema = transformerVersionSnapshot(5);
+  expect(schema).toMatchSnapshot();
+});
+
+test(`Current version transformer snapshot test`, () => {
+  const schema = transformerVersionSnapshot(TRANSFORM_CURRENT_VERSION);
+  expect(schema).toMatchSnapshot();
+});
+
+function transformerVersionSnapshot(version: number): string {
+  const validSchema = `
+        type Post @model
+        {
+          id: ID!
+          content: String
+        }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+    transformConfig: {
+      Version: version,
+    },
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  return out.schema;
+}
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
   for (const fieldName of fields) {

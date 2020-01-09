@@ -12,9 +12,9 @@ import {
   DirectiveDefinitionNode,
   TypeDefinitionNode,
 } from 'graphql';
-import TransformerContext from './TransformerContext';
+import { TransformerContext } from './TransformerContext';
 
-export default interface ITransformer {
+export interface ITransformer {
   name: string;
 
   directive: DirectiveDefinitionNode;

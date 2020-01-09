@@ -1,25 +1,26 @@
 {
-    "name": "core",
-    "type": "core",
-    "commands": [
-        "categories",
-        "configure",
-        "console",
-        "delete",
-        "env",
-        "help",
-        "init",
-        "migrate",
-        "publish",
-        "push",
-        "run",
-        "status",
-        "plugin",
-        "version"
-    ],
-    "commandAliases":{
-        "h": "help",
-        "serve": "run",
-        "ls": "status"
-    }
+  "name": "core",
+  "type": "core",
+  "commands": [
+    "categories",
+    "configure",
+    "console",
+    "delete",
+    "env",
+    "help",
+    "init",
+    "migrate",
+    "publish",
+    "push",
+    "pull",
+    "run",
+    "status",
+    "plugin",
+    "version"
+  ],
+  "commandAliases": {
+    "h": "help",
+    "serve": "run",
+    "ls": "status"
+  }
 }

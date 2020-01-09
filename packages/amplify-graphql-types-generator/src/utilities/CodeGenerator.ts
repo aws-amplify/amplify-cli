@@ -72,7 +72,7 @@ export class GeneratedFile<Scope = any> implements BasicGeneratedFile {
   }
 }
 
-export default class CodeGenerator<Context = any, Scope = any> {
+export class CodeGenerator<Context = any, Scope = any> {
   generatedFiles: { [fileName: string]: GeneratedFile<Scope> } = {};
   currentFile: GeneratedFile<Scope>;
 

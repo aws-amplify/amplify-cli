@@ -1,4 +1,4 @@
-export default {
+export const constants = {
   HELP: 'help',
   HELP_SHORT: 'h',
   VERSION: 'version',

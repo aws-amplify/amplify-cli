@@ -1,6 +1,6 @@
-import ModelTransformer from 'graphql-dynamodb-transformer';
-import FunctionTransformer from 'graphql-function-transformer';
-import GraphQLTransform from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { FunctionTransformer } from 'graphql-function-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, logDebug } from './utils/index';
 
@@ -35,7 +35,7 @@ beforeAll(async () => {
     `;
   try {
     const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new FunctionTransformer()],
+      transformers: [new DynamoDBModelTransformer(), new FunctionTransformer()],
     });
     const out = transformer.transform(validSchema);
 

@@ -1,8 +1,8 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import GraphQLTransform from 'graphql-transformer-core';
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
-import SearchableModelTransformer from 'graphql-elasticsearch-transformer';
-import ModelAuthTransformer from 'graphql-auth-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { S3Client } from '../S3Client';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -11,11 +11,15 @@ import { deploy } from '../deployNestedStacks';
 import * as moment from 'moment';
 import * as S3 from 'aws-sdk/clients/s3';
 import emptyBucket from '../emptyBucket';
+import addStringSets from '../stringSetMutations';
 
+// tslint:disable: no-magic-numbers
 jest.setTimeout(60000 * 60);
 
-const s3 = new S3Client('us-west-2');
 const cf = new CloudFormationClient('us-west-2');
+const customS3Client = new S3Client('us-west-2');
+const awsS3Client = new S3({ region: 'us-west-2' });
+let GRAPHQL_CLIENT: GraphQLClient = undefined;
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `TestSearchableModelTransformer-${BUILD_TIMESTAMP}`;
@@ -23,27 +27,7 @@ const BUCKET_NAME = `testsearchablemodeltransformer-${BUILD_TIMESTAMP}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/model_searchable_transform_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
-const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
-
 const fragments = [`fragment FullPost on Post { id author title ups downs percentageUp isPublished createdAt }`];
-
-const createPosts = async () => {
-  const logContent = 'createPost response: ';
-
-  await runQuery(getCreatePostsQuery('snvishna', 'test', 157, 10, 97.4, true), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 60, 30, 21.0, false), logContent);
-  await runQuery(getCreatePostsQuery('shankar', 'test title', 160, 30, 97.6, false), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test TITLE', 170, 30, 88.8, true), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 200, 50, 11.9, false), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 170, 30, 88.8, true), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 160, 30, 97.6, false), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 170, 30, 77.7, true), logContent);
-
-  // Waiting for the ES Cluster + Streaming Lambda infra to be setup
-  console.log('Waiting for the ES Cluster + Streaming Lambda infra to be setup');
-  await cf.wait(120, () => Promise.resolve());
-};
 
 const runQuery = async (query: string, logContent: string) => {
   try {
@@ -57,7 +41,26 @@ const runQuery = async (query: string, logContent: string) => {
   }
 };
 
-let GRAPHQL_CLIENT = undefined;
+const createEntries = async () => {
+  // create posts
+  const logContent = 'createPost response: ';
+  await runQuery(getCreatePostsQuery('snvishna', 'test', 157, 10, 97.4, true), logContent);
+  await runQuery(getCreatePostsQuery('snvishna', 'test title', 60, 30, 21.0, false), logContent);
+  await runQuery(getCreatePostsQuery('shankar', 'test title', 160, 30, 97.6, false), logContent);
+  await runQuery(getCreatePostsQuery('snvishna', 'test TITLE', 170, 30, 88.8, true), logContent);
+  await runQuery(getCreatePostsQuery('snvishna', 'test title', 200, 50, 11.9, false), logContent);
+  await runQuery(getCreatePostsQuery('snvishna', 'test title', 170, 30, 88.8, true), logContent);
+  await runQuery(getCreatePostsQuery('snvishna', 'test title', 160, 30, 97.6, false), logContent);
+  await runQuery(getCreatePostsQuery('snvishna', 'test title', 170, 30, 77.7, true), logContent);
+  // create users
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user1', userItems: ['thing1', 'thing2'] } });
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user2', userItems: ['thing3', 'thing4'] } });
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user3', userItems: ['thing5', 'thing6'] } });
+  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user4', userItems: ['thing7', 'thing8'] } });
+  // Waiting for the ES Cluster + Streaming Lambda infra to be setup
+  console.log('Waiting for the ES Cluster + Streaming Lambda infra to be setup');
+  await cf.wait(120, () => Promise.resolve());
+};
 
 beforeAll(async () => {
   const validSchema = `
@@ -78,6 +81,12 @@ beforeAll(async () => {
         percentageUp: Float
         isPublished: Boolean
         jsonField: AWSJSON
+    }
+
+    type User @model @searchable {
+      id: ID!
+      name: String!
+      userItems: [String]
     }
     `;
   const transformer = new GraphQLTransform({
@@ -100,10 +109,9 @@ beforeAll(async () => {
     console.error(`Failed to create bucket: ${e}`);
   }
   try {
-    const out = transformer.transform(validSchema);
+    // change create/update to create string sets
+    const out = addStringSets(transformer.transform(validSchema));
     // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4))
-    // create stack with additional params
-    // const additionalParams = generateParams()
     console.log('Creating Stack ' + STACK_NAME);
     const finishedStack = await deploy(
       customS3Client,
@@ -129,7 +137,7 @@ beforeAll(async () => {
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
 
     // Create sample mutations to test search queries
-    await createPosts();
+    await createEntries();
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);
@@ -675,14 +683,25 @@ test('Test updatePost syncing with Elasticsearch', async () => {
   expect(items2[0].isPublished).toEqual(isPublished);
 });
 
-function generateParams() {
-  const params = {
-    [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: 'ElasticsearchAccessIAMRoleTest',
-    [ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName]: 'ElasticsearchStreamingIAMRoleTest',
-  };
-
-  return params;
-}
+test('query users knowing userItems is a string set in ddb but should be a list in es', async () => {
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query SearchUsers {
+      searchUsers {
+        items {
+          id
+          name
+          userItems
+        }
+        nextToken
+        total
+      }
+    }`,
+    {}
+  );
+  expect(searchResponse).toBeDefined();
+  const items = searchResponse.data.searchUsers.items;
+  expect(items.length).toEqual(4);
+});
 
 function getCreatePostsQuery(
   author: string,
@@ -702,6 +721,16 @@ function getCreatePostsQuery(
             isPublished: ${isPublished}
         }) { ...FullPost }
     }`;
+}
+
+function getCreateUsersQuery() {
+  return `mutation CreateUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      id
+      name
+      userItems
+    }
+  }`;
 }
 
 function outputValueSelector(key: string) {

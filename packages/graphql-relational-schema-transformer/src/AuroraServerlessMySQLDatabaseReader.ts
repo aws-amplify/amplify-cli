@@ -1,4 +1,4 @@
-import TemplateContext, { TableContext } from './RelationalDBSchemaTransformer';
+import { TemplateContext, TableContext } from './RelationalDBSchemaTransformer';
 import {
   getNamedType,
   getNonNullType,

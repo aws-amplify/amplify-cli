@@ -1,5 +1,5 @@
-import TransformerContext from './TransformerContext';
-import ITransformer from './ITransformer';
+import { TransformerContext } from './TransformerContext';
+import { ITransformer } from './ITransformer';
 import {
   DirectiveDefinitionNode,
   parse,
@@ -15,7 +15,6 @@ import {
   InputValueDefinitionNode,
   EnumValueDefinitionNode,
   TypeDefinitionNode,
-  DefinitionNode,
   DocumentNode,
 } from 'graphql';
 import { InvalidTransformerError } from './errors';
@@ -26,7 +25,7 @@ import { InvalidTransformerError } from './errors';
  * a context that fully describes the infrastructure requirements
  * for its stage of the transformation.
  */
-export default class Transformer implements ITransformer {
+export class Transformer implements ITransformer {
   public name: string;
 
   public directive: DirectiveDefinitionNode;
