@@ -1,4 +1,6 @@
 //  Used for tests. Directive definition will be passed as part of the configuration
+// TODO remove once prettier is upgraded
+// prettier-ignore
 export const directives = /* GraphQL */ `
   # model directive
   directive @model(queries: ModelQueryMap, mutations: ModelMutationMap, subscriptions: ModelSubscriptionMap) on OBJECT
@@ -24,7 +26,7 @@ export const directives = /* GraphQL */ `
   }
 
   # Key directive
-  directive @key(name: String, fields: [String!]!, queryField: String) on OBJECT
+  directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
 
   # Connection directive
   directive @connection(

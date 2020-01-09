@@ -9,10 +9,12 @@ const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
 
 export class FunctionTransformer extends Transformer {
   constructor() {
+    // TODO remove once prettier is upgraded
+    // prettier-ignore
     super(
       'FunctionTransformer',
       gql`
-        directive @function(name: String!, region: String) on FIELD_DEFINITION
+        directive @function(name: String!, region: String) repeatable on FIELD_DEFINITION
       `
     );
   }
