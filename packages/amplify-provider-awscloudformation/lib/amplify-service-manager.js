@@ -98,7 +98,7 @@ async function init(amplifyServiceParams) {
         if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
           amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
         } else if (appIdsInTheSameLocalProjectAndRegion.length > 1) {
-          context.print.info(`You project is associated with multiple Amplify Service Apps in the region ${awsConfig.region}`);
+          context.print.info(`Your project is associated with multiple Amplify Service Apps in the region ${awsConfig.region}`);
           amplifyAppId = await SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRegion);
         }
       }
@@ -248,7 +248,7 @@ async function postPushCheck(context) {
       if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
         amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
       } else if (appIdsInTheSameLocalProjectAndRegion.length > 1) {
-        context.print.info(`You project is associated with multiple Amplify Service Apps in the region ${region}`);
+        context.print.info(`Your project is associated with multiple Amplify Service Apps in the region ${region}`);
         amplifyAppId = await SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRegion);
       }
 
@@ -315,7 +315,7 @@ async function SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRe
   const answer = await inquirer.prompt({
     type: 'list',
     name: 'selection',
-    message: `Select the app id you want this env to be be associated with`,
+    message: `Select the app id you want this env to be associated with`,
     choices: options,
     default: options[0],
   });
