@@ -181,7 +181,7 @@ async function guessPlatform() {
   } else {
     let fitToHandleScore = -1;
 
-    Object.keys(frontendPlugins).forEach(key => {
+   validFrontends.forEach(key => {
       const { scanProject } = require(frontendPlugins[key]);
       const newScore = scanProject(process.cwd());
       if (newScore > fitToHandleScore) {
@@ -210,7 +210,7 @@ async function guessPlatform() {
           type: 'list',
           name: 'platform',
           message: 'What type of app are you building',
-          choices: Object.keys(frontendPlugins),
+          choices: validFrontends,
         };
 
         const { platform } = await inquirer.prompt(platformComfirmation);
@@ -221,7 +221,7 @@ async function guessPlatform() {
             type: 'list',
             name: 'framework',
             message: 'What javascript framework are you using',
-            choices: Object.keys(frameworkConfigMapping),
+            choices: validJSFrameworks,
           };
 
           const { framework } = await inquirer.prompt(frameworkComfirmation);
