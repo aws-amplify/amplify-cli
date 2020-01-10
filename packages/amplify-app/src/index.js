@@ -213,8 +213,8 @@ async function guessPlatform() {
           choices: Object.keys(frontendPlugins),
         };
 
-        const platformAnswer = await inquirer.prompt(platformComfirmation);
-        suitableFrontend = platformAnswer.platform;
+        const { platform } = await inquirer.prompt(platformComfirmation);
+        suitableFrontend = platform;
 
         if (suitableFrontend === 'javascript') {
           const frameworkComfirmation = {
@@ -224,8 +224,8 @@ async function guessPlatform() {
             choices: Object.keys(frameworkConfigMapping),
           };
 
-          const frameworkAnswer = await inquirer.prompt(frameworkComfirmation);
-          jsFrameWork = frameworkAnswer.framework;
+          const { framework } = await inquirer.prompt(frameworkComfirmation);
+          jsFrameWork = framework;
         }
       }
     }
