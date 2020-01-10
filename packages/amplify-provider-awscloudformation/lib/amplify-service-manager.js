@@ -322,7 +322,7 @@ async function SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRe
 
   if (answer.selection === LEARNMORE) {
     displayAppIdSelectionLearnMore(context);
-    amplifyAppId = await SelectFromExistingAppId(appIdsInTheSameLocalProjectAndRegion);
+    amplifyAppId = await SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRegion);
   }
 
   if (answer.selection !== NONE) {
