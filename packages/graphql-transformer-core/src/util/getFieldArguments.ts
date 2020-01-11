@@ -4,12 +4,12 @@ import { FieldDefinitionNode } from 'graphql';
  * Given a Type returns a plain JS map of its arguments
  * @param arguments The list of argument nodes to reduce.
  */
-export function getFieldArguments(type: any): any {
+export function getFieldArguments(type: any, withBaseType: boolean = true): any {
   return type.fields
     ? type.fields.reduce(
         (acc: {}, arg: FieldDefinitionNode) => ({
           ...acc,
-          [arg.name.value]: getBaseType(arg.type),
+          [arg.name.value]: withBaseType ? getBaseType(arg.type) : arg.type,
         }),
         {}
       )

@@ -22,7 +22,7 @@ import {
   NamedTypeNode,
   InputObjectTypeDefinitionNode,
   TypeDefinitionNode,
-  TypeSystemDefinitionNode,
+  ListTypeNode,
 } from 'graphql';
 import {
   ResourceConstants,
@@ -31,6 +31,7 @@ import {
   getBaseType,
   makeDirective,
   makeNamedType,
+  unwrapNonNull,
   makeInputValueDefinition,
   blankObjectExtension,
   extensionWithDirectives,
@@ -347,7 +348,7 @@ export class ModelAuthTransformer extends Transformer {
     const rules = this.getAuthRulesFromDirective(directive);
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
-    this.validateRules(rules);
+    this.validateRules(rules, def);
     // Check the rules if we've to generate IAM policies for Unauth role or not
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
@@ -453,7 +454,7 @@ Static group authorization should perform as expected.`,
     const rules = this.getAuthRulesFromDirective(directive);
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
-    this.validateFieldRules(rules);
+    this.validateFieldRules(rules, parent);
     // Check the rules if we've to generate IAM policies for Unauth role or not
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
@@ -926,9 +927,10 @@ Either make the field optional, set auth on the object and not the field, or dis
     };
   }
 
-  private validateRules(rules: AuthRule[]) {
+  private validateRules(rules: AuthRule[], modelType: any) {
+    const fields = getFieldArguments(modelType);
     for (const rule of rules) {
-      this.validateRuleAuthStrategy(rule);
+      this.validateRuleAuthStrategy(rule, modelType.name.value, fields);
 
       const { queries, mutations, operations } = rule;
       if (mutations && operations) {
@@ -941,9 +943,10 @@ Either make the field optional, set auth on the object and not the field, or dis
     }
   }
 
-  private validateFieldRules(rules: AuthRule[]) {
+  private validateFieldRules(rules: AuthRule[], modelType: any) {
+    const fields = getFieldArguments(modelType);
     for (const rule of rules) {
-      this.validateRuleAuthStrategy(rule);
+      this.validateRuleAuthStrategy(rule, modelType.name.value, fields);
 
       const { queries, mutations } = rule;
       if (queries || mutations) {
@@ -1828,14 +1831,15 @@ All @auth directives used on field definitions are performed when the field is r
         const ownerRules = rules.filter(rule => rule.allow === OWNER_AUTH_STRATEGY);
         const needsDefaultOwnerField = ownerRules.find(rule => !rule.ownerField);
         const hasStaticGroupAuth = rules.find(rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
+        const fields = getFieldArguments(parent, false);
         if (ownerRules) {
           // if there is an owner rule without ownerField add the owner field in the type
           if (needsDefaultOwnerField) {
-            this.addOwner(ctx, parent.name.value);
+            this.addOwner(ctx, parent, fields);
           }
           // If static group is specified in any of the rules then it would specify the owner arg(s) as optional
           const makeNonNull = hasStaticGroupAuth ? false : true;
-          this.addSubscriptionOwnerArgument(ctx, resolver, ownerRules, makeNonNull);
+          this.addSubscriptionOwnerArgument(ctx, resolver, fields, ownerRules, makeNonNull);
         }
       }
     }
@@ -1847,15 +1851,23 @@ All @auth directives used on field definitions are performed when the field is r
     ctx.mapResourceToStack(parent.name.value, resolverResourceId);
   }
 
-  private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, ownerRules: AuthRule[], makeNonNull: boolean = false) {
+  private addSubscriptionOwnerArgument(
+    ctx: TransformerContext,
+    resolver: Resolver,
+    fields: any,
+    ownerRules: AuthRule[],
+    makeNonNull: boolean = false
+  ) {
     let subscription = ctx.getSubscription();
     let createField: FieldDefinitionNode = subscription.fields.find(
       field => field.name.value === resolver.Properties.FieldName,
     ) as FieldDefinitionNode;
-    const nameNode: any = makeNonNull ? makeNonNullType(makeNamedType('String')) : makeNamedType('String');
-    // const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
+    const argNode: any = (type: NamedTypeNode | ListTypeNode) => (makeNonNull ? makeNonNullType(type) : type);
     const ownerArgumentList = ownerRules.map(rule => {
-      return makeInputValueDefinition(rule.ownerField || DEFAULT_OWNER_FIELD, nameNode);
+      if (rule.ownerField) {
+        return makeInputValueDefinition(rule.ownerField, argNode(unwrapNonNull(fields[rule.ownerField])));
+      }
+      return makeInputValueDefinition(DEFAULT_OWNER_FIELD, argNode(makeNamedType('String')));
     });
     createField = {
       ...createField,
@@ -1868,9 +1880,7 @@ All @auth directives used on field definitions are performed when the field is r
     ctx.putType(subscription);
   }
 
-  private addOwner(ctx: TransformerContext, parent: string) {
-    const modelType: any = ctx.getType(parent);
-    const fields = getFieldArguments(modelType);
+  private addOwner(ctx: TransformerContext, modelType: any, fields: any) {
     if (!('owner' in fields)) {
       modelType.fields.push(makeField(DEFAULT_OWNER_FIELD, [], makeNamedType('String')));
     }
@@ -2028,15 +2038,21 @@ All @auth directives used on field definitions are performed when the field is r
     }
   }
 
-  private validateRuleAuthStrategy(rule: AuthRule) {
+  private validateRuleAuthStrategy(rule: AuthRule, name: string, fields: any) {
     //
     // Groups
     //
 
-    if (rule.allow === 'groups' && rule.provider !== 'userPools' && rule.provider !== 'oidc') {
-      throw new InvalidDirectiveError(
-        `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found '${rule.provider}' assigned.`,
-      );
+    if (rule.allow === 'groups') {
+      if (rule.provider !== 'userPools') {
+        throw new InvalidDirectiveError(
+          `@auth directive with 'groups' strategy only supports 'userPools' provider, but found '${rule.provider}' assigned.`
+        );
+      }
+      // if the value for groupsField does not exist in the type
+      if (rule.groupsField && !(rule.groupsField in fields)) {
+        throw new InvalidDirectiveError(`${rule.groupsField} does not exist in ${name}`);
+      }
     }
 
     //
@@ -2049,6 +2065,10 @@ All @auth directives used on field definitions are performed when the field is r
           `@auth directive with 'owner' strategy only supports 'userPools' (default) and 'oidc' providers, but \
 found '${rule.provider}' assigned.`,
         );
+      }
+      // if the value for ownerField does not exist in the type
+      if (rule.ownerField && !(rule.ownerField in fields)) {
+        throw new InvalidDirectiveError(`${rule.ownerField} does not exist in ${name}`);
       }
     }
 
