@@ -108,6 +108,7 @@ export class ResourceConstants {
     IsLocalDynamicGroupAuthorizedVariable: 'isLocalDynamicGroupAuthorized',
     IsStaticGroupAuthorizedVariable: 'isStaticGroupAuthorized',
     IsOwnerAuthorizedVariable: 'isOwnerAuthorized',
+    IsSourceTypeAuthorizedVariable: 'isSourceTypeAuthorized',
     IsLocalOwnerAuthorizedVariable: 'isLocalOwnerAuthorized',
   };
 }

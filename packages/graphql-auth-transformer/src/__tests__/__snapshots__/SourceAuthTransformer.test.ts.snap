@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@auth using source and sourceTypes 1`] = `
+"## No Static Group Authorization Rules **
+
+
+## No Dynamic Group Authorization Rules **
+
+
+## No Owner Authorization Rules **
+
+
+## [Start] Source Types Authorization Checks **
+#set( $isSourceTypeAuthorized = $util.defaultIfNull($isSourceTypeAuthorized, false) )
+## Authorization rule: { allow: source, sourceTypes: [\\"Post\\"] } **
+#set( $allowedSourceTypes0 = [\\"Post\\"] )
+#foreach( $allowedSourceType in $allowedSourceTypes0 )
+  #if( $allowedSourceType == $ctx.source.__typename )
+    #set( $isSourceTypeAuthorized = true )
+  #end
+#end
+## [End] Source Types Authorization Checks **
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true || $isSourceTypeAuthorized == true) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+$util.toJson($context.result)"
+`;
