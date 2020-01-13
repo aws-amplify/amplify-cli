@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile } from '../init';
+import { initJSProjectWithProfile, amplifyPushUpdate, deleteProject } from '../init';
 import { addAnalytics, removeAnalytics } from '../categories/analytics';
 import { createNewProjectDir, deleteProjectDir } from '../utils';
 import * as fs from 'fs-extra';
@@ -12,13 +12,15 @@ describe('amplify add analytics', () => {
 
   afterEach(async () => {
     await removeAnalytics(projRoot, {});
-    deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot), true;
   });
 
   it('add analytics', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    const rightName = 'my-app';
-    await addAnalytics(projRoot, { rightName, wrongName: 'my=app' });
+    const rightName = 'myapp';
+    await addAnalytics(projRoot, { rightName, wrongName: '$' });
+    await amplifyPushUpdate(projRoot);
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);
   });
 });
