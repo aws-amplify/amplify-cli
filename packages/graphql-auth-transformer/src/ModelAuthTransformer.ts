@@ -18,11 +18,10 @@ import {
   Kind,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  TypeDefinitionNode,
   valueFromASTUntyped,
   NamedTypeNode,
   InputObjectTypeDefinitionNode,
-  TypeDefinitionNode,
-  ListTypeNode,
 } from 'graphql';
 import {
   ResourceConstants,
