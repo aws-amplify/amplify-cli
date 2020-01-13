@@ -740,8 +740,8 @@ test('query using date range for createdAt', async () => {
     `query {
       searchUsers(filter: {
         createdAt: {
-          lt: "2019-07-04"
-          gt: "2016-07-20"
+          lte: "2017-08-22"
+          gte: "2017-06-10"
         }
       }) {
         items {
