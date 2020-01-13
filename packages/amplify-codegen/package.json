@@ -20,7 +20,7 @@
     "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",
     "glob-all": "^3.1.0",
-    "graphql": "^0.13.2",
+    "graphql": "^14.5.8",
     "graphql-config": "^2.1.0",
     "inquirer": "^6.5.1",
     "ora": "^3.4.0",

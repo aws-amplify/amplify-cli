@@ -2947,11 +2947,6 @@
   resolved "https://registry.yarnpkg.com/@types/global-prefix/-/global-prefix-3.0.0.tgz#153c4534331e0dcb73a78e83b77668af1c274a9d"
   integrity sha512-qkgDK8cbId7LPdNchNaBhTduJehCUwEFlKhORd3yLE+RPyKeJXtZu8doBTEOCEFkchyfAb6cbL/li486pCGY4w==
 
-"@types/graphql@^0.13.4":
-  version "0.13.4"
-  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.4.tgz#55ae9c29f0fd6b85ee536f5c72b4769d5c5e06b1"
-  integrity sha512-B4yel4ro2nTb3v0pYO8vO6SjgvFJSrwUY+IO6TUSLdOSB+gQFslylrhRCHxvXMIhxB71mv5PEE9dAX+24S8sew==
-
 "@types/inflected@^1.1.29":
   version "1.1.29"
   resolved "https://registry.yarnpkg.com/@types/inflected/-/inflected-1.1.29.tgz#8ef717dcf618d84584f506108ea85cd852f6d3ab"
@@ -9767,7 +9762,7 @@ graphql@^0.13.2:
   dependencies:
     iterall "^1.2.1"
 
-graphql@^14.4.2:
+graphql@^14.5.8:
   version "14.5.8"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.5.8.tgz#504f3d3114cb9a0a3f359bbbcf38d9e5bf6a6b3c"
   integrity sha512-MMwmi0zlVLQKLdGiMfWkgQD7dY/TUKt4L+zgJ/aR0Howebod3aNgP5JkgvAULiR2HPVZaP2VEElqtdidHweLkg==
