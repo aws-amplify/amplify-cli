@@ -12,8 +12,8 @@ describe('amplify add analytics', () => {
 
   afterEach(async () => {
     await removeAnalytics(projRoot, {});
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot), true;
+    await deleteProject(projRoot, true);
+    deleteProjectDir(projRoot);
   });
 
   it('add analytics', async () => {
