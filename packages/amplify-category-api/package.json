@@ -5,10 +5,6 @@
   "main": "index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "scripts": {
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
-  },
   "dependencies": {
     "amplify-category-auth": "2.12.0",
     "amplify-category-function": "2.12.0",
@@ -26,10 +22,5 @@
     "open": "^6.4.0",
     "ora": "^3.4.0",
     "uuid": "^3.3.2"
-  },
-  "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
   }
 }

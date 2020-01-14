@@ -12,8 +12,6 @@
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci -i",
-    "lint": "./node_modules/.bin/tslint -c tslint.json 'src/**/*.ts' && eslint 'src/**/*.js'",
-    "lint-fix": "./node_modules/.bin/tslint --fix -c tslint.json 'src/**/*.ts' && eslint 'src/**/*.js' --fix",
     "postinstall": "node scripts/post-install.js",
     "build": "tsc",
     "start": "tsc -w",
@@ -72,14 +70,8 @@
   "devDependencies": {
     "@types/jest": "^24.0.15",
     "@types/node": "^10.17.13",
-    "babel-eslint": "^8.0.1",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.17.0",
-    "tslint-config-airbnb-base": "^0.3.0",
     "typescript": "~3.6.4"
   },
   "jest": {

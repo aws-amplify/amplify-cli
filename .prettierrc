@@ -8,5 +8,5 @@
   "useTabs": false,
   "arrowParens": "avoid",
   "jsxSingleQuote": true,
-  "trailingComma": "es5"
+  "trailingComma": "all"
 }
