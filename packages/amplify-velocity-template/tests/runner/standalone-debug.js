@@ -1,78 +1,73 @@
-var define
-var require
+var define;
+var require;
 (function(global, undefined) {
-
   function isType(type) {
     return function(obj) {
-      return {}.toString.call(obj) == "[object " + type + "]"
-    }
+      return {}.toString.call(obj) == '[object ' + type + ']';
+    };
   }
 
-  var isFunction = isType("Function")
+  var isFunction = isType('Function');
 
-  var cachedMods = {}
+  var cachedMods = {};
 
-  function Module() {
-  }
+  function Module() {}
 
-  Module.prototype.exec = function () {
-    var mod = this
+  Module.prototype.exec = function() {
+    var mod = this;
 
     if (this.execed) {
-      return mod.exports
+      return mod.exports;
     }
-    this.execed = true
+    this.execed = true;
 
     function require(id) {
-      return Module.get(id).exec()
+      return Module.get(id).exec();
     }
 
-    var factory = mod.factory
+    var factory = mod.factory;
 
-    var exports = isFunction(factory) ?
-      factory(require, mod.exports = {}, mod) :
-      factory
+    var exports = isFunction(factory) ? factory(require, (mod.exports = {}), mod) : factory;
 
     if (exports === undefined) {
-      exports = mod.exports
+      exports = mod.exports;
     }
 
     // Reduce memory leak
-    delete mod.factory
+    delete mod.factory;
 
-    mod.exports = exports
+    mod.exports = exports;
 
-    return exports
-  }
+    return exports;
+  };
 
-  define = function (id, deps, factory) {
+  define = function(id, deps, factory) {
     var meta = {
       id: id,
       deps: deps,
-      factory: factory
-    }
+      factory: factory,
+    };
 
-    Module.save(meta)
-  }
+    Module.save(meta);
+  };
 
   Module.save = function(meta) {
-    var mod = Module.get(meta.id)
+    var mod = Module.get(meta.id);
 
-    mod.id = meta.id
-    mod.dependencies = meta.deps
-    mod.factory = meta.factory
-  }
+    mod.id = meta.id;
+    mod.dependencies = meta.deps;
+    mod.factory = meta.factory;
+  };
 
   Module.get = function(id) {
-    return cachedMods[id] || (cachedMods[id] = new Module())
-  }
+    return cachedMods[id] || (cachedMods[id] = new Module());
+  };
 
   require = function(id) {
-    var mod = Module.get(id)
-    if(!mod.execed) {
-      mod.exec()
+    var mod = Module.get(id);
+    if (!mod.execed) {
+      mod.exec();
     }
-    return mod.exports
-  }
-
-})(this)
+    return mod.exports;
+  };
+})(this);

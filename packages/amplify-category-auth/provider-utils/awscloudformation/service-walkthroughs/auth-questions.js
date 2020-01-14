@@ -2,6 +2,8 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 const { uniq, pullAll } = require('lodash');
+const path = require('path');
+const { Sort } = require('enquirer');
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap, capabilities } = require('../assets/string-maps');
 
@@ -14,6 +16,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   const projectType = amplify.getProjectConfig().frontend;
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
+  let userPoolGroupList = context.amplify.getUserPoolGroupList(context);
+  let adminQueryGroup;
 
   handleUpdates(context, coreAnswers);
 
@@ -22,15 +26,19 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   while (j < inputs.length) {
     const questionObj = inputs[j];
 
-    if (context.updatingAuth && coreAnswers.updateFlow && filterInput(inputs[j], coreAnswers.updateFlow)) {
-      j += 1;
-    }
-
     // CREATE QUESTION OBJECT
     const q = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
 
     // ASK QUESTION
     const answer = await inquirer.prompt(q);
+
+    if (answer.userPoolGroups === true) {
+      userPoolGroupList = await updateUserPoolGroups(context);
+    }
+
+    if (answer.adminQueries === true) {
+      adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
+    }
 
     if (answer.triggers && answer.triggers !== '{}') {
       const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
@@ -111,7 +119,11 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
         if the user selects a default or fully manual config option during an update,
         we set the useDefault value so that the appropriate questions are displayed
       */
-      if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
+      if (answer.updateFlow === 'updateUserPoolGroups') {
+        userPoolGroupList = await updateUserPoolGroups(context);
+      } else if (answer.updateFlow === 'updateAdminQueries') {
+        adminQueryGroup = await updateAdminQuery(context, userPoolGroupList);
+      } else if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
         answer.useDefault = answer.updateFlow;
         if (answer.useDefault === 'defaultSocial') {
           coreAnswers.hostedUI = true;
@@ -181,7 +193,170 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
 
   return {
     ...coreAnswers,
+    userPoolGroupList,
+    adminQueryGroup,
   };
+}
+
+async function updateUserPoolGroups(context) {
+  let userPoolGroupList = [];
+  let existingGroups;
+
+  const userGroupParamsPath = path.join(
+    context.amplify.pathManager.getBackendDirPath(),
+    'auth',
+    'userPoolGroups',
+    'user-pool-group-precedence.json'
+  );
+
+  try {
+    existingGroups = context.amplify.readJsonFile(userGroupParamsPath);
+    userPoolGroupList = existingGroups.map(e => e.groupName);
+  } catch (e) {
+    existingGroups = null;
+  }
+
+  if (existingGroups) {
+    // eslint-disable-next-line
+    const deletionChoices = existingGroups.map(e => {
+      return { name: e.groupName, value: e.groupName };
+    });
+
+    const deletionAnswer = await inquirer.prompt([
+      {
+        name: 'groups2BeDeleted',
+        type: 'checkbox',
+        message: 'Select any user pool groups you want to delete:',
+        choices: deletionChoices,
+      },
+    ]);
+
+    userPoolGroupList = userPoolGroupList.filter(i => !deletionAnswer.groups2BeDeleted.includes(i));
+  }
+
+  let answer;
+
+  /* Must be sure to ask this question in the event that it is the
+  first time in the user pool group flow, or it is an update but
+  the user has deleted all existing groups. If they want to delete
+  all groups they should just delete the resource */
+  if (userPoolGroupList.length < 1) {
+    answer = await inquirer.prompt([
+      {
+        name: 'userPoolGroupName',
+        type: 'input',
+        message: 'Provide a name for your user pool group:',
+        validate: context.amplify.inputValidation({
+          validation: {
+            operator: 'regex',
+            value: '^[a-zA-Z0-9]+$',
+            onErrorMsg: 'Resource name should be alphanumeric',
+          },
+          required: true,
+        }),
+      },
+    ]);
+    userPoolGroupList.push(answer.userPoolGroupName);
+  }
+
+  let addAnother = await inquirer.prompt({
+    name: 'repeater',
+    type: 'confirm',
+    default: false,
+    message: 'Do you want to add another User Pool Group',
+  });
+
+  while (addAnother.repeater === true) {
+    answer = await inquirer.prompt([
+      {
+        name: 'userPoolGroupName',
+        type: 'input',
+        message: 'Provide a name for your user pool group:',
+        validate: context.amplify.inputValidation({
+          validation: {
+            operator: 'regex',
+            value: '^[a-zA-Z0-9]+$',
+            onErrorMsg: 'Resource name should be alphanumeric',
+          },
+          required: true,
+        }),
+      },
+    ]);
+
+    userPoolGroupList.push(answer.userPoolGroupName);
+
+    addAnother = await inquirer.prompt({
+      name: 'repeater',
+      type: 'confirm',
+      default: false,
+      message: 'Do you want to add another User Pool Group',
+    });
+  }
+
+  // Get distinct list
+  const distinctSet = new Set(userPoolGroupList);
+  userPoolGroupList = Array.from(distinctSet);
+
+  // Sort the Array to get precedence
+  let sortedUserPoolGroupList = [];
+
+  if (userPoolGroupList && userPoolGroupList.length > 0) {
+    const sortPrompt = new Sort({
+      name: 'sortUserPools',
+      hint: `(Use ${chalk.green.bold('<shift>+<right/left>')} to change the order)`,
+      message: 'Sort the user pool groups in order of preference',
+      choices: userPoolGroupList,
+      shiftLeft(...args) {
+        return this.shiftUp(...args);
+      },
+      shiftRight(...args) {
+        return this.shiftDown(...args);
+      },
+    });
+
+    sortedUserPoolGroupList = await sortPrompt.run();
+  }
+  return sortedUserPoolGroupList;
+}
+
+async function updateAdminQuery(context, userPoolGroupList) {
+  let adminGroup;
+  // Clone user pool group list
+  const userPoolGroupListClone = userPoolGroupList.slice(0);
+  if (await context.amplify.confirmPrompt.run('Do you want to restrict access to the admin queries API to a specific Group')) {
+    userPoolGroupListClone.push('Enter a custom group');
+
+    const adminGroupAnswer = await inquirer.prompt([
+      {
+        name: 'adminGroup',
+        type: 'list',
+        message: 'Select the group to restrict access with:',
+        choices: userPoolGroupListClone,
+      },
+    ]);
+
+    if (adminGroupAnswer.adminGroup === 'Enter a custom group') {
+      const temp = await inquirer.prompt([
+        {
+          name: 'userPoolGroupName',
+          type: 'input',
+          message: 'Provide a group name:',
+          validate: context.amplify.inputValidation({
+            validation: {
+              operator: 'regex',
+              value: '^[a-zA-Z0-9]+$',
+              onErrorMsg: 'Resource name should be alphanumeric',
+            },
+            required: true,
+          }),
+        },
+      ]);
+      adminGroup = temp.userPoolGroupName;
+    } else {
+      ({ adminGroup } = adminGroupAnswer);
+    }
+  }
+  return adminGroup;
 }
 
 /*
@@ -351,16 +526,6 @@ function parseOAuthCreds(providers, metadata, envCreds) {
     return {};
   }
   return providerKeys;
-}
-
-/*
-  Filter inputs for update flow
-*/
-function filterInput(input, updateFlow) {
-  if (input.updateGroups && !input.updateGroups.includes('manual') && !input.updateGroups.includes(updateFlow.type)) {
-    return true;
-  }
-  return false;
 }
 
 /*

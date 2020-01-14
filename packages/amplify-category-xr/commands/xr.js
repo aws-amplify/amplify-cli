@@ -23,6 +23,10 @@ module.exports = {
         name: 'remove',
         description: 'Removes XR resource from your local backend which would be removed from the cloud on the next push command',
       },
+      {
+        name: 'console',
+        description: `Opens the web console for the ${featureName} category`,
+      },
     ];
 
     context.amplify.showHelp(header, commands);

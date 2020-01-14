@@ -1,47 +1,51 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "1.24.0",
+  "version": "2.12.0",
   "description": "",
   "main": "index.js",
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest --maxWorkers=3",
-    "setup-profile": "tsc && node ./lib/configure_tests.js",
-    "build": "tsc",
-    "clean": "rm -rf ./lib"
+    "e2e": "npm run setup-profile && jest",
+    "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "23.1.6",
-    "@types/nexpect": "0.4.30",
-    "@types/node": "^8.10.51",
-    "aws-amplify": "^1.1.36",
-    "dotenv": "6.2.0",
-    "jest": "23.1.0",
-    "jest-junit": "^8.0.0",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^10.17.13",
+    "aws-amplify": "^2.1.0",
+    "dotenv": "^8.2.0",
+    "jest": "^24.9.0",
+    "jest-circus": "^24.9.0",
+    "jest-junit": "^9.0.0",
     "nexpect": "file:./src/utils/nexpect-modified",
     "node-fetch": "^2.6.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^22.4.6",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.2",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "~3.6.4"
   },
   "jest": {
+    "verbose": false,
+    "preset": "ts-jest",
+    "testRunner": "jest-circus/runner",
+    "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
-    "testRegex": "(__tests__/.*.test.*)$",
+    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "src"
+      "lib"
     ],
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
-      "!__tests__/**"
+      "!src/__tests__/**",
+      "!**/*.d.ts"
     ],
     "reporters": [
       "default",
@@ -54,13 +58,19 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setup-tests.ts"
+    ],
+    "globals": {
+      "window": {}
+    }
   },
   "dependencies": {
-    "aws-sdk": "^2.510.0",
+    "aws-sdk": "^2.580.0",
     "esm": "^3.2.25",
-    "mime-types": "^2.1.24",
-    "ora": "^3.4.0"
+    "fs-extra": "^8.1.0",
+    "graphql-transformer-core": "6.12.0"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

@@ -1,24 +1,14 @@
 import { stripIndent } from 'common-tags';
 
-import {
-  parse,
-  isType,
-  GraphQLID,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull
-} from 'graphql';
+import { parse, isType, GraphQLID, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
 
-import {
-  generateSource
-} from '../../src/angular';
+import { generateSource } from '../../src/angular';
 
 import { loadSchema } from '../../src/loading';
 const starWarsSchema = loadSchema(require.resolve('../fixtures/starwars/schema.json'));
 const miscSchema = loadSchema(require.resolve('../fixtures/misc/schema.json'));
 
-import CodeGenerator from '../../src/utilities/CodeGenerator';
+import { CodeGenerator } from '../../src/utilities/CodeGenerator';
 
 import { compileToLegacyIR } from '../../src/compiler/legacyIR';
 
@@ -32,22 +22,22 @@ describe('Angular code generation', function() {
       schema: schema,
       operations: {},
       fragments: {},
-      typesUsed: {}
-    }
+      typesUsed: {},
+    };
 
     generator = new CodeGenerator(context);
 
-    compileFromSource = (source) => {
+    compileFromSource = source => {
       const document = parse(source);
       const context = compileToLegacyIR(schema, document, {
         mergeInFieldsFromFragmentSpreads: true,
-        addTypename: true
+        addTypename: true,
       });
       generator.context = context;
       return context;
     };
 
-    addFragment = (fragment) => {
+    addFragment = fragment => {
       generator.context.fragments[fragment.fragmentName] = fragment;
     };
 

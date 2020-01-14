@@ -42,6 +42,7 @@ export interface AppSyncSimulatorFunctionResolverConfig {
   responseMappingTemplateLocation: string;
 }
 export type AppSyncSimulatorMappingTemplate = AppSyncMockFile;
+export type AppSyncSimulatorTable = string;
 export interface AppSyncSimulatorUnitResolver extends AppSyncSimulatorUnitResolverConfig {
   datSourceName: string;
 }
@@ -62,8 +63,10 @@ export interface AppSyncSimulatorDataSourceDDBConfig extends AppSyncSimulatorDat
     tableName: string;
   };
 }
-interface AppSyncSimulatorDataSourceNoneConfig extends AppSyncSimulatorDataSourceBaseConfig {}
-interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulatorDataSourceBaseConfig {
+export interface AppSyncSimulatorDataSourceNoneConfig extends AppSyncSimulatorDataSourceBaseConfig {
+  type: 'None';
+}
+export interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulatorDataSourceBaseConfig {
   type: 'AWS_LAMBDA';
   invoke: Function;
 }
@@ -123,6 +126,7 @@ export type AmplifyAppSyncSimulatorConfig = {
   functions?: AppSyncSimulatorFunctionsConfig[];
   dataSources?: AppSyncSimulatorDataSourceConfig[];
   mappingTemplates?: AppSyncSimulatorMappingTemplate[];
+  tables?: AppSyncSimulatorTable[];
   appSync: AmplifyAppSyncAPIConfig;
 };
 
@@ -132,8 +136,8 @@ export type AppSyncSimulatorServerConfig = {
 };
 
 export type AmplifyAppSyncSimulatorRequestContext = {
-  jwt?: object,
-  requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType,
-  request: Request,
-  appsyncErrors: {}
-}
+  jwt?: object;
+  requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType;
+  request: Request;
+  appsyncErrors: {};
+};

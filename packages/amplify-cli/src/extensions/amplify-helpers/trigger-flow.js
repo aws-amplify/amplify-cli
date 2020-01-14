@@ -6,6 +6,7 @@ const fsExtra = require('fs-extra');
 const { flattenDeep } = require('lodash');
 const { join } = require('path');
 const { uniq } = require('lodash');
+const { readJsonFile } = require('./read-json-file');
 
 /** ADD A TRIGGER
  * @function addTrigger
@@ -325,9 +326,10 @@ const learnMoreLoop = async (key, map, metaData, question) => {
   ) {
     let prefix;
     if (metaData.URL) {
-      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(null, chalk.blue.underline)(
-        metaData.URL
-      )}\n`;
+      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(
+        null,
+        chalk.blue.underline
+      )(metaData.URL)}\n`;
       prefix = prefix.concat('\n');
     } else {
       prefix = `\nThe following ${key} are available in ${map}\n`;
@@ -361,7 +363,7 @@ const choicesFromMetadata = (path, selection, isDir) => {
 };
 
 // get metadata from a particular file
-const getTriggerMetadata = (path, selection) => JSON.parse(fs.readFileSync(`${path}/${selection}.map.json`));
+const getTriggerMetadata = (path, selection) => readJsonFile(`${path}/${selection}.map.json`);
 
 // open customer's text editor
 async function openEditor(context, path, name) {

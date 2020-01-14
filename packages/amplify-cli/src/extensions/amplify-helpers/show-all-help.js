@@ -21,6 +21,11 @@ function showAllHelp(context) {
       description: 'Provisions cloud resources with the latest local developments.',
     },
     {
+      name: 'pull',
+      description:
+        'Fetch upstream backend environment definition changes from the cloud and updates the local environment to match that definition.',
+    },
+    {
       name: 'publish',
       description: 'Executes amplify push, and then builds and publishes client-side application for hosting.',
     },
@@ -67,6 +72,10 @@ function showAllHelp(context) {
     {
       name: 'env',
       description: 'Displays and manages environment related information for your Amplify project.',
+    },
+    {
+      name: 'console',
+      description: 'Opens the web console for the selected cloud resource.',
     },
   ];
 

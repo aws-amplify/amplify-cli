@@ -1,6 +1,5 @@
 const fsExtra = jest.genMockFromModule('fs-extra');
 
-
 function copySync() {
   return {};
 }

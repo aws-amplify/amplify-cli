@@ -57,7 +57,13 @@ function showGraphQLURL(context, resourcesToBeCreated) {
 
     context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
     if (hasApiKey) {
-      context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
+      if (GraphQLAPIKeyOutput) {
+        context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
+      } else {
+        context.print.warning(
+          chalk`GraphQL API is configured to use API_KEY authentication, but API Key deployment is disabled, don't forget to create one.`
+        );
+      }
     }
   }
 }
@@ -100,9 +106,7 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
       context.print.info(chalk`Hosted UI Endpoint: {blue.underline ${hostedUIEndpoint}}`);
       const redirectURIs = oAuthMetadata.CallbackURLs.concat(oAuthMetadata.LogoutURLs);
       if (redirectURIs.length > 0) {
-        const testHostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=code&client_id=${AppClientIDWeb}&redirect_uri=${
-          redirectURIs[0]
-        }\n`;
+        const testHostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=code&client_id=${AppClientIDWeb}&redirect_uri=${redirectURIs[0]}\n`;
         context.print.info(chalk`Test Your Hosted UI Endpoint: {blue.underline ${testHostedUIEndpoint}}`);
       }
     }

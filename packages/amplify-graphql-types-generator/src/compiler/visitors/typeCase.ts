@@ -17,16 +17,13 @@ export class Variant implements SelectionSet {
   }
 
   inspect() {
-    return `${inspect(this.possibleTypes)} -> ${inspect(
-      collectAndMergeFields(this, false).map(field => field.responseKey)
-    )} ${inspect(this.fragmentSpreads.map(fragmentSpread => fragmentSpread.fragmentName))}\n`;
+    return `${inspect(this.possibleTypes)} -> ${inspect(collectAndMergeFields(this, false).map(field => field.responseKey))} ${inspect(
+      this.fragmentSpreads.map(fragmentSpread => fragmentSpread.fragmentName)
+    )}\n`;
   }
 }
 
-export function typeCaseForSelectionSet(
-  selectionSet: SelectionSet,
-  mergeInFragmentSpreads: boolean = true
-): TypeCase {
+export function typeCaseForSelectionSet(selectionSet: SelectionSet, mergeInFragmentSpreads: boolean = true): TypeCase {
   const typeCase = new TypeCase(selectionSet.possibleTypes);
 
   for (const selection of selectionSet.selections) {
@@ -37,12 +34,7 @@ export function typeCaseForSelectionSet(
         }
         break;
       case 'FragmentSpread':
-        if (
-          typeCase.default.fragmentSpreads.some(
-            fragmentSpread => fragmentSpread.fragmentName === selection.fragmentName
-          )
-        )
-          continue;
+        if (typeCase.default.fragmentSpreads.some(fragmentSpread => fragmentSpread.fragmentName === selection.fragmentName)) continue;
 
         for (const variant of typeCase.disjointVariantsFor(selectionSet.possibleTypes)) {
           variant.fragmentSpreads.push(selection);
@@ -55,10 +47,8 @@ export function typeCaseForSelectionSet(
           typeCase.merge(
             typeCaseForSelectionSet(
               {
-                possibleTypes: selectionSet.possibleTypes.filter(type =>
-                  selection.selectionSet.possibleTypes.includes(type)
-                ),
-                selections: selection.selectionSet.selections
+                possibleTypes: selectionSet.possibleTypes.filter(type => selection.selectionSet.possibleTypes.includes(type)),
+                selections: selection.selectionSet.selections,
               },
               mergeInFragmentSpreads
             )
@@ -69,25 +59,20 @@ export function typeCaseForSelectionSet(
         typeCase.merge(
           typeCaseForSelectionSet(
             {
-              possibleTypes: selectionSet.possibleTypes.filter(type =>
-                selection.selectionSet.possibleTypes.includes(type)
-              ),
-              selections: selection.selectionSet.selections
+              possibleTypes: selectionSet.possibleTypes.filter(type => selection.selectionSet.possibleTypes.includes(type)),
+              selections: selection.selectionSet.selections,
             },
             mergeInFragmentSpreads
           )
         );
         break;
       case 'BooleanCondition':
-        typeCase.merge(
-          typeCaseForSelectionSet(selection.selectionSet, mergeInFragmentSpreads),
-          selectionSet => [
-            {
-              ...selection,
-              selectionSet
-            }
-          ]
-        );
+        typeCase.merge(typeCaseForSelectionSet(selection.selectionSet, mergeInFragmentSpreads), selectionSet => [
+          {
+            ...selection,
+            selectionSet,
+          },
+        ]);
         break;
     }
   }
@@ -197,10 +182,6 @@ export class TypeCase {
   }
 
   inspect() {
-    return (
-      `TypeCase\n` +
-      `  default -> ${inspect(this.default)}\n` +
-      this.variants.map(variant => `  ${inspect(variant)}\n`).join('')
-    );
+    return `TypeCase\n` + `  default -> ${inspect(this.default)}\n` + this.variants.map(variant => `  ${inspect(variant)}\n`).join('');
   }
 }

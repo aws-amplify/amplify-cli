@@ -1,15 +1,12 @@
 import { subscribe, DocumentNode, ExecutionResult } from 'graphql';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import { inspect } from 'util';
 import { createServer as createHTTPServer } from 'http';
-import * as e2p from 'event-to-promise';
-import * as portfinder from 'portfinder';
+import e2p from 'event-to-promise';
+import portfinder from 'portfinder';
 
-import { Server as CoreHTTPServer } from 'net';
-import { AddressInfo } from 'dgram';
+import { Server as CoreHTTPServer, AddressInfo } from 'net';
 import { Server as MQTTServer } from '../mqtt-server';
-import { readFileSync } from 'fs-extra';
-import { join } from 'path';
 import { address as getLocalIpAddress } from 'ip';
 
 import { AmplifyAppSyncSimulator } from '..';
@@ -32,10 +29,7 @@ export class SubscriptionServer {
   private port: number;
   private publishingTopics: Set<string>;
 
-  constructor(
-    private config: AppSyncSimulatorServerConfig,
-    private appSyncServerContext: AmplifyAppSyncSimulator
-  ) {
+  constructor(private config: AppSyncSimulatorServerConfig, private appSyncServerContext: AmplifyAppSyncSimulator) {
     this.port = config.wsPort;
     this.webSocketServer = createHTTPServer();
 
@@ -106,11 +100,7 @@ export class SubscriptionServer {
     }
 
     if (!reg.isRegistered) {
-      const asyncIterator = await this.subscribeToGraphQL(
-        reg.documentAST,
-        reg.variables,
-        reg.context
-      );
+      const asyncIterator = await this.subscribeToGraphQL(reg.documentAST, reg.variables, reg.context);
 
       if ((asyncIterator as ExecutionResult).errors) {
         log.error('Error(s) subscribing via graphql', (asyncIterator as ExecutionResult).errors);
@@ -279,9 +269,7 @@ export class SubscriptionServer {
       return false;
     }
     // every variable key/value pair must match corresponding payload key/value pair
-    const variableResult = variableEntries.every(
-      ([variableKey, variableValue]) => payloadData[variableKey] === variableValue
-    );
+    const variableResult = variableEntries.every(([variableKey, variableValue]) => payloadData[variableKey] === variableValue);
 
     if (!variableResult) {
       console.info('subscribe payload did not match variables', inspect(payload));

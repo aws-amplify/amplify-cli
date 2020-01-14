@@ -1,20 +1,76 @@
 const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
+const graphQLConfig = require('graphql-config');
+const amplifyConfigHelper = require('./amplify-config-helper');
 
-function createAmplifyConfig(context, amplifyResources) {
-  const { amplify, filesystem } = context;
+const FILE_EXTENSION_MAP = {
+  javascript: 'js',
+  graphql: 'graphql',
+  flow: 'js',
+  typescript: 'ts',
+  angular: 'graphql',
+};
+
+const fileNames = ['queries', 'mutations', 'subscriptions'];
+
+function deleteAmplifyConfig(context) {
+  const { srcDirPath, projectPath } = getSrcDir(context);
+  // delete amplify config
+  const awsConfigFilePath = path.join(srcDirPath, constants.awsConfigFilename);
+  if (fs.existsSync(awsConfigFilePath)) {
+    fs.removeSync(awsConfigFilePath);
+  }
+  // delete amplify configuration
+  const amplifyConfigFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
+  if (fs.existsSync(amplifyConfigFilePath)) {
+    fs.removeSync(amplifyConfigFilePath);
+  }
+
+  if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;
+
+  const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
+  if (gqlConfig && gqlConfig.config) {
+    const { projects } = gqlConfig.config;
+    Object.keys(projects).forEach(project => {
+      const { codeGenTarget, docsFilePath } = projects[project].extensions.amplify;
+      fileNames.forEach(filename => {
+        const file = path.join(projectPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget] || 'graphql'}`);
+        if (fs.existsSync(file)) fs.removeSync(file);
+      });
+    });
+  }
+}
+
+function getSrcDir(context) {
+  const { amplify } = context;
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const frontendConfig = projectConfig.config;
+  return {
+    srcDirPath: path.join(projectPath, frontendConfig.ResDir, 'raw'),
+    projectPath,
+  };
+}
+
+function createAmplifyConfig(context) {
+  const { amplify } = context;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
   const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
 
-  if (!fs.existsSync(srcDirPath)) {
-    filesystem.dir(srcDirPath);
-  }
+  fs.ensureDirSync(srcDirPath);
 
   const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-  const jsonString = JSON.stringify(amplifyResources, null, 4);
+  let amplifyConfig;
+  if (fs.existsSync(targetFilePath)) {
+    amplifyConfig = context.amplify.readJsonFile(targetFilePath);
+  }
+
+  amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig);
+
+  const jsonString = JSON.stringify(amplifyConfig, null, 4);
   fs.writeFileSync(targetFilePath, jsonString, 'utf8');
 }
 
@@ -192,6 +248,16 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     });
   }
 
+  if (cognitoConfig.Auth && cognitoConfig.Auth.Default) {
+    cognitoConfig.Auth.Default.authenticationFlowType = cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH';
+  } else {
+    cognitoConfig.Auth = {
+      Default: {
+        authenticationFlowType: cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH',
+      },
+    };
+  }
+
   return cognitoConfig;
 }
 
@@ -270,7 +336,9 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
     result.AppSync.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
   }
 
-  const additionalAuths = appsyncResource.output.authConfig.additionalAuthenticationProviders || [];
+  const additionalAuths =
+    (appsyncResource.output && appsyncResource.output.authConfig && appsyncResource.output.authConfig.additionalAuthenticationProviders) ||
+    [];
   additionalAuths.forEach(auth => {
     const apiName = `${appsyncResource.resourceName}_${auth.authenticationType}`;
     const config = {
@@ -315,4 +383,4 @@ function getSumerianConfig(sumerianResources) {
   };
 }
 
-module.exports = { createAWSConfig, createAmplifyConfig };
+module.exports = { createAWSConfig, createAmplifyConfig, deleteAmplifyConfig };

@@ -3,6 +3,7 @@ const { createReadStream } = require('fs-extra');
 const Ora = require('ora');
 const mime = require('mime-types');
 const sequential = require('promise-sequential');
+const { getAuthResourceName } = require('../../../utils/getAuthResourceName');
 
 const providerName = 'awscloudformation';
 
@@ -16,7 +17,7 @@ async function getS3Client(context, action) {
 async function uploadFiles(context) {
   try {
     const s3Client = await getS3Client(context, 'update');
-    const authResource = Object.keys(context.amplify.getProjectMeta().auth)[0];
+    const authResource = await getAuthResourceName(context);
     const authPath = `${context.amplify.pathManager.getAmplifyDirPath()}/backend/auth/${authResource}`;
     if (!authPath) {
       return null;
@@ -44,6 +45,7 @@ async function uploadFiles(context) {
       throw e;
     }
   } catch (e) {
+    console.log(e.stack);
     throw new Error('Unable to upload trigger files to S3');
   }
 }

@@ -1,11 +1,11 @@
-import * as cors from 'cors';
-import * as e2p from 'event-to-promise';
-import * as express from 'express';
+import cors from 'cors';
+import e2p from 'event-to-promise';
+import express from 'express';
 import { execute, parse, specifiedRules, validate } from 'graphql';
 import { address as getLocalIpAddress } from 'ip';
-import * as jwtDecode from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import { join } from 'path';
-import * as portfinder from 'portfinder';
+import portfinder from 'portfinder';
 import { AmplifyAppSyncSimulator } from '..';
 import {
   AmplifyAppSyncAuthenticationProviderOIDCConfig,
@@ -15,6 +15,7 @@ import {
 import { exposeGraphQLErrors } from '../utils/expose-graphql-errors';
 import { SubscriptionServer } from './subscription';
 
+const MAX_BODY_SIZE = '10mb';
 const BASE_PORT = 8900;
 const MAX_PORT = 9999;
 
@@ -33,7 +34,7 @@ export class OperationServer {
   ) {
     this.port = config.port;
     this.app = express();
-    this.app.use(express.json());
+    this.app.use(express.json({ limit: MAX_BODY_SIZE }));
     this.app.use(cors());
     this.app.post('/graphql', this.handleRequest.bind(this));
     this.app.get('/api-config', this.handleAPIInfoRequest.bind(this));

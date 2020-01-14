@@ -30,8 +30,8 @@ module.exports = async (context, apiDetails) => {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   fs.write(amplifyMetaFilePath, JSON.stringify(amplifyMeta, null, 4));
 
-  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
-  const currentAmplifyMeta = JSON.parse(fs.read(currentAmplifyMetaFilePath));
+  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
+  const currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
   if (!currentAmplifyMeta.api) {
     currentAmplifyMeta.api = {};
   }

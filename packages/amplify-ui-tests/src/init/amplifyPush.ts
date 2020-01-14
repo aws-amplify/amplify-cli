@@ -1,10 +1,7 @@
 import * as nexpect from 'nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-function amplifyPushApi(
-  cwd: string,
-  verbose: Boolean = isCI() ? false : true
-) {
+function amplifyPushApi(cwd: string, verbose: Boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
@@ -23,10 +20,7 @@ function amplifyPushApi(
   });
 }
 
-function amplifyPush(
-  cwd: string,
-  verbose: Boolean = isCI() ? false : true
-) {
+function amplifyPush(cwd: string, verbose: Boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })

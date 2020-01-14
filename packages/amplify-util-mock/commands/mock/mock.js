@@ -8,5 +8,5 @@ module.exports = {
       return help.run(context);
     }
     testUtil.mockAllCategories(context);
-  }
-}
+  },
+};

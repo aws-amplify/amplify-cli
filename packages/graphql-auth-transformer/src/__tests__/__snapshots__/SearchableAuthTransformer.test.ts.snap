@@ -1,0 +1,193 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test auth logic is enabled for iam/apiKey auth rules in response es resolver 1`] = `
+"type Post @aws_api_key @aws_iam {
+  id: ID!
+  content: String
+  secret: String @aws_iam
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection @aws_api_key @aws_iam {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPostFilterInput {
+  id: ModelIDFilterInput
+  content: ModelStringFilterInput
+  secret: ModelStringFilterInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection @aws_api_key @aws_iam
+  getPost(id: ID!): Post @aws_api_key @aws_iam
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_api_key @aws_iam
+}
+
+input CreatePostInput {
+  id: ID
+  content: String
+  secret: String
+}
+
+input UpdatePostInput {
+  id: ID!
+  content: String
+  secret: String
+}
+
+input DeletePostInput {
+  id: ID
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): Post @aws_api_key @aws_iam
+  updatePost(input: UpdatePostInput!): Post @aws_api_key @aws_iam
+  deletePost(input: DeletePostInput!): Post @aws_api_key @aws_iam
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"]) @aws_api_key @aws_iam
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"]) @aws_api_key @aws_iam
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"]) @aws_api_key @aws_iam
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchablePostFilterInput {
+  id: SearchableIDFilterInput
+  content: SearchableStringFilterInput
+  secret: SearchableStringFilterInput
+  and: [SearchablePostFilterInput]
+  or: [SearchablePostFilterInput]
+  not: SearchablePostFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchablePostSortableFields {
+  id
+  content
+  secret
+}
+
+input SearchablePostSortInput {
+  field: SearchablePostSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchablePostConnection @aws_api_key @aws_iam {
+  items: [Post]
+  nextToken: String
+}
+"
+`;

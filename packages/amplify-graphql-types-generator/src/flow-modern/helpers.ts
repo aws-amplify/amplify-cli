@@ -8,7 +8,7 @@ import {
   GraphQLType,
   isNonNullType,
   isListType,
-} from 'graphql'
+} from 'graphql';
 
 import * as t from 'babel-types';
 
@@ -20,27 +20,21 @@ const builtInScalarMap = {
   [GraphQLFloat.name]: t.numberTypeAnnotation(),
   [GraphQLBoolean.name]: t.booleanTypeAnnotation(),
   [GraphQLID.name]: t.stringTypeAnnotation(),
-}
+};
 
-export function createTypeAnnotationFromGraphQLTypeFunction(
-  compilerOptions: CompilerOptions
-): Function {
-  return function typeAnnotationFromGraphQLType(type: GraphQLType, {
-    nullable
-  }: { nullable: boolean } = {
-    nullable: true
-  }): t.FlowTypeAnnotation {
+export function createTypeAnnotationFromGraphQLTypeFunction(compilerOptions: CompilerOptions): Function {
+  return function typeAnnotationFromGraphQLType(
+    type: GraphQLType,
+    { nullable }: { nullable: boolean } = {
+      nullable: true,
+    }
+  ): t.FlowTypeAnnotation {
     if (isNonNullType(type)) {
-      return typeAnnotationFromGraphQLType(
-        type.ofType,
-        { nullable: false }
-      );
+      return typeAnnotationFromGraphQLType(type.ofType, { nullable: false });
     }
 
     if (isListType(type)) {
-      const typeAnnotation = t.arrayTypeAnnotation(
-        typeAnnotationFromGraphQLType(type.ofType)
-      );
+      const typeAnnotation = t.arrayTypeAnnotation(typeAnnotationFromGraphQLType(type.ofType));
 
       if (nullable) {
         return t.nullableTypeAnnotation(typeAnnotation);
@@ -51,22 +45,18 @@ export function createTypeAnnotationFromGraphQLTypeFunction(
 
     let typeAnnotation;
     if (type instanceof GraphQLScalarType) {
-      const builtIn = builtInScalarMap[type.name]
+      const builtIn = builtInScalarMap[type.name];
       if (builtIn) {
         typeAnnotation = builtIn;
       } else {
         if (compilerOptions.passthroughCustomScalars) {
           typeAnnotation = t.anyTypeAnnotation();
         } else {
-          typeAnnotation = t.genericTypeAnnotation(
-            t.identifier(type.name)
-          );
+          typeAnnotation = t.genericTypeAnnotation(t.identifier(type.name));
         }
       }
     } else {
-      typeAnnotation = t.genericTypeAnnotation(
-        t.identifier(type.name)
-      );
+      typeAnnotation = t.genericTypeAnnotation(t.identifier(type.name));
     }
 
     if (nullable) {
@@ -74,5 +64,5 @@ export function createTypeAnnotationFromGraphQLTypeFunction(
     } else {
       return typeAnnotation;
     }
-  }
+  };
 }

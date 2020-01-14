@@ -99,10 +99,7 @@ export function compileToLegacyIR(
 }
 
 class LegacyIRTransformer {
-  constructor(
-    public context: CompilerContext,
-    public options: CompilerOptions = { mergeInFieldsFromFragmentSpreads: true }
-  ) {}
+  constructor(public context: CompilerContext, public options: CompilerOptions = { mergeInFieldsFromFragmentSpreads: true }) {}
 
   transformIR(): LegacyCompilerContext {
     const operations: { [operationName: string]: LegacyOperation } = Object.create({});
@@ -111,11 +108,7 @@ class LegacyIRTransformer {
       const { filePath, operationType, rootType, variables, source, selectionSet } = operation;
       const fragmentsReferenced = collectFragmentsReferenced(selectionSet, this.context.fragments);
 
-      const { sourceWithFragments, operationId } = generateOperationId(
-        operation,
-        this.context.fragments,
-        fragmentsReferenced
-      );
+      const { sourceWithFragments, operationId } = generateOperationId(operation, this.context.fragments, fragmentsReferenced);
 
       operations[operationName] = {
         filePath,
@@ -127,7 +120,7 @@ class LegacyIRTransformer {
         ...this.transformSelectionSetToLegacyIR(selectionSet),
         fragmentsReferenced: Array.from(fragmentsReferenced),
         sourceWithFragments,
-        operationId
+        operationId,
       };
     }
 
@@ -139,7 +132,7 @@ class LegacyIRTransformer {
         typeCondition: type,
         possibleTypes: selectionSet.possibleTypes,
         ...fragmentWithoutSelectionSet,
-        ...this.transformSelectionSetToLegacyIR(selectionSet)
+        ...this.transformSelectionSetToLegacyIR(selectionSet),
       };
     }
 
@@ -148,7 +141,7 @@ class LegacyIRTransformer {
       operations,
       fragments,
       typesUsed: this.context.typesUsed,
-      options: this.options
+      options: this.options,
     };
 
     return legacyContext;
@@ -178,7 +171,7 @@ class LegacyIRTransformer {
           typeCondition: possibleType,
           possibleTypes: [possibleType],
           fields,
-          fragmentSpreads
+          fragmentSpreads,
         } as LegacyInlineFragment;
       });
     });
@@ -194,7 +187,7 @@ class LegacyIRTransformer {
     return {
       fields,
       fragmentSpreads,
-      inlineFragments
+      inlineFragments,
     };
   }
 
@@ -207,7 +200,7 @@ class LegacyIRTransformer {
               return {
                 kind,
                 variableName,
-                inverted
+                inverted,
               };
             })
           : undefined;
@@ -221,15 +214,12 @@ class LegacyIRTransformer {
         description,
         isDeprecated,
         deprecationReason,
-        ...selectionSet ? this.transformSelectionSetToLegacyIR(selectionSet) : {}
+        ...(selectionSet ? this.transformSelectionSetToLegacyIR(selectionSet) : {}),
       } as LegacyField;
     });
   }
 
-  collectFragmentSpreads(
-    selectionSet: SelectionSet,
-    possibleTypes: GraphQLObjectType[] = selectionSet.possibleTypes
-  ): FragmentSpread[] {
+  collectFragmentSpreads(selectionSet: SelectionSet, possibleTypes: GraphQLObjectType[] = selectionSet.possibleTypes): FragmentSpread[] {
     const fragmentSpreads: FragmentSpread[] = [];
 
     for (const selection of selectionSet.selections) {

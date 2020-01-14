@@ -22,16 +22,16 @@ class S3 {
 class IAM {
   createPolicy() {
     return {
-      promise: () => Promise.resolve({
-        Policy: {},
-      }),
+      promise: () =>
+        Promise.resolve({
+          Policy: {},
+        }),
     };
   }
 
   attachRolePolicy() {
     return {
-      promise: () => Promise.resolve({
-      }),
+      promise: () => Promise.resolve({}),
     };
   }
 }
@@ -43,27 +43,30 @@ class Pinpoint {
 
   getApp() {
     return {
-      promise: () => Promise.resolve({
-        ApplicationResponse: {},
-      }),
+      promise: () =>
+        Promise.resolve({
+          ApplicationResponse: {},
+        }),
     };
   }
 
   deleteApp(params) {
     return {
-      promise: () => Promise.resolve({
-        ApplicationResponse: {
-          Id: params.ApplicationId,
-        },
-      }),
+      promise: () =>
+        Promise.resolve({
+          ApplicationResponse: {
+            Id: params.ApplicationId,
+          },
+        }),
     };
   }
 
   createApp() {
     return {
-      promise: () => Promise.resolve({
-        ApplicationResponse: {},
-      }),
+      promise: () =>
+        Promise.resolve({
+          ApplicationResponse: {},
+        }),
     };
   }
 }

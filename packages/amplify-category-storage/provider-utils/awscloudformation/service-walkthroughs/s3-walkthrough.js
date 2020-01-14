@@ -6,9 +6,17 @@ const uuid = require('uuid');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
+const storageParamsFileName = 'storage-params.json';
 const serviceName = 'S3';
 const templateFileName = 's3-cloudformation-template.json.ejs';
 const amplifyMetaFilename = 'amplify-meta.json';
+// map of s3 actions corresponding to CRUD verbs
+// 'create/update' have been consolidated since s3 only has put concept
+const permissionMap = {
+  'create/update': ['s3:PutObject'],
+  read: ['s3:GetObject', 's3:ListBucket'],
+  delete: ['s3:DeleteObject'],
+};
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, options) {
   while (!checkIfAuthExists(context)) {
@@ -74,10 +82,13 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
   let parameters = {};
+  let storageParams = {};
   if (resourceName) {
     inputs = inputs.filter(input => input.key !== 'resourceName');
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
+
     try {
       parameters = amplify.readJsonFile(parametersFilePath);
     } catch (e) {
@@ -85,6 +96,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
     parameters.resourceName = resourceName;
     Object.assign(defaultValues, parameters);
+
+    try {
+      storageParams = amplify.readJsonFile(storageParamsFilePath);
+    } catch (e) {
+      storageParams = {};
+    }
   }
   let answers = {};
 
@@ -141,32 +158,176 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
   }
 
-  const accessQuestion = await inquirer.prompt({
-    type: 'list',
-    name: 'storageAccess',
-    message: 'Who should have access:',
-    choices: [
-      {
-        name: 'Auth users only',
-        value: 'auth',
-      },
-      {
-        name: 'Auth and guest users',
-        value: 'authAndGuest',
-      },
-    ],
-    default: defaultValues.storageAccess,
-  });
+  const userPoolGroupList = await context.amplify.getUserPoolGroupList(context);
 
-  answers = { ...answers, storageAccess: accessQuestion.storageAccess };
-
-  // auth permissions
-
-  answers.selectedAuthenticatedPermissions = await askReadWrite('Authenticated', context, answers, parameters);
+  let permissionSelected = 'Auth/Guest Users';
   let allowUnauthenticatedIdentities = false;
-  if (answers.storageAccess === 'authAndGuest') {
-    answers.selectedGuestPermissions = await askReadWrite('Guest', context, answers, parameters);
-    allowUnauthenticatedIdentities = true;
+
+  if (userPoolGroupList.length > 0) {
+    do {
+      if (permissionSelected === 'Learn more') {
+        context.print.info('');
+        context.print.info(
+          'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+        );
+        context.print.info('');
+      }
+      const permissionSelection = await inquirer.prompt({
+        name: 'selection',
+        type: 'list',
+        message: 'Restrict access by?',
+        choices: ['Auth/Guest Users', 'Individual Groups', 'Both', 'Learn more'],
+        default: 'Auth/Guest Users',
+      });
+
+      permissionSelected = permissionSelection.selection;
+    } while (permissionSelected === 'Learn more');
+  }
+
+  if (permissionSelected === 'Both' || permissionSelected === 'Auth/Guest Users') {
+    const accessQuestion = await inquirer.prompt({
+      type: 'list',
+      name: 'storageAccess',
+      message: 'Who should have access:',
+      choices: [
+        {
+          name: 'Auth users only',
+          value: 'auth',
+        },
+        {
+          name: 'Auth and guest users',
+          value: 'authAndGuest',
+        },
+      ],
+      default: defaultValues.storageAccess,
+    });
+
+    answers = { ...answers, storageAccess: accessQuestion.storageAccess };
+
+    // auth permissions
+
+    answers.selectedAuthenticatedPermissions = await askReadWrite('Authenticated', context, answers, parameters);
+    if (answers.storageAccess === 'authAndGuest') {
+      answers.selectedGuestPermissions = await askReadWrite('Guest', context, answers, parameters);
+      allowUnauthenticatedIdentities = true;
+    }
+  }
+
+  if (permissionSelected === 'Both' || permissionSelected === 'Individual Groups') {
+    if (permissionSelected === 'Individual Groups') {
+      removeAuthUnauthAccess(answers);
+    }
+
+    let defaultSelectedGroups = [];
+
+    if (storageParams && storageParams.groupPermissionMap) {
+      defaultSelectedGroups = Object.keys(storageParams.groupPermissionMap);
+    }
+
+    const userPoolGroupSelection = await inquirer.prompt([
+      {
+        name: 'userpoolGroups',
+        type: 'checkbox',
+        message: 'Select groups:',
+        choices: userPoolGroupList,
+        default: defaultSelectedGroups,
+        validate: selectedAnswers => {
+          if (selectedAnswers.length === 0) {
+            return 'Select at least one option';
+          }
+          return true;
+        },
+      },
+    ]);
+
+    const selectedUserPoolGroupList = userPoolGroupSelection.userpoolGroups;
+
+    const groupCrudFlow = async (group, defaults = []) => {
+      const possibleOperations = Object.keys(permissionMap).map(el => ({ name: el, value: el }));
+
+      const crudAnswers = await inquirer.prompt({
+        name: 'permissions',
+        type: 'checkbox',
+        message: `What kind of access do you want for ${group} users?`,
+        choices: possibleOperations,
+        default: defaults,
+        validate: selectedAnswers => {
+          if (selectedAnswers.length === 0) {
+            return 'Select at least one option';
+          }
+          return true;
+        },
+      });
+
+      return {
+        permissions: crudAnswers.permissions,
+        policies: _.uniq(_.flatten(crudAnswers.permissions.map(e => permissionMap[e]))),
+      };
+    };
+
+    const groupPermissionMap = {};
+    const groupPolicyMap = {};
+
+    for (let i = 0; i < selectedUserPoolGroupList.length; i += 1) {
+      let defaults = [];
+      if (storageParams && storageParams.groupPermissionMap) {
+        defaults = storageParams.groupPermissionMap[selectedUserPoolGroupList[i]];
+      }
+
+      const crudAnswers = await groupCrudFlow(selectedUserPoolGroupList[i], defaults);
+
+      groupPermissionMap[selectedUserPoolGroupList[i]] = crudAnswers.permissions;
+      groupPolicyMap[selectedUserPoolGroupList[i]] = crudAnswers.policies;
+    }
+
+    // Get auth resources
+
+    let authResources = (await context.amplify.getResourceStatus('auth')).allResources;
+    authResources = authResources.filter(resource => resource.service === 'Cognito');
+    if (authResources.length === 0) {
+      throw new Error('No auth resource found. Please add it using amplify add auth');
+    }
+
+    const authResourceName = authResources[0].resourceName;
+
+    // add to storage params
+    storageParams.groupPermissionMap = groupPermissionMap;
+
+    if (!resourceName) {
+      // add to depends
+      if (!options.dependsOn) {
+        options.dependsOn = [];
+      }
+
+      options.dependsOn.push({
+        category: 'auth',
+        resourceName: authResourceName,
+        attributes: ['UserPoolId'],
+      });
+
+      selectedUserPoolGroupList.forEach(group => {
+        options.dependsOn.push({
+          category: 'auth',
+          resourceName: 'userPoolGroups',
+          attributes: [`${group}GroupRole`],
+        });
+      });
+      // add to props
+
+      defaultValues.authResourceName = authResourceName;
+      defaultValues.groupList = selectedUserPoolGroupList;
+      defaultValues.groupPolicyMap = groupPolicyMap;
+    } else {
+      // In the update flow
+      await updateCfnTemplateWithGroups(
+        context,
+        defaultSelectedGroups,
+        selectedUserPoolGroupList,
+        groupPolicyMap,
+        resourceName,
+        authResourceName
+      );
+    }
   }
 
   // Ask Lambda trigger question
@@ -249,20 +410,31 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   Object.assign(defaultValues, answers);
   const resource = defaultValues.resourceName;
   const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+  fs.ensureDirSync(resourceDirPath);
+  let props = { ...defaultValues };
+
+  if (!parameters.resourceName) {
+    if (options) {
+      props = { ...defaultValues, ...options };
+    }
+    // Generate CFN file on add
+    await copyCfnTemplate(context, category, resource, props);
+  }
+
   delete defaultValues.resourceName;
   delete defaultValues.storageAccess;
-  fs.ensureDirSync(resourceDirPath);
+  delete defaultValues.groupPolicyMap;
+  delete defaultValues.groupList;
+  delete defaultValues.authResourceName;
+
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   const jsonString = JSON.stringify(defaultValues, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
-  if (!parameters.resourceName) {
-    if (options) {
-      Object.assign(defaultValues, options);
-    }
-    // Generate CFN file on add
-    await copyCfnTemplate(context, category, resource, defaultValues);
-  }
+  const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
+  const storageParamsString = JSON.stringify(storageParams, null, 4);
+  fs.writeFileSync(storageParamsFilePath, storageParamsString, 'utf8');
+
   return resource;
 }
 
@@ -281,6 +453,102 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
 
   // copy over the files
   return await context.amplify.copyBatch(context, copyJobs, options);
+}
+
+async function updateCfnTemplateWithGroups(context, oldGroupList, newGroupList, newGroupPolicyMap, s3ResourceName, authResourceName) {
+  const groupsToBeDeleted = _.difference(oldGroupList, newGroupList);
+
+  // Update Cloudformtion file
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(projectBackendDirPath, category, s3ResourceName);
+  const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
+  const storageCFNFile = context.amplify.readJsonFile(storageCFNFilePath);
+
+  const amplifyMetaFilePath = path.join(projectBackendDirPath, amplifyMetaFilename);
+  const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
+
+  let s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn || [];
+
+  s3DependsOnResources = s3DependsOnResources.filter(resource => resource.category !== 'auth');
+
+  if (newGroupList.length > 0) {
+    s3DependsOnResources.push({
+      category: 'auth',
+      resourceName: authResourceName,
+      attributes: ['UserPoolId'],
+    });
+  }
+
+  storageCFNFile.Parameters[`auth${authResourceName}UserPoolId`] = {
+    Type: 'String',
+    Default: `auth${authResourceName}UserPoolId`,
+  };
+
+  groupsToBeDeleted.forEach(group => {
+    delete storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`];
+    delete storageCFNFile.Resources[`${group}GroupPolicy`];
+  });
+
+  newGroupList.forEach(group => {
+    s3DependsOnResources.push({
+      category: 'auth',
+      resourceName: 'userPoolGroups',
+      attributes: [`${group}GroupRole`],
+    });
+
+    storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`] = {
+      Type: 'String',
+      Default: `authuserPoolGroups${group}GroupRole`,
+    };
+
+    storageCFNFile.Resources[`${group}GroupPolicy`] = {
+      Type: 'AWS::IAM::Policy',
+      Properties: {
+        PolicyName: `${group}-group-s3-policy`,
+        Roles: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  Ref: `auth${authResourceName}UserPoolId`,
+                },
+                `-${group}GroupRole`,
+              ],
+            ],
+          },
+        ],
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: newGroupPolicyMap[group],
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:s3:::',
+                      {
+                        Ref: 'S3Bucket',
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+  });
+
+  context.amplify.updateamplifyMetaAfterResourceUpdate(category, s3ResourceName, 'dependsOn', s3DependsOnResources);
+
+  const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
+  fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
 }
 
 async function removeTrigger(context, resourceName, triggerFunction) {
@@ -634,6 +902,19 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
                         {
                           Ref: 'bucketName',
                         },
+                        {
+                          'Fn::Select': [
+                            3,
+                            {
+                              'Fn::Split': [
+                                '-',
+                                {
+                                  Ref: 'AWS::StackName',
+                                },
+                              ],
+                            },
+                          ],
+                        },
                         '-',
                         {
                           Ref: 'env',
@@ -652,7 +933,9 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
     fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
   } else {
     // New resource
-    options.dependsOn = [];
+    if (!options.dependsOn) {
+      options.dependsOn = [];
+    }
     options.dependsOn.push({
       category: 'function',
       resourceName: functionName,
@@ -671,14 +954,6 @@ async function getLambdaFunctions(context) {
 }
 
 async function askReadWrite(userType, context, answers, parameters) {
-  // map of s3 actions corresponding to CRUD verbs
-  // 'create/update' have been consolidated since s3 only has put concept
-  const permissionMap = {
-    'create/update': ['s3:PutObject'],
-    read: ['s3:GetObject', 's3:ListBucket'],
-    delete: ['s3:DeleteObject'],
-  };
-
   const defaults = [];
   if (parameters[`selected${userType}Permissions`]) {
     Object.values(permissionMap).forEach((el, index) => {
@@ -726,6 +1001,18 @@ function createPermissionKeys(userType, answers, selectedPermissions) {
     answers.s3PermissionsGuestUploads = 'DISALLOW';
     answers.GuestAllowList = 'DISALLOW';
   }
+}
+
+function removeAuthUnauthAccess(answers) {
+  answers.s3PermissionsGuestPublic = 'DISALLOW';
+  answers.s3PermissionsGuestUploads = 'DISALLOW';
+  answers.GuestAllowList = 'DISALLOW';
+
+  answers.s3PermissionsAuthenticatedPublic = 'DISALLOW';
+  answers.s3PermissionsAuthenticatedProtected = 'DISALLOW';
+  answers.s3PermissionsAuthenticatedPrivate = 'DISALLOW';
+  answers.s3PermissionsAuthenticatedUploads = 'DISALLOW';
+  answers.AuthenticatedAllowList = 'DISALLOW';
 }
 
 function resourceAlreadyExists(context) {
@@ -808,6 +1095,19 @@ function migrate(context, projectPath, resourceName) {
           [
             {
               Ref: 'bucketName',
+            },
+            {
+              'Fn::Select': [
+                3,
+                {
+                  'Fn::Split': [
+                    '-',
+                    {
+                      Ref: 'AWS::StackName',
+                    },
+                  ],
+                },
+              ],
             },
             '-',
             {

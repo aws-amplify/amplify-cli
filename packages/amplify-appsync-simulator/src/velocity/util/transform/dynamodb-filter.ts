@@ -20,11 +20,7 @@ const FUNCTION_MAP = {
   beginsWith: 'begins_with',
 };
 
-export function generateFilterExpression(
-  filter: any,
-  prefix = null,
-  parent = null,
-): DDBFilterExpression {
+export function generateFilterExpression(filter: any, prefix = null, parent = null): DDBFilterExpression {
   const expr = Object.entries(filter).reduce(
     (sum, [name, value]) => {
       let subExpr = {
@@ -42,24 +38,16 @@ export function generateFilterExpression(
           if (Array.isArray(value)) {
             subExpr = scopeExpression(
               value.reduce((expr, subFilter, idx) => {
-                const newExpr = generateFilterExpression(
-                  subFilter,
-                  [prefix, name, idx].filter(i => i !== null).join('_'),
-                );
+                const newExpr = generateFilterExpression(subFilter, [prefix, name, idx].filter(i => i !== null).join('_'));
                 return merge(expr, newExpr, JOINER);
-              }, subExpr),
+              }, subExpr)
             );
           } else {
-            subExpr = generateFilterExpression(
-              value,
-              [prefix, name].filter(val => val !== null).join('_'),
-            );
+            subExpr = generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_'));
           }
           break;
         case 'not':
-          subExpr = scopeExpression(
-            generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_')),
-          );
+          subExpr = scopeExpression(generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_')));
           subExpr.expressions.unshift('NOT');
           break;
         case 'between':
@@ -109,27 +97,19 @@ export function generateFilterExpression(
       expressions: [],
       expressionNames: {},
       expressionValues: {},
-    },
+    }
   );
 
   return expr;
 }
 
-function merge(
-  expr1: DDBFilterExpression,
-  expr2: DDBFilterExpression,
-  joinCondition = 'AND',
-): DDBFilterExpression {
+function merge(expr1: DDBFilterExpression, expr2: DDBFilterExpression, joinCondition = 'AND'): DDBFilterExpression {
   if (!expr2.expressions.length) {
     return expr1;
   }
 
   return {
-    expressions: [
-      ...expr1.expressions,
-      expr1.expressions.length ? joinCondition : '',
-      ...expr2.expressions,
-    ],
+    expressions: [...expr1.expressions, expr1.expressions.length ? joinCondition : '', ...expr2.expressions],
     expressionNames: { ...expr1.expressionNames, ...expr2.expressionNames },
     expressionValues: { ...expr1.expressionValues, ...expr2.expressionValues },
   };

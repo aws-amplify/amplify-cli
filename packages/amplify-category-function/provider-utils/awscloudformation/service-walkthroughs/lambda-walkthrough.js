@@ -123,7 +123,7 @@ async function updateWalkthrough(context, lambdaToUpdate) {
   const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
   let currentParameters;
   try {
-    currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    currentParameters = context.amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     currentParameters = {};
   }
@@ -148,7 +148,7 @@ async function updateWalkthrough(context, lambdaToUpdate) {
 
     const cfnFileName = `${resourceAnswer.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-    const cfnContent = JSON.parse(fs.readFileSync(cfnFilePath));
+    const cfnContent = context.amplify.readJsonFile(cfnFilePath);
     const dependsOnParams = { env: { Type: 'String' } };
 
     Object.keys(answers.resourcePropertiesJSON).forEach(resourceProperty => {
@@ -319,7 +319,7 @@ function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNResourcePa
 
 async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
   let categories = Object.keys(amplifyMeta);
   categories = categories.filter(category => category !== 'providers');
@@ -527,8 +527,8 @@ async function askDynamoDBQuestions(context, inputs) {
     message: inputs[5].question,
     choices: inputs[5].options,
   };
+  // eslint-disable-next-line
   while (true) {
-    //eslint-disable-line
     const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
     switch (dynamoDbTypeAnswer[inputs[5].key]) {
       case 'currentProject': {

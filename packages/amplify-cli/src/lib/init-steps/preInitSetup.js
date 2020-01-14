@@ -3,7 +3,8 @@ const { getPackageManager } = require('../packageManagerHelpers');
 const { normalizePackageManagerForOS } = require('../packageManagerHelpers');
 const { generateLocalEnvInfoFile } = require('./s9-onSuccess');
 const url = require('url');
-const fs = require('fs');
+const fs = require('fs-extra');
+const path = require('path');
 
 async function run(context) {
   if (context.parameters.options.app) {
@@ -14,6 +15,10 @@ async function run(context) {
     await cloneRepo(context, repoUrl);
     await installPackage();
     await setLocalEnvDefaults(context);
+  }
+  if (context.parameters.options.quickstart) {
+    await createAmplifySkeleton();
+    process.exit(0);
   }
   return context;
 }
@@ -84,6 +89,15 @@ async function setLocalEnvDefaults(context) {
   };
   context.exeInfo.inputParams.amplify.envName = envName;
   await generateLocalEnvInfoFile(context);
+}
+
+/**
+ * Extract amplify project structure with backend-config and project-config
+ */
+async function createAmplifySkeleton() {
+  const skeletonLocalDir = path.join(__dirname, '/../../../src/lib/amplify-skeleton');
+  const skeletonProjectDir = path.join(process.cwd(), '/amplify');
+  await fs.copySync(skeletonLocalDir, skeletonProjectDir);
 }
 
 module.exports = {

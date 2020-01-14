@@ -1,6 +1,11 @@
 require = require('esm')(module);
-import { join } from 'path';
-export default function getAWSExports(projectRoot: string) {
-  const metaFilePath = join(projectRoot, 'src', 'aws-exports.js');
+import * as path from 'path';
+
+export function getAWSExportsPath(projRoot: string): string {
+  return path.join(projRoot, 'aws-exports.js');
+}
+
+export function getAWSExports(projectRoot: string) {
+  const metaFilePath = getAWSExportsPath(projectRoot);
   return require(metaFilePath);
 }

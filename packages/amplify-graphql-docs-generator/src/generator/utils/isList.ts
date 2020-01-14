@@ -1,4 +1,4 @@
-import { GraphQLType, isNonNullType, isListType } from "graphql";
+import { GraphQLType, isNonNullType, isListType } from 'graphql';
 
 export default function isList(typeObj: GraphQLType): boolean {
   if (isNonNullType(typeObj)) {

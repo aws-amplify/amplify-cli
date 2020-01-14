@@ -1,7 +1,9 @@
 module.exports = {
   ProviderName: 'awscloudformation',
   Label: 'awscloudformation',
+  AmplifyAppIdLabel: 'AmplifyAppId',
   CacheFileName: 'cache.json',
+  S3BackendZipFileName: '#current-cloud-backend.zip',
   LocalAWSInfoFileName: 'local-aws-info.json',
   Aliases: ['aws', 'cloudformation', 'cfn', 'awscfn'],
   DefaultAWSAccessKeyId: '<YOUR_ACCESS_KEY_ID>',

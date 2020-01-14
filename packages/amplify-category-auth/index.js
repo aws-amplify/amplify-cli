@@ -6,13 +6,17 @@ const path = require('path');
 const sequential = require('promise-sequential');
 
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
+const { getAuthResourceName } = require('./utils/getAuthResourceName');
 const {
   updateConfigOnEnvInit,
   copyCfnTemplate,
   saveResourceParameters,
   ENV_SPECIFIC_PARAMS,
   migrate,
+  removeDeprecatedProps,
 } = require('./provider-utils/awscloudformation');
+
+const { transformUserPoolGroupSchema } = require('./utils/transform-user-pool-group');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -76,7 +80,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   // if auth has already been enabled, grab the existing parameters
   if (authExists) {
     const providerPlugin = context.amplify.getPluginInstance(context, provider);
-    currentAuthName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0]; //eslint-disable-line
+    currentAuthName = await getAuthResourceName(context);
     currentAuthParams = providerPlugin.loadResourceParameters(context, 'auth', currentAuthName);
 
     if (requirements.authSelections.includes('identityPoolOnly') && currentAuthParams.userPoolName) {
@@ -110,12 +114,13 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       }); //eslint-disable-line
   /* eslint-enable */
   const { roles } = defaults;
-  const authProps = {
+  let authProps = {
     ...authPropsValues,
     ...roles,
   };
 
   try {
+    authProps = removeDeprecatedProps(authProps);
     await copyCfnTemplate(context, category, authProps, cfnFilename);
     saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
     if (!authExists) {
@@ -158,7 +163,8 @@ async function checkRequirements(requirements, context) {
   let authParameters;
 
   if (existingAuth && Object.keys(existingAuth).length > 0) {
-    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', Object.keys(existingAuth)[0], 'parameters.json');
+    const authResourceName = await getAuthResourceName(context);
+    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', authResourceName, 'parameters.json');
     authParameters = amplify.readJsonFile(resourceDirPath);
   } else {
     return { authEnabled: false };
@@ -283,6 +289,10 @@ async function handleAmplifyEvent(context, args) {
   context.print.info(`Received event args ${args}`);
 }
 
+async function prePushAuthHook(context) {
+  await transformUserPoolGroupSchema(context);
+}
+
 module.exports = {
   externalAuthEnable,
   checkRequirements,
@@ -293,4 +303,5 @@ module.exports = {
   getPermissionPolicies,
   executeAmplifyCommand,
   handleAmplifyEvent,
+  prePushAuthHook,
 };

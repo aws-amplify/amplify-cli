@@ -18,7 +18,7 @@ const {
   getDotConfigDirPath,
   getProjectConfigFilePath,
   getAmplifyMetaFilePath,
-  getCurentAmplifyMetaFilePath,
+  getCurrentAmplifyMetaFilePath,
   getLocalEnvFilePath,
   getProviderInfoFilePath,
   getBackendConfigFilePath,
@@ -202,13 +202,13 @@ function persistAmplifyMeta(amplifyMeta, projectPath) {
 }
 
 function getCurrentAmplifyMeta(projectPath) {
-  const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath(projectPath);
+  const currentAmplifyMetafilePath = getCurrentAmplifyMetaFilePath(projectPath);
   return readJsonFile(currentAmplifyMetafilePath);
 }
 
 function persistCurrentAmplifyMeta(currentAmplifyMeta, projectPath) {
   if (currentAmplifyMeta) {
-    const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath(projectPath);
+    const currentAmplifyMetafilePath = getCurrentAmplifyMetaFilePath(projectPath);
     const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
     fs.writeFileSync(currentAmplifyMetafilePath, jsonString, 'utf8');
   }

@@ -1,11 +1,12 @@
-import { IAM, AWSError } from 'aws-sdk';
+import { IAM } from 'aws-sdk';
+
 expect.extend({
   async toBeIAMRoleWithArn(roleName: string, arn?: string) {
     const iam = new IAM();
     let pass: boolean;
     let message: string;
     try {
-      const {Role: role} = await iam.getRole({ RoleName: roleName }).promise();
+      const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
       if (arn) {
         pass = role.Arn === arn ? true : false;
         if (pass) {
@@ -23,8 +24,8 @@ expect.extend({
 
     const result = {
       message: () => message,
-      pass
+      pass,
     };
     return result;
-  }
+  },
 });

@@ -1,7 +1,4 @@
-import {
-  join,
-  wrap,
-} from '../utilities/printing';
+import { join, wrap } from '../utilities/printing';
 
 import { propertyDeclarations } from './codeGeneration';
 import { typeNameFromGraphQLType } from './types';
@@ -11,7 +8,7 @@ import { pascalCase } from 'change-case';
 export function typeDeclaration(generator, { interfaceName, noBrackets }, closure) {
   generator.printNewlineIfNeeded();
   generator.printNewline();
-  generator.print(`export type ${ interfaceName } = `);
+  generator.print(`export type ${interfaceName} = `);
   generator.pushScope({ typeName: interfaceName });
   if (noBrackets) {
     generator.withinBlock(closure, '', '');
@@ -22,33 +19,27 @@ export function typeDeclaration(generator, { interfaceName, noBrackets }, closur
   generator.print(';');
 }
 
-export function propertyDeclaration(generator, {
-  fieldName,
-  type,
-  propertyName,
-  typeName,
-  description,
-  isArray,
-  isNullable,
-  isArrayElementNullable,
-  fragmentSpreads,
-  isInput
-}, closure, open = ' {|', close = '|}') {
+export function propertyDeclaration(
+  generator,
+  { fieldName, type, propertyName, typeName, description, isArray, isNullable, isArrayElementNullable, fragmentSpreads, isInput },
+  closure,
+  open = ' {|',
+  close = '|}'
+) {
   const name = fieldName || propertyName;
 
   if (description) {
-    description.split('\n')
-      .forEach(line => {
-        generator.printOnNewline(`// ${line.trim()}`);
-      })
+    description.split('\n').forEach(line => {
+      generator.printOnNewline(`// ${line.trim()}`);
+    });
   }
 
   if (closure) {
-    generator.printOnNewline(name)
+    generator.printOnNewline(name);
     if (isInput && isNullable) {
-      generator.print('?')
+      generator.print('?');
     }
-    generator.print(':')
+    generator.print(':');
     if (isNullable) {
       generator.print(' ?');
     }
@@ -71,11 +62,10 @@ export function propertyDeclaration(generator, {
     if (isArray) {
       generator.print(' >');
     }
-
   } else {
-    generator.printOnNewline(name)
+    generator.printOnNewline(name);
     if (isInput && isNullable) {
-      generator.print('?')
+      generator.print('?');
     }
     generator.print(`: ${typeName || typeNameFromGraphQLType(generator.context, type)}`);
   }
@@ -83,17 +73,13 @@ export function propertyDeclaration(generator, {
 }
 
 export function propertySetsDeclaration(generator, property, propertySets, standalone = false) {
-  const {
-    description, fieldName, propertyName, typeName,
-    isNullable, isArray, isArrayElementNullable
-  } = property;
+  const { description, fieldName, propertyName, typeName, isNullable, isArray, isArrayElementNullable } = property;
   const name = fieldName || propertyName;
 
   if (description) {
-    description.split('\n')
-      .forEach(line => {
-        generator.printOnNewline(`// ${line.trim()}`);
-      })
+    description.split('\n').forEach(line => {
+      generator.printOnNewline(`// ${line.trim()}`);
+    });
   }
   if (!standalone) {
     generator.printOnNewline(`${name}:`);
@@ -112,16 +98,20 @@ export function propertySetsDeclaration(generator, property, propertySets, stand
 
   generator.pushScope({ typeName: name });
 
-  generator.withinBlock(() => {
-    propertySets.forEach((propertySet, index, propertySets) => {
-      generator.withinBlock(() => {
-        propertyDeclarations(generator, propertySet);
+  generator.withinBlock(
+    () => {
+      propertySets.forEach((propertySet, index, propertySets) => {
+        generator.withinBlock(() => {
+          propertyDeclarations(generator, propertySet);
+        });
+        if (index !== propertySets.length - 1) {
+          generator.print(' |');
+        }
       });
-      if (index !== propertySets.length - 1) {
-        generator.print(' |');
-      }
-    })
-  }, '(', ')');
+    },
+    '(',
+    ')'
+  );
 
   generator.popScope();
 

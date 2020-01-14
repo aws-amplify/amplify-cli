@@ -7,7 +7,7 @@ const { removeResourceParameters } = require('./envResourceParams');
 
 async function forceRemoveResource(context, category, name, dir) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');
     process.exit(1);
@@ -30,7 +30,7 @@ async function forceRemoveResource(context, category, name, dir) {
 
 function removeResource(context, category) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');
     process.exit(1);
@@ -71,7 +71,7 @@ function removeResource(context, category) {
 
 const deleteResourceFiles = async (context, category, resourceName, resourceDir, force) => {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   if (!force) {
     const { allResources } = await context.amplify.getResourceStatus();
     allResources.forEach(resourceItem => {

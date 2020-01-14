@@ -7,7 +7,7 @@ const defaultSettings = {
 };
 
 export function readSchemaDocument(schemaName: string): string {
-  const docPath = `${__dirname}/../../schemas/${schemaName}.graphql`
+  const docPath = `${__dirname}/../../schemas/${schemaName}.graphql`;
   if (fs.existsSync(docPath)) {
     return fs.readFileSync(docPath).toString();
   } else {
@@ -16,21 +16,17 @@ export function readSchemaDocument(schemaName: string): string {
 }
 
 function getSchemaPath(schemaName: string): string {
-  return  `${__dirname}/../../schemas/${schemaName}.graphql`;
+  return `${__dirname}/../../schemas/${schemaName}.graphql`;
 }
 
-export function addApiWithSimpleModel(
-  cwd: string,
-  settings: any = {},
-  verbose: boolean = !isCI()
-) {
-  settings = {...defaultSettings, ...settings};
+export function addApiWithSimpleModel(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
+  settings = { ...defaultSettings, ...settings };
   const schemaName: string = settings.schemaName ? settings.schemaName : 'simple_model';
   readSchemaDocument(schemaName);
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Please select from one of the below mentioned services:')
       .sendline('\r')
       .wait('Provide API name:')
       .sendline(settings.apiName)
@@ -48,6 +44,6 @@ export function addApiWithSimpleModel(
         } else {
           reject(err);
         }
-      })
-  })
+      });
+  });
 }

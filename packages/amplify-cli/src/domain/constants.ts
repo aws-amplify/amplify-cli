@@ -1,4 +1,4 @@
-export default {
+export const constants = {
   HELP: 'help',
   HELP_SHORT: 'h',
   VERSION: 'version',
@@ -18,4 +18,4 @@ export default {
   GlobalNodeModules: 'global-node-modules',
   ExecuteAmplifyCommand: 'executeAmplifyCommand',
   HandleAmplifyEvent: 'handleAmplifyEvent',
-}
+};
