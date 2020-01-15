@@ -41,7 +41,7 @@ async function init(amplifyServiceParams) {
           appId: inputAmplifyAppId,
         })
         .promise();
-      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}}`);
+      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
       context.print.error(
