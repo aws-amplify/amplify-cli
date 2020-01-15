@@ -31,9 +31,6 @@
     "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts build",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",

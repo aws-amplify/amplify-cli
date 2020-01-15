@@ -3,7 +3,8 @@
   "files.exclude": {
     "**/.git": true,
     "**/node_modules": true,
-    "**/build": true
+    "**/build": true,
+    "**/coverage": true
   },
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "editor.formatOnSave": true,
