@@ -6,10 +6,29 @@ const { storeCurrentCloudBackend } = require('./push-resources');
 const constants = require('./constants');
 
 async function run(context) {
-  const projectDetails = context.amplify.getProjectDetails();
-  const awsConfig = await configurationManager.getAwsConfig(context);
-  const { amplifyMeta, teamProviderInfo } = projectDetails;
-  const { envName } = projectDetails.localEnvInfo;
+  let projectDetails;
+  let currentAmplifyMetaFilePath;
+  let currentAmplifyMeta;
+  let awsConfig;
+
+  let isProjectFullySetUp = false;
+
+  try {
+    projectDetails = context.amplify.getProjectDetails();
+    currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
+    currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
+    awsConfig = await configurationManager.getAwsConfig(context);
+    isProjectFullySetUp = true;
+  } catch (e) {
+    isProjectFullySetUp = false;
+  }
+
+  if (!isProjectFullySetUp) {
+    return;
+  }
+
+  const { amplifyMeta, teamProviderInfo, localEnvInfo } = projectDetails;
+  const { envName } = localEnvInfo;
 
   if (teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel]) {
     // Migration is not needed if appId is already present in the team provider info
@@ -96,8 +115,6 @@ async function run(context) {
     let jsonString = JSON.stringify(amplifyMeta, null, 4);
     fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
-    const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
-    const currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
     currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
     jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
     fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');

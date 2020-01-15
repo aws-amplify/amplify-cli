@@ -69,8 +69,10 @@ async function run(context) {
       });
   } else if (
     // This part of the code is invoked by the `amplify init --appId xxx` command
-    // for projects that are already setup by `amplify init` with the Amplify CLI version prior to 4.0.0.
-    // This allows the local project's env to be added to an existing Amplify Console project, as specified
+    // on projects that are already fully setup by `amplify init` with the Amplify CLI version prior to 4.0.0.
+    // It expects all the artifacts in the `amplify/.config` directory, the amplify-meta.json file in both
+    // the `#current-cloud-backend` and the `backend` directories, and the team-provider-info file to exist.
+    // It allows the local project's env to be added to an existing Amplify Console project, as specified
     // by the appId, without unneccessarily creating another Amplify Console project by the post push migration.
     !context.exeInfo.isNewProject &&
     context.exeInfo.inputParams &&
