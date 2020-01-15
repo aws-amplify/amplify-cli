@@ -158,19 +158,19 @@ export class StorageServer extends EventEmitter {
     for (const file of files) {
       if (delimiter !== '' && util.checkfile(file, prefix, delimiter)) {
         ListBucketResult[LIST_COMMOM_PREFIXES].push({
-          prefix: request.params.path + files[file].split(dirPath)[1],
+          prefix: request.params.path + file.split(dirPath)[1],
         });
       }
-      if (!statSync(files[file]).isDirectory()) {
+      if (!statSync(file).isDirectory()) {
         if (keyCount === maxKeys) {
           break;
         }
 
         ListBucketResult[LIST_CONTENT].push({
-          Key: request.params.path + files[file].split(dirPath)[1],
-          LastModified: new Date(statSync(files[file]).mtime).toISOString(),
-          Size: statSync(files[file]).size,
-          ETag: etag(files[file]),
+          Key: request.params.path + file.split(dirPath)[1],
+          LastModified: new Date(statSync(file).mtime).toISOString(),
+          Size: statSync(file).size,
+          ETag: etag(file),
           StorageClass: 'STANDARD',
         });
         keyCount = keyCount + 1;
