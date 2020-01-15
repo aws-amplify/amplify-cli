@@ -131,7 +131,7 @@ export class StorageServer extends EventEmitter {
             RequestId: '',
             HostId: '',
           },
-        })
+        }),
       );
     }
   }
@@ -154,8 +154,8 @@ export class StorageServer extends EventEmitter {
     // getting folders recursively
     const dirPath = normalize(join(this.localDirectoryPath, request.params.path) + '/');
 
-    let files = glob.sync(dirPath + '/**/*');
-    for (let file in files) {
+    const files = glob.sync(dirPath + '/**/*');
+    for (const file of files) {
       if (delimiter !== '' && util.checkfile(file, prefix, delimiter)) {
         ListBucketResult[LIST_COMMOM_PREFIXES].push({
           prefix: request.params.path + files[file].split(dirPath)[1],
@@ -191,7 +191,7 @@ export class StorageServer extends EventEmitter {
       o2x({
         '?xml version="1.0" encoding="utf-8"?': null,
         ListBucketResult,
-      })
+      }),
     );
   }
 
@@ -238,7 +238,7 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             UploadId: id,
           },
-        })
+        }),
       );
     } else if (this.uploadIds.includes(request.query.uploadId)) {
       let arr: Buffer[] = Object.values(this.upload_bufferMap[request.query.uploadId]); // store all the buffers  in an array
@@ -257,7 +257,7 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             Etag: etag(directoryPath),
           },
-        })
+        }),
       );
       let buf = Buffer.concat(arr);
       writeFileSync(directoryPath, buf);
@@ -282,7 +282,7 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             Etag: etag(directoryPath),
           },
-        })
+        }),
       );
     }
   }
