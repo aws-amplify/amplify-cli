@@ -12,6 +12,7 @@
     "clean": "rm -rf node_modules && lerna clean --yes",
     "production-build": "yarn --frozen-lockfile && lerna run build",
     "dev-build": "yarn && lerna run build",
+    "dev-watch": "lerna run --parallel watch",
     "link-caa": "cd packages/amplify-app && npm link",
     "link-dev": "cd packages/amplify-cli && ln -s $(pwd)/bin/amplify $(yarn global bin)/amplify-dev && cd -",
     "rm-dev-link": "rm -f $(yarn global bin)/amplify-dev",
