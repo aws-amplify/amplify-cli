@@ -107,7 +107,7 @@ function updateFileContent(fileString: string): string {
 
 async function promptForConfirmation(context: Context, filesToUpdate: string[]): Promise<boolean> {
   context.print.info('');
-  context.print.info('Amplify CLI uses Lambda backed custom resources with CloudFormation to manage part of your backend resources.');
+  context.print.info('Amplify CLI uses Lambda backend custom resources with CloudFormation to manage part of your backend resources.');
   context.print.info('In response to the Lambda Runtime support deprecation schedule');
   context.print.green('https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html');
   context.print.warning(
