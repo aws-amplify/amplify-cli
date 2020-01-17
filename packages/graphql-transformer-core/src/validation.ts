@@ -102,7 +102,7 @@ scalar BigInt
 scalar Double
 `);
 
-const EXTRA_DIRECTIVES_DOCUMENT = parse(`
+export const EXTRA_DIRECTIVES_DOCUMENT = parse(`
 directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
 directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
 directive @aws_api_key on FIELD_DEFINITION | OBJECT
