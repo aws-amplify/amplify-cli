@@ -1,4 +1,5 @@
 import './polyfills/Object.assign';
+import { print } from 'graphql';
 import { TransformerContext } from './TransformerContext';
 import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
@@ -23,9 +24,17 @@ import {
   TransformConfig,
   SyncConfig,
 } from './util/transformConfig';
+import { EXTRA_DIRECTIVES_DOCUMENT } from './validation';
 
 export * from './errors';
 export * from './util';
+
+/**
+ * Returns the extra set of directives that are supported by AppSync service
+ */
+export function getAppSyncServiceExtraDirectives(): string {
+  return print(EXTRA_DIRECTIVES_DOCUMENT);
+}
 
 export {
   GraphQLTransform,

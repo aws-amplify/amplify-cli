@@ -1,4 +1,4 @@
-//  Used for tests. Directive definition will be passed as part of the configuration
+//  Used only in  tests. Directive definition will be passed as part of the configuration when modelgen is run using CLI
 // TODO remove once prettier is upgraded
 // prettier-ignore
 export const directives = /* GraphQL */ `
@@ -123,7 +123,7 @@ export const directives = /* GraphQL */ `
     search: String
   }
 
-  directive @deprecated(reason: String!) on INPUT_FIELD_DEFINITION | ENUM
+  directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
 `;
 
 export const scalars = [
