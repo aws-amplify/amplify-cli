@@ -1,18 +1,13 @@
 import fs from 'fs-extra';
 import path from 'path';
+import util from 'util';
+import _ from 'lodash';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
 import { PluginInfo } from './domain/plugin-info';
 import inquirer from './domain/inquirer-helper';
-import {
-  AmplifyEvent,
-  AmplifyEventArgs,
-  AmplifyPreInitEventData,
-  AmplifyPostInitEventData,
-  AmplifyPrePushEventData,
-  AmplifyPostPushEventData,
-} from './domain/amplify-event';
+import { AmplifyEventArgs, AmplifyEventData } from './domain/amplify-event';
 
 export async function executeCommand(context: Context) {
   const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform, context.input.plugin!, context.input.command!);
@@ -97,40 +92,31 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo) 
   }
 }
 
-async function raisePreEvent(context: Context) {
-  if (context.input.plugin === constants.CORE) {
-    if (context.input.command === 'init') {
-      await raisePreInitEvent(context);
-    } else if (context.input.command === 'push') {
-      await raisePrePushEvent(context);
-    }
+function pascalCase(s?: string) {
+  return _.upperFirst(_.capitalize(s));
+}
+
+function makeEvent(context: Context, phase: 'pre' | 'post') {
+  const {
+    input: { plugin, command, subCommands },
+  } = context;
+  let event = pascalCase(phase);
+  if (plugin !== 'core') {
+    event += pascalCase(plugin);
   }
+  event += pascalCase(command);
+  if (subCommands) {
+    event += pascalCase(subCommands[0]);
+  }
+  return new AmplifyEventArgs(event, new AmplifyEventData());
 }
 
-async function raisePreInitEvent(context: Context) {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreInit, new AmplifyPreInitEventData()));
-}
-
-async function raisePrePushEvent(context: Context) {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePush, new AmplifyPrePushEventData()));
+async function raisePreEvent(context: Context) {
+  raiseEvent(context, makeEvent(context, 'pre'));
 }
 
 async function raisePostEvent(context: Context) {
-  if (context.input.plugin === constants.CORE) {
-    if (context.input.command === 'init') {
-      await raisePostInitEvent(context);
-    } else if (context.input.command === 'push') {
-      await raisePostPushEvent(context);
-    }
-  }
-}
-
-async function raisePostInitEvent(context: Context) {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostInit, new AmplifyPostPushEventData()));
-}
-
-async function raisePostPushEvent(context: Context) {
-  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostInitEventData()));
+  raiseEvent(context, makeEvent(context, 'post'));
 }
 
 export async function raiseEvent(context: Context, args: AmplifyEventArgs) {

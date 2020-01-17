@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import inquirer from '../domain/inquirer-helper';
 import { Context } from '../domain/context';
 import { constants } from '../domain/constants';
-import { AmplifyEvent } from '../domain/amplify-event';
+import { AmplifyCoreEvent } from '../domain/amplify-event';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
 import { readJsonFileSync } from '../utils/readJsonFile';
 import { validPluginNameSync } from './verify-plugin';
@@ -135,7 +135,7 @@ https://aws-amplify.github.io/docs/cli-toolchain/plugins');
 
 async function promptForEventSubscription(context: Context): Promise<string[]> {
   const yesFlag = context.input.options && context.input.options[constants.YES];
-  const eventHandlers = Object.keys(AmplifyEvent);
+  const eventHandlers = Object.keys(AmplifyCoreEvent);
 
   if (yesFlag) {
     return eventHandlers;
@@ -167,21 +167,20 @@ the platform broadcasts events for plugins to handle.');
   context.print.green('If a plugin subscribes to an event, its event handler is \
 invoked by the Amplify CLI Core on such event.');
   context.print.green('');
-  context.print.green('The Amplify CLI currently broadcasts these events to plugins:');
-  context.print.red(AmplifyEvent.PreInit);
-  context.print.green(`${indentationStr}${AmplifyEvent.PreInit} handler is invoked prior to the \
+  context.print.green('The Amplify CLI automatically broadcasts events in accordance with its command signatures.');
+  context.print.green('The following events are a part of the whole. If you want to support other events, you need to do it manually.');
+  context.print.red(AmplifyCoreEvent.PreInit);
+  context.print.green(`${indentationStr}${AmplifyCoreEvent.PreInit} handler is invoked prior to the \
 execution of the amplify init command.`);
-  context.print.red(AmplifyEvent.PostInit);
-  context.print.green(`${indentationStr}${AmplifyEvent.PostInit} handler is invoked on the \
+  context.print.red(AmplifyCoreEvent.PostInit);
+  context.print.green(`${indentationStr}${AmplifyCoreEvent.PostInit} handler is invoked on the \
 complete execution of the amplify init command.`);
-  context.print.red(AmplifyEvent.PrePush);
-  context.print.green(`${indentationStr}${AmplifyEvent.PrePush} handler is invoked prior to the \
+  context.print.red(AmplifyCoreEvent.PrePush);
+  context.print.green(`${indentationStr}${AmplifyCoreEvent.PrePush} handler is invoked prior to the \
 executionof the amplify push command.`);
-  context.print.red(AmplifyEvent.PostPush);
-  context.print.green(`${indentationStr}${AmplifyEvent.PostPush} handler is invoked on the \
+  context.print.red(AmplifyCoreEvent.PostPush);
+  context.print.green(`${indentationStr}${AmplifyCoreEvent.PostPush} handler is invoked on the \
 complete execution of the amplify push command.`);
-  context.print.warning('This feature is currently under actively development, \
-events might be added or removed in future releases');
 }
 
 function updatePackageJson(pluginDirPath: string, pluginName: string): void {
