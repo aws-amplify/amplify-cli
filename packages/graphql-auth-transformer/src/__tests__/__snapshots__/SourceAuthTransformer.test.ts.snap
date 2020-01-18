@@ -15,7 +15,7 @@ exports[`@auth using source and sourceTypes 1`] = `
 ## Authorization rule: { allow: source, sourceTypes: [\\"Post\\"] } **
 #set( $allowedSourceTypes0 = [\\"Post\\"] )
 #foreach( $allowedSourceType in $allowedSourceTypes0 )
-  #if( $allowedSourceType == $ctx.source.__typename )
+  #if( $allowedSourceType == $ctx.source[\\"__typename\\"] )
     #set( $isSourceTypeAuthorized = true )
   #end
 #end

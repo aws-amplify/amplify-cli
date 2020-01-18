@@ -763,7 +763,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         comment(`Authorization rule: { allow: ${rule.allow}, sourceTypes: ${JSON.stringify(sourceTypes)} }`),
         set(ref(allowedSourceTypesVariable), list(sourceTypes.map(str))),
         forEach(ref('allowedSourceType'), ref(allowedSourceTypesVariable), [
-          iff(raw(`$allowedSourceType == $ctx.source.__typename`), set(ref(variableToSet), raw('true'))),
+          iff(raw(`$allowedSourceType == $ctx.source["__typename"]`), set(ref(variableToSet), raw('true'))),
         ])
       );
       ruleNumber++;
