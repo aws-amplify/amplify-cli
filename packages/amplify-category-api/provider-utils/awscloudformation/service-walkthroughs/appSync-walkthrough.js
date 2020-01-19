@@ -4,7 +4,6 @@ const fs = require('fs-extra');
 const uuid = require('uuid');
 const path = require('path');
 const open = require('open');
-const TransformPackage = require('graphql-transformer-core');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -863,49 +862,9 @@ async function migrate(context) {
   });
 }
 
-async function getIAMPolicies(context, resourceName, crudOptions) {
+function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
-
-  const restrictedAccessQuestion = {
-    type: 'confirm',
-    name: 'restrictedAccess',
-    message: 'Do you want to restrict the access to specific appsync @model(s)?',
-    default: false,
-  };
-
-  const restrictAccessResult = await inquirer.prompt(restrictedAccessQuestion);
-  let targetModelNames = [];
-  if (restrictAccessResult.restrictedAccess) {
-    const backendDir = context.amplify.pathManager.getBackendDirPath();
-    const resourceDirPath = path.join(backendDir, category, resourceName);
-    const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
-    const directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
-    const modelNames = Object.keys(directiveMap.types).filter(typeName => directiveMap.types[typeName].includes('model'));
-
-    if (modelNames.length === 0) {
-      throw Error('Unable to find graphql model info.');
-    } else if (modelNames.length === 1) {
-      const [modelName] = modelNames;
-      context.print.success(`Selected @model ${modelName}`);
-      targetModelNames = modelNames;
-    } else {
-      while (targetModelNames.length === 0) {
-        const modelNameQuestion = {
-          type: 'checkbox',
-          name: 'modelDatasources',
-          message: 'Please choose graphql @models',
-          choices: modelNames,
-        };
-        const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
-        targetModelNames = modelNameAnswer.modelDatasources;
-
-        if (targetModelNames.length === 0) {
-          context.print.info('You need to select at least one @model');
-        }
-      }
-    }
-  }
 
   crudOptions.forEach(crudOption => {
     switch (crudOption) {
@@ -926,47 +885,27 @@ async function getIAMPolicies(context, resourceName, crudOptions) {
     }
   });
 
-  const resources =
-    targetModelNames.length > 0
-      ? targetModelNames.map(modelName => ({
-          'Fn::Join': [
-            '',
-            [
-              'arn:aws:appsync:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':apis/',
-              {
-                Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
-              },
-              `/datasources/${modelName}Table`,
-            ],
-          ],
-        }))
-      : [
-          {
-            'Fn::Join': [
-              '',
-              [
-                'arn:aws:appsync:',
-                { Ref: 'AWS::Region' },
-                ':',
-                { Ref: 'AWS::AccountId' },
-                ':apis/',
-                {
-                  Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
-                },
-                '/*',
-              ],
-            ],
-          },
-        ];
-
   policy = {
     Effect: 'Allow',
     Action: actions,
-    Resource: resources,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:appsync:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':apis/',
+            {
+              Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
+            },
+            '/*',
+          ],
+        ],
+      },
+    ],
   };
 
   const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];

@@ -25,8 +25,7 @@
     "moment": "^2.24.0",
     "open": "^6.4.0",
     "ora": "^3.4.0",
-    "uuid": "^3.3.2",
-    "graphql-transformer-core": "5.16.0"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "eslint": "^4.19.1",

@@ -164,7 +164,7 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
     return;
   }
 
-  return getIAMPolicies(context, resourceName, crudOptions);
+  return getIAMPolicies(resourceName, crudOptions);
 }
 
 module.exports = {
