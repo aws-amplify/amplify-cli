@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const uuid = require('uuid');
 const path = require('path');
 const open = require('open');
+const TransformPackage = require('graphql-transformer-core');
 
 const category = 'api';
 const serviceName = 'AppSync';
