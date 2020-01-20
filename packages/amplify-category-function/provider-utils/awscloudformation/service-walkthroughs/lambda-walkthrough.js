@@ -348,10 +348,25 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   parameters.permissions = {};
 
   const categoryPlugins = context.amplify.getCategoryPlugins(context);
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const appsyncTableSuffix = '@model(appsync)';
   for (let i = 0; i < selectedCategories.length; i += 1) {
     const category = selectedCategories[i];
-
     const resourcesList = Object.keys(amplifyMeta[category]);
+    // for storage category, add api's appsynch resource @model-backed dynamoDB tables to selection
+    let appsyncResourceName;
+    if (category === 'storage' && 'api' in amplifyMeta) {
+      appsyncResourceName = Object.keys(amplifyMeta.api).find(key => amplifyMeta.api[key].service === 'AppSync');
+      if (appsyncResourceName) {
+        const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
+        const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
+        const directivesMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+        const modelNames = Object.keys(directivesMap.types)
+          .filter(typeName => directivesMap.types[typeName].includes('model'))
+          .map(modelName => `${modelName}:${appsyncTableSuffix}`);
+        resourcesList.push(...modelNames);
+      }
+    }
 
     if (resourcesList.length === 0) {
       context.print.warning(`No resources found for ${category}`);
@@ -424,12 +439,50 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
           if (!parameters.permissions[category]) {
             parameters.permissions[category] = {};
           }
+
           parameters.permissions[category][resourceName] = crudPermissionAnswer.crudOptions;
+          // overload crudOptions when user selects graphql @model-backing DynamoDB table
+          // as there is no actual storage category resource where getPermissionPolicies can derive service and provider
+          if (resourceName.endsWith(appsyncTableSuffix)) {
+            parameters.permissions[category][resourceName].providerPlugin = 'awscloudformation';
+            parameters.permissions[category][resourceName].service = 'DynamoDB';
+            const dynamoDBTableARNComponents = [
+              'arn:aws:appsync:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':table/',
+              {
+                'Fn::ImportValue': {
+                  'Fn::Sub': `\${apicorefootballGraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
+                },
+              },
+            ];
+
+            // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
+            parameters.permissions[category][resourceName].customPolicyResource = [
+              // dynam
+              {
+                'Fn::Join': ['', dynamoDBTableARNComponents],
+              },
+              {
+                'Fn::Join': ['', [...dynamoDBTableARNComponents, '/index/*']],
+              },
+            ];
+          }
         }
         if (selectedResources.length > 0) {
           const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, parameters.permissions[category]);
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
-          resources = resources.concat(resourceAttributes);
+
+          // replace resource attributes for @model-backed dynamoDB tables
+          resources = resources.concat(
+            resourceAttributes.map(attributes =>
+              attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
+                ? { resourceName: appsyncResourceName, category: 'api', attributes: ['GraphQLAPIIdOutput'] }
+                : attributes
+            )
+          );
         }
       }
     } catch (e) {
