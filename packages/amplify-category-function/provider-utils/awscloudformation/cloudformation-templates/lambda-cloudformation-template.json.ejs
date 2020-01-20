@@ -51,9 +51,18 @@
                                 }
                             ]
                         ]
-                    }      
+                    }
                 ]
             },
+            "Layers": [
+              <% if (props.layers) { %>
+                <% for(var i=0; i < props.layers.length; i++) { %>
+                {
+                  "Ref": "layer<%= props.layers[i] %>Arn"
+                }<%if (i !== props.layers.length - 1) { %>,<% } %>
+                <% } %>
+              <% } %>
+            ],
             "Environment": {
                 "Variables" : {
                     "ENV": {
@@ -140,7 +149,7 @@
                                             "index/*"
                                         ]
                                     ]
-                                }      
+                                }
                             <% } else { %>
                                 { "Ref": "storage<%= props.database.resourceName %>Arn" },
                                 {
@@ -151,7 +160,7 @@
                                             "index/*"
                                         ]
                                     ]
-                                }      
+                                }
                             <% } %>
                             ]
                         }

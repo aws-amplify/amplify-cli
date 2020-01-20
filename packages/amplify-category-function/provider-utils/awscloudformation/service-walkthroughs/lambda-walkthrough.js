@@ -10,7 +10,11 @@ const parametersFileName = 'parameters.json';
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const { amplify } = context;
-  const { inputs } = serviceMetadata;
+  const { inputs: rawInputs } = serviceMetadata;
+  const inputs = {};
+  rawInputs.forEach(input => {
+    inputs[input.key] = input;
+  });
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
@@ -18,52 +22,66 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const parameters = {};
   // Ask resource and Lambda function name
 
+  const { resourceName, functionName } = inputs;
+
   const resourceQuestions = [
     {
-      type: inputs[0].type,
-      name: inputs[0].key,
-      message: inputs[0].question,
-      validate: amplify.inputValidation(inputs[0]),
+      type: resourceName.type,
+      name: resourceName.key,
+      message: resourceName.question,
+      validate: amplify.inputValidation(resourceName),
       default: () => {
-        const defaultValue = getAllDefaults(amplify.getProjectDetails())[inputs[0].key];
+        const defaultValue = getAllDefaults(amplify.getProjectDetails())[resourceName.key];
         return defaultValue;
       },
     },
     {
-      type: inputs[1].type,
-      name: inputs[1].key,
-      message: inputs[1].question,
-      validate: amplify.inputValidation(inputs[1]),
+      type: functionName.type,
+      name: functionName.key,
+      message: functionName.question,
+      validate: amplify.inputValidation(functionName),
       default: answers => answers.resourceName,
     },
+    ...getLayersQuestion(context),
   ];
 
   const pathDetails = {
     path: '/items',
   };
 
+  const { functionTemplate } = inputs;
+
   if (context.api) {
-    inputs[4].options.splice(0, 1);
+    functionTemplate.options.splice(0, 1);
     Object.assign(pathDetails, context.api);
     resourceQuestions.push({
-      type: inputs[4].type,
-      name: inputs[4].key,
-      message: inputs[4].question,
-      choices: inputs[4].options,
+      type: functionTemplate.type,
+      name: functionTemplate.key,
+      message: functionTemplate.question,
+      choices: functionTemplate.options,
       default: 'crud',
     });
   } else {
     resourceQuestions.push({
-      type: inputs[4].type,
-      name: inputs[4].key,
-      message: inputs[4].question,
-      choices: inputs[4].options,
+      type: functionTemplate.type,
+      name: functionTemplate.key,
+      message: functionTemplate.question,
+      choices: functionTemplate.options,
     });
   }
 
   const answers = await inquirer.prompt(resourceQuestions);
 
   Object.assign(allDefaultValues, pathDetails, answers);
+  if (answers.layers) {
+    answers.layers.forEach(layer => {
+      dependsOn.push({
+        category: 'layer',
+        resourceName: layer,
+        attributes: ['Arn'],
+      });
+    });
+  }
   if (answers.functionTemplate === 'crud') {
     const dynamoAnswers = await askDynamoDBQuestions(context, inputs);
 
@@ -78,8 +96,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
         attributes: ['Name', 'Arn'],
       });
     }
-    allDefaultValues.dependsOn = dependsOn;
   }
+
+  allDefaultValues.dependsOn = dependsOn;
 
   let topLevelComment;
   if (await context.amplify.confirmPrompt.run('Do you want to access other resources created in this project from your Lambda function?')) {
@@ -317,6 +336,25 @@ function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNResourcePa
   return oldCFNParameters;
 }
 
+function getLayersQuestion(context) {
+  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+
+  const layers = Object.keys(amplifyMeta.layer);
+  if (!layers.length) {
+    return [];
+  }
+
+  return [
+    {
+      type: 'checkbox',
+      name: 'layers',
+      message: 'Select layers',
+      choices: layers,
+    },
+  ];
+}
+
 async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
@@ -521,16 +559,18 @@ async function getTableParameters(context, dynamoAnswers) {
 }
 
 async function askDynamoDBQuestions(context, inputs) {
+  const { dynamoDbType, dynamoDbResources } = inputs;
+
   const dynamoDbTypeQuestion = {
-    type: inputs[5].type,
-    name: inputs[5].key,
-    message: inputs[5].question,
-    choices: inputs[5].options,
+    type: dynamoDbType.type,
+    name: dynamoDbType.key,
+    message: dynamoDbType.question,
+    choices: dynamoDbType.options,
   };
   // eslint-disable-next-line
   while (true) {
     const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
-    switch (dynamoDbTypeAnswer[inputs[5].key]) {
+    switch (dynamoDbTypeAnswer[dynamoDbType.key]) {
       case 'currentProject': {
         const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;
         const dynamoDbProjectResources = [];
@@ -548,15 +588,15 @@ async function askDynamoDBQuestions(context, inputs) {
           break;
         }
         const dynamoResourceQuestion = {
-          type: inputs[6].type,
-          name: inputs[6].key,
-          message: inputs[6].question,
+          type: dynamoDbResources.type,
+          name: dynamoDbResources.key,
+          message: dynamoDbResources.question,
           choices: dynamoDbProjectResources,
         };
 
         const dynamoResourceAnswer = await inquirer.prompt([dynamoResourceQuestion]);
 
-        return { resourceName: dynamoResourceAnswer[inputs[6].key] };
+        return { resourceName: dynamoResourceAnswer[dynamoDbResources.key] };
       }
       case 'newResource': {
         let add;
@@ -576,6 +616,7 @@ async function askDynamoDBQuestions(context, inputs) {
       /*Commented this section until we figure out
         multi-environemnt solution for existing tables - NOT CRITICAL
 
+        const { dynamodbTableChoice } = inputs;
         case 'cloudResource': {
         const dynamodbTables =
           await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables');
@@ -597,14 +638,14 @@ async function askDynamoDBQuestions(context, inputs) {
         }
 
         const dynamoCloudOptionQuestion = {
-          type: inputs[7].type,
-          name: inputs[7].key,
-          message: inputs[7].question,
+          type: dynamodbTableChoice.type,
+          name: dynamodbTableChoice.key,
+          message: dynamodbTableChoice.question,
           choices: dynamodbOptions,
         };
 
         const dynamoCloudOptionAnswer = await inquirer.prompt([dynamoCloudOptionQuestion]);
-        return dynamoCloudOptionAnswer[inputs[7].key];
+        return dynamoCloudOptionAnswer[dynamodbTableChoice.key];
       } */
 
       /* eslint-enable */

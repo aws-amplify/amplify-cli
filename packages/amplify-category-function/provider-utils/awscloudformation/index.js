@@ -80,7 +80,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
           template: triggerPackagePath,
           target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
         },
-      ]
+      ],
     );
   } else {
     switch (options.functionTemplate) {
@@ -102,7 +102,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
               template: 'function-template-dir/package.json.ejs',
               target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
             },
-          ]
+          ],
         );
         break;
       case 'serverless':
@@ -128,7 +128,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
               template: 'function-template-dir/serverless-event.json',
               target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
             },
-          ]
+          ],
         );
         break;
       default:
@@ -154,7 +154,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
               template: 'function-template-dir/crud-event.json',
               target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
             },
-          ]
+          ],
         );
         break;
     }
@@ -315,27 +315,32 @@ async function openEditor(context, category, options) {
 async function invoke(context, category, service, resourceName) {
   const { amplify } = context;
   serviceMetadata = amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
-  const { inputs } = serviceMetadata;
+  const { inputs: rawInputs } = serviceMetadata;
+  const inputs = {};
+  rawInputs.forEach(input => {
+    inputs[input.key] = input;
+  });
+  const { handlerFilename, handlerName, eventName } = inputs;
   const resourceQuestions = [
     {
-      type: inputs[2].type,
-      name: inputs[2].key,
-      message: inputs[2].question,
-      validate: amplify.inputValidation(inputs[2]),
+      type: handlerFilename.type,
+      name: handlerFilename.key,
+      message: handlerFilename.question,
+      validate: amplify.inputValidation(handlerFilename),
       default: 'index.js',
     },
     {
-      type: inputs[3].type,
-      name: inputs[3].key,
-      message: inputs[3].question,
-      validate: amplify.inputValidation(inputs[3]),
+      type: handlerName.type,
+      name: handlerName.key,
+      message: handlerName.question,
+      validate: amplify.inputValidation(handlerName),
       default: 'handler',
     },
     {
-      type: inputs[9].type,
-      name: inputs[9].key,
-      message: inputs[9].question,
-      validate: amplify.inputValidation(inputs[9]),
+      type: eventName.type,
+      name: eventName.key,
+      message: eventName.question,
+      validate: amplify.inputValidation(eventName),
       default: 'event.json',
     },
   ];
@@ -346,12 +351,12 @@ async function invoke(context, category, service, resourceName) {
 
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
-  const event = context.amplify.readJsonFile(path.resolve(`${srcDir}/${resourceAnswers[inputs[9].key]}`));
+  const event = context.amplify.readJsonFile(path.resolve(`${srcDir}/${resourceAnswers[eventName.key]}`));
 
   const invokeOptions = {
     packageFolder: srcDir,
-    fileName: `${srcDir}/${resourceAnswers[inputs[2].key]}`,
-    handler: `${resourceAnswers[inputs[3].key]}`,
+    fileName: `${srcDir}/${resourceAnswers[handlerFilename.key]}`,
+    handler: `${resourceAnswers[handlerName.key]}`,
     event,
   };
 
@@ -435,7 +440,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
           triggerPath,
           currentTrigger,
           triggers[currentTrigger],
-          currentEnvVariables
+          currentEnvVariables,
         );
       } else {
         envParams = currentEnvVariables;
