@@ -14,24 +14,20 @@
   </a>
 </p>
 
-
-
 # AWS Amplify CLI
 
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks to allow you to add or modify configurations locally before you push them for execution in your account.
 
-* [Install the CLI](#install-the-cli)
-* [Commands Summary](#commands-summary)
-* [Tutorials](#tutorials)
-* [Contributing](#contributing)
-* [Start building your app](https://aws-amplify.github.io/docs)
-* [Changelog](https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-cli/CHANGELOG.md)
-
+- [Install the CLI](#install-the-cli)
+- [Commands Summary](#commands-summary)
+- [Tutorials](#tutorials)
+- [Contributing](#contributing)
+- [Start building your app](https://aws-amplify.github.io/docs)
+- [Changelog](https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-cli/CHANGELOG.md)
 
 ## Install the CLI
 
- - Requires Node.js® version 8.11.x or later
-
+- Requires Node.js® version 8.11.x or later
 
 Install and configure the Amplify CLI as follows:
 
@@ -40,7 +36,7 @@ $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
 
-***Note***: If you're having permission issues on your system installing the CLI, please try the following command:
+**_Note_**: If you're having permission issues on your system installing the CLI, please try the following command:
 
 ```bash
 $ sudo npm install -g @aws-amplify/cli --unsafe-perm=true
@@ -69,9 +65,11 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify env add \| list \| remove \| get \| pull \| import | See the [multienv docs](https://aws-amplify.github.io/docs/cli/multienv). |
 
 ### Category specific commands:
+
 - [auth (Amazon Cognito)](packages/amplify-category-auth/Readme.md)
 - [storage (Amazon S3 & Amazon DynamoDB)](packages/amplify-category-storage/Readme.md)
 - [function (AWS Lambda)](packages/amplify-category-function/Readme.md)
+- [layer (AWS Lambda Layer Version)](packages/amplify-category-layer/Readme.md)
 - [api (AWS AppSync & Amazon API Gateway)](packages/amplify-category-api/Readme.md)
 - [analytics (Amazon Pinpoint)](packages/amplify-category-analytics/Readme.md)
 - [hosting (Amazon S3 and Amazon CloudFront distribution)](packages/amplify-category-hosting/Readme.md)
@@ -97,6 +95,7 @@ To test your category, do the following:<br>
 `amplify-dev <your category> <subcommand>`<br>
 
 Before pushing code or sending a pull request, do the following:
+
 - At the command line, run `npm run lint` at the top-level directory. This invokes lerna to check for lint errors in all of our packages.
 - You can use `eslint` to fix some of the lint errors. To use it, go to the package that has errors and run `lint-fix`
 - If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step.

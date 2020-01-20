@@ -1,0 +1,74 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Lambda layer resource stack creation using Amplify CLI",
+    "Parameters": {
+        "env": {
+            "Type": "String"
+        }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
+    <% if (props.dependsOn) { %>
+    <% for(var i=0; i < props.dependsOn.length; i++) { %>
+    <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+        "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>": {
+            "Type": "String",
+            "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
+            }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
+        <% } %>
+        <% } %>
+    <% } %>
+    },
+    "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                {
+                    "Ref": "env"
+                },
+                "NONE"
+            ]
+        }
+    },
+    "Resources": {
+        "LambdaLayer": {
+          "Type": "AWS::Lambda::LayerVersion",
+          "Metadata": {
+            "aws:asset:path": "./src",
+            "aws:asset:property": "Content"
+          },
+          "Properties": {
+            "LayerName": {
+                "Fn::If": [
+                    "ShouldNotCreateEnvResources",
+                    "<%= props.layerName %>", 
+                    {
+
+                        "Fn::Join": [
+                            "",
+                            [
+                                "<%= props.layerName %>",
+                                "-",
+                                {
+                                    "Ref": "env"
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            },
+            "CompatibleRuntimes": [
+              "nodejs10.x"
+            ]
+          }
+        }
+    },
+    "Outputs": {
+        "Arn": {
+            "Value": {
+                "Ref": "LambdaLayer"
+            }
+        },
+        "Region": {
+            "Value": {
+                "Ref": "AWS::Region"
+            }
+        }
+    }
+}

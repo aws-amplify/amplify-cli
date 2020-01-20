@@ -1,0 +1,6 @@
+{
+  "name": "layer",
+  "type": "category",
+  "commands": ["add", "build", "push", "remove", "help"],
+  "eventHandlers": []
+}

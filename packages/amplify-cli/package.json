@@ -29,6 +29,7 @@
     "amplify-category-api": "2.13.0",
     "amplify-category-auth": "2.13.0",
     "amplify-category-function": "2.13.0",
+    "amplify-category-layer": "1.0.0",
     "amplify-category-hosting": "2.1.8",
     "amplify-category-interactions": "2.1.8",
     "amplify-category-notifications": "2.13.0",
@@ -123,6 +124,11 @@
         "name": "function",
         "type": "category",
         "packageName": "amplify-category-function"
+      },
+      "layer": {
+        "name": "layer",
+        "type": "category",
+        "packageName": "amplify-category-layer"
       },
       "hosting": {
         "name": "hosting",

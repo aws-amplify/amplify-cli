@@ -1,0 +1,30 @@
+{
+  "LambdaLayerVersion": {
+    "inputs": [
+      {
+        "key": "resourceName",
+        "question": "Provide a friendly name for your resource to be used as a label for this category in the project:",
+        "validation": {
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9]+$",
+          "onErrorMsg": "Resource name should be alphanumeric"
+        },
+        "required": true
+      },
+      {
+        "key": "layerName",
+        "question": "Provide the AWS Lambda layer name:",
+        "validation": {
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9._-]+$",
+          "onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+        },
+        "required": true
+      }
+    ],
+    "defaultValuesFilename": "layer-defaults.js",
+    "serviceWalkthroughFilename": "layer-walkthrough.js",
+    "cfnFilename": "layer-cloudformation-template.json.ejs",
+    "provider": "awscloudformation"
+  }
+}
