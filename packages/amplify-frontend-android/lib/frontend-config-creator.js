@@ -16,9 +16,15 @@ const fileNames = ['queries', 'mutations', 'subscriptions'];
 
 function deleteAmplifyConfig(context) {
   const { srcDirPath, projectPath } = getSrcDir(context);
-  const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-  if (fs.existsSync(targetFilePath)) {
-    fs.removeSync(targetFilePath);
+  // delete amplify config
+  const awsConfigFilePath = path.join(srcDirPath, constants.awsConfigFilename);
+  if (fs.existsSync(awsConfigFilePath)) {
+    fs.removeSync(awsConfigFilePath);
+  }
+  // delete amplify configuration
+  const amplifyConfigFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
+  if (fs.existsSync(amplifyConfigFilePath)) {
+    fs.removeSync(amplifyConfigFilePath);
   }
 
   if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;

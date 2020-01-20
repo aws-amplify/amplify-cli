@@ -1922,42 +1922,6 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
-            },
-            {
-              "name": "onOperation",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              },
-              "isDeprecated": true,
-              "deprecationReason": "Use `locations`."
-            },
-            {
-              "name": "onFragment",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              },
-              "isDeprecated": true,
-              "deprecationReason": "Use `locations`."
-            },
-            {
-              "name": "onField",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              },
-              "isDeprecated": true,
-              "deprecationReason": "Use `locations`."
             }
           ],
           "inputFields": null,
@@ -2083,6 +2047,7 @@
         {
           "name": "include",
           "description": "Directs the executor to include this field or fragment only when the `if` argument is true",
+          "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
           "args": [
             {
               "name": "if",
@@ -2098,14 +2063,12 @@
               },
               "defaultValue": null
             }
-          ],
-          "onOperation": false,
-          "onFragment": true,
-          "onField": true
+          ]
         },
         {
           "name": "skip",
           "description": "Directs the executor to skip this field or fragment when the `if`'argument is true.",
+          "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
           "args": [
             {
               "name": "if",
@@ -2121,22 +2084,18 @@
               },
               "defaultValue": null
             }
-          ],
-          "onOperation": false,
-          "onFragment": true,
-          "onField": true
+          ]
         },
         {
           "name": "defer",
           "description": "This directive allows results to be deferred during execution",
-          "args": [],
-          "onOperation": false,
-          "onFragment": false,
-          "onField": true
+          "locations": ["FIELD"],
+          "args": []
         },
         {
           "name": "deprecated",
           "description": null,
+          "locations": ["FIELD_DEFINITION", "ENUM_VALUE"],
           "args": [
             {
               "name": "reason",
@@ -2148,37 +2107,12 @@
               },
               "defaultValue": "\"No longer supported\""
             }
-          ],
-          "onOperation": false,
-          "onFragment": false,
-          "onField": false
-        },
-        {
-          "name": "aws_auth",
-          "description": "Directs the schema to enforce authorization on a field",
-          "args": [
-            {
-              "name": "cognito_groups",
-              "description": "List of cognito user pool groups which have access on this field",
-              "type": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              },
-              "defaultValue": null
-            }
-          ],
-          "onOperation": false,
-          "onFragment": false,
-          "onField": false
+          ]
         },
         {
           "name": "aws_publish",
-          "description": "Tells the service which subscriptions will be published to when this mutation is called.",
+          "description": "Tells the service which subscriptions will be published to when this mutation is called. This directive is deprecated use @aws_susbscribe directive instead.",
+          "locations": ["FIELD_DEFINITION"],
           "args": [
             {
               "name": "subscriptions",
@@ -2194,14 +2128,12 @@
               },
               "defaultValue": null
             }
-          ],
-          "onOperation": false,
-          "onFragment": false,
-          "onField": false
+          ]
         },
         {
           "name": "aws_subscribe",
           "description": "Tells the service which mutation triggers this subscription.",
+          "locations": ["FIELD_DEFINITION"],
           "args": [
             {
               "name": "mutations",
@@ -2217,10 +2149,28 @@
               },
               "defaultValue": null
             }
-          ],
-          "onOperation": false,
-          "onFragment": false,
-          "onField": false
+          ]
+        },
+        {
+          "name": "aws_auth",
+          "description": "Directs the schema to enforce authorization on a field",
+          "locations": ["FIELD_DEFINITION"],
+          "args": [
+            {
+              "name": "cognito_groups",
+              "description": "List of cognito user pool groups which have access on this field",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ]
         }
       ]
     }

@@ -1,9 +1,20 @@
 import { S3 } from 'aws-sdk';
 import { initJSProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject } from '../init';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
+import {
+  createNewProjectDir,
+  deleteProjectDir,
+  getProjectMeta,
+  getAWSExportsPath,
+  getAWSConfigIOSPath,
+  getAmplifyConfigIOSPath,
+  getAWSConfigAndroidPath,
+  getAmplifyConfigAndroidPath,
+} from '../utils';
 import { addEnvironment } from '../environment/add-env';
 import { addApiWithoutSchema } from '../categories/api';
 import { addCodegen } from '../codegen/add';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 
 describe('amplify delete', () => {
   let projRoot: string;
@@ -48,6 +59,16 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   await expect(await bucketExists(deploymentBucketName2)).toBe(false);
   await expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
   await expect(UnauthRoleName).not.toBeIAMRoleWithArn(UnauthRoleName);
+  // check that config/exports file was deleted
+  if (settings.ios) {
+    expect(fs.existsSync(getAWSConfigIOSPath(projRoot))).toBe(false);
+    expect(fs.existsSync(getAmplifyConfigIOSPath(projRoot))).toBe(false);
+  } else if (settings.android) {
+    expect(fs.existsSync(getAWSConfigAndroidPath(projRoot))).toBe(false);
+    expect(fs.existsSync(getAmplifyConfigAndroidPath(projRoot))).toBe(false);
+  } else {
+    expect(fs.existsSync(getAWSExportsPath(projRoot))).toBe(false);
+  }
 }
 
 async function bucketExists(bucket: string) {

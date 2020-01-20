@@ -64,7 +64,7 @@ export interface AppSyncSimulatorDataSourceDDBConfig extends AppSyncSimulatorDat
   };
 }
 export interface AppSyncSimulatorDataSourceNoneConfig extends AppSyncSimulatorDataSourceBaseConfig {
-  type: 'None',
+  type: 'None';
 }
 export interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulatorDataSourceBaseConfig {
   type: 'AWS_LAMBDA';

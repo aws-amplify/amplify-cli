@@ -104,7 +104,7 @@ are also accepted and these represent the number of seconds till 1970-01-01T00:0
     return GraphQLInt.parseValue(value) ? value : undefined;
   },
   parseLiteral(value) {
-    return GraphQLInt.parseLiteral(value) ? (value as StringValueNode).value : undefined;
+    return GraphQLInt.parseLiteral(value, null) ? (value as StringValueNode).value : undefined;
   },
 });
 
