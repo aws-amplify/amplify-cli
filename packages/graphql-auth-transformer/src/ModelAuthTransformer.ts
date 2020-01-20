@@ -21,6 +21,8 @@ import {
   valueFromASTUntyped,
   NamedTypeNode,
   InputObjectTypeDefinitionNode,
+  TypeDefinitionNode,
+  TypeSystemDefinitionNode,
 } from 'graphql';
 import {
   ResourceConstants,
@@ -350,6 +352,11 @@ export class ModelAuthTransformer extends Transformer {
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
 
+    // Check if the object type has fields of type without the @model directive.
+    // We've to make sure that appropriate @aws_* directive will be added and a policy entry for the
+    // type will be emitted as well in case of IAM.
+    this.propagateAuthDirectivesToNestedTypes(def, rules, ctx);
+
     const { operationRules, queryRules } = this.splitRules(rules);
 
     // Retrieve the configuration options for the related @model directive
@@ -505,6 +512,34 @@ Static group authorization should perform as expected.`
       this.protectField(ctx, parent, definition, staticGroupRules);
     }
   };
+
+  private propagateAuthDirectivesToNestedTypes(type: ObjectTypeDefinitionNode, rules: AuthRule[], ctx: TransformerContext) {
+    const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
+      if (fieldType) {
+        const typeModel = fieldType.directives.find(dir => dir.name.value === 'model');
+        return typeModel !== undefined ? undefined : fieldType;
+      }
+      return fieldType;
+    };
+
+    const nonModelFieldTypes = type.fields.map(f => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
+
+    for (const nonModelFieldType of nonModelFieldTypes) {
+      const directives = this.getDirectivesForRules(rules, false);
+
+      // Add the directives to the Type node itself
+      if (directives.length > 0) {
+        this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
+      }
+
+      const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+
+      if (hasIAM) {
+        this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+        this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+      }
+    }
+  }
 
   private protectField(
     ctx: TransformerContext,
