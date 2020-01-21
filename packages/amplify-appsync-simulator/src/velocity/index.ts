@@ -1,5 +1,4 @@
 import { Compile, parse } from 'amplify-velocity-template';
-import JSON5 from 'json5';
 import { AmplifyAppSyncSimulator } from '..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
 import { create as createUtil, TemplateSentError } from './util';
@@ -55,7 +54,7 @@ export class VelocityTemplate {
     const templateResult = this.compiler.render(context);
     const stash = context.ctx.stash.toJSON();
     try {
-      const result = JSON5.parse(templateResult);
+      const result = JSON.parse(templateResult);
       return { result, stash, errors: context.util.errors };
     } catch (e) {
       const errorMessage = `Unable to convert ${templateResult} to class com.amazonaws.deepdish.transform.model.lambda.LambdaVersionedConfig.`;
