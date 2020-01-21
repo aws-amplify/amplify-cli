@@ -1,6 +1,0 @@
-{
-  "extends": ["tslint-config-airbnb-base", "tslint-plugin-prettier", "tslint-config-prettier"],
-  "rules": {
-    "semicolon": true
-  }
-}

@@ -30,7 +30,6 @@
     "graphql-dynamodb-transformer": "6.12.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
     "typescript": "~3.6.4"
   },
   "jest": {

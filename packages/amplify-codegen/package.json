@@ -4,8 +4,6 @@
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src/** tests/**",
-    "lint-fix": "eslint src/** tests/** --fix",
     "test": "jest",
     "test-ci": "jest --ci -i",
     "test-watch": "jest --watch"
@@ -28,9 +26,6 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0",
     "jest": "^23.0.0"
   },
   "jest": {
