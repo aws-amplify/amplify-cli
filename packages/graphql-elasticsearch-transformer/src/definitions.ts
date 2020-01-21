@@ -10,15 +10,29 @@ import {
 } from 'graphql';
 import { graphqlName, makeNamedType, isScalar, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
 
-const STRING_CONDITIONS = ['ne', 'eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp'];
-const ID_CONDITIONS = ['ne', 'eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp'];
+const ID_CONDITIONS = [
+  'ne',
+  'gt',
+  'lt',
+  'gte',
+  'lte',
+  'eq',
+  'match',
+  'matchPhrase',
+  'matchPhrasePrefix',
+  'multiMatch',
+  'exists',
+  'wildcard',
+  'regexp',
+];
+const STRING_CONDITIONS = ID_CONDITIONS;
 const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const BOOLEAN_CONDITIONS = ['eq', 'ne'];
 
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
-  let conditions = getScalarConditions(type);
+  const conditions = getScalarConditions(type);
   const fields: InputValueDefinitionNode[] = conditions.map((condition: string) => ({
     kind: Kind.INPUT_VALUE_DEFINITION,
     name: { kind: 'Name' as 'Name', value: condition },
