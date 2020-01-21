@@ -13,7 +13,7 @@ describe('amplify add function', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add  simple function', async () => {
+  it('init a project and add simple function', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHelloWorldFunction(projRoot, {});
     await functionBuild(projRoot, {});
