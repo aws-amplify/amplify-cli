@@ -35,7 +35,7 @@ function invokeFunction(options: InvokeOptions) {
       },
       fail(error) {
         returned = true;
-        reject(error);
+        reject(error.message);
       },
       awsRequestId: 'LAMBDA_INVOKE',
       logStreamName: 'LAMBDA_INVOKE',
