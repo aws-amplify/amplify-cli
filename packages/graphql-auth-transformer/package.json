@@ -27,10 +27,9 @@
   "devDependencies": {
     "@types/jest": "23.1.1",
     "@types/node": "^10.17.13",
-    "cloudform": "^4.1.0",
     "cloudform-types": "^4.1.0",
     "graphql-dynamodb-transformer": "6.12.0",
-    "graphql-elasticsearch-transformer": "3.23.0",
+    "graphql-elasticsearch-transformer": "4.2.0",
     "jest": "^23.1.0",
     "rimraf": "^3.0.0",
     "ts-jest": "^22.4.6",

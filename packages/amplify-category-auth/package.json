@@ -11,7 +11,6 @@
     "test-ci": "jest --ci -i"
   },
   "dependencies": {
-    "amplify-category-function": "2.12.0",
     "aws-sdk": "^2.580.0",
     "chalk": "^2.4.2",
     "chalk-pipe": "^2.0.0",

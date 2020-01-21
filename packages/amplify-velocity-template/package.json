@@ -16,12 +16,16 @@
     "Yathiraj"
   ],
   "devDependencies": {
+    "browser": "^0.2.6",
     "coveralls": "~2.11.2",
+    "growl": "^1.10.5",
     "istanbul": "~0.3.5",
+    "jade": "^1.11.0",
     "jison": ">=0.3",
     "mocha": ">=1.7.2",
     "mocha-lcov-reporter": "0.0.1",
-    "should": "^7.0.1"
+    "should": "^7.0.1",
+    "velocityjs": "^2.0.0"
   },
   "dependencies": {
     "lodash": "^4.17.15"

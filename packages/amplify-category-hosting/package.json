@@ -18,8 +18,7 @@
     "moment": "^2.24.0",
     "open": "^6.4.0",
     "ora": "^3.4.0",
-    "promise-sequential": "^1.1.1",
-    "util": "^0.12.1"
+    "promise-sequential": "^1.1.1"
   },
   "devDependencies": {
     "jest": "^23.5.0",

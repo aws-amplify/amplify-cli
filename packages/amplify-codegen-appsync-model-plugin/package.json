@@ -5,13 +5,10 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@graphql-codegen/core": "~1.8.1",
-    "@graphql-codegen/java-common": "~1.8.2",
+    "@graphql-codegen/plugin-helpers": "~1.8.1",
     "@graphql-codegen/visitor-plugin-common": "~1.8.1",
-    "auto-bind": "^2.1.1",
     "chalk": "^2.4.2",
     "change-case": "^3.1.0",
-    "graphql-tag": "^2.10.1",
     "graphql-toolkit": "^0.5.17",
     "pluralize": "^8.0.0",
     "strip-indent": "^3.0.0",
@@ -43,7 +40,6 @@
     ]
   },
   "devDependencies": {
-    "@graphql-codegen/testing": "1.8.3",
     "graphql": "^14.5.8",
     "java-ast": "^0.1.0",
     "jest": "24.9.0",
