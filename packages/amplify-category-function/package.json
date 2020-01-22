@@ -9,7 +9,7 @@
     "inquirer": "^6.5.1",
     "mime-types": "^2.1.24",
     "promise-sequential": "^1.1.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.4.0"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0"

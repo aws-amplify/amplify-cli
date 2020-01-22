@@ -8,7 +8,7 @@
     "@graphql-codegen/plugin-helpers": "~1.8.1",
     "@graphql-codegen/visitor-plugin-common": "~1.8.1",
     "chalk": "^2.4.2",
-    "change-case": "^3.1.0",
+    "change-case": "^4.1.1",
     "graphql-toolkit": "^0.5.17",
     "pluralize": "^8.0.0",
     "strip-indent": "^3.0.0",

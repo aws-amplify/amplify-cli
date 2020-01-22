@@ -17,6 +17,6 @@
     "merge-graphql-schemas": "^1.7.0",
     "open": "^6.4.0",
     "ora": "^3.4.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.4.0"
   }
 }
