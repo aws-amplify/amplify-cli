@@ -76,7 +76,6 @@ function getTransformerFactory(context, resourceDir, authConfig) {
         // The loading of transformer can happen multiple ways in the following order:
         // - modulePath is an absolute path to an NPM package
         // - modulePath is a package name, then it will be loaded from the project's root's node_modules with createRequireFromPath.
-        // - modulePath is a name of a globally installed package
         let importedModule;
         const tempModulePath = modulePath.toString();
 
@@ -85,28 +84,11 @@ function getTransformerFactory(context, resourceDir, authConfig) {
             // Load it by absolute path
             importedModule = require(modulePath);
           } else {
+            // 'require' from project path
             const projectRootPath = context.amplify.pathManager.searchProjectRootPath();
             const { createRequireFromPath } = require('module');
-            const projectRequire = createRequireFromPath(projectRootPath);
-
-            if (tempModulePath.startsWith('./')) {
-              // Lookup 'locally' within project's node_modules with require mechanism
-              importedModule = projectRequire(tempModulePath);
-            } else {
-              const prefixedModuleName = `./${tempModulePath}`;
-
-              try {
-                // Lookup 'locally' within project's node_modules with require mechanism
-                importedModule = projectRequire(prefixedModuleName);
-              } catch (_) {
-                // Intentionally left blank to try global
-              }
-
-              if (!importedModule) {
-                // Lookup in global with require
-                importedModule = require(tempModulePath);
-              }
-            }
+            const projectRequire = createRequireFromPath(path.join(projectRootPath, 'noop.js')); // createRequireFromPath doesn't support directory well. we need to add noop file. See https://github.com/nodejs/node/issues/23710 for detail
+            importedModule = projectRequire(tempModulePath);
           }
 
           // At this point we've to have an imported module, otherwise module loader, threw an error.
