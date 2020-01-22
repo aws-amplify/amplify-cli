@@ -1,5 +1,4 @@
 import { Compile, parse } from 'amplify-velocity-template';
-import * as JSON5 from 'json5';
 import { AmplifyAppSyncSimulator } from '..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
 import { create as createUtil, TemplateSentError } from './util';
@@ -56,8 +55,9 @@ export class VelocityTemplate {
     const isReturn = this.compiler._state.return; // If the template has #return, then set the value
     const stash = context.ctx.stash.toJSON();
     try {
-      const result = JSON5.parse(templateResult);
+      const result = JSON.parse(templateResult);
       return { result, stash, errors: context.util.errors, isReturn };
+
     } catch (e) {
       if (isReturn) { // # when template has #return, if the value is non JSON, we pass that along
         return { result: templateResult, stash, errors: context.util.errors, isReturn };

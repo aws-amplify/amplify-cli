@@ -4,22 +4,8 @@ import {
   InterfaceTypeDefinitionNode,
   ObjectTypeDefinitionNode,
   FieldDefinitionNode,
-  Kind,
-  print,
 } from 'graphql';
-import {
-  makeInputValueDefinition,
-  makeNonNullType,
-  makeNamedType,
-  ModelResourceIDs,
-  isScalar,
-  getBaseType,
-  withNamedNodeNamed,
-  makeArgument,
-  STANDARD_SCALARS,
-  unwrapNonNull,
-} from 'graphql-transformer-common';
-import { TransformerContext } from 'graphql-transformer-core';
+import { makeInputValueDefinition, makeNonNullType, makeNamedType, ModelResourceIDs, unwrapNonNull } from 'graphql-transformer-common';
 
 export function makeHttpArgument(name: string, inputType: InputObjectTypeDefinitionNode, makeNonNull: boolean): InputValueDefinitionNode {
   // the URL params type that we create will need to be non-null, so build in some flexibility here
@@ -36,8 +22,6 @@ export function makeUrlParamInputObject(
   const urlParamFields = urlParams.map((param: string) => {
     return makeInputValueDefinition(param, makeNonNullType(makeNamedType('String')));
   });
-  console.log(`urlParamInputObject has these fields: ${print(urlParamFields)}`);
-  const fields: InputValueDefinitionNode[] = urlParamFields;
   return {
     kind: 'InputObjectTypeDefinition',
     // TODO: Service does not support new style descriptions so wait.
@@ -49,7 +33,7 @@ export function makeUrlParamInputObject(
       kind: 'Name',
       value: name,
     },
-    fields,
+    fields: urlParamFields,
     directives: [],
   };
 }

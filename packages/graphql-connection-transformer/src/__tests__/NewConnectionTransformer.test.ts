@@ -65,7 +65,7 @@ test('ModelConnectionTransformer should fail if the field type where the directi
     }
 
     type Test1 @model {
-        id: iD!
+        id: ID!
         name: String!
     }
     `;
@@ -74,7 +74,7 @@ test('ModelConnectionTransformer should fail if the field type where the directi
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('Type "Test2" not found in document.');
+  expect(() => transformer.transform(validSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('ModelConnectionTransformer should fail if an empty list of fields is passed in.', () => {

@@ -104,7 +104,7 @@
                 }
             },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
-            "Runtime": "nodejs8.10",
+            "Runtime": "nodejs10.x",
             "Timeout": "25"
           }
         },
@@ -190,6 +190,11 @@
         },
         "Arn": {
             "Value": {"Fn::GetAtt": ["LambdaFunction", "Arn"]}
+        },
+        "LambdaExecutionRole": {
+            "Value": {
+                "Ref": "LambdaExecutionRole"
+            }
         },
         "Region": {
             "Value": {

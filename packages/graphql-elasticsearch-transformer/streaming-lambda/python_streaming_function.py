@@ -18,16 +18,23 @@ from boto3.dynamodb.types import TypeDeserializer
 # The following parameters are required to configure the ES cluster
 ES_ENDPOINT = os.environ['ES_ENDPOINT']
 ES_REGION = os.environ['ES_REGION']
-DEBUG = True if os.environ['DEBUG'] is not None else False
+DEBUG = True if os.environ.get('DEBUG') == 1 else False
 
 # ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
 DOC_TYPE = 'doc'
 ES_MAX_RETRIES = 3              # Max number of retries for exponential backoff
 
-print("Streaming to ElasticSearch")
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
+logger.info("Streaming to ElasticSearch")
 
+# custom encoder changes
+# - sets to lists
+class DDBTypesEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
 
 # Subclass of boto's TypeDeserializer for DynamoDB to adjust for DynamoDB Stream format.
 class StreamTypeDeserializer(TypeDeserializer):
@@ -54,7 +61,7 @@ class ES_Exception(Exception):
 def post_data_to_es(payload, region, creds, host, path, method='POST', proto='https://'):
     '''Post data to ES endpoint with SigV4 signed http headers'''
     req = AWSRequest(method=method, url=proto + host +
-                     quote(path), data=payload, headers={'Host': host, 'Content-Type': 'application/json'})
+                    quote(path), data=payload, headers={'Host': host, 'Content-Type': 'application/json'})
     SigV4Auth(creds, 'es', region).add_auth(req)
     http_session = BotocoreHTTPSession()
     res = http_session.send(req.prepare())
@@ -96,9 +103,9 @@ def post_to_es(payload):
                     'ES post unsuccessful, errors present, took=%sms', es_ret['took'])
                 # Filter errors
                 es_errors = [item for item in es_ret['items']
-                             if item.get('index').get('error')]
+                            if item.get('index').get('error')]
                 logger.error('List of items with errors: %s',
-                             json.dumps(es_errors))
+                            json.dumps(es_errors))
             else:
                 logger.info('ES post successful, took=%sms', es_ret['took'])
             break  # Sending to ES was ok, break retry loop
@@ -146,7 +153,7 @@ def _lambda_handler(event, context):
             doc_seq = record['kinesis']['sequenceNumber']
         else:
             logger.error('Ignoring non-DynamoDB event sources: %s',
-                         record.get('eventSource'))
+                        record.get('eventSource'))
             continue
 
         # Compute DynamoDB table, type and index for item
@@ -158,7 +165,7 @@ def _lambda_handler(event, context):
         # Dispatch according to event TYPE
         event_name = record['eventName'].upper()  # INSERT, MODIFY, REMOVE
         logger.debug('doc_table=%s, event_name=%s, seq=%s',
-                     doc_table, event_name, doc_seq)
+                    doc_table, event_name, doc_seq)
 
         # Treat events from a Kinesis stream as INSERTs
         if event_name == 'AWS:KINESIS:RECORD':
@@ -186,13 +193,13 @@ def _lambda_handler(event, context):
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
 
-        print(doc_fields)
+        logger.debug('Deserialized doc_fields: ', doc_fields)
 
         doc_id = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
             ddb['Keys'], ddb_deserializer)
 
         # Generate JSON payload
-        doc_json = json.dumps(doc_fields)
+        doc_json = json.dumps(doc_fields, cls=DDBTypesEncoder)
 
         # If DynamoDB INSERT or MODIFY, send 'index' to ES
         if is_ddb_insert_or_update:
@@ -207,7 +214,7 @@ def _lambda_handler(event, context):
         # If DynamoDB REMOVE, send 'delete' to ES
         elif is_ddb_delete:
             action = {'delete': {'_index': doc_es_index_name,
-                                 '_type': doc_type, '_id': doc_id}}
+                                '_type': doc_type, '_id': doc_id}}
             # Action line with 'index' directive
             es_actions.append(json.dumps(action))
 

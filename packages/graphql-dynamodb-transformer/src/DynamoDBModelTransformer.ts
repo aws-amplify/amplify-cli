@@ -27,6 +27,7 @@ import {
   makeSubscriptionField,
   makeUpdateInputObject,
   makeModelXConditionInputObject,
+  makeAttributeTypeEnum,
 } from './definitions';
 import { ModelDirectiveArgs } from './ModelDirectiveArgs';
 import { ResourceFactory } from './resources';
@@ -35,6 +36,13 @@ export interface DynamoDBModelTransformerOptions {
   EnableDeletionProtection?: boolean;
   SyncConfig?: SyncConfig;
 }
+
+// Transform config version constants
+// We have constants instead of magic number all around, later these should be moved to feature
+// flags and transformers should be feature and not version dependent.
+
+// To support generation of conditions and new naming, version 5 was introduced
+export const CONDITIONS_MINIMUM_VERSION = 5;
 
 /**
  * The @model transformer.
@@ -157,6 +165,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
     // Update ModelXConditionInput type
     this.updateMutationConditionInput(ctx, def);
+
     // change type to include sync related fields if sync is enabled
     if (isSyncEnabled) {
       const obj = ctx.getObject(def.name.value);
@@ -231,16 +240,11 @@ export class DynamoDBModelTransformer extends Transformer {
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
       ctx.setResource(resourceId, createResolver);
       ctx.mapResourceToStack(typeName, resourceId);
-      mutationFields.push(
-        makeField(
-          createResolver.Properties.FieldName,
-          [
-            makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value))),
-            makeInputValueDefinition('condition', makeNamedType(conditionInputName)),
-          ],
-          makeNamedType(def.name.value)
-        )
-      );
+      const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))];
+      if (this.supportsConditions(ctx)) {
+        args.push(makeInputValueDefinition('condition', makeNamedType(conditionInputName)));
+      }
+      mutationFields.push(makeField(createResolver.Properties.FieldName.toString(), args, makeNamedType(def.name.value)));
     }
 
     if (shouldMakeUpdate) {
@@ -256,16 +260,11 @@ export class DynamoDBModelTransformer extends Transformer {
       const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
       ctx.setResource(resourceId, updateResolver);
       ctx.mapResourceToStack(typeName, resourceId);
-      mutationFields.push(
-        makeField(
-          updateResolver.Properties.FieldName,
-          [
-            makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInput.name.value))),
-            makeInputValueDefinition('condition', makeNamedType(conditionInputName)),
-          ],
-          makeNamedType(def.name.value)
-        )
-      );
+      const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInput.name.value)))];
+      if (this.supportsConditions(ctx)) {
+        args.push(makeInputValueDefinition('condition', makeNamedType(conditionInputName)));
+      }
+      mutationFields.push(makeField(updateResolver.Properties.FieldName.toString(), args, makeNamedType(def.name.value)));
     }
 
     if (shouldMakeDelete) {
@@ -281,16 +280,11 @@ export class DynamoDBModelTransformer extends Transformer {
       const resourceId = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName);
       ctx.setResource(resourceId, deleteResolver);
       ctx.mapResourceToStack(typeName, resourceId);
-      mutationFields.push(
-        makeField(
-          deleteResolver.Properties.FieldName,
-          [
-            makeInputValueDefinition('input', makeNonNullType(makeNamedType(deleteInput.name.value))),
-            makeInputValueDefinition('condition', makeNamedType(conditionInputName)),
-          ],
-          makeNamedType(def.name.value)
-        )
-      );
+      const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(deleteInput.name.value)))];
+      if (this.supportsConditions(ctx)) {
+        args.push(makeInputValueDefinition('condition', makeNamedType(conditionInputName)));
+      }
+      mutationFields.push(makeField(deleteResolver.Properties.FieldName.toString(), args, makeNamedType(def.name.value)));
     }
     ctx.addMutationFields(mutationFields);
 
@@ -348,7 +342,7 @@ export class DynamoDBModelTransformer extends Transformer {
       this.generateFilterInputs(ctx, def);
       queryFields.push(
         makeField(
-          syncResolver.Properties.FieldName,
+          syncResolver.Properties.FieldName.toString(),
           [
             makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(def.name.value))),
             makeInputValueDefinition('limit', makeNamedType('Int')),
@@ -369,7 +363,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
       queryFields.push(
         makeField(
-          getResolver.Properties.FieldName,
+          getResolver.Properties.FieldName.toString(),
           [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))],
           makeNamedType(def.name.value)
         )
@@ -385,7 +379,7 @@ export class DynamoDBModelTransformer extends Transformer {
       ctx.setResource(resourceId, listResolver);
       ctx.mapResourceToStack(typeName, resourceId);
 
-      queryFields.push(makeConnectionField(listResolver.Properties.FieldName, def.name.value));
+      queryFields.push(makeConnectionField(listResolver.Properties.FieldName.toString(), def.name.value));
     }
     this.generateFilterInputs(ctx, def);
 
@@ -505,7 +499,7 @@ export class DynamoDBModelTransformer extends Transformer {
   }
 
   private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
-    const scalarFilters = makeScalarFilterInputs();
+    const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));
     for (const filter of scalarFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
@@ -513,7 +507,7 @@ export class DynamoDBModelTransformer extends Transformer {
     }
 
     // Create the Enum filters
-    const enumFilters = makeEnumFilterInputObjects(def, ctx);
+    const enumFilters = makeEnumFilterInputObjects(def, ctx, this.supportsConditions(ctx));
     for (const filter of enumFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
@@ -521,14 +515,14 @@ export class DynamoDBModelTransformer extends Transformer {
     }
 
     // Create the ModelXFilterInput
-    const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx);
+    const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx, this.supportsConditions(ctx));
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
     }
   }
 
   private generateConditionInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
-    const scalarFilters = makeScalarFilterInputs();
+    const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));
     for (const filter of scalarFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
@@ -536,17 +530,24 @@ export class DynamoDBModelTransformer extends Transformer {
     }
 
     // Create the Enum filters
-    const enumFilters = makeEnumFilterInputObjects(def, ctx);
+    const enumFilters = makeEnumFilterInputObjects(def, ctx, this.supportsConditions(ctx));
     for (const filter of enumFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
       }
     }
 
-    // Create the ModelXConditionInput
-    const tableXMutationConditionInput = makeModelXConditionInputObject(def, ctx);
-    if (!this.typeExist(tableXMutationConditionInput.name.value, ctx)) {
-      ctx.addInput(tableXMutationConditionInput);
+    if (this.supportsConditions(ctx)) {
+      // Create the ModelXConditionInput
+      const tableXMutationConditionInput = makeModelXConditionInputObject(def, ctx, this.supportsConditions(ctx));
+      if (!this.typeExist(tableXMutationConditionInput.name.value, ctx)) {
+        ctx.addInput(tableXMutationConditionInput);
+      }
+
+      const attributeTypeEnum = makeAttributeTypeEnum();
+      if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
+        ctx.addType(attributeTypeEnum);
+      }
     }
   }
 
@@ -581,32 +582,38 @@ export class DynamoDBModelTransformer extends Transformer {
   // here, because KeyTranformer will not be invoked if there are no @key directives declared
   // on the type.
   private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode): void {
-    // Get the existing ModelXConditionInput
-    const tableXMutationConditionInputName = ModelResourceIDs.ModelConditionInputTypeName(type.name.value);
+    if (this.supportsConditions(ctx)) {
+      // Get the existing ModelXConditionInput
+      const tableXMutationConditionInputName = ModelResourceIDs.ModelConditionInputTypeName(type.name.value);
 
-    if (this.typeExist(tableXMutationConditionInputName, ctx)) {
-      const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
+      if (this.typeExist(tableXMutationConditionInputName, ctx)) {
+        const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
 
-      const keyDirectives = type.directives.filter(d => d.name.value === 'key');
+        const keyDirectives = type.directives.filter(d => d.name.value === 'key');
 
-      // If there are @key directives defined we've nothing to do, it will handle everything
-      if (keyDirectives && keyDirectives.length > 0) {
-        return;
-      }
+        // If there are @key directives defined we've nothing to do, it will handle everything
+        if (keyDirectives && keyDirectives.length > 0) {
+          return;
+        }
 
-      // Remove the field named 'id' from the condition if there is one
-      const idField = tableXMutationConditionInput.fields.find(f => f.name.value === 'id');
+        // Remove the field named 'id' from the condition if there is one
+        const idField = tableXMutationConditionInput.fields.find(f => f.name.value === 'id');
 
-      if (idField) {
-        const reducedFields = tableXMutationConditionInput.fields.filter(f => Boolean(f.name.value !== 'id'));
+        if (idField) {
+          const reducedFields = tableXMutationConditionInput.fields.filter(f => Boolean(f.name.value !== 'id'));
 
-        const updatedInput = {
-          ...tableXMutationConditionInput,
-          fields: reducedFields,
-        };
+          const updatedInput = {
+            ...tableXMutationConditionInput,
+            fields: reducedFields,
+          };
 
-        ctx.putType(updatedInput);
+          ctx.putType(updatedInput);
+        }
       }
     }
+  }
+
+  private supportsConditions(context: TransformerContext) {
+    return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
   }
 }

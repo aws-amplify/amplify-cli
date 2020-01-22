@@ -27,7 +27,6 @@ import {
   ResolverResourceIDs,
   isListType,
   getBaseType,
-  getDirectiveArgument,
   makeDirective,
   makeNamedType,
   makeInputValueDefinition,
@@ -38,23 +37,7 @@ import {
   makeField,
   ModelResourceIDs,
 } from 'graphql-transformer-common';
-import {
-  Expression,
-  print,
-  raw,
-  iff,
-  forEach,
-  set,
-  ref,
-  list,
-  compoundExpression,
-  or,
-  newline,
-  comment,
-  and,
-  not,
-  parens,
-} from 'graphql-mapping-template';
+import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
@@ -296,9 +279,15 @@ export class ModelAuthTransformer extends Transformer {
         }),
       });
 
-      ctx.mergeResources({
-        [ResourceConstants.RESOURCES.AuthRolePolicy]: this.resources.makeIAMPolicyForRole(true, this.authPolicyResources),
-      });
+      const authPolicies = this.resources.makeIAMPolicyForRole(true, this.authPolicyResources);
+
+      for (let i = 0; i < authPolicies.length; i++) {
+        const paddedIndex = `${i + 1}`.padStart(2, '0');
+        const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
+        ctx.mergeResources({
+          [resourceName]: authPolicies[i],
+        });
+      }
     }
 
     if (this.generateIAMPolicyforUnauthRole === true) {
@@ -313,9 +302,15 @@ export class ModelAuthTransformer extends Transformer {
         }),
       });
 
-      ctx.mergeResources({
-        [ResourceConstants.RESOURCES.UnauthRolePolicy]: this.resources.makeIAMPolicyForRole(false, this.unauthPolicyResources),
-      });
+      const unauthPolicies = this.resources.makeIAMPolicyForRole(false, this.unauthPolicyResources);
+
+      for (let i = 0; i < unauthPolicies.length; i++) {
+        const paddedIndex = `${i + 1}`.padStart(2, '0');
+        const resourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
+        ctx.mergeResources({
+          [resourceName]: unauthPolicies[i],
+        });
+      }
     }
   };
 
@@ -724,12 +719,16 @@ Either make the field optional, set auth on the object and not the field, or dis
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
@@ -1017,12 +1016,16 @@ All @auth directives used on field definitions are performed when the field is r
 
       if (
         ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-        staticGroupAuthorizationRules.length > 0 ||
-        dynamicGroupAuthorizationRules.length > 0
+        staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
       ) {
         authModesToCheck.add('userPools');
       }
-      if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+      if (
+        ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+        staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+      ) {
         authModesToCheck.add('oidc');
       }
 
@@ -1162,12 +1165,16 @@ All @auth directives used on field definitions are performed when the field is r
 
       if (
         ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-        staticGroupAuthorizationRules.length > 0 ||
-        dynamicGroupAuthorizationRules.length > 0
+        staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
       ) {
         authModesToCheck.add('userPools');
       }
-      if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+      if (
+        ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+        staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+      ) {
         authModesToCheck.add('oidc');
       }
 
@@ -1271,12 +1278,16 @@ All @auth directives used on field definitions are performed when the field is r
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
@@ -1412,12 +1423,16 @@ All @auth directives used on field definitions are performed when the field is r
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
@@ -1636,7 +1651,7 @@ All @auth directives used on field definitions are performed when the field is r
     // create auth expression
     const authExpression = this.authorizationExpressionForListResult(rules);
     if (authExpression) {
-      const templateParts = [ print(authExpression), resolver.Properties.ResponseMappingTemplate ];
+      const templateParts = [print(authExpression), resolver.Properties.ResponseMappingTemplate];
       resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
       ctx.setResource(resolverResourceID, resolver);
     }
@@ -1736,10 +1751,13 @@ All @auth directives used on field definitions are performed when the field is r
         const authModesToCheck = new Set<AuthProvider>();
         const expressions: Array<Expression> = new Array();
 
-        if (ownerAuthorizationRules.find(r => r.provider === 'userPools') || staticGroupAuthorizationRules.length > 0) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools')
+        ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (ownerAuthorizationRules.find(r => r.provider === 'oidc') || staticGroupAuthorizationRules.find(r => r.provider === 'oidc')) {
           authModesToCheck.add('oidc');
         }
 
@@ -1975,9 +1993,9 @@ All @auth directives used on field definitions are performed when the field is r
     // Groups
     //
 
-    if (rule.allow === 'groups' && rule.provider !== 'userPools') {
+    if (rule.allow === 'groups' && rule.provider !== 'userPools' && rule.provider !== 'oidc') {
       throw new InvalidDirectiveError(
-        `@auth directive with 'groups' strategy only supports 'userPools' provider, but found '${rule.provider}' assigned.`
+        `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found '${rule.provider}' assigned.`
       );
     }
 
@@ -2246,7 +2264,7 @@ found '${rule.provider}' assigned.`
     if (resolverConfig && resolverConfig.project) {
       return true;
     }
-    if (resolverConfig && resolverConfig.models[typeName]) {
+    if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
       return true;
     }
     return false;

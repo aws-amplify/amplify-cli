@@ -6,8 +6,14 @@ const emoji = require('node-emoji');
 const { spawnSync, spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
+const { addFileToXcodeProj } = require('./xcodeHelpers');
+const ini = require('ini');
+const semver = require('semver');
+const stripAnsi = require('strip-ansi');
+const { engines } = require('../package.json');
 
-const amplifyCliPackageName = '@aws-amplify/cli@canary';
+const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+const amplifyCliPackageName = '@aws-amplify/cli';
 
 function run() {
   const projpath = args.path;
@@ -17,7 +23,7 @@ function run() {
   }
 
   return checkNodeVersion()
-    .then(() => installAmplifyCLI())
+    .then(() => amplifyCLIVersionCheck())
     .then(() => createAmplifySkeletonProject())
     .then(frontend => createAmplifyHelperFiles(frontend))
     .then(frontend => {
@@ -36,47 +42,57 @@ function run() {
 // Node version check
 async function checkNodeVersion() {
   const currentNodeVersion = process.versions.node;
-  const semver = currentNodeVersion.split('.');
-  const major = semver[0];
-  const minor = semver[1];
-
-  if (major < 8 || (major === 8 && minor < 12)) {
+  const minNodeVersion = engines.node;
+  if (!semver.satisfies(currentNodeVersion, minNodeVersion)) {
     console.error(
       `You are running Node ${currentNodeVersion}.\n` +
-        `Amplify CLI requires Node 8.12.0 or higher. \n` +
+        `Amplify CLI requires Node ${minNodeVersion}. \n` +
         `Please update your version of Node.`
     );
     process.exit(1);
   }
 }
 
+// Install CLI using npm
 async function installAmplifyCLI() {
-  const amplifyCLIVersionCheck = spawnSync('amplify', ['-v']);
-
-  if (amplifyCLIVersionCheck.stderr !== null) {
-    console.log(`${emoji.get('white_check_mark')} Found Amplify CLI v${amplifyCLIVersionCheck.stdout.toString()}`);
-  } else {
-    // Install the CLI
-    console.log(`${emoji.get('worried')} Amplify CLI not found on your system.`);
-    console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
-
-    return new Promise((resolve, reject) => {
-      const amplifyCLIInstall = spawn('npm', ['install', '-g', `${amplifyCliPackageName}`], {
-        cwd: process.cwd(),
-        env: process.env,
-        stdio: 'inherit',
-      });
-
-      amplifyCLIInstall.on('exit', code => {
-        if (code === 0) {
-          console.log(`${emoji.get('white_check_mark')} Successfully installed Amplify CLI.`);
-          resolve();
-        } else {
-          console.log(`${emoji.get('x')} Failed to install Amplify CLI.`);
-          reject();
-        }
-      });
+  return new Promise((resolve, reject) => {
+    const amplifyCLIInstall = spawn(npm, ['install', '-g', `${amplifyCliPackageName}`], {
+      cwd: process.cwd(),
+      env: process.env,
+      stdio: 'inherit',
     });
+
+    amplifyCLIInstall.on('exit', code => {
+      if (code === 0) {
+        console.log(`${emoji.get('white_check_mark')} Successfully installed Amplify CLI.`);
+        resolve();
+      } else {
+        console.log(`${emoji.get('x')} Failed to install Amplify CLI.`);
+        reject();
+      }
+    });
+  });
+}
+
+// Check the amplify CLI version, install latest CLI if it does not exist or is too old
+async function amplifyCLIVersionCheck() {
+  const amplifyCLIVersionSpawn = spawnSync('amplify', ['-v']);
+  const minCLIVersion = engines['@aws-amplify/cli'];
+  if (amplifyCLIVersionSpawn.stderr !== null) {
+    const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionSpawn.stdout.toString()));
+    if (semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
+      console.log(`${emoji.get('white_check_mark')} Found Amplify CLI version ${amplifyCLIVersion}`);
+    } else {
+      console.log(
+        `${emoji.get('worried')} Found Amplify CLI version ${amplifyCLIVersion}. The minimum required version is ${minCLIVersion}`
+      );
+      console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
+      await installAmplifyCLI();
+    }
+  } else {
+    console.log(`${emoji.get('worried')} Amplify CLI was not found.`);
+    console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
+    await installAmplifyCLI();
   }
 }
 
@@ -165,7 +181,7 @@ async function guessPlatform() {
   } else {
     let fitToHandleScore = -1;
 
-    Object.keys(frontendPlugins).forEach(key => {
+    validFrontends.forEach(key => {
       const { scanProject } = require(frontendPlugins[key]);
       const newScore = scanProject(process.cwd());
       if (newScore > fitToHandleScore) {
@@ -194,22 +210,22 @@ async function guessPlatform() {
           type: 'list',
           name: 'platform',
           message: 'What type of app are you building',
-          choices: Object.keys(frontendPlugins),
+          choices: validFrontends,
         };
 
-        const platformAnswer = await inquirer.prompt(platformComfirmation);
-        suitableFrontend = platformAnswer.platform;
+        const { platform } = await inquirer.prompt(platformComfirmation);
+        suitableFrontend = platform;
 
         if (suitableFrontend === 'javascript') {
           const frameworkComfirmation = {
             type: 'list',
             name: 'framework',
             message: 'What javascript framework are you using',
-            choices: Object.keys(frameworkConfigMapping),
+            choices: validJSFrameworks,
           };
 
-          const frameworkAnswer = await inquirer.prompt(frameworkComfirmation);
-          jsFrameWork = frameworkAnswer.framework;
+          const { framework } = await inquirer.prompt(frameworkComfirmation);
+          jsFrameWork = framework;
         }
       }
     }
@@ -306,6 +322,7 @@ async function createJSHelperFiles() {
 
   const devDependencies = {
     ini: '^1.3.5',
+    inquirer: '^6.5.1',
   };
 
   Object.assign(packageJSON.scripts, runScripts);
@@ -316,7 +333,7 @@ async function createJSHelperFiles() {
   console.log(`${emoji.get('white_check_mark')} Successfully added helper npm run scripts to your package.json.`);
 
   return new Promise((resolve, reject) => {
-    const npmInstall = spawn('npm', ['install', '--only=dev'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+    const npmInstall = spawn(npm, ['install', '--only=dev'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
     npmInstall.on('exit', code => {
       if (code === 0) {
@@ -330,11 +347,49 @@ async function createJSHelperFiles() {
 }
 
 async function createAndroidHelperFiles() {
-  const configJsonObj = { profile: 'default', envName: 'amplify' };
-  const configJsonStr = JSON.stringify(configJsonObj);
+  const configJsonObj = {
+    profile: 'default',
+    envName: 'amplify',
+    syncEnabled: true,
+  };
+  const configJsonStr = JSON.stringify(configJsonObj, null, 4);
   const configFile = path.join(process.cwd(), './amplify-gradle-config.json');
   if (!fs.existsSync(configFile)) {
     fs.writeFileSync(configFile, configJsonStr);
+  }
+}
+
+async function createIosHelperFiles() {
+  const configFile = './amplifyxc.config';
+  const awsConfigFile = './awsconfiguration.json';
+  const amplifyConfigFile = './amplifyconfiguration.json';
+  const amplifyDir = './amplify';
+  const configJsonObj = {};
+  const configJsonStr = JSON.stringify(configJsonObj);
+
+  // Write files if needed and them to xcode project if one exists
+  if (!fs.existsSync(configFile)) {
+    const configxc = ini.parse('');
+    configxc.push = false;
+    configxc.modelgen = false;
+    configxc.profile = 'default';
+    configxc.envName = 'amplify';
+    fs.writeFileSync(configFile, ini.stringify(configxc));
+  }
+  await addFileToXcodeProj(configFile);
+
+  if (!fs.existsSync(awsConfigFile)) {
+    fs.writeFileSync(awsConfigFile, configJsonStr);
+  }
+  await addFileToXcodeProj(awsConfigFile, true);
+
+  if (!fs.existsSync(amplifyConfigFile)) {
+    fs.writeFileSync(amplifyConfigFile, configJsonStr);
+  }
+  await addFileToXcodeProj(amplifyConfigFile, true);
+
+  if (fs.existsSync(amplifyDir)) {
+    await addFileToXcodeProj(amplifyDir);
   }
 }
 
@@ -345,6 +400,10 @@ async function createAmplifyHelperFiles(frontend) {
 
   if (frontend === 'android') {
     await createAndroidHelperFiles();
+  }
+
+  if (frontend === 'ios') {
+    await createIosHelperFiles();
   }
 
   return frontend;
@@ -385,7 +444,15 @@ async function showAndroidHelpText() {
 }
 
 async function showIOSHelpText() {
-  // TBD
+  console.log();
+  console.log(chalk.green('Some next steps:'));
+  console.log(
+    'Setting "modelgen" to true in amplifyxc.config will allow you to generate models/entities for your GraphQL models in your next xcode build'
+  );
+  console.log(
+    'Setting "push" to true in the amplifyxc.config will build all your local backend resources and provision them in the cloud in your next xcode build'
+  );
+  console.log('');
 }
 
 module.exports = { run };

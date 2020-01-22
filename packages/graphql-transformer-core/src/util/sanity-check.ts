@@ -4,6 +4,7 @@ import { diff as getDiffs } from 'deep-diff';
 import { readFromPath } from './fileUtils';
 import { InvalidMigrationError } from '../errors';
 import { Template } from 'cloudform-types';
+import { TRANSFORM_CONFIG_FILE_NAME } from '..';
 
 interface Diff {
   kind: 'N' | 'E' | 'D' | 'A';
@@ -264,7 +265,7 @@ export function cantHaveMoreThan200Resources(diffs: Diff[], currentBuild: Diffab
         'CloudFormation templates may contain at most 200 resources.',
         'If the stack is a custom stack, break the stack up into multiple files in stacks/. ' +
           'If the stack was generated, you have hit a limit and can use the StackMapping argument in ' +
-          'transform.conf.json to fine tune how resources are assigned to stacks.'
+          `${TRANSFORM_CONFIG_FILE_NAME} to fine tune how resources are assigned to stacks.`
       );
     }
   }

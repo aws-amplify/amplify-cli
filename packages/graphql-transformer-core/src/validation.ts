@@ -1,17 +1,6 @@
-import { GraphQLScalarType } from 'graphql';
-import {
-  Kind,
-  DocumentNode,
-  TypeSystemDefinitionNode,
-  DirectiveDefinitionNode,
-  ScalarTypeDefinitionNode,
-  parse,
-  SchemaDefinitionNode,
-  TypeDefinitionNode,
-} from 'graphql/language';
-import { GraphQLSchema, GraphQLObjectType, isOutputType } from 'graphql/type';
-import { validate } from 'graphql/validation';
-import { ASTDefinitionBuilder } from 'graphql/utilities/buildASTSchema';
+import { Kind, DocumentNode, parse, SchemaDefinitionNode } from 'graphql/language';
+import { validate, ValidationRule } from 'graphql/validation';
+import { buildASTSchema } from 'graphql/utilities/buildASTSchema';
 
 // Spec Section: "Subscriptions with Single Root Field"
 import { SingleFieldSubscriptions } from 'graphql/validation/rules/SingleFieldSubscriptions';
@@ -52,7 +41,18 @@ import { OverlappingFieldsCanBeMerged } from 'graphql/validation/rules/Overlappi
 // Spec Section: "Input Object Field Uniqueness"
 import { UniqueInputFieldNames } from 'graphql/validation/rules/UniqueInputFieldNames';
 
-import { ProvidedNonNullArguments } from 'graphql/validation/rules/ProvidedNonNullArguments';
+import { ProvidedRequiredArguments } from 'graphql/validation/rules/ProvidedRequiredArguments';
+import { UniqueOperationNames } from 'graphql/validation/rules/UniqueOperationNames';
+import { LoneAnonymousOperation } from 'graphql/validation/rules/LoneAnonymousOperation';
+import { UniqueFragmentNames } from 'graphql/validation/rules/UniqueFragmentNames';
+import { KnownFragmentNames } from 'graphql/validation/rules/KnownFragmentNames';
+import { NoUnusedFragments } from 'graphql/validation/rules/NoUnusedFragments';
+import { PossibleFragmentSpreads } from 'graphql/validation/rules/PossibleFragmentSpreads';
+import { NoFragmentCycles } from 'graphql/validation/rules/NoFragmentCycles';
+import { UniqueVariableNames } from 'graphql/validation/rules/UniqueVariableNames';
+import { NoUndefinedVariables } from 'graphql/validation/rules/NoUndefinedVariables';
+import { NoUnusedVariables } from 'graphql/validation/rules/NoUnusedVariables';
+import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDirectivesPerLocation';
 
 /**
  * This set includes all validation rules defined by the GraphQL spec.
@@ -60,21 +60,32 @@ import { ProvidedNonNullArguments } from 'graphql/validation/rules/ProvidedNonNu
  * The order of the rules in this list has been adjusted to lead to the
  * most clear output when encountering multiple validation errors.
  */
-export const specifiedRules = [
+export const specifiedRules: Readonly<ValidationRule[]> = [
+  UniqueOperationNames,
+  LoneAnonymousOperation,
   SingleFieldSubscriptions,
   KnownTypeNames,
   FragmentsOnCompositeTypes,
   VariablesAreInputTypes,
   ScalarLeafs,
   FieldsOnCorrectType,
+  UniqueFragmentNames,
+  KnownFragmentNames,
+  NoUnusedFragments,
+  PossibleFragmentSpreads,
+  NoFragmentCycles,
+  UniqueVariableNames,
+  NoUndefinedVariables,
+  NoUnusedVariables,
   KnownDirectives,
+  UniqueDirectivesPerLocation,
   KnownArgumentNames,
   UniqueArgumentNames,
   ValuesOfCorrectType,
+  ProvidedRequiredArguments,
   VariablesInAllowedPosition,
   OverlappingFieldsCanBeMerged,
   UniqueInputFieldNames,
-  ProvidedNonNullArguments,
 ];
 
 const EXTRA_SCALARS_DOCUMENT = parse(`
@@ -91,7 +102,7 @@ scalar BigInt
 scalar Double
 `);
 
-const EXTRA_DIRECTIVES_DOCUMENT = parse(`
+export const EXTRA_DIRECTIVES_DOCUMENT = parse(`
 directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
 directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
 directive @aws_api_key on FIELD_DEFINITION | OBJECT
@@ -103,48 +114,30 @@ directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION
 directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
 `);
 
-export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
-  const nodeMap = doc.definitions
-    .filter((def: TypeSystemDefinitionNode) => def.kind !== Kind.SCHEMA_DEFINITION && Boolean(def.name))
-    .reduce(
-      (a: { [k: string]: TypeDefinitionNode }, def: TypeDefinitionNode) => ({
-        ...a,
-        [def.name.value]: def,
-      }),
-      {}
-    );
-  return new ASTDefinitionBuilder(nodeMap, {}, typeRef => {
-    throw new Error(`Type "${typeRef.name.value}" not found in document.`);
-  });
+// As query type is mandatory in the schema we've to append a dummy one if it is not present
+const NOOP_QUERY = parse(`
+type Query {
+  noop: String
 }
+`);
 
-export function validateModelSchema(doc: DocumentNode) {
+export const validateModelSchema = (doc: DocumentNode) => {
   const fullDocument = {
     kind: Kind.DOCUMENT,
     definitions: [...EXTRA_DIRECTIVES_DOCUMENT.definitions, ...doc.definitions, ...EXTRA_SCALARS_DOCUMENT.definitions],
   };
-  const builder = astBuilder(fullDocument);
-  const directives = fullDocument.definitions
-    .filter(d => d.kind === Kind.DIRECTIVE_DEFINITION)
-    .map((d: DirectiveDefinitionNode) => {
-      return builder.buildDirective(d);
-    });
-  const types = fullDocument.definitions
-    .filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION)
-    .map((d: TypeDefinitionNode) => builder.buildType(d));
-  const outputTypes = types.filter(t => isOutputType(t));
-  const fields = outputTypes.reduce((acc, t) => ({ ...acc, [t.name]: { type: t } }), {});
 
-  const schemaRecord = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
-  const queryOp = schemaRecord ? schemaRecord.operationTypes.find(o => o.operation === 'query') : undefined;
-  const queryName = queryOp ? queryOp.type.name.value : 'Query';
-  const existingQueryType = types.find(t => t.name === queryName) as GraphQLObjectType;
-  const queryType = existingQueryType
-    ? existingQueryType
-    : new GraphQLObjectType({
-        name: queryName,
-        fields,
-      });
-  const schema = new GraphQLSchema({ query: queryType, types, directives });
+  const schemaDef = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
+  const queryOperation = schemaDef ? schemaDef.operationTypes.find(o => o.operation === 'query') : undefined;
+  const queryName = queryOperation ? queryOperation.type.name.value : 'Query';
+  const existingQueryType = doc.definitions.find(
+    d => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName
+  );
+
+  if (!existingQueryType) {
+    fullDocument.definitions.push(...NOOP_QUERY.definitions);
+  }
+
+  const schema = buildASTSchema(fullDocument);
   return validate(schema, fullDocument, specifiedRules);
-}
+};

@@ -1,3 +1,4 @@
+const syncAssets = require('../sync-conflict-handler-assets/syncAssets');
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const uuid = require('uuid');
@@ -14,7 +15,12 @@ const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
 const defaultStackName = 'CustomResources.json';
 
-const { collectDirectivesByTypeNames, readTransformerConfiguration, writeTransformerConfiguration } = TransformPackage;
+const {
+  collectDirectivesByTypeNames,
+  readTransformerConfiguration,
+  writeTransformerConfiguration,
+  TRANSFORM_CURRENT_VERSION,
+} = TransformPackage;
 
 const authProviderChoices = [
   {
@@ -137,6 +143,11 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     fs.mkdirSync(stacksDirectoryPath);
   }
 
+  // During API add, make sure we're creating a transform.conf.json file with the latest version the CLI supports.
+  await updateTransformerConfigVersion(resourceDir);
+
+  await writeResolverConfig(resolverConfig, resourceDir);
+
   // Write the default custom resources stack out to disk.
   const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
   fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
@@ -243,10 +254,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
-  if (resolverConfig) {
-    await writeResolverConfig(context, resolverConfig, resourceDir);
-  }
-
   if (editSchemaChoice) {
     return context.amplify.openEditor(context, targetSchemaFilePath).then(async () => {
       let notCompiled = true;
@@ -283,10 +290,18 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
 }
+// write to the transformer conf if the resolverConfig is valid
+async function writeResolverConfig(resolverConfig, resourceDir) {
+  if (resolverConfig && (resolverConfig.project || resolverConfig.models)) {
+    const localTransformerConfig = await readTransformerConfiguration(resourceDir);
+    localTransformerConfig.ResolverConfig = resolverConfig;
+    await writeTransformerConfiguration(resourceDir, localTransformerConfig);
+  }
+}
 
-async function writeResolverConfig(context, syncConfig, resourceDir) {
+async function updateTransformerConfigVersion(resourceDir) {
   const localTransformerConfig = await readTransformerConfiguration(resourceDir);
-  localTransformerConfig.ResolverConfig = syncConfig;
+  localTransformerConfig.Version = TRANSFORM_CURRENT_VERSION;
   await writeTransformerConfiguration(resourceDir, localTransformerConfig);
 }
 
@@ -414,9 +429,7 @@ async function updateWalkthrough(context) {
   jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
-  if (resolverConfig) {
-    await writeResolverConfig(context, resolverConfig, resourceDir);
-  }
+  await writeResolverConfig(resolverConfig, resourceDir);
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     resourceDir,
@@ -448,9 +461,7 @@ async function askAdditionalQuestions(context, parameters, authConfig, defaultAu
 
   if (advancedSettingsAnswer.advancedSettings) {
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
-    if (process.env.AMPLIFY_DATASTORE_SYNC === 'true') {
-      resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
-    }
+    resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
   }
 
   return { authConfig, resolverConfig };
@@ -464,13 +475,6 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
       let conflictResolutionStrategy;
 
       do {
-        if (conflictResolutionStrategy === 'Learn More') {
-          // Todo: Update the help text
-          context.print.info('');
-          context.print.info('DataStore help text');
-          context.print.info('');
-        }
-
         const conflictResolutionQuestion = {
           type: 'list',
           name: 'conflictResolutionStrategy',
@@ -495,6 +499,9 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
             },
           ],
         };
+        if (conflictResolutionStrategy === 'Learn More') {
+          conflictResolutionQuestion.prefix = syncAssets.getDataStoreLearnMore();
+        }
         ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
       } while (conflictResolutionStrategy === 'Learn More');
 
@@ -517,7 +524,7 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
     // Ask for per-model resolver override setting
 
     if (modelTypes && modelTypes.length > 0) {
-      if (await context.prompt.confirm('Do you want to override default per model settings?')) {
+      if (await context.prompt.confirm('Do you want to override default per model settings?', false)) {
         const modelTypeQuestion = {
           type: 'checkbox',
           name: 'selectedModelTypes',

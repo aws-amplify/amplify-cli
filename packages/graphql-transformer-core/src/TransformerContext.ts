@@ -111,6 +111,8 @@ export class TransformerContext {
 
   private resolverConfig: ResolverConfig;
 
+  private transformerVersion: Number;
+
   constructor(inputSDL: string) {
     const doc: DocumentNode = parse(inputSDL);
     for (const def of doc.definitions) {
@@ -702,12 +704,20 @@ export class TransformerContext {
    */
   public setResolverConfig(resolverConfig: ResolverConfig) {
     if (this.resolverConfig) {
-      throw new Error(`Resolver Configuration has already been added to the context`)
+      throw new Error(`Resolver Configuration has already been added to the context`);
     }
     this.resolverConfig = resolverConfig;
   }
 
   public getResolverConfig(): ResolverConfig {
     return this.resolverConfig;
+  }
+
+  public setTransformerVersion(version: Number) {
+    this.transformerVersion = version;
+  }
+
+  public getTransformerVersion(): Number {
+    return this.transformerVersion;
   }
 }

@@ -57,7 +57,7 @@ async function pushResources(context, category, resourceName, filteredResources)
   if (continueToPush) {
     try {
       // Get current-cloud-backend's amplify-meta
-      const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+      const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
       const currentAmplifyMeta = readJsonFile(currentAmplifyMetaFilePath);
 
       await providersPush(context, category, resourceName, filteredResources);
@@ -86,6 +86,20 @@ async function providersPush(context, category, resourceName, filteredResources)
   await Promise.all(providerPromises);
 }
 
+async function storeCurrentCloudBackend(context) {
+  const { providers } = getProjectConfig();
+  const providerPlugins = getProviderPlugins(context);
+  const providerPromises = [];
+
+  for (let i = 0; i < providers.length; i += 1) {
+    const providerModule = require(providerPlugins[providers[i]]);
+    providerPromises.push(providerModule.storeCurrentCloudBackend(context));
+  }
+
+  await Promise.all(providerPromises);
+}
+
 module.exports = {
   pushResources,
+  storeCurrentCloudBackend,
 };

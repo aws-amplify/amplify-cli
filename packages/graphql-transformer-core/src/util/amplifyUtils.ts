@@ -8,7 +8,6 @@ import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirect
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 import * as Sanity from './sanity-check';
 
-export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
 
@@ -146,7 +145,7 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
               missingStackMappings[resourceId] = stackName;
             }
           }
-          const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
+          const outputIdsInStack = Object.keys(lastDeployedStack.Outputs || {});
           for (const outputId of outputIdsInStack) {
             if (stackMapping[outputId] && stackName !== stackMapping[outputId]) {
               missingStackMappings[outputId] = stackName;
@@ -163,7 +162,7 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
           missingStackMappings[resourceId] = 'root';
         }
       }
-      const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
+      const outputIdsInStack = Object.keys(lastDeployedStack.Outputs || {});
       for (const outputId of outputIdsInStack) {
         if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
           missingStackMappings[outputId] = 'root';

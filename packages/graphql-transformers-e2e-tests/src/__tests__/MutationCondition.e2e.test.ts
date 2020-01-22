@@ -1,8 +1,16 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION } from 'graphql-transformer-core';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { parse } from 'graphql/language/parser';
-import { DocumentNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, DefinitionNode, Kind } from 'graphql';
+import {
+  DocumentNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  DefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  FieldDefinitionNode,
+} from 'graphql';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
@@ -27,10 +35,11 @@ import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 import AWS = require('aws-sdk');
+import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 
-const transformAndParseSchema = (schema: string): DocumentNode => {
+const transformAndParseSchema = (schema: string, version: number = TRANSFORM_CURRENT_VERSION): DocumentNode => {
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
@@ -46,6 +55,9 @@ const transformAndParseSchema = (schema: string): DocumentNode => {
         },
       }),
     ],
+    transformConfig: {
+      Version: version,
+    },
   });
 
   const out = transformer.transform(schema);
@@ -59,6 +71,26 @@ const getInputType = (doc: DocumentNode, typeName: string): InputObjectTypeDefin
   expect(type).toBeDefined();
 
   return <InputObjectTypeDefinitionNode>type;
+};
+
+const expectInputTypeDefined = (doc: DocumentNode, typeName: string) => {
+  const type = doc.definitions.find((def: DefinitionNode) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === typeName);
+  expect(type).toBeDefined();
+};
+
+const expectInputTypeUndefined = (doc: DocumentNode, typeName: string) => {
+  const type = doc.definitions.find((def: DefinitionNode) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === typeName);
+  expect(type).toBeUndefined();
+};
+
+const expectEnumTypeDefined = (doc: DocumentNode, typeName: string) => {
+  const type = doc.definitions.find((def: DefinitionNode) => def.kind === Kind.ENUM_TYPE_DEFINITION && def.name.value === typeName);
+  expect(type).toBeDefined();
+};
+
+const expectEnumTypeUndefined = (doc: DocumentNode, typeName: string) => {
+  const type = doc.definitions.find((def: DefinitionNode) => def.kind === Kind.ENUM_TYPE_DEFINITION && def.name.value === typeName);
+  expect(type).toBeUndefined();
 };
 
 const expectFieldsOnInputType = (type: InputObjectTypeDefinitionNode, fields: string[]) => {
@@ -82,26 +114,6 @@ describe(`Local Mutation Condition tests`, () => {
     const validSchema = `
             type Post
             @model
-            # @versioned
-            # @versioned(versionField: "vv", versionInput: "ww")
-            # @auth(rules: [
-            #   {
-            #     allow: owner
-            #   }
-            #   {
-            #     allow: groups
-            #   }
-            #   {
-            #     allow: owner
-            #     ownerField: "author"
-            #   }
-            #   {
-            #     allow: groups
-            #     groupsField: "editors"
-            #   }
-            # ])
-            # @key(fields: ["id", "type", "slug"])
-            # @key(name: "byTypeSlugCounter", fields: ["type", "slug", "likeCount"])
             {
                 id: ID!
                 content: String
@@ -618,6 +630,9 @@ describe(`Deployed Mutation Condition tests`, () => {
           },
         }),
       ],
+      transformConfig: {
+        Version: TRANSFORM_CURRENT_VERSION,
+      },
     });
 
     try {
@@ -783,10 +798,23 @@ describe(`Deployed Mutation Condition tests`, () => {
 
       // Since we're doing the policy here we've to remove the transformer generated artifacts from
       // the generated stack.
-      delete out.rootStack.Resources[ResourceConstants.RESOURCES.UnauthRolePolicy];
-      delete out.rootStack.Parameters.unauthRoleName;
-      delete out.rootStack.Resources[ResourceConstants.RESOURCES.AuthRolePolicy];
+      const maxPolicyCount = 10;
+      for (let i = 0; i < maxPolicyCount; i++) {
+        const paddedIndex = `${i + 1}`.padStart(2, '0');
+        const authResourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
+        const unauthResourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
+
+        if (out.rootStack.Resources[authResourceName]) {
+          delete out.rootStack.Resources[authResourceName];
+        }
+
+        if (out.rootStack.Resources[unauthResourceName]) {
+          delete out.rootStack.Resources[unauthResourceName];
+        }
+      }
+
       delete out.rootStack.Parameters.authRoleName;
+      delete out.rootStack.Parameters.unauthRoleName;
 
       for (const key of Object.keys(out.rootStack.Resources)) {
         if (
@@ -1369,5 +1397,169 @@ describe(`Deployed Mutation Condition tests`, () => {
     expect(deleteResponse.data.deletePost.id).toBeDefined();
     expect(deleteResponse.data.deletePost.content).toEqual('Content #5');
     expect(deleteResponse.data.deletePost.version).toEqual(1);
+  });
+});
+
+describe(`Local V4-V5 Transformer tests`, () => {
+  it('V4 transform result', () => {
+    const validSchema = `
+            type Post
+            @model
+            {
+                id: ID!
+                content: String
+                rating: Int
+                state: State
+                stateList: [State]
+            }
+
+            enum State {
+              DRAFT,
+              PUBLISHED
+            }
+        `;
+
+    const schema = transformAndParseSchema(validSchema, TRANSFORM_BASE_VERSION);
+
+    const filterType = getInputType(schema, 'ModelPostFilterInput');
+    expectFieldsOnInputType(filterType, ['id', 'content', 'rating', 'state', 'stateList', 'and', 'or', 'not']);
+    doNotExpectFieldsOnInputType(filterType, ['attributeExists']);
+    doNotExpectFieldsOnInputType(filterType, ['attributeType']);
+
+    expectInputTypeUndefined(schema, 'ModelPostConditionInput');
+
+    expectInputTypeDefined(schema, 'ModelStringFilterInput');
+    expectInputTypeDefined(schema, 'ModelIDFilterInput');
+    expectInputTypeDefined(schema, 'ModelIntFilterInput');
+    expectInputTypeDefined(schema, 'ModelFloatFilterInput');
+    expectInputTypeDefined(schema, 'ModelBooleanFilterInput');
+    expectInputTypeDefined(schema, 'ModelStateFilterInput');
+    expectInputTypeDefined(schema, 'ModelStateListFilterInput');
+
+    expectInputTypeUndefined(schema, 'ModelSizeInput');
+    expectEnumTypeUndefined(schema, 'ModelAttributeTypes');
+
+    const mutation = <ObjectTypeDefinitionNode>(
+      schema.definitions.find((def: DefinitionNode) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === 'Mutation')
+    );
+    expect(mutation).toBeDefined();
+
+    const checkMutation = (name: string) => {
+      const field = <FieldDefinitionNode>mutation.fields.find(f => f.name.value === `${name}Post`);
+      expect(field).toBeDefined();
+      const conditionArg = field.arguments.find(a => a.name.value === 'condition');
+      expect(conditionArg).toBeUndefined();
+    };
+
+    checkMutation('create');
+    checkMutation('update');
+    checkMutation('delete');
+  });
+
+  it(`V5 transform result`, () => {
+    const validSchema = `
+            type Post
+            @model
+            {
+                id: ID!
+                content: String
+                rating: Int
+                state: State
+                stateList: [State]
+            }
+
+            enum State {
+              DRAFT,
+              PUBLISHED
+            }
+        `;
+
+    const conditionFeatureVersion = 5;
+    const schema = transformAndParseSchema(validSchema, conditionFeatureVersion);
+
+    const filterType = getInputType(schema, 'ModelPostFilterInput');
+    expectFieldsOnInputType(filterType, ['id', 'content', 'rating', 'state', 'stateList', 'and', 'or', 'not']);
+
+    const conditionType = getInputType(schema, 'ModelPostConditionInput');
+    expectFieldsOnInputType(conditionType, ['content', 'rating', 'state', 'stateList', 'and', 'or', 'not']);
+
+    expectInputTypeDefined(schema, 'ModelStringInput');
+    expectInputTypeDefined(schema, 'ModelIDInput');
+    expectInputTypeDefined(schema, 'ModelIntInput');
+    expectInputTypeDefined(schema, 'ModelFloatInput');
+    expectInputTypeDefined(schema, 'ModelBooleanInput');
+    expectInputTypeDefined(schema, 'ModelStateInput');
+    expectInputTypeDefined(schema, 'ModelStateListInput');
+    expectInputTypeDefined(schema, 'ModelSizeInput');
+    expectEnumTypeDefined(schema, 'ModelAttributeTypes');
+
+    const mutation = <ObjectTypeDefinitionNode>(
+      schema.definitions.find((def: DefinitionNode) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === 'Mutation')
+    );
+    expect(mutation).toBeDefined();
+
+    const checkMutation = (name: string) => {
+      const field = <FieldDefinitionNode>mutation.fields.find(f => f.name.value === `${name}Post`);
+      expect(field).toBeDefined();
+      const conditionArg = field.arguments.find(a => a.name.value === 'condition');
+      expect(conditionArg).toBeDefined();
+    };
+
+    checkMutation('create');
+    checkMutation('update');
+    checkMutation('delete');
+  });
+
+  it(`Current version transform result`, () => {
+    const validSchema = `
+            type Post
+            @model
+            {
+                id: ID!
+                content: String
+                rating: Int
+                state: State
+                stateList: [State]
+            }
+
+            enum State {
+              DRAFT,
+              PUBLISHED
+            }
+        `;
+
+    const schema = transformAndParseSchema(validSchema, TRANSFORM_CURRENT_VERSION);
+
+    const filterType = getInputType(schema, 'ModelPostFilterInput');
+    expectFieldsOnInputType(filterType, ['id', 'content', 'rating', 'state', 'stateList', 'and', 'or', 'not']);
+
+    const conditionType = getInputType(schema, 'ModelPostConditionInput');
+    expectFieldsOnInputType(conditionType, ['content', 'rating', 'state', 'stateList', 'and', 'or', 'not']);
+
+    expectInputTypeDefined(schema, 'ModelStringInput');
+    expectInputTypeDefined(schema, 'ModelIDInput');
+    expectInputTypeDefined(schema, 'ModelIntInput');
+    expectInputTypeDefined(schema, 'ModelFloatInput');
+    expectInputTypeDefined(schema, 'ModelBooleanInput');
+    expectInputTypeDefined(schema, 'ModelStateInput');
+    expectInputTypeDefined(schema, 'ModelStateListInput');
+    expectInputTypeDefined(schema, 'ModelSizeInput');
+    expectEnumTypeDefined(schema, 'ModelAttributeTypes');
+
+    const mutation = <ObjectTypeDefinitionNode>(
+      schema.definitions.find((def: DefinitionNode) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === 'Mutation')
+    );
+    expect(mutation).toBeDefined();
+
+    const checkMutation = (name: string) => {
+      const field = <FieldDefinitionNode>mutation.fields.find(f => f.name.value === `${name}Post`);
+      expect(field).toBeDefined();
+      const conditionArg = field.arguments.find(a => a.name.value === 'condition');
+      expect(conditionArg).toBeDefined();
+    };
+
+    checkMutation('create');
+    checkMutation('update');
+    checkMutation('delete');
   });
 });

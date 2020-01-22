@@ -1,4 +1,4 @@
-const response = require('cfn-response');
+const response = require('./cfn-response');
 const aws = require('aws-sdk');
 const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19' });
 const iam = new aws.IAM();

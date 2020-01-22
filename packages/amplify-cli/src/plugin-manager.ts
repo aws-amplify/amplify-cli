@@ -1,7 +1,12 @@
 import { PluginPlatform } from './domain/plugin-platform';
 import { PluginInfo } from './domain/plugin-info';
 import { readPluginsJsonFileSync, writePluginsJsonFileSync } from './plugin-helpers/access-plugins-file';
-import { scanPluginPlatform, getCorePluginDirPath, isUnderScanCoverageSync } from './plugin-helpers/scan-plugin-platform';
+import {
+  scanPluginPlatform,
+  getCorePluginDirPath,
+  getCorePluginVersion,
+  isUnderScanCoverageSync,
+} from './plugin-helpers/scan-plugin-platform';
 import { verifyPlugin, verifyPluginSync } from './plugin-helpers/verify-plugin';
 import createNewPlugin from './plugin-helpers/create-new-plugin';
 import { AddPluginResult, AddPluginError } from './domain/add-plugin-result';
@@ -42,8 +47,10 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
 function isCoreMatching(pluginPlatform: PluginPlatform): boolean {
   try {
     const currentCorePluginDirPath = getCorePluginDirPath();
+    const currentCorePluginVersion = getCorePluginVersion();
     const platformCorePluginDirPath = pluginPlatform.plugins[constants.CORE][0].packageLocation;
-    return currentCorePluginDirPath === platformCorePluginDirPath;
+    const platformCorePluginVersion = pluginPlatform.plugins[constants.CORE][0].packageVersion;
+    return currentCorePluginDirPath === platformCorePluginDirPath && currentCorePluginVersion === platformCorePluginVersion;
   } catch {
     return false;
   }

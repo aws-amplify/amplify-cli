@@ -1,9 +1,12 @@
-export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 import * as path from 'path';
 import { Template } from 'cloudform-types';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
+
+export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
+export const TRANSFORM_BASE_VERSION = 4;
+export const TRANSFORM_CURRENT_VERSION = 5;
 
 export interface TransformMigrationConfig {
   V1?: {
@@ -13,36 +16,36 @@ export interface TransformMigrationConfig {
 
 // Sync Config
 export declare enum ConflictHandlerType {
-  OPTIMISTIC = "OPTIMISTIC_CONCURRENCY",
-  AUTOMERGE = "AUTOMERGE",
-  LAMBDA = "LAMBDA"
+  OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',
+  AUTOMERGE = 'AUTOMERGE',
+  LAMBDA = 'LAMBDA',
 }
 export type ConflictDectionType = 'VERSION' | 'NONE';
 export type SyncConfigOPTIMISTIC = {
   ConflictDetection: ConflictDectionType;
   ConflictHandler: ConflictHandlerType.OPTIMISTIC;
-}
+};
 export type SyncConfigSERVER = {
   ConflictDetection: ConflictDectionType;
   ConflictHandler: ConflictHandlerType.AUTOMERGE;
-}
+};
 export type SyncConfigLAMBDA = {
   ConflictDetection: ConflictDectionType;
   ConflictHandler: ConflictHandlerType.LAMBDA;
   LambdaConflictHandler: {
-    name: string,
-    region?: string,
-    lambdaArn?: any,
-  }
-}
+    name: string;
+    region?: string;
+    lambdaArn?: any;
+  };
+};
 export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
 
 export type ResolverConfig = {
   project: SyncConfig;
   models: {
     [key: string]: SyncConfig;
-  }
-}
+  };
+};
 /**
  * The transform config is specified in transform.conf.json within an Amplify
  * API project directory.
@@ -91,7 +94,7 @@ export interface TransformConfig {
    * Object which states info about a resolver's configuration
    * Such as sync configuration for appsync local support
    */
-  ResolverConfig?: ResolverConfig
+  ResolverConfig?: ResolverConfig;
 }
 /**
  * try to load transformer config from specified projectDir
@@ -99,7 +102,10 @@ export interface TransformConfig {
  *  */
 
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
-  let config = {};
+  // Initialize the config always with the latest version, other members are optional for now.
+  let config = {
+    Version: TRANSFORM_CURRENT_VERSION,
+  };
   try {
     const configPath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
     const configExists = await fs.exists(configPath);

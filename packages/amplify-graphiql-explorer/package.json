@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "0.23.0",
+  "version": "1.1.7",
   "private": true,
   "dependencies": {
     "add": "^2.0.6",
@@ -8,7 +8,7 @@
     "graphiql": "^0.13.2",
     "graphiql-code-exporter": "^2.0.5",
     "graphiql-explorer": "^0.4.3",
-    "graphql": "^14.4.2",
+    "graphql": "^14.5.8",
     "jsonwebtoken": "^8.5.1",
     "prop-types": "^15.7.2",
     "react": "16.8.6",
@@ -19,11 +19,10 @@
   },
   "devDependencies": {
     "@types/jest": "24.0.15",
-    "@types/node": "^8.10.51",
+    "@types/node": "^10.17.13",
     "@types/react-dom": "16.8.5",
     "cross-env": "^5.2.0",
-    "eslint": "^6.1.0",
-    "typescript": "^3.6.4"
+    "typescript": "~3.6.4"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -31,9 +30,6 @@
     "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts start",
     "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts build",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": {
     "production": [

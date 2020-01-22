@@ -1,5 +1,5 @@
+// eslint-disable-next-line
 exports.handler = function(event, context) {
-  //eslint-disable-line
   console.log('Received S3 event:', JSON.stringify(event, null, 2));
   // Get the object from the event and show its content type
   const bucket = event.Records[0].s3.bucket.name; //eslint-disable-line

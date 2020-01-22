@@ -12,7 +12,7 @@ export class InvalidTransformerError extends Error {
 }
 
 export class SchemaValidationError extends Error {
-  constructor(errors: GraphQLError[]) {
+  constructor(errors: Readonly<GraphQLError[]>) {
     super(`Schema Errors:\n\n${errors.join('\n')}`);
     Object.setPrototypeOf(this, SchemaValidationError.prototype);
     this.name = 'SchemaValidationError';

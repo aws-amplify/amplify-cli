@@ -4,7 +4,8 @@ const { readJsonFile } = require('./read-json-file');
 
 function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
+  const backendConfig = getExistingBackendConfig(backendConfigFilePath);
+
   if (!backendConfig[category]) {
     backendConfig[category] = {};
   }
@@ -18,7 +19,7 @@ function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
 
 function updateBackendConfigDependsOn(category, resourceName, attribute, value) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
+  const backendConfig = getExistingBackendConfig(backendConfigFilePath);
 
   if (!backendConfig[category]) {
     backendConfig[category] = {};
@@ -35,7 +36,7 @@ function updateBackendConfigDependsOn(category, resourceName, attribute, value) 
 
 function updateBackendConfigAfterResourceRemove(category, resourceName) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
+  const backendConfig = getExistingBackendConfig(backendConfigFilePath);
 
   if (backendConfig[category] && backendConfig[category][resourceName] !== undefined) {
     delete backendConfig[category][resourceName];
@@ -43,6 +44,14 @@ function updateBackendConfigAfterResourceRemove(category, resourceName) {
 
   const jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+}
+
+function getExistingBackendConfig(backendConfigFilePath) {
+  let backendConfig = {};
+  if (fs.existsSync(backendConfigFilePath)) {
+    backendConfig = readJsonFile(backendConfigFilePath);
+  }
+  return backendConfig;
 }
 
 module.exports = {

@@ -1,7 +1,6 @@
-import * as nexpect from 'nexpect';
-import { join } from 'path';
-
+import * as nexpect from '../utils/nexpect-modified';
 import { getCLIPath, isCI } from '../utils';
+
 const defaultSettings = {
   name: '\r',
   envName: 'integtest',
@@ -16,7 +15,7 @@ const defaultSettings = {
   profileName: '\r',
 };
 
-export default function initJSProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
+export function initJSProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     nexpect
@@ -209,7 +208,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }, verbo
       .wait('Please choose the profile you want to use')
       .sendline('\r')
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

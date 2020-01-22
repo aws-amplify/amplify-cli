@@ -2,6 +2,7 @@ const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
+const amplifyConfigHelper = require('./amplify-config-helper');
 
 const FILE_EXTENSION_MAP = {
   javascript: 'js',
@@ -16,9 +17,12 @@ const fileNames = ['queries', 'mutations', 'subscriptions'];
 
 function deleteAmplifyConfig(context) {
   const srcDirPath = getSrcDir(context);
+  // delete aws configuration and amplify configuration
   if (fs.existsSync(srcDirPath)) {
-    const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-    fs.removeSync(targetFilePath);
+    const amplifyConfigFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
+    const awsConfigFilePath = path.join(srcDirPath, constants.awsConfigFilename);
+    fs.removeSync(amplifyConfigFilePath);
+    fs.removeSync(awsConfigFilePath);
   }
 
   if (!fs.existsSync(path.join(srcDirPath, '.graphqlconfig.yml'))) return;
@@ -43,12 +47,21 @@ function getSrcDir(context) {
   return path.join(projectPath);
 }
 
-function createAmplifyConfig(context, amplifyResources) {
-  const srcDirPath = getSrcDir(context);
+function createAmplifyConfig(context) {
+  const { amplify } = context;
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const srcDirPath = path.join(projectPath);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-    const jsonString = JSON.stringify(amplifyResources, null, 4);
+    let amplifyConfig;
+    if (fs.existsSync(targetFilePath)) {
+      amplifyConfig = context.amplify.readJsonFile(targetFilePath);
+    }
+
+    amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig);
+
+    const jsonString = JSON.stringify(amplifyConfig, null, 4);
     fs.writeFileSync(targetFilePath, jsonString, 'utf8');
   }
 }
@@ -225,6 +238,16 @@ function getCognitoConfig(cognitoResources, projectRegion) {
         },
       },
     });
+  }
+
+  if (cognitoConfig.Auth && cognitoConfig.Auth.Default) {
+    cognitoConfig.Auth.Default.authenticationFlowType = cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH';
+  } else {
+    cognitoConfig.Auth = {
+      Default: {
+        authenticationFlowType: cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH',
+      },
+    };
   }
 
   return cognitoConfig;

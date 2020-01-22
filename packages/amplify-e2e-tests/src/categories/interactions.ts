@@ -1,11 +1,6 @@
 import * as nexpect from 'nexpect';
-import { join } from 'path';
-import * as fs from 'fs';
 
-import { getCLIPath, isCI, getEnvVars } from '../utils';
-const defaultSettings = {
-  projectName: 'CLI Interaction test',
-};
+import { getCLIPath, isCI } from '../utils';
 
 export function addSampleInteraction(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
@@ -20,8 +15,7 @@ export function addSampleInteraction(cwd: string, settings: any, verbose: boolea
       .wait("Please indicate if your use of this bot is subject to the Children's")
       .sendline('y')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

@@ -21,10 +21,12 @@ export function addCodegen(cwd: string, settings: any, verbose: boolean = !isCI(
         .wait('Do you want to generate code for your newly created GraphQL API')
         .sendline('\r');
     }
-    //.wait(`Generated GraphQL operations successfully and saved at`)
     run.run((err: Error) => {
-      if (!err) resolve();
-      else reject(err);
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
     });
   });
 }

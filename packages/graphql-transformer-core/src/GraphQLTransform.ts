@@ -22,7 +22,7 @@ import { Transformer } from './Transformer';
 import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
-import { TransformConfig, SyncConfig, SyncUtils } from './util';
+import { TransformConfig, SyncUtils } from './util';
 import { SyncResourceIDs } from 'graphql-transformer-common';
 
 function isFunction(obj: any) {
@@ -239,7 +239,7 @@ export class GraphQLTransform {
     }
     const errors = validateModelSchema({ kind: Kind.DOCUMENT, definitions: allModelDefinitions });
     if (errors && errors.length) {
-      throw new SchemaValidationError(errors.slice(0));
+      throw new SchemaValidationError(errors);
     }
 
     // check if the project is sync enabled
@@ -247,6 +247,9 @@ export class GraphQLTransform {
       this.createResourcesForSyncEnabledProject(context);
       context.setResolverConfig(this.transformConfig.ResolverConfig);
     }
+
+    // Transformer version is populated, store it in the transformer context, to make it accessible to transformers
+    context.setTransformerVersion(this.transformConfig.Version!);
 
     for (const transformer of this.transformers) {
       if (isFunction(transformer.before)) {
@@ -312,8 +315,8 @@ export class GraphQLTransform {
 
   private createResourcesForSyncEnabledProject(context: TransformerContext) {
     const syncResources = {
-      [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable()
-    }
+      [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable(),
+    };
     context.mergeResources(syncResources);
   }
 

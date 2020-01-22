@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "5.18.0",
+  "version": "6.12.0",
   "description": "End to end functional tests for appsync supported transformers.",
   "main": "lib/index.js",
   "private": true,
@@ -19,46 +19,47 @@
   "dependencies": {
     "amazon-cognito-identity-js": "^3.0.7",
     "axios": "^0.19.0",
-    "cloudform": "^3.5.0",
-    "graphql": "^0.13.2",
-    "graphql-mapping-template": "3.25.0",
-    "graphql-transformer-common": "3.32.0",
-    "graphql-transformer-core": "5.18.0",
+    "cloudform": "^4.1.0",
+    "graphql": "^14.5.8",
+    "graphql-mapping-template": "4.12.0",
+    "graphql-transformer-common": "4.12.0",
+    "graphql-transformer-core": "6.12.0",
     "moment": "^2.24.0"
   },
   "devDependencies": {
-    "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.1",
-    "@types/node": "^8.10.51",
-    "aws-amplify": "^1.1.36",
+    "@types/node": "^10.17.13",
+    "aws-amplify": "^2.1.0",
     "aws-appsync": "^1.8.1",
-    "aws-sdk": "^2.510.0",
-    "graphql-auth-transformer": "5.18.0",
-    "graphql-connection-transformer": "3.29.0",
-    "graphql-dynamodb-transformer": "5.18.0",
-    "graphql-elasticsearch-transformer": "3.30.0",
-    "graphql-function-transformer": "1.25.0",
-    "graphql-key-transformer": "1.25.0",
+    "aws-sdk": "^2.580.0",
+    "graphql-auth-transformer": "6.12.0",
+    "graphql-connection-transformer": "4.12.0",
+    "graphql-dynamodb-transformer": "6.12.0",
+    "graphql-elasticsearch-transformer": "4.2.0",
+    "graphql-function-transformer": "2.1.7",
+    "graphql-key-transformer": "2.12.0",
+    "graphql-predictions-transformer": "2.1.7",
     "graphql-tag": "^2.10.1",
-    "graphql-versioned-transformer": "3.28.0",
+    "graphql-versioned-transformer": "4.12.0",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^23.1.0",
     "jest-junit": "^8.0.0",
     "node-fetch": "^2.6.0",
     "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
-    "typescript": "^3.6.4",
+    "typescript": "~3.6.4",
     "ws": "4.0.0"
   },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "testEnvironment": "node",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
-      "!src/__tests__/**"
+      "!src/__tests__/**",
+      "!**/*.d.ts"
     ],
     "reporters": [
       "default",
@@ -77,7 +78,10 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "window": {}
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

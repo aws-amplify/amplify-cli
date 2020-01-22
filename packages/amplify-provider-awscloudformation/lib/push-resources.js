@@ -15,6 +15,7 @@ const { downloadAPIModels } = require('./download-api-models');
 const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
+const amplifyServiceManager = require('./amplify-service-manager');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -49,6 +50,7 @@ async function run(context, resourceDefinition) {
     }
 
     await postPushGraphQLCodegen(context);
+    await amplifyServiceManager.postPushCheck(context);
 
     if (resources.length > 0) {
       await context.amplify.updateamplifyMetaAfterPush(resources);
@@ -76,6 +78,7 @@ async function run(context, resourceDefinition) {
 
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
+    await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
     spinner.succeed('All resources are updated in the cloud');
 
@@ -453,4 +456,5 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
 module.exports = {
   run,
   updateStackForAPIMigration,
+  storeCurrentCloudBackend,
 };

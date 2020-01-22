@@ -50,6 +50,7 @@ function getGitIgnoreAppendString() {
     'node_modules/',
     'aws-exports.js',
     'awsconfiguration.json',
+    'amplifyconfiguration.json',
     'amplify-gradle-config.json',
     'amplifyxc.config',
   ];

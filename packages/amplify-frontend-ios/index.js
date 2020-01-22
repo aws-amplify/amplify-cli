@@ -3,7 +3,7 @@ const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
 const configManager = require('./lib/configuration-manager');
 const constants = require('./lib/constants');
-const { createAWSConfig, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
+const { createAmplifyConfig, createAWSConfig, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
 
 const pluginName = 'ios';
 
@@ -22,7 +22,7 @@ function onInitSuccessful(context) {
 function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
   const newOutputsForFrontend = amplifyResources.outputsForFrontend;
   const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
-  // createAmplifyConfig(context, outputsByCategory);
+  createAmplifyConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
   return createAWSConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
 }
 function configure(context) {

@@ -1,18 +1,10 @@
-import {
-  Transformer,
-  gql,
-  TransformerContext,
-  getDirectiveArguments,
-  TransformerContractError,
-  InvalidDirectiveError,
-} from 'graphql-transformer-core';
+import { Transformer, gql, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
 import {
   obj,
   str,
   ref,
   printBlock,
   compoundExpression,
-  newline,
   raw,
   qref,
   set,
@@ -59,9 +51,8 @@ import {
   InputValueDefinitionNode,
   EnumTypeDefinitionNode,
 } from 'graphql';
-import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types';
+import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
-import { fieldsConflictMessage } from 'graphql/validation/rules/OverlappingFieldsCanBeMerged';
 
 interface KeyArguments {
   name?: string;
@@ -71,10 +62,12 @@ interface KeyArguments {
 
 export class KeyTransformer extends Transformer {
   constructor() {
+    // TODO remove once prettier is upgraded
+    // prettier-ignore
     super(
       'KeyTransformer',
       gql`
-        directive @key(name: String, fields: [String!]!, queryField: String) on OBJECT
+        directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
       `
     );
   }
@@ -636,7 +629,10 @@ export class KeyTransformer extends Transformer {
 function keySchema(args: KeyArguments) {
   if (args.fields.length > 1) {
     const condensedSortKey = condenseRangeKey(args.fields.slice(1));
-    return [{ AttributeName: args.fields[0], KeyType: 'HASH' }, { AttributeName: condensedSortKey, KeyType: 'RANGE' }];
+    return [
+      { AttributeName: args.fields[0], KeyType: 'HASH' },
+      { AttributeName: condensedSortKey, KeyType: 'RANGE' },
+    ];
   } else {
     return [{ AttributeName: args.fields[0], KeyType: 'HASH' }];
   }

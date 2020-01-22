@@ -32,6 +32,7 @@ export class AmplifyToolkit {
   private _pathManager: any;
   private _pressEnterToContinue: any;
   private _pushResources: any;
+  private _storeCurrentCloudBackend: any;
   private _readJsonFile: any;
   private _removeEnvFromCloud: any;
   private _removeResource: any;
@@ -66,6 +67,7 @@ export class AmplifyToolkit {
   private _getTriggerEnvVariables: any;
   private _getTriggerEnvInputs: any;
   private _getUserPoolGroupList: any;
+  private _forceRemoveResource: any;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -204,6 +206,11 @@ export class AmplifyToolkit {
   get pushResources(): any {
     this._pushResources = this._pushResources || require(path.join(this._amplifyHelpersDirPath, 'push-resources')).pushResources;
     return this._pushResources;
+  }
+  get storeCurrentCloudBackend(): any {
+    this._storeCurrentCloudBackend =
+      this._storeCurrentCloudBackend || require(path.join(this._amplifyHelpersDirPath, 'push-resources')).storeCurrentCloudBackend;
+    return this._storeCurrentCloudBackend;
   }
   get readJsonFile(): any {
     this._readJsonFile = this._readJsonFile || require(path.join(this._amplifyHelpersDirPath, 'read-json-file')).readJsonFile;
@@ -369,8 +376,14 @@ export class AmplifyToolkit {
     return this._getTriggerEnvInputs;
   }
   get getUserPoolGroupList(): any {
-    this._getUserPoolGroupList = this._getUserPoolGroupList ||
-            require(path.join(this._amplifyHelpersDirPath, 'get-userpoolgroup-list')).getUserPoolGroupList;
+    this._getUserPoolGroupList =
+      this._getUserPoolGroupList || require(path.join(this._amplifyHelpersDirPath, 'get-userpoolgroup-list')).getUserPoolGroupList;
     return this._getUserPoolGroupList;
+  }
+
+  get forceRemoveResource(): any {
+    this._forceRemoveResource =
+      this._forceRemoveResource || require(path.join(this._amplifyHelpersDirPath, 'remove-resource')).forceRemoveResource;
+    return this._forceRemoveResource;
   }
 }

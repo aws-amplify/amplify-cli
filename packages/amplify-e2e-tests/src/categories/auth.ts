@@ -1,6 +1,4 @@
-import * as nexpect from 'nexpect';
-import { join } from 'path';
-import * as fs from 'fs';
+import * as nexpect from '../utils/nexpect-modified';
 
 import { getCLIPath, isCI, getEnvVars } from '../utils';
 
@@ -15,8 +13,7 @@ export function addAuthWithDefault(cwd: string, settings: any, verbose: boolean 
       .wait('Do you want to configure advanced settings?')
       .sendline('\r')
       .sendEof()
-      // tslint:disable-next-line
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -48,7 +45,7 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any, verbose: boo
       .wait('Do you want to edit your add-to-group function now?')
       .send('n')
       .send('\r')
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -100,7 +97,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: bo
       .wait('Do you want to edit the schema now?')
       .send('n')
       .send('\r')
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -179,7 +176,7 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any, verbose: bo
       .wait('Do you want to edit your custom function now?')
       .send('n')
       .send('\r')
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -233,7 +230,7 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any, verbo
       .send('jjj')
       .send(' ')
       .send('\r')
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -271,7 +268,61 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose:
       .wait('Do you want to edit your captcha-verify function now?')
       .send('n')
       .send('\r')
-      .run(function(err: Error) {
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
+      .wait('What do you want to do')
+      .send('j')
+      .send('\r')
+      .wait('Select the authentication/authorization services')
+      .send('\r')
+      .wait('Allow unauthenticated logins?')
+      .send('\r')
+      .wait('Do you want to enable 3rd party authentication providers')
+      .send('j')
+      .send('\r')
+      .wait('Do you want to add User Pool Groups?')
+      .send('j')
+      .send('\r')
+      .wait('Do you want to add an admin queries API?')
+      .send('j')
+      .send('\r')
+      .wait('Multifactor authentication (MFA) user login options')
+      .send('\r')
+      .wait('Email based user registration/forgot password')
+      .send('\r')
+      .wait('Please specify an email verification subject:')
+      .send('\r')
+      .wait('Please specify an email verification message')
+      .send('\r')
+      .wait('Do you want to override the default password policy for this')
+      .send('\r')
+      .wait('Specify the app')
+      .send('\r')
+      .wait('Do you want to specify the user attributes')
+      .send('\r')
+      .wait('Do you want to enable any of the following capabilities')
+      .send('a')
+      .send('a')
+      .send('\r')
+      .wait('Do you want to use an OAuth')
+      .send('j')
+      .send('\r')
+      .wait('Do you want to configure Lambda Triggers for Cognito')
+      .send('n')
+      .send('\r')
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -353,7 +404,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
       .send(AMAZON_APP_SECRET)
       .send('\r')
       .sendEof()
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -548,9 +599,8 @@ export function addAuthWithMaxOptions(cwd: string, settings: any, verbose: boole
       .send('\r')
       .wait('Do you want to edit your custom function now')
       .send('n')
-      .send('\r')
       .sendEof()
-      .run(function(err: Error) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
