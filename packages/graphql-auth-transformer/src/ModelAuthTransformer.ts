@@ -22,6 +22,7 @@ import {
   valueFromASTUntyped,
   NamedTypeNode,
   InputObjectTypeDefinitionNode,
+  TypeNode,
 } from 'graphql';
 import {
   ResourceConstants,
@@ -1851,7 +1852,7 @@ All @auth directives used on field definitions are performed when the field is r
   private addSubscriptionOwnerArgument(
     ctx: TransformerContext,
     resolver: Resolver,
-    currentFields: any,
+    currentFields: Record<string, TypeNode>,
     ownerRules: AuthRule[],
     makeNonNull: boolean = false
   ) {
