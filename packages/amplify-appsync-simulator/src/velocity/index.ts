@@ -48,15 +48,20 @@ export class VelocityTemplate {
     ctxValues: AppSyncVTLRenderContext,
     requestContext: AppSyncSimulatorRequestContext,
     info?: GraphQLResolveInfo
-  ): { result; stash; errors } {
+  ): { result; stash; errors; isReturn: boolean } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
 
     const templateResult = this.compiler.render(context);
+    const isReturn = this.compiler._state.return; // If the template has #return, then set the value
     const stash = context.ctx.stash.toJSON();
     try {
       const result = JSON.parse(templateResult);
-      return { result, stash, errors: context.util.errors };
+      return { result, stash, errors: context.util.errors, isReturn };
+
     } catch (e) {
+      if (isReturn) { // # when template has #return, if the value is non JSON, we pass that along
+        return { result: templateResult, stash, errors: context.util.errors, isReturn };
+      }
       const errorMessage = `Unable to convert ${templateResult} to class com.amazonaws.deepdish.transform.model.lambda.LambdaVersionedConfig.`;
       throw new TemplateSentError(errorMessage, 'MappingTemplate', null, null, info);
     }

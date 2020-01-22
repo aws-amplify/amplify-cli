@@ -32,6 +32,12 @@ export class AmplifySimulatorFunction {
     const requestTemplateResult = await requestMappingTemplate.render({ source, arguments: args, stash, prevResult }, context, info);
     context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateResult.errors];
 
+    if (requestTemplateResult.isReturn) { // #return was used in template, bail and don't run data invoker
+      return {
+        result: requestTemplateResult.result,
+        stash: requestTemplateResult.stash
+      };
+    }
     try {
       result = await dataLoader.load(requestTemplateResult.result);
     } catch (e) {
