@@ -68,11 +68,13 @@
     "lodash": "^4.17.15",
     "open": "^7.0.0",
     "ora": "^4.0.3",
+    "parse-json": "^5.0.0",
     "promise-sequential": "^1.1.1",
     "which": "^2.0.2"
   },
   "devDependencies": {
-    "@types/node": "^10.17.13"
+    "@types/node": "^10.17.13",
+    "@types/parse-json": "^4.0.0"
   },
   "jest": {
     "transform": {
