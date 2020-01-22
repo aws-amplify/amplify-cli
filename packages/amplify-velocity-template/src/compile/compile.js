@@ -96,8 +96,16 @@ module.exports = function(Velocity, utils) {
 
             case 'return':
               this._state.stop = true;
+              this._state.return = true;
               if (ast.value) {
-                str += this.format(this.getExpression(ast.value, true));
+                const result = this.getExpression(ast.value, true);
+                try {
+                  str = JSON.stringify(result);
+                } catch(e) {
+                  str = result;
+                }
+              } else {
+                str = null;
               }
               break;
             default:

@@ -14,7 +14,7 @@ function Velocity(asts, config) {
     },
     config
   );
-  this._state = { stop: false, break: false };
+  this._state = { stop: false, break: false, return: false };
   this.init();
 }
 

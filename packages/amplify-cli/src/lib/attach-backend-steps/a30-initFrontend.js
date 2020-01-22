@@ -3,24 +3,33 @@ const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-fro
 const { normalizeFrontendHandlerName } = require('../input-params-manager');
 
 async function run(context) {
-  const frontendPlugins = getFrontendPlugins(context);
-  let suitableFrontend;
-  let fitToHandleScore = -1;
+  if (
+    context.exeInfo.inputParams &&
+    context.exeInfo.inputParams.yes &&
+    context.exeInfo.existingProjectConfig &&
+    context.exeInfo.existingProjectConfig.frontend
+  ) {
+    context.exeInfo.projectConfig = context.exeInfo.existingProjectConfig;
+  } else {
+    const frontendPlugins = getFrontendPlugins(context);
+    let suitableFrontend;
+    let fitToHandleScore = -1;
 
-  Object.keys(frontendPlugins).forEach(key => {
-    const { scanProject } = require(frontendPlugins[key]);
-    const newScore = scanProject(context.exeInfo.localEnvInfo.projectPath);
-    if (newScore > fitToHandleScore) {
-      fitToHandleScore = newScore;
-      suitableFrontend = key;
-    }
-  });
+    Object.keys(frontendPlugins).forEach(key => {
+      const { scanProject } = require(frontendPlugins[key]);
+      const newScore = scanProject(context.exeInfo.localEnvInfo.projectPath);
+      if (newScore > fitToHandleScore) {
+        fitToHandleScore = newScore;
+        suitableFrontend = key;
+      }
+    });
 
-  const frontend = await getFrontendHandler(context, frontendPlugins, suitableFrontend);
+    const frontend = await getFrontendHandler(context, frontendPlugins, suitableFrontend);
 
-  context.exeInfo.projectConfig.frontend = frontend;
-  const frontendModule = require(frontendPlugins[frontend]);
-  await frontendModule.init(context);
+    context.exeInfo.projectConfig.frontend = frontend;
+    const frontendModule = require(frontendPlugins[frontend]);
+    await frontendModule.init(context);
+  }
 
   return context;
 }

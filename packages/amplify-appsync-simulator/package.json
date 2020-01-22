@@ -35,7 +35,6 @@
     "graphql-type-json": "^0.3.0",
     "ip": "^1.1.5",
     "js-string-escape": "^1.0.1",
-    "json5": "^2.1.0",
     "jwt-decode": "^2.2.0",
     "libphonenumber-js": "^1.7.18",
     "lodash": "^4.17.15",
@@ -65,7 +64,6 @@
     "aws-sdk": "^2.580.0",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.18.0",
     "typescript": "~3.6.4"
   },
   "jest": {

@@ -22,7 +22,6 @@
     "@types/node": "^10.17.13",
     "@types/react-dom": "16.8.5",
     "cross-env": "^5.2.0",
-    "eslint": "^6.1.0",
     "typescript": "~3.6.4"
   },
   "author": "Amazon Web Services",
@@ -31,9 +30,6 @@
     "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts start",
     "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts build",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": {
     "production": [
