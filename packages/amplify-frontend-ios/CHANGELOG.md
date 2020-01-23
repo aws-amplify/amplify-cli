@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@1.32.0...amplify-frontend-ios@2.13.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+* point to correct file to delete for amplify config ([#3116](https://github.com/aws-amplify/amplify-cli/issues/3116)) ([61c0769](https://github.com/aws-amplify/amplify-cli/commit/61c0769cb1d40faa76ff3de8e82f2f58199b4a0f)), closes [#2997](https://github.com/aws-amplify/amplify-cli/issues/2997)
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+
+
+
+
+
 # [2.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@1.32.0...amplify-frontend-ios@2.12.0) (2020-01-09)
 
 

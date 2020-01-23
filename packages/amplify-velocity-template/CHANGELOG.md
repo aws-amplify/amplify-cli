@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@0.22.0...amplify-velocity-template@1.1.8) (2020-01-23)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** support early return from resolvers ([#2497](https://github.com/aws-amplify/amplify-cli/issues/2497)) ([0cff7ed](https://github.com/aws-amplify/amplify-cli/commit/0cff7ed09bfaf797baad2acd1c0a6d013cb717e8)), closes [#2427](https://github.com/aws-amplify/amplify-cli/issues/2427)
+
+
+
+
+
 ## [1.1.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@0.22.0...amplify-velocity-template@1.1.7) (2020-01-09)
 
 **Note:** Version bump only for package amplify-velocity-template

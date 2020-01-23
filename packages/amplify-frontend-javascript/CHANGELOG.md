@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.30.0...amplify-frontend-javascript@2.13.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* point to correct file to delete for amplify config ([#3116](https://github.com/aws-amplify/amplify-cli/issues/3116)) ([61c0769](https://github.com/aws-amplify/amplify-cli/commit/61c0769cb1d40faa76ff3de8e82f2f58199b4a0f)), closes [#2997](https://github.com/aws-amplify/amplify-cli/issues/2997)
+
+
+### Features
+
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+
+
+
+
+
 # [2.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.30.0...amplify-frontend-javascript@2.12.0) (2020-01-09)
 
 

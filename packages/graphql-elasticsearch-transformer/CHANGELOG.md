@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.30.0...graphql-elasticsearch-transformer@4.3.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+* **graphql-elasticsearch-transformer:** allow range on searches ([#3129](https://github.com/aws-amplify/amplify-cli/issues/3129)) ([f81ea32](https://github.com/aws-amplify/amplify-cli/commit/f81ea329f47194fbc19eb966cacee9877e04a389)), closes [#2775](https://github.com/aws-amplify/amplify-cli/issues/2775)
+* **graphql-elasticsearch-transformer:** es logging fix ([#2983](https://github.com/aws-amplify/amplify-cli/issues/2983)) ([6a6be16](https://github.com/aws-amplify/amplify-cli/commit/6a6be16493aaceeef57e9dfdde7faddfac061a26))
+* **graphql-elasticsearch-transformer:** fixed KeyError for unset DEBUG ([#2963](https://github.com/aws-amplify/amplify-cli/issues/2963)) ([ad3e23e](https://github.com/aws-amplify/amplify-cli/commit/ad3e23e5c1a88c1385529f7a6685305cb59c840d))
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** support sets in es fn ([#2986](https://github.com/aws-amplify/amplify-cli/issues/2986)) ([16419f4](https://github.com/aws-amplify/amplify-cli/commit/16419f4d9e1733ed0ada064f9ced604083ee4703)), closes [#2860](https://github.com/aws-amplify/amplify-cli/issues/2860)
+
+
+
+
+
 # [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.30.0...graphql-elasticsearch-transformer@4.2.0) (2020-01-09)
 
 
