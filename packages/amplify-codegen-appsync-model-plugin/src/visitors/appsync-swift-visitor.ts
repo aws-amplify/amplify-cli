@@ -1,9 +1,10 @@
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { camelCase, lowerCaseFirst } from 'change-case';
-import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
-import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
-import { CodeGenConnectionType } from '../utils/process-connections';
 import { schemaTypeMap } from '../configs/swift-config';
+import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
+import { CodeGenConnectionType } from '../utils/process-connections';
+import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
+
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
   protected imports: string[] = ['import Amplify', 'import Foundation'];
@@ -47,10 +48,10 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
           name: this.getFieldName(field),
           type: this.getNativeType(field),
           value: field.name === 'id' ? 'UUID().uuidString' : undefined,
-          flags: { optional: field.isNullable, isList: field.isList },
+          flags: { optional: field.isNullable, isList: field.isList, isEnum: this.isEnumType(field) },
         })),
         'public',
-        {}
+        {},
       );
       result.push(structBlock.string);
     });
@@ -132,7 +133,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       `defineSchema ${indentMultiline(closure).trim()}`,
       'public',
       { static: true, variable: false },
-      ' MARK: - ModelSchema'
+      ' MARK: - ModelSchema',
     );
   }
 
@@ -159,7 +160,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       body,
       [{ type: 'ModelRegistry.Type', name: 'registry', flags: {}, value: undefined }],
       'public',
-      {}
+      {},
     );
     result.push(classDeclaration.string);
 
@@ -193,12 +194,12 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     if (connectionInfo) {
       if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
         return `.hasMany(${name}, is: ${isRequired}, ofType: ${typeName}, associatedWith: ${this.getModelName(
-          connectionInfo.connectedModel
+          connectionInfo.connectedModel,
         )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
       }
       if (connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
         return `.hasOne(${name}, is: ${isRequired}, ofType: ${typeName}, associatedWith: ${this.getModelName(
-          connectionInfo.connectedModel
+          connectionInfo.connectedModel,
         )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
       }
       if (connectionInfo.kind === CodeGenConnectionType.BELONGS_TO) {

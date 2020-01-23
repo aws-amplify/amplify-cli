@@ -126,7 +126,7 @@ export class SwiftDeclarationBlock {
     flags: PropertyFlags = {},
     comment?: string,
     getter?: string,
-    setter?: string
+    setter?: string,
   ): SwiftDeclarationBlock {
     this._properties.push({
       name,
@@ -166,7 +166,7 @@ export class SwiftDeclarationBlock {
     args: MethodArgument[] = [],
     access: Access = 'public',
     flags: MethodFlags = {},
-    comment: string = ''
+    comment: string = '',
   ): SwiftDeclarationBlock {
     this._methods.push({
       name,
@@ -197,11 +197,11 @@ export class SwiftDeclarationBlock {
         '{',
       ],
       false,
-      ' '
+      ' ',
     );
     const enumValues = this.mergeSections(
       Object.entries(this._enumValues).map(([name, val]) => ['case', name, ...(name !== val ? ['=', `"${val}"`] : [])].join(' ')),
-      false
+      false,
     );
     const declarationFoot = '}';
     return this.mergeSections([declarationHead, indentMultiline(enumValues), declarationFoot], false);
@@ -224,12 +224,12 @@ export class SwiftDeclarationBlock {
             '{',
           ],
           false,
-          ' '
+          ' ',
         );
         const methodFooter = '}';
         return this.mergeSections([method.comment, methodHeader, indentMultiline(method.implementation), methodFooter], false);
       }),
-      false
+      false,
     );
 
     const declarationHead = this.mergeSections(
@@ -241,7 +241,7 @@ export class SwiftDeclarationBlock {
         '{',
       ],
       false,
-      ' '
+      ' ',
     );
     const declarationBody = indentMultiline(this.mergeSections([...this._block, properties, methods]));
     const declarationFoot = '}';
@@ -275,7 +275,7 @@ export class SwiftDeclarationBlock {
     if (setterStr) {
       getterSetterStr = this.mergeSections(
         ['{', indentMultiline(`set: ${setterStr}`), getterStr ? indentMultiline(`get: ${getterStr}`) : '', '}'],
-        false
+        false,
       );
     } else if (getterStr) {
       getterSetterStr = indentMultiline(getterStr);
@@ -305,6 +305,6 @@ export class SwiftDeclarationBlock {
     if (primitiveTypes.includes(typeDeclaration.type) || typeDeclaration.flags.isEnum) {
       return `[${typeDeclaration.type}]`;
     }
-    return `List<${typeDeclaration.name}`;
+    return `List<${typeDeclaration.type}>`;
   }
 }
