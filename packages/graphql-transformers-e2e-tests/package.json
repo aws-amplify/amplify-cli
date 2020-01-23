@@ -26,11 +26,11 @@
     "moment": "^2.24.0"
   },
   "devDependencies": {
-    "@aws-amplify/core": "^2.2.2",
+    "@aws-amplify/core": "^2.1.0",
     "@types/jest": "23.1.1",
     "@types/node": "^10.17.13",
     "aws-amplify": "^2.2.2",
-    "aws-appsync": "^3.0.2",
+    "aws-appsync": "^1.8.1",
     "aws-sdk": "^2.608.0",
     "graphql-auth-transformer": "6.13.0",
     "graphql-connection-transformer": "4.13.0",

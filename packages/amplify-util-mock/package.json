@@ -26,7 +26,7 @@
     "@types/jest": "^24.0.16",
     "@types/lodash": "^4.14.149",
     "@types/node": "^10.17.13",
-    "aws-appsync": "^3.0.2",
+    "aws-appsync": "^1.8.1",
     "aws-sdk": "^2.608.0",
     "axios": "^0.19.2",
     "graphql-auth-transformer": "6.13.0",
