@@ -111,7 +111,7 @@ export class VelocityTemplate {
       error,
     };
 
-    if (prevResult) {
+    if (typeof prevResult !== 'undefined') {
       vtlContext['prev'] = convertToJavaTypes({
         result: prevResult,
       });
