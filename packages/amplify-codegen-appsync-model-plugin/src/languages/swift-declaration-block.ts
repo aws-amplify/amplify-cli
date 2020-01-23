@@ -1,6 +1,7 @@
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { NameNode, StringValueNode } from 'graphql';
 
+const primitiveTypes = ['String', 'Int', 'Double', 'Bool', 'Date'];
 function isStringValueNode(node: any): node is StringValueNode {
   return node && typeof node === 'object' && node.kind === 'StringValue';
 }
@@ -34,6 +35,7 @@ export type Access = 'private' | 'public' | 'DEFAULT';
 export type VariableFlags = {
   isList?: boolean;
   variable?: boolean;
+  isEnum?: boolean;
 };
 export type StructFlags = VariableFlags & { optional?: boolean; static?: boolean };
 export type PropertyFlags = StructFlags;
@@ -124,7 +126,7 @@ export class SwiftDeclarationBlock {
     flags: PropertyFlags = {},
     comment?: string,
     getter?: string,
-    setter?: string
+    setter?: string,
   ): SwiftDeclarationBlock {
     this._properties.push({
       name,
@@ -164,7 +166,7 @@ export class SwiftDeclarationBlock {
     args: MethodArgument[] = [],
     access: Access = 'public',
     flags: MethodFlags = {},
-    comment: string = ''
+    comment: string = '',
   ): SwiftDeclarationBlock {
     this._methods.push({
       name,
@@ -195,11 +197,11 @@ export class SwiftDeclarationBlock {
         '{',
       ],
       false,
-      ' '
+      ' ',
     );
     const enumValues = this.mergeSections(
       Object.entries(this._enumValues).map(([name, val]) => ['case', name, ...(name !== val ? ['=', `"${val}"`] : [])].join(' ')),
-      false
+      false,
     );
     const declarationFoot = '}';
     return this.mergeSections([declarationHead, indentMultiline(enumValues), declarationFoot], false);
@@ -222,12 +224,12 @@ export class SwiftDeclarationBlock {
             '{',
           ],
           false,
-          ' '
+          ' ',
         );
         const methodFooter = '}';
         return this.mergeSections([method.comment, methodHeader, indentMultiline(method.implementation), methodFooter], false);
       }),
-      false
+      false,
     );
 
     const declarationHead = this.mergeSections(
@@ -239,7 +241,7 @@ export class SwiftDeclarationBlock {
         '{',
       ],
       false,
-      ' '
+      ' ',
     );
     const declarationBody = indentMultiline(this.mergeSections([...this._block, properties, methods]));
     const declarationFoot = '}';
@@ -249,7 +251,7 @@ export class SwiftDeclarationBlock {
   private generateArgsStr(args: MethodArgument[]): string {
     const res: string[] = args.reduce((acc: string[], arg) => {
       const val: string | null = arg.value ? arg.value : arg.flags.isList ? '[]' : arg.flags.optional ? 'nil' : null;
-      const type = arg.flags.isList ? `List<${arg.type}>` : arg.type;
+      const type = arg.flags.isList ? this.getListType(arg) : arg.type;
       acc.push([arg.name, ': ', type, arg.flags.optional ? '?' : '', val ? ` = ${val}` : ''].join(''));
       return acc;
     }, []);
@@ -258,7 +260,7 @@ export class SwiftDeclarationBlock {
   }
 
   private generatePropertiesStr(prop: StructProperty): string {
-    const propertyTypeName = prop.flags.isList ? `List<${prop.type}>` : prop.type;
+    const propertyTypeName = prop.flags.isList ? this.getListType(prop) : prop.type;
     const propertyType = propertyTypeName ? `: ${propertyTypeName}${prop.flags.optional ? '?' : ''}` : '';
     let resultArr: string[] = [
       prop.access,
@@ -273,7 +275,7 @@ export class SwiftDeclarationBlock {
     if (setterStr) {
       getterSetterStr = this.mergeSections(
         ['{', indentMultiline(`set: ${setterStr}`), getterStr ? indentMultiline(`get: ${getterStr}`) : '', '}'],
-        false
+        false,
       );
     } else if (getterStr) {
       getterSetterStr = indentMultiline(getterStr);
@@ -297,5 +299,12 @@ export class SwiftDeclarationBlock {
       .map(section => (insertNewLine ? `${section}\n` : section))
       .join(joinStr)
       .trim();
+  }
+
+  private getListType(typeDeclaration: VariableDeclaration): string {
+    if (primitiveTypes.includes(typeDeclaration.type) || typeDeclaration.flags.isEnum) {
+      return `[${typeDeclaration.type}]`;
+    }
+    return `List<${typeDeclaration.name}`;
   }
 }

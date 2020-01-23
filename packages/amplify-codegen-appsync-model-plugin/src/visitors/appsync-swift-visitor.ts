@@ -5,7 +5,6 @@ import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { schemaTypeMap } from '../configs/swift-config';
-import dedent from 'ts-dedent';
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
   protected imports: string[] = ['import Amplify', 'import Foundation'];
@@ -37,6 +36,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
           optional: !this.isFieldRequired(field),
           isList: field.isList,
           variable: isVariable,
+          isEnum: this.isEnumType(field),
         });
       });
       const initImpl: string = this.getInitBody(obj.fields);

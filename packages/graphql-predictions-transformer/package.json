@@ -1,6 +1,6 @@
 {
   "name": "graphql-predictions-transformer",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "description": "Implements the @predictions directive.",
   "main": "lib/index.js",
   "author": "Amazon Web Services",
@@ -17,9 +17,9 @@
   "dependencies": {
     "cloudform-types": "^4.1.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.12.0",
-    "graphql-transformer-common": "4.12.0",
-    "graphql-transformer-core": "6.12.0"
+    "graphql-mapping-template": "4.13.0",
+    "graphql-transformer-common": "4.13.0",
+    "graphql-transformer-core": "6.13.0"
   },
   "devDependencies": {
     "@types/jest": "23.1.1",

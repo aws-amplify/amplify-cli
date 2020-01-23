@@ -41,11 +41,11 @@ async function init(amplifyServiceParams) {
           appId: inputAmplifyAppId,
         })
         .promise();
-      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}}`);
+      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
       context.print.error(
-        `Amplify AppID: ${inputAmplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`
+        `Amplify AppID: ${inputAmplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       );
       context.print.info(e);
       throw e;
@@ -336,11 +336,11 @@ function displayAppIdSelectionLearnMore(context) {
   // this should rarely happen
   context.print.info('');
   context.print.green(
-    'The AWS Amplify Console stores information on your backend environment in the cloud to facilitate collaboration workflows for your team.'
+    'The AWS Amplify Console stores information on your backend environment in the cloud to facilitate collaboration workflows for your team.',
   );
   context.print.green('Select an existing AWS Amplify Console app to associate this backend environment with the app.');
   context.print.green(
-    'Select None will lead to the creation of a new AWS Amplify Service App that this backend environment will be associated with.'
+    'Select None will lead to the creation of a new AWS Amplify Service App that this backend environment will be associated with.',
   );
   context.print.info('');
 }

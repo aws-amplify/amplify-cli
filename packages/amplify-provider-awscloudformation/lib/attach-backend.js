@@ -95,11 +95,11 @@ async function getAmplifyApp(context, amplifyClient) {
           appId: inputAmplifyAppId,
         })
         .promise();
-      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}}`);
+      context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       return getAppResult.app;
     } catch (e) {
       context.print.error(
-        `Amplify AppID: ${inputAmplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`
+        `Amplify AppID: ${inputAmplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       );
       context.print.info(e);
       throw e;
