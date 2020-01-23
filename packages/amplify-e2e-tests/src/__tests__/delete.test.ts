@@ -13,7 +13,6 @@ import {
 import { addEnvironment } from '../environment/add-env';
 import { addApiWithoutSchema } from '../categories/api';
 import { addCodegen } from '../codegen/add';
-import * as path from 'path';
 import * as fs from 'fs-extra';
 
 describe('amplify delete', () => {
@@ -52,13 +51,13 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   await addApiWithoutSchema(projRoot);
   await addCodegen(projRoot, settings);
   const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
-  await expect(await bucketExists(deploymentBucketName1)).toBe(true);
-  await expect(await bucketExists(deploymentBucketName2)).toBe(true);
+  expect(await bucketExists(deploymentBucketName1)).toBe(true);
+  expect(await bucketExists(deploymentBucketName2)).toBe(true);
   await deleteProject(projRoot, true);
-  await expect(await bucketExists(deploymentBucketName1)).toBe(false);
-  await expect(await bucketExists(deploymentBucketName2)).toBe(false);
-  await expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
-  await expect(UnauthRoleName).not.toBeIAMRoleWithArn(UnauthRoleName);
+  expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
+  expect(await bucketNotExists(deploymentBucketName2)).toBe(true);
+  expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
+  expect(UnauthRoleName).not.toBeIAMRoleWithArn(UnauthRoleName);
   // check that config/exports file was deleted
   if (settings.ios) {
     expect(fs.existsSync(getAWSConfigIOSPath(projRoot))).toBe(false);
@@ -73,14 +72,31 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
 
 async function bucketExists(bucket: string) {
   const s3 = new S3();
-  const options = {
+  const params = {
     Bucket: bucket,
   };
   try {
-    await s3.headBucket(options).promise();
+    await s3.headBucket(params).promise();
     return true;
   } catch (error) {
     if (error.statusCode === 404) {
+      return false;
+    }
+    throw error;
+  }
+}
+
+async function bucketNotExists(bucket: string) {
+  const s3 = new S3();
+  const params = {
+    Bucket: bucket,
+    $waiter: { maxAttempts: 10 },
+  };
+  try {
+    await s3.waitFor('bucketNotExists', params).promise();
+    return true;
+  } catch (error) {
+    if (error.statusCode === 200) {
       return false;
     }
     throw error;

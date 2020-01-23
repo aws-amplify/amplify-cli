@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.13.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@5.18.0...graphql-dynamodb-transformer@6.13.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** fix cloudformation error config ([#2772](https://github.com/aws-amplify/amplify-cli/issues/2772)) ([10ca188](https://github.com/aws-amplify/amplify-cli/commit/10ca188703c71262a90b687ab758323bd2ef7f88))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+
+
+
+
+
 # [6.12.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@5.18.0...graphql-dynamodb-transformer@6.12.0) (2020-01-09)
 
 

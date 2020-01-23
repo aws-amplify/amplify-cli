@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.28.0...amplify-category-analytics@2.13.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* **amplify-category-analytics:** reverted the hyphen and updated tests ([#3181](https://github.com/aws-amplify/amplify-cli/issues/3181)) ([1a1efcf](https://github.com/aws-amplify/amplify-cli/commit/1a1efcfe9ba11242316ebed3bca3bf5fe78761f7)), closes [#3163](https://github.com/aws-amplify/amplify-cli/issues/3163)
+
+
+### Features
+
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
 # [2.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.28.0...amplify-category-analytics@2.12.0) (2020-01-09)
 
 

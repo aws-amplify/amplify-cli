@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.13.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@5.18.0...graphql-transformers-e2e-tests@6.13.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* [#2727](https://github.com/aws-amplify/amplify-cli/issues/2727) ([#2754](https://github.com/aws-amplify/amplify-cli/issues/2754)) ([44a7b54](https://github.com/aws-amplify/amplify-cli/commit/44a7b549f84ff8d752fd0dc87d6d689a609a579d))
+* build break after recent merges ([#2758](https://github.com/aws-amplify/amplify-cli/issues/2758)) ([7155787](https://github.com/aws-amplify/amplify-cli/commit/7155787d74306e9708fe7115648ab6f702dc2093))
+* e2e test failures with node env ([#2831](https://github.com/aws-amplify/amplify-cli/issues/2831)) ([377dfa7](https://github.com/aws-amplify/amplify-cli/commit/377dfa7c78d97408d53ba3611045d19d477c163d))
+* graphql e2e test deployment ([#2887](https://github.com/aws-amplify/amplify-cli/issues/2887)) ([7ba515a](https://github.com/aws-amplify/amplify-cli/commit/7ba515acb40009f783d899f23b9fe89392afcbdb))
+* remaining e2e tests ([#2889](https://github.com/aws-amplify/amplify-cli/issues/2889)) ([b518061](https://github.com/aws-amplify/amplify-cli/commit/b518061154261b21faeee842579f355d175981ba))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+* use managedpolicies and slice them ([#2883](https://github.com/aws-amplify/amplify-cli/issues/2883)) ([fa0f2ed](https://github.com/aws-amplify/amplify-cli/commit/fa0f2ed2fc725d964cbaf11a892b3850aaf42d84)), closes [#2084](https://github.com/aws-amplify/amplify-cli/issues/2084)
+* **graphql-elasticsearch-transformer:** allow range on searches ([#3129](https://github.com/aws-amplify/amplify-cli/issues/3129)) ([f81ea32](https://github.com/aws-amplify/amplify-cli/commit/f81ea329f47194fbc19eb966cacee9877e04a389)), closes [#2775](https://github.com/aws-amplify/amplify-cli/issues/2775)
+* **graphql-function-transformer:** add hash to function iam role name ([#3030](https://github.com/aws-amplify/amplify-cli/issues/3030)) ([e3c4a32](https://github.com/aws-amplify/amplify-cli/commit/e3c4a32135f3df6ffb06308d5250433aaf2c1ce9)), closes [#2468](https://github.com/aws-amplify/amplify-cli/issues/2468)
+* **graphql-transformers-e2e-tests:** added amplify next ([#2839](https://github.com/aws-amplify/amplify-cli/issues/2839)) ([800d5a2](https://github.com/aws-amplify/amplify-cli/commit/800d5a2f46b02bbd7d6b6dcf76d5cbb825fcdb46))
+
+
+### Features
+
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* **graphql-elasticsearch-transformer:** support sets in es fn ([#2986](https://github.com/aws-amplify/amplify-cli/issues/2986)) ([16419f4](https://github.com/aws-amplify/amplify-cli/commit/16419f4d9e1733ed0ada064f9ced604083ee4703)), closes [#2860](https://github.com/aws-amplify/amplify-cli/issues/2860)
+
+
+
+
+
 # [6.12.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@5.18.0...graphql-transformers-e2e-tests@6.12.0) (2020-01-09)
 
 

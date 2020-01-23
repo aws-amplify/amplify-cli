@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@1.25.0...graphql-function-transformer@2.1.8) (2020-01-23)
+
+
+### Bug Fixes
+
+* **graphql-function-transformer:** add hash to function iam role name ([#3030](https://github.com/aws-amplify/amplify-cli/issues/3030)) ([e3c4a32](https://github.com/aws-amplify/amplify-cli/commit/e3c4a32135f3df6ffb06308d5250433aaf2c1ce9)), closes [#2468](https://github.com/aws-amplify/amplify-cli/issues/2468)
+
+
+
+
+
 ## [2.1.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@1.25.0...graphql-function-transformer@2.1.7) (2020-01-09)
 
 

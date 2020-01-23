@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.13.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.28.0...graphql-http-transformer@4.13.0) (2020-01-23)
+
+
+### Bug Fixes
+
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+
+
+### Features
+
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+
+
+
+
+
 # [4.12.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.28.0...graphql-http-transformer@4.12.0) (2020-01-09)
 
 
