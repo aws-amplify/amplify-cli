@@ -70,7 +70,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   if (resourceName) {
     context.print.warning(
-      'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.'
+      'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.',
     );
     process.exit(0);
   }
@@ -220,11 +220,11 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Guided creation of the transform schema
   const authTypes = getAuthTypes(authConfig);
-  const onlyApiKeyAuthEnabled = authTypes.includes('API_KEY') && authTypes.length === 1;
+  const cognitoNotEnabled = !authTypes.includes('AMAZON_COGNITO_USER_POOLS');
 
   let templateSchemaChoices = inputs[4].options;
 
-  if (onlyApiKeyAuthEnabled) {
+  if (cognitoNotEnabled) {
     templateSchemaChoices = templateSchemaChoices.filter(schema => schema.value !== 'single-object-auth-schema.graphql');
   }
 
@@ -363,7 +363,7 @@ async function updateWalkthrough(context) {
     if (resource.providerPlugin !== providerName) {
       // TODO: Move message string to seperate file
       throw new Error(
-        `The selected resource is not managed using AWS Cloudformation. Please use the AWS AppSync Console to make updates to your API - ${resource.resourceName}`
+        `The selected resource is not managed using AWS Cloudformation. Please use the AWS AppSync Console to make updates to your API - ${resource.resourceName}`,
       );
     }
     ({ resourceName } = resource);
@@ -538,7 +538,7 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
           resolverConfig.models = {};
           for (let i = 0; i < selectedModelTypes.length; i += 1) {
             resolverConfig.models[selectedModelTypes[i]] = await askConflictResolutionStrategy(
-              `Select the resolution strategy for ${selectedModelTypes[i]} model`
+              `Select the resolution strategy for ${selectedModelTypes[i]} model`,
             );
           }
         }
@@ -634,7 +634,7 @@ async function askAdditionalAuthQuestions(context, parameters, authConfig, defau
 
 async function checkForCognitoUserPools(context, parameters, authConfig) {
   const additionalUserPoolProviders = authConfig.additionalAuthenticationProviders.filter(
-    provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
+    provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
   );
   const additionalUserPoolProvider = additionalUserPoolProviders.length > 0 ? additionalUserPoolProviders[0] : undefined;
 
@@ -801,7 +801,7 @@ function validateDays(input) {
 
 function validateIssuerUrl(input) {
   const isValid = /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
-    input
+    input,
   );
 
   if (!isValid) {
