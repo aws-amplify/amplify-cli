@@ -20,7 +20,7 @@
     "nexpect": "file:./src/utils/nexpect-modified",
     "rimraf": "^3.0.0",
     "ts-jest": "^24.2.0",
-    "ts-node": "^8.5.2",
+    "ts-node": "^8.6.2",
     "typescript": "~3.6.4"
   },
   "jest": {
@@ -64,7 +64,7 @@
     }
   },
   "dependencies": {
-    "aws-sdk": "^2.580.0",
+    "aws-sdk": "^2.608.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.12.0"

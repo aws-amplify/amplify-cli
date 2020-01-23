@@ -25,7 +25,7 @@
   "devDependencies": {
     "@types/jest": "23.1.1",
     "@types/node": "^10.17.13",
-    "bestzip": "^2.0.0",
+    "bestzip": "^2.1.5",
     "graphql-dynamodb-transformer": "6.12.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",

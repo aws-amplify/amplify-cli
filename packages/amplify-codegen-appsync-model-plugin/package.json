@@ -7,15 +7,16 @@
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "~1.8.1",
     "@graphql-codegen/visitor-plugin-common": "~1.8.1",
-    "chalk": "^2.4.2",
+    "chalk": "^3.0.0",
     "change-case": "^4.1.1",
-    "graphql-toolkit": "^0.5.17",
+    "lower-case-first": "^2.0.1",
+    "graphql-toolkit": "^0.7.5",
     "pluralize": "^8.0.0",
     "strip-indent": "^3.0.0",
     "ts-dedent": "^1.1.0"
   },
   "peerDependencies": {
-    "graphql": "^14.0.0"
+    "graphql": "^14.5.8"
   },
   "typescript": {
     "definition": "lib/index.d.ts"
