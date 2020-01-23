@@ -117,18 +117,12 @@ const getSchemaWithNonModelField = (authDirective: string) => {
         id: ID!
         title: String!
         location: Location
-        status: Status
         createdAt: String
         updatedAt: String
     }
 
     type Location {
       name: String
-    }
-
-    enum Status {
-      PUBLISHED,
-      DRAFT
     }`;
 };
 
@@ -179,7 +173,7 @@ describe('Validation tests', () => {
       privateAuthDirective,
       apiKeyDefaultConfig,
       `@auth directive with 'userPools' provider found, but the project has no Cognito User \
-Pools authentication provider configured.`,
+Pools authentication provider configured.`
     );
   });
 
@@ -188,7 +182,7 @@ Pools authentication provider configured.`,
       publicAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'apiKey' provider found, but the project has no API Key \
-authentication provider configured.`,
+authentication provider configured.`
     );
   });
 
@@ -197,7 +191,7 @@ authentication provider configured.`,
       publicIAMAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'iam' provider found, but the project has no IAM \
-authentication provider configured.`,
+authentication provider configured.`
     );
   });
 
@@ -206,7 +200,7 @@ authentication provider configured.`,
       ownerOpenIdAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT \
-authentication provider configured.`,
+authentication provider configured.`
     );
   });
 
@@ -215,7 +209,7 @@ authentication provider configured.`,
       groupsWithProviderAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found \
-'iam' assigned`,
+'iam' assigned`
     );
   });
 
@@ -224,7 +218,7 @@ authentication provider configured.`,
       ownerWithIAMAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'owner' strategy only supports 'userPools' (default) and \
-'oidc' providers, but found 'iam' assigned.`,
+'oidc' providers, but found 'iam' assigned.`
     );
   });
 
@@ -233,7 +227,7 @@ authentication provider configured.`,
       publicUserPoolsAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
-found 'userPools' assigned.`,
+found 'userPools' assigned.`
     );
   });
 
@@ -242,7 +236,7 @@ found 'userPools' assigned.`,
       privateWithApiKeyAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but \
-found 'apiKey' assigned.`,
+found 'apiKey' assigned.`
     );
   });
 });
@@ -471,7 +465,7 @@ describe('Type directive transformation tests', () => {
           r['Fn::Sub'].length &&
           r['Fn::Sub'].length === 2 &&
           r['Fn::Sub'][1].typeName &&
-          r['Fn::Sub'][1].typeName === 'Location',
+          r['Fn::Sub'][1].typeName === 'Location'
       );
       expect(locationPolicy).toBeDefined();
     }
@@ -510,7 +504,7 @@ describe('Type directive transformation tests', () => {
         r['Fn::Sub'].length &&
         r['Fn::Sub'].length === 2 &&
         r['Fn::Sub'][1].typeName &&
-        r['Fn::Sub'][1].typeName === 'Location',
+        r['Fn::Sub'][1].typeName === 'Location'
     );
     expect(locationPolicy).toBeDefined();
   });
