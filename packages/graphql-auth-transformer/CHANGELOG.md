@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.13.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.13.0...graphql-auth-transformer@6.13.1) (2020-01-24)
+
+
+### Bug Fixes
+
+* non-model [@auth](https://github.com/auth) propagation fails enums ([#3252](https://github.com/aws-amplify/amplify-cli/issues/3252)) ([f48fefa](https://github.com/aws-amplify/amplify-cli/commit/f48fefa31cb36846af2b029ecf3c0c7049937811))
+
+
+
+
+
 # [6.13.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@5.18.0...graphql-auth-transformer@6.13.0) (2020-01-23)
 
 ### Bug Fixes

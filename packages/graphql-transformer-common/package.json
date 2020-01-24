@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "4.13.0",
+  "version": "4.13.1",
   "description": "Common code and constants for AppSync Transformers",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.13.0",
+    "graphql-mapping-template": "4.13.1",
     "md5": "^2.2.1"
   },
   "devDependencies": {

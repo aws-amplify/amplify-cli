@@ -1,6 +1,6 @@
 {
   "name": "graphql-key-transformer",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "description": "Implements the @key directive.",
   "main": "lib/index.js",
   "author": "Michael Paris",
@@ -13,10 +13,10 @@
   "dependencies": {
     "cloudform-types": "^4.1.0",
     "graphql": "^14.5.8",
-    "graphql-dynamodb-transformer": "6.13.0",
-    "graphql-mapping-template": "4.13.0",
-    "graphql-transformer-common": "4.13.0",
-    "graphql-transformer-core": "6.13.0"
+    "graphql-dynamodb-transformer": "6.13.1",
+    "graphql-mapping-template": "4.13.1",
+    "graphql-transformer-common": "4.13.1",
+    "graphql-transformer-core": "6.13.1"
   },
   "devDependencies": {
     "@types/jest": "23.1.1",

@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-notifications",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "description": "amplify-cli notifications plugin",
   "main": "index.js",
   "dependencies": {
-    "amplify-category-auth": "2.13.0",
+    "amplify-category-auth": "2.13.1",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",
     "open": "^7.0.0",

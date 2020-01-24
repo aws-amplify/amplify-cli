@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.13.0...amplify-category-api@2.13.1) (2020-01-24)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** edit auth workflow if cognito is not used ([#3232](https://github.com/aws-amplify/amplify-cli/issues/3232)) ([f9473cf](https://github.com/aws-amplify/amplify-cli/commit/f9473cf50bbcf43a701f1f44b6f4d451dc2be237)), closes [#2967](https://github.com/aws-amplify/amplify-cli/issues/2967)
+
+
+
+
+
 # [2.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.30.0...amplify-category-api@2.13.0) (2020-01-23)
 
 ### Bug Fixes

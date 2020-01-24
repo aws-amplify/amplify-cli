@@ -1,7 +1,7 @@
 {
   "name": "amplify-velocity-template",
   "description": "Velocity Template Language(VTL) for JavaScript",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "keywords": [
     "velocity template"
   ],

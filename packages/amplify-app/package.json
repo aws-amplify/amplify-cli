@@ -1,6 +1,6 @@
 {
   "name": "amplify-app",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "description": "Amplify CLI",
   "main": "src/index.js",
   "bin": {

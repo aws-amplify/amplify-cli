@@ -1,6 +1,6 @@
 {
   "name": "graphql-relational-schema-transformer",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
   "main": "lib/index.js",
   "scripts": {
@@ -20,8 +20,8 @@
     "cloudform-types": "^4.1.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.13.0",
-    "graphql-transformer-common": "4.13.0"
+    "graphql-mapping-template": "4.13.1",
+    "graphql-transformer-common": "4.13.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

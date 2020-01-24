@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen-appsync-model-plugin",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "main": "lib/index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -9,8 +9,8 @@
     "@graphql-codegen/visitor-plugin-common": "~1.8.1",
     "chalk": "^3.0.0",
     "change-case": "^4.1.1",
-    "lower-case-first": "^2.0.1",
     "graphql-toolkit": "^0.7.5",
+    "lower-case-first": "^2.0.1",
     "pluralize": "^8.0.0",
     "strip-indent": "^3.0.0",
     "ts-dedent": "^1.1.0"

@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-function",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "main": "index.js",
   "description": "amplify-cli function plugin",
   "dependencies": {
-    "amplify-category-storage": "2.1.8",
+    "amplify-category-storage": "2.1.9",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",
     "mime-types": "^2.1.26",

@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "An AppSync Simulator to test AppSync API.",
   "main": "lib/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-velocity-template": "1.1.8",
+    "amplify-velocity-template": "1.1.9",
     "aws-sdk": "^2.608.0",
     "cors": "^2.8.5",
     "event-to-promise": "^0.8.0",
@@ -48,8 +48,7 @@
     "retimer": "2.0.0",
     "slash": "^3.0.0",
     "steed": "^1.1.3",
-    "uuid": "^3.4.0"
-    ,
+    "uuid": "^3.4.0",
     "websocket-stream": "^5.5.0"
   },
   "devDependencies": {
@@ -59,7 +58,7 @@
     "@types/moment-timezone": "0.5.12",
     "@types/node": "^10.17.13",
     "@types/pino": "5.15.3",
-    "amplify-graphiql-explorer": "1.1.8",
+    "amplify-graphiql-explorer": "1.1.9",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
     "typescript": "~3.6.4"

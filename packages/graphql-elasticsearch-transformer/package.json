@@ -1,6 +1,6 @@
 {
   "name": "graphql-elasticsearch-transformer",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
   "main": "lib/index.js",
   "scripts": {
@@ -18,15 +18,15 @@
   "dependencies": {
     "cloudform-types": "^4.1.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.13.0",
-    "graphql-transformer-common": "4.13.0",
-    "graphql-transformer-core": "6.13.0"
+    "graphql-mapping-template": "4.13.1",
+    "graphql-transformer-common": "4.13.1",
+    "graphql-transformer-core": "6.13.1"
   },
   "devDependencies": {
     "@types/jest": "23.1.1",
     "@types/node": "^10.17.13",
     "bestzip": "^2.1.5",
-    "graphql-dynamodb-transformer": "6.13.0",
+    "graphql-dynamodb-transformer": "6.13.1",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "typescript": "~3.6.4"
