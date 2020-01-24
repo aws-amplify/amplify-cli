@@ -6,10 +6,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
-    "inquirer": "^6.5.1",
-    "path": "^0.12.7"
+    "inquirer": "^7.0.3"
   }
 }

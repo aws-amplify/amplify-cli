@@ -31,12 +31,13 @@ export class AppSyncPipelineResolver {
     ({ result, stash, errors: templateErrors, isReturn } = requestMappingTemplate.render(
       { source, arguments: args, stash },
       context,
-      info
+      info,
     ));
 
     context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
 
-    if (isReturn) { //Request mapping template called #return, don't process further
+    if (isReturn) {
+      //Request mapping template called #return, don't process further
       return result;
     }
 
@@ -58,7 +59,7 @@ export class AppSyncPipelineResolver {
     ({ result, errors: templateErrors } = responseMappingTemplate.render(
       { source, arguments: args, result, prevResult: result },
       context,
-      info
+      info,
     ));
     context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
     return result;

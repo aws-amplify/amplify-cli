@@ -16,7 +16,7 @@ describe('Return', function() {
     var tpl = `#return ([1,2,3])`;
     const html = render(tpl);
     console.log(tpl);
-    html.should.containEql('[1, 2, 3]');
+    html.should.containEql('[1,2,3]');
   });
 
   it('return empty value', function() {

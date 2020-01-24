@@ -101,7 +101,7 @@ module.exports = function(Velocity, utils) {
                 const result = this.getExpression(ast.value, true);
                 try {
                   str = JSON.stringify(result);
-                } catch(e) {
+                } catch (e) {
                   str = result;
                 }
               } else {
@@ -113,7 +113,7 @@ module.exports = function(Velocity, utils) {
               break;
           }
         },
-        this
+        this,
       );
 
       return str;

@@ -64,7 +64,7 @@ async function run(context) {
       context.print.info(`Amplify AppID found: ${amplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
     } catch (e) {
       context.print.error(
-        `Amplify AppID: ${amplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`
+        `Amplify AppID: ${amplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       );
       context.print.info(e);
       throw e;
