@@ -1,10 +1,10 @@
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
-import { camelCase } from 'change-case';
-import { lowerCaseFirst } from 'lower-case-first';
-import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
-import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
-import { CodeGenConnectionType } from '../utils/process-connections';
+import { camelCase, lowerCaseFirst } from 'change-case';
 import { schemaTypeMap } from '../configs/swift-config';
+import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
+import { CodeGenConnectionType } from '../utils/process-connections';
+import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
+
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
   protected imports: string[] = ['import Amplify', 'import Foundation'];
@@ -48,7 +48,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
           name: this.getFieldName(field),
           type: this.getNativeType(field),
           value: field.name === 'id' ? 'UUID().uuidString' : undefined,
-          flags: { optional: field.isNullable, isList: field.isList },
+          flags: { optional: field.isNullable, isList: field.isList, isEnum: this.isEnumType(field) },
         })),
         'public',
         {},

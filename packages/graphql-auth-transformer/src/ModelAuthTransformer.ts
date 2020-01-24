@@ -516,9 +516,14 @@ Static group authorization should perform as expected.`,
   private propagateAuthDirectivesToNestedTypes(type: ObjectTypeDefinitionNode, rules: AuthRule[], ctx: TransformerContext) {
     const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
       if (fieldType) {
+        if (fieldType.kind !== 'ObjectTypeDefinition') {
+          return undefined;
+        }
+
         const typeModel = fieldType.directives.find(dir => dir.name.value === 'model');
         return typeModel !== undefined ? undefined : fieldType;
       }
+
       return fieldType;
     };
 

@@ -117,12 +117,18 @@ const getSchemaWithNonModelField = (authDirective: string) => {
         id: ID!
         title: String!
         location: Location
+        status: Status
         createdAt: String
         updatedAt: String
     }
 
     type Location {
       name: String
+    }
+
+    enum Status {
+      PUBLISHED,
+      DRAFT
     }`;
 };
 

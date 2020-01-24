@@ -305,6 +305,6 @@ export class SwiftDeclarationBlock {
     if (primitiveTypes.includes(typeDeclaration.type) || typeDeclaration.flags.isEnum) {
       return `[${typeDeclaration.type}]`;
     }
-    return `List<${typeDeclaration.name}`;
+    return `List<${typeDeclaration.type}>`;
   }
 }
