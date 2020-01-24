@@ -12,7 +12,7 @@ function Velocity(asts, config) {
         return value;
       },
     },
-    config
+    config,
   );
   this._state = { stop: false, break: false, return: false };
   this.init();

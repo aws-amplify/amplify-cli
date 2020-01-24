@@ -47,7 +47,7 @@ export class VelocityTemplate {
   render(
     ctxValues: AppSyncVTLRenderContext,
     requestContext: AppSyncSimulatorRequestContext,
-    info?: GraphQLResolveInfo
+    info?: GraphQLResolveInfo,
   ): { result; stash; errors; isReturn: boolean } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
 
@@ -57,9 +57,9 @@ export class VelocityTemplate {
     try {
       const result = JSON.parse(templateResult);
       return { result, stash, errors: context.util.errors, isReturn };
-
     } catch (e) {
-      if (isReturn) { // # when template has #return, if the value is non JSON, we pass that along
+      if (isReturn) {
+        // # when template has #return, if the value is non JSON, we pass that along
         return { result: templateResult, stash, errors: context.util.errors, isReturn };
       }
       const errorMessage = `Unable to convert ${templateResult} to class com.amazonaws.deepdish.transform.model.lambda.LambdaVersionedConfig.`;

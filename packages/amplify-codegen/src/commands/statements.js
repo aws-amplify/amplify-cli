@@ -33,7 +33,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth, withou
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
-  await projects.forEach(async cfg => {
+  for (const cfg of projects) {
     const includeFiles = path.join(projectPath, cfg.includes[0]);
     const opsGenDirectory = cfg.amplifyExtension.docsFilePath
       ? path.join(projectPath, cfg.amplifyExtension.docsFilePath)
@@ -51,13 +51,17 @@ async function generateStatements(context, forceDownloadSchema, maxDepth, withou
     const language = frontend === 'javascript' ? cfg.amplifyExtension.codeGenTarget : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
-    fs.ensureDirSync(opsGenDirectory);
-    await generate(schemaPath, opsGenDirectory, {
-      separateFiles: true,
-      language,
-      maxDepth: maxDepth || cfg.amplifyExtension.maxDepth,
-    });
-    opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory));
-  });
+    try {
+      fs.ensureDirSync(opsGenDirectory);
+      generate(schemaPath, opsGenDirectory, {
+        separateFiles: true,
+        language,
+        maxDepth: maxDepth || cfg.amplifyExtension.maxDepth,
+      });
+      opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory));
+    } finally {
+      opsGenSpinner.stop();
+    }
+  }
 }
 module.exports = generateStatements;

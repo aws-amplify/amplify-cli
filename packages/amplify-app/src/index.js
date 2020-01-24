@@ -47,7 +47,7 @@ async function checkNodeVersion() {
     console.error(
       `You are running Node ${currentNodeVersion}.\n` +
         `Amplify CLI requires Node ${minNodeVersion}. \n` +
-        `Please update your version of Node.`
+        `Please update your version of Node.`,
     );
     process.exit(1);
   }
@@ -84,7 +84,7 @@ async function amplifyCLIVersionCheck() {
       console.log(`${emoji.get('white_check_mark')} Found Amplify CLI version ${amplifyCLIVersion}`);
     } else {
       console.log(
-        `${emoji.get('worried')} Found Amplify CLI version ${amplifyCLIVersion}. The minimum required version is ${minCLIVersion}`
+        `${emoji.get('worried')} Found Amplify CLI version ${amplifyCLIVersion}. The minimum required version is ${minCLIVersion}`,
       );
       console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
       await installAmplifyCLI();
@@ -129,7 +129,7 @@ async function createAmplifySkeletonProject() {
     });
   }
   console.log(
-    `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.`
+    `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.`,
   );
   console.log();
   const existingApp = true;
@@ -435,10 +435,10 @@ async function showAndroidHelpText() {
   console.log();
   console.log(chalk.green('Some next steps:'));
   console.log(
-    'Running the "modelgen" task provided in the amplifytools plugin will allow you to generate models/entities for your GraphQL models'
+    'Running the "modelgen" task provided in the amplifytools plugin will allow you to generate models/entities for your GraphQL models',
   );
   console.log(
-    'Running the "amplifyPush" task provided in the amplifytools plugin will build all your local backend resources and provision them in the cloud'
+    'Running the "amplifyPush" task provided in the amplifytools plugin will build all your local backend resources and provision them in the cloud',
   );
   console.log('');
 }
@@ -447,10 +447,10 @@ async function showIOSHelpText() {
   console.log();
   console.log(chalk.green('Some next steps:'));
   console.log(
-    'Setting "modelgen" to true in amplifyxc.config will allow you to generate models/entities for your GraphQL models in your next xcode build'
+    'Setting "modelgen" to true in amplifyxc.config will allow you to generate models/entities for your GraphQL models in your next xcode build',
   );
   console.log(
-    'Setting "push" to true in the amplifyxc.config will build all your local backend resources and provision them in the cloud in your next xcode build'
+    'Setting "push" to true in the amplifyxc.config will build all your local backend resources and provision them in the cloud in your next xcode build',
   );
   console.log('');
 }

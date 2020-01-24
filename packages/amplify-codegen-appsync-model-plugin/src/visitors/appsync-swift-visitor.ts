@@ -1,5 +1,6 @@
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
-import { camelCase, lowerCaseFirst } from 'change-case';
+import { camelCase } from 'change-case';
+import { lowerCaseFirst } from 'lower-case-first';
 import { schemaTypeMap } from '../configs/swift-config';
 import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
 import { CodeGenConnectionType } from '../utils/process-connections';

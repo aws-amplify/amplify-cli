@@ -22,12 +22,10 @@
     "@types/jest": "^24.0.25",
     "@types/node": "^10.17.13",
     "jest": "^24.9.0",
-    "ts-interface-builder": "^0.2.1",
     "ts-jest": "^24.3.0",
     "typescript": "~3.6.4"
   },
   "dependencies": {
-    "cloudform": "^4.1.0",
     "cloudform-types": "^4.1.0",
     "deep-diff": "^1.0.2",
     "fs-extra": "^8.1.0",

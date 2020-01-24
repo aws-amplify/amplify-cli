@@ -8,19 +8,15 @@
   "dependencies": {
     "amplify-category-auth": "2.13.0",
     "amplify-category-function": "2.13.0",
-    "amplify-category-storage": "2.1.8",
-    "aws-sdk": "^2.580.0",
-    "chalk": "^2.4.2",
+    "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
     "graphql-relational-schema-transformer": "2.13.0",
-    "graphql-tag-pluck": "^0.8.4",
     "graphql-transformer-core": "6.13.0",
-    "inquirer": "^6.5.1",
-    "merge-graphql-schemas": "^1.7.0",
-    "moment": "^2.24.0",
-    "open": "^6.4.0",
-    "ora": "^3.4.0",
-    "uuid": "^3.3.2"
+    "inquirer": "^7.0.3",
+    "merge-graphql-schemas": "^1.7.6",
+    "open": "^7.0.0",
+    "ora": "^4.0.3",
+    "uuid": "^3.4.0"
   }
 }

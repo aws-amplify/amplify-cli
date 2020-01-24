@@ -6,11 +6,10 @@
   "dependencies": {
     "amplify-category-auth": "2.13.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^6.5.1",
-    "open": "^6.4.0",
-    "ora": "^3.4.0",
-    "promise-sequential": "^1.1.1",
-    "uuid": "^3.3.2"
+    "inquirer": "^7.0.3",
+    "open": "^7.0.0",
+    "ora": "^4.0.3",
+    "promise-sequential": "^1.1.1"
   },
   "scripts": {
     "test": "jest --coverage",
@@ -19,7 +18,6 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
-    "codecov": "^3.0.0",
     "jest": "^23.5.0",
     "mockirer": "^2.0.1"
   },
