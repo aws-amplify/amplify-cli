@@ -3,8 +3,6 @@ import { JavaMap } from '../../../velocity/value-mapper/map';
 import { GraphQLResolveInfo } from 'graphql';
 import { TemplateSentError } from '../../../velocity/util/errors';
 
-// jest.mock('../../../velocity/util/errors');
-
 const stubInfo = {
   fieldName: 'testFieldName',
   path: {
