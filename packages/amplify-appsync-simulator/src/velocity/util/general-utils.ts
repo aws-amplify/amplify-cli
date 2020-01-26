@@ -40,6 +40,15 @@ export const generalUtils = {
     throw err;
   },
   error(message, type = null, data = null, errorInfo = null) {
+    if (data instanceof JavaMap) {
+      var filteredData = {};
+      // filter fields in data based on the query selection set
+      this.info.operation.selectionSet.selections
+        .find(selection => selection.name.value === this.info.fieldName)
+        .selectionSet.selections.map(fieldNode => fieldNode.name.value)
+        .forEach(field => (filteredData[field] = data.get(field)));
+      data = filteredData;
+    }
     const err = new TemplateSentError(message, type, data, errorInfo, this.info);
     this.errors.push(err);
     throw err;
