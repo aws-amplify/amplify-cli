@@ -2,6 +2,7 @@
 
 exports[`TypeScript code generation #generateSource() should generate correct list with custom fragment 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 // The episodes in the Star Wars trilogy
@@ -66,6 +67,7 @@ export type FriendFragment = ( {
 
 exports[`TypeScript code generation #generateSource() should generate fragmented query operations 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type HeroAndFriendsNamesQuery = {
@@ -136,6 +138,7 @@ export type heroFriendsFragment = ( {
 
 exports[`TypeScript code generation #generateSource() should generate mutation operations with complex input types 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 // The episodes in the Star Wars trilogy
@@ -180,6 +183,7 @@ export type ReviewMovieMutation = {
 
 exports[`TypeScript code generation #generateSource() should generate query operations with inline fragments 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type HeroAndDetailsQuery = {
@@ -214,6 +218,7 @@ export type HeroDetailsFragment = ( {
 
 exports[`TypeScript code generation #generateSource() should generate simple nested query operations including input variables 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 // The episodes in the Star Wars trilogy
@@ -267,6 +272,7 @@ export type HeroAndFriendsNamesQuery = {
 
 exports[`TypeScript code generation #generateSource() should generate simple nested with required elements in lists 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type StarshipCoordsQuery = {
@@ -280,6 +286,7 @@ export type StarshipCoordsQuery = {
 
 exports[`TypeScript code generation #generateSource() should generate simple query operations 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type HeroNameQuery = {
@@ -299,6 +306,7 @@ export type HeroNameQuery = {
 
 exports[`TypeScript code generation #generateSource() should generate simple query operations including input variables 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 // The episodes in the Star Wars trilogy
@@ -330,6 +338,7 @@ export type HeroNameQuery = {
 
 exports[`TypeScript code generation #generateSource() should handle comments in enums 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export enum EnumCommentTestCase {
@@ -351,6 +360,7 @@ export type CustomScalarQuery = {
 
 exports[`TypeScript code generation #generateSource() should handle interfaces at root 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type CustomScalarQuery = {
@@ -370,6 +380,7 @@ export type CustomScalarQuery = {
 
 exports[`TypeScript code generation #generateSource() should handle multi-line comments 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type CustomScalarQuery = {
@@ -385,6 +396,7 @@ export type CustomScalarQuery = {
 
 exports[`TypeScript code generation #generateSource() should handle single line comments 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type CustomScalarQuery = {
@@ -399,6 +411,7 @@ export type CustomScalarQuery = {
 
 exports[`TypeScript code generation #generateSource() should handle unions at root 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type CustomScalarQuery = {
@@ -416,6 +429,7 @@ export type CustomScalarQuery = {
 
 exports[`TypeScript code generation #generateSource() should have __typename value matching fragment type on generic type 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type HeroNameQuery = {
@@ -446,6 +460,7 @@ export type HeroWithNameFragment = ( {
 
 exports[`TypeScript code generation #generateSource() should have __typename value matching fragment type on specific type 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type DroidNameQuery = {
