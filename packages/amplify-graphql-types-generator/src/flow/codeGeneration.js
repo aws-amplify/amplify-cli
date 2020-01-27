@@ -308,7 +308,7 @@ export function propertyFromField(context, field) {
   }
 }
 
-export function propertyDeclarations(generator, properties, isInput) {
+export function propertyDeclarations(generator, properties, isOptional) {
   if (!properties) return;
   properties.forEach(property => {
     if (isAbstractType(getNamedType(property.type || property.fieldType))) {
@@ -367,11 +367,11 @@ export function propertyDeclarations(generator, properties, isInput) {
           }
         });
         propertyDeclaration(generator, property, () => {
-          const properties = propertiesFromFields(generator.context, fields);
-          propertyDeclarations(generator, properties, isInput);
+          const properties = propertiesFromFields(generator.context, property.fields);
+          propertyDeclarations(generator, properties, isOptional);
         });
       } else {
-        propertyDeclaration(generator, { ...property, isInput });
+        propertyDeclaration(generator, { ...property, isOptional });
       }
     }
   });

@@ -169,6 +169,13 @@ exports[`Flow code generation #generateSource() should generate fragmented query
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+// The episodes in the Star Wars trilogy
+export type Episode =
+  \\"NEWHOPE\\" | // Star Wars Episode IV: A New Hope, released in 1977.
+  \\"EMPIRE\\" | // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  \\"JEDI\\"; // Star Wars Episode VI: Return of the Jedi, released in 1983.
+
+
 export type HeroAndFriendsNamesQuery = {|
   hero: ?( {
       __typename: \\"Human\\",
@@ -282,6 +289,13 @@ exports[`Flow code generation #generateSource() should generate query operations
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+// The episodes in the Star Wars trilogy
+export type Episode =
+  \\"NEWHOPE\\" | // Star Wars Episode IV: A New Hope, released in 1977.
+  \\"EMPIRE\\" | // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  \\"JEDI\\"; // Star Wars Episode VI: Return of the Jedi, released in 1983.
+
+
 export type HeroAndDetailsQuery = {|
   hero: ?( {
       __typename: \\"Human\\",
@@ -381,6 +395,13 @@ exports[`Flow code generation #generateSource() should generate simple query ope
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+// The episodes in the Star Wars trilogy
+export type Episode =
+  \\"NEWHOPE\\" | // Star Wars Episode IV: A New Hope, released in 1977.
+  \\"EMPIRE\\" | // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  \\"JEDI\\"; // Star Wars Episode VI: Return of the Jedi, released in 1983.
+
+
 export type HeroNameQuery = {|
   hero: ?( {
       __typename: \\"Human\\",
@@ -469,6 +490,13 @@ exports[`Flow code generation #generateSource() should handle multi-line comment
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type EnumCommentTestCase =
+  \\"first\\" | // This is a single-line comment
+  // This is a multi-line
+  // comment.
+  \\"second\\";
+
+
 export type CustomScalarQuery = {|
   commentTest: ? {|
     __typename: \\"CommentTest\\",
@@ -493,6 +521,13 @@ exports[`Flow code generation #generateSource() should handle single line commen
 "/* @flow */
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
+
+export type EnumCommentTestCase =
+  \\"first\\" | // This is a single-line comment
+  // This is a multi-line
+  // comment.
+  \\"second\\";
+
 
 export type CustomScalarQuery = {|
   commentTest: ? {|
@@ -525,6 +560,13 @@ exports[`Flow code generation #generateSource() should have __typename value mat
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+// The episodes in the Star Wars trilogy
+export type Episode =
+  \\"NEWHOPE\\" | // Star Wars Episode IV: A New Hope, released in 1977.
+  \\"EMPIRE\\" | // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  \\"JEDI\\"; // Star Wars Episode VI: Return of the Jedi, released in 1983.
+
+
 export type HeroNameQuery = {|
   hero: ?( {
       __typename: \\"Human\\",
@@ -555,6 +597,13 @@ exports[`Flow code generation #generateSource() should have __typename value mat
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+// The episodes in the Star Wars trilogy
+export type Episode =
+  \\"NEWHOPE\\" | // Star Wars Episode IV: A New Hope, released in 1977.
+  \\"EMPIRE\\" | // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  \\"JEDI\\"; // Star Wars Episode VI: Return of the Jedi, released in 1983.
+
+
 export type DroidNameQuery = {|
   droid: ? {|
     __typename: \\"Droid\\",
@@ -574,6 +623,13 @@ exports[`Flow code generation #generateSource() should have __typename value mat
 "/* @flow */
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
+
+// The episodes in the Star Wars trilogy
+export type Episode =
+  \\"NEWHOPE\\" | // Star Wars Episode IV: A New Hope, released in 1977.
+  \\"EMPIRE\\" | // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  \\"JEDI\\"; // Star Wars Episode VI: Return of the Jedi, released in 1983.
+
 
 export type DroidNameQuery = {|
   droid: ? {|
