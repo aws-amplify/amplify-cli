@@ -142,7 +142,7 @@ async function updateWalkthrough(context, lambdaToUpdate) {
 
   if (
     await context.amplify.confirmPrompt.run(
-      'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?'
+      'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
     )
   ) {
     // Get current dependsOn for the resource
@@ -199,7 +199,7 @@ async function updateWalkthrough(context, lambdaToUpdate) {
       cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
       currentParameters,
       answers.resourcePropertiesJSON,
-      newParams
+      newParams,
     ); // Need to update
     // Update top level comment in app.js or index.js file
 
@@ -454,25 +454,10 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
           if (resourceName.endsWith(appsyncTableSuffix)) {
             parameters.permissions[category][resourceName].providerPlugin = 'awscloudformation';
             parameters.permissions[category][resourceName].service = 'DynamoDB';
-            const dynamoDBTableARNComponents = [
-              'arn:aws:appsync:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':table/',
-              {
-                'Fn::ImportValue': {
-                  'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(
-                    `:${appsyncTableSuffix}`,
-                    'Table'
-                  )}:Name`,
-                },
-              },
-            ];
+            const dynamoDBTableARNComponents = constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
 
             // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
             parameters.permissions[category][resourceName].customPolicyResource = [
-              // dynam
               {
                 'Fn::Join': ['', dynamoDBTableARNComponents],
               },
@@ -490,9 +475,26 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
           resources = resources.concat(
             resourceAttributes.map(attributes =>
               attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
-                ? { resourceName: appsyncResourceName, category: 'api', attributes: ['GraphQLAPIIdOutput'] }
-                : attributes
-            )
+                ? {
+                    resourceName: appsyncResourceName,
+                    category: 'api',
+                    attributes: ['GraphQLAPIIdOutput'],
+                    needsAdditionalDynamoDBResourceProps: true,
+                    // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+                    _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
+                    _cfJoinComponentTableName: constructCFModelTableNameComponent(
+                      appsyncResourceName,
+                      attributes.resourceName,
+                      appsyncTableSuffix,
+                    ),
+                    _cfJoinComponentTableArn: constructCFModelTableArnComponent(
+                      appsyncResourceName,
+                      attributes.resourceName,
+                      appsyncTableSuffix,
+                    ),
+                  }
+                : attributes,
+            ),
           );
         }
       }
@@ -508,6 +510,35 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   const categoryMapping = {};
   resources.forEach(resource => {
     const { category, resourceName, attributes } = resource;
+    /**
+     * while resourceProperties and resourcePropertiesJson
+     * (which are utilized to set Lambda environment variables on CF side)
+     * are derived from dependencies on other category resources that in-turn are set as CF-template parameters
+     * we need to inject extra when blending appsync @model-backed dynamoDB tables into storage category flow
+     * as @model-backed DynamoDB table name and full arn is not available in api category resource output
+     */
+    if (resource.needsAdditionalDynamoDBResourceProps) {
+      const modelEnvPrefix = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${resource._modelName.toUpperCase()}`;
+      let modelNameResourcePropValue = {
+        'Fn::Join': ['-', resource._cfJoinComponentTableName],
+      };
+      let modelArnResourcePropValue = {
+        'Fn::Join': ['', resource._cfJoinComponentTableArn],
+      };
+
+      resourceProperties.push(`"${modelEnvPrefix}_NAME": ${JSON.stringify(modelNameResourcePropValue)}`);
+      resourceProperties.push(`"${modelEnvPrefix}_ARN": ${JSON.stringify(modelArnResourcePropValue)}`);
+      resourcePropertiesJSON[`${modelEnvPrefix}_NAME`] = modelNameResourcePropValue;
+      resourcePropertiesJSON[`${modelEnvPrefix}_ARN`] = modelArnResourcePropValue;
+
+      const categoryMappingPrefix = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(resource._modelName)}`;
+      if (!categoryMapping[category]) {
+        categoryMapping[category] = [];
+      }
+      categoryMapping[category].push({ envName: `${modelEnvPrefix}_NAME`, varName: `${categoryMappingPrefix}Name` });
+      categoryMapping[category].push({ envName: `${modelEnvPrefix}_ARN`, varName: `${categoryMappingPrefix}Arn` });
+    }
+
     attributes.forEach(attribute => {
       const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
       const varName = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(attribute)}`;
@@ -1141,6 +1172,27 @@ function getIAMPolicies(resourceName, crudOptions) {
   const attributes = ['Name'];
 
   return { policy, attributes };
+}
+
+/** CF template component of join function { "Fn::Join": ["": THIS_PART ] } */
+function constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
+  return [
+    'arn:aws:appsync:',
+    { Ref: 'AWS::Region' },
+    ':',
+    { Ref: 'AWS::AccountId' },
+    ':table/',
+    {
+      'Fn::ImportValue': {
+        'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
+      },
+    },
+  ];
+}
+
+/** CF template component of join function { "Fn::Join": ["-": THIS_PART ] } */
+function constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
+  return [resourceName.replace(`:${appsyncTableSuffix}`, 'Table'), { Ref: `api${appsyncResourceName}GraphQLAPIIdOutput` }];
 }
 
 module.exports = {
