@@ -190,7 +190,7 @@ authentication provider configured.`
     validationTest(
       groupsWithProviderAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'groups' strategy only supports 'userPools' provider, but found \
+      `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found \
 'iam' assigned`
     );
   });

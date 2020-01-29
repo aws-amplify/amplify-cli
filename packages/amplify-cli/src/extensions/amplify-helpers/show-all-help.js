@@ -21,6 +21,11 @@ function showAllHelp(context) {
       description: 'Provisions cloud resources with the latest local developments.',
     },
     {
+      name: 'pull',
+      description:
+        'Fetch upstream backend environment definition changes from the cloud and updates the local environment to match that definition.',
+    },
+    {
       name: 'publish',
       description: 'Executes amplify push, and then builds and publishes client-side application for hosting.',
     },

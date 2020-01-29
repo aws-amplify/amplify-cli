@@ -23,6 +23,7 @@ const {
   TRANSFORM_CONFIG_FILE_NAME,
   TRANSFORM_BASE_VERSION,
   CLOUDFORMATION_FILE_NAME,
+  getAppSyncServiceExtraDirectives,
 } = TransformPackage;
 
 const apiCategory = 'api';
@@ -488,9 +489,12 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 
 async function getDirectiveDefinitions(context, resourceDir) {
   const transformList = await getTransformerFactory(context, resourceDir)(true);
-  return transformList
+  const appSynDirectives = getAppSyncServiceExtraDirectives();
+  const transformDirectives = transformList
     .map(transformPluginInst => [transformPluginInst.directive, ...transformPluginInst.typeDefinitions].map(node => print(node)).join('\n'))
     .join('\n');
+
+  return [appSynDirectives, transformDirectives].join('\n');
 }
 /**
  * Check if storage exists in the project if not return undefined

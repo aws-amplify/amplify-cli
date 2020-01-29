@@ -719,12 +719,16 @@ Either make the field optional, set auth on the object and not the field, or dis
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
@@ -1012,12 +1016,16 @@ All @auth directives used on field definitions are performed when the field is r
 
       if (
         ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-        staticGroupAuthorizationRules.length > 0 ||
-        dynamicGroupAuthorizationRules.length > 0
+        staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
       ) {
         authModesToCheck.add('userPools');
       }
-      if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+      if (
+        ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+        staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+      ) {
         authModesToCheck.add('oidc');
       }
 
@@ -1157,12 +1165,16 @@ All @auth directives used on field definitions are performed when the field is r
 
       if (
         ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-        staticGroupAuthorizationRules.length > 0 ||
-        dynamicGroupAuthorizationRules.length > 0
+        staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
       ) {
         authModesToCheck.add('userPools');
       }
-      if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+      if (
+        ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+        staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+      ) {
         authModesToCheck.add('oidc');
       }
 
@@ -1266,12 +1278,16 @@ All @auth directives used on field definitions are performed when the field is r
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
@@ -1407,12 +1423,16 @@ All @auth directives used on field definitions are performed when the field is r
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
@@ -1731,10 +1751,13 @@ All @auth directives used on field definitions are performed when the field is r
         const authModesToCheck = new Set<AuthProvider>();
         const expressions: Array<Expression> = new Array();
 
-        if (ownerAuthorizationRules.find(r => r.provider === 'userPools') || staticGroupAuthorizationRules.length > 0) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools')
+        ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (ownerAuthorizationRules.find(r => r.provider === 'oidc') || staticGroupAuthorizationRules.find(r => r.provider === 'oidc')) {
           authModesToCheck.add('oidc');
         }
 
@@ -1970,9 +1993,9 @@ All @auth directives used on field definitions are performed when the field is r
     // Groups
     //
 
-    if (rule.allow === 'groups' && rule.provider !== 'userPools') {
+    if (rule.allow === 'groups' && rule.provider !== 'userPools' && rule.provider !== 'oidc') {
       throw new InvalidDirectiveError(
-        `@auth directive with 'groups' strategy only supports 'userPools' provider, but found '${rule.provider}' assigned.`
+        `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found '${rule.provider}' assigned.`
       );
     }
 

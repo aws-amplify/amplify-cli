@@ -62,10 +62,12 @@ interface KeyArguments {
 
 export class KeyTransformer extends Transformer {
   constructor() {
+    // TODO remove once prettier is upgraded
+    // prettier-ignore
     super(
       'KeyTransformer',
       gql`
-        directive @key(name: String, fields: [String!]!, queryField: String) on OBJECT
+        directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
       `
     );
   }

@@ -1,18 +1,12 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "sourceMap": true,
-        "outDir": "lib",
-        "lib": [
-            "es2015",
-            "esnext.asynciterable",
-            "dom"
-        ],
-        "declaration": true
-    },
-    "exclude": [
-        "node_modules",
-        "lib"
-    ]
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "lib",
+    "lib": ["es2015", "esnext.asynciterable", "dom"],
+    "declaration": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "lib", "src/__tests__"]
 }
