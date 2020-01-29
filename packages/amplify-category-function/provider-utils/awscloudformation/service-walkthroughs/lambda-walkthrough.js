@@ -332,6 +332,17 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   let categories = Object.keys(amplifyMeta);
   categories = categories.filter(category => category !== 'providers');
 
+  // retrieve api's appsynch resource name for conditional logic
+  // in blending appsync @model-backed dynamoDB tables into storage category flow
+  const appsyncResourceName =
+    'api' in amplifyMeta ? Object.keys(amplifyMeta.api).find(key => amplifyMeta.api[key].service === 'AppSync') : undefined;
+
+  // if there is api category appsynch resource and no storage category, add it back to selection
+  // since storage category is responsible for managing appsync @model-backed dynamoDB table permissions
+  if (!categories.includes('storage') && appsyncResourceName !== undefined) {
+    categories.push('storage');
+  }
+
   const categoryPermissionQuestion = {
     type: 'checkbox',
     name: 'categories',
@@ -353,10 +364,7 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   for (let i = 0; i < selectedCategories.length; i += 1) {
     const category = selectedCategories[i];
     const resourcesList = Object.keys(amplifyMeta[category]);
-    // for storage category, add api's appsynch resource @model-backed dynamoDB tables to selection
-    let appsyncResourceName;
     if (category === 'storage' && 'api' in amplifyMeta) {
-      appsyncResourceName = Object.keys(amplifyMeta.api).find(key => amplifyMeta.api[key].service === 'AppSync');
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
         const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
@@ -454,7 +462,10 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
               ':table/',
               {
                 'Fn::ImportValue': {
-                  'Fn::Sub': `\${apicorefootballGraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
+                  'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(
+                    `:${appsyncTableSuffix}`,
+                    'Table'
+                  )}:Name`,
                 },
               },
             ];
