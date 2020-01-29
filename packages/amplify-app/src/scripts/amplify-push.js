@@ -89,26 +89,26 @@ async function run() {
   }
 
   const PROJECT_CONFIG = `{\
-    \"envName\":\"${buildConfig.envName || 'amplify'}\"\
+    "envName":"${buildConfig.envName || 'amplify'}"\
   }`;
 
   let PROVIDER_CONFIG;
 
   if (buildConfig.profile) {
     PROVIDER_CONFIG = `{\
-      \"awscloudformation\": {\
-        \"configLevel\":\"project\",\
-        \"useProfile\":true,\
-        \"profileName\":\"${profileToUse}\"\
+      "awscloudformation": {\
+        "configLevel":"project",\
+        "useProfile":true,\
+        "profileName":"${profileToUse}"\
       } \
     }`;
   } else if (buildConfig.accessKeyId && buildConfig.secretAccessKey && buildConfig.region) {
     PROVIDER_CONFIG = `{\
-      \"awscloudformation\": {\
-        \"configLevel\":\"project\",\
-        \"accessKeyId\":\"${buildConfig.accessKeyId}\",\
-        \"secretAccessKey\":\"${buildConfig.secretAccessKey}\",\
-        \"region\":\"${buildConfig.region}\"\
+      "awscloudformation": {\
+        "configLevel":"project",\
+        "accessKeyId":"${buildConfig.accessKeyId}",\
+        "secretAccessKey":"${buildConfig.secretAccessKey}",\
+        "region":"${buildConfig.region}"\
       } \
     }`;
   } else {

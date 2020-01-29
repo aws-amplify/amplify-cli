@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-docs-generator",
-  "version": "2.1.7",
+  "version": "2.1.9",
   "main": "lib/index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -24,30 +24,22 @@
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rm -rf ./lib",
-    "lint": "tslint -p ./tsconfig.json"
+    "clean": "rm -rf ./lib"
   },
   "devDependencies": {
-    "@types/ejs": "^2.6.0",
     "@types/jest": "23.3.1",
     "@types/node": "^10.17.13",
-    "@types/prettier": "^1.13.2",
+    "@types/prettier": "^1.19.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
     "typescript": "~3.6.4"
   },
   "dependencies": {
-    "camel-case": "^3.0.0",
-    "commander": "^2.9.0",
-    "fetch": "^1.1.0",
+    "change-case": "^4.1.1",
     "graphql": "^14.5.8",
-    "handlebars": "^4.1.2",
-    "lodash": "^4.17.15",
-    "node-fetch": "^2.6.0",
-    "pascal-case": "^2.0.1",
-    "prettier": "^1.18.2",
-    "yargs": "^13.3.0"
+    "handlebars": "4.5.0",
+    "prettier": "^1.19.1",
+    "yargs": "^15.1.0"
   },
   "jest": {
     "transform": {

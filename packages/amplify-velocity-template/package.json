@@ -1,7 +1,7 @@
 {
   "name": "amplify-velocity-template",
   "description": "Velocity Template Language(VTL) for JavaScript",
-  "version": "1.1.7",
+  "version": "1.1.9",
   "keywords": [
     "velocity template"
   ],
@@ -16,12 +16,16 @@
     "Yathiraj"
   ],
   "devDependencies": {
-    "coveralls": "~2.11.2",
-    "istanbul": "~0.3.5",
-    "jison": ">=0.3",
-    "mocha": ">=1.7.2",
-    "mocha-lcov-reporter": "0.0.1",
-    "should": "^7.0.1"
+    "browser": "^0.2.6",
+    "coveralls": "~3.0.9",
+    "growl": "^1.10.5",
+    "istanbul": "~0.4.5",
+    "jade": "^1.11.0",
+    "jison": ">=0.4",
+    "mocha": ">=7.0.0",
+    "mocha-lcov-reporter": "1.3.0",
+    "should": "^13.2.3",
+    "velocityjs": "^2.0.0"
   },
   "dependencies": {
     "lodash": "^4.17.15"

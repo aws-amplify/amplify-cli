@@ -2,6 +2,7 @@
 node_modules
 lerna-debug.log
 npm-debug.log
+yarn-error.log
 coverage
 .nyc_output
 package-lock.json
@@ -9,7 +10,9 @@ packages/amplify-cli/amplify/.config/
 packages/amplify-appsync-simulator/public
 packages/amplify-dynamodb-simulator/emulator
 packages/amplify-dynamodb-simulator/__test__/dynamodb-data
-.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 packages/graphql*/lib
 packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
@@ -22,3 +25,4 @@ packages/*/package-lock.json
 amplify-integ*/
 packages/amplify-storage-simulator/lib
 packages/**/reports/junit/*
+test.out.log

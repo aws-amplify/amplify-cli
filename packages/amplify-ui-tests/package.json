@@ -1,6 +1,6 @@
 {
   "name": "amplify-ui-tests",
-  "version": "2.12.0",
+  "version": "2.13.1",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -18,16 +18,12 @@
     "@types/jest": "^23.3.14",
     "@types/nexpect": "0.4.30",
     "@types/node": "^10.17.13",
-    "aws-amplify": "1.1.4",
-    "aws-sdk": "^2.580.0",
-    "dotenv": "6.2.0",
+    "dotenv": "8.2.0",
     "jest": "23.1.0",
     "jest-junit": "^8.0.0",
     "nexpect": "0.6.0",
-    "node-fetch": "2.2.0",
-    "rimraf": "2.6.2",
+    "rimraf": "3.0.0",
     "ts-jest": "22.4.6",
-    "tslint": "5.10.0",
     "typescript": "~3.6.4"
   },
   "jest": {
@@ -58,8 +54,5 @@
     "outputName": "js-test-results.xml",
     "usePathForSuiteName": "true",
     "addFileAttribute": "true"
-  },
-  "dependencies": {
-    "esm": "^3.2.25"
   }
 }

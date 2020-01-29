@@ -8,7 +8,6 @@ import {
   getConnectedField,
 } from '../../utils/process-connections';
 import { CodeGenModelMap, CodeGenModel } from '../../visitors/appsync-visitor';
-import { directive } from 'babel-types';
 
 describe('process connection', () => {
   describe('Bi-Directional connection (named connection)', () => {

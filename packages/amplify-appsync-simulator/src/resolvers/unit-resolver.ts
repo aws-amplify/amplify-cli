@@ -22,14 +22,18 @@ export class AppSyncUnitResolver {
     const requestMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);
     const responseMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
-    const { result: requestPayload, errors: requestTemplateErrors } = requestMappingTemplate.render(
+    const { result: requestPayload, errors: requestTemplateErrors, isReturn } = requestMappingTemplate.render(
       { source, arguments: args },
       context,
-      info
+      info,
     );
     context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateErrors];
     let result = null;
     let error;
+    if (isReturn) {
+      // template has #return bail and return the value specified in the template
+      return requestPayload;
+    }
     try {
       result = await dataLoader.load(requestPayload);
     } catch (e) {
@@ -47,7 +51,7 @@ export class AppSyncUnitResolver {
     const { result: responseTemplateResult, errors: responseTemplateErrors } = responseMappingTemplate.render(
       { source, arguments: args, result, error },
       context,
-      info
+      info,
     );
     context.appsyncErrors = [...context.appsyncErrors, ...responseTemplateErrors];
 

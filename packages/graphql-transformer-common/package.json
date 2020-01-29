@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "4.12.0",
+  "version": "4.13.1",
   "description": "Common code and constants for AppSync Transformers",
   "main": "lib/index.js",
   "scripts": {
@@ -18,19 +18,16 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "cloudform": "^4.1.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.12.0",
+    "graphql-mapping-template": "4.13.1",
     "md5": "^2.2.1"
   },
   "devDependencies": {
     "@types/jest": "23.1.1",
     "@types/md5": "^2.1.33",
     "@types/node": "^10.17.13",
-    "aws-sdk": "^2.580.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
     "typescript": "~3.6.4"
   },
   "jest": {

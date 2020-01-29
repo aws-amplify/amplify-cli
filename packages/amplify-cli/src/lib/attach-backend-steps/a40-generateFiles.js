@@ -81,6 +81,10 @@ function generateProviderInfoFile(context) {
 
   if (existingTeamProviderInfo) {
     if (existingTeamProviderInfo[envName]) {
+      if (existingTeamProviderInfo[envName].categories) {
+        teamProviderInfo[envName] = teamProviderInfo[envName] || {};
+        teamProviderInfo[envName].categories = existingTeamProviderInfo[envName].categories;
+      }
       delete existingTeamProviderInfo[envName];
     }
     Object.assign(teamProviderInfo, existingTeamProviderInfo);

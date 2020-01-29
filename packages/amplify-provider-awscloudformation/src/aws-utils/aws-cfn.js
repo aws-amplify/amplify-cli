@@ -299,7 +299,7 @@ class CloudFormation {
               'UpdateRolesWithIDPFunction',
               'UpdateRolesWithIDPFunctionOutputs',
               'UpdateRolesWithIDPFunctionRole',
-            ].includes(resource.LogicalResourceId)
+            ].includes(resource.LogicalResourceId),
         );
 
         const promises = [];
@@ -323,7 +323,7 @@ class CloudFormation {
                   category,
                   resource,
                   'output',
-                  formattedOutputs
+                  formattedOutputs,
                 );
 
                 // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
@@ -491,7 +491,7 @@ function showEvents(events) {
       const res = {};
       const { ResourceStatus: resourceStatus } = ev;
 
-      let colorFn = chalk.default;
+      let colorFn = chalk.reset;
       if (CNF_ERROR_STATUS.includes(resourceStatus)) {
         colorFn = chalk.red;
       } else if (CFN_SUCCESS_STATUS.includes(resourceStatus)) {
@@ -509,7 +509,7 @@ function showEvents(events) {
       columnify(e, {
         columns: COLUMNS,
         showHeaders: false,
-      })
+      }),
     );
   }
 }
