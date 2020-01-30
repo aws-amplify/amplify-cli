@@ -14,8 +14,10 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 !.vscode/settings.json
 !.vscode/extensions.json
 packages/graphql*/lib
+packages/amplify-cli/lib
 packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
+packages/amplify-codegen-appsync-model-plugin/lib
 packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
@@ -26,3 +28,4 @@ amplify-integ*/
 packages/amplify-storage-simulator/lib
 packages/**/reports/junit/*
 test.out.log
+tsconfig.tsbuildinfo

@@ -31,8 +31,7 @@
     "@types/node": "^10.17.13",
     "@types/prettier": "^1.19.0",
     "jest": "^23.1.0",
-    "ts-jest": "^22.4.6",
-    "typescript": "~3.6.4"
+    "ts-jest": "^22.4.6"
   },
   "dependencies": {
     "change-case": "^4.1.1",

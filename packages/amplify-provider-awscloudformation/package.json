@@ -2,9 +2,19 @@
   "name": "amplify-provider-awscloudformation",
   "version": "4.13.1",
   "description": "AWS CloudFormation Provider",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-provider-awscloudformation"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "dependencies": {
     "amplify-category-auth": "2.13.1",
     "amplify-category-predictions": "2.1.9",
