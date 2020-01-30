@@ -242,6 +242,7 @@ export class APIService {
 
 exports[`Angular code generation #generateSource() should generate queries returning Arrays as Array objects 1`] = `
 "/* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
