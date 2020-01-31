@@ -62,7 +62,7 @@ function printOr(node: OrNode, indent: string = ''): string {
 }
 
 function printParens(node: ParensNode, indent: string = ''): string {
-  return `(${printExpr(node.expr)})`;
+  return `${indent}(${printExpr(node.expr)})`;
 }
 
 function printEquals(node: EqualsNode, indent: string = ''): string {
