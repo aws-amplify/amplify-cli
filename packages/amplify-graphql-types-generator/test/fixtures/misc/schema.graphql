@@ -62,4 +62,9 @@ type Query {
   interfaceTest: InterfaceTestCase
   unionTest: UnionTestCase
   scalarTest: Boolean!
+  arrayTest: [QueryObject]
+}
+
+type QueryObject {
+  test: String
 }

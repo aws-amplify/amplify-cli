@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLType, isScalarType } from 'graphql';
+import { GraphQLNonNull, GraphQLType, isScalarType, isListType } from 'graphql';
 import * as prettier from 'prettier';
 import { LegacyCompilerContext, LegacyOperation, LegacyInlineFragment, LegacyField } from '../compiler/legacyIR';
 
@@ -88,10 +88,15 @@ function getOperationResultField(operation: LegacyOperation): LegacyField | void
 
 function getReturnTypeName(generator: CodeGenerator, op: LegacyOperation): String {
   const { operationName, operationType } = op;
-  if (isScalarType(op.fields[0].type)) {
-    return typeNameFromGraphQLType(generator.context, op.fields[0].type);
+  const { type } = op.fields[0];
+  if (isScalarType(type)) {
+    return typeNameFromGraphQLType(generator.context, type);
   } else {
-    return interfaceNameFromOperation({ operationName, operationType });
+    let returnType = interfaceNameFromOperation({ operationName, operationType });
+    if (isListType(type)) {
+      returnType = `Array<${returnType}>`;
+    }
+    return returnType;
   }
 }
 
