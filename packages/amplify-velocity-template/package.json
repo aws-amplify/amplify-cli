@@ -1,20 +1,35 @@
 {
   "name": "amplify-velocity-template",
-  "description": "Velocity Template Language(VTL) for JavaScript",
   "version": "1.1.9",
+  "description": "Velocity Template Language(VTL) for JavaScript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-velocity-template"
+  },
+  "author": "Amazon Web Services",
+  "license": "MIT OR Apache-2.0",
+  "main": "src/velocity.js",
   "keywords": [
+    "graphql",
+    "appsync",
+    "aws",
     "velocity template"
   ],
-  "author": "Amazon Web Services",
-  "license": "MIT",
-  "main": "src/velocity.js",
   "bin": {
     "velocity": "bin/velocity"
   },
   "contributors": [
-    "Eward Song",
-    "Yathiraj"
+    "Eward Song"
   ],
+  "scripts": {
+    "test": "mocha tests --require should",
+    "pub": "npm version patch && npm publish && git push origin master && git push origin --tag",
+    "build": "jison src/parse/velocity.yy src/parse/velocity.l -o src/parse/index.js"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
+  },
   "devDependencies": {
     "browser": "^0.2.6",
     "coveralls": "~3.0.9",
@@ -26,13 +41,5 @@
     "mocha-lcov-reporter": "1.3.0",
     "should": "^13.2.3",
     "velocityjs": "^2.0.0"
-  },
-  "dependencies": {
-    "lodash": "^4.17.15"
-  },
-  "scripts": {
-    "test": "mocha tests --require should",
-    "pub": "npm version patch && npm publish && git push origin master && git push origin --tag",
-    "build": "jison src/parse/velocity.yy src/parse/velocity.l -o src/parse/index.js"
   }
 }

@@ -11,8 +11,7 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "keywords": [
-    "graphql",
-    "appsync",
+    "amplify",
     "aws"
   ],
   "scripts": {

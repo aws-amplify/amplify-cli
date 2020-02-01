@@ -2,7 +2,19 @@
   "name": "amplify-util-mock",
   "version": "3.13.1",
   "description": "amplify cli plugin providing local testing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-util-mock"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "scripts": {
     "e2e": "jest --runInBand  --forceExit src/__e2e__/*.e2e.test.ts",
     "test-watch": "jest --watch",
@@ -10,8 +22,6 @@
     "watch": "tsc -w",
     "clean": "rm -rf ./lib"
   },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
   "dependencies": {
     "amplify-appsync-simulator": "1.13.1",
     "amplify-category-function": "2.13.1",

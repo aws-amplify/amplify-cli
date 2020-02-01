@@ -1,20 +1,26 @@
 {
   "name": "amplify-graphql-docs-generator",
   "version": "2.1.9",
-  "main": "lib/index.js",
+  "description": "amplify graphql docs generator plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-graphql-docs-generator"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "engines": {
     "node": ">=10.0.0"
   },
   "bin": {
     "amplify-graphql-docs-generator": "./bin/cli"
   },
-  "keywords": [
-    "graphql",
-    "appsync",
-    "aws"
-  ],
   "directories": {
     "test": "tests"
   },
@@ -26,19 +32,19 @@
     "watch": "tsc -w",
     "clean": "rm -rf ./lib"
   },
-  "devDependencies": {
-    "@types/jest": "23.3.1",
-    "@types/node": "^10.17.13",
-    "@types/prettier": "^1.19.0",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6"
-  },
   "dependencies": {
     "change-case": "^4.1.1",
     "graphql": "^14.5.8",
     "handlebars": "4.5.0",
     "prettier": "^1.19.1",
     "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "23.3.1",
+    "@types/node": "^10.17.13",
+    "@types/prettier": "^1.19.0",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6"
   },
   "jest": {
     "transform": {

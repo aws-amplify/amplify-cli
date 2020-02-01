@@ -2,9 +2,18 @@
   "name": "amplify-category-hosting",
   "version": "2.1.9",
   "description": "amplify-cli hosting plugin",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-hosting"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
   "scripts": {
     "test": "jest --coverage",
     "test-ci": "jest --ci -i"

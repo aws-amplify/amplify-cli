@@ -2,7 +2,20 @@
   "name": "amplify-appsync-simulator",
   "version": "1.13.1",
   "description": "An AppSync Simulator to test AppSync API.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-appsync-simulator"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws",
+    "simulator"
+  ],
   "scripts": {
     "copy-assets": "rm -rf ./public && cp -R ../amplify-graphiql-explorer/build ./public",
     "build": "yarn copy-assets && tsc",
@@ -12,14 +25,6 @@
     "test": "jest",
     "test-ci": "jest"
   },
-  "keywords": [
-    "graphql",
-    "appsync",
-    "aws",
-    "simulator"
-  ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
   "dependencies": {
     "amplify-velocity-template": "1.1.9",
     "aws-sdk": "^2.608.0",
