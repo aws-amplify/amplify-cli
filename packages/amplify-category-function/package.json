@@ -10,11 +10,7 @@
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0",
-    "graphql-transformer-core": "5.16.0"
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "graphql-transformer-core": "^6.13.1"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0"
