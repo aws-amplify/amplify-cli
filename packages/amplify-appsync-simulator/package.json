@@ -73,7 +73,8 @@
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.ts"
+      "src/**/*.ts",
+      "!**/*.d.ts"
     ],
     "testURL": "http://localhost/",
     "testRegex": "(src/__tests__/.*.test.*)$",

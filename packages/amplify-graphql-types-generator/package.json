@@ -8,7 +8,7 @@
     "directory": "packages/amplify-graphql-types-generator"
   },
   "author": "Amazon Web Services",
-  "license": "MIT OR Apache-2.0",
+  "license": "(MIT OR Apache-2.0)",
   "original-author": "Martijn Walraven <martijn@martijnwalraven.com>",
   "contributors": [
     "Min Bi",

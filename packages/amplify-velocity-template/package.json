@@ -8,7 +8,7 @@
     "directory": "packages/amplify-velocity-template"
   },
   "author": "Amazon Web Services",
-  "license": "MIT OR Apache-2.0",
+  "license": "(MIT OR Apache-2.0)",
   "main": "src/velocity.js",
   "keywords": [
     "graphql",

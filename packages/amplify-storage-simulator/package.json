@@ -38,8 +38,12 @@
   "devDependencies": {
     "@types/body-parser": "^1.17.1",
     "@types/cors": "^2.8.6",
+    "@types/etag": "^1.8.0",
+    "@types/event-to-promise": "^0.7.0",
     "@types/glob": "^7.1.1",
     "@types/serve-static": "^1.13.3",
+    "@types/uuid": "^3.4.7",
+    "@types/xml": "^1.0.4",
     "aws-sdk": "^2.608.0",
     "request": "^2.88.0"
   },
@@ -51,6 +55,7 @@
     "collectCoverageFrom": [
       "**/*.ts",
       "!**/node_modules/**",
+      "!**/lib/**",
       "!__tests__/**"
     ],
     "testURL": "http://localhost/",
