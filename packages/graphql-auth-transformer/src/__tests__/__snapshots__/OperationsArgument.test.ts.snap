@@ -292,7 +292,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": {
-      \\"S\\": \\"$context.args.input.id\\"
+      \\"S\\": $util.toJson($context.args.input.id)
   }
 } #end,
   \\"update\\": $util.toJson($update),
@@ -919,7 +919,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": {
-      \\"S\\": \\"$context.args.input.id\\"
+      \\"S\\": $util.toJson($context.args.input.id)
   }
 } #end,
   \\"update\\": $util.toJson($update),
