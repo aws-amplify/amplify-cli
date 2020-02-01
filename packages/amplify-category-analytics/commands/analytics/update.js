@@ -1,14 +1,12 @@
-const fs = require('fs');
-
 const subcommand = 'update';
 const category = 'analytics';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
 
 module.exports = {
   name: subcommand,
   alias: ['configure'],
   run: async context => {
     const { amplify } = context;
+    const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
 
     return amplify
       .serviceSelectionPrompt(context, category, servicesMetadata)
@@ -33,7 +31,7 @@ module.exports = {
         print.success('Some next steps:');
         print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
         print.info(
-          '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+          '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
         );
         print.info('');
       })

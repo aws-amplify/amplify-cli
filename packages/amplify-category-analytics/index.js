@@ -8,11 +8,11 @@ const category = 'analytics';
 
 async function console(context) {
   const hasKinesisResource = kinesisHelper.hasResource(context);
-  const hasPinpointResporce = pinpointHelper.hasResource(context);
+  const hasPinpointResource = pinpointHelper.hasResource(context);
 
   let selectedResource;
-  if (hasKinesisResource && hasPinpointResporce) {
-    const questions = {
+  if (hasKinesisResource && hasPinpointResource) {
+    const question = {
       name: 'resource',
       message: 'Select resource',
       type: 'list',
@@ -20,11 +20,11 @@ async function console(context) {
       required: true,
     };
 
-    const result = await inquirer.prompt(questions);
+    const result = await inquirer.prompt(question);
     selectedResource = result.resource;
   } else if (hasKinesisResource) {
     selectedResource = 'kinesis';
-  } else if (hasPinpointResporce) {
+  } else if (hasPinpointResource) {
     selectedResource = 'pinpoint';
   } else {
     context.print.error('Neither analytics nor notifications is enabled in the cloud.');
@@ -56,7 +56,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName]
+          resourceOpsMapping[resourceName],
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });
