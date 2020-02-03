@@ -28,6 +28,7 @@ module.exports = function(Velocity, utils) {
      * @return str
      */
     render: function(context, macros, silence) {
+      this._state = { stop: false, break: false, return: false };
       this.silence = !!silence;
       this.context = context || {};
       this.jsmacros = utils.mixin(macros || {}, this.directive);
