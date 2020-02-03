@@ -2,9 +2,14 @@
   "name": "amplify-category-api",
   "version": "2.13.1",
   "description": "amplify-cli api plugin",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-api"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
+  "main": "index.js",
   "dependencies": {
     "amplify-category-auth": "2.13.1",
     "amplify-category-function": "2.13.1",

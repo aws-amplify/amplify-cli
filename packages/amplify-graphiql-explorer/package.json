@@ -16,8 +16,7 @@
   },
   "devDependencies": {
     "@types/react-dom": "16.9.5",
-    "cross-env": "^6.0.3",
-    "typescript": "~3.6.4"
+    "cross-env": "^6.0.3"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",

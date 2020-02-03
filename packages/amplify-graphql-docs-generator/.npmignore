@@ -1,0 +1,7 @@
+**/__mocks__/**
+**/__tests__/**
+__integration__
+src
+fixtures
+tsconfig.json
+tsconfig.tsbuildinfo

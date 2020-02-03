@@ -2,10 +2,19 @@
   "name": "amplify-category-auth",
   "version": "2.13.1",
   "description": "amplify-cli authentication plugin",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-auth"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "scripts": {
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+   "scripts": {
     "test": "jest",
     "test-watch": "jest --watch",
     "test-ci": "jest --ci -i"

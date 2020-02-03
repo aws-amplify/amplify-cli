@@ -2,9 +2,19 @@
   "name": "amplify-frontend-javascript",
   "version": "2.13.1",
   "description": "amplify-cli front-end plugin for JavaScript projects",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-frontend-javascript"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "dependencies": {
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",

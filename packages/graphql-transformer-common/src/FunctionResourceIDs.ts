@@ -1,5 +1,5 @@
 import { simplifyName } from './util';
-import * as md5 from 'md5';
+import md5 from 'md5';
 
 export class FunctionResourceIDs {
   static FunctionDataSourceID(name: string, region?: string): string {

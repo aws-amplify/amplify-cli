@@ -23,8 +23,7 @@
     "jest-junit": "^8.0.0",
     "nexpect": "0.6.0",
     "rimraf": "3.0.0",
-    "ts-jest": "22.4.6",
-    "typescript": "~3.6.4"
+    "ts-jest": "22.4.6"
   },
   "jest": {
     "transform": {

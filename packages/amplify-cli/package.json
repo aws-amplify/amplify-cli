@@ -2,7 +2,20 @@
   "name": "@aws-amplify/cli",
   "version": "4.13.1",
   "description": "Amplify CLI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-cli"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "bin": {
     "amplify": "bin/amplify"
   },
@@ -20,8 +33,6 @@
   "engines": {
     "node": ">=10.0.0"
   },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
   "dependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/global-prefix": "^3.0.0",
@@ -64,8 +75,7 @@
     "@types/jest": "^24.0.15",
     "@types/node": "^10.17.13",
     "jest": "^24.8.0",
-    "ts-jest": "^24.0.2",
-    "typescript": "~3.6.4"
+    "ts-jest": "^24.0.2"
   },
   "jest": {
     "transform": {

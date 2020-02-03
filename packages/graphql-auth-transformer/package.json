@@ -2,7 +2,20 @@
   "name": "graphql-auth-transformer",
   "version": "6.13.1",
   "description": "Implements the @auth directive for the appsync model transform.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-auth-transformer"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci -i",
@@ -10,13 +23,6 @@
     "clean": "rimraf ./lib",
     "watch": "tsc -w"
   },
-  "keywords": [
-    "graphql",
-    "appsync",
-    "aws"
-  ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
   "dependencies": {
     "graphql": "^14.5.8",
     "graphql-connection-transformer": "4.13.1",
@@ -32,8 +38,7 @@
     "graphql-elasticsearch-transformer": "4.3.1",
     "jest": "^23.1.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^22.4.6",
-    "typescript": "~3.6.4"
+    "ts-jest": "^22.4.6"
   },
   "jest": {
     "testURL": "http://localhost",

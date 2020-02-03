@@ -2,9 +2,19 @@
   "name": "amplify-frontend-ios",
   "version": "2.13.1",
   "description": "amplify-cli front-end plugin for xcode projects",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-frontend-ios"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "dependencies": {
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1"
