@@ -345,7 +345,7 @@ export class ResourceFactory {
       ),
       filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
       limit: ref('limit'),
-      nextToken: ifElse(ref('context.args.nextToken'), str('$context.args.nextToken'), nul()),
+      nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
       index: indexName ? str(indexName) : undefined,
     };
 

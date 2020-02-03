@@ -638,7 +638,7 @@ export class ResourceFactory {
             ),
             filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
             limit: ref('limit'),
-            nextToken: ifElse(ref('context.args.nextToken'), str('$context.args.nextToken'), nul()),
+            nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
             isSyncEnabled,
           }),
         ]),
@@ -677,7 +677,7 @@ export class ResourceFactory {
               limit: ref('limit'),
             }),
           ),
-          iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), str('$context.args.nextToken'))),
+          iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('util.toJson($context.args.nextToken)'))),
           iff(
             ref('context.args.filter'),
             set(ref(`${requestVariable}.filter`), ref('util.parseJson("$util.transform.toDynamoDBFilterExpression($ctx.args.filter)")')),
