@@ -448,9 +448,14 @@ export class ResourceFactory {
             ref('util.isNullOrEmpty($context.args.sort)'),
             compoundExpression([set(ref('sortDirection'), str('desc')), set(ref('sortField'), str(primaryKey))]),
             compoundExpression([
-              set(ref('sortDirection'), ref('util.toJson($util.defaultIfNull($context.args.sort.direction, "desc"))')),
-              set(ref('sortField'), ref(`util.toJson($util.defaultIfNull($context.args.sort.field, "${primaryKey}"))`)),
+              set(ref('sortDirection'), ref('util.defaultIfNull($context.args.sort.direction, "desc")')),
+              set(ref('sortField'), ref(`util.defaultIfNull($context.args.sort.field, "${primaryKey}")`)),
             ]),
+          ),
+          ifElse(
+            ref('nonKeywordFields.contains($sortField)'),
+            compoundExpression([set(ref('sortField0'), ref('util.toJson($sortField)'))]),
+            compoundExpression([set(ref('sortField0'), ref('util.toJson("${sortField}.keyword")'))]),
           ),
           ElasticsearchMappingTemplate.searchItem({
             path: str('$indexPath'),
@@ -465,10 +470,7 @@ export class ResourceFactory {
             ),
             sort: list([
               raw(
-                '{ #if($nonKeywordFields.contains($sortField))\
-    "$sortField" #else "${sortField}.keyword" #end : {\
-    "order" : "$sortDirection"\
-} }',
+                '{$sortField0: { "order" : $util.toJson($sortDirection) }}',
               ),
             ]),
           }),
