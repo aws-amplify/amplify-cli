@@ -381,7 +381,7 @@ export function block(name: string, exprs: Expression[]): CompoundExpressionNode
 }
 
 export function methodCall(methodName: ReferenceNode, ...params: Expression[]): CompoundExpressionNode {
-  return compoundExpression([methodName, parens(compoundExpression(params, ', '))], '', !RECURSE_INDENT);
+  return compoundExpression([methodName, parens(compoundExpression(params, ', '))], '', false);
 }
 
 /**
@@ -414,9 +414,3 @@ export type Expression =
   | NotNode
   | NewLineNode
   | ReturnNode;
-
-/**
- * Can be used as a parameter to iff() and others to more clearly specify "inline" parameter
- */
-export const INLINE = true;
-const RECURSE_INDENT = true;

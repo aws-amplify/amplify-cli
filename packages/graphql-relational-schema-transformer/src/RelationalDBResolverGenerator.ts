@@ -2,7 +2,7 @@ import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { DocumentNode } from 'graphql';
 import { Fn } from 'cloudform-types';
 import AppSync from 'cloudform-types/types/appSync';
-import { print, obj, set, str, list, forEach, ref, compoundExpression, iff, methodCall, ret, INLINE } from 'graphql-mapping-template';
+import { print, obj, set, str, list, forEach, ref, compoundExpression, iff, methodCall, ret } from 'graphql-mapping-template';
 import { graphqlName, toUpper, plurality } from 'graphql-transformer-common';
 import { ResourceConstants } from './ResourceConstants';
 import { RelationalDBMappingTemplate } from './RelationalDBMappingTemplate';
@@ -159,10 +159,9 @@ export class RelationalDBResolverGenerator {
         iff(
           ref('output.isEmpty()'),
           methodCall(ref('util.error'), str(rdsResponseErrorMessage), str(rdsResponseErrorType), obj({}), ref('output')),
-          !INLINE,
         ),
         set(ref('output'), ref('output[0]')),
-        iff(ref('output.isEmpty()'), ret(), !INLINE),
+        iff(ref('output.isEmpty()'), ret()),
         methodCall(ref('utils.toJson'), ref('output[0]')),
       ]),
     );
@@ -233,10 +232,9 @@ export class RelationalDBResolverGenerator {
         iff(
           ref('output.length() < 2'),
           methodCall(ref('util.error'), str(rdsResponseErrorMessage), str(rdsResponseErrorType), obj({}), ref('output')),
-          !INLINE,
         ),
         set(ref('output'), ref('output[1]')),
-        iff(ref('output.isEmpty()'), ret(), !INLINE),
+        iff(ref('output.isEmpty()'), ret()),
         methodCall(ref('utils.toJson'), ref('output[0]')),
       ]),
     );
@@ -294,10 +292,9 @@ export class RelationalDBResolverGenerator {
         iff(
           ref('output.isEmpty()'),
           methodCall(ref('util.error'), str(rdsResponseErrorMessage), str(rdsResponseErrorType), obj({}), ref('output')),
-          !INLINE,
         ),
         set(ref('output'), ref('output[0]')),
-        iff(ref('output.isEmpty()'), ret(), !INLINE),
+        iff(ref('output.isEmpty()'), ret()),
         methodCall(ref('utils.toJson'), ref('output[0]')),
       ]),
     );

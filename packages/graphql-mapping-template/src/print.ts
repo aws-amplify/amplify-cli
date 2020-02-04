@@ -159,8 +159,8 @@ function printNewLine(node: NewLineNode): string {
 
 function printReturn(node: ReturnNode, indent: string = ''): string {
   var suffix: string = '';
-  if (node.value) {
-    printParens(parens(node.value));
+  if (node.value !== undefined) {
+    suffix = printParens(parens(node.value));
   }
   return `${indent}#return` + suffix;
 }
