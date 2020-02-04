@@ -1,6 +1,6 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-unused-vars */
-const triggerFlow = require('../../src/extensions/amplify-helpers/trigger-flow');
+const triggerFlow = require('../../lib/extensions/amplify-helpers/trigger-flow');
 const func = require('amplify-category-function');
 const inquirer = require('inquirer');
 const fs = require('fs');

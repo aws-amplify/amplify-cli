@@ -95,7 +95,7 @@ async function setLocalEnvDefaults(context) {
  * Extract amplify project structure with backend-config and project-config
  */
 async function createAmplifySkeleton() {
-  const skeletonLocalDir = path.join(__dirname, '/../../../src/lib/amplify-skeleton');
+  const skeletonLocalDir = path.join(__dirname, '../../templates/amplify-skeleton');
   const skeletonProjectDir = path.join(process.cwd(), '/amplify');
   await fs.copySync(skeletonLocalDir, skeletonProjectDir);
 }

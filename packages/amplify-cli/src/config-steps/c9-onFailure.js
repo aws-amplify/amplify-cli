@@ -1,4 +1,4 @@
-const print = require('../../extensions/amplify-helpers/print');
+const print = require('../extensions/amplify-helpers/print');
 const util = require('util');
 
 function run(e) {

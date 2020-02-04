@@ -1,10 +1,10 @@
 const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const { normalizeEditor, editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
-const { makeId } = require('../../extensions/amplify-helpers/make-id');
-const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/constants');
-const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
+const { normalizeEditor, editorSelection } = require('../extensions/amplify-helpers/editor-selection');
+const { makeId } = require('../extensions/amplify-helpers/make-id');
+const { PROJECT_CONFIG_VERSION } = require('../extensions/amplify-helpers/constants');
+const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
 
 async function run(context) {
   if (!context.parameters.options.app) {

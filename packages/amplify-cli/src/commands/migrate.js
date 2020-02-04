@@ -1,4 +1,4 @@
-const { migrateProject } = require('../lib/migrate-project');
+const { migrateProject } = require('../migrate-project');
 
 module.exports = {
   name: 'migrate',

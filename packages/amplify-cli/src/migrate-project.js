@@ -2,13 +2,13 @@ const fs = require('fs-extra');
 const chalk = require('chalk');
 const path = require('path');
 const ora = require('ora');
-const { makeId } = require('../extensions/amplify-helpers/make-id');
-const constants = require('../extensions/amplify-helpers/constants');
-const gitManager = require('../extensions/amplify-helpers/git-manager');
-const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
+const { makeId } = require('./extensions/amplify-helpers/make-id');
+const constants = require('./extensions/amplify-helpers/constants');
+const gitManager = require('./extensions/amplify-helpers/git-manager');
+const { readJsonFile } = require('./extensions/amplify-helpers/read-json-file');
 
 const spinner = ora('');
-const { run } = require('../commands/push');
+const { run } = require('./commands/push');
 
 const pushRun = run;
 
@@ -24,7 +24,7 @@ const {
   getBackendConfigFilePath,
   getGitIgnoreFilePath,
   getAmplifyRcFilePath,
-} = require('../extensions/amplify-helpers/path-manager');
+} = require('./extensions/amplify-helpers/path-manager');
 
 const confirmMigrateMessage =
   'We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?';
@@ -62,8 +62,8 @@ async function migrateProject(context) {
       context.print.info(infoMessage);
       context.print.info(
         chalk.red(
-          "IF YOU'VE MODIFIED ANY CLOUDFORMATION FILES MANUALLY, PLEASE CHECK AND DIFF YOUR CLOUDFORMATION FILES BEFORE PUSHING YOUR RESOURCES IN THE CLOUD IN THE LAST STEP OF THIS MIGRATION."
-        )
+          "IF YOU'VE MODIFIED ANY CLOUDFORMATION FILES MANUALLY, PLEASE CHECK AND DIFF YOUR CLOUDFORMATION FILES BEFORE PUSHING YOUR RESOURCES IN THE CLOUD IN THE LAST STEP OF THIS MIGRATION.",
+        ),
       );
 
       if (await context.prompt.confirm(secondConfirmMessage)) {
@@ -123,7 +123,7 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
     updateGitIgnoreFile(projectPath);
     spinner.succeed('Migrated your project successfully.');
     context.print.warning(
-      "If you have added functions or interactions category to your project, please check the 'Auto-migration' section at https://github.com/aws-amplify/docs/blob/master/cli/migrate.md"
+      "If you have added functions or interactions category to your project, please check the 'Auto-migration' section at https://github.com/aws-amplify/docs/blob/master/cli/migrate.md",
     );
     // Run the `amplify push` flow
     try {

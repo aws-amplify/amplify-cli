@@ -83,7 +83,8 @@
     },
     "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "/templates/"
     ],
     "moduleFileExtensions": [
       "ts",

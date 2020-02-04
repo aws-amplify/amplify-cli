@@ -1,11 +1,11 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
 const ora = require('ora');
-const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
+const { readJsonFile } = require('./extensions/amplify-helpers/read-json-file');
 
 const spinner = ora('');
 
-const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provider-plugins');
+const { getProviderPlugins } = require('./extensions/amplify-helpers/get-provider-plugins');
 
 async function initializeEnv(context, currentAmplifyMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
@@ -56,11 +56,11 @@ async function initializeEnv(context, currentAmplifyMeta) {
     });
 
     spinner.start(
-      isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`
+      isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`,
     );
     await sequential(initializationTasks);
     spinner.succeed(
-      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.'
+      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',
     );
 
     const projectDetails = context.amplify.getProjectDetails();
@@ -70,7 +70,7 @@ async function initializeEnv(context, currentAmplifyMeta) {
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt.run(
-        'Do you want to push your resources to the cloud for your environment?'
+        'Do you want to push your resources to the cloud for your environment?',
       );
     }
     if (context.exeInfo.forcePush) {
@@ -87,7 +87,7 @@ async function initializeEnv(context, currentAmplifyMeta) {
     context.print.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
     spinner.fail(
-      isPulling ? `There was an error pulling the backend environment ${currentEnv}.` : 'There was an error initializing your environment.'
+      isPulling ? `There was an error pulling the backend environment ${currentEnv}.` : 'There was an error initializing your environment.',
     );
     throw e;
   }
