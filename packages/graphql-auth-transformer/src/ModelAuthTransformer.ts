@@ -1829,7 +1829,7 @@ All @auth directives used on field definitions are performed when the field is r
         const ownerRules = rules.filter(rule => rule.allow === OWNER_AUTH_STRATEGY);
         const needsDefaultOwnerField = ownerRules.find(rule => !rule.ownerField);
         const hasStaticGroupAuth = rules.find(rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
-        const fields = getFieldArguments(parent, false);
+        const fields = getFieldArguments(parent, false) as Record<string, TypeNode>;
         if (ownerRules) {
           // if there is an owner rule without ownerField add the owner field in the type
           if (needsDefaultOwnerField) {
@@ -1854,7 +1854,7 @@ All @auth directives used on field definitions are performed when the field is r
     resolver: Resolver,
     currentFields: Record<string, TypeNode>,
     ownerRules: AuthRule[],
-    makeNonNull: boolean = false
+    makeNonNull: boolean = false,
   ) {
     let subscription = ctx.getSubscription();
     let createField: FieldDefinitionNode = subscription.fields.find(
@@ -2048,7 +2048,7 @@ All @auth directives used on field definitions are performed when the field is r
 
     if (rule.allow === 'groups' && rule.provider !== 'userPools') {
       throw new InvalidDirectiveError(
-        `@auth directive with 'groups' strategy only supports 'userPools' provider, but found '${rule.provider}' assigned.`
+        `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found '${rule.provider}' assigned.`,
       );
     }
 
