@@ -10,8 +10,8 @@ import { GraphQLClient } from '../GraphQLClient';
 import { deploy } from '../deployNestedStacks';
 import emptyBucket from '../emptyBucket';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
-import * as moment from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
 
 jest.setTimeout(2000000);
 
@@ -160,7 +160,7 @@ type PostAuthor
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     // Arbitrary wait to make sure everything is ready.
     await cf.wait(5, () => Promise.resolve());
@@ -215,7 +215,7 @@ test('Test Parent.child getItem', async () => {
             name
         }
     }`,
-    {}
+    {},
   );
   expect(createChild.data.createChild.id).toBeDefined();
   expect(createChild.data.createChild.name).toEqual('child1');
@@ -227,7 +227,7 @@ test('Test Parent.child getItem', async () => {
             childName
         }
     }`,
-    {}
+    {},
   );
   expect(createParent.data.createParent.id).toBeDefined();
   expect(createParent.data.createParent.childID).toEqual(createChild.data.createChild.id);
@@ -242,7 +242,7 @@ test('Test Parent.child getItem', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryParent.data.getParent).toBeDefined();
   const child = queryParent.data.getParent.child;
@@ -258,7 +258,7 @@ test('Test Child.parents query', async () => {
             name
         }
     }`,
-    {}
+    {},
   );
   expect(createChild.data.createChild.id).toBeDefined();
   expect(createChild.data.createChild.name).toEqual('child2');
@@ -271,7 +271,7 @@ test('Test Child.parents query', async () => {
             childName
         }
     }`,
-    {}
+    {},
   );
   expect(createParent1.data.createParent.id).toBeDefined();
   expect(createParent1.data.createParent.childID).toEqual(createChild.data.createChild.id);
@@ -290,7 +290,7 @@ test('Test Child.parents query', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryChild.data.getChild).toBeDefined();
   const items = queryChild.data.getChild.parents.items;
@@ -309,7 +309,7 @@ test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
           surname
         }
       }`,
-    {}
+    {},
   );
 
   expect(createUser.data.createUser.id).toBeDefined();
@@ -328,7 +328,7 @@ test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
           postContents
         }
       }`,
-    {}
+    {},
   );
   expect(createPostModel.data.createPostModel.id).toBeDefined();
   expect(createPostModel.data.createPostModel.authorID).toEqual(createUser.data.createUser.id);
@@ -345,7 +345,7 @@ test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryPostModel.data.getPostModel).toBeDefined();
   const author = queryPostModel.data.getPostModel.singleAuthor;
@@ -364,7 +364,7 @@ test('Test PostModel.authors query with composite sortkey', async () => {
           surname
         }
       }`,
-    {}
+    {},
   );
   expect(createUser.data.createUserModel.id).toBeDefined();
   expect(createUser.data.createUserModel.name).toEqual('Bob');
@@ -379,7 +379,7 @@ test('Test PostModel.authors query with composite sortkey', async () => {
           surname
         }
       }`,
-    {}
+    {},
   );
   expect(createUser2.data.createUserModel.id).toBeDefined();
   expect(createUser2.data.createUserModel.name).toEqual('Bob');
@@ -398,7 +398,7 @@ test('Test PostModel.authors query with composite sortkey', async () => {
           postContents
         }
       }`,
-    {}
+    {},
   );
   expect(createPostModel.data.createPostModel.id).toBeDefined();
   expect(createPostModel.data.createPostModel.authorID).toEqual(createUser.data.createUserModel.id);
@@ -418,7 +418,7 @@ test('Test PostModel.authors query with composite sortkey', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryPostModel.data.getPostModel).toBeDefined();
   const items = queryPostModel.data.getPostModel.authors.items;
@@ -447,7 +447,7 @@ test('Test PostModel.authors query with composite sortkey passed as arg.', async
           surname
         }
       }`,
-    {}
+    {},
   );
   expect(createUser.data.createUser.id).toBeDefined();
   expect(createUser.data.createUser.name).toEqual('Bobby');
@@ -460,7 +460,7 @@ test('Test PostModel.authors query with composite sortkey passed as arg.', async
           postContents
         }
       }`,
-    {}
+    {},
   );
   expect(createPost.data.createPost.id).toBeDefined();
   expect(createPost.data.createPost.authorID).toEqual(createUser.data.createUser.id);
@@ -477,7 +477,7 @@ test('Test PostModel.authors query with composite sortkey passed as arg.', async
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryPost.data.getPost).toBeDefined();
   const items = queryPost.data.getPost.authors.items;
@@ -512,7 +512,7 @@ test('Test User.authorPosts.posts query followed by getItem (intermediary model)
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryUser.data.getUserModel).toBeDefined();
   const items = queryUser.data.getUserModel.authorPosts.items;
@@ -530,7 +530,7 @@ test('Test User.friendship.friend query (reflexive has many).', async () => {
           surname
         }
       }`,
-    {}
+    {},
   );
   expect(createUser.data.createUser.id).toBeDefined();
   expect(createUser.data.createUser.name).toEqual('Bobby');
@@ -543,7 +543,7 @@ test('Test User.friendship.friend query (reflexive has many).', async () => {
           surname
         }
       }`,
-    {}
+    {},
   );
   expect(createUser1.data.createUser.id).toBeDefined();
   expect(createUser1.data.createUser.name).toEqual('Bob');
@@ -556,7 +556,7 @@ test('Test User.friendship.friend query (reflexive has many).', async () => {
           friendID
         }
       }`,
-    {}
+    {},
   );
   expect(createFriendship.data.createFriendship.id).toBeDefined();
   expect(createFriendship.data.createFriendship.userID).toEqual('13');
@@ -577,7 +577,7 @@ test('Test User.friendship.friend query (reflexive has many).', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryUser.data.getUser).toBeDefined();
   const items = queryUser.data.getUser.friendships.items;

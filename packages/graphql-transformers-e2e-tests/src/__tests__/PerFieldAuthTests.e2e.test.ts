@@ -6,13 +6,13 @@ import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { CreateBucketRequest } from 'aws-sdk/clients/s3';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import { deploy } from '../deployNestedStacks';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import {
   createUserPool,
@@ -196,7 +196,7 @@ beforeAll(async () => {
       LOCAL_BUILD_ROOT,
       BUCKET_NAME,
       DEPLOYMENT_ROOT_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -282,7 +282,7 @@ test('Test that only Admins can create Employee records.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(createUser1);
   expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
@@ -296,7 +296,7 @@ test('Test that only Admins can create Employee records.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(tryToCreateAsNonAdmin);
   expect(tryToCreateAsNonAdmin.data.createEmployee).toBeNull();
@@ -310,7 +310,7 @@ test('Test that only Admins can create Employee records.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(tryToCreateAsNonAdmin2);
   expect(tryToCreateAsNonAdmin2.data.createEmployee).toBeNull();
@@ -326,7 +326,7 @@ test('Test that only Admins may update salary & email.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
@@ -342,7 +342,7 @@ test('Test that only Admins may update salary & email.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(tryToUpdateAsNonAdmin);
   expect(tryToUpdateAsNonAdmin.data.updateEmployee).toBeNull();
@@ -356,7 +356,7 @@ test('Test that only Admins may update salary & email.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(tryToUpdateAsNonAdmin2);
   expect(tryToUpdateAsNonAdmin2.data.updateEmployee).toBeNull();
@@ -370,7 +370,7 @@ test('Test that only Admins may update salary & email.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(tryToUpdateAsNonAdmin3);
   expect(tryToUpdateAsNonAdmin3.data.updateEmployee).toBeNull();
@@ -384,7 +384,7 @@ test('Test that only Admins may update salary & email.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(updateAsAdmin);
   expect(updateAsAdmin.data.updateEmployee.email).toEqual('someonelese@gmail.com');
@@ -398,7 +398,7 @@ test('Test that only Admins may update salary & email.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(updateAsAdmin2);
   expect(updateAsAdmin2.data.updateEmployee.email).toEqual('someonelese@gmail.com');
@@ -414,7 +414,7 @@ test('Test that owners may update their bio.', async () => {
             salary
         }
     }`,
-    {}
+    {},
   );
   console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
@@ -431,7 +431,7 @@ test('Test that owners may update their bio.', async () => {
             bio
         }
     }`,
-    {}
+    {},
   );
   console.log(tryToUpdateAsNonAdmin);
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.bio).toEqual('Does cool stuff.');
@@ -449,7 +449,7 @@ test('Test that everyone may view employee bios.', async () => {
             bio
         }
     }`,
-    {}
+    {},
   );
   console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
@@ -466,7 +466,7 @@ test('Test that everyone may view employee bios.', async () => {
             bio
         }
     }`,
-    {}
+    {},
   );
   console.log(getAsNonAdmin);
   // Should not be able to view the email as the non owner
@@ -484,7 +484,7 @@ test('Test that everyone may view employee bios.', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   console.log(listAsNonAdmin);
   expect(listAsNonAdmin.data.listEmployees.items.length).toBeGreaterThan(1);
@@ -508,7 +508,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
             notes
         }
     }`,
-    {}
+    {},
   );
   console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
@@ -524,7 +524,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
             notes
         }
     }`,
-    {}
+    {},
   );
   console.log(tryToDeleteUserNotes);
   expect(tryToDeleteUserNotes.data.updateEmployee).toBeNull();
@@ -537,7 +537,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
             notes
         }
     }`,
-    {}
+    {},
   );
   expect(updateNewsWithNotes.data.updateEmployee.notes).toEqual('something else');
 
@@ -548,7 +548,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
             notes
         }
     }`,
-    {}
+    {},
   );
   expect(updateAsAdmin.data.updateEmployee).toBeNull();
   expect(updateAsAdmin.errors).toHaveLength(1);
@@ -560,7 +560,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
             notes
         }
     }`,
-    {}
+    {},
   );
   expect(deleteNotes.data.updateEmployee.notes).toBeNull();
 });
@@ -581,7 +581,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
             owner
         }
     }`,
-    {}
+    {},
   );
   console.log(createStudent2);
   expect(createStudent2.data.createStudent.id).toBeDefined();
@@ -599,7 +599,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
             owner
         }
     }`,
-    {}
+    {},
   );
   console.log(queryForStudent2);
   expect(queryForStudent2.data.getStudent.notes).toEqual(secureNote1);
@@ -615,7 +615,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
             owner
         }
     }`,
-    {}
+    {},
   );
   console.log(queryAsStudent1);
   expect(queryAsStudent1.data.getStudent.notes).toBeNull();
