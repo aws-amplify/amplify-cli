@@ -22,7 +22,7 @@ async function pullBackend(context, inputParams) {
         context.print.info(`Run an 'amplify push' to update your project upstream.`);
         context.print.info('However, this will override upstream changes to this backend environment with your local changes.');
         context.print.info(
-          `To merge local and upstream changes, commit all backend code changes to Git, perform a merge, resolve conflicts, and then run 'amplify push'.`
+          `To merge local and upstream changes, commit all backend code changes to Git, perform a merge, resolve conflicts, and then run 'amplify push'.`,
         );
         process.exit(0);
       }

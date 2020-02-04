@@ -1,6 +1,6 @@
 const fs = require('fs');
 const sequential = require('promise-sequential');
-const { initializeEnv } = require('../../lib/initialize-env');
+const { initializeEnv } = require('../../initialize-env');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 const { getEnvInfo } = require('../../extensions/amplify-helpers/get-env-info');
 

@@ -1,10 +1,10 @@
 const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const { normalizeEditor, editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
-const { makeId } = require('../../extensions/amplify-helpers/make-id');
-const { getEnvInfo } = require('../../extensions/amplify-helpers/get-env-info');
-const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
+const { normalizeEditor, editorSelection } = require('../extensions/amplify-helpers/editor-selection');
+const { makeId } = require('../extensions/amplify-helpers/make-id');
+const { getEnvInfo } = require('../extensions/amplify-helpers/get-env-info');
+const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
 
 async function run(context) {
   const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();

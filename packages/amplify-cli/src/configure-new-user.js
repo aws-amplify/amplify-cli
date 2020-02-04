@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
-const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provider-plugins');
+const { getProviderPlugins } = require('./extensions/amplify-helpers/get-provider-plugins');
 
 function run(context) {
   const providerPlugins = getProviderPlugins(context);

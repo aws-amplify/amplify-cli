@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
-const { normalizeEditor, editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
-const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/constants');
-const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
+const { normalizeEditor, editorSelection } = require('../extensions/amplify-helpers/editor-selection');
+const { PROJECT_CONFIG_VERSION } = require('../extensions/amplify-helpers/constants');
+const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
 
 async function run(context) {
   let defaultEditor = getDefaultEditor(context);

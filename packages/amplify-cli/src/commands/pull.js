@@ -1,8 +1,8 @@
 const fs = require('fs-extra');
 
-const { pullBackend } = require('../lib/pull-backend');
-const { attachBackend } = require('../lib/attach-backend');
-const { constructInputParams } = require('../lib/amplify-service-helper');
+const { pullBackend } = require('../pull-backend');
+const { attachBackend } = require('../attach-backend');
+const { constructInputParams } = require('../amplify-service-helper');
 const { run: envCheckout } = require('./env/checkout');
 
 module.exports = {
