@@ -760,3 +760,75 @@ export class APIService {
 }
 "
 `;
+
+exports[`Angular code generation #generateSource() should have the correct __typename(s) for nested fragments 1`] = `
+"/* tslint:disable */
+/* eslint-disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type FindHumanQuery = {
+  __typename: \\"Human\\";
+  // The ID of the human
+  id: string;
+  // What this human calls themselves
+  name: string;
+  // A list of starships this person has piloted, or an empty list if none
+  starships: Array<{
+    __typename: \\"Starship\\";
+    // The ID of the starship
+    id: string;
+    // The name of the starship
+    name: string;
+  } | null> | null;
+};
+
+export type humanDetailsFragment = {
+  __typename: \\"Human\\";
+  // The ID of the human
+  id: string;
+  // What this human calls themselves
+  name: string;
+  // A list of starships this person has piloted, or an empty list if none
+  starships: Array<{
+    __typename: \\"Starship\\";
+    // The ID of the starship
+    id: string;
+    // The name of the starship
+    name: string;
+  } | null> | null;
+};
+
+export type starshipDetailsFragment = {
+  __typename: \\"Starship\\";
+  // The ID of the starship
+  id: string;
+  // The name of the starship
+  name: string;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async FindHuman(id: string): Promise<FindHumanQuery> {
+    const statement = \`query FindHuman($id: ID!) {
+        human {
+          __typename
+          ...humanDetails
+        }
+      }\`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <FindHumanQuery>response.data.human;
+  }
+}
+"
+`;
