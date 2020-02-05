@@ -82,7 +82,12 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.tests.json"
+      }
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

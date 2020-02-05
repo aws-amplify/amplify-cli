@@ -85,7 +85,10 @@
       "node"
     ],
     "globals": {
-      "window": {}
+      "window": {},
+      "ts-jest": {
+        "tsConfig": "tsconfig.tests.json"
+      }
     }
   },
   "jest-junit": {
