@@ -28,6 +28,10 @@ function deleteAmplifyAppFiles() {
   rimraf.sync('amplify');
   rimraf.sync('src');
   rimraf.sync('amplify-build-config.json');
+  rimraf.sync('amplify-gradle-config.json');
+  rimraf.sync('amplifyxc.config');
+  rimraf.sync('amplifyconfiguration.json');
+  rimraf.sync('awsconfiguration.json');
   rimraf.sync('package.json');
   rimraf.sync('package-lock.json');
   rimraf.sync('.graphqlconfig.yml');

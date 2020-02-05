@@ -5,6 +5,30 @@ function getAmplifyAppPath() {
   return path.join(__dirname, '..', '..', 'bin', 'amplify-app');
 }
 
+function amplifyAppAndroid() {
+  return new Promise((resolve, reject) => {
+    nexpect.spawn(getAmplifyAppPath(), ['--platform', 'android']).run(function(err) {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
+function amplifyAppIos() {
+  return new Promise((resolve, reject) => {
+    nexpect.spawn(getAmplifyAppPath(), ['--platform', 'ios']).run(function(err) {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
 function amplifyAppAngular() {
   return new Promise((resolve, reject) => {
     nexpect
@@ -65,4 +89,4 @@ function amplifyPush() {
   });
 }
 
-module.exports = { amplifyAppAngular, amplifyAppReact, amplifyModelgen, amplifyPush };
+module.exports = { amplifyAppAngular, amplifyAppReact, amplifyModelgen, amplifyPush, amplifyAppAndroid, amplifyAppIos };

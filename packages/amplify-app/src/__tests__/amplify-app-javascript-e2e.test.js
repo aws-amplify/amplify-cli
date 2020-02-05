@@ -4,8 +4,9 @@ const fs = require('fs-extra');
 const path = require('path');
 
 jest.setTimeout(30000);
-// move to src dir to avoid conflict with amplify-app package.json
-process.chdir('src');
+// move to javascriptTest dir to avoid conflicts
+fs.mkdirSync('javascriptTest');
+process.chdir('javascriptTest');
 
 it('should set up a angular project', async () => {
   await amplifyAppAngular();
@@ -79,7 +80,9 @@ it('should run amplify push', async () => {
   expect(fs.existsSync(path.join('amplify', 'backend', 'amplify-meta.json'))).toBeTruthy();
 });
 
-it('remove amplify-app files', async () => {
+it('remove amplify-app files and test folder after js test', async () => {
   await amplifyDelete();
   await deleteAmplifyAppFiles();
+  process.chdir('..');
+  fs.removeSync('javascriptTest');
 });
