@@ -6,13 +6,13 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import * as path from 'path';
 import { deploy } from '../deployNestedStacks';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import {
   createUserPool,
@@ -228,7 +228,7 @@ describe(`ModelAuthTests`, async () => {
         LOCAL_FS_BUILD_DIR,
         BUCKET_NAME,
         S3_ROOT_DIR_KEY,
-        BUILD_TIMESTAMP
+        BUILD_TIMESTAMP,
       );
       expect(finishedStack).toBeDefined();
       const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -322,7 +322,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response);
     expect(response.data.createPost.id).toBeDefined();
@@ -341,7 +341,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response2);
     expect(response2.data.createPost.id).toBeDefined();
@@ -362,7 +362,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Hello, World!');
@@ -379,7 +379,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(getResponse.data.getPost.id).toBeDefined();
     expect(getResponse.data.getPost.title).toEqual('Hello, World!');
@@ -397,7 +397,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(getResponseAccess.data.getPost.id).toBeDefined();
     expect(getResponseAccess.data.getPost.title).toEqual('Hello, World!');
@@ -417,7 +417,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Hello, World!');
@@ -434,7 +434,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(getResponse.data.getPost).toEqual(null);
     expect(getResponse.errors.length).toEqual(1);
@@ -452,7 +452,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Hello, World!');
@@ -469,7 +469,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(updateResponse.data.updatePost.id).toEqual(response.data.createPost.id);
     expect(updateResponse.data.updatePost.title).toEqual('Bye, World!');
@@ -485,7 +485,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(updateResponseAccess.data.updatePost.id).toEqual(response.data.createPost.id);
     expect(updateResponseAccess.data.updatePost.title).toEqual('Bye, World!');
@@ -503,7 +503,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Hello, World!');
@@ -520,7 +520,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(updateResponse.data.updatePost).toEqual(null);
     expect(updateResponse.errors.length).toEqual(1);
@@ -538,7 +538,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Hello, World!');
@@ -551,7 +551,7 @@ describe(`ModelAuthTests`, async () => {
               id
           }
       }`,
-      {}
+      {},
     );
     expect(deleteResponse.data.deletePost.id).toEqual(response.data.createPost.id);
 
@@ -565,7 +565,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(responseAccess.data.createPost.id).toBeDefined();
     expect(responseAccess.data.createPost.title).toEqual('Hello, World!');
@@ -578,7 +578,7 @@ describe(`ModelAuthTests`, async () => {
               id
           }
       }`,
-      {}
+      {},
     );
     expect(deleteResponseAccess.data.deletePost.id).toEqual(responseAccess.data.createPost.id);
   });
@@ -594,7 +594,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Hello, World!');
@@ -607,7 +607,7 @@ describe(`ModelAuthTests`, async () => {
               id
           }
       }`,
-      {}
+      {},
     );
     expect(deleteResponse.data.deletePost).toEqual(null);
     expect(deleteResponse.errors.length).toEqual(1);
@@ -625,7 +625,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     expect(firstPost.data.createPost.id).toBeDefined();
     expect(firstPost.data.createPost.title).toEqual('testing list');
@@ -642,7 +642,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     // There are two posts but only 1 created by me.
     const listResponse = await GRAPHQL_CLIENT_1.query(
@@ -653,7 +653,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(listResponse, null, 4));
     expect(listResponse.data.listPosts.items.length).toEqual(1);
@@ -666,7 +666,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(listResponseAccess, null, 4));
     expect(listResponseAccess.data.listPosts.items.length).toEqual(1);
@@ -2518,7 +2518,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }`,
-      {}
+      {},
     );
     const relevantPost = listResponse.data.listTestIdentitys.items.find(p => p.id === getReq.data.getTestIdentity.id);
     console.log(JSON.stringify(listResponse, null, 4));
@@ -2556,7 +2556,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response);
     expect(response.data.createOwnerReadProtected.id).toBeDefined();
@@ -2569,7 +2569,7 @@ describe(`ModelAuthTests`, async () => {
               id content owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response2);
     expect(response2.data.getOwnerReadProtected).toBeNull();
@@ -2581,7 +2581,7 @@ describe(`ModelAuthTests`, async () => {
               id content owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response3);
     expect(response3.data.getOwnerReadProtected.id).toBeDefined();
@@ -2596,7 +2596,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }`,
-      {}
+      {},
     );
     console.log(response4);
     expect(response4.data.listOwnerReadProtecteds.items.length).toBeGreaterThanOrEqual(1);
@@ -2609,7 +2609,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }`,
-      {}
+      {},
     );
     console.log(response5);
     expect(response5.data.listOwnerReadProtecteds.items).toHaveLength(0);
@@ -2624,7 +2624,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response);
     expect(response.data.createOwnerCreateUpdateDeleteProtected.id).toBeDefined();
@@ -2639,7 +2639,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response2);
     expect(response2.data.createOwnerCreateUpdateDeleteProtected).toBeNull();
@@ -2655,7 +2655,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response);
     expect(response.data.createOwnerCreateUpdateDeleteProtected.id).toBeDefined();
@@ -2675,7 +2675,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response2);
     expect(response2.data.updateOwnerCreateUpdateDeleteProtected).toBeNull();
@@ -2694,7 +2694,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response3);
     expect(response3.data.updateOwnerCreateUpdateDeleteProtected.id).toBeDefined();
@@ -2711,7 +2711,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response);
     expect(response.data.createOwnerCreateUpdateDeleteProtected.id).toBeDefined();
@@ -2730,7 +2730,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response2);
     expect(response2.data.deleteOwnerCreateUpdateDeleteProtected).toBeNull();
@@ -2748,7 +2748,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }`,
-      {}
+      {},
     );
     console.log(response3);
     expect(response3.data.deleteOwnerCreateUpdateDeleteProtected.id).toBeDefined();

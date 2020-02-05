@@ -6,11 +6,11 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
 
@@ -107,7 +107,7 @@ beforeAll(async () => {
     LOCAL_FS_BUILD_DIR,
     BUCKET_NAME,
     S3_ROOT_DIR_KEY,
-    BUILD_TIMESTAMP
+    BUILD_TIMESTAMP,
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
@@ -185,7 +185,7 @@ test('Test simple echo function', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.echo.arguments.msg).toEqual('Hello');
@@ -204,7 +204,7 @@ test('Test simple echoEnv function', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.echoEnv.arguments.msg).toEqual('Hello');
@@ -223,7 +223,7 @@ test('Test simple duplicate function', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.duplicate.arguments.msg).toEqual('Hello');
@@ -236,7 +236,7 @@ test('Test pipeline of @function(s)', async () => {
     `query {
         pipeline(msg: "IGNORED")
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.pipeline).toEqual('Hello, world!');
@@ -253,7 +253,7 @@ test('Test pipelineReverse of @function(s)', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.pipelineReverse.arguments.msg).toEqual('Hello');

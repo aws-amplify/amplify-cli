@@ -13,7 +13,7 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common';
 import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import { AuthenticationDetails } from 'amazon-cognito-identity-js';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import TestStorage from './TestStorage';
 import DeploymentResources from 'graphql-transformer-core/lib/DeploymentResources';
 
@@ -52,7 +52,7 @@ export async function signupUser(userPoolId: string, name: string, pw: string) {
         Username: name,
         TemporaryPassword: pw,
       },
-      (err, data) => (err ? rej(err) : res(data))
+      (err, data) => (err ? rej(err) : res(data)),
     );
   });
 }
@@ -176,7 +176,7 @@ export async function deleteUserPool(client: CognitoClient, userPoolId: string):
 export async function createUserPoolClient(
   client: CognitoClient,
   userPoolId: string,
-  clientName: string
+  clientName: string,
 ): Promise<CreateUserPoolClientResponse> {
   return new Promise((res, rej) => {
     const params: CreateUserPoolClientRequest = {

@@ -8,8 +8,8 @@ import { S3Client } from '../S3Client';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
 import { deploy } from '../deployNestedStacks';
-import * as moment from 'moment';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import emptyBucket from '../emptyBucket';
 import addStringSets from '../stringSetMutations';
 
@@ -123,7 +123,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     // Arbitrary wait to make sure everything is ready.
     await cf.wait(120, () => Promise.resolve());
@@ -181,7 +181,7 @@ test('Test searchPosts with sort field on a string field', async () => {
             nextToken
           }
     }`,
-    'Test searchPosts with filter '
+    'Test searchPosts with filter ',
   );
   expect(firstQuery).toBeDefined();
   expect(firstQuery.data.searchPosts).toBeDefined();
@@ -198,7 +198,7 @@ test('Test searchPosts with sort field on a string field', async () => {
             nextToken
           }
     }`,
-    'Test searchPosts with limit '
+    'Test searchPosts with limit ',
   );
   expect(secondQuery).toBeDefined();
   expect(secondQuery.data.searchPosts).toBeDefined();
@@ -216,7 +216,7 @@ test('Test searchPosts with sort field on a string field', async () => {
             nextToken
           }
     }`,
-    'Test searchPosts with sort limit and nextToken  '
+    'Test searchPosts with sort limit and nextToken  ',
   );
   expect(thirdQuery).toBeDefined();
   expect(thirdQuery.data.searchPosts).toBeDefined();
@@ -237,7 +237,7 @@ test('Test searchPosts with sort on date type', async () => {
             }
         }
     }`,
-    'Test search posts with date type response: '
+    'Test search posts with date type response: ',
   );
   expect(query).toBeDefined();
   expect(query.data.searchPosts).toBeDefined();
@@ -253,7 +253,7 @@ test('Test searchPosts query without filter', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts response without filter response: '
+    'Test searchPosts response without filter response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -270,7 +270,7 @@ test('Test searchPosts query with basic filter', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts response with basic filter response: '
+    'Test searchPosts response with basic filter response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -292,7 +292,7 @@ test('Test searchPosts query with non-recursive filter', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts response with non-recursive filter response: '
+    'Test searchPosts response with non-recursive filter response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -325,7 +325,7 @@ test('Test searchPosts query with recursive filter 1', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts response with recursive filter 1 response: '
+    'Test searchPosts response with recursive filter 1 response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -358,7 +358,7 @@ test('Test searchPosts query with recursive filter 2', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts response with recursive filter 2 response: '
+    'Test searchPosts response with recursive filter 2 response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -390,7 +390,7 @@ test('Test searchPosts query with recursive filter 3', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts query with recursive filter 3 response: '
+    'Test searchPosts query with recursive filter 3 response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -432,7 +432,7 @@ test('Test searchPosts query with recursive filter 4', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts query with recursive filter 4 response: '
+    'Test searchPosts query with recursive filter 4 response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -474,7 +474,7 @@ test('Test searchPosts query with recursive filter 5', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts query with recursive filter 5 response: '
+    'Test searchPosts query with recursive filter 5 response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -515,7 +515,7 @@ test('Test searchPosts query with recursive filter 6', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test searchPosts query with recursive filter 6 response: '
+    'Test searchPosts query with recursive filter 6 response: ',
   );
   expect(response).toBeDefined();
   expect(response.data.searchPosts.items).toBeDefined();
@@ -528,7 +528,7 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
   const title = 'to be deleted';
   const postToBeDeletedResponse = await runQuery(
     getCreatePostsQuery('test author new', title, 1157, 1000, 22.2, true),
-    'createPost (to be deleted) response: '
+    'createPost (to be deleted) response: ',
   );
   expect(postToBeDeletedResponse).toBeDefined();
   expect(postToBeDeletedResponse.data.createPost).toBeDefined();
@@ -545,7 +545,7 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test deletePosts syncing with Elasticsearch Search_Before response: '
+    'Test deletePosts syncing with Elasticsearch Search_Before response: ',
   );
   expect(searchResponse1).toBeDefined();
   expect(searchResponse1.data.searchPosts.items).toBeDefined();
@@ -567,7 +567,7 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
             ...FullPost
         }
     }`,
-    'Test deletePosts syncing with Elasticsearch Perform_Delete response: '
+    'Test deletePosts syncing with Elasticsearch Perform_Delete response: ',
   );
   expect(deleteResponse).toBeDefined();
   expect(deleteResponse.data.deletePost).toBeDefined();
@@ -584,7 +584,7 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test deletePosts syncing with Elasticsearch Search_After response: '
+    'Test deletePosts syncing with Elasticsearch Search_After response: ',
   );
   expect(searchResponse2).toBeDefined();
   expect(searchResponse2.data.searchPosts.items).toBeDefined();
@@ -603,7 +603,7 @@ test('Test updatePost syncing with Elasticsearch', async () => {
 
   const postToBeUpdatedResponse = await runQuery(
     getCreatePostsQuery(author, title, ups, downs, percentageUp, isPublished),
-    'createPost (to be updated) response: '
+    'createPost (to be updated) response: ',
   );
   expect(postToBeUpdatedResponse).toBeDefined();
   expect(postToBeUpdatedResponse.data.createPost).toBeDefined();
@@ -622,7 +622,7 @@ test('Test updatePost syncing with Elasticsearch', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test updatePost syncing with Elasticsearch Search_Before response: '
+    'Test updatePost syncing with Elasticsearch Search_Before response: ',
   );
   expect(searchResponse1).toBeDefined();
   expect(searchResponse1.data.searchPosts.items).toBeDefined();
@@ -651,7 +651,7 @@ test('Test updatePost syncing with Elasticsearch', async () => {
             ...FullPost
         }
     }`,
-    'Test updatePost syncing with Elasticsearch Perform_Update response: '
+    'Test updatePost syncing with Elasticsearch Perform_Update response: ',
   );
   expect(updateResponse).toBeDefined();
   expect(updateResponse.data.updatePost).toBeDefined();
@@ -669,7 +669,7 @@ test('Test updatePost syncing with Elasticsearch', async () => {
             items { ...FullPost }
         }
     }`,
-    'Test updatePost syncing with Elasticsearch Search_After response: '
+    'Test updatePost syncing with Elasticsearch Search_After response: ',
   );
   expect(searchResponse2).toBeDefined();
   expect(searchResponse2.data.searchPosts.items).toBeDefined();
@@ -697,7 +697,7 @@ test('query users knowing userItems is a string set in ddb but should be a list 
         total
       }
     }`,
-    {}
+    {},
   );
   expect(searchResponse).toBeDefined();
   const items = searchResponse.data.searchUsers.items;
@@ -722,7 +722,7 @@ test('query using string range between names', async () => {
         }
       }
     }`,
-    {}
+    {},
   );
   expect(searchResponse).toBeDefined();
   const items = searchResponse.data.searchUsers.items;
@@ -752,7 +752,7 @@ test('query using date range for createdAt', async () => {
         }
       }
     }`,
-    {}
+    {},
   );
   expect(searchResponse).toBeDefined();
   const items = searchResponse.data.searchUsers.items;
@@ -769,7 +769,7 @@ function getCreatePostsQuery(
   ups: number,
   downs: number,
   percentageUp: number,
-  isPublished: boolean
+  isPublished: boolean,
 ): string {
   return `mutation {
         createPost(input: {
