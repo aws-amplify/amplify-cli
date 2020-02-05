@@ -14,6 +14,7 @@ it('should set up a angular project', async () => {
   expect(fs.existsSync(path.join('amplify-build-config.json'))).toBeTruthy();
   expect(fs.existsSync(path.join('package.json'))).toBeTruthy();
 });
+
 it('should have a valid angular project config', async () => {
   const configPath = path.join('amplify', '.config', 'project-config.json');
   expect(fs.existsSync(configPath)).toBeTruthy();
