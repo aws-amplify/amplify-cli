@@ -5,10 +5,6 @@ function getAmplifyAppPath() {
   return path.join(__dirname, '..', '..', 'bin', 'amplify-app');
 }
 
-function getCLIPath() {
-  return path.join(__dirname, '..', '..', '..', 'amplify-cli', 'bin', 'amplify');
-}
-
 function amplifyAppAngular() {
   return new Promise((resolve, reject) => {
     nexpect
