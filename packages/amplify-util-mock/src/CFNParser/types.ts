@@ -1,7 +1,14 @@
+export type CloudFormationParsedResource = {
+  Type: string;
+  result: {
+    [key: string]: any;
+  };
+};
+
 export type CloudFormationParseContext = {
   params: any;
   conditions: object;
-  resources: object;
+  resources: Record<string, CloudFormationParsedResource>;
   exports: object;
 };
 

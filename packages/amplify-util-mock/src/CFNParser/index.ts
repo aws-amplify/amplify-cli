@@ -13,6 +13,7 @@ import {
   cfnSelect,
   cfnSplit,
   cfnSub,
+  cfnImportValue,
 } from './intrinsic-functions';
 
 // Add know intrinsic functions
@@ -28,6 +29,7 @@ addIntrinsicFunction('Fn::And', cfnAnd);
 addIntrinsicFunction('Fn::Or', cfnOr);
 addIntrinsicFunction('Fn::Not', cfnNot);
 addIntrinsicFunction('Condition', cfnCondition);
+addIntrinsicFunction('Fn::ImportValue', cfnImportValue);
 
 export { addIntrinsicFunction } from './field-parser';
-export { processResources as processAppSyncResources } from './appsync-resource-processor';
+export { processTransformerStacks as processAppSyncResources } from './appsync-resource-processor';
