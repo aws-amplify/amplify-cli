@@ -1,10 +1,10 @@
-const { amplifyAppIos } = require('../test-helpers/amplify-app-setup');
-const { deleteAmplifyAppFiles } = require('../test-helpers/amplify-app-cleanup');
+const { amplifyAppIos } = require('./test-helpers/amplify-app-setup');
 const fs = require('fs-extra');
 const path = require('path');
+const rimraf = require('rimraf');
 
 jest.setTimeout(30000);
-// move to src dir to avoid conflicts
+// move to test dir to avoid conflicts
 fs.mkdirSync('iosTest');
 process.chdir('iosTest');
 
@@ -44,7 +44,6 @@ it('should have a backend-config', async () => {
 });
 
 it('remove amplify-app files and test folder after ios test', async () => {
-  deleteAmplifyAppFiles();
   process.chdir('..');
-  fs.removeSync('iosTest');
+  rimraf.sync('iosTest');
 });

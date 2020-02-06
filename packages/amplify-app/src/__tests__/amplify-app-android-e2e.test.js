@@ -1,7 +1,7 @@
-const { amplifyAppAndroid } = require('../test-helpers/amplify-app-setup');
-const { deleteAmplifyAppFiles } = require('../test-helpers/amplify-app-cleanup');
+const { amplifyAppAndroid } = require('./test-helpers/amplify-app-setup');
 const fs = require('fs-extra');
 const path = require('path');
+const rimraf = require('rimraf');
 
 jest.setTimeout(30000);
 // move to androidTest dir to avoid conflicts
@@ -43,7 +43,6 @@ it('should have a backend-config', async () => {
 });
 
 it('remove amplify-app files and test folder after android test', async () => {
-  deleteAmplifyAppFiles();
   process.chdir('..');
-  fs.removeSync('androidTest');
+  rimraf.sync('androidTest');
 });

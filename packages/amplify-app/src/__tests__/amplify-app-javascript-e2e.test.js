@@ -1,12 +1,13 @@
-const { amplifyAppAngular, amplifyAppReact, amplifyModelgen, amplifyPush } = require('../test-helpers/amplify-app-setup');
-const { deleteAmplifyAppFiles, amplifyDelete } = require('../test-helpers/amplify-app-cleanup');
+const { amplifyAppAngular, amplifyAppReact, amplifyModelgen, amplifyPush } = require('./test-helpers/amplify-app-setup');
+const { amplifyDelete } = require('./test-helpers/amplify-app-cleanup');
 const fs = require('fs-extra');
 const path = require('path');
+const rimraf = require('rimraf');
 
 jest.setTimeout(30000);
 // move to javascriptTest dir to avoid conflicts
-fs.mkdirSync('javascriptTest');
-process.chdir('javascriptTest');
+fs.mkdirSync('angularTest');
+process.chdir('angularTest');
 
 it('should set up a angular project', async () => {
   await amplifyAppAngular();
@@ -25,8 +26,11 @@ it('should have a valid angular project config', async () => {
   expect(config['javascript']['config']['StartCommand']).toBe('ng serve');
 });
 
-it('remove amplify-app files after angular test', async () => {
-  deleteAmplifyAppFiles();
+it('remove test dir after angular test', async () => {
+  process.chdir('..');
+  rimraf.sync('angularTest');
+  fs.mkdirSync('reactTest');
+  process.chdir('reactTest');
 });
 
 it('should set up a react project', async () => {
@@ -81,9 +85,11 @@ it('should run amplify push', async () => {
   expect(fs.existsSync(path.join('amplify', 'backend', 'amplify-meta.json'))).toBeTruthy();
 });
 
-it('remove amplify-app files and test folder after js test', async () => {
+it('should delete amplify project', async () => {
   await amplifyDelete();
-  await deleteAmplifyAppFiles();
+});
+
+it('shoud remove react test folder', async () => {
   process.chdir('..');
-  fs.removeSync('javascriptTest');
+  rimraf.sync('reactTest');
 });

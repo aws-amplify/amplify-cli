@@ -2,7 +2,7 @@ const nexpect = require('nexpect');
 const path = require('path');
 
 function getAmplifyAppPath() {
-  return path.join(__dirname, '..', '..', 'bin', 'amplify-app');
+  return path.join(__dirname, '..', '..', '..', 'bin', 'amplify-app');
 }
 
 function amplifyAppAndroid() {

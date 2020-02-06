@@ -37,5 +37,10 @@
   "devDependencies": {
     "jest": "^25.1.0",
     "nexpect": "^0.6.0"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "__tests__/test-helpers"
+    ]
   }
 }
