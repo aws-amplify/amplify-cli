@@ -18,6 +18,7 @@ export interface ProjectOptions {
   currentCloudBackendDirectory: string;
   rootStackFileName?: string;
   dryRun?: boolean;
+  disableFunctionOverrides?: boolean;
   disableResolverOverrides?: boolean;
   buildParameters?: Object;
 }
@@ -184,6 +185,13 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
  * Merge user config on top of transform output when needed.
  */
 function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResources>, transformOutput: DeploymentResources) {
+  // Override user defined functions.
+  const userFunctions = userConfig.functions || {};
+  const transformFunctions = transformOutput.functions;
+  for (const userFunction of Object.keys(userFunctions)) {
+    transformFunctions[userFunction] = userConfig.functions[userFunction];
+  }
+
   // Override user defined resolvers.
   const userResolvers = userConfig.resolvers || {};
   const transformResolvers = transformOutput.resolvers;
@@ -214,7 +222,7 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
       ...acc,
       [k]: Fn.Ref(k),
     }),
-    {}
+    {},
   );
   // customStackParams is a map that will be passed as the "parameters" value
   // to any nested stacks.
@@ -259,7 +267,7 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
         ...acc,
         [k]: customStackParams[k],
       }),
-      {}
+      {},
     );
 
     transformStacks[userStack] = userDefinedStack;
@@ -318,7 +326,7 @@ async function writeDeploymentToDisk(
   deployment: DeploymentResources,
   directory: string,
   rootStackFileName: string = 'rootStack.json',
-  buildParameters: Object
+  buildParameters: Object,
 ) {
   // Delete the last deployments resources.
   await emptyDirectory(directory);
