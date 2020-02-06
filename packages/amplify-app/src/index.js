@@ -155,6 +155,7 @@ async function getProjectConfig(existingApp) {
   projectConfig.projectName = projectName;
 
   if (suitableFrontend === 'javascript') {
+    projectConfig.javascript.framework = jsFrameWork;
     projectConfig.javascript.config = frameworkConfigMapping[jsFrameWork];
   }
 
