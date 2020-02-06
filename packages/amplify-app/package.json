@@ -15,7 +15,7 @@
   },
   "engines": {
     "node": ">=10.0.0",
-    "@aws-amplify/cli": ">=4.13.1"
+    "@aws-amplify/cli": ">=4.14.0"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
