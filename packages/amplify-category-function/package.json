@@ -1,8 +1,19 @@
 {
   "name": "amplify-category-function",
   "version": "2.13.1",
-  "main": "index.js",
   "description": "amplify-cli function plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-function"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
   "dependencies": {
     "amplify-category-storage": "2.1.9",
     "fs-extra": "^8.1.0",
@@ -11,7 +22,5 @@
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0",
     "graphql-transformer-core": "^6.13.1"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0"
+  }
 }
