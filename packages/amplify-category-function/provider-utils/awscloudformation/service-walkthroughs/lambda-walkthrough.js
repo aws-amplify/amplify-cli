@@ -363,7 +363,7 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   const appsyncTableSuffix = '@model(appsync)';
   for (let i = 0; i < selectedCategories.length; i += 1) {
     const category = selectedCategories[i];
-    const resourcesList = Object.keys(amplifyMeta[category]);
+    const resourcesList = category in amplifyMeta ? Object.keys(amplifyMeta[category]) : [];
     if (category === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
