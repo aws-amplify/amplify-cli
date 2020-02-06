@@ -2,7 +2,20 @@
   "name": "graphql-transformer-common",
   "version": "4.13.1",
   "description": "Common code and constants for AppSync Transformers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-transformer-common"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci -i",
@@ -10,13 +23,6 @@
     "watch": "tsc -w",
     "clean": "rm -rf ./lib"
   },
-  "keywords": [
-    "graphql",
-    "appsync",
-    "aws"
-  ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
   "dependencies": {
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.13.1",
@@ -27,8 +33,7 @@
     "@types/md5": "^2.1.33",
     "@types/node": "^10.17.13",
     "jest": "^23.1.0",
-    "ts-jest": "^22.4.6",
-    "typescript": "~3.6.4"
+    "ts-jest": "^22.4.6"
   },
   "jest": {
     "transform": {

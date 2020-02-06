@@ -10,8 +10,8 @@ import { GraphQLClient } from '../GraphQLClient';
 import { deploy } from '../deployNestedStacks';
 import emptyBucket from '../emptyBucket';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
-import * as moment from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
 
 jest.setTimeout(2000000);
 
@@ -157,7 +157,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
 
     // Arbitrary wait to make sure everything is ready.
@@ -215,7 +215,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:1', asy
         }
     }
     `,
-    {}
+    {},
   );
 
   await GRAPHQL_CLIENT.query(
@@ -227,7 +227,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:1', asy
         }
     }
     `,
-    {}
+    {},
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -245,7 +245,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:1', asy
         }
     }
     `,
-    {}
+    {},
   );
   expect(queryResponse.data.listAProjects).toBeDefined();
   const items = queryResponse.data.listAProjects.items;
@@ -265,7 +265,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
         }
     }
     `,
-    {}
+    {},
   );
 
   await GRAPHQL_CLIENT.query(
@@ -277,7 +277,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
         }
     }
     `,
-    {}
+    {},
   );
 
   await GRAPHQL_CLIENT.query(
@@ -289,7 +289,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
         }
     }
     `,
-    {}
+    {},
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -309,7 +309,7 @@ test('Unnamed connection 1 way navigation, with primary @key directive 1:M', asy
         }
     }
     `,
-    {}
+    {},
   );
   expect(queryResponse.data.listBProjects).toBeDefined();
   const items = queryResponse.data.listBProjects.items;
@@ -332,7 +332,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:1', asyn
         }
     }
     `,
-    {}
+    {},
   );
 
   await GRAPHQL_CLIENT.query(
@@ -344,7 +344,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:1', asyn
         }
     }
     `,
-    {}
+    {},
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -366,7 +366,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:1', asyn
         }
     }
     `,
-    {}
+    {},
   );
   expect(queryResponse.data.listCProjects).toBeDefined();
   const items = queryResponse.data.listCProjects.items;
@@ -388,7 +388,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
         }
     }
     `,
-    {}
+    {},
   );
 
   await GRAPHQL_CLIENT.query(
@@ -400,7 +400,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
         }
     }
     `,
-    {}
+    {},
   );
 
   await GRAPHQL_CLIENT.query(
@@ -412,7 +412,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
         }
     }
     `,
-    {}
+    {},
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -436,7 +436,7 @@ test('Named connection 2 way navigation, with with custom @key fields 1:M', asyn
         }
     }
     `,
-    {}
+    {},
   );
   expect(queryResponse.data.listDProjects).toBeDefined();
   const items = queryResponse.data.listDProjects.items;
@@ -464,7 +464,7 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
         }
     }
     `,
-    {}
+    {},
   );
 
   await GRAPHQL_CLIENT.query(
@@ -477,7 +477,7 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
         }
     }
     `,
-    {}
+    {},
   );
 
   await GRAPHQL_CLIENT.query(
@@ -489,7 +489,7 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
         }
     }
     `,
-    {}
+    {},
   );
 
   const queryResponse = await GRAPHQL_CLIENT.query(
@@ -505,7 +505,7 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
         }
     }
     `,
-    {}
+    {},
   );
   expect(queryResponse.data.getModel2).toBeDefined();
   const item = queryResponse.data.getModel2;

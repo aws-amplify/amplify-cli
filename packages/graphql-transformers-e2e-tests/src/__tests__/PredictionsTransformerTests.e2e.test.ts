@@ -6,11 +6,11 @@ import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 
 // tslint:disable: no-magic-numbers
 jest.setTimeout(2000000);
@@ -20,13 +20,11 @@ const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
 const awsS3Client = new S3({ region: AWS_REGION });
 
-
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `PredictionsTransformerTests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-predictions-transformer-test-bucket-${BUILD_TIMESTAMP}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/predictions_transformer_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
-
 
 let GRAPHQL_CLIENT: GraphQLClient = undefined;
 
@@ -74,7 +72,7 @@ beforeAll(async () => {
     LOCAL_FS_BUILD_DIR,
     BUCKET_NAME,
     S3_ROOT_DIR_KEY,
-    BUILD_TIMESTAMP
+    BUILD_TIMESTAMP,
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
@@ -112,47 +110,48 @@ afterAll(async () => {
   } catch (e) {
     console.warn(`Error during bucket cleanup: ${e}`);
   }
-})
+});
 
-test('test translate and convert text to speech',  async () => {
+test('test translate and convert text to speech', async () => {
   // logic to test graphql
   const response = await GRAPHQL_CLIENT.query(
     `query SpeakTranslatedText($input: SpeakTranslatedTextInput!) {
       speakTranslatedText(input: $input)
-    }`, {
+    }`,
+    {
       input: {
         translateText: {
-          sourceLanguage: "en",
-          targetLanguage: "es",
-          text: "this is a voice test"
+          sourceLanguage: 'en',
+          targetLanguage: 'es',
+          text: 'this is a voice test',
         },
         convertTextToSpeech: {
-          voiceID: "Conchita"
-        }
-      }
-    });
-    expect(response).toBeDefined();
-    const pollyURL = response.data.speakTranslatedText;
-    // check that return format is a url
-    expect(pollyURL).toMatch(
-      /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
-    );
-})
-
+          voiceID: 'Conchita',
+        },
+      },
+    },
+  );
+  expect(response).toBeDefined();
+  const pollyURL = response.data.speakTranslatedText;
+  // check that return format is a url
+  expect(pollyURL).toMatch(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
+});
 
 test('test translate text individually', async () => {
   const germanTranslation = 'Dies ist ein Sprachtest';
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateThis($input: TranslateThisInput!) {
       translateThis(input: $input)
-    }`, {
+    }`,
+    {
       input: {
         translateText: {
-          sourceLanguage: "en",
-          targetLanguage: "de",
-          text: "this is a voice test"
+          sourceLanguage: 'en',
+          targetLanguage: 'de',
+          text: 'this is a voice test',
         },
-    }}
+      },
+    },
   );
   expect(response).toBeDefined();
   const translatedText = response.data.translateThis;

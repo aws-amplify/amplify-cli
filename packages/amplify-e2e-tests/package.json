@@ -2,14 +2,30 @@
   "name": "amplify-e2e-tests",
   "version": "2.13.1",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-e2e-tests"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "private": true,
   "scripts": {
     "e2e": "npm run setup-profile && jest",
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-sdk": "^2.608.0",
+    "esm": "^3.2.25",
+    "fs-extra": "^8.1.0",
+    "graphql-transformer-core": "6.13.1"
+  },
   "devDependencies": {
     "@types/jest": "^24.0.23",
     "@types/node": "^10.17.13",
@@ -20,8 +36,7 @@
     "nexpect": "file:./src/utils/nexpect-modified",
     "rimraf": "^3.0.0",
     "ts-jest": "^24.2.0",
-    "ts-node": "^8.6.2",
-    "typescript": "~3.6.4"
+    "ts-node": "^8.6.2"
   },
   "jest": {
     "verbose": false,
@@ -62,12 +77,6 @@
     "globals": {
       "window": {}
     }
-  },
-  "dependencies": {
-    "aws-sdk": "^2.608.0",
-    "esm": "^3.2.25",
-    "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "6.13.1"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

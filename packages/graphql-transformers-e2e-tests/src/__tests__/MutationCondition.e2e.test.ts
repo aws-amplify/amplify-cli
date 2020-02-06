@@ -22,12 +22,12 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { S3Client } from '../S3Client';
 import * as path from 'path';
 import { deploy } from '../deployNestedStacks';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { createUserPool, createUserPoolClient, deleteUserPool, signupAndAuthenticateUser, configureAmplify } from '../cognitoUtils';
 import Role from 'cloudform-types/types/iam/role';
@@ -875,7 +875,7 @@ describe(`Deployed Mutation Condition tests`, () => {
         LOCAL_FS_BUILD_DIR,
         BUCKET_NAME,
         S3_ROOT_DIR_KEY,
-        BUILD_TIMESTAMP
+        BUILD_TIMESTAMP,
       );
       expect(finishedStack).toBeDefined();
       const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -982,22 +982,16 @@ describe(`Deployed Mutation Condition tests`, () => {
   });
 
   it('Create Mutation with failing condition', async () => {
-    const createMutation = gql(`
-    mutation {
-      createPost(input: {
-        id: "P1"
-        type: "Post"
-        category: "T1"
-        content: "Content #1"
-        slug: "content-1"
-        rating: 4
-      }, condition: {
-        category: { eq: "T" }
-      }) {
-        id
+    const createMutation = gql`
+      mutation {
+        createPost(
+          input: { id: "P1", type: "Post", category: "T1", content: "Content #1", slug: "content-1", rating: 4 }
+          condition: { category: { eq: "T" } }
+        ) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     try {
       await APIKEY_CLIENT.mutate({
@@ -1010,20 +1004,13 @@ describe(`Deployed Mutation Condition tests`, () => {
   });
 
   it('Update Mutation with failing and succeeding condition', async () => {
-    const createMutation = gql(`
-    mutation {
-      createPost(input: {
-        id: "P1"
-        type: "Post"
-        category: "T1"
-        content: "Content #1"
-        slug: "content-1"
-        rating: 4
-      }) {
-        id
+    const createMutation = gql`
+      mutation {
+        createPost(input: { id: "P1", type: "Post", category: "T1", content: "Content #1", slug: "content-1", rating: 4 }) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     const createResponse = await APIKEY_CLIENT.mutate({
       mutation: createMutation,
@@ -1033,20 +1020,16 @@ describe(`Deployed Mutation Condition tests`, () => {
     expect(createResponse.data.createPost.id).toBeDefined();
 
     // Update P1 if rating === 5 (but it is 4)
-    const updateMutationFailure = gql(`
-    mutation {
-      updatePost(input: {
-        id: "P1"
-        type: "Post"
-        content: "Content #1 - Update"
-        expectedVersion: 1
-      }, condition: {
-        rating: { eq: 5 }
-      }) {
-        id
+    const updateMutationFailure = gql`
+      mutation {
+        updatePost(
+          input: { id: "P1", type: "Post", content: "Content #1 - Update", expectedVersion: 1 }
+          condition: { rating: { eq: 5 } }
+        ) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     try {
       await APIKEY_CLIENT.mutate({
@@ -1058,21 +1041,17 @@ describe(`Deployed Mutation Condition tests`, () => {
     }
 
     // Update P1 if rating === 4
-    const updateMutationSuccess = gql(`
-    mutation {
-      updatePost(input: {
-        id: "P1"
-        type: "Post"
-        content: "Content #1 - Update"
-        expectedVersion: 1
-      }, condition: {
-        rating: { eq: 4 }
-      }) {
-        id
-        content
+    const updateMutationSuccess = gql`
+      mutation {
+        updatePost(
+          input: { id: "P1", type: "Post", content: "Content #1 - Update", expectedVersion: 1 }
+          condition: { rating: { eq: 4 } }
+        ) {
+          id
+          content
+        }
       }
-    }
-    `);
+    `;
 
     const updateResponse = await APIKEY_CLIENT.mutate({
       mutation: updateMutationSuccess,
@@ -1084,20 +1063,13 @@ describe(`Deployed Mutation Condition tests`, () => {
   });
 
   it('Update Mutation with failing and succeeding complex conditions', async () => {
-    const createMutation = gql(`
-    mutation {
-      createPost(input: {
-        id: "P2"
-        type: "Post"
-        category: "T1"
-        content: "Content #2"
-        slug: "content-2"
-        rating: 4
-      }) {
-        id
+    const createMutation = gql`
+      mutation {
+        createPost(input: { id: "P2", type: "Post", category: "T1", content: "Content #2", slug: "content-2", rating: 4 }) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     const createResponse = await APIKEY_CLIENT.mutate({
       mutation: createMutation,
@@ -1107,31 +1079,19 @@ describe(`Deployed Mutation Condition tests`, () => {
     expect(createResponse.data.createPost.id).toBeDefined();
 
     // Update P2 if (content beginsWith "Content #2" AND rating === [4-5]) OR content is null
-    const updateMutation = gql(`
-    mutation {
-      updatePost(input: {
-        id: "P2"
-        type: "Post"
-        content: "Content #2 - UpdateComplex"
-        expectedVersion: 1
-      }, condition: {
-        or: [
-          {
-            and: [
-              { content: { beginsWith: "Content #2" } }
-              { rating: { between: [4, 5] } }
-            ]
+    const updateMutation = gql`
+      mutation {
+        updatePost(
+          input: { id: "P2", type: "Post", content: "Content #2 - UpdateComplex", expectedVersion: 1 }
+          condition: {
+            or: [{ and: [{ content: { beginsWith: "Content #2" } }, { rating: { between: [4, 5] } }] }, { content: { eq: null } }]
           }
-          {
-            content: { eq: null }
-          }
-        ]
-      }) {
-        id
-        content
+        ) {
+          id
+          content
+        }
       }
-    }
-    `);
+    `;
 
     const updateResponse = await APIKEY_CLIENT.mutate({
       mutation: updateMutation,
@@ -1143,20 +1103,13 @@ describe(`Deployed Mutation Condition tests`, () => {
   });
 
   it('Delete Mutation with failing and succeeding complex conditions', async () => {
-    const createMutation = gql(`
-    mutation {
-      createPost(input: {
-        id: "P3"
-        type: "Post"
-        category: "T1"
-        content: "Content #3"
-        slug: "content-3"
-        rating: 4
-      }) {
-        id
+    const createMutation = gql`
+      mutation {
+        createPost(input: { id: "P3", type: "Post", category: "T1", content: "Content #3", slug: "content-3", rating: 4 }) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     const createResponse = await APIKEY_CLIENT.mutate({
       mutation: createMutation,
@@ -1166,30 +1119,17 @@ describe(`Deployed Mutation Condition tests`, () => {
     expect(createResponse.data.createPost.id).toBeDefined();
 
     // Delete P3 if (content equals "Content #3" AND rating === [4-5]) OR content is null
-    const deleteMutation = gql(`
-    mutation {
-      deletePost(input: {
-        id: "P3"
-        type: "Post"
-        expectedVersion: 1
-      }, condition: {
-        or: [
-          {
-            and: [
-              { content: { eq: "Content #3" } }
-              { rating: { between: [4, 5] } }
-            ]
-          }
-          {
-            content: { eq: null }
-          }
-        ]
-      }) {
-        id
-        content
+    const deleteMutation = gql`
+      mutation {
+        deletePost(
+          input: { id: "P3", type: "Post", expectedVersion: 1 }
+          condition: { or: [{ and: [{ content: { eq: "Content #3" } }, { rating: { between: [4, 5] } }] }, { content: { eq: null } }] }
+        ) {
+          id
+          content
+        }
       }
-    }
-    `);
+    `;
 
     const deleteResponse = await APIKEY_CLIENT.mutate({
       mutation: deleteMutation,
@@ -1201,20 +1141,13 @@ describe(`Deployed Mutation Condition tests`, () => {
   });
 
   it('Update Mutation with different owners and same condition', async () => {
-    const createMutation = gql(`
-    mutation {
-      createPost(input: {
-        id: "P4"
-        type: "Post"
-        category: "T1"
-        content: "Content #4"
-        slug: "content-4"
-        rating: 4
-      }) {
-        id
+    const createMutation = gql`
+      mutation {
+        createPost(input: { id: "P4", type: "Post", category: "T1", content: "Content #4", slug: "content-4", rating: 4 }) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     const createResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
       mutation: createMutation,
@@ -1224,20 +1157,16 @@ describe(`Deployed Mutation Condition tests`, () => {
     expect(createResponse.data.createPost.id).toBeDefined();
 
     // Update P4 if rating === 4, different user (non-owner)
-    const updateMutation = gql(`
-    mutation {
-      updatePost(input: {
-        id: "P4"
-        type: "Post"
-        content: "Content #4 - Update"
-        expectedVersion: 1
-      }, condition: {
-        rating: { eq: 4 }
-      }) {
-        id
+    const updateMutation = gql`
+      mutation {
+        updatePost(
+          input: { id: "P4", type: "Post", content: "Content #4 - Update", expectedVersion: 1 }
+          condition: { rating: { eq: 4 } }
+        ) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     try {
       await USER_POOL_AUTH_CLIENT_2.mutate({
@@ -1249,20 +1178,16 @@ describe(`Deployed Mutation Condition tests`, () => {
     }
 
     // Update P4 if rating === 5, owner user, wrong condition
-    const updateMutation2 = gql(`
-    mutation {
-      updatePost(input: {
-        id: "P4"
-        type: "Post"
-        content: "Content #4 - Update"
-        expectedVersion: 1
-      }, condition: {
-        rating: { eq: 5 }
-      }) {
-        id
+    const updateMutation2 = gql`
+      mutation {
+        updatePost(
+          input: { id: "P4", type: "Post", content: "Content #4 - Update", expectedVersion: 1 }
+          condition: { rating: { eq: 5 } }
+        ) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     try {
       await USER_POOL_AUTH_CLIENT_1.mutate({
@@ -1274,22 +1199,18 @@ describe(`Deployed Mutation Condition tests`, () => {
     }
 
     // Update P4 if rating === 4, owner user, right condition
-    const updateMutation3 = gql(`
-    mutation {
-      updatePost(input: {
-        id: "P4"
-        type: "Post"
-        content: "Content #4 - Update"
-        expectedVersion: 1
-      }, condition: {
-        rating: { eq: 4 }
-      }) {
-        id
-        content
-        version
+    const updateMutation3 = gql`
+      mutation {
+        updatePost(
+          input: { id: "P4", type: "Post", content: "Content #4 - Update", expectedVersion: 1 }
+          condition: { rating: { eq: 4 } }
+        ) {
+          id
+          content
+          version
+        }
       }
-    }
-    `);
+    `;
 
     const updateResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
       mutation: updateMutation3,
@@ -1302,20 +1223,13 @@ describe(`Deployed Mutation Condition tests`, () => {
   });
 
   it('Delete Mutation with different owners and same condition', async () => {
-    const createMutation = gql(`
-    mutation {
-      createPost(input: {
-        id: "P5"
-        type: "Post"
-        category: "T1"
-        content: "Content #5"
-        slug: "content-5"
-        rating: 4
-      }) {
-        id
+    const createMutation = gql`
+      mutation {
+        createPost(input: { id: "P5", type: "Post", category: "T1", content: "Content #5", slug: "content-5", rating: 4 }) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     const createResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
       mutation: createMutation,
@@ -1325,19 +1239,13 @@ describe(`Deployed Mutation Condition tests`, () => {
     expect(createResponse.data.createPost.id).toBeDefined();
 
     // Delete P5 if rating === 4, different user (non-owner)
-    const deleteMutation = gql(`
-    mutation {
-      deletePost(input: {
-        id: "P5"
-        type: "Post"
-        expectedVersion: 1
-      }, condition: {
-        rating: { eq: 4 }
-      }) {
-        id
+    const deleteMutation = gql`
+      mutation {
+        deletePost(input: { id: "P5", type: "Post", expectedVersion: 1 }, condition: { rating: { eq: 4 } }) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     try {
       await USER_POOL_AUTH_CLIENT_2.mutate({
@@ -1349,19 +1257,13 @@ describe(`Deployed Mutation Condition tests`, () => {
     }
 
     // Delete P5 if rating === 5, owner user, wrong condition
-    const deleteMutation2 = gql(`
-    mutation {
-      deletePost(input: {
-        id: "P5"
-        type: "Post"
-        expectedVersion: 1
-      }, condition: {
-        rating: { eq: 5 }
-      }) {
-        id
+    const deleteMutation2 = gql`
+      mutation {
+        deletePost(input: { id: "P5", type: "Post", expectedVersion: 1 }, condition: { rating: { eq: 5 } }) {
+          id
+        }
       }
-    }
-    `);
+    `;
 
     try {
       await USER_POOL_AUTH_CLIENT_1.mutate({
@@ -1373,21 +1275,15 @@ describe(`Deployed Mutation Condition tests`, () => {
     }
 
     // Delete P5 if rating === 4, owner user, right condition
-    const deleteMutation3 = gql(`
-    mutation {
-      deletePost(input: {
-        id: "P5"
-        type: "Post"
-        expectedVersion: 1
-      }, condition: {
-        rating: { eq: 4 }
-      }) {
-        id
-        content
-        version
+    const deleteMutation3 = gql`
+      mutation {
+        deletePost(input: { id: "P5", type: "Post", expectedVersion: 1 }, condition: { rating: { eq: 4 } }) {
+          id
+          content
+          version
+        }
       }
-    }
-    `);
+    `;
 
     const deleteResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
       mutation: deleteMutation3,

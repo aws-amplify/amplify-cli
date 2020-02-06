@@ -1,17 +1,17 @@
-import * as express from 'express';
-import * as cors from 'cors';
+import express from 'express';
+import cors from 'cors';
 import { join, normalize } from 'path';
 import { readFile, unlink, statSync, ensureFileSync, writeFileSync, existsSync } from 'fs-extra';
-import * as xml from 'xml';
+import xml from 'xml';
 import * as bodyParser from 'body-parser';
 import * as convert from 'xml-js';
-import * as e2p from 'event-to-promise';
-import * as serveStatic from 'serve-static';
+import e2p from 'event-to-promise';
+import serveStatic from 'serve-static';
 import * as glob from 'glob';
-import * as o2x from 'object-to-xml';
-import * as uuid from 'uuid';
-import * as etag from 'etag';
-import * as EventEmitter from 'events';
+import o2x from 'object-to-xml';
+import uuid from 'uuid';
+import etag from 'etag';
+import { EventEmitter } from 'events';
 
 import { StorageSimulatorServerConfig } from '../index';
 

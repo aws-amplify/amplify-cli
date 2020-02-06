@@ -2,20 +2,25 @@
   "name": "graphql-transformers-e2e-tests",
   "version": "6.13.1",
   "description": "End to end functional tests for appsync supported transformers.",
-  "main": "lib/index.js",
   "private": true,
-  "scripts": {
-    "e2e": "jest",
-    "build": "tsc",
-    "clean": "rm -rf ./lib"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-transformers-e2e-tests"
   },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "graphql",
     "appsync",
     "aws"
   ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
+  "scripts": {
+    "e2e": "jest",
+    "build-tests": "tsc --build tsconfig.tests.json"
+  },
   "dependencies": {
     "amazon-cognito-identity-js": "^3.2.2",
     "axios": "^0.19.2",
@@ -27,10 +32,10 @@
   },
   "devDependencies": {
     "@aws-amplify/core": "^2.1.0",
-    "@types/jest": "23.1.1",
+    "@types/jest": "^25.1.1",
     "@types/node": "^10.17.13",
     "aws-amplify": "^2.2.2",
-    "aws-appsync": "^1.8.1",
+    "aws-appsync": "^2.0.2",
     "aws-sdk": "^2.608.0",
     "graphql-auth-transformer": "6.13.1",
     "graphql-connection-transformer": "4.13.1",
@@ -43,11 +48,10 @@
     "graphql-tag": "^2.10.1",
     "graphql-versioned-transformer": "4.13.1",
     "isomorphic-fetch": "^2.2.1",
-    "jest": "^23.1.0",
-    "jest-junit": "^8.0.0",
+    "jest": "^25.1.0",
+    "jest-junit": "^10.0.0",
     "node-fetch": "^2.6.0",
-    "ts-jest": "^22.4.6",
-    "typescript": "~3.6.4",
+    "ts-jest": "^25.2.0",
     "ws": "^7.2.1"
   },
   "jest": {
@@ -81,7 +85,10 @@
       "node"
     ],
     "globals": {
-      "window": {}
+      "window": {},
+      "ts-jest": {
+        "tsConfig": "tsconfig.tests.json"
+      }
     }
   },
   "jest-junit": {

@@ -240,6 +240,38 @@ export class APIService {
 "
 `;
 
+exports[`Angular code generation #generateSource() should generate queries returning Arrays as Array objects 1`] = `
+"/* tslint:disable */
+/* eslint-disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type CustomScalarQuery = {
+  __typename: \\"QueryObject\\";
+  test: string | null;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async CustomScalar(): Promise<Array<CustomScalarQuery>> {
+    const statement = \`query CustomScalar {
+        arrayTest {
+          __typename
+          test
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <Array<CustomScalarQuery>>response.data.arrayTest;
+  }
+}
+"
+`;
+
 exports[`Angular code generation #generateSource() should generate query operations with inline fragments 1`] = `
 "/* tslint:disable */
 /* eslint-disable */

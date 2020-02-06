@@ -2,12 +2,20 @@
   "name": "graphql-predictions-transformer",
   "version": "2.1.9",
   "description": "Implements the @predictions directive.",
-  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-predictions-transformer"
+  },
   "author": "Amazon Web Services",
-  "contributors": [
-    "Josue Ruiz"
-  ],
   "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "scripts": {
     "build": "tsc && cd lambdaFunction && bestzip --force node ../lib/predictionsLambdaFunction.zip predictionsLambda.js",
     "watch": "tsc -w",
@@ -25,8 +33,7 @@
     "@types/jest": "23.1.1",
     "bestzip": "^2.1.5",
     "jest": "^24.9.0",
-    "ts-jest": "^22.4.6",
-    "typescript": "~3.6.4"
+    "ts-jest": "^22.4.6"
   },
   "jest": {
     "transform": {

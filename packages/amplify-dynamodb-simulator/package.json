@@ -2,9 +2,19 @@
   "name": "amplify-dynamodb-simulator",
   "version": "1.13.1",
   "description": "DynamoDB emulator nodejs wrapper",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-dynamodb-simulator"
+  },
+  "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "private": false,
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "scripts": {
     "build": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
     "test": "jest",

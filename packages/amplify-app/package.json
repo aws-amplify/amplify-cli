@@ -2,7 +2,18 @@
   "name": "amplify-app",
   "version": "2.13.1",
   "description": "Amplify CLI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-app"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "src/index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
   "bin": {
     "amplify-app": "bin/amplify-app"
   },
@@ -16,8 +27,6 @@
     "node": ">=10.0.0",
     "@aws-amplify/cli": ">=4.13.0"
   },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
   "dependencies": {
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",

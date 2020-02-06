@@ -70,11 +70,11 @@ async function copyAndUpdateTemplateFiles(context: Context, pluginParentDirPath:
   const pluginType = await promptForPluginType(context);
   const eventHandlers = await promptForEventSubscription(context);
 
-  let srcDirPath = path.join(__dirname, '../../templates/plugin-template');
+  let srcDirPath = path.join(__dirname, '../templates/plugin-template');
   if (pluginType === AmplifyPluginType.frontend.toString()) {
-    srcDirPath = path.join(__dirname, '../../templates/plugin-template-frontend');
+    srcDirPath = path.join(__dirname, '../templates/plugin-template-frontend');
   } else if (pluginType === AmplifyPluginType.provider.toString()) {
-    srcDirPath = path.join(__dirname, '../../templates/plugin-template-provider');
+    srcDirPath = path.join(__dirname, '../templates/plugin-template-provider');
   }
   fs.copySync(srcDirPath, pluginDirPath);
 

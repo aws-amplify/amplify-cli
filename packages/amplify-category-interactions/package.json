@@ -1,8 +1,19 @@
 {
   "name": "amplify-category-interactions",
   "version": "2.1.9",
-  "main": "index.js",
   "description": "amplify-cli interactions plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-interactions"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
   "dependencies": {
     "amplify-category-auth": "2.13.1",
     "fs-extra": "^8.1.0",
@@ -10,6 +21,5 @@
     "inquirer": "^7.0.3",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "uuid": "^3.4.0"
-  },
-  "license": "Apache-2.0"
+  }
 }

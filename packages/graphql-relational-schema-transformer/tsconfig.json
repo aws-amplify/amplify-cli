@@ -1,21 +1,12 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
-        "sourceMap": true,
-        "outDir": "lib",
-        "lib": [
-            "es2015",
-            "es2016.array.include",
-            "esnext.asynciterable",
-            "dom"
-        ],
-        "declaration": true
-    },
-    "exclude": [
-        "node_modules",
-        "lib",
-        "src/__tests__",
-        "**/tests/*.test.ts"
-    ]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "strict": false, // TODO enable
+    "rootDir": "src",
+    "outDir": "lib"
+  },
+  "references": [
+    {"path": "../graphql-mapping-template"},
+    {"path": "../graphql-transformer-common"}
+  ]
 }

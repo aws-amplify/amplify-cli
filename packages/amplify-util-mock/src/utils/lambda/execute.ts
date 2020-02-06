@@ -67,6 +67,7 @@ function invokeFunction(options: InvokeOptions) {
     };
 
     const lambda = loadFunction(options.fileName);
+
     const { event } = options;
     try {
       if (!lambda[options.handler]) {
@@ -78,6 +79,8 @@ function invokeFunction(options: InvokeOptions) {
       const result = await lambda[options.handler](event, context, callback);
       if (result !== undefined) {
         context.done(null, result);
+      } else {
+        context.done(null, null);
       }
     } catch (e) {
       context.done(e, null);

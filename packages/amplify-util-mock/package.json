@@ -2,16 +2,27 @@
   "name": "amplify-util-mock",
   "version": "3.13.1",
   "description": "amplify cli plugin providing local testing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-util-mock"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "scripts": {
     "e2e": "jest --runInBand  --forceExit src/__e2e__/*.e2e.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
+    "build-tests": "tsc --build tsconfig.tests.json",
     "watch": "tsc -w",
     "clean": "rm -rf ./lib"
   },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
   "dependencies": {
     "amplify-appsync-simulator": "1.13.1",
     "amplify-category-function": "2.13.1",
@@ -26,7 +37,7 @@
     "@types/jest": "^24.0.16",
     "@types/lodash": "^4.14.149",
     "@types/node": "^10.17.13",
-    "aws-appsync": "^1.8.1",
+    "aws-appsync": "^2.0.2",
     "aws-sdk": "^2.608.0",
     "axios": "^0.19.2",
     "graphql-auth-transformer": "6.13.1",
@@ -44,7 +55,6 @@
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.0",
     "ts-jest": "^24.0.2",
-    "typescript": "~3.6.4",
     "uuid": "^3.4.0",
     "ws": "^7.2.1"
   },
@@ -72,7 +82,12 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.tests.json"
+      }
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

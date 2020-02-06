@@ -2,7 +2,20 @@
   "name": "graphql-transformer-core",
   "version": "6.13.1",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-transformer-core"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "cloudformation",
+    "aws"
+  ],
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci -i",
@@ -10,27 +23,19 @@
     "watch": "tsc -w",
     "clean": "rm -rf ./lib"
   },
-  "keywords": [
-    "graphql",
-    "cloudformation",
-    "aws"
-  ],
-  "author": "Michael Paris",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^24.0.25",
-    "@types/node": "^10.17.13",
-    "jest": "^24.9.0",
-    "ts-jest": "^24.3.0",
-    "typescript": "~3.6.4"
-  },
   "dependencies": {
     "cloudform-types": "^4.1.0",
     "deep-diff": "^1.0.2",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
     "graphql-transformer-common": "4.13.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^10.17.13",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.3.0"
   },
   "jest": {
     "transform": {

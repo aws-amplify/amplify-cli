@@ -268,7 +268,7 @@ export class ResourceFactory {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Join(separator, [...listToJoin, Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
-      Fn.Join(separator, listToJoin)
+      Fn.Join(separator, listToJoin),
     );
   }
 
@@ -396,7 +396,7 @@ export class ResourceFactory {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Refs.NoValue,
-      Fn.Join('-', ['d', Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+      Fn.Join('-', ['d', Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
     );
   }
 
@@ -432,7 +432,7 @@ export class ResourceFactory {
     nonKeywordFields: Expression[],
     primaryKey: string,
     queryTypeName: string,
-    nameOverride?: string
+    nameOverride?: string,
   ) {
     const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)));
     return new AppSync.Resolver({
@@ -448,31 +448,33 @@ export class ResourceFactory {
             ref('util.isNullOrEmpty($context.args.sort)'),
             compoundExpression([set(ref('sortDirection'), str('desc')), set(ref('sortField'), str(primaryKey))]),
             compoundExpression([
-              set(ref('sortDirection'), raw('$util.defaultIfNull($context.args.sort.direction, "desc")')),
-              set(ref('sortField'), raw(`$util.defaultIfNull($context.args.sort.field, "${primaryKey}")`)),
-            ])
+              set(ref('sortDirection'), ref('util.defaultIfNull($context.args.sort.direction, "desc")')),
+              set(ref('sortField'), ref(`util.defaultIfNull($context.args.sort.field, "${primaryKey}")`)),
+            ]),
+          ),
+          ifElse(
+            ref('nonKeywordFields.contains($sortField)'),
+            compoundExpression([set(ref('sortField0'), ref('util.toJson($sortField)'))]),
+            compoundExpression([set(ref('sortField0'), ref('util.toJson("${sortField}.keyword")'))]),
           ),
           ElasticsearchMappingTemplate.searchItem({
             path: str('$indexPath'),
             size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(10), true),
-            search_after: list([str('$context.args.nextToken')]),
+            search_after: list([ref('util.toJson($context.args.nextToken)')]),
             query: ifElse(
               ref('context.args.filter'),
               ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
               obj({
                 match_all: obj({}),
-              })
+              }),
             ),
             sort: list([
               raw(
-                '{ #if($nonKeywordFields.contains($sortField))\
-    "$sortField" #else "${sortField}.keyword" #end : {\
-    "order" : "$sortDirection"\
-} }'
+                '{$sortField0: { "order" : $util.toJson($sortDirection) }}',
               ),
             ]),
           }),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: print(
         compoundExpression([
@@ -486,9 +488,9 @@ export class ResourceFactory {
               items: ref('es_items'),
               total: ref('ctx.result.hits.total'),
               nextToken: ref('nextToken'),
-            })
+            }),
           ),
-        ])
+        ]),
       ),
     }).dependsOn([ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]);
   }

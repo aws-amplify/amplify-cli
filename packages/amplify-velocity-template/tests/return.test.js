@@ -32,4 +32,13 @@ describe('Return', function() {
     console.log(tpl);
     html.should.containEql('');
   });
+
+  it('return value several times', function() {
+    var tpl = `#return ("Foo")`;
+    var compile = new Compile(parse(tpl));
+    const result = compile.render(context);
+    const result2 = compile.render(context);
+    result.should.containEql('Foo');
+    result2.should.containEql('Foo');
+  });
 });

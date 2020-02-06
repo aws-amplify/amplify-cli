@@ -1,18 +1,14 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "sourceMap": true,
-    "mapRoot": "lib",
-    "lib": ["es6", "es2015", "dom"],
-    "declaration": false,
+    "composite": false,
     "allowJs": true,
-    "outDir": "lib",
-    // "rootDir": "src",
-    "strict": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true
+    "declaration": false,
+    "declarationMap": false,
+    "rootDir": "src",
+    "outDir": "lib"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib"]
+  "include": [
+    "src/**/*"
+  ]
 }
