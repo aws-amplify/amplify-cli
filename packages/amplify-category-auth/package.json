@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.13.1",
+  "version": "2.13.2-beta.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
     "amplify",
     "aws"
   ],
-   "scripts": {
+  "scripts": {
     "test": "jest",
     "test-watch": "jest --watch",
     "test-ci": "jest --ci -i"
