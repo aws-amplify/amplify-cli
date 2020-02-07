@@ -159,12 +159,14 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     const cfnContent = context.amplify.readJsonFile(cfnFilePath);
     const dependsOnParams = { env: { Type: 'String' } };
 
-    Object.keys(answers.resourcePropertiesJSON).forEach(resourceProperty => {
-      dependsOnParams[answers.resourcePropertiesJSON[resourceProperty].Ref] = {
-        Type: 'String',
-        Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
-      };
-    });
+    Object.keys(answers.resourcePropertiesJSON)
+      .filter(resourceProperty => 'Ref' in answers.resourcePropertiesJSON[resourceProperty])
+      .forEach(resourceProperty => {
+        dependsOnParams[answers.resourcePropertiesJSON[resourceProperty].Ref] = {
+          Type: 'String',
+          Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
+        };
+      });
 
     cfnContent.Parameters = getNewCFNParameters(cfnContent.Parameters, currentParameters, dependsOnParams, newParams);
 
