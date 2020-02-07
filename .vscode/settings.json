@@ -24,5 +24,8 @@
   "eslint.format.enable": true,
   "eslint.lintTask.enable": true,
   "eslint.packageManager": "yarn",
-  "eslint.quiet": true
+  "eslint.quiet": true,
+  "jest.enableInlineErrorMessages": true,
+  "jest.showCoverageOnLoad": true,
+  "jest.runAllTestsFirst": false
 }

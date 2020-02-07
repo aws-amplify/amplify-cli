@@ -8,10 +8,10 @@ module.exports = {
     '**/*.d.ts',
     '**/__e2e__/',
     '**/__integration__/',
-    'packages/amplify-e2e-tests/**',
-    'packages/graphql-transformers-e2e-tests/**',
-    'packages/amplify-util-mock/src/__e2e__/**',
-    'packages/amplify-ui-tests/**',
+    'packages/amplify-e2e-tests/',
+    'packages/graphql-transformers-e2e-tests/',
+    'packages/amplify-util-mock/src/__e2e__/',
+    'packages/amplify-ui-tests/',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'core', 'node'],
   collectCoverage: true,
@@ -43,7 +43,7 @@ module.exports = {
     '<rootDir>/packages/amplify-provider-awscloudformation',
     '<rootDir>/packages/amplify-storage-simulator',
     '<rootDir>/packages/amplify-util-mock',
-    // '<rootDir>/packages/amplify-velocity-template', // todo: enable after migration
+    // '<rootDir>/packages/amplify-velocity-template', // todo: enable after migration to Jest
     '<rootDir>/packages/graphql-auth-transformer',
     '<rootDir>/packages/graphql-connection-transformer',
     '<rootDir>/packages/graphql-dynamodb-transformer',
