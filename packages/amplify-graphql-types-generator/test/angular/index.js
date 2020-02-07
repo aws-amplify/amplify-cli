@@ -317,5 +317,29 @@ describe('Angular code generation', function() {
       const source = generateSource(context);
       expect(source).toMatchSnapshot();
     });
+
+    test('should have the correct __typename(s) for nested fragments', () => {
+      const { compileFromSource } = setup(starWarsSchema);
+      const context = compileFromSource(`
+        query FindHuman($id: ID!) {
+          human {
+            ...humanDetails
+          }
+        }
+        fragment humanDetails on Human {
+          id
+          name
+          starships {
+            ...starshipDetails
+          }
+        }
+        fragment starshipDetails on Starship {
+          id
+          name
+        }
+      `);
+      const source = generateSource(context);
+      expect(source).toMatchSnapshot();
+    });
   });
 });
