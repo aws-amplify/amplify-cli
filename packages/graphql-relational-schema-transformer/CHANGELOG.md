@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.13.1...graphql-relational-schema-transformer@2.13.2) (2020-02-07)
+
+
+### Bug Fixes
+
+* **graphql-relational-schema-transformer:** fix [#3025](https://github.com/aws-amplify/amplify-cli/issues/3025) rds resolver correctly handles no data in response ([#3314](https://github.com/aws-amplify/amplify-cli/issues/3314)) ([cb826a7](https://github.com/aws-amplify/amplify-cli/commit/cb826a7ec7680ad9b5fc46fd7a931c30747cd0ce))
+* e2e test dependency and cloudform depe for relational ([#3352](https://github.com/aws-amplify/amplify-cli/issues/3352)) ([6b74433](https://github.com/aws-amplify/amplify-cli/commit/6b74433a4ddf7706fef3834f02247a3cd0fd75c2))
+
+
+
+
+
 ## [2.13.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.13.0...graphql-relational-schema-transformer@2.13.1) (2020-01-24)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

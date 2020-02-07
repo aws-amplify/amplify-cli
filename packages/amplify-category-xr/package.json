@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-xr",
-  "version": "2.1.9",
+  "version": "2.1.10",
   "description": "amplify-cli xr plugin",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "test-ci": "jest --ci -i"
   },
   "dependencies": {
-    "amplify-category-auth": "2.13.1",
+    "amplify-category-auth": "2.13.2",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",

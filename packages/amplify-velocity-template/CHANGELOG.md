@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.1.9...amplify-velocity-template@1.1.10) (2020-02-07)
+
+
+### Bug Fixes
+
+* **amplify-velocity-template:** #Return directive called several times ([#3306](https://github.com/aws-amplify/amplify-cli/issues/3306)) ([82f1d26](https://github.com/aws-amplify/amplify-cli/commit/82f1d26aa12306bdb7d6fe635fd37b3ac7180d19))
+
+
+
+
+
 ## [1.1.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.1.8...amplify-velocity-template@1.1.9) (2020-01-24)
 
 **Note:** Version bump only for package amplify-velocity-template
