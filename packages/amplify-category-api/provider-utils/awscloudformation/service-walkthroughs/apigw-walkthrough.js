@@ -438,7 +438,7 @@ async function askPaths(context, answers, currentPath) {
     {
       name: 'name',
       type: 'input',
-      message: 'Provide a path (e.g., /items)',
+      message: 'Provide a path (e.g., /items)\nTo specify path parameters use {paramName}. To specify a proxy path use {proxy+} at the end of the path.',
       default: currentPath ? currentPath.name : '/items',
       validate(value) {
         const err = validatePathName(value, answers.paths);
@@ -492,36 +492,25 @@ async function askPaths(context, answers, currentPath) {
 }
 
 function validatePathName(name, paths) {
-  const err = null;
-
-  if (name.length === 0 || name.substring(name.length - 1) === '/') {
-    return 'Each sub-path must begin with a letter or number.';
+  if (name.length === 0) {
+    return 'The path must not be empty';
   }
 
-  // Set / as a first character of path name
-  if (name.substring(0, 1) !== '/') {
-    return 'Path must begin with / e.g. /items';
-  }
-  if (/[^a-zA-Z0-9\-/]/.test(name)) {
-    return 'You can use the following characters: a-z A-Z 0-9 - /';
+  if (name.charAt(name.length - 1) === '/') {
+    return 'The path must not end with /';
   }
 
-  // If the are is something like /asasd//asa must be detected
-  // Splitting the string with / to find empty sub-path
+  if (name.charAt(0) !== '/') {
+    return 'The path must begin with / e.g. /items';
+  }
+
+  // Matches parameterized paths such as /THIS/{is}/a-path/{proxy+}
+  if (!/^(?:\/(?:[a-zA-Z0-9\-]+|{[a-zA-Z0-9\-]+}))+(?:\/{proxy\+})?$/.test(name)) {
+    return 'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.\nA path can also end with /{proxy+} to specify a proxy path.';
+  }
+
   const split = name.split('/');
-  for (let i = 1; i < split.length; i += 1) {
-    const val = split[i];
-    if (val.length === 0) {
-      return 'Each sub-path must begin with a letter or number';
-    }
-  }
-
-  // Checking if there is already that path created on the API
-  if (paths.find(path => path.name === name)) {
-    return 'Path name already exists';
-  }
-
-  // Create subpath from the beginning to find a match on existing paths
+  // Check if any prefix of this path matches an existing path
   const findSubPath = (path, subpath) => path.name === subpath;
   let subpath = '';
   split.forEach(sub => {
@@ -535,10 +524,10 @@ function validatePathName(name, paths) {
   // Check if other paths are a subpath of the new path
   subpath = paths.find(path => path.name.indexOf(name) === 0);
   if (subpath) {
-    return `An existing path already match with the one provided: ${subpath.name}`;
+    return `An existing path already matches the one provided: ${subpath.name}`;
   }
 
-  return err;
+  return null;
 }
 
 async function findDependsOn(paths, context) {
@@ -645,6 +634,7 @@ function newLambdaFunction(context, path) {
   }
   context.api = {
     path,
+    expressPath: path.replace(/{([a-zA-Z0-9\-]+)}/g, ':\$1'),
     functionTemplate: 'serverless',
   };
   return add(context, 'awscloudformation', 'Lambda').then(resourceName => {
