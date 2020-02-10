@@ -66,7 +66,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
 
   if (updateApi.resourceName === 'AdminQueries') {
     context.print.warning(
-      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`
+      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`,
     );
     process.exit(0);
   }
@@ -211,7 +211,7 @@ async function askPrivacy(context, answers, currentPath) {
         if (permissionSelected === 'Learn more') {
           context.print.info('');
           context.print.info(
-            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
           );
           context.print.info('');
         }
@@ -516,9 +516,7 @@ function validatePathName(name, paths) {
   let subpath = '';
   const subMatch = split.some(sub => {
     subpath = `${subpath}/${sub}`;
-    return paths
-      .map(path => path.name)
-      .find(name => name === subpath) !== undefined;
+    return paths.map(path => path.name).find(name => name === subpath) !== undefined;
   });
   if (subMatch) {
     return `An existing path already matches this sub-path: ${subpath}`;
@@ -641,8 +639,10 @@ function newLambdaFunction(context, path) {
   });
 }
 
+// Convert a CloudFormation parameterized path to an ExpressJS parameterized path
+// /library/{libraryId}/book/{isbn} => /library/:libraryId/book/:isbn
 function formatCFNPathParamsForExpressJs(path) {
-  return path.replace(/{([a-zA-Z0-9\-]+)}/g, ':\$1');
+  return path.replace(/{([a-zA-Z0-9\-]+)}/g, ':$1');
 }
 
 async function askLambdaFromProject(context, currentPath) {
