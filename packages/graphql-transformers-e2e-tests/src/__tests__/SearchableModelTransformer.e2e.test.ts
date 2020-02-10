@@ -1,6 +1,7 @@
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -44,19 +45,33 @@ const runQuery = async (query: string, logContent: string) => {
 const createEntries = async () => {
   // create posts
   const logContent = 'createPost response: ';
-  await runQuery(getCreatePostsQuery('snvishna', 'test', 157, 10, 97.4, true), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 60, 30, 21.0, false), logContent);
-  await runQuery(getCreatePostsQuery('shankar', 'test title', 160, 30, 97.6, false), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test TITLE', 170, 30, 88.8, true), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 200, 50, 11.9, false), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 170, 30, 88.8, true), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 160, 30, 97.6, false), logContent);
-  await runQuery(getCreatePostsQuery('snvishna', 'test title', 170, 30, 77.7, true), logContent);
+  await runQuery(getCreatePostsMutation('snvishna', 'test', 157, 10, 97.4, true), logContent);
+  await runQuery(getCreatePostsMutation('snvishna', 'test title', 60, 30, 21.0, false), logContent);
+  await runQuery(getCreatePostsMutation('shankar', 'test title', 160, 30, 97.6, false), logContent);
+  await runQuery(getCreatePostsMutation('snvishna', 'test TITLE', 170, 30, 88.8, true), logContent);
+  await runQuery(getCreatePostsMutation('snvishna', 'test title', 200, 50, 11.9, false), logContent);
+  await runQuery(getCreatePostsMutation('snvishna', 'test title', 170, 30, 88.8, true), logContent);
+  await runQuery(getCreatePostsMutation('snvishna', 'test title', 160, 30, 97.6, false), logContent);
+  await runQuery(getCreatePostsMutation('snvishna', 'test title', 170, 30, 77.7, true), logContent);
   // create users
-  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user1', userItems: ['thing1', 'thing2'], createdAt: '2016-07-20' } });
-  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user2', userItems: ['thing3', 'thing4'], createdAt: '2017-06-10' } });
-  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user3', userItems: ['thing5', 'thing6'], createdAt: '2017-08-22' } });
-  await GRAPHQL_CLIENT.query(getCreateUsersQuery(), { input: { name: 'user4', userItems: ['thing7', 'thing8'], createdAt: '2019-07-04' } });
+  await GRAPHQL_CLIENT.query(getCreateUsersMutation(), {
+    input: { name: 'user1', userItems: ['thing1', 'thing2'], createdAt: '2016-07-20' },
+  });
+  await GRAPHQL_CLIENT.query(getCreateUsersMutation(), {
+    input: { name: 'user2', userItems: ['thing3', 'thing4'], createdAt: '2017-06-10' },
+  });
+  await GRAPHQL_CLIENT.query(getCreateUsersMutation(), {
+    input: { name: 'user3', userItems: ['thing5', 'thing6'], createdAt: '2017-08-22' },
+  });
+  await GRAPHQL_CLIENT.query(getCreateUsersMutation(), {
+    input: { name: 'user4', userItems: ['thing7', 'thing8'], createdAt: '2019-07-04' },
+  });
+  // create books
+  await GRAPHQL_CLIENT.query(createBookMutation(), {
+    input: { author: 'Agatha Christie', name: 'Murder on the Orient Express', genre: 'Mystery' },
+  });
+  await GRAPHQL_CLIENT.query(createBookMutation(), { input: { author: 'Agatha Christie', name: 'Death on the Nile', genre: 'Mystery' } });
+  await GRAPHQL_CLIENT.query(createBookMutation(), { input: { author: 'Ayn Rand', name: 'Anthem', genre: 'Science Fiction' } });
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   console.log('Waiting for the ES Cluster + Streaming Lambda infra to be setup');
   await cf.wait(120, () => Promise.resolve());
@@ -89,10 +104,21 @@ beforeAll(async () => {
       createdAt: AWSDate
       userItems: [String]
     }
+
+    type Book
+    @model
+    @key(fields: ["author", "name"])
+    @searchable
+    {
+      author: String!
+      name: String!
+      genre: String!
+    }
     `;
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
+      new KeyTransformer(),
       new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
@@ -527,7 +553,7 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
   // Create Post
   const title = 'to be deleted';
   const postToBeDeletedResponse = await runQuery(
-    getCreatePostsQuery('test author new', title, 1157, 1000, 22.2, true),
+    getCreatePostsMutation('test author new', title, 1157, 1000, 22.2, true),
     'createPost (to be deleted) response: ',
   );
   expect(postToBeDeletedResponse).toBeDefined();
@@ -602,7 +628,7 @@ test('Test updatePost syncing with Elasticsearch', async () => {
   const isPublished = true;
 
   const postToBeUpdatedResponse = await runQuery(
-    getCreatePostsQuery(author, title, ups, downs, percentageUp, isPublished),
+    getCreatePostsMutation(author, title, ups, downs, percentageUp, isPublished),
     'createPost (to be updated) response: ',
   );
   expect(postToBeUpdatedResponse).toBeDefined();
@@ -763,7 +789,36 @@ test('query using date range for createdAt', async () => {
   });
 });
 
-function getCreatePostsQuery(
+test('query for books by Agatha Christie with model using @key', async () => {
+  const expectedBookItemsLength = 2;
+  const expectedBookNames: string[] = ['Murder on the Orient Express', 'Death on the Nile'];
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `
+    query SearchBooks {
+      searchBooks(filter: {
+        author: {
+          eq: "Agatha Christie"
+        }
+      }) {
+        items {
+          author
+          name
+          genre
+        }
+      }
+    }
+    `,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  const items: any[] = searchResponse.data.searchBooks.items;
+  expect(items.length).toEqual(expectedBookItemsLength);
+  items.forEach((item: any) => {
+    expect(expectedBookNames).toContain(item.name);
+  });
+});
+
+function getCreatePostsMutation(
   author: string,
   title: string,
   ups: number,
@@ -783,7 +838,18 @@ function getCreatePostsQuery(
     }`;
 }
 
-function getCreateUsersQuery() {
+function createBookMutation() {
+  return `mutation CreateBook( $input: CreateBookInput!) {
+      createBook(input: $input) {
+        author
+        name
+        genre
+      }
+    }
+  `;
+}
+
+function getCreateUsersMutation() {
   return `mutation CreateUser($input: CreateUserInput!) {
     createUser(input: $input) {
       id
