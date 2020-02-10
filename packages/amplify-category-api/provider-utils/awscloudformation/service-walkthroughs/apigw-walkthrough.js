@@ -438,7 +438,7 @@ async function askPaths(context, answers, currentPath) {
     {
       name: 'name',
       type: 'input',
-      message: 'Provide a path (e.g., /items)\nTo specify path parameters use {paramName}. To specify a proxy path use {proxy+} at the end of the path.',
+      message: 'Provide a path (e.g., /book/{isbn}):',
       default: currentPath ? currentPath.name : '/items',
       validate(value) {
         const err = validatePathName(value, answers.paths);
