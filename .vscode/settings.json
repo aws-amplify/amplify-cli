@@ -7,21 +7,6 @@
     "**/coverage": true
   },
   "editor.formatOnSave": false,
-  "[javascript]": {
-    "editor.formatOnSave": false
-  },
-  "[javascriptreact]": {
-    "editor.formatOnSave": false
-  },
-  "[typescript]": {
-    "editor.formatOnSave": false
-  },
-  "[typescriptreact]": {
-    "editor.formatOnSave": false
-  },
-  "eslint.options": {
-    "extensions": [".js", ".ts", ".jsx", ".tsx"]
-  },
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,

@@ -504,27 +504,24 @@ function validatePathName(name, paths) {
     return 'The path must begin with / e.g. /items';
   }
 
-  // Matches parameterized paths such as /THIS/{is}/a-path/{proxy+}
-  if (!/^(?:\/(?:[a-zA-Z0-9\-]+|{[a-zA-Z0-9\-]+}))+(?:\/{proxy\+})?$/.test(name)) {
-    return 'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.\nA path can also end with /{proxy+} to specify a proxy path.';
+  // Matches parameterized paths such as /book/{isbn}/page/{pageNum}
+  // This regex also catches the above conditions, but those are left in to provide clearer error messages.
+  if (!/^(?:\/(?:[a-zA-Z0-9\-]+|{[a-zA-Z0-9\-]+}))+$/.test(name)) {
+    return 'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.';
   }
 
-  const split = name.split('/');
+  const split = name.split('/').filter(sub => sub !== ''); // because name starts with a /, this filters out the first empty element
   // Check if any prefix of this path matches an existing path
   const findSubPath = (path, subpath) => path.name === subpath;
   let subpath = '';
-  split.forEach(sub => {
+  const subMatch = split.some(sub => {
     subpath = `${subpath}/${sub}`;
-    const subpathFind = paths.find(path => findSubPath(path, subpath));
-    if (subpathFind) {
-      return `A different path already matches this sub-path: ${subpath}`;
-    }
+    return paths
+      .map(path => path.name)
+      .find(name => name === subpath) !== undefined;
   });
-
-  // Check if other paths are a subpath of the new path
-  subpath = paths.find(path => path.name.indexOf(name) === 0);
-  if (subpath) {
-    return `An existing path already matches the one provided: ${subpath.name}`;
+  if (subMatch) {
+    return `An existing path already matches this sub-path: ${subpath}`;
   }
 
   return null;
@@ -634,13 +631,18 @@ function newLambdaFunction(context, path) {
   }
   context.api = {
     path,
-    expressPath: path.replace(/{([a-zA-Z0-9\-]+)}/g, ':\$1'),
+    // ExpressJS represents path parameters as /:param instead of /{param}. This expression performs this replacement.
+    expressPath: formatCFNPathParamsForExpressJs(path),
     functionTemplate: 'serverless',
   };
   return add(context, 'awscloudformation', 'Lambda').then(resourceName => {
     context.print.success('Succesfully added the Lambda function locally');
     return { lambdaFunction: resourceName };
   });
+}
+
+function formatCFNPathParamsForExpressJs(path) {
+  return path.replace(/{([a-zA-Z0-9\-]+)}/g, ':\$1');
 }
 
 async function askLambdaFromProject(context, currentPath) {
