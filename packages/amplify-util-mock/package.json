@@ -68,7 +68,8 @@
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
-      "!src/__tests__/**"
+      "!src/__tests__/**",
+      "!lib/**"
     ],
     "reporters": [
       "default",

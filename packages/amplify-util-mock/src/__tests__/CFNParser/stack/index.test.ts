@@ -183,7 +183,7 @@ describe('CloudFormation stack', () => {
           Type: 'DummyResource',
         },
       };
-      expect(() => sortResources(resources, {})).toThrowError('DependsOn an non existent resource');
+      expect(() => sortResources(resources, {})).toThrowError('DependsOn a non-existent resource');
     });
 
     it('should throw error when resource Depends on itself', () => {
@@ -582,7 +582,7 @@ describe('CloudFormation stack', () => {
       };
       expect(() =>
         nestedStackHandler('nestedStack', resource, { conditions: {}, exports: {}, params: {}, resources: {} }, cfnResourceFetcher),
-      ).toThrowError('Stack is missing required Property TemplateURL');
+      ).toThrowError('Stack is missing required property TemplateURL');
     });
   });
 
