@@ -22,9 +22,9 @@ export function lambdaFunctionHandler(resourceName, resource, cfnContext: CloudF
         )
       : {};
   return {
-    cfnExposedAttributes: { Arn: 'Arn' },
+    cfnExposedAttributes: { Arn: 'arn' },
     arn: `arn:aws:lambda:{aws-region}:{aws-account-number}:function/${name}/LATEST`,
-    ref: 'arn:aws:lambda:{aws-region}:{aws-account-number}:function/${name}/LATEST',
+    ref: `arn:aws:lambda:{aws-region}:{aws-account-number}:function/${name}/LATEST`,
     name,
     handler,
     environment,

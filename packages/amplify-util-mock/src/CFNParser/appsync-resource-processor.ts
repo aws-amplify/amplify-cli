@@ -3,7 +3,7 @@ import { registerAppSyncResourceProcessor, registerIAMResourceProcessor, registe
 import { AppSyncAPIKeyProcessedResource, AppSyncAPIProcessedResource } from './resource-processors/appsync';
 import { processCloudFormationStack } from './stack/index';
 import { CloudFormationTemplateFetcher, CloudFormationTemplate } from './stack/types';
-import { type } from 'os';
+
 const CFN_DEFAULT_PARAMS = {
   'AWS::Region': 'us-east-1-fake',
   'AWS::AccountId': '12345678910',

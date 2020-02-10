@@ -102,5 +102,5 @@ export type CloudFormationProcessedResource = {
 };
 
 export type CloudFormationTemplateFetcher = {
-  getCloudFormationStackTemplate: (string) => CloudFormationTemplate;
+  getCloudFormationStackTemplate: (templateName: string) => CloudFormationTemplate;
 };

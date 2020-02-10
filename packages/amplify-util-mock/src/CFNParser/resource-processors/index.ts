@@ -1,5 +1,5 @@
 import { lambdaFunctionHandler } from '../lambda-resource-processor';
-import { CloudFormationResource, CloudFormationTemplateFetcher } from '../stack/types';
+import { CloudFormationResource } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
 import {
   appSyncAPIKeyResourceHandler,
