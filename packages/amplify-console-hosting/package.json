@@ -1,0 +1,25 @@
+{
+    "name": "amplify-console-hosting",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc"
+    },
+    "dependencies": {
+        "archiver": "^3.0.0",
+        "aws-sdk": "^2.611.0",
+        "chalk": "^2.4.2",
+        "cli-table2": "^0.2.0",
+        "fs-extra": "^6.0.1",
+        "inquirer": "^6.0.0",
+        "log-symbols": "^3.0.0",
+        "open": "^6.4.0",
+        "ora": "^3.0.0",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.4"
+    },
+    "author": "",
+    "license": "ISC"
+}

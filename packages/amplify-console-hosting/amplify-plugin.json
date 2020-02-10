@@ -1,0 +1,19 @@
+{
+    "name": "hosting",
+    "type": "category",
+    "commands": [
+        "add",
+        "configure",
+        "console",
+        "push",
+        "remove",
+        "publish",
+        "help"
+    ],
+    "eventHandlers": [
+        "PreInit",
+        "PostInit",
+        "PrePush",
+        "PostPush"
+    ]
+}
