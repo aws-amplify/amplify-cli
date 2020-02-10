@@ -216,7 +216,11 @@ export class StorageServer extends EventEmitter {
     if (request.query.partNumber !== undefined) {
       this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
     } else {
-      writeFileSync(directoryPath, new_data);
+      if (request.url.split('.')[request.url.split('.').length - 1] === 'json') {
+        writeFileSync(directoryPath, JSON.stringify(new_data));
+      } else {
+        writeFileSync(directoryPath, new_data);
+      }
       // event trigger  to differentitiate between multipart and normal put
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
@@ -260,8 +264,11 @@ export class StorageServer extends EventEmitter {
         }),
       );
       let buf = Buffer.concat(arr);
-      writeFileSync(directoryPath, buf);
-
+      if (request.url.split('.')[request.url.split('.').length - 1] === 'json') {
+        writeFileSync(directoryPath, buf.toString());
+      } else {
+        writeFileSync(directoryPath, buf);
+      }
       // event trigger for multipart post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
@@ -269,7 +276,11 @@ export class StorageServer extends EventEmitter {
       const directoryPath = normalize(join(String(this.localDirectoryPath), String(request.params.path)));
       ensureFileSync(directoryPath);
       var new_data = util.stripChunkSignature(request.body);
-      writeFileSync(directoryPath, new_data);
+      if (request.url.split('.')[request.url.split('.').length - 1] === 'json') {
+        writeFileSync(directoryPath, JSON.stringify(new_data));
+      } else {
+        writeFileSync(directoryPath, new_data);
+      }
       // event trigger for normal post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
