@@ -21,8 +21,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf ./lib",
-    "e2e": "jest"
+    "clean": "rimraf ./lib"
   },
   "engines": {
     "node": ">=10.0.0",
@@ -42,14 +41,5 @@
     "strip-ansi": "^6.0.0",
     "xcode": "^2.1.0",
     "yargs": "^15.1.0"
-  },
-  "devDependencies": {
-    "jest": "^25.1.0",
-    "nexpect": "^0.6.0"
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "__tests__/test-helpers"
-    ]
   }
 }
