@@ -3,7 +3,11 @@ import * as path from 'path';
 import { isCI } from '../utils';
 
 function getAmplifyAppPath() {
-  return path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
+  if (isCI()) {
+    return 'amplify-app';
+  } else {
+    return path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
+  }
 }
 
 function amplifyAppAndroid(projRoot: string, verbose: Boolean = isCI() ? false : true) {
