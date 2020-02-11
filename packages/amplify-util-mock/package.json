@@ -19,7 +19,6 @@
     "e2e": "jest --runInBand  --forceExit src/__e2e__/*.test.ts",
     "test": "jest  src/__tests__/**/*.test.ts",
     "test-watch": "jest --watch",
-    "test": "jest src/__tests__/",
     "test-ci": "jest src/__tests__/",
     "build": "tsc",
     "build-tests": "tsc --build tsconfig.tests.json",
