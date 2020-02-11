@@ -678,27 +678,29 @@ async function askEventSourceQuestions(context, inputs) {
           arnAnswer = await inquirer.prompt([arnQuestion]);
           eventSourceArn = arnAnswer[arnInput.key];
           return {
-            triggerEventSourceMapping: {
-              batchSize: 100,
-              startingPosition: 'LATEST',
-              eventSourceArn,
-              functionTemplateName: 'trigger-custom.js',
-              triggerPolicies: [
-                {
-                  Effect: 'Allow',
-                  Action: [
-                    'kinesis:DescribeStream',
-                    'kinesis:DescribeStreamSummary',
-                    'kinesis:GetRecords',
-                    'kinesis:GetShardIterator',
-                    'kinesis:ListShards',
-                    'kinesis:ListStreams',
-                    'kinesis:SubscribeToShard',
-                  ],
-                  Resource: eventSourceArn,
-                },
-              ],
-            },
+            triggerEventSourceMappings: [
+              {
+                batchSize: 100,
+                startingPosition: 'LATEST',
+                eventSourceArn,
+                functionTemplateName: 'trigger-custom.js',
+                triggerPolicies: [
+                  {
+                    Effect: 'Allow',
+                    Action: [
+                      'kinesis:DescribeStream',
+                      'kinesis:DescribeStreamSummary',
+                      'kinesis:GetRecords',
+                      'kinesis:GetShardIterator',
+                      'kinesis:ListShards',
+                      'kinesis:ListStreams',
+                      'kinesis:SubscribeToShard',
+                    ],
+                    Resource: eventSourceArn,
+                  },
+                ],
+              },
+            ],
           };
         case 'analyticsKinesisStream':
           return await askAnalyticsCategoryKinesisQuestions(context, inputs);
@@ -732,19 +734,21 @@ async function askEventSourceQuestions(context, inputs) {
           arnAnswer = await inquirer.prompt([arnQuestion]);
           eventSourceArn = arnAnswer[arnInput.key];
           return {
-            triggerEventSourceMapping: {
-              batchSize: 100,
-              startingPosition: 'LATEST',
-              eventSourceArn,
-              functionTemplateName: 'trigger-dynamodb.js',
-              triggerPolicies: [
-                {
-                  Effect: 'Allow',
-                  Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
-                  Resource: eventSourceArn,
-                },
-              ],
-            },
+            triggerEventSourceMappings: [
+              {
+                batchSize: 100,
+                startingPosition: 'LATEST',
+                eventSourceArn,
+                functionTemplateName: 'trigger-dynamodb.js',
+                triggerPolicies: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+                    Resource: eventSourceArn,
+                  },
+                ],
+              },
+            ],
           };
         case 'graphqlModelTable':
           return await askAPICategoryDynamoDBQuestions(context, inputs);
@@ -755,19 +759,21 @@ async function askEventSourceQuestions(context, inputs) {
           };
 
           return {
-            triggerEventSourceMapping: {
-              batchSize: 100,
-              startingPosition: 'LATEST',
-              eventSourceArn: dynamoDBCategoryStorageStreamArnRef,
-              functionTemplateName: 'trigger-dynamodb.js',
-              triggerPolicies: [
-                {
-                  Effect: 'Allow',
-                  Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
-                  Resource: dynamoDBCategoryStorageStreamArnRef,
-                },
-              ],
-            },
+            triggerEventSourceMappings: [
+              {
+                batchSize: 100,
+                startingPosition: 'LATEST',
+                eventSourceArn: dynamoDBCategoryStorageStreamArnRef,
+                functionTemplateName: 'trigger-dynamodb.js',
+                triggerPolicies: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+                    Resource: dynamoDBCategoryStorageStreamArnRef,
+                  },
+                ],
+              },
+            ],
             dependsOn: [
               {
                 category: 'storage',
@@ -820,27 +826,29 @@ async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
   };
 
   return {
-    triggerEventSourceMapping: {
-      batchSize: 100,
-      startingPosition: 'LATEST',
-      eventSourceArn: streamArnParamRef,
-      functionTemplateName: 'trigger-custom.js',
-      triggerPolicies: [
-        {
-          Effect: 'Allow',
-          Action: [
-            'kinesis:DescribeStream',
-            'kinesis:DescribeStreamSummary',
-            'kinesis:GetRecords',
-            'kinesis:GetShardIterator',
-            'kinesis:ListShards',
-            'kinesis:ListStreams',
-            'kinesis:SubscribeToShard',
-          ],
-          Resource: streamArnParamRef,
-        },
-      ],
-    },
+    triggerEventSourceMappings: [
+      {
+        batchSize: 100,
+        startingPosition: 'LATEST',
+        eventSourceArn: streamArnParamRef,
+        functionTemplateName: 'trigger-custom.js',
+        triggerPolicies: [
+          {
+            Effect: 'Allow',
+            Action: [
+              'kinesis:DescribeStream',
+              'kinesis:DescribeStreamSummary',
+              'kinesis:GetRecords',
+              'kinesis:GetShardIterator',
+              'kinesis:ListShards',
+              'kinesis:ListStreams',
+              'kinesis:SubscribeToShard',
+            ],
+            Resource: streamArnParamRef,
+          },
+        ],
+      },
+    ],
     dependsOn: [
       {
         category: 'analytics',
