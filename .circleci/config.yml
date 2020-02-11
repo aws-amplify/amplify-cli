@@ -46,6 +46,25 @@ jobs:
       - run:
           name: Collect code coverage
           command: yarn coverage
+
+  publish_to_local_registry:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: 'Publish to verdaccio'
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            yarn publish-to-verdaccio
+      - save_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/verdaccio-cache/
+
   graphql_e2e_tests:
     <<: *defaults
     steps:
@@ -59,6 +78,7 @@ jobs:
           no_output_timeout: 90m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
+
   mock_e2e_tests:
     <<: *defaults
     steps:
@@ -84,9 +104,20 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
-          command: 'cd packages/amplify-e2e-tests && yarn run e2e --maxWorkers=3'
+          name: Start verdaccio and Install Amplify CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            changeNpmGlobalPath
+            npm install -g @aws-amplify/cli
+      - run:
+          command: |
+            export PATH=~/.npm-global/bin:$PATH
+            amplify -v
+            cd packages/amplify-e2e-tests
+            yarn run e2e --maxWorkers=3
           name: 'Run Amplify end-to-end tests'
           no_output_timeout: 90m
       - store_test_results:
@@ -452,14 +483,22 @@ workflows:
           requires:
             - build
             - mock_e2e_tests
+      - publish_to_local_registry:
+          filters:
+            branches:
+              only:
+                - master
+                - e2e-from-verdaccio
+          requires:
+            - build
       - amplify_e2e_tests:
           filters:
             branches:
               only:
                 - master
+                - e2e-from-verdaccio
           requires:
-            - build
-            - mock_e2e_tests
+            - publish_to_local_registry
       - deploy:
           requires:
             - build
