@@ -32,10 +32,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "23.1.1",
-    "aws-sdk": "^2.608.0",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6"
+    "aws-sdk": "^2.608.0"
   },
   "jest": {
     "collectCoverage": true,
@@ -55,6 +52,11 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
   }
 }

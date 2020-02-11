@@ -35,9 +35,7 @@
   },
   "devDependencies": {
     "graphql": "^14.5.8",
-    "java-ast": "^0.1.0",
-    "jest": "24.9.0",
-    "ts-jest": "24.1.0"
+    "java-ast": "^0.1.0"
   },
   "peerDependencies": {
     "graphql": "^14.5.8"
