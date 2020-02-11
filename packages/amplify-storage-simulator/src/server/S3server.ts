@@ -44,11 +44,8 @@ export class StorageServer extends EventEmitter {
     super();
     this.localDirectoryPath = config.localDirS3;
     this.app = express();
-    this.app.use(express.json());
     this.app.use(cors(corsOptions));
     this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
-    this.app.use(bodyParser.json({ limit: '50mb', type: '*/*' }));
-    this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: false, type: '*/*' }));
     this.app.use(serveStatic(this.localDirectoryPath), this.handleRequestAll.bind(this));
 
     this.server = null;
@@ -216,11 +213,7 @@ export class StorageServer extends EventEmitter {
     if (request.query.partNumber !== undefined) {
       this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
     } else {
-      if (request.url.split('.')[request.url.split('.').length - 1] === 'json') {
-        writeFileSync(directoryPath, JSON.stringify(new_data));
-      } else {
-        writeFileSync(directoryPath, new_data);
-      }
+      writeFileSync(directoryPath, new_data);
       // event trigger  to differentitiate between multipart and normal put
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
@@ -264,11 +257,7 @@ export class StorageServer extends EventEmitter {
         }),
       );
       let buf = Buffer.concat(arr);
-      if (request.url.split('.')[request.url.split('.').length - 1] === 'json') {
-        writeFileSync(directoryPath, buf.toString());
-      } else {
-        writeFileSync(directoryPath, buf);
-      }
+      writeFileSync(directoryPath, buf);
       // event trigger for multipart post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
@@ -276,11 +265,7 @@ export class StorageServer extends EventEmitter {
       const directoryPath = normalize(join(String(this.localDirectoryPath), String(request.params.path)));
       ensureFileSync(directoryPath);
       var new_data = util.stripChunkSignature(request.body);
-      if (request.url.split('.')[request.url.split('.').length - 1] === 'json') {
-        writeFileSync(directoryPath, JSON.stringify(new_data));
-      } else {
-        writeFileSync(directoryPath, new_data);
-      }
+      writeFileSync(directoryPath, new_data);
       // event trigger for normal post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
