@@ -16,7 +16,8 @@
     "aws"
   ],
   "scripts": {
-    "e2e": "jest --runInBand  --forceExit src/__e2e__/*.e2e.test.ts",
+    "e2e": "jest --runInBand  --forceExit src/__e2e__/*.test.ts",
+    "test": "jest  src/__tests__/**/*.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
     "build-tests": "tsc --build tsconfig.tests.json",
@@ -34,7 +35,6 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.16",
     "@types/lodash": "^4.14.149",
     "@types/node": "^10.17.13",
     "aws-appsync": "^2.0.2",
@@ -49,12 +49,8 @@
     "graphql-transformer-core": "6.13.2",
     "graphql-versioned-transformer": "4.13.2",
     "isomorphic-fetch": "^2.2.1",
-    "jest": "^24.8.0",
-    "jest-environment-node": "^24.8.0",
-    "jest-junit": "^8.0.0",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.0",
-    "ts-jest": "^24.0.2",
     "uuid": "^3.4.0",
     "ws": "^7.2.1"
   },
@@ -85,7 +81,7 @@
     ],
     "globals": {
       "ts-jest": {
-        "tsConfig": "tsconfig.tests.json"
+        "tsConfig": "<rootDir>/tsconfig.tests.json"
       }
     }
   },

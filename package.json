@@ -71,7 +71,12 @@
     "prettier": "^1.19.1",
     "prettier-eslint": "^9.0.1",
     "pretty-quick": "^2.0.1",
-    "typescript": "~3.6.4"
+    "typescript": "~3.6.4",
+    "jest":"^25.1.0",
+    "@types/jest": "^25.1.1",
+    "jest-circus": "^25.1.0",
+    "jest-junit": "10.0.0",
+    "ts-jest": "^25.2.0"
   },
   "config": {
     "commitizen": {
