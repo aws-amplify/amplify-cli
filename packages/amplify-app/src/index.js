@@ -56,7 +56,7 @@ async function checkNodeVersion() {
 // Install CLI using npm
 async function installAmplifyCLI() {
   return new Promise((resolve, reject) => {
-    const amplifyCLIInstall = spawn(npm, ['install', '-g', `${amplifyCliPackageName}`], {
+    const amplifyCLIInstall = spawn(npm, ['install', '-g', amplifyCliPackageName], {
       cwd: process.cwd(),
       env: process.env,
       stdio: 'inherit',
