@@ -80,7 +80,7 @@ async function remove(context) {
 }
 
 async function console(context) {
-  if (!isHostingEnabled) {
+  if (!isHostingEnabled(context)) {
     throw new ValidationError();
   }
   const type = loadDeployType(context);
@@ -89,7 +89,7 @@ async function console(context) {
 }
 
 async function configure(context) {
-  if (!isHostingEnabled) {
+  if (!isHostingEnabled(context)) {
     throw new ValidationError(HOSTING_NOT_ENABLED);
   }
   const type = loadDeployType(context);
@@ -98,7 +98,7 @@ async function configure(context) {
 }
 
 async function status(context) {
-  if (!isHostingEnabled) {
+  if (!isHostingEnabled(context)) {
     throw new ValidationError(HOSTING_NOT_ENABLED);
   }
 
