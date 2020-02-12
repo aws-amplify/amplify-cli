@@ -334,7 +334,8 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any, ver
 
 export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
+    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET, 
+      OIDC_APP_ID, OIDC_APP_SECRET, OIDC_APP_ISSUER, OIDC_APP_SCOPES, OIDC_APP_MAPPING }: any = getEnvVars();
 
     const missingVars = [];
     if (!FACEBOOK_APP_ID) {
@@ -354,6 +355,21 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
     }
     if (!AMAZON_APP_SECRET) {
       missingVars.push('AMAZON_APP_SECRET');
+    }
+    if (!OIDC_APP_ID) {
+      missingVars.push('OIDC_APP_ID');
+    }
+    if (!OIDC_APP_SECRET) {
+      missingVars.push('OIDC_APP_SECRET');
+    }
+    if (!OIDC_APP_ISSUER) {
+      missingVars.push('OIDC_APP_ISSUER');
+    }
+    if (!OIDC_APP_SCOPES) {
+      missingVars.push('OIDC_APP_SCOPES');
+    }
+    if (!OIDC_APP_MAPPING) {
+      missingVars.push('OIDC_APP_MAPPING');
     }
 
     if (missingVars.length > 0) {
@@ -403,6 +419,23 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
       .wait('Enter your Amazon App Secret for your OAuth flow:')
       .send(AMAZON_APP_SECRET)
       .send('\r')
+      .wait('Enter your OIDC App ID for your OAuth flow:')
+      .send(OIDC_APP_ID)
+      .send('\r')
+      .wait('Enter your OIDC App Secret for your OAuth flow:')
+      .send(OIDC_APP_SECRET)
+      .send('\r')
+      .wait('Enter your OIDC Issuer url:')
+      .send(OIDC_APP_ISSUER)
+      .send('\r')
+      .wait('Select your OIDC Attributes Request Method:')
+      .sendline('\r')
+      .wait('Enter authorize scopes used by your application during authentication to authorize access to a user\'s details, like name and picture as a JSON array (ec. [\"openid\",\"test\"]):')
+      .send(OIDC_APP_SCOPES)
+      .send('\r')
+      .wait('Enter the expected attributes mapping between your OIDC provider and your Cognito user as a JSON (ex. \"{\"email\":\"EMAIL\",\"username\":\"sub\"}\"):')
+      .send(OIDC_APP_MAPPING)
+      .send('\r')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -443,6 +476,9 @@ export function addAuthWithMaxOptions(cwd: string, settings: any, verbose: boole
       .send('\r')
       .wait('Enter your Amazon App ID for your identity pool')
       .send('amazonIDPOOL')
+      .send('\r')
+      .wait('Enter your OIDC App ID for your identity pool')
+      .send('oidcIDPOOL')
       .send('\r')
       .wait('Please provide a name for your user pool')
       .send('\r')
@@ -544,6 +580,12 @@ export function addAuthWithMaxOptions(cwd: string, settings: any, verbose: boole
       .send('\r')
       .wait('Enter your Amazon App Secret for your OAuth flow')
       .send('amzOAUTHsecret')
+      .send('\r')
+      .wait('Enter your OIDC App ID for your OAuth flow')
+      .send('oidcOAUTHid')
+      .send('\r')
+      .wait('Enter your OIDC App Secret for your OAuth flow')
+      .send('oidcOAUTHsecret')
       .send('\r')
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .send('y')

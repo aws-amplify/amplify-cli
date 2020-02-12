@@ -575,6 +575,8 @@ Resources:
             - '    ProviderDetails: {'
             - '     ''client_id'': providerCreds.client_id,'
             - '     ''client_secret'': providerCreds.client_secret,'
+            - '     ''oidc_issuer'': providerMeta.oidc_issuer,'
+            - '     ''attributes_request_method'': providerMeta.attributes_request_method,'
             - '     ''authorize_scopes'': providerMeta.authorize_scopes'
             - '    },'
             - '    ProviderName: providerMeta.ProviderName,'
@@ -1172,5 +1174,9 @@ Outputs :
   <%if (props.amazonAppId) { %>
   AmazonWebClient:
     Value: !Ref amazonAppId
+  <% } %> 
+  <%if (props.oidcAppId) { %>
+  OIDCWebClient:
+    Value: !Ref oidcAppId
   <% } %> 
   <% } %>

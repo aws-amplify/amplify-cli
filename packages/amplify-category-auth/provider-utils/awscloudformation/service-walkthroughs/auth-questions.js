@@ -155,6 +155,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     delete context.updatingAuth.thirdPartyAuth;
     delete context.updatingAuth.authProviders;
     delete context.updatingAuth.facebookAppId;
+    delete context.updatingAuth.oidcAppId;
     delete context.updatingAuth.googleClientId;
     delete context.updatingAuth.googleIos;
     delete context.updatingAuth.googleAndroid;
@@ -412,8 +413,8 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
-        const scopes = [];
-        const maps = {};
+        const scopes = el === 'OIDC' ? JSON.parse(answers.oidcAppOIDCAuthorizeScopes) : [];
+        const maps = el === 'OIDC' ? JSON.parse(answers.oidcAppOIDCAttributesMapping) : {};
         attributesForMapping.forEach(a => {
           const attributeKey = attributeProviderMap[a];
           if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
@@ -431,6 +432,8 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
         return {
           ProviderName: el,
           authorize_scopes: scopes.join(delimmiter),
+          oidc_issuer: answers.oidcAppOIDCIssuer,
+          attributes_request_method: answers.oidcAppOIDCAttributesRequestMethod,
           AttributeMapping: maps,
         };
       })
@@ -439,7 +442,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
       oAuthProviders.map(el => ({
         ProviderName: el,
         client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`],
-        client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`],
+        client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`]
       }))
     );
   }
@@ -517,6 +520,7 @@ function parseOAuthCreds(providers, metadata, envCreds) {
         const creds = parsedCreds.find(i => i.ProviderName === el);
         providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
         providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
+        providerKeys[`${el.toLowerCase()}AppOIDCIssuer`] = creds.oidc_issuer;
         providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
       } catch (e) {
         return null;
