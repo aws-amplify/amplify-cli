@@ -13,6 +13,7 @@ const stripAnsi = require('strip-ansi');
 const { engines } = require('../package.json');
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
 const amplifyCliPackageName = '@aws-amplify/cli';
 
 function run() {
@@ -76,7 +77,7 @@ async function installAmplifyCLI() {
 
 // Check the amplify CLI version, install latest CLI if it does not exist or is too old
 async function amplifyCLIVersionCheck() {
-  const amplifyCLIVersionSpawn = spawnSync('amplify', ['-v']);
+  const amplifyCLIVersionSpawn = spawnSync(amplify, ['-v']);
   const minCLIVersion = engines['@aws-amplify/cli'];
   if (amplifyCLIVersionSpawn.stderr !== null) {
     const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionSpawn.stdout.toString()));
@@ -104,7 +105,7 @@ async function createAmplifySkeletonProject() {
     console.log(`${emoji.get('guitar')} Creating base Amplify project`);
 
     return new Promise((resolve, reject) => {
-      const createSkeletonAmplifyProject = spawn('amplify', ['init', '--quickstart'], {
+      const createSkeletonAmplifyProject = spawn(amplify, ['init', '--quickstart'], {
         cwd: process.cwd(),
         env: process.env,
         stdio: 'inherit',
