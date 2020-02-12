@@ -440,13 +440,7 @@ async function askPaths(context, answers, currentPath) {
       type: 'input',
       message: 'Provide a path (e.g., /book/{isbn}):',
       default: currentPath ? currentPath.name : '/items',
-      validate(value) {
-        const err = validatePathName(value, answers.paths);
-        if (err) {
-          return err;
-        }
-        return true;
-      },
+      validate: (value) => validatePathName(value, answers.paths),
     },
     {
       name: 'functionType',
@@ -522,7 +516,7 @@ function validatePathName(name, paths) {
     return `An existing path already matches this sub-path: ${subpath}`;
   }
 
-  return null;
+  return true;
 }
 
 async function findDependsOn(paths, context) {
