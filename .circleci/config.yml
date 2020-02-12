@@ -132,8 +132,8 @@ jobs:
           TERM: dumb
     steps:
       - checkout
+      - run: apt-get update
       - run: apt-get install -y sudo
-      - run: sudo apt-get update
       - run: sudo apt-get install -y tcl
       - run: sudo apt-get install -y expect
       - run: sudo apt-get install -y zip
