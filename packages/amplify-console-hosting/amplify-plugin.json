@@ -1,0 +1,13 @@
+{
+    "name": "hosting",
+    "type": "category",
+    "commands": [
+        "add",
+        "configure",
+        "remove",
+        "publish",
+        "help",
+        "status",
+        "console"
+    ]
+}
