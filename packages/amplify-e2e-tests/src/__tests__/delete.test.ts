@@ -10,7 +10,7 @@ import {
   getAWSConfigAndroidPath,
   getAmplifyConfigAndroidPath,
 } from '../utils';
-import { addEnvironment } from '../environment/add-env';
+import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/add-env';
 import { addApiWithoutSchema } from '../categories/api';
 import { addCodegen } from '../codegen/add';
 import * as fs from 'fs-extra';
@@ -39,6 +39,19 @@ describe('amplify delete', () => {
     await initAndroidProjectWithProfile(projRoot, {});
     await testDeletion(projRoot, { android: true });
   });
+
+  it('should remove enviroment', async () => {
+    await initJSProjectWithProfile(projRoot, { envName: 'testdev' });
+    await addEnvironment(projRoot, { envName: 'testprod' });
+    const amplifyMeta = getProjectMeta(projRoot);
+    const meta = amplifyMeta.providers.awscloudformation;
+    const deploymentBucketName1 = meta.DeploymentBucketName;
+    await expect(await bucketExists(deploymentBucketName1)).toBe(true);
+    await checkoutEnvironment(projRoot, { envName: 'testdev' });
+    await removeEnvironment(projRoot, { envName: 'testprod' });
+    await expect(await bucketExists(deploymentBucketName1)).toBe(false);
+    await deleteProject(projRoot, true);
+  });
 });
 
 async function testDeletion(projRoot: string, settings: { ios?: Boolean; android?: Boolean }) {
@@ -47,7 +60,7 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   const deploymentBucketName1 = meta.DeploymentBucketName;
   expect(meta.Region).toBeDefined();
   const { AuthRoleName, UnauthRoleName } = meta;
-  await addEnvironment(projRoot, {});
+  await addEnvironment(projRoot, { envName: 'test' });
   await addApiWithoutSchema(projRoot);
   await addCodegen(projRoot, settings);
   const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
