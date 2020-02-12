@@ -29,6 +29,11 @@
     "graphql-transformer-common": "4.13.2",
     "graphql-transformer-core": "6.13.2"
   },
+  "devDependencies": {
+    "@types/jest": "23.1.1",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6"
+  },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

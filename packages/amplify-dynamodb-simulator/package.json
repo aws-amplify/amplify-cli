@@ -32,6 +32,8 @@
   },
   "devDependencies": {
     "download-cli": "^1.1.1",
+    "jest": "^24.8.0",
+    "jest-environment-node": "^24.8.0",
     "portfinder": "^1.0.25"
   },
   "jest": {

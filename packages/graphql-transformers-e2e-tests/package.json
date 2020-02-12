@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@aws-amplify/core": "^2.1.0",
+    "@types/jest": "^25.1.1",
     "@types/node": "^10.17.13",
     "aws-amplify": "^2.2.2",
     "aws-appsync": "^2.0.2",
@@ -47,8 +48,10 @@
     "graphql-tag": "^2.10.1",
     "graphql-versioned-transformer": "4.13.2",
     "isomorphic-fetch": "^2.2.1",
+    "jest": "^25.1.0",
     "jest-junit": "^10.0.0",
     "node-fetch": "^2.6.0",
+    "ts-jest": "^25.2.0",
     "ws": "^7.2.1"
   },
   "jest": {

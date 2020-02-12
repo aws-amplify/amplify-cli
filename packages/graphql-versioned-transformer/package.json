@@ -29,8 +29,11 @@
     "graphql-transformer-core": "6.13.2"
   },
   "devDependencies": {
+    "@types/jest": "23.1.1",
     "@types/node": "^10.17.13",
-    "graphql-dynamodb-transformer": "6.13.2"
+    "graphql-dynamodb-transformer": "6.13.2",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6"
   },
   "jest": {
     "transform": {

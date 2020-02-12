@@ -33,7 +33,10 @@
     "pluralize": "^8.0.0"
   },
   "devDependencies": {
-    "@types/node": "^10.17.13"
+    "@types/jest": "23.1.1",
+    "@types/node": "^10.17.13",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6"
   },
   "jest": {
     "transform": {

@@ -27,6 +27,7 @@
     "promise-sequential": "^1.1.1"
   },
   "devDependencies": {
+    "jest": "^23.5.0",
     "mockirer": "^2.0.1"
   },
   "jest": {
