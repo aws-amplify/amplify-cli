@@ -16,11 +16,13 @@
     "link-dev": "cd packages/amplify-cli && ln -s $(pwd)/bin/amplify $(yarn global bin)/amplify-dev && cd -",
     "rm-dev-link": "rm -f $(yarn global bin)/amplify-dev",
     "setup-dev": "yarn dev-build && yarn rm-dev-link && yarn link-dev && yarn link-caa",
-    "setup-dev-win": "lerna exec -- del /f package-lock.json && lerna bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link && cd ../.. && lerna run build",
+    "link-win": "node ./scripts/link-bin.js packages/amplify-cli/bin/amplify",
+    "setup-dev-win": "yarn dev-build && yarn link-win && yarn link-caa",
     "publish:master": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --yes",
     "publish:beta": "lerna publish prerelease --exact --dist-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --yes",
     "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]'",
     "postpublish:release": "git fetch . release:master && git push origin master",
+    "publish-to-verdaccio":"lerna publish prerelease --yes --force-publish=* --no-git-tag-version --no-commit-hooks --no-push --exact --dist-tag=latest",
     "commit": "git-cz",
     "coverage": "codecov || exit 0"
   },
@@ -76,7 +78,11 @@
     "@types/jest": "^25.1.1",
     "jest-circus": "^25.1.0",
     "jest-junit": "10.0.0",
-    "ts-jest": "^25.2.0"
+    "ts-jest": "^25.2.0",
+    "cmd-shim":"^3.0.3",
+    "lnk": "1.1.0",
+    "copyfiles":"^2.1.1",
+    "rimraf":"^3.0.2"
   },
   "config": {
     "commitizen": {

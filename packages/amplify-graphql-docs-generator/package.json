@@ -30,7 +30,7 @@
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "change-case": "^4.1.1",

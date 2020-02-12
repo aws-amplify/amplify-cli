@@ -20,7 +20,7 @@
     "build": "tsc && cd lambdaFunction && bestzip --force node ../lib/predictionsLambdaFunction.zip predictionsLambda.js",
     "watch": "tsc -w",
     "test": "jest",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "cloudform-types": "^4.1.0",

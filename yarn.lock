@@ -5880,6 +5880,14 @@ cloudform@^4.1.0:
     ts-node "^5.0.1"
     typescript "^2.9.2"
 
+cmd-shim@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/cmd-shim/-/cmd-shim-3.0.3.tgz#2c35238d3df37d98ecdd7d5f6b8dc6b21cadc7cb"
+  integrity sha512-DtGg+0xiFhQIntSBRzL2fRQBnmtAVwXIDo4Qq46HPpObYquxMaZS4sb82U9nH91qJrlosC1wa9gwr0QyL/HypA==
+  dependencies:
+    graceful-fs "^4.1.2"
+    mkdirp "~0.5.0"
+
 co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
@@ -6395,6 +6403,18 @@ copy-to-clipboard@^3.2.0:
   integrity sha512-btru1Q6RD9wbonIvEU5EfnhIRGHLo//BGXQ1hNAD2avIs/nBZlpbOeKtv3mhoUByN4DB9Cb6/vXBymj1S43KmA==
   dependencies:
     toggle-selection "^1.0.6"
+
+copyfiles@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/copyfiles/-/copyfiles-2.1.1.tgz#d430e122d7880f92c45d372208b0af03b0c39db6"
+  integrity sha512-y6DZHve80whydXzBal7r70TBgKMPKesVRR1Sn/raUu7Jh/i7iSLSyGvYaq0eMJ/3Y/CKghwzjY32q1WzEnpp3Q==
+  dependencies:
+    glob "^7.0.5"
+    minimatch "^3.0.3"
+    mkdirp "^0.5.1"
+    noms "0.0.0"
+    through2 "^2.0.1"
+    yargs "^13.2.4"
 
 core-js-compat@^3.1.1, core-js-compat@^3.6.2:
   version "3.6.4"
@@ -12386,6 +12406,16 @@ linkify-it@^2.0.0:
   dependencies:
     uc.micro "^1.0.1"
 
+lnk@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/lnk/-/lnk-1.1.0.tgz#acee59b91ca9a0a8fc12a3dbc53b9edc5f353dd7"
+  integrity sha1-rO5ZuRypoKj8EqPbxTue3F81Pdc=
+  dependencies:
+    arrify "^1.0.1"
+    mkdirp "^0.5.0"
+    pify "^2.3"
+    rimraf "^2.5.4"
+
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
@@ -13184,7 +13214,7 @@ minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/minimalistic-crypto-utils/-/minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a"
   integrity sha1-9sAMHAsIIkblxNmd+4x8CDsrWCo=
 
-"minimatch@2 || 3", minimatch@3.0.4, minimatch@^3.0.4, minimatch@~3.0.4:
+"minimatch@2 || 3", minimatch@3.0.4, minimatch@^3.0.3, minimatch@^3.0.4, minimatch@~3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
   integrity sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==
@@ -13715,6 +13745,14 @@ nomnom@1.5.2:
   dependencies:
     chalk "~0.4.0"
     underscore "~1.6.0"
+
+noms@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/noms/-/noms-0.0.0.tgz#da8ebd9f3af9d6760919b27d9cdc8092a7332859"
+  integrity sha1-2o69nzr51nYJGbJ9nNyAkqczKFk=
+  dependencies:
+    inherits "^2.0.1"
+    readable-stream "~1.0.31"
 
 nopt@3.x:
   version "3.0.6"
@@ -14681,7 +14719,7 @@ picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.0.7:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.2.1.tgz#21bac888b6ed8601f831ce7816e335bc779f0a4a"
   integrity sha512-ISBaA8xQNmwELC7eOjqFKMESB2VIqt4PPDD0nsS95b/9dZXvVKOlz9keMSnoGGKcOHXfTvDD6WMaRoSc9UuhRA==
 
-pify@^2.0.0, pify@^2.3.0:
+pify@^2.0.0, pify@^2.3, pify@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
   integrity sha1-7RQaasBDqEnqWISY59yosVMw6Qw=
@@ -16170,6 +16208,16 @@ readable-stream@1.1.x:
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
 
+readable-stream@~1.0.31:
+  version "1.0.34"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
+  integrity sha1-Elgg40vIQtLyqq+v5MKRbuMsFXw=
+  dependencies:
+    core-util-is "~1.0.0"
+    inherits "~2.0.1"
+    isarray "0.0.1"
+    string_decoder "~0.10.x"
+
 readdir-scoped-modules@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/readdir-scoped-modules/-/readdir-scoped-modules-1.1.0.tgz#8d45407b4f870a0dcaebc0e28670d18e74514309"
@@ -16687,6 +16735,13 @@ rimraf@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-3.0.1.tgz#48d3d4cb46c80d388ab26cd61b1b466ae9ae225a"
   integrity sha512-IQ4ikL8SjBiEDZfk+DFVwqRK8md24RWMEJkdSlgNLkyyAImcjf8SWvU1qFMDOb4igBClbTQ/ugPqXcRwdFTxZw==
+  dependencies:
+    glob "^7.1.3"
+
+rimraf@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-3.0.2.tgz#f1a5402ba6220ad52cc1282bac1ae3aa49fd061a"
+  integrity sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==
   dependencies:
     glob "^7.1.3"
 
