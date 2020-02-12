@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile } from '../init';
+import { initJSProjectWithProfile, deleteProject } from '../init';
 import { addHosting, removeHosting, amplifyPush } from '../categories/hosting';
 import { createNewProjectDir, deleteProjectDir } from '../utils';
 import * as fs from 'fs-extra';
@@ -13,6 +13,7 @@ describe('amplify add hosting', () => {
   afterEach(async () => {
     await removeHosting(projRoot);
     await amplifyPush(projRoot);
+    await deleteProject(projRoot, true);
     deleteProjectDir(projRoot);
   });
 

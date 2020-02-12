@@ -44,6 +44,11 @@ const emptyBucket = async (bucket: string) => {
         Bucket: bucket,
       })
       .promise();
+    const params = {
+      Bucket: bucket,
+      $waiter: { maxAttempts: 10 },
+    };
+    await awsS3Client.waitFor('bucketNotExists', params).promise();
   } catch (e) {
     console.error(`Error deleting bucket: ${e}`);
   }
