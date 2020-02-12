@@ -21,7 +21,7 @@
     "test-ci": "jest --ci -i",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "graphql": "^14.5.8",
@@ -29,11 +29,8 @@
     "md5": "^2.2.1"
   },
   "devDependencies": {
-    "@types/jest": "23.1.1",
     "@types/md5": "^2.1.33",
-    "@types/node": "^10.17.13",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6"
+    "@types/node": "^10.17.13"
   },
   "jest": {
     "transform": {

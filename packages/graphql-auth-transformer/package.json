@@ -31,14 +31,11 @@
     "graphql-transformer-core": "6.13.2-beta.0"
   },
   "devDependencies": {
-    "@types/jest": "23.1.1",
     "@types/node": "^10.17.13",
     "cloudform-types": "^4.1.0",
     "graphql-dynamodb-transformer": "6.13.2-beta.0",
     "graphql-elasticsearch-transformer": "4.3.2-beta.0",
-    "jest": "^23.1.0",
-    "rimraf": "^3.0.0",
-    "ts-jest": "^22.4.6"
+    "rimraf": "^3.0.0"
   },
   "jest": {
     "testURL": "http://localhost",

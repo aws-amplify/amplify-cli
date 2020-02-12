@@ -3,13 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.1.9...amplify-graphql-types-generator@2.1.10) (2020-02-07)
+
+### Bug Fixes
+
+- **amplify-graphql-types-generator:** generate array return type ([#3233](https://github.com/aws-amplify/amplify-cli/issues/3233)) ([1c22350](https://github.com/aws-amplify/amplify-cli/commit/1c223503c93070e320eaab93a5783bce2d096e21)), closes [#2478](https://github.com/aws-amplify/amplify-cli/issues/2478)
+- e2e tests, tsconfigs, [@deprecated](https://github.com/deprecated) directive for codegen: ([#3338](https://github.com/aws-amplify/amplify-cli/issues/3338)) ([2ed7715](https://github.com/aws-amplify/amplify-cli/commit/2ed77151dd6367ac9547f78fe600e7913a3d37b2))
+- update snapshot for eslint ([#3301](https://github.com/aws-amplify/amplify-cli/issues/3301)) ([9ef1deb](https://github.com/aws-amplify/amplify-cli/commit/9ef1deb4583eb6c9c88cbced192a74b4a6a6a21c))
+
 ## [2.1.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.1.8...amplify-graphql-types-generator@2.1.9) (2020-01-24)
 
 **Note:** Version bump only for package amplify-graphql-types-generator
-
-
-
-
 
 ## [2.1.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.24.0...amplify-graphql-types-generator@2.1.8) (2020-01-23)
 

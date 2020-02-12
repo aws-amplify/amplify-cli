@@ -3,16 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.0...amplify-codegen-appsync-model-plugin@1.13.1) (2020-01-24)
+## [1.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.1...amplify-codegen-appsync-model-plugin@1.13.2) (2020-02-07)
 
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.0...amplify-codegen-appsync-model-plugin@1.13.1) (2020-01-24)
 
 ### Bug Fixes
 
-* **amplify-codegen-appsync-model-plugin:** fix typo in swift model gen ([#3256](https://github.com/aws-amplify/amplify-cli/issues/3256)) ([c5109ba](https://github.com/aws-amplify/amplify-cli/commit/c5109baf5f9b47e91ab19bc5f5c7a0e4e3089adf))
-
-
-
-
+- **amplify-codegen-appsync-model-plugin:** fix typo in swift model gen ([#3256](https://github.com/aws-amplify/amplify-cli/issues/3256)) ([c5109ba](https://github.com/aws-amplify/amplify-cli/commit/c5109baf5f9b47e91ab19bc5f5c7a0e4e3089adf))
 
 # 1.13.0 (2020-01-23)
 

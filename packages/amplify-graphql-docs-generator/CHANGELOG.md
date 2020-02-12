@@ -3,13 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@2.1.9...amplify-graphql-docs-generator@2.1.10) (2020-02-07)
+
+### Bug Fixes
+
+- e2e tests, tsconfigs, [@deprecated](https://github.com/deprecated) directive for codegen: ([#3338](https://github.com/aws-amplify/amplify-cli/issues/3338)) ([2ed7715](https://github.com/aws-amplify/amplify-cli/commit/2ed77151dd6367ac9547f78fe600e7913a3d37b2))
+
 ## [2.1.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@2.1.8...amplify-graphql-docs-generator@2.1.9) (2020-01-24)
 
 **Note:** Version bump only for package amplify-graphql-docs-generator
-
-
-
-
 
 ## [2.1.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.28.0...amplify-graphql-docs-generator@2.1.8) (2020-01-23)
 
