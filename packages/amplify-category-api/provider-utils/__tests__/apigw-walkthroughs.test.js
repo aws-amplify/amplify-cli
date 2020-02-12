@@ -6,8 +6,8 @@ const validatePathName = walkthrough.__get__('validatePathName');
 const stubOtherPaths = [{name: '/other/path'}, {name: '/sub/path'}]
 
 test('validatePathName_validPath', () => {
-    expect(validatePathName('/some/path', stubOtherPaths)).toBeNull();
-    expect(validatePathName('/path/{with}/{params}', stubOtherPaths)).toBeNull();
+    expect(validatePathName('/some/path', stubOtherPaths)).toBeTruthy();
+    expect(validatePathName('/path/{with}/{params}', stubOtherPaths)).toBeTruthy();
 });
 
 test('validatePath_empty', () => {
