@@ -506,7 +506,6 @@ function validatePathName(name, paths) {
 
   const split = name.split('/').filter(sub => sub !== ''); // because name starts with a /, this filters out the first empty element
   // Check if any prefix of this path matches an existing path
-  const findSubPath = (path, subpath) => path.name === subpath;
   let subpath = '';
   const subMatch = split.some(sub => {
     subpath = `${subpath}/${sub}`;
