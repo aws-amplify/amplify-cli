@@ -20,7 +20,7 @@
     "test": "jest",
     "test-ci": "jest --ci -i",
     "build": "tsc",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "graphql": "^14.5.8",

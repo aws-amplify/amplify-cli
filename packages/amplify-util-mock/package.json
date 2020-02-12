@@ -22,7 +22,7 @@
     "build": "tsc",
     "build-tests": "tsc --build tsconfig.tests.json",
     "watch": "tsc -w",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "amplify-appsync-simulator": "1.13.2",
