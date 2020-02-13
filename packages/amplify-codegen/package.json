@@ -21,7 +21,7 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "@graphql-codegen/core": "^1.8.3",
+    "@graphql-codegen/core": "1.8.3",
     "amplify-codegen-appsync-model-plugin": "1.13.2",
     "amplify-graphql-docs-generator": "2.1.10",
     "amplify-graphql-types-generator": "2.1.10",
