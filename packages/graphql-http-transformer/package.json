@@ -1,6 +1,6 @@
 {
   "name": "graphql-http-transformer",
-  "version": "4.13.2",
+  "version": "4.13.3",
   "description": "An AppSync model transform for HTTP resolvers.",
   "repository": {
     "type": "git",
@@ -25,9 +25,9 @@
   "dependencies": {
     "cloudform-types": "^4.1.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.13.2",
-    "graphql-transformer-common": "4.13.2",
-    "graphql-transformer-core": "6.13.2"
+    "graphql-mapping-template": "4.13.3",
+    "graphql-transformer-common": "4.13.3",
+    "graphql-transformer-core": "6.13.3"
   },
   "devDependencies": {
     "@types/node": "^10.17.13"

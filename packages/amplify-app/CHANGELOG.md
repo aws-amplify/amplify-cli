@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.2...amplify-app@2.13.3) (2020-02-13)
+
+
+### Bug Fixes
+
+* fix amplify-app on windows ([#3401](https://github.com/aws-amplify/amplify-cli/issues/3401)) ([aae3a92](https://github.com/aws-amplify/amplify-cli/commit/aae3a929f81a59514210cb3974e9e2fbb7a954ef)), closes [#3396](https://github.com/aws-amplify/amplify-cli/issues/3396)
+
+
+
+
+
 ## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.1...amplify-app@2.13.2) (2020-02-07)
 
 
