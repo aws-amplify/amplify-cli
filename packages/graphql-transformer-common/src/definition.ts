@@ -16,13 +16,11 @@ import {
   DirectiveNode,
   EnumTypeDefinitionNode,
   ValueNode,
-  ListValueNode,
-  ObjectValueNode,
   InputObjectTypeDefinitionNode,
 } from 'graphql';
 
 type ScalarMap = {
-  [k: string]: 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
+  [k: string]: 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'Date';
 };
 export const STANDARD_SCALARS: ScalarMap = {
   String: 'String',
@@ -47,6 +45,14 @@ export const APPSYNC_DEFINED_SCALARS: ScalarMap = {
   AWSURL: 'String',
   AWSPhone: 'String',
   AWSIPAddress: 'String',
+};
+
+export const ES_SCALARS: ScalarMap = {
+  ...STANDARD_SCALARS,
+  ...OTHER_SCALARS,
+  ...APPSYNC_DEFINED_SCALARS,
+  AWSDate: 'Date',
+  AWSDateTime: 'Date',
 };
 
 export const DEFAULT_SCALARS: ScalarMap = {
@@ -280,7 +286,7 @@ export function makeField(
   name: string,
   args: InputValueDefinitionNode[],
   type: TypeNode,
-  directives: DirectiveNode[] = []
+  directives: DirectiveNode[] = [],
 ): FieldDefinitionNode {
   return {
     kind: Kind.FIELD_DEFINITION,
@@ -358,7 +364,6 @@ export function makeInputValueDefinition(name: string, type: TypeNode): InputVal
     directives: [],
   };
 }
-
 
 export function makeNamedType(name: string): NamedTypeNode {
   return {
