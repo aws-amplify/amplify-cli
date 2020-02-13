@@ -1,0 +1,273 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`filter input types have the correct output 1`] = `
+"type Record {
+  id: ID!
+  createdAt: AWSDate
+  updatedAt: AWSDateTime
+  info: String
+  precision: Float
+  age: Int
+  active: Boolean
+  email: AWSEmail
+  json: AWSJSON
+  url: AWSURL
+  phone: AWSPhone
+  ip: AWSIPAddress
+  time: AWSTime
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelRecordConnection {
+  items: [Record]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelRecordFilterInput {
+  id: ModelIDFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  info: ModelStringFilterInput
+  precision: ModelFloatFilterInput
+  age: ModelIntFilterInput
+  active: ModelBooleanFilterInput
+  email: ModelStringFilterInput
+  json: ModelStringFilterInput
+  url: ModelStringFilterInput
+  phone: ModelStringFilterInput
+  ip: ModelStringFilterInput
+  time: ModelStringFilterInput
+  and: [ModelRecordFilterInput]
+  or: [ModelRecordFilterInput]
+  not: ModelRecordFilterInput
+}
+
+type Query {
+  getRecord(id: ID!): Record
+  listRecords(filter: ModelRecordFilterInput, limit: Int, nextToken: String): ModelRecordConnection
+  searchRecords(filter: SearchableRecordFilterInput, sort: SearchableRecordSortInput, limit: Int, nextToken: String): SearchableRecordConnection
+}
+
+input CreateRecordInput {
+  id: ID
+  createdAt: AWSDate
+  updatedAt: AWSDateTime
+  info: String
+  precision: Float
+  age: Int
+  active: Boolean
+  email: AWSEmail
+  json: AWSJSON
+  url: AWSURL
+  phone: AWSPhone
+  ip: AWSIPAddress
+  time: AWSTime
+}
+
+input UpdateRecordInput {
+  id: ID!
+  createdAt: AWSDate
+  updatedAt: AWSDateTime
+  info: String
+  precision: Float
+  age: Int
+  active: Boolean
+  email: AWSEmail
+  json: AWSJSON
+  url: AWSURL
+  phone: AWSPhone
+  ip: AWSIPAddress
+  time: AWSTime
+}
+
+input DeleteRecordInput {
+  id: ID
+}
+
+type Mutation {
+  createRecord(input: CreateRecordInput!): Record
+  updateRecord(input: UpdateRecordInput!): Record
+  deleteRecord(input: DeleteRecordInput!): Record
+}
+
+type Subscription {
+  onCreateRecord: Record @aws_subscribe(mutations: [\\"createRecord\\"])
+  onUpdateRecord: Record @aws_subscribe(mutations: [\\"updateRecord\\"])
+  onDeleteRecord: Record @aws_subscribe(mutations: [\\"deleteRecord\\"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableDateFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  exists: Boolean
+  range: [String]
+}
+
+input SearchableRecordFilterInput {
+  id: SearchableIDFilterInput
+  createdAt: SearchableDateFilterInput
+  updatedAt: SearchableDateFilterInput
+  info: SearchableStringFilterInput
+  precision: SearchableFloatFilterInput
+  age: SearchableIntFilterInput
+  active: SearchableBooleanFilterInput
+  email: SearchableStringFilterInput
+  json: SearchableStringFilterInput
+  url: SearchableStringFilterInput
+  phone: SearchableStringFilterInput
+  ip: SearchableStringFilterInput
+  time: SearchableStringFilterInput
+  and: [SearchableRecordFilterInput]
+  or: [SearchableRecordFilterInput]
+  not: SearchableRecordFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableRecordSortableFields {
+  id
+  createdAt
+  updatedAt
+  info
+  precision
+  age
+  active
+  email
+  json
+  url
+  phone
+  ip
+  time
+}
+
+input SearchableRecordSortInput {
+  field: SearchableRecordSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchableRecordConnection {
+  items: [Record]
+  nextToken: String
+  total: Int
+}
+"
+`;
