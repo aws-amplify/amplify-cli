@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.13.2-beta.1",
+  "version": "2.13.3-beta.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
