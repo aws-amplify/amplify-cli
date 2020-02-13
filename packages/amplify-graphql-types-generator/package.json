@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-types-generator",
-  "version": "2.1.10-beta.0",
+  "version": "2.1.10-beta.1",
   "description": "Generate API code or type annotations based on a GraphQL schema and statements",
   "repository": {
     "type": "git",
@@ -65,7 +65,9 @@
     ],
     "collectCoverage": true,
     "testURL": "http://localhost",
-    "setupFilesAfterEnv": ["<rootDir>/test/test-utils/matchers.ts"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/test/test-utils/matchers.ts"
+    ],
     "testMatch": [
       "**/test/**/*.(js|ts)",
       "**/test/*.(js|ts)",

@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-docs-generator",
-  "version": "2.1.10-beta.0",
+  "version": "2.1.10-beta.1",
   "description": "amplify graphql docs generator plugin",
   "repository": {
     "type": "git",
@@ -40,7 +40,6 @@
     "yargs": "^15.1.0"
   },
   "devDependencies": {
-
     "@types/node": "^10.17.13",
     "@types/prettier": "^1.19.0"
   },
