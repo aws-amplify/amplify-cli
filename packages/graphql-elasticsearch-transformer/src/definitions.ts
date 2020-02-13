@@ -28,6 +28,7 @@ const ID_CONDITIONS = [
 const STRING_CONDITIONS = ID_CONDITIONS;
 const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
+const DATE_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'exists', 'range'];
 const BOOLEAN_CONDITIONS = ['eq', 'ne'];
 
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
@@ -103,7 +104,7 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
       // TODO: Service does not support new style descriptions so wait.
       // description: field.description,
       directives: [],
-    }
+    },
   );
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
@@ -203,6 +204,9 @@ export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): I
 }
 
 function getScalarFilterInputType(condition: string, type: string, filterInputName: string): TypeNode {
+  if (type === 'Date') {
+    type = 'String';
+  }
   switch (condition) {
     case 'range':
       return makeListType(makeNamedType(type));
@@ -225,7 +229,9 @@ function getScalarConditions(type: string): string[] {
       return FLOAT_CONDITIONS;
     case 'Boolean':
       return BOOLEAN_CONDITIONS;
+    case 'Date':
+      return DATE_CONDITIONS;
     default:
-      throw 'Valid types are String, ID, Int, Float, Boolean';
+      throw 'Valid types are String, ID, Int, Float, Boolean, Date';
   }
 }

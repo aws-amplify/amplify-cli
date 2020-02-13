@@ -1,5 +1,6 @@
 import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
+import { Expression, str } from 'graphql-mapping-template';
 import { ResourceFactory } from './resources';
 import {
   makeSearchableScalarInputObject,
@@ -17,7 +18,6 @@ import {
   makeListType,
   makeInputValueDefinition,
 } from 'graphql-transformer-common';
-import { Expression, str } from 'graphql-mapping-template';
 import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
 import path = require('path');
 
@@ -46,7 +46,7 @@ export class SearchableModelTransformer extends Transformer {
         input SearchableQueryMap {
           search: String
         }
-      `
+      `,
     );
     this.resources = new ResourceFactory();
   }
@@ -59,7 +59,7 @@ export class SearchableModelTransformer extends Transformer {
     ctx.mergeMappings(template.Mappings);
     ctx.metadata.set(
       ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID,
-      path.resolve(`${__dirname}/../lib/streaming-lambda.zip`)
+      path.resolve(`${__dirname}/../lib/streaming-lambda.zip`),
     );
     for (const resourceId of Object.keys(template.Resources)) {
       ctx.mapResourceToStack(STACK_NAME, resourceId);
@@ -98,7 +98,7 @@ export class SearchableModelTransformer extends Transformer {
     const typeName = def.name.value;
     ctx.setResource(
       SearchableResourceIDs.SearchableEventSourceMappingID(typeName),
-      this.resources.makeDynamoDBStreamEventSourceMapping(typeName)
+      this.resources.makeDynamoDBStreamEventSourceMapping(typeName),
     );
     ctx.mapResourceToStack(STACK_NAME, SearchableResourceIDs.SearchableEventSourceMappingID(typeName));
 
@@ -124,7 +124,7 @@ export class SearchableModelTransformer extends Transformer {
         nonKeywordFields,
         primaryKey,
         ctx.getQueryTypeName(),
-        searchFieldNameOverride
+        searchFieldNameOverride,
       );
       ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver);
       ctx.mapResourceToStack(STACK_NAME, ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value));
@@ -137,8 +137,8 @@ export class SearchableModelTransformer extends Transformer {
             makeInputValueDefinition('limit', makeNamedType('Int')),
             makeInputValueDefinition('nextToken', makeNamedType('String')),
           ],
-          makeNamedType(`Searchable${def.name.value}Connection`)
-        )
+          makeNamedType(`Searchable${def.name.value}Connection`),
+        ),
       );
     }
 
@@ -173,30 +173,13 @@ export class SearchableModelTransformer extends Transformer {
 
   private generateSearchableInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
     // Create the Scalar filter inputs
-    if (!this.typeExist('SearchableStringFilterInput', ctx)) {
-      const searchableStringFilterInput = makeSearchableScalarInputObject('String');
-      ctx.addInput(searchableStringFilterInput);
-    }
-
-    if (!this.typeExist('SearchableIDFilterInput', ctx)) {
-      const searchableIDFilterInput = makeSearchableScalarInputObject('ID');
-      ctx.addInput(searchableIDFilterInput);
-    }
-
-    if (!this.typeExist('SearchableIntFilterInput', ctx)) {
-      const searchableIntFilterInput = makeSearchableScalarInputObject('Int');
-      ctx.addInput(searchableIntFilterInput);
-    }
-
-    if (!this.typeExist('SearchableFloatFilterInput', ctx)) {
-      const searchableFloatFilterInput = makeSearchableScalarInputObject('Float');
-      ctx.addInput(searchableFloatFilterInput);
-    }
-
-    if (!this.typeExist('SearchableBooleanFilterInput', ctx)) {
-      const searchableBooleanFilterInput = makeSearchableScalarInputObject('Boolean');
-      ctx.addInput(searchableBooleanFilterInput);
-    }
+    const inputs: string[] = ['String', 'ID', 'Int', 'Float', 'Boolean', 'Date'];
+    inputs.forEach((input: string) => {
+      if (!this.typeExist(`Searchable${input}FilterInput`, ctx)) {
+        const searchableInputFilterInput = makeSearchableScalarInputObject(input);
+        ctx.addInput(searchableInputFilterInput);
+      }
+    });
 
     const searchableXQueryFilterInput = makeSearchableXFilterInputObject(def);
     if (!this.typeExist(searchableXQueryFilterInput.name.value, ctx)) {
