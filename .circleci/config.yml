@@ -117,13 +117,18 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryPathToLocal
             changeNpmGlobalPath
+            setNpmRegistryPathToLocal
             npm install -g @aws-amplify/cli
+            unsetNpmRegistryPath
             stopLocalRegistry
       - run:
           command: |
             export PATH=~/.npm-global/bin:$PATH
             amplify -v
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryPathToLocal
             cd packages/amplify-e2e-tests
             yarn run e2e --maxWorkers=3
           name: 'Run Amplify end-to-end tests'
