@@ -168,6 +168,17 @@ input SearchableBooleanFilterInput {
   ne: Boolean
 }
 
+input SearchableDateFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  exists: Boolean
+  range: [String]
+}
+
 input SearchablePostFilterInput {
   id: SearchableIDFilterInput
   content: SearchableStringFilterInput
