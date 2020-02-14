@@ -22,7 +22,6 @@ import {
   NamedTypeNode,
   InputObjectTypeDefinitionNode,
   TypeDefinitionNode,
-  TypeSystemDefinitionNode,
 } from 'graphql';
 import {
   ResourceConstants,
@@ -43,7 +42,6 @@ import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpressio
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
-import { RulesConfigurationType } from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -482,19 +480,19 @@ Static group authorization should perform as expected.`,
       // Retrieve the configuration options for the related @model directive
       const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, parent);
       // The field handler adds the read rule on the object
-      const readRules = rules.filter(this.isRuleOperation(ModelOperation.READ).test);
+      const readRules = rules.filter(this.isRuleOperation(ModelOperation.READ));
       this.protectReadForField(ctx, parent, definition, readRules, modelConfiguration);
 
       // Protect mutations when objects including this field are trying to be created.
-      const createRules = rules.filter(this.isRuleOperation(ModelOperation.CREATE).test);
+      const createRules = rules.filter(this.isRuleOperation(ModelOperation.CREATE));
       this.protectCreateForField(ctx, parent, definition, createRules, modelConfiguration);
 
       // Protect update mutations when objects inluding this field are trying to be updated.
-      const updateRules = rules.filter(this.isRuleOperation(ModelOperation.UPDATE).test);
+      const updateRules = rules.filter(this.isRuleOperation(ModelOperation.UPDATE));
       this.protectUpdateForField(ctx, parent, definition, updateRules, modelConfiguration);
 
       // Delete operations are only protected by @auth directives on objects.
-      const deleteRules = rules.filter(this.isRuleOperation(ModelOperation.DELETE).test);
+      const deleteRules = rules.filter(this.isRuleOperation(ModelOperation.DELETE));
       this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration);
     } else {
       // if @auth is used without @model only generate static group rules
@@ -805,15 +803,12 @@ Either make the field optional, set auth on the object and not the field, or dis
   }
 
   private isRuleOperation(op: ModelOperation): Predicate<AuthRule> {
-    return {
-      test: (rule: AuthRule) => {
-        if (rule.operations) {
-          return rule.operations.includes(op);
-        } else {
-          return rule.operations !== null;
-        }
-      },
-    };
+    return (rule: AuthRule) => {
+      if (rule.operations) {
+        return rule.operations.includes(op);
+      }
+      return rule.operations !== null;
+    }
   }
 
   /**
@@ -855,18 +850,18 @@ Either make the field optional, set auth on the object and not the field, or dis
       // If operations is provided, then it takes precendence.
       if (isTruthyOrNull(rule.operations)) {
         // If operations is given use it.
-        if (this.isRuleOperation(ModelOperation.READ).test(rule)) {
+        if (this.isRuleOperation(ModelOperation.READ)(rule)) {
           queryRules.get.push(rule);
           queryRules.list.push(rule);
           operationRules.read.push(rule);
         }
-        if (this.isRuleOperation(ModelOperation.CREATE).test(rule)) {
+        if (this.isRuleOperation(ModelOperation.CREATE)(rule)) {
           operationRules.create.push(rule);
         }
-        if (this.isRuleOperation(ModelOperation.UPDATE).test(rule)) {
+        if (this.isRuleOperation(ModelOperation.UPDATE)(rule)) {
           operationRules.update.push(rule);
         }
-        if (this.isRuleOperation(ModelOperation.DELETE).test(rule)) {
+        if (this.isRuleOperation(ModelOperation.DELETE)(rule)) {
           operationRules.delete.push(rule);
         }
       } else {
@@ -2025,7 +2020,7 @@ All @auth directives used on field definitions are performed when the field is r
   // This method adds owner create auth to rules as necessary.
   private ensureOwnerRulesHaveCreateAuth(rules: AuthRule[]) {
     this.getOwnerRules(rules)
-      .filter(rule => !this.isRuleOperation(ModelOperation.CREATE).test(rule))
+      .filter(negate(this.isRuleOperation(ModelOperation.CREATE)))
       .forEach(rule => rule.operations.push(ModelOperation.CREATE));
   }
 
@@ -2343,6 +2338,10 @@ interface QueryRules {
   list: AuthRule[];
 }
 
-interface Predicate<T> {
-  test: (arg: T) => boolean;
+// interfaces / functions like this should ideally be imported from a lib but putting here
+// until this file can be more extensively refactored.
+type Predicate<T> = (arg: T) => boolean;
+
+function negate<T>(pred: Predicate<T>): Predicate<T> {
+  return (arg: T) => !pred(arg)
 }
