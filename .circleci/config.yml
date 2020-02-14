@@ -122,7 +122,6 @@ jobs:
             setNpmRegistryPathToLocal
             npm install -g @aws-amplify/cli
             unsetNpmRegistryPath
-            stopLocalRegistry
       - run:
           command: |
             export PATH=~/.npm-global/bin:$PATH
