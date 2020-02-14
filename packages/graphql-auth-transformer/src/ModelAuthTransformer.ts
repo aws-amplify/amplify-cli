@@ -43,6 +43,7 @@ import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpressio
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
+import { RulesConfigurationType } from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -347,15 +348,22 @@ export class ModelAuthTransformer extends Transformer {
     const rules = this.getAuthRulesFromDirective(directive);
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
+
+    // If owner auth for read, update or delete is specified, owner auth for create must also be included
+    // This ensures that the owner will be stored when the record is created
+    this.ensureOwnerRulesHaveCreateAuth(rules);
+
     this.validateRules(rules);
     // Check the rules if we've to generate IAM policies for Unauth role or not
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
 
     // Check if the object type has fields of type without the @model directive.
-    // We've to make sure that appropriate @aws_* directive will be added and a policy entry for the
-    // type will be emitted as well in case of IAM.
+    // Must make sure that appropriate @aws_* directive will be added
+    // Additionally a policy entry for the type will be emitted in case of IAM.
     this.propagateAuthDirectivesToNestedTypes(def, rules, ctx);
+
+
 
     const { operationRules, queryRules } = this.splitRules(rules);
 
@@ -484,27 +492,22 @@ Static group authorization should perform as expected.`,
 
     // add rules if per field @auth is used with @model
     if (modelDirective) {
-      const isReadRule = isOpRule('read');
-      const isCreateRule = isOpRule('create');
-      const isUpdateRule = isOpRule('update');
-      const isDeleteRule = isOpRule('delete');
-
       // Retrieve the configuration options for the related @model directive
       const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, parent);
       // The field handler adds the read rule on the object
-      const readRules = rules.filter((rule: AuthRule) => isReadRule(rule));
+      const readRules = rules.filter((rule: AuthRule) => this.isRuleOperation(ModelOperation.READ).test(rule));
       this.protectReadForField(ctx, parent, definition, readRules, modelConfiguration);
 
       // Protect mutations when objects including this field are trying to be created.
-      const createRules = rules.filter((rule: AuthRule) => isCreateRule(rule));
+      const createRules = rules.filter((rule: AuthRule) => this.isRuleOperation(ModelOperation.CREATE).test(rule));
       this.protectCreateForField(ctx, parent, definition, createRules, modelConfiguration);
 
       // Protect update mutations when objects inluding this field are trying to be updated.
-      const updateRules = rules.filter((rule: AuthRule) => isUpdateRule(rule));
+      const updateRules = rules.filter((rule: AuthRule) => this.isRuleOperation(ModelOperation.UPDATE).test(rule));
       this.protectUpdateForField(ctx, parent, definition, updateRules, modelConfiguration);
 
       // Delete operations are only protected by @auth directives on objects.
-      const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule));
+      const deleteRules = rules.filter((rule: AuthRule) => this.isRuleOperation(ModelOperation.DELETE).test(rule));
       this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration);
     } else {
       // if @auth is used without @model only generate static group rules
@@ -814,12 +817,24 @@ Either make the field optional, set auth on the object and not the field, or dis
     }
   }
 
+  private isRuleOperation(op: ModelOperation): AuthRuleOperationPredicate {
+    return {
+      test: (rule: AuthRule) => {
+        if (rule.operations) {
+          return rule.operations.includes(op);
+        } else {
+          return rule.operations !== null;
+        }
+      }
+    }
+  }
+
   /**
    * Takes a flat list of rules, each containing their own list of operations (or queries/mutations if an old API).
    * This method splits those rules into buckets keyed by operation and implements some logic for backwards compatibility.
    * @param rules The list of auth rules
    */
-  private splitRules(rules: AuthRule[]) {
+  private splitRules(rules: AuthRule[]): IndexedRules {
     // Create a reverse index on rules from operation -> rules list.
     const queryRules: { [k in ModelQuery]: AuthRule[] } = {
       get: [],
@@ -849,31 +864,22 @@ Either make the field optional, set auth on the object and not the field, or dis
       }
       return true;
     };
-    const matchOperation = (op: ModelOperation) => (rule: AuthRule) => {
-      if (rule.operations) {
-        const matchesOp = rule.operations.find(o => o === op);
-        return Boolean(matchesOp);
-      } else if (rule.operations === null) {
-        return false;
-      }
-      return true;
-    };
     for (const rule of rules) {
       // If operations is provided, then it takes precendence.
       if (isTruthyOrNull(rule.operations)) {
         // If operations is given use it.
-        if (matchOperation('read')(rule)) {
+        if (this.isRuleOperation(ModelOperation.READ).test(rule)) {
           queryRules.get.push(rule);
           queryRules.list.push(rule);
           operationRules.read.push(rule);
         }
-        if (matchOperation('create')(rule)) {
+        if (this.isRuleOperation(ModelOperation.CREATE).test(rule)) {
           operationRules.create.push(rule);
         }
-        if (matchOperation('update')(rule)) {
+        if (this.isRuleOperation(ModelOperation.UPDATE).test(rule)) {
           operationRules.update.push(rule);
         }
-        if (matchOperation('delete')(rule)) {
+        if (this.isRuleOperation(ModelOperation.DELETE).test(rule)) {
           operationRules.delete.push(rule);
         }
       } else {
@@ -2028,6 +2034,16 @@ All @auth directives used on field definitions are performed when the field is r
     }
   }
 
+  // If owner read, update, or delete auth is specified, create auth must also be specified so creator identity is stored in the record
+  // This method adds owner create auth to rules as necessary.
+  private ensureOwnerRulesHaveCreateAuth(rules: AuthRule[]) {
+    this.getOwnerRules(rules).forEach(rule => {
+      if (!this.isRuleOperation(ModelOperation.CREATE).test(rule)) {
+        rule.operations.push(ModelOperation.CREATE);
+      }
+    });
+  }
+
   private validateRuleAuthStrategy(rule: AuthRule) {
     //
     // Groups
@@ -2323,4 +2339,25 @@ function isTruthyOrNull(obj: any): boolean {
 
 function isUndefined(obj: any): boolean {
   return obj === undefined;
+}
+
+interface IndexedRules {
+  operationRules: OperationRules
+  queryRules: QueryRules
+}
+
+interface OperationRules {
+  create: AuthRule[]
+  read: AuthRule[]
+  update: AuthRule[]
+  delete: AuthRule[]
+}
+
+interface QueryRules {
+  get: AuthRule[]
+  list: AuthRule[]
+}
+
+interface AuthRuleOperationPredicate {
+  test: (AuthRule) => boolean
 }

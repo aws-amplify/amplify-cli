@@ -3,7 +3,8 @@
   "compilerOptions": {
     "strict": false, // TODO enable
     "rootDir": "src",
-    "outDir": "lib"
+    "outDir": "lib",
+    "skipLibCheck": true
   },
   "references": [
     {"path": "../graphql-connection-transformer"},
