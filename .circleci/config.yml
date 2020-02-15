@@ -85,6 +85,7 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryPathToLocal
             yarn publish-to-verdaccio
       - save_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
