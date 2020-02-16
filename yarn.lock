@@ -3680,36 +3680,6 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-frontend-android@1.31.0:
-  version "1.31.0"
-  resolved "https://registry.yarnpkg.com/amplify-frontend-android/-/amplify-frontend-android-1.31.0.tgz#cbab66b75675faed5a49eceb51a254cbb3b63484"
-  integrity sha512-NL7vd54CoyV5NyVIpzEUJfuOHp470amBNaUYPLL2WO/Y+yNeT+ivkywAFbGnNG2xBYHLClCYszufHzgSVTFkfA==
-  dependencies:
-    chalk "^2.4.2"
-    fs-extra "^8.1.0"
-    inquirer "^6.5.1"
-    path "^0.12.7"
-
-amplify-frontend-ios@1.31.0:
-  version "1.31.0"
-  resolved "https://registry.yarnpkg.com/amplify-frontend-ios/-/amplify-frontend-ios-1.31.0.tgz#2dcd57d3943006564d284850d12036fc0d2230a8"
-  integrity sha512-BVr8ZruUmj8yNcheUfw6wd1Ay8mKB3vVH5T0PtoVDUbvVp7wnwye6RQA+YohwyrNlKYC3bJeXLhDJ/PCUDDbRw==
-  dependencies:
-    chalk "^2.4.2"
-    fs-extra "^8.1.0"
-    inquirer "^6.5.1"
-    path "^0.12.7"
-
-amplify-frontend-javascript@1.29.0:
-  version "1.29.0"
-  resolved "https://registry.yarnpkg.com/amplify-frontend-javascript/-/amplify-frontend-javascript-1.29.0.tgz#022d9ab2eccd4916bb10942bfbf366b9eaf58fdf"
-  integrity sha512-Ls3C98aIlsDlE8w+RhfHXHCL0wWDy8q+YsYfBTQ3LssuIKMOQvQaHyKGyp+sTS+kpO7ixJRi+XRGfZzNi1PpXA==
-  dependencies:
-    chalk "^2.4.2"
-    fs-extra "^8.1.0"
-    inquirer "^6.5.1"
-    path "^0.12.7"
-
 ansi-colors@3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.3.tgz#57d35b8686e851e2cc04c403f1c00203976a1813"
@@ -10255,7 +10225,7 @@ inquirer@7.0.4, inquirer@^7.0.0, inquirer@^7.0.3:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-inquirer@^6.2.0, inquirer@^6.2.2, inquirer@^6.5.1:
+inquirer@^6.2.0, inquirer@^6.2.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-6.5.2.tgz#ad50942375d036d327ff528c08bd5fab089928ca"
   integrity sha512-cntlB5ghuB0iuO65Ovoi8ogLHiWGs/5yNrtUcKjFhSSiVeAIVpD7koaSU9RM8mpXw5YDi9RdYXGQMaOURB7ycQ==
@@ -11273,15 +11243,7 @@ jest-jasmine2@^25.1.0:
     pretty-format "^25.1.0"
     throat "^5.0.0"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 jest-junit@10.0.0, jest-junit@^10.0.0:
-=======
-<<<<<<< Updated upstream
-=======
->>>>>>> fix(amplify-storage-simulator): fixes aws-amplify#3177 Json error
-jest-junit@^10.0.0:
->>>>>>> fix(amplify-storage-simulator): fixes aws-amplify#3177 Json error
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/jest-junit/-/jest-junit-10.0.0.tgz#c94b91c24920a327c9d2a075e897b2dba4af494b"
   integrity sha512-dbOVRyxHprdSpwSAR9/YshLwmnwf+RSl5hf0kCGlhAcEeZY9aRqo4oNmaT0tLC16Zy9D0zekDjWkjHGjXlglaQ==
@@ -11292,42 +11254,6 @@ jest-junit@^10.0.0:
     uuid "^3.3.3"
     xml "^1.0.1"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> fix(amplify-storage-simulator): fixes aws-amplify#3177 Json error
-jest-junit@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/jest-junit/-/jest-junit-8.0.0.tgz#d4f7ff67e292a5426dc60bc38694c9f77cb94178"
-  integrity sha512-cuD2XM2youMjrOxOu/7H2pLfsO8LfAG4D3WsBxd9fFyI9U0uPpmr/CORH64kbIyZ47X5x1Rbzb9ovUkAEvhEEA==
-  dependencies:
-    jest-validate "^24.0.0"
-    mkdirp "^0.5.1"
-    strip-ansi "^4.0.0"
-    xml "^1.0.1"
-
-jest-junit@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/jest-junit/-/jest-junit-9.0.0.tgz#9eb247dda7a8d2e1647a92f58a03a1490c74aea5"
-  integrity sha512-jnABGjL5pd2lhE1w3RIslZSufFbWQZGx8O3eluDES7qKxQuonXMtsPIi+4AKl4rtjb4DvMAjwLi4eHukc2FP/Q==
-  dependencies:
-    jest-validate "^24.9.0"
-    mkdirp "^0.5.1"
-    strip-ansi "^5.2.0"
-    uuid "^3.3.3"
-    xml "^1.0.1"
-
-jest-leak-detector@^23.6.0:
-  version "23.6.0"
-  resolved "https://registry.yarnpkg.com/jest-leak-detector/-/jest-leak-detector-23.6.0.tgz#e4230fd42cf381a1a1971237ad56897de7e171de"
-  integrity sha512-f/8zA04rsl1Nzj10HIyEsXvYlMpMPcy0QkQilVZDFOaPbv2ur71X5u2+C4ZQJGyV/xvVXtCCZ3wQ99IgQxftCg==
-  dependencies:
-    pretty-format "^23.6.0"
-
->>>>>>> fix(amplify-storage-simulator): fixes aws-amplify#3177 Json error
 jest-leak-detector@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-leak-detector/-/jest-leak-detector-24.9.0.tgz#b665dea7c77100c5c4f7dfcb153b65cf07dcf96a"
@@ -13404,7 +13330,7 @@ netmask@^1.0.6:
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
   integrity sha1-ICl+idhvb2QA8lDZ9Pa0wZRfzTU=
 
-nexpect@0.6.0, nexpect@^0.6.0:
+nexpect@0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/nexpect/-/nexpect-0.6.0.tgz#6c8c6460d418c0855e8b65462474a73f256a753b"
   integrity sha512-gG4cO0zoNG+kaPesw516hPVEKLW3YizGU8UWMr5lpkHKOgoTWcu4sPQN7rWVAIL4Ck87zM4N8immPUhYPdDz3g==
@@ -13564,37 +13490,10 @@ node-notifier@^6.0.0:
     shellwords "^0.1.1"
     which "^1.3.1"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 node-releases@^1.1.47:
   version "1.1.49"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.49.tgz#67ba5a3fac2319262675ef864ed56798bb33b93e"
   integrity sha512-xH8t0LS0disN0mtRCh+eByxFPie+msJUBL/lJDBuap53QGiYPa9joh83K4pCZgWJ+2L4b9h88vCVdXQ60NO2bg==
-=======
-<<<<<<< Updated upstream
-node-pre-gyp@*:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.14.0.tgz#9a0596533b877289bcad4e143982ca3d904ddc83"
-  integrity sha512-+CvDC7ZttU/sSt9rFjix/P05iS43qHCOOGzcr3Ry99bXG7VX953+vFyEuph/tfqoYu8dttBkE86JSKBO2OzcxA==
-  dependencies:
-    detect-libc "^1.0.2"
-    mkdirp "^0.5.1"
-    needle "^2.2.1"
-    nopt "^4.0.1"
-    npm-packlist "^1.1.6"
-    npmlog "^4.0.2"
-    rc "^1.2.7"
-    rimraf "^2.6.1"
-    semver "^5.3.0"
-    tar "^4.4.2"
-
-=======
->>>>>>> fix(amplify-storage-simulator): fixes aws-amplify#3177 Json error
-node-releases@^1.1.47:
-  version "1.1.47"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.47.tgz#c59ef739a1fd7ecbd9f0b7cf5b7871e8a8b591e4"
-  integrity sha512-k4xjVPx5FpwBUj0Gw7uvFOTF4Ep8Hok1I6qjwL3pLfwe7Y0REQSAqOwwv9TWBCUtMHxcXfY4PgRLRozcChvTcA==
->>>>>>> fix(amplify-storage-simulator): fixes aws-amplify#3177 Json error
   dependencies:
     semver "^6.3.0"
 
@@ -14553,14 +14452,6 @@ path-type@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-path@^0.12.7:
-  version "0.12.7"
-  resolved "https://registry.yarnpkg.com/path/-/path-0.12.7.tgz#d4dc2a506c4ce2197eb481ebfcd5b36c0140b10f"
-  integrity sha1-1NwqUGxM4hl+tIHr/NWzbAFAsQ8=
-  dependencies:
-    process "^0.11.1"
-    util "^0.10.3"
-
 pbkdf2@^3.0.3:
   version "3.0.17"
   resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.17.tgz#976c206530617b14ebb32114239f7b09336e93a6"
@@ -15496,7 +15387,7 @@ process-nextick-args@^2.0.0, process-nextick-args@~2.0.0:
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
   integrity sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==
 
-process@^0.11.1, process@^0.11.10:
+process@^0.11.10:
   version "0.11.10"
   resolved "https://registry.yarnpkg.com/process/-/process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182"
   integrity sha1-czIwDoQBYb2j5podHZGn1LwW8YI=
@@ -18668,13 +18559,6 @@ util@0.10.3:
   integrity sha1-evsa/lCAUkZInj23/g7TeTNqwPk=
   dependencies:
     inherits "2.0.1"
-
-util@^0.10.3:
-  version "0.10.4"
-  resolved "https://registry.yarnpkg.com/util/-/util-0.10.4.tgz#3aa0125bfe668a4672de58857d3ace27ecb76901"
-  integrity sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==
-  dependencies:
-    inherits "2.0.3"
 
 util@^0.11.0:
   version "0.11.1"
