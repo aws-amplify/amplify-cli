@@ -1,0 +1,1889 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test owner create auth appended to auth 1`] = `
+Object {
+  "functions": Object {},
+  "pipelineFunctions": Object {},
+  "resolvers": Object {
+    "Mutation.createPost.req.vtl": "## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## No Static Group Authorization Rules **
+
+
+  ## No Dynamic Group Authorization Rules **
+
+
+  ## [Start] Owner Authorization Checks **
+  #set( $isOwnerAuthorized = false )
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+  #set( $allowedOwners0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+  #if( $util.isList($allowedOwners0) )
+    #foreach( $allowedOwner in $allowedOwners0 )
+      #if( $allowedOwner == $identityValue )
+        #set( $isOwnerAuthorized = true )
+      #end
+    #end
+  #end
+  #if( $util.isString($allowedOwners0) )
+    #if( $allowedOwners0 == $identityValue )
+      #set( $isOwnerAuthorized = true )
+    #end
+  #end
+  #if( $util.isNull($allowedOwners0) && (! $ctx.args.input.containsKey(\\"owner\\")) )
+    $util.qr($ctx.args.input.put(\\"owner\\", $identityValue))
+    #set( $isOwnerAuthorized = true )
+  #end
+  ## [End] Owner Authorization Checks **
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+## [Start] Prepare DynamoDB PutItem Request. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+#set( $condition = {
+  \\"expression\\": \\"attribute_not_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+#if( $context.args.condition )
+  #set( $condition.expressionValues = {} )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+} #end,
+  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
+  \\"condition\\": $util.toJson($condition)
+}
+## [End] Prepare DynamoDB PutItem Request. **",
+    "Mutation.createPost.res.vtl": "$util.toJson($ctx.result)",
+    "Mutation.deletePost.req.vtl": "#if( $authCondition )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+  #end
+#end
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  #set( $expressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($expressionValues.putAll($versionedCondition.expressionValues))
+  #set( $condition.expressionValues = $expressionValues )
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  #set( $conditionExpressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues))
+  #set( $condition.expressionValues = $conditionExpressionValues )
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"DeleteItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+} #end,
+  \\"condition\\": $util.toJson($condition)
+}",
+    "Mutation.deletePost.res.vtl": "$util.toJson($ctx.result)",
+    "Mutation.updatePost.req.vtl": "#if( $authCondition && $authCondition.expression != \\"\\" )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  },
+  \\"expressionValues\\": {}
+} )
+  #end
+#end
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+## Update condition if type is @versioned **
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": {
+      \\"S\\": $util.toJson($context.args.input.id)
+  }
+} #end,
+  \\"update\\": $util.toJson($update),
+  \\"condition\\": $util.toJson($condition)
+}",
+    "Mutation.updatePost.res.vtl": "$util.toJson($ctx.result)",
+    "Query.getPost.req.vtl": "{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"GetItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.id)
+} #end
+}",
+    "Query.getPost.res.vtl": "## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## No Static Group Authorization Rules **
+
+
+  ## No Dynamic Group Authorization Rules **
+
+
+  ## [Start] Owner Authorization Checks **
+  #set( $isOwnerAuthorized = $util.defaultIfNull($isOwnerAuthorized, false) )
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+  #set( $allowedOwners0 = $ctx.result.owner )
+  #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+  #if( $util.isList($allowedOwners0) )
+    #foreach( $allowedOwner in $allowedOwners0 )
+      #if( $allowedOwner == $identityValue )
+        #set( $isOwnerAuthorized = true )
+      #end
+    #end
+  #end
+  #if( $util.isString($allowedOwners0) )
+    #if( $allowedOwners0 == $identityValue )
+      #set( $isOwnerAuthorized = true )
+    #end
+  #end
+  ## [End] Owner Authorization Checks **
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+$util.toJson($ctx.result)",
+    "Query.listPosts.req.vtl": "#set( $limit = $util.defaultIfNull($context.args.limit, 10) )
+#set( $ListRequest = {
+  \\"version\\": \\"2017-02-28\\",
+  \\"limit\\": $limit
+} )
+#if( $context.args.nextToken )
+  #set( $ListRequest.nextToken = $util.toJson($context.args.nextToken) )
+#end
+#if( $context.args.filter )
+  #set( $ListRequest.filter = $util.parseJson(\\"$util.transform.toDynamoDBFilterExpression($ctx.args.filter)\\") )
+#end
+#if( !$util.isNull($modelQueryExpression)
+                        && !$util.isNullOrEmpty($modelQueryExpression.expression) )
+  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
+  $util.qr($ListRequest.put(\\"query\\", $modelQueryExpression))
+  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $ListRequest.scanIndexForward = false )
+  #else
+    #set( $ListRequest.scanIndexForward = true )
+  #end
+#else
+  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+#end
+$util.toJson($ListRequest)",
+    "Query.listPosts.res.vtl": "## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## No Static Group Authorization Rules **
+
+
+  ## [Start] If not static group authorized, filter items **
+  #if( !$isStaticGroupAuthorized )
+    #set( $items = [] )
+    #foreach( $item in $ctx.result.items )
+      ## No Dynamic Group Authorization Rules **
+
+
+      ## [Start] Owner Authorization Checks **
+      #set( $isLocalOwnerAuthorized = false )
+      ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+      #set( $allowedOwners0 = $item.owner )
+      #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+      #if( $util.isList($allowedOwners0) )
+        #foreach( $allowedOwner in $allowedOwners0 )
+          #if( $allowedOwner == $identityValue )
+            #set( $isLocalOwnerAuthorized = true )
+          #end
+        #end
+      #end
+      #if( $util.isString($allowedOwners0) )
+        #if( $allowedOwners0 == $identityValue )
+          #set( $isLocalOwnerAuthorized = true )
+        #end
+      #end
+      ## [End] Owner Authorization Checks **
+
+
+      #if( ($isLocalDynamicGroupAuthorized == true || $isLocalOwnerAuthorized == true) )
+        $util.qr($items.add($item))
+      #end
+    #end
+    #set( $ctx.result.items = $items )
+  #end
+  ## [End] If not static group authorized, filter items **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+$util.toJson($ctx.result)",
+    "Subscription.onCreatePost.req.vtl": "{
+    \\"version\\": \\"2018-05-29\\",
+    \\"payload\\": {}
+}",
+    "Subscription.onCreatePost.res.vtl": "## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## No Static Group Authorization Rules **
+
+
+  ## [Start] Owner Authorization Checks **
+  #set( $isOwnerAuthorized = false )
+  ## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+  #set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )
+  #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"),
+                        $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+  #if( $util.isList($allowedOwners0) )
+    #foreach( $allowedOwner in $allowedOwners0 )
+      #if( $allowedOwner == $identityValue )
+        #set( $isOwnerAuthorized = true )
+      #end
+    #end
+  #end
+  #if( $util.isString($allowedOwners0) )
+    #if( $allowedOwners0 == $identityValue )
+      #set( $isOwnerAuthorized = true )
+    #end
+  #end
+  ## [End] Owner Authorization Checks **
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || $isOwnerAuthorized == true) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
+#end
+## [End] Check authMode and execute owner/group checks **
+
+$util.toJson(null)",
+  },
+  "rootStack": Object {
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Conditions": Object {
+      "APIKeyExpirationEpochIsPositive": Object {
+        "Fn::And": Array [
+          Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Equals": Array [
+                  Object {
+                    "Ref": "APIKeyExpirationEpoch",
+                  },
+                  -1,
+                ],
+              },
+            ],
+          },
+          Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Equals": Array [
+                  Object {
+                    "Ref": "APIKeyExpirationEpoch",
+                  },
+                  0,
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "HasEnvironmentParameter": Object {
+        "Fn::Not": Array [
+          Object {
+            "Fn::Equals": Array [
+              Object {
+                "Ref": "env",
+              },
+              "NONE",
+            ],
+          },
+        ],
+      },
+      "ShouldCreateAPIKey": Object {
+        "Fn::Equals": Array [
+          Object {
+            "Ref": "CreateAPIKey",
+          },
+          1,
+        ],
+      },
+      "ShouldUsePayPerRequestBilling": Object {
+        "Fn::Equals": Array [
+          Object {
+            "Ref": "DynamoDBBillingMode",
+          },
+          "PAY_PER_REQUEST",
+        ],
+      },
+      "ShouldUsePointInTimeRecovery": Object {
+        "Fn::Equals": Array [
+          Object {
+            "Ref": "DynamoDBEnablePointInTimeRecovery",
+          },
+          "true",
+        ],
+      },
+      "ShouldUseServerSideEncryption": Object {
+        "Fn::Equals": Array [
+          Object {
+            "Ref": "DynamoDBEnableServerSideEncryption",
+          },
+          "true",
+        ],
+      },
+    },
+    "Description": "An auto-generated nested stack.",
+    "Mappings": Object {},
+    "Metadata": Object {},
+    "Outputs": Object {
+      "GraphQLAPIEndpointOutput": Object {
+        "Description": "Your GraphQL API endpoint.",
+        "Export": Object {
+          "Name": Object {
+            "Fn::Join": Array [
+              ":",
+              Array [
+                Object {
+                  "Ref": "AWS::StackName",
+                },
+                "GraphQLApiEndpoint",
+              ],
+            ],
+          },
+        },
+        "Value": Object {
+          "Fn::GetAtt": Array [
+            "GraphQLAPI",
+            "GraphQLUrl",
+          ],
+        },
+      },
+      "GraphQLAPIIdOutput": Object {
+        "Description": "Your GraphQL API ID.",
+        "Export": Object {
+          "Name": Object {
+            "Fn::Join": Array [
+              ":",
+              Array [
+                Object {
+                  "Ref": "AWS::StackName",
+                },
+                "GraphQLApiId",
+              ],
+            ],
+          },
+        },
+        "Value": Object {
+          "Fn::GetAtt": Array [
+            "GraphQLAPI",
+            "ApiId",
+          ],
+        },
+      },
+      "GraphQLAPIKeyOutput": Object {
+        "Condition": "ShouldCreateAPIKey",
+        "Description": "Your GraphQL API key. Provide via 'x-api-key' header.",
+        "Export": Object {
+          "Name": Object {
+            "Fn::Join": Array [
+              ":",
+              Array [
+                Object {
+                  "Ref": "AWS::StackName",
+                },
+                "GraphQLApiKey",
+              ],
+            ],
+          },
+        },
+        "Value": Object {
+          "Fn::GetAtt": Array [
+            "GraphQLAPIKey",
+            "ApiKey",
+          ],
+        },
+      },
+    },
+    "Parameters": Object {
+      "APIKeyExpirationEpoch": Object {
+        "Default": 0,
+        "Description": "The epoch time in seconds when the API Key should expire. Setting this to 0 will default to 7 days from the deployment date. Setting this to -1 will not create an API Key.",
+        "MinValue": -1,
+        "Type": "Number",
+      },
+      "AppSyncApiName": Object {
+        "Default": "AppSyncSimpleTransform",
+        "Description": "The name of the AppSync API",
+        "Type": "String",
+      },
+      "AuthCognitoUserPoolId": Object {
+        "Default": "NONE",
+        "Description": "The id of an existing User Pool to connect. If this is changed, a user pool will not be created for you.",
+        "Type": "String",
+      },
+      "CreateAPIKey": Object {
+        "Default": 0,
+        "Description": "The boolean value to control if an API Key will be created or not. The value of the property is automatically set by the CLI. If the value is set to 0 no API Key will be created.",
+        "MaxValue": 1,
+        "MinValue": 0,
+        "Type": "Number",
+      },
+      "DynamoDBBillingMode": Object {
+        "AllowedValues": Array [
+          "PAY_PER_REQUEST",
+          "PROVISIONED",
+        ],
+        "Default": "PAY_PER_REQUEST",
+        "Description": "Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.",
+        "Type": "String",
+      },
+      "DynamoDBEnablePointInTimeRecovery": Object {
+        "AllowedValues": Array [
+          "true",
+          "false",
+        ],
+        "Default": "false",
+        "Description": "Whether to enable Point in Time Recovery on the table",
+        "Type": "String",
+      },
+      "DynamoDBEnableServerSideEncryption": Object {
+        "AllowedValues": Array [
+          "true",
+          "false",
+        ],
+        "Default": "true",
+        "Description": "Enable server side encryption powered by KMS.",
+        "Type": "String",
+      },
+      "DynamoDBModelTableReadIOPS": Object {
+        "Default": 5,
+        "Description": "The number of read IOPS the table should support.",
+        "Type": "Number",
+      },
+      "DynamoDBModelTableWriteIOPS": Object {
+        "Default": 5,
+        "Description": "The number of write IOPS the table should support.",
+        "Type": "Number",
+      },
+      "S3DeploymentBucket": Object {
+        "Description": "The S3 bucket containing all deployment assets for the project.",
+        "Type": "String",
+      },
+      "S3DeploymentRootKey": Object {
+        "Description": "An S3 key relative to the S3DeploymentBucket that points to the root of the deployment directory.",
+        "Type": "String",
+      },
+      "env": Object {
+        "Default": "NONE",
+        "Description": "The environment name. e.g. Dev, Test, or Production",
+        "Type": "String",
+      },
+    },
+    "Resources": Object {
+      "GraphQLAPI": Object {
+        "Properties": Object {
+          "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
+          "Name": Object {
+            "Fn::If": Array [
+              "HasEnvironmentParameter",
+              Object {
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    Object {
+                      "Ref": "AppSyncApiName",
+                    },
+                    Object {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
+              },
+              Object {
+                "Ref": "AppSyncApiName",
+              },
+            ],
+          },
+          "UserPoolConfig": Object {
+            "AwsRegion": Object {
+              "Ref": "AWS::Region",
+            },
+            "DefaultAction": "ALLOW",
+            "UserPoolId": Object {
+              "Ref": "AuthCognitoUserPoolId",
+            },
+          },
+        },
+        "Type": "AWS::AppSync::GraphQLApi",
+      },
+      "GraphQLAPIKey": Object {
+        "Condition": "ShouldCreateAPIKey",
+        "Properties": Object {
+          "ApiId": Object {
+            "Fn::GetAtt": Array [
+              "GraphQLAPI",
+              "ApiId",
+            ],
+          },
+          "Expires": Object {
+            "Fn::If": Array [
+              "APIKeyExpirationEpochIsPositive",
+              Object {
+                "Ref": "APIKeyExpirationEpoch",
+              },
+              1582568839,
+            ],
+          },
+        },
+        "Type": "AWS::AppSync::ApiKey",
+      },
+      "GraphQLSchema": Object {
+        "Properties": Object {
+          "ApiId": Object {
+            "Fn::GetAtt": Array [
+              "GraphQLAPI",
+              "ApiId",
+            ],
+          },
+          "DefinitionS3Location": Object {
+            "Fn::Sub": Array [
+              "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/schema.graphql",
+              Object {
+                "S3DeploymentBucket": Object {
+                  "Ref": "S3DeploymentBucket",
+                },
+                "S3DeploymentRootKey": Object {
+                  "Ref": "S3DeploymentRootKey",
+                },
+              },
+            ],
+          },
+        },
+        "Type": "AWS::AppSync::GraphQLSchema",
+      },
+      "NoneDataSource": Object {
+        "Properties": Object {
+          "ApiId": Object {
+            "Fn::GetAtt": Array [
+              "GraphQLAPI",
+              "ApiId",
+            ],
+          },
+          "Name": "NONE",
+          "Type": "NONE",
+        },
+        "Type": "AWS::AppSync::DataSource",
+      },
+      "Post": Stack {
+        "DependsOn": Array [
+          "GraphQLSchema",
+          "NoneDataSource",
+        ],
+        "Properties": Object {
+          "Parameters": Object {
+            "APIKeyExpirationEpoch": Object {
+              "Ref": "APIKeyExpirationEpoch",
+            },
+            "AppSyncApiId": Object {
+              "Fn::GetAtt": Array [
+                "GraphQLAPI",
+                "ApiId",
+              ],
+            },
+            "AppSyncApiName": Object {
+              "Ref": "AppSyncApiName",
+            },
+            "AuthCognitoUserPoolId": Object {
+              "Ref": "AuthCognitoUserPoolId",
+            },
+            "CreateAPIKey": Object {
+              "Ref": "CreateAPIKey",
+            },
+            "DynamoDBBillingMode": Object {
+              "Ref": "DynamoDBBillingMode",
+            },
+            "DynamoDBEnablePointInTimeRecovery": Object {
+              "Ref": "DynamoDBEnablePointInTimeRecovery",
+            },
+            "DynamoDBEnableServerSideEncryption": Object {
+              "Ref": "DynamoDBEnableServerSideEncryption",
+            },
+            "DynamoDBModelTableReadIOPS": Object {
+              "Ref": "DynamoDBModelTableReadIOPS",
+            },
+            "DynamoDBModelTableWriteIOPS": Object {
+              "Ref": "DynamoDBModelTableWriteIOPS",
+            },
+            "GetAttGraphQLAPIApiId": Object {
+              "Fn::GetAtt": Array [
+                "GraphQLAPI",
+                "ApiId",
+              ],
+            },
+            "S3DeploymentBucket": Object {
+              "Ref": "S3DeploymentBucket",
+            },
+            "S3DeploymentRootKey": Object {
+              "Ref": "S3DeploymentRootKey",
+            },
+            "env": Object {
+              "Ref": "env",
+            },
+          },
+          "TemplateURL": Object {
+            "Fn::Join": Array [
+              "/",
+              Array [
+                "https://s3.amazonaws.com",
+                Object {
+                  "Ref": "S3DeploymentBucket",
+                },
+                Object {
+                  "Ref": "S3DeploymentRootKey",
+                },
+                "stacks",
+                "Post.json",
+              ],
+            ],
+          },
+        },
+        "Type": "AWS::CloudFormation::Stack",
+      },
+    },
+  },
+  "schema": "type Post {
+  id: ID!
+  title: String!
+  owner: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPostFilterInput {
+  id: ModelIDFilterInput
+  title: ModelStringFilterInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
+input CreatePostInput {
+  id: ID
+  title: String!
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+}
+
+input DeletePostInput {
+  id: ID
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): Post
+  updatePost(input: UpdatePostInput!): Post
+  deletePost(input: DeletePostInput!): Post
+}
+
+type Subscription {
+  onCreatePost(owner: String!): Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+",
+  "stackMapping": Object {
+    "CreatePostResolver": "Post",
+    "DeletePostResolver": "Post",
+    "GetAttPostDataSourceName": "Post",
+    "GetAttPostTableName": "Post",
+    "GetAttPostTableStreamArn": "Post",
+    "GetPostResolver": "Post",
+    "GraphQLAPI": "root",
+    "GraphQLAPIEndpointOutput": "root",
+    "GraphQLAPIIdOutput": "root",
+    "GraphQLAPIKey": "root",
+    "GraphQLAPIKeyOutput": "root",
+    "GraphQLSchema": "root",
+    "ListPostResolver": "Post",
+    "NoneDataSource": "root",
+    "PostDataSource": "Post",
+    "PostIAMRole": "Post",
+    "PostTable": "Post",
+    "SubscriptiononCreatePostResolver": "Post",
+    "UpdatePostResolver": "Post",
+  },
+  "stacks": Object {
+    "Post": Object {
+      "AWSTemplateFormatVersion": "2010-09-09",
+      "Conditions": Object {
+        "APIKeyExpirationEpochIsPositive": Object {
+          "Fn::And": Array [
+            Object {
+              "Fn::Not": Array [
+                Object {
+                  "Fn::Equals": Array [
+                    Object {
+                      "Ref": "APIKeyExpirationEpoch",
+                    },
+                    -1,
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Fn::Not": Array [
+                Object {
+                  "Fn::Equals": Array [
+                    Object {
+                      "Ref": "APIKeyExpirationEpoch",
+                    },
+                    0,
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        "HasEnvironmentParameter": Object {
+          "Fn::Not": Array [
+            Object {
+              "Fn::Equals": Array [
+                Object {
+                  "Ref": "env",
+                },
+                "NONE",
+              ],
+            },
+          ],
+        },
+        "ShouldCreateAPIKey": Object {
+          "Fn::Equals": Array [
+            Object {
+              "Ref": "CreateAPIKey",
+            },
+            1,
+          ],
+        },
+        "ShouldUsePayPerRequestBilling": Object {
+          "Fn::Equals": Array [
+            Object {
+              "Ref": "DynamoDBBillingMode",
+            },
+            "PAY_PER_REQUEST",
+          ],
+        },
+        "ShouldUsePointInTimeRecovery": Object {
+          "Fn::Equals": Array [
+            Object {
+              "Ref": "DynamoDBEnablePointInTimeRecovery",
+            },
+            "true",
+          ],
+        },
+        "ShouldUseServerSideEncryption": Object {
+          "Fn::Equals": Array [
+            Object {
+              "Ref": "DynamoDBEnableServerSideEncryption",
+            },
+            "true",
+          ],
+        },
+      },
+      "Description": "An auto-generated nested stack.",
+      "Mappings": Object {},
+      "Metadata": Object {},
+      "Outputs": Object {
+        "GetAttPostDataSourceName": Object {
+          "Description": "Your model DataSource name.",
+          "Export": Object {
+            "Name": Object {
+              "Fn::Join": Array [
+                ":",
+                Array [
+                  Object {
+                    "Ref": "AppSyncApiId",
+                  },
+                  "GetAtt",
+                  "PostDataSource",
+                  "Name",
+                ],
+              ],
+            },
+          },
+          "Value": Object {
+            "Fn::GetAtt": Array [
+              "PostDataSource",
+              "Name",
+            ],
+          },
+        },
+        "GetAttPostTableName": Object {
+          "Description": "Your DynamoDB table name.",
+          "Export": Object {
+            "Name": Object {
+              "Fn::Join": Array [
+                ":",
+                Array [
+                  Object {
+                    "Ref": "AppSyncApiId",
+                  },
+                  "GetAtt",
+                  "PostTable",
+                  "Name",
+                ],
+              ],
+            },
+          },
+          "Value": Object {
+            "Ref": "PostTable",
+          },
+        },
+        "GetAttPostTableStreamArn": Object {
+          "Description": "Your DynamoDB table StreamArn.",
+          "Export": Object {
+            "Name": Object {
+              "Fn::Join": Array [
+                ":",
+                Array [
+                  Object {
+                    "Ref": "AppSyncApiId",
+                  },
+                  "GetAtt",
+                  "PostTable",
+                  "StreamArn",
+                ],
+              ],
+            },
+          },
+          "Value": Object {
+            "Fn::GetAtt": Array [
+              "PostTable",
+              "StreamArn",
+            ],
+          },
+        },
+      },
+      "Parameters": Object {
+        "APIKeyExpirationEpoch": Object {
+          "Default": 0,
+          "Description": "The epoch time in seconds when the API Key should expire. Setting this to 0 will default to 7 days from the deployment date. Setting this to -1 will not create an API Key.",
+          "MinValue": -1,
+          "Type": "Number",
+        },
+        "AppSyncApiId": StringParameter {
+          "Description": "The id of the AppSync API associated with this project.",
+          "Type": "String",
+        },
+        "AppSyncApiName": Object {
+          "Default": "AppSyncSimpleTransform",
+          "Description": "The name of the AppSync API",
+          "Type": "String",
+        },
+        "AuthCognitoUserPoolId": Object {
+          "Default": "NONE",
+          "Description": "The id of an existing User Pool to connect. If this is changed, a user pool will not be created for you.",
+          "Type": "String",
+        },
+        "CreateAPIKey": Object {
+          "Default": 0,
+          "Description": "The boolean value to control if an API Key will be created or not. The value of the property is automatically set by the CLI. If the value is set to 0 no API Key will be created.",
+          "MaxValue": 1,
+          "MinValue": 0,
+          "Type": "Number",
+        },
+        "DynamoDBBillingMode": Object {
+          "AllowedValues": Array [
+            "PAY_PER_REQUEST",
+            "PROVISIONED",
+          ],
+          "Default": "PAY_PER_REQUEST",
+          "Description": "Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.",
+          "Type": "String",
+        },
+        "DynamoDBEnablePointInTimeRecovery": Object {
+          "AllowedValues": Array [
+            "true",
+            "false",
+          ],
+          "Default": "false",
+          "Description": "Whether to enable Point in Time Recovery on the table",
+          "Type": "String",
+        },
+        "DynamoDBEnableServerSideEncryption": Object {
+          "AllowedValues": Array [
+            "true",
+            "false",
+          ],
+          "Default": "true",
+          "Description": "Enable server side encryption powered by KMS.",
+          "Type": "String",
+        },
+        "DynamoDBModelTableReadIOPS": Object {
+          "Default": 5,
+          "Description": "The number of read IOPS the table should support.",
+          "Type": "Number",
+        },
+        "DynamoDBModelTableWriteIOPS": Object {
+          "Default": 5,
+          "Description": "The number of write IOPS the table should support.",
+          "Type": "Number",
+        },
+        "GetAttGraphQLAPIApiId": StringParameter {
+          "Description": "Auto-generated parameter that forwards Fn.GetAtt(GraphQLAPI, ApiId) through to nested stacks.",
+          "Type": "String",
+        },
+        "S3DeploymentBucket": Object {
+          "Description": "The S3 bucket containing all deployment assets for the project.",
+          "Type": "String",
+        },
+        "S3DeploymentRootKey": Object {
+          "Description": "An S3 key relative to the S3DeploymentBucket that points to the root of the deployment directory.",
+          "Type": "String",
+        },
+        "env": Object {
+          "Default": "NONE",
+          "Description": "The environment name. e.g. Dev, Test, or Production",
+          "Type": "String",
+        },
+      },
+      "Resources": Object {
+        "CreatePostResolver": Object {
+          "Properties": Object {
+            "ApiId": Object {
+              "Ref": "GetAttGraphQLAPIApiId",
+            },
+            "DataSourceName": Object {
+              "Fn::GetAtt": Array [
+                "PostDataSource",
+                "Name",
+              ],
+            },
+            "FieldName": "createPost",
+            "RequestMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Mutation",
+                        "createPost",
+                        "req",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "ResponseMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Mutation",
+                        "createPost",
+                        "res",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "TypeName": "Mutation",
+          },
+          "Type": "AWS::AppSync::Resolver",
+        },
+        "DeletePostResolver": Object {
+          "Properties": Object {
+            "ApiId": Object {
+              "Ref": "GetAttGraphQLAPIApiId",
+            },
+            "DataSourceName": Object {
+              "Fn::GetAtt": Array [
+                "PostDataSource",
+                "Name",
+              ],
+            },
+            "FieldName": "deletePost",
+            "RequestMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Mutation",
+                        "deletePost",
+                        "req",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "ResponseMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Mutation",
+                        "deletePost",
+                        "res",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "TypeName": "Mutation",
+          },
+          "Type": "AWS::AppSync::Resolver",
+        },
+        "GetPostResolver": Object {
+          "Properties": Object {
+            "ApiId": Object {
+              "Ref": "GetAttGraphQLAPIApiId",
+            },
+            "DataSourceName": Object {
+              "Fn::GetAtt": Array [
+                "PostDataSource",
+                "Name",
+              ],
+            },
+            "FieldName": "getPost",
+            "RequestMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Query",
+                        "getPost",
+                        "req",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "ResponseMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Query",
+                        "getPost",
+                        "res",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "TypeName": "Query",
+          },
+          "Type": "AWS::AppSync::Resolver",
+        },
+        "ListPostResolver": Object {
+          "Properties": Object {
+            "ApiId": Object {
+              "Ref": "GetAttGraphQLAPIApiId",
+            },
+            "DataSourceName": Object {
+              "Fn::GetAtt": Array [
+                "PostDataSource",
+                "Name",
+              ],
+            },
+            "FieldName": "listPosts",
+            "RequestMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Query",
+                        "listPosts",
+                        "req",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "ResponseMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Query",
+                        "listPosts",
+                        "res",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "TypeName": "Query",
+          },
+          "Type": "AWS::AppSync::Resolver",
+        },
+        "PostDataSource": Object {
+          "DependsOn": Array [
+            "PostIAMRole",
+          ],
+          "Properties": Object {
+            "ApiId": Object {
+              "Ref": "GetAttGraphQLAPIApiId",
+            },
+            "DynamoDBConfig": Object {
+              "AwsRegion": Object {
+                "Ref": "AWS::Region",
+              },
+              "TableName": Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Join": Array [
+                      "-",
+                      Array [
+                        "Post",
+                        Object {
+                          "Ref": "GetAttGraphQLAPIApiId",
+                        },
+                        Object {
+                          "Ref": "env",
+                        },
+                      ],
+                    ],
+                  },
+                  Object {
+                    "Fn::Join": Array [
+                      "-",
+                      Array [
+                        "Post",
+                        Object {
+                          "Ref": "GetAttGraphQLAPIApiId",
+                        },
+                      ],
+                    ],
+                  },
+                ],
+              },
+            },
+            "Name": "PostTable",
+            "ServiceRoleArn": Object {
+              "Fn::GetAtt": Array [
+                "PostIAMRole",
+                "Arn",
+              ],
+            },
+            "Type": "AMAZON_DYNAMODB",
+          },
+          "Type": "AWS::AppSync::DataSource",
+        },
+        "PostIAMRole": Object {
+          "Properties": Object {
+            "AssumeRolePolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": "sts:AssumeRole",
+                  "Effect": "Allow",
+                  "Principal": Object {
+                    "Service": "appsync.amazonaws.com",
+                  },
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "Policies": Array [
+              Object {
+                "PolicyDocument": Object {
+                  "Statement": Array [
+                    Object {
+                      "Action": Array [
+                        "dynamodb:BatchGetItem",
+                        "dynamodb:BatchWriteItem",
+                        "dynamodb:PutItem",
+                        "dynamodb:DeleteItem",
+                        "dynamodb:GetItem",
+                        "dynamodb:Scan",
+                        "dynamodb:Query",
+                        "dynamodb:UpdateItem",
+                      ],
+                      "Effect": "Allow",
+                      "Resource": Array [
+                        Object {
+                          "Fn::Sub": Array [
+                            "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+                            Object {
+                              "tablename": Object {
+                                "Fn::If": Array [
+                                  "HasEnvironmentParameter",
+                                  Object {
+                                    "Fn::Join": Array [
+                                      "-",
+                                      Array [
+                                        "Post",
+                                        Object {
+                                          "Ref": "GetAttGraphQLAPIApiId",
+                                        },
+                                        Object {
+                                          "Ref": "env",
+                                        },
+                                      ],
+                                    ],
+                                  },
+                                  Object {
+                                    "Fn::Join": Array [
+                                      "-",
+                                      Array [
+                                        "Post",
+                                        Object {
+                                          "Ref": "GetAttGraphQLAPIApiId",
+                                        },
+                                      ],
+                                    ],
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                        Object {
+                          "Fn::Sub": Array [
+                            "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
+                            Object {
+                              "tablename": Object {
+                                "Fn::If": Array [
+                                  "HasEnvironmentParameter",
+                                  Object {
+                                    "Fn::Join": Array [
+                                      "-",
+                                      Array [
+                                        "Post",
+                                        Object {
+                                          "Ref": "GetAttGraphQLAPIApiId",
+                                        },
+                                        Object {
+                                          "Ref": "env",
+                                        },
+                                      ],
+                                    ],
+                                  },
+                                  Object {
+                                    "Fn::Join": Array [
+                                      "-",
+                                      Array [
+                                        "Post",
+                                        Object {
+                                          "Ref": "GetAttGraphQLAPIApiId",
+                                        },
+                                      ],
+                                    ],
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                  "Version": "2012-10-17",
+                },
+                "PolicyName": "DynamoDBAccess",
+              },
+            ],
+            "RoleName": Object {
+              "Fn::If": Array [
+                "HasEnvironmentParameter",
+                Object {
+                  "Fn::Join": Array [
+                    "-",
+                    Array [
+                      "Post",
+                      "role",
+                      Object {
+                        "Ref": "GetAttGraphQLAPIApiId",
+                      },
+                      Object {
+                        "Ref": "env",
+                      },
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "-",
+                    Array [
+                      "Post",
+                      "role",
+                      Object {
+                        "Ref": "GetAttGraphQLAPIApiId",
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+          },
+          "Type": "AWS::IAM::Role",
+        },
+        "PostTable": Object {
+          "DeletionPolicy": "Delete",
+          "Properties": Object {
+            "AttributeDefinitions": Array [
+              Object {
+                "AttributeName": "id",
+                "AttributeType": "S",
+              },
+            ],
+            "BillingMode": Object {
+              "Fn::If": Array [
+                "ShouldUsePayPerRequestBilling",
+                "PAY_PER_REQUEST",
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            "KeySchema": Array [
+              Object {
+                "AttributeName": "id",
+                "KeyType": "HASH",
+              },
+            ],
+            "PointInTimeRecoverySpecification": Object {
+              "Fn::If": Array [
+                "ShouldUsePointInTimeRecovery",
+                Object {
+                  "PointInTimeRecoveryEnabled": true,
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            "ProvisionedThroughput": Object {
+              "Fn::If": Array [
+                "ShouldUsePayPerRequestBilling",
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+                Object {
+                  "ReadCapacityUnits": Object {
+                    "Ref": "DynamoDBModelTableReadIOPS",
+                  },
+                  "WriteCapacityUnits": Object {
+                    "Ref": "DynamoDBModelTableWriteIOPS",
+                  },
+                },
+              ],
+            },
+            "SSESpecification": Object {
+              "SSEEnabled": Object {
+                "Fn::If": Array [
+                  "ShouldUseServerSideEncryption",
+                  true,
+                  false,
+                ],
+              },
+            },
+            "StreamSpecification": Object {
+              "StreamViewType": "NEW_AND_OLD_IMAGES",
+            },
+            "TableName": Object {
+              "Fn::If": Array [
+                "HasEnvironmentParameter",
+                Object {
+                  "Fn::Join": Array [
+                    "-",
+                    Array [
+                      "Post",
+                      Object {
+                        "Ref": "GetAttGraphQLAPIApiId",
+                      },
+                      Object {
+                        "Ref": "env",
+                      },
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "-",
+                    Array [
+                      "Post",
+                      Object {
+                        "Ref": "GetAttGraphQLAPIApiId",
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+          },
+          "Type": "AWS::DynamoDB::Table",
+        },
+        "SubscriptiononCreatePostResolver": Object {
+          "Properties": Object {
+            "ApiId": Object {
+              "Ref": "GetAttGraphQLAPIApiId",
+            },
+            "DataSourceName": "NONE",
+            "FieldName": "onCreatePost",
+            "RequestMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Subscription",
+                        "onCreatePost",
+                        "req",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "ResponseMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Subscription",
+                        "onCreatePost",
+                        "res",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "TypeName": "Subscription",
+          },
+          "Type": "AWS::AppSync::Resolver",
+        },
+        "UpdatePostResolver": Object {
+          "Properties": Object {
+            "ApiId": Object {
+              "Ref": "GetAttGraphQLAPIApiId",
+            },
+            "DataSourceName": Object {
+              "Fn::GetAtt": Array [
+                "PostDataSource",
+                "Name",
+              ],
+            },
+            "FieldName": "updatePost",
+            "RequestMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Mutation",
+                        "updatePost",
+                        "req",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "ResponseMappingTemplateS3Location": Object {
+              "Fn::Sub": Array [
+                "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/resolvers/\${ResolverFileName}",
+                Object {
+                  "ResolverFileName": Object {
+                    "Fn::Join": Array [
+                      ".",
+                      Array [
+                        "Mutation",
+                        "updatePost",
+                        "res",
+                        "vtl",
+                      ],
+                    ],
+                  },
+                  "S3DeploymentBucket": Object {
+                    "Ref": "S3DeploymentBucket",
+                  },
+                  "S3DeploymentRootKey": Object {
+                    "Ref": "S3DeploymentRootKey",
+                  },
+                },
+              ],
+            },
+            "TypeName": "Mutation",
+          },
+          "Type": "AWS::AppSync::Resolver",
+        },
+      },
+    },
+  },
+}
+`;

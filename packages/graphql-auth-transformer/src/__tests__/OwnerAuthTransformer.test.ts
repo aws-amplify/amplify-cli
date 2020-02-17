@@ -41,6 +41,36 @@ test('Test ModelAuthTransformer validation happy case', () => {
   );
 });
 
+test('Test owner create auth appended to auth', () => {
+  // setup
+  const schema = `
+    type Post @model @auth(rules: [{allow: owner, operations: [read]}]) {
+      id: ID!
+      title: String!
+    }
+  `
+  const transformer = new GraphQLTransform({
+    transformers: [
+      new DynamoDBModelTransformer(),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
+    ],
+  });
+
+  // test
+  const actual = transformer.transform(schema);
+
+  // verfiy
+  expect(actual).toMatchSnapshot();
+
+})
+
 test('Test OwnerField with Subscriptions', () => {
   const validSchema = `
         type Post @model
