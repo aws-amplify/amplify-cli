@@ -113,6 +113,7 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
     env: '${env}',
     S3DeploymentBucket: '${S3DeploymentBucket}',
     S3DeploymentRootKey: '${S3DeploymentRootKey}',
+    CreateAPIKey: 1,
     ...params,
   };
 
