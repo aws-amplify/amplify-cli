@@ -4,6 +4,7 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '.
 import { create as createUtil, TemplateSentError } from './util';
 import { map as convertToJavaTypes, map } from './value-mapper/mapper';
 import { GraphQLResolveInfo } from 'graphql';
+import { createInfo } from './util/info';
 
 export type AppSyncSimulatorRequestContext = {
   jwt?: {
@@ -103,6 +104,7 @@ export class VelocityTemplate {
     const vtlContext = {
       arguments: args,
       args,
+      info: createInfo(info),
       request: request ? { headers: request.headers } : {},
       identity,
       stash: convertToJavaTypes(stash || {}),
