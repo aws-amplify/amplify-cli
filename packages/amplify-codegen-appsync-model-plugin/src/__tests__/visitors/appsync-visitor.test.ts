@@ -120,47 +120,161 @@ describe('AppSyncModelVisitor', () => {
   });
 
   describe(' 2 Way Connection', () => {
-    const schema = /* GraphQL */ `
-      type Post @model {
-        title: String!
-        content: String
-        comments: [Comment] @connection(name: "PostComment")
-      }
+    describe('with connection name', () => {
+      const schema = /* GraphQL */ `
+        type Post @model {
+          title: String!
+          content: String
+          comments: [Comment] @connection(name: "PostComment")
+        }
 
-      type Comment @model {
-        comment: String!
-        post: Post @connection(name: "PostComment")
-      }
-    `;
-    it('one to many connection', () => {
-      const ast = parse(schema);
-      const builtSchema = buildSchemaWithDirectives(schema);
-      const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
-      visit(ast, { leave: visitor });
-      visitor.generate();
-      const commentsField = visitor.models.Post.fields.find(f => f.name === 'comments');
-      const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
-      expect(commentsField).toBeDefined();
-      expect(commentsField!.connectionInfo).toBeDefined();
-      const connectionInfo = (commentsField!.connectionInfo as any) as CodeGenFieldConnectionHasMany;
-      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
-      expect(connectionInfo.associatedWith).toEqual(postField);
-      expect(connectionInfo.connectedModel).toEqual(visitor.models.Comment);
+        type Comment @model {
+          comment: String!
+          post: Post @connection(name: "PostComment")
+        }
+      `;
+      it('one to many connection', () => {
+        const ast = parse(schema);
+        const builtSchema = buildSchemaWithDirectives(schema);
+        const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+        visit(ast, { leave: visitor });
+        visitor.generate();
+        const commentsField = visitor.models.Post.fields.find(f => f.name === 'comments');
+        const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
+        expect(commentsField).toBeDefined();
+        expect(commentsField!.connectionInfo).toBeDefined();
+        const connectionInfo = (commentsField!.connectionInfo as any) as CodeGenFieldConnectionHasMany;
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
+        expect(connectionInfo.associatedWith).toEqual(postField);
+        expect(connectionInfo.connectedModel).toEqual(visitor.models.Comment);
+      });
+
+      it('many to one connection', () => {
+        const ast = parse(schema);
+        const builtSchema = buildSchemaWithDirectives(schema);
+        const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+        visit(ast, { leave: visitor });
+        visitor.generate();
+        const commentsField = visitor.models.Post.fields.find(f => f.name === 'comments');
+        const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
+        expect(postField).toBeDefined();
+        expect(postField!.connectionInfo).toBeDefined();
+        const connectionInfo = (postField!.connectionInfo as any) as CodeGenFieldConnectionBelongsTo;
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+        expect(connectionInfo.connectedModel).toEqual(visitor.models.Post);
+      });
+    });
+    describe('connection with fields argument', () => {
+      const schema = /* GraphQL */ `
+        type Post @model {
+          title: String!
+          content: String
+          comments: [Comment] @connection(fields: ["id"])
+        }
+
+        type Comment @model {
+          comment: String!
+          postId: ID!
+          post: Post @connection(fields: ["postId"])
+        }
+      `;
+
+      it('one to many connection', () => {
+        const ast = parse(schema);
+        const builtSchema = buildSchemaWithDirectives(schema);
+        const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+        visit(ast, { leave: visitor });
+        visitor.generate();
+        const commentsField = visitor.models.Post.fields.find(f => f.name === 'comments');
+        const commentIdField = visitor.models.Post.fields.find(f => f.name === 'id');
+        const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
+        expect(commentsField).toBeDefined();
+        expect(commentsField!.connectionInfo).toBeDefined();
+        const connectionInfo = (commentsField!.connectionInfo as any) as CodeGenFieldConnectionHasMany;
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
+        expect(connectionInfo.associatedWith).toEqual(commentIdField);
+        expect(connectionInfo.connectedModel).toEqual(visitor.models.Comment);
+      });
+
+      it('many to one connection', () => {
+        const ast = parse(schema);
+        const builtSchema = buildSchemaWithDirectives(schema);
+        const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+        visit(ast, { leave: visitor });
+        visitor.generate();
+
+        const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
+        expect(postField).toBeDefined();
+        expect(postField!.connectionInfo).toBeDefined();
+        const connectionInfo = (postField!.connectionInfo as any) as CodeGenFieldConnectionBelongsTo;
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+        expect(connectionInfo.connectedModel).toEqual(visitor.models.Post);
+      });
     });
 
-    it('many to one connection', () => {
+    it('should support custom keys with key name (many to many)', () => {
+      const schema = /* GraphQL */ `
+        type Post @model {
+          id: ID!
+          title: String!
+          editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+        }
+
+        # Create a join model and disable queries as you don't need them
+        # and can query through Post.editors and User.posts
+        type PostEditor
+          @model(queries: null)
+          @key(name: "byPost", fields: ["postID", "editorID"])
+          @key(name: "byEditor", fields: ["editorID", "postID"]) {
+          id: ID!
+          postID: ID!
+          editorID: ID!
+          post: Post! @connection(fields: ["postID"])
+          editor: User! @connection(fields: ["editorID"])
+        }
+
+        type User @model {
+          id: ID!
+          username: String!
+          posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
+        }
+      `;
       const ast = parse(schema);
       const builtSchema = buildSchemaWithDirectives(schema);
+
       const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
       visit(ast, { leave: visitor });
       visitor.generate();
-      const commentsField = visitor.models.Post.fields.find(f => f.name === 'comments');
-      const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
-      expect(postField).toBeDefined();
-      expect(postField!.connectionInfo).toBeDefined();
-      const connectionInfo = (postField!.connectionInfo as any) as CodeGenFieldConnectionBelongsTo;
-      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
-      expect(connectionInfo.connectedModel).toEqual(visitor.models.Post);
+      const postModel = visitor.models.Post;
+      const userModel = visitor.models.User;
+      const editorModel = visitor.models.PostEditor;
+
+      const postEditorsField = postModel.fields.find(field => field.name === 'editors');
+      const editorPostPostField = editorModel.fields.find(field => field.name === 'post');
+      const editorEditorField = editorModel.fields.find(field => field.name === 'editor');
+      const userPostsField = userModel.fields.find(field => field.name === 'posts');
+
+      expect(postEditorsField.connectionInfo).toBeDefined();
+      expect(postEditorsField.connectionInfo!.connectedModel).toEqual(editorModel);
+      expect(postEditorsField.connectionInfo!.kind).toEqual(CodeGenConnectionType.HAS_MANY);
+      const postEditorConnection = postEditorsField.connectionInfo as CodeGenFieldConnectionHasMany;
+      expect(postEditorConnection.associatedWith).toEqual(editorPostPostField);
+
+      expect(userPostsField.connectionInfo).toBeDefined();
+      expect(userPostsField.connectionInfo!.connectedModel).toEqual(editorModel);
+      expect(userPostsField.connectionInfo!.kind).toEqual(CodeGenConnectionType.HAS_MANY);
+      const userPostsConnection = userPostsField.connectionInfo as CodeGenFieldConnectionHasMany;
+      expect(userPostsConnection.associatedWith).toEqual(editorEditorField);
+
+      expect(editorEditorField.connectionInfo).toBeDefined();
+      expect(editorEditorField.connectionInfo!.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+      const editorEditorConnection = editorEditorField.connectionInfo as CodeGenFieldConnectionBelongsTo;
+      expect(editorEditorConnection.targetName).toEqual('editorID');
+
+      expect(editorPostPostField.connectionInfo).toBeDefined();
+      expect(editorPostPostField.connectionInfo!.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+      const editorPostConnection = editorPostPostField.connectionInfo as CodeGenFieldConnectionBelongsTo;
+      expect(editorPostConnection.targetName).toEqual('postID');
     });
   });
 
