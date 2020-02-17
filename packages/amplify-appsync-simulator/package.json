@@ -17,7 +17,7 @@
     "simulator"
   ],
   "scripts": {
-    "copy-assets": "rimraf ./public && copyfiles --flat ../amplify-graphiql-explorer/build/* ./public",
+    "copy-assets": "yarn rimraf ./public && yarn copyfiles -u 3 \"../amplify-graphiql-explorer/build/**/*\" ./public",
     "build": "yarn copy-assets && tsc",
     "clean": "rimraf ./lib",
     "watch": "tsc -w",
