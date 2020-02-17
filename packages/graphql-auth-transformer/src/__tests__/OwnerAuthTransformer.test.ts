@@ -67,8 +67,7 @@ test('Test owner create auth appended to auth', () => {
   const actual = transformer.transform(schema);
 
   // verfiy
-  expect(actual).toMatchSnapshot();
-
+  expect(actual.resolvers["Mutation.createPost.req.vtl"]).toMatchSnapshot();
 })
 
 test('Test OwnerField with Subscriptions', () => {
