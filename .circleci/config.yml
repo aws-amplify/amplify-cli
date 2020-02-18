@@ -27,6 +27,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: .
+
   test:
     <<: *defaults
     steps:
@@ -34,6 +35,9 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
       - run:
           name: Install Java
           command: sudo apt-get install default-jdk
@@ -46,6 +50,28 @@ jobs:
       - run:
           name: Collect code coverage
           command: yarn coverage
+
+  mock_e2e_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Install Java
+          command: sudo apt-get install default-jdk
+      - run:
+          name: Run Transformer end-to-end tests with mock server
+          command: cd packages/amplify-util-mock/ && yarn e2e
+          no_output_timeout: 90m
+          environment:
+            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+      - store_test_results:
+          path: packages/amplify-util-mock/
 
   publish_to_local_registry:
     <<: *defaults
@@ -78,25 +104,6 @@ jobs:
           no_output_timeout: 90m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
-
-  mock_e2e_tests:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Java
-          command: sudo apt-get install default-jdk
-      - run:
-          name: Run Transformer end-to-end tests with mock server
-          command: cd packages/amplify-util-mock/ && yarn e2e
-          no_output_timeout: 90m
-          environment:
-            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
-      - store_test_results:
-          path: packages/amplify-util-mock/
 
   amplify_e2e_tests:
     <<: *defaults
@@ -218,6 +225,7 @@ jobs:
           path: ../aws-amplify-cypress-api/cypress/videos
       - store_artifacts:
           path: ../aws-amplify-cypress-api/cypress/screenshots
+
   deploy:
     <<: *defaults
     steps:
@@ -240,6 +248,7 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+
   integration_test_js:
     working_directory: ~/repo
     docker:
@@ -283,6 +292,7 @@ jobs:
           path: /root/screenshots
       - store_test_results:
           path: packages/amplify-ui-tests/
+
   integration_test_ios:
     macos:
       xcode: '11.0.0'
@@ -340,6 +350,7 @@ jobs:
           path: ../uitest_logs
       - store_test_results:
           path: ../uitest_logs
+
   integration_test_android:
     docker:
       - image: circleci/android:api-27-node
@@ -454,6 +465,7 @@ jobs:
           when: always
       - store_artifacts:
           path: ../uitest_android_results
+
 workflows:
   version: 2
   build_test_deploy:
