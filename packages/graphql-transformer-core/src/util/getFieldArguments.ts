@@ -11,7 +11,7 @@ export function getFieldArguments(type: any): any {
           ...acc,
           [arg.name.value]: getBaseType(arg.type),
         }),
-        {}
+        {},
       )
     : [];
 }
