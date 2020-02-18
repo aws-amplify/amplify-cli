@@ -66,7 +66,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
 
   if (updateApi.resourceName === 'AdminQueries') {
     context.print.warning(
-      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`
+      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`,
     );
     process.exit(0);
   }
@@ -211,7 +211,7 @@ async function askPrivacy(context, answers, currentPath) {
         if (permissionSelected === 'Learn more') {
           context.print.info('');
           context.print.info(
-            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
           );
           context.print.info('');
         }
@@ -824,7 +824,7 @@ function getIAMPolicies(resourceName, crudOptions) {
     ],
   };
 
-  const attributes = ['ApiName'];
+  const attributes = ['ApiName', 'ApiId'];
 
   return { policy, attributes };
 }
