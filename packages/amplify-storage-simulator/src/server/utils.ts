@@ -17,6 +17,11 @@ export function parseUrl(request, route: String) {
     request.params.path = request.params.path.substring(1);
   }
 
+  // changing file path by removing invalid file path characters for windows
+  if (process.platform === 'win32') {
+    request.params.path = request.params.path.replace(/[<>:"|?*]/g, (match, capture) => '%' + Buffer.from(match, 'utf8').toString('hex'));
+  }
+
   if (request.method === 'GET') {
     if (request.query.prefix !== undefined || (temp[1] === '' && temp[0] === '')) {
       request.method = 'LIST';
