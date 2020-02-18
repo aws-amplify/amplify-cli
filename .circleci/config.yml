@@ -85,7 +85,8 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-            setNpmRegistryPathToLocal
+            setNpmRegistryUrlToLocal
+            loginToLocalRegistry
             yarn publish-to-verdaccio
       - save_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
@@ -118,18 +119,20 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-            setNpmRegistryPathToLocal
+            setNpmRegistryUrlToLocal
             changeNpmGlobalPath
-            setNpmRegistryPathToLocal
+            setNpmRegistryUrlToLocal
+            loginToLocalRegistry
             npm install -g @aws-amplify/cli
-            unsetNpmRegistryPath
+            unsetNpmRegistryUrl
       - run:
           command: |
             export PATH=~/.npm-global/bin:$PATH
             amplify -v
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-            setNpmRegistryPathToLocal
+            setNpmRegistryUrlToLocal
+            loginToLocalRegistry
             cd packages/amplify-e2e-tests
             yarn run e2e --maxWorkers=3
           name: 'Run Amplify end-to-end tests'
