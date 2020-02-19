@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.13.2...amplify-codegen@2.13.3) (2020-02-13)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** support appsync scalars in modelgen ([#3424](https://github.com/aws-amplify/amplify-cli/issues/3424)) ([a6eba85](https://github.com/aws-amplify/amplify-cli/commit/a6eba858f2ed31192a1214a22a3180dd243c80c7)), closes [#3296](https://github.com/aws-amplify/amplify-cli/issues/3296)
+
+
+
+
+
 ## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.13.1...amplify-codegen@2.13.2) (2020-02-07)
 
 

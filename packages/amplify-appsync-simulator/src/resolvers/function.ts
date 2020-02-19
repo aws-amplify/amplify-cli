@@ -48,7 +48,7 @@ export class AmplifySimulatorFunction {
     }
 
     const responseMappingResult = await responseMappingTemplate.render(
-      { source, arguments: args, result, stash, prevResult, error },
+      { source, arguments: args, result, stash: requestTemplateResult.stash, prevResult, error },
       context,
       info,
     );
