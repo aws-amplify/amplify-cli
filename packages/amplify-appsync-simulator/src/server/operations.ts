@@ -30,7 +30,7 @@ export class OperationServer {
   constructor(
     private config: AppSyncSimulatorServerConfig,
     private simulatorContext: AmplifyAppSyncSimulator,
-    private subscriptionServer: SubscriptionServer
+    private subscriptionServer: SubscriptionServer,
   ) {
     this.port = config.port;
     this.app = express();
@@ -111,7 +111,7 @@ export class OperationServer {
         definitions: [{ operation: queryType }],
       } = doc as any; // Remove casting
       const authorization = headers.Authorization || headers.authorization;
-      const jwt = authorization ? jwtDecode(authorization) : {};
+      const jwt = (authorization && this.extractJwtToken(authorization)) || {};
       const context = { jwt, requestAuthorizationMode, request, appsyncErrors: [] };
       switch (queryType) {
         case 'query':
@@ -150,31 +150,64 @@ export class OperationServer {
   private checkAuthorization(request): AmplifyAppSyncSimulatorAuthenticationType {
     const appSyncConfig = this.simulatorContext.appSyncConfig;
     const { headers } = request;
-    const apiKey = headers['x-api-key'];
+
+    const apiKey = this.extractHeader(headers, 'x-api-key');
+    const authorization = this.extractHeader(headers, 'Authorization');
+    const jwtToken = this.extractJwtToken(authorization);
     const allowedAuthTypes = this.getAllowedAuthTypes();
-    if (apiKey && allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.API_KEY)) {
-      if (appSyncConfig.apiKey === apiKey) {
-        return AmplifyAppSyncSimulatorAuthenticationType.API_KEY;
+    const isApiKeyAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.API_KEY);
+    const isIamAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM);
+    const isCupAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS);
+    const isOicdAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT);
+
+    if (isApiKeyAllowed) {
+      if (apiKey) {
+        if (appSyncConfig.apiKey === apiKey) {
+          return AmplifyAppSyncSimulatorAuthenticationType.API_KEY;
+        }
+
+        throw new Error('UnauthorizedException: Invalid API key');
       }
-      throw new Error('UnauthorizedException');
-    } else {
-      const authorization = headers.Authorization || headers.authorization;
-      if (!authorization) {
-        throw new Error('UnauthorizedException:Missing authorization header');
-      }
-      let jwtToken;
-      try {
-        jwtToken = jwtDecode(authorization);
-      } catch (e) {
-        throw new Error('UnauthorizedException:Invalid JWT Token');
-      }
-      if (this.isCognitoUserPoolToken(jwtToken)) {
-        return AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS;
-      } else if (this.isOidcToken(jwtToken)) {
-        return AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT;
+    }
+
+    if (authorization) {
+      if (isIamAllowed) {
+        const isSignatureV4Token = authorization.startsWith('AWS4-HMAC-SHA256');
+        if (isSignatureV4Token) {
+          return AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM;
+        }
       }
 
-      throw new Error('UnauthorizedException');
+      if (isCupAllowed) {
+        const isCupToken = jwtToken.iss.startsWith('https://cognito-idp.');
+        if (isCupToken) {
+          return AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS;
+        }
+      }
+
+      if (isOicdAllowed) {
+        const isOidcToken = this.hasValidOidcIssuer(jwtToken);
+        if (isOidcToken) {
+          return AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT;
+        }
+      }
+
+      throw new Error('UnauthorizedException: Invalid JWT token');
+    }
+
+    throw new Error('UnauthorizedException: Missing authorization');
+  }
+
+  private extractHeader(headers, name) {
+    const headerName = Object.keys(headers).find(header => header.toLowerCase() === name.toLowerCase());
+    return headerName && headers[headerName];
+  }
+
+  private extractJwtToken(authorization) {
+    try {
+      return jwtDecode(authorization);
+    } catch (_) {
+      return null;
     }
   }
 
@@ -184,38 +217,14 @@ export class OperationServer {
     return allAuthTypes.map(c => c.authenticationType).filter(c => c);
   }
 
-  private isCognitoUserPoolToken(token): boolean {
-    let cupToken: boolean = false;
-    const allowedAuthTypes = this.getAllowedAuthTypes();
-
-    if (
-      allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS) &&
-      token.iss.startsWith('https://cognito-idp.')
-    ) {
-      cupToken = true;
-    }
-
-    return cupToken;
-  }
-
-  private isOidcToken(token): boolean {
-    let oidcToken: boolean = false;
-    const allowedAuthTypes = this.getAllowedAuthTypes();
+  private hasValidOidcIssuer(token): boolean {
     const appSyncConfig = this.simulatorContext.appSyncConfig;
     const allAuthTypes = [appSyncConfig.defaultAuthenticationType, ...appSyncConfig.additionalAuthenticationProviders];
 
     const oidcIssuers = allAuthTypes
       .filter(authType => authType.authenticationType === AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT)
-      .map((auth: AmplifyAppSyncAuthenticationProviderOIDCConfig) => {
-        return auth.openIDConnectConfig.Issuer;
-      });
+      .map((auth: AmplifyAppSyncAuthenticationProviderOIDCConfig) => auth.openIDConnectConfig.Issuer);
 
-    if (allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT)) {
-      if (oidcIssuers.length && oidcIssuers.includes(token.iss)) {
-        oidcToken = true;
-      }
-    }
-
-    return oidcToken;
+    return oidcIssuers.length > 0 && oidcIssuers.includes(token.iss);
   }
 }
