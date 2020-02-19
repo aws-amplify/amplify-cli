@@ -35,6 +35,8 @@ export class APITest {
       });
       this.projectRoot = context.amplify.getEnvInfo().projectPath;
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
+      // check java version
+      await this.checkJavaversion();
       this.apiName = await this.getAppSyncAPI(context);
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
@@ -77,6 +79,22 @@ export class APITest {
 
     await this.appSyncSimulator.stop();
     this.resolverOverrideManager.stop();
+  }
+
+  async checkJavaversion() {
+    var javaSpawn = spawnSync('java', ['-version'], {
+      shell: true,
+    });
+    const minJavaVersion = '>=1.8 <= 2.0 ||  >=8.0';
+    const regex = /(\d+\.)(\d+\.)(\d)/g;
+    if (javaSpawn.stderr !== null) {
+      let data = javaSpawn.stderr.toString().split('\n')[0];
+      if (!semver.satisfies(semver.coerce(data.match(regex)[0]), minJavaVersion)) {
+        throw new Error('Update java to 1.8+');
+      }
+    } else {
+      throw new Error('Java not found');
+    }
   }
 
   private async runTransformer(context, parameters = {}) {
