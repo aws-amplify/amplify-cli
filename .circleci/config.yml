@@ -132,7 +132,6 @@ jobs:
             changeNpmGlobalPath
             amplify -v
             amplify-app --version
-            npx amplify-app --version
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             cd packages/amplify-e2e-tests
