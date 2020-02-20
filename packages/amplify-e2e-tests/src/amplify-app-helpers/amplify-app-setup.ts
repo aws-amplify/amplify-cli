@@ -1,5 +1,6 @@
 import * as nexpect from '../utils/nexpect-modified';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { isCI } from '../utils';
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
@@ -98,4 +99,15 @@ function amplifyPush(projRoot: string, verbose: Boolean = isCI() ? false : true)
   });
 }
 
-export { amplifyAppAndroid, amplifyAppIos, amplifyAppAngular, amplifyAppReact, amplifyModelgen, amplifyPush };
+function addIntegAccountInConfig(projRoot: string) {
+  // add test account to config since no default account in circle ci
+  if (isCI()) {
+    const buildConfigPath = path.join(projRoot, 'amplify-build-config.json');
+    const buildConfigFile = fs.readFileSync(buildConfigPath);
+    let buildConfig = JSON.parse(buildConfigFile.toString());
+    buildConfig.profile = 'amplify-integ-test-user';
+    fs.writeFileSync(buildConfigPath, JSON.stringify(buildConfig));
+  }
+}
+
+export { amplifyAppAndroid, amplifyAppIos, amplifyAppAngular, amplifyAppReact, amplifyModelgen, amplifyPush, addIntegAccountInConfig };
