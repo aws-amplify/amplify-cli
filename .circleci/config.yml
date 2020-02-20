@@ -123,7 +123,6 @@ jobs:
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
             npm install -g @aws-amplify/cli
-            npm install -g amplify-app
             unsetNpmRegistryUrl
       - run:
           name: Run Amplify end-to-end tests
@@ -131,7 +130,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             amplify -v
-            npx amplify-app --version
+            npx --ignore-existing amplify-app --version
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             cd packages/amplify-e2e-tests

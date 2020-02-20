@@ -23,11 +23,11 @@ describe('amplify-app platform tests', () => {
     projRoot = createNewProjectDir();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     deleteProjectDir(projRoot);
   });
 
-  jest.setTimeout(600000);
+  jest.setTimeout(1000 * 60 * 60); // 1 hour timeout as pushing might be slow
 
   it('should set up an android project', async () => {
     await amplifyAppAndroid(projRoot);
