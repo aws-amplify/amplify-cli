@@ -127,10 +127,10 @@ jobs:
       - run:
           name: Run Amplify end-to-end tests
           command: |
+            source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             amplify -v
             npx amplify-app --version
-            source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             cd packages/amplify-e2e-tests
