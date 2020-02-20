@@ -121,7 +121,6 @@ jobs:
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
-            setNpmRegistryUrlToLocal
             loginToLocalRegistry
             npm install -g @aws-amplify/cli
             unsetNpmRegistryUrl
