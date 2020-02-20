@@ -123,6 +123,7 @@ jobs:
             setNpmRegistryUrlToLocal
             changeNpmGlobalPath
             npm install -g @aws-amplify/cli
+            npm install -g amplify-app
             unsetNpmRegistryUrl
       - run:
           name: Run Amplify end-to-end tests
@@ -134,7 +135,7 @@ jobs:
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             cd packages/amplify-e2e-tests
-            yarn run e2e --maxWorkers=3
+            # yarn run e2e --maxWorkers=3
             unsetNpmRegistryUrl
           no_output_timeout: 90m
       - store_test_results:
