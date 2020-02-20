@@ -21,16 +21,18 @@ async function deleteProject(context) {
   }
 }
 
-async function getConfirmation(context) {
+async function getConfirmation(context, env) {
   if (context.input.options && context.input.options.force)
     return {
       proceed: true,
       deleteS3: true,
     };
-
+  const environmentText = env ? `'${env}' environment` : 'all the environments';
   return {
     proceed: await context.amplify.confirmPrompt.run(
-      'Are you sure you want to continue? (This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)'
+      `Are you sure you want to continue? (This would delete ${environmentText} of the project from the cloud${
+        env ? '' : ' and wipe out all the local amplify resource files'
+      })`,
     ),
     // Place holder for later selective deletes
     deleteS3: true,
