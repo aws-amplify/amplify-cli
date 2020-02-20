@@ -4,6 +4,7 @@ import { inspect } from 'util';
 import { createServer as createHTTPServer } from 'http';
 import e2p from 'event-to-promise';
 import portfinder from 'portfinder';
+import chalk from 'chalk';
 
 import { Server as CoreHTTPServer, AddressInfo } from 'net';
 import { Server as MQTTServer } from '../mqtt-server';
@@ -77,7 +78,7 @@ export class SubscriptionServer {
 
   async afterClientConnect(client) {
     const { id: clientId } = client;
-    log.info(`client connected to subscription server (${clientId})`);
+    log.info(`Client (${chalk.bold(clientId)}) connected to subscription server`);
     const timeout = this.iteratorTimeout.get(client.id);
     if (timeout) {
       clearTimeout(timeout);
@@ -86,16 +87,16 @@ export class SubscriptionServer {
 
   async afterSubscription(topic, client) {
     const { id: clientId } = client;
-    log.info(`client (${clientId}) subscribed to : ${topic}`);
+    log.info(`Client (${chalk.bold(clientId)}) subscribed to topic ${topic}`);
     const regs = this.registrations.get(clientId);
     if (!regs) {
-      log.error('No registration for clientId', clientId);
+      log.error(`No registration for client (${chalk.bold(clientId)})`);
       return;
     }
 
     const reg = regs.find(({ topicId }) => topicId === topic);
     if (!reg) {
-      log.error(`Not subscribed to subscriptionId: ${topic} for clientId`, clientId);
+      log.error(`Client (${chalk.bold(clientId)}) tried to subscribe to non-existent topic ${topic}`);
       return;
     }
 
@@ -103,7 +104,7 @@ export class SubscriptionServer {
       const asyncIterator = await this.subscribeToGraphQL(reg.documentAST, reg.variables, reg.context);
 
       if ((asyncIterator as ExecutionResult).errors) {
-        log.error('Error(s) subscribing via graphql', (asyncIterator as ExecutionResult).errors);
+        log.error('Error(s) subscribing via GraphQL', (asyncIterator as ExecutionResult).errors);
         return;
       }
 
@@ -114,16 +115,16 @@ export class SubscriptionServer {
     }
 
     const { asyncIterator, topicId, variables } = reg;
-    log.info('clientConnect', { clientId, subscriptionId: topicId, variables });
 
     while (true) {
       let { value: payload } = await asyncIterator.next();
       if (!this.shouldPublishSubscription(payload, variables)) {
-        console.info('skipping publish', { clientId, subscriptionId: topicId });
         continue;
       }
 
-      console.info('publish', inspect({ payload, subscriptionId: topicId }, { depth: null }));
+      log.info(`Publishing payload for topic ${topicId}`);
+      log.log('Payload:');
+      log.log(inspect(payload));
       this.mqttServer.publish({
         topic: topicId,
         payload: JSON.stringify(payload),
@@ -135,17 +136,16 @@ export class SubscriptionServer {
 
   afterUnsubscribe(topic, client) {
     const { id: clientId } = client;
-    console.info(`client (${clientId}) unsubscribed to : ${topic}`);
-    log.info(`client (${clientId}) unsubscribed to : ${topic}`);
+    log.info(`Client (${chalk.bold(clientId)}) unsubscribed from topic ${topic}`);
     const regs = this.registrations.get(clientId);
     if (!regs) {
-      log.warn(`Unsubscribe topic: ${topic} from client with unknown id`, clientId);
+      log.error(`No registration for client (${chalk.bold(clientId)})`);
       return;
     }
 
     const reg = regs.find(({ topicId }) => topicId === topic);
     if (!reg) {
-      log.warn(`Unsubscribe unregistered subscription ${topic} from client`, clientId);
+      log.error(`Client (${chalk.bold(clientId)}) tried to unsubscribe from non-existent topic ${topic}`);
       return;
     }
 
@@ -157,10 +157,10 @@ export class SubscriptionServer {
 
   afterDisconnect(client) {
     const { id: clientId } = client;
-    log.info('clientDisconnect', { clientId });
+    log.info(`Client (${chalk.bold(clientId)}) disconnected`);
     const reg = this.registrations.get(clientId);
     if (!reg) {
-      log.warn('Disconnecting client with unknown id', clientId);
+      log.error(`Unregistered client (${chalk.bold(clientId)}) disconnected`);
     }
   }
 
@@ -184,7 +184,7 @@ export class SubscriptionServer {
         : null;
     const topicId = [clientId, subscriptionName, paramHash].join('/');
 
-    log.info('register', { clientId, subscriptionId: topicId });
+    log.info(`Client (${chalk.bold(clientId)}) registered for topic ${topicId}`);
 
     const registration = {
       context,
@@ -217,7 +217,7 @@ export class SubscriptionServer {
       setTimeout(() => {
         (asyncIterator as AsyncIterator<ExecutionResult>).return();
         this.iteratorTimeout.delete(clientId);
-      }, CONNECTION_TIME_OUT)
+      }, CONNECTION_TIME_OUT),
     );
 
     return {
@@ -252,7 +252,7 @@ export class SubscriptionServer {
 
   private shouldPublishSubscription(payload, variables) {
     if (payload == null || (typeof payload === 'object' && payload.data == null)) {
-      log.info('subscribe payload is null skipping publish', payload);
+      log.warn('Subscription payload is null; Publishing will be skipped');
       return false;
     }
 
@@ -272,8 +272,11 @@ export class SubscriptionServer {
     const variableResult = variableEntries.every(([variableKey, variableValue]) => payloadData[variableKey] === variableValue);
 
     if (!variableResult) {
-      console.info('subscribe payload did not match variables', inspect(payload));
-      console.info('variables', inspect(variables));
+      log.warn('Subscription payload did not match variables');
+      log.warn('Payload:');
+      log.warn(inspect(payload));
+      log.warn('Variables:');
+      log.warn(inspect(variables));
       return false;
     }
 
