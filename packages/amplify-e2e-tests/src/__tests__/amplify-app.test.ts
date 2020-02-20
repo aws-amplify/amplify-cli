@@ -5,6 +5,7 @@ import {
   amplifyAppReact,
   amplifyModelgen,
   amplifyPush,
+  addIntegAccountInConfig,
 } from '../amplify-app-helpers/amplify-app-setup';
 import { createNewProjectDir, deleteProjectDir } from '../utils';
 import { deleteProject } from '../init';
@@ -60,6 +61,7 @@ describe('amplify-app platform tests', () => {
     validateProjectConfig(projRoot, 'javascript', 'react');
     validateApi(projRoot);
     validateBackendConfig(projRoot);
+    await addIntegAccountInConfig(projRoot);
     await amplifyModelgen(projRoot);
     validateModelgen(projRoot);
     await amplifyPush(projRoot);
