@@ -482,35 +482,37 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - test:
-          requires:
-            - build
-      - graphql_e2e_tests:
-          filters:
-            branches:
-              only:
-                - master
-                - graphql_e2e_testing
-          requires:
-            - build
-            - mock_e2e_tests
-      - mock_e2e_tests:
-          requires:
-            - build
-      - integration_test:
-          filters:
-            branches:
-              only:
-                - master
-                - beta
-          requires:
-            - build
-            - mock_e2e_tests
+      # - test:
+      #     requires:
+      #       - build
+      # - graphql_e2e_tests:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - graphql_e2e_testing
+      #     requires:
+      #       - build
+      #       - mock_e2e_tests
+      # - mock_e2e_tests:
+      #     requires:
+      #       - build
+      # - integration_test:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - beta
+      #     requires:
+      #       - build
+      #       - mock_e2e_tests
       - publish_to_local_registry:
           filters:
             branches:
               only:
                 - master
+                - e2e-from-verdaccio
+                - e2e2
           requires:
             - build
       - amplify_e2e_tests:
@@ -518,22 +520,24 @@ workflows:
             branches:
               only:
                 - master
+                - e2e-from-verdaccio
+                - e2e2
           requires:
             - publish_to_local_registry
-      - deploy:
-          requires:
-            - build
-            - test
-            - integration_test
-            - graphql_e2e_tests
-            - amplify_e2e_tests
-            - mock_e2e_tests
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - beta
+      # - deploy:
+      #     requires:
+      #       - build
+      #       - test
+      #       - integration_test
+      #       - graphql_e2e_tests
+      #       - amplify_e2e_tests
+      #       - mock_e2e_tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - beta
       # - integration_test_js:
       #     filters:
       #       branches:
