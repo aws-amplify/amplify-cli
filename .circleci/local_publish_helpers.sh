@@ -24,7 +24,7 @@ function unsetNpmRegistryUrl {
 }
 
 function changeNpmGlobalPath {
-  mkdir ~/.npm-global
+  mkdir -p ~/.npm-global
   npm config set prefix '~/.npm-global'
   export PATH=~/.npm-global/bin:$PATH
 }
