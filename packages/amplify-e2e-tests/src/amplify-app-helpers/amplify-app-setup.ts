@@ -3,15 +3,13 @@ import * as path from 'path';
 import { isCI } from '../utils';
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-const npx = /^win/.test(process.platform) ? 'npx.cmd' : 'npx';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
+const spawnCommand = isCI() ? 'amplify-app' : amplifyAppBinPath;
 
 function amplifyAppAndroid(projRoot: string, verbose: Boolean = isCI() ? false : true) {
-  const spawnCommand = isCI() ? npx : amplifyAppBinPath;
-  const spawnArgs = isCI() ? ['amplify-app', '--platform', 'android'] : ['--platform', 'android'];
   return new Promise((resolve, reject) => {
     nexpect
-      .spawn(spawnCommand, spawnArgs, { cwd: projRoot, stripColors: true, verbose })
+      .spawn(spawnCommand, ['--platform', 'android'], { cwd: projRoot, stripColors: true, verbose })
       .wait('Successfully created base Amplify Project')
       .wait('Amplify setup completed successfully')
       .run(function(err) {
@@ -25,11 +23,9 @@ function amplifyAppAndroid(projRoot: string, verbose: Boolean = isCI() ? false :
 }
 
 function amplifyAppIos(projRoot: string, verbose: Boolean = isCI() ? false : true) {
-  const spawnCommand = isCI() ? npx : amplifyAppBinPath;
-  const spawnArgs = isCI() ? ['amplify-app', '--platform', 'ios'] : ['--platform', 'ios'];
   return new Promise((resolve, reject) => {
     nexpect
-      .spawn(spawnCommand, spawnArgs, { cwd: projRoot, stripColors: true, verbose })
+      .spawn(spawnCommand, ['--platform', 'ios'], { cwd: projRoot, stripColors: true, verbose })
       .wait('Successfully created base Amplify Project')
       .wait('Amplify setup completed successfully')
       .run(function(err) {
@@ -43,11 +39,9 @@ function amplifyAppIos(projRoot: string, verbose: Boolean = isCI() ? false : tru
 }
 
 function amplifyAppAngular(projRoot: string, verbose: Boolean = isCI() ? false : true) {
-  const spawnCommand = isCI() ? npx : amplifyAppBinPath;
-  const spawnArgs = isCI() ? ['amplify-app'] : [];
   return new Promise((resolve, reject) => {
     nexpect
-      .spawn(spawnCommand, spawnArgs, { cwd: projRoot, stripColors: true, verbose })
+      .spawn(spawnCommand, { cwd: projRoot, stripColors: true, verbose })
       .wait('What type of app are you building')
       .sendline('\r')
       .wait('What javascript framework are you using')
@@ -63,11 +57,9 @@ function amplifyAppAngular(projRoot: string, verbose: Boolean = isCI() ? false :
 }
 
 function amplifyAppReact(projRoot: string, verbose: Boolean = isCI() ? false : true) {
-  const spawnCommand = isCI() ? npx : amplifyAppBinPath;
-  const spawnArgs = isCI() ? ['amplify-app'] : [];
   return new Promise((resolve, reject) => {
     nexpect
-      .spawn(spawnCommand, spawnArgs, { cwd: projRoot, stripColors: true, verbose })
+      .spawn(spawnCommand, { cwd: projRoot, stripColors: true, verbose })
       .wait('What type of app are you building')
       .sendline('\r')
       .wait('What javascript framework are you using')
