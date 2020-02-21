@@ -31,8 +31,7 @@ export const SELECT_ADD_FRONTEND = 'Add new frontend environment';
 export const PICKUP_FRONTEND_QUESTION = 'Pick a frontend environment to deploy to:';
 export const ADD_NEW_FRONTEND_QUESTION = 'Enter a frontend environment name (e.g. dev or prod):';
 
-export const CICD_CONFIRM_QUESTION = `Continuous deployment is configued ${chalk.red('in')} the browser.\
-Once you complete the wizard please ${chalk.red('return')} here and enter your app Arn. Continue:`;
+export const CICD_CONFIRM_QUESTION = 'Continuous deployment is configured in the Amplify Console. Please hit enter once you connect your repository';
 export const INPUT_APP_ARN_QUESTION = 'Please enter your Amplify Console App Arn (App Settings > General):';
 export const CHANGE_APP_ARN_QUESTION = 'Please enter your new Amplify Console App Arn (App Settings > General):';
 
@@ -46,3 +45,4 @@ export const STATUS_CODE_VALIDATION = 'Status code can only be number';
 export const FRONTEND_NAME_VALIDATION = 'The frontend environment already exists. Please input a new name';
 
 export const APP_CONFIGURE_QUESTION = `We recommends you open ${chalk.green('AWS Amplify Console')} to configure advanced settings such as ${chalk.yellow('rewrite/redirect, basic auth, custom domain...')} Open your Amplify Console app to configure?`;
+export const APP_SERVE_QUESTION = 'You have set up Continuous deployment with Amplify Console. Visit Amplify Console to view your frontend URL?';

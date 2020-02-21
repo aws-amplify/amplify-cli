@@ -9,7 +9,7 @@ function enable(context) {
 }
 
 async function publish(context) {
-  publshMod.publish(context);
+  await publshMod.publish(context);
 }
 
 function initEnv(context) {

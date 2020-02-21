@@ -8,6 +8,6 @@
         "publish",
         "help",
         "status",
-        "console"
+        "serve"
     ]
 }

@@ -9,8 +9,8 @@ async function askDeployType() {
       name: 'anwser',
       message: constants.DEPLOY_TYPE_QUESTION,
       choices: [
-        constants.DEPLOY_TYPE_QUESTION_MANUAL,
         constants.DEPLOY_TYPE_QUESTION_CICD,
+        constants.DEPLOY_TYPE_QUESTION_MANUAL,
         constants.LEARN_MORE,
       ],
       default: constants.DEPLOY_TYPE_QUESTION_MANUAL,
@@ -29,11 +29,15 @@ async function askDeployType() {
 }
 
 async function askCICDConfirmQuestion() {
-  return askConfirmQuestion(constants.CICD_CONFIRM_QUESTION);
+  return askInputQuestion(constants.CICD_CONFIRM_QUESTION);
 }
 
 async function askViewAppQuestion() {
   return askConfirmQuestion(constants.VIEW_APP_QUESTION);
+}
+
+async function askServeQuestion() {
+  return askConfirmQuestion(constants.APP_SERVE_QUESTION);
 }
 
 async function askConfigureAppQuestion() {
@@ -53,9 +57,22 @@ async function askConfirmQuestion(message) {
   return anwser[questionKey];
 }
 
+async function askInputQuestion(message) {
+  const questionKey = 'question';
+  const anwser = await inquirer.prompt([
+    {
+      type: 'input',
+      name: questionKey,
+      message,
+    },
+  ]);
+  return anwser[questionKey];
+}
+
 module.exports = {
   askDeployType,
   askViewAppQuestion,
   askCICDConfirmQuestion,
   askConfigureAppQuestion,
+  askServeQuestion,
 };

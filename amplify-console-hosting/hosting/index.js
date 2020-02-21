@@ -8,7 +8,6 @@ const clientFactory = require('../utils/client-factory');
 const ora = require('ora');
 const tableUtis = require('../utils/table-utils');
 
-const VALIDATING_MESSAGE = 'Validating ...';
 const HELP_INFO_PLACE_HOLDER = 'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
 const REMOVE_ERROR_MESSAGE = 'There was an error removing the auth resource';
 const HOSTING_NOT_ENABLED = 'Amplify console hosting is not enabled!';
@@ -81,7 +80,7 @@ async function remove(context) {
 
 async function console(context) {
   if (!isHostingEnabled(context)) {
-    throw new ValidationError();
+    throw new ValidationError(HOSTING_NOT_ENABLED);
   }
   const type = loadDeployType(context);
   const hostingModule = require(`./${type}/index`);
@@ -119,7 +118,7 @@ function loadDeployType(context) {
 
 async function validateHosting(context) {
   const spinner = ora();
-  spinner.start(VALIDATING_MESSAGE);
+  spinner.start();
   try {
     if (isHostingEnabled(context)) {
       spinner.stop();

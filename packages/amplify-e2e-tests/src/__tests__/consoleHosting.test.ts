@@ -1,0 +1,60 @@
+import { initJSProjectWithProfile, deleteProject } from '../init';
+import { addManualHosting, npmInstall, amplifyPublish, amplifyPush, removeHosting, loadTypeFromTeamProviderInfo, addCICDsHostingWithoutFrontend } from '../categories/consoleHosting/consoleHosting';
+import { createNewProjectDir, deleteProjectDir, createAuthProject } from '../utils';
+import { addEnvironment } from '../environment/add-env';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { TYPE_MANUAL } from '../categories/consoleHosting/constants';
+
+const envIntegrationTest = 'integtest';
+const envTest = 'test';
+
+describe('amplify console add hosting', () => {
+  let projRoot: string;
+  beforeEach(async () => {
+    projRoot = createAuthProject();
+    await initJSProjectWithProfile(projRoot, {});
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  // Manual tests
+  // it('add / publish / remove hosting for manual deployment should succeed', async () => {
+  //   try {
+  //     await addManualHosting(projRoot);
+  //     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(true);
+  //     const type = loadTypeFromTeamProviderInfo(projRoot, envIntegrationTest);
+  //     expect(type).toBe(TYPE_MANUAL);
+  //     await npmInstall(projRoot);
+  //     await amplifyPublish(projRoot);
+
+  //     await removeHosting(projRoot);
+  //     await amplifyPush(projRoot);
+  //   } catch(err) {
+  //     throw err;
+  //   }
+  // });
+
+  // it('when hosting is enabled, add new env should be able to deploy frontend successfully', async() => {
+  //   await addManualHosting(projRoot);
+  //   await addEnvironment(projRoot, null);
+  //   expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(true);
+  //   const type = loadTypeFromTeamProviderInfo(projRoot, envTest);
+  //   expect(type).toBe(TYPE_MANUAL);
+  //   await npmInstall(projRoot);
+  //   await amplifyPublish(projRoot);
+
+  //   await removeHosting(projRoot);
+  //   expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(false);
+  //   await amplifyPush(projRoot);
+  // });
+  
+  //CICD tests
+  it('when user not add frontend in amplify console, no config file will be written in CLI', async() => {
+    await addCICDsHostingWithoutFrontend(projRoot);
+    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(false);
+  });
+});

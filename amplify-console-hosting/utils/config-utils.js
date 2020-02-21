@@ -17,7 +17,7 @@ function initCFNTemplate(context, templateFilePath) {
 function initMetaFile(context, category, resourceName, type) {
   const metaData = {
     service: resourceName,
-    providerPlugin: constants.PROVIDER,
+    providerPlugin: type === constants.TYPE_CICD ? constants.CICD_PROVIDER : constants.PROVIDER,
     type,
   };
 
@@ -26,6 +26,22 @@ function initMetaFile(context, category, resourceName, type) {
     resourceName,
     metaData,
   );
+}
+
+async function initNoPushMetaFile(context, category, resourceName, type) {
+  const metaData = {
+    service: resourceName,
+    providerPlugin: type === constants.TYPE_CICD ? constants.CICD_PROVIDER : constants.PROVIDER,
+    type,
+  };
+
+  context.amplify.updateamplifyMetaAfterResourceAdd(
+    category,
+    resourceName,
+    metaData,
+  );
+
+  await context.amplify.updateamplifyMetaAfterPush([resourceName]);
 }
 
 function initTeamProviderInfo(context, category, resourceName, type) {
@@ -77,5 +93,6 @@ module.exports = {
   initMetaFile,
   initTeamProviderInfo,
   initBackendConfig,
+  initNoPushMetaFile,
 };
 
