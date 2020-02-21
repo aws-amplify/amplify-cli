@@ -23,5 +23,23 @@
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "rewire":"^4.0.1"
+  },
+  "jest": {
+    "testURL": "http://localhost",
+    "testRegex": "(.*/__tests__/.*.test.js)$",
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "html"
+    ]
   }
 }
