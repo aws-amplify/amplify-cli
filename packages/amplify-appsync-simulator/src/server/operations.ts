@@ -158,7 +158,7 @@ export class OperationServer {
     const isApiKeyAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.API_KEY);
     const isIamAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM);
     const isCupAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS);
-    const isOicdAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT);
+    const isOidcAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT);
 
     if (isApiKeyAllowed) {
       if (apiKey) {
@@ -185,7 +185,7 @@ export class OperationServer {
         }
       }
 
-      if (isOicdAllowed) {
+      if (isOidcAllowed) {
         const isOidcToken = this.hasValidOidcIssuer(jwtToken);
         if (isOidcToken) {
           return AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT;
