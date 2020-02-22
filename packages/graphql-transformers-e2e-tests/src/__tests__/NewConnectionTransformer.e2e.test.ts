@@ -35,94 +35,87 @@ function outputValueSelector(key: string) {
 }
 
 beforeAll(async () => {
-  const validSchema = `
-type Child
-	@model
-	@key(fields: ["id", "name"])
-{
-	id: ID!
-	name: String!
+  const validSchema = /* GraphQL */ `
+    type Child @model @key(fields: ["id", "name"]) {
+      id: ID!
+      name: String!
 
-	parents: [Parent] @connection(keyName: "byChild", fields: ["id"])
-}
+      parents: [Parent] @connection(keyName: "byChild", fields: ["id"])
+    }
 
-type Parent
-	@model
-	@key(name: "byChild", fields: ["childID", "childName"])
-{
-	id: ID!
-	childID: ID!
-	childName: String!
+    type Parent @model @key(name: "byChild", fields: ["childID", "childName"]) {
+      id: ID!
+      childID: ID!
+      childName: String!
 
-	child: Child @connection(fields: ["childID", "childName"])
-}
+      child: Child @connection(fields: ["childID", "childName"])
+    }
 
-type User
-	@model
-	@key(fields: ["id", "name", "surname"])
-{
-	id: ID!
-	name: String!
-    surname: String!
+    type User @model @key(fields: ["id", "name", "surname"]) {
+      id: ID!
+      name: String!
+      surname: String!
 
-    friendships: [Friendship] @connection(keyName: "byUser", fields: ["id"])
-}
+      friendships: [Friendship] @connection(keyName: "byUser", fields: ["id"])
+    }
 
-type Friendship
-    @model
-    @key(name: "byUser", fields: ["userID", "friendID"])
-{
-    id: ID!
-    userID: ID!
-    friendID: ID!
+    type Friendship @model @key(name: "byUser", fields: ["userID", "friendID"]) {
+      id: ID!
+      userID: ID!
+      friendID: ID!
 
-    friend: [User] @connection(fields: ["friendID"])
-}
+      friend: [User] @connection(fields: ["friendID"])
+    }
 
-type UserModel
-    @model
-    @key(fields: ["id", "rollNumber"])
-    @key(name: "composite", fields: ["id", "name", "surname"])
-{
-    id: ID!
-    rollNumber: Int!
-	name: String!
-    surname: String!
+    type UserModel @model @key(fields: ["id", "rollNumber"]) @key(name: "composite", fields: ["id", "name", "surname"]) {
+      id: ID!
+      rollNumber: Int!
+      name: String!
+      surname: String!
 
-    authorPosts: [PostAuthor] @connection(keyName: "byAuthor", fields: ["id"])
-}
+      authorPosts: [PostAuthor] @connection(keyName: "byAuthor", fields: ["id"])
+    }
 
+    type PostModel @model {
+      id: ID!
+      authorID: ID!
+      authorName: String!
+      authorSurname: String!
+      postContents: [String]
 
-type PostModel @model {
-	id: ID!
-	authorID: ID!
-	authorName: String!
-	authorSurname: String!
-	postContents: [String]
+      authors: [UserModel] @connection(keyName: "composite", fields: ["authorID", "authorName", "authorSurname"])
+      singleAuthor: User @connection(fields: ["authorID", "authorName", "authorSurname"])
+    }
 
-    authors: [UserModel] @connection(keyName: "composite", fields: ["authorID", "authorName", "authorSurname"])
-    singleAuthor: User @connection(fields: ["authorID", "authorName", "authorSurname"])
-}
+    type Post @model {
+      id: ID!
+      authorID: ID!
+      postContents: [String]
 
-type Post @model {
-	id: ID!
-	authorID: ID!
-	postContents: [String]
+      authors: [User] @connection(fields: ["authorID"])
+    }
 
-	authors: [User] @connection(fields: ["authorID"])
-}
+    type PostAuthor @model @key(name: "byAuthor", fields: ["authorID", "postID"]) {
+      id: ID!
+      authorID: ID!
+      postID: ID!
 
-type PostAuthor
-    @model
-    @key(name: "byAuthor", fields: ["authorID", "postID"])
-{
-    id: ID!
-    authorID: ID!
-    postID: ID!
+      post: Post @connection(fields: ["postID"])
+    }
 
-    post: Post @connection(fields: ["postID"])
-}
-`;
+    # https://github.com/aws-amplify/amplify-cli/issues/3403
+    type ParentWithConfig @model {
+      id: ID!
+      version: Int!
+      configs: [ConfigWithParent] @connection(keyName: "byParentAndVersion", fields: ["id", "version"])
+    }
+    # Int as sort key instead of string
+    type ConfigWithParent @model @key(name: "byParentAndVersion", fields: ["parentId", "parentVersion"]) {
+      id: ID!
+      parentId: ID!
+      parentVersion: Int!
+    }
+  `;
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
@@ -584,4 +577,49 @@ test('Test User.friendship.friend query (reflexive has many).', async () => {
   expect(items.length).toEqual(1);
   expect(items[0].friend.items[0].id).toEqual('12');
   expect(items[0].friend.items[0].name).toEqual('Bobby');
+});
+
+test('Test @key directive to support Int as sort key', async () => {
+  // https://github.com/aws-amplify/amplify-cli/issues/3403
+  const mutationData = {
+    parentId: 'parent',
+    configId: 'config22',
+    version: 3,
+  };
+  const result = await GRAPHQL_CLIENT.query(
+    /* GraphQL */ `
+      mutation create($parentId: ID!, $configId: ID!, $version: Int!) {
+        createConfigWithParent(input: { id: $configId, parentVersion: $version, parentId: $parentId }) {
+          parentId
+          parentVersion
+          id
+        }
+
+        createParentWithConfig(input: { id: $parentId, version: $version }) {
+          id
+          version
+          configs {
+            items {
+              id
+            }
+          }
+        }
+      }
+    `,
+    mutationData,
+  );
+  debugger;
+  expect(result).toBeDefined();
+  expect(result.data).toBeDefined();
+  expect(result.data.createConfigWithParent).toBeDefined();
+
+  expect(result.data.createConfigWithParent.parentId).toEqual(mutationData.parentId);
+  expect(result.data.createConfigWithParent.parentVersion).toEqual(mutationData.version);
+  expect(result.data.createConfigWithParent.id).toEqual(mutationData.configId);
+
+  expect(result.data.createParentWithConfig).toBeDefined();
+  expect(result.data.createParentWithConfig.id).toEqual(mutationData.parentId);
+  expect(result.data.createParentWithConfig.version).toEqual(mutationData.version);
+  expect(result.data.createParentWithConfig.configs.items).toHaveLength(1);
+  expect(result.data.createParentWithConfig.configs.items[0].id).toEqual(mutationData.configId);
 });

@@ -376,10 +376,10 @@ export class ResourceFactory {
    */
   public makeExpression(keySchema: KeySchema[], connectionAttributes: string[]): ObjectNode {
     if (keySchema[1] && connectionAttributes[1]) {
-      let condensedSortKeyValue: string = undefined;
+      let condensedSortKeyValue: string = `$context.source.${connectionAttributes[1]}`;
       if (connectionAttributes.length > 2) {
         const rangeKeyFields = connectionAttributes.slice(1);
-        condensedSortKeyValue = this.condenseRangeKey(rangeKeyFields.map(keyField => `\${context.source.${keyField}}`));
+        condensedSortKeyValue = `"${this.condenseRangeKey(rangeKeyFields.map(keyField => `\${context.source.${keyField}}`))}"`;
       }
 
       return obj({
@@ -389,12 +389,8 @@ export class ResourceFactory {
           '#sortKey': str(String(keySchema[1].AttributeName)),
         }),
         expressionValues: obj({
-          ':partitionKey': obj({
-            S: str(`$context.source.${connectionAttributes[0]}`),
-          }),
-          ':sortKey': obj({
-            S: str(condensedSortKeyValue || `$context.source.${connectionAttributes[1]}`),
-          }),
+          ':partitionKey': ref(`util.dynamodb.toDynamoDB($context.source.${connectionAttributes[0]})`),
+          ':sortKey': ref(`util.dynamodb.toDynamoDB(${condensedSortKeyValue})`),
         }),
       });
     }
