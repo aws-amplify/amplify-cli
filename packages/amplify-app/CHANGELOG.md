@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.13.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.3...amplify-app@2.13.4) (2020-02-19)
+
+
+### Bug Fixes
+
+* add graphql dependency ([#3466](https://github.com/aws-amplify/amplify-cli/issues/3466)) ([8620105](https://github.com/aws-amplify/amplify-cli/commit/86201059ddde68239b48d7a3430378ca496bcf15)), closes [#3465](https://github.com/aws-amplify/amplify-cli/issues/3465)
+
+
+
+
+
 ## [2.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.2...amplify-app@2.13.3) (2020-02-13)
 
 

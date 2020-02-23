@@ -146,7 +146,7 @@ test('ModelConnectionTransformer should fail if the query is not run on the defa
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError(
-    'Connection is to a single object but the keyName notDefault was provided which does not reference the default table.'
+    'Connection is to a single object but the keyName notDefault was provided which does not reference the default table.',
   );
 });
 
@@ -217,6 +217,58 @@ test('ModelConnectionTransformer should fail if sort key type passed in does not
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
+});
+
+test('ModelConnectionTransformer should fail if partial sort key is passed in connection.', () => {
+  const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        testObj: [Test1] @connection(keyName: "testIndex", fields: ["id", "email"])
+    }
+
+    type Test1
+        @model
+        @key(name: "testIndex", fields: ["id", "friendID", "name"])
+    {
+        id: ID!
+        friendID: ID!
+        name: String!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+  });
+
+  expect(() => transformer.transform(validSchema)).toThrowError(
+    'Invalid @connection directive  testObj. fields does not accept partial sort key',
+  );
+});
+
+test('ModelConnectionTransformer should accept connection without sort key', () => {
+  const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        testObj: [Test1] @connection(keyName: "testIndex", fields: ["id"])
+    }
+
+    type Test1
+        @model
+        @key(name: "testIndex", fields: ["id", "friendID", "name"])
+    {
+        id: ID!
+        friendID: ID!
+        name: String!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+  });
+
+  expect(() => transformer.transform(validSchema)).not.toThrowError();
 });
 
 test('ModelConnectionTransformer should fail if sort key type passed in does not match custom index sort key type.', () => {

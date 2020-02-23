@@ -27,6 +27,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: .
+
   test:
     <<: *defaults
     steps:
@@ -34,6 +35,9 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
       - run:
           name: Install Java
           command: sudo apt-get install default-jdk
@@ -47,6 +51,28 @@ jobs:
           name: Collect code coverage
           command: yarn coverage
 
+  mock_e2e_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Install Java
+          command: sudo apt-get install default-jdk
+      - run:
+          name: Run Transformer end-to-end tests with mock server
+          command: cd packages/amplify-util-mock/ && yarn e2e
+          no_output_timeout: 90m
+          environment:
+            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+      - store_test_results:
+          path: packages/amplify-util-mock/
+
   publish_to_local_registry:
     <<: *defaults
     steps:
@@ -55,11 +81,14 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
-          name: 'Publish to verdaccio'
+          name: Publish to verdaccio
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            loginToLocalRegistry
             yarn publish-to-verdaccio
+            unsetNpmRegistryUrl
       - save_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -79,25 +108,6 @@ jobs:
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
 
-  mock_e2e_tests:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Java
-          command: sudo apt-get install default-jdk
-      - run:
-          name: Run Transformer end-to-end tests with mock server
-          command: cd packages/amplify-util-mock/ && yarn e2e
-          no_output_timeout: 90m
-          environment:
-            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
-      - store_test_results:
-          path: packages/amplify-util-mock/
-
   amplify_e2e_tests:
     <<: *defaults
     steps:
@@ -110,15 +120,23 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
             changeNpmGlobalPath
             npm install -g @aws-amplify/cli
+            npm install -g amplify-app
+            unsetNpmRegistryUrl
       - run:
+          name: Run Amplify end-to-end tests
           command: |
-            export PATH=~/.npm-global/bin:$PATH
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
             amplify -v
+            amplify-app --version
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
             cd packages/amplify-e2e-tests
             yarn run e2e --maxWorkers=3
-          name: 'Run Amplify end-to-end tests'
+            unsetNpmRegistryUrl
           no_output_timeout: 90m
       - store_test_results:
           path: packages/amplify-e2e-tests/
@@ -147,7 +165,7 @@ jobs:
       - run: yarn setup-dev
       - run: amplify-dev
       - run:
-          name: 'Clone auth test package'
+          name: Clone auth test package
           command: |
             cd ..
             git clone $AUTH_CLONE_URL
@@ -162,7 +180,7 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: cd ../aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*')
       - run:
-          name: 'Start Auth test server in background'
+          name: Start Auth test server in background
           command: |
             cd ../aws-amplify-cypress-auth
             pwd
@@ -170,7 +188,7 @@ jobs:
           background: true
       - run: cat $(find ../repo -type f -name 'auth_spec*')
       - run:
-          name: 'Run cypress tests for auth'
+          name: Run cypress tests for auth
           command: |
             cd ../aws-amplify-cypress-auth
             yarn add cypress --save
@@ -181,7 +199,7 @@ jobs:
       - run: cd .circleci/ && chmod +x delete_auth.sh
       - run: expect .circleci/delete_auth.exp
       - run:
-          name: 'Clone API test package'
+          name: Clone API test package
           command: |
             cd ..
             git clone $API_CLONE_URL
@@ -194,14 +212,14 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: cd ../aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')
       - run:
-          name: 'Start API test server in background'
+          name: Start API test server in background
           command: |
             cd ../aws-amplify-cypress-api
             pwd
             yarn start
           background: true
       - run:
-          name: 'Run cypress tests for api'
+          name: Run cypress tests for api
           command: |
             cd ../aws-amplify-cypress-auth
             yarn add cypress --save
@@ -218,6 +236,7 @@ jobs:
           path: ../aws-amplify-cypress-api/cypress/videos
       - store_artifacts:
           path: ../aws-amplify-cypress-api/cypress/screenshots
+
   deploy:
     <<: *defaults
     steps:
@@ -231,7 +250,7 @@ jobs:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
-          name: 'Publish Amplify CLI'
+          name: Publish Amplify CLI
           command: |
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
               git config --global user.email $GITHUB_EMAIL
@@ -240,6 +259,7 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+
   integration_test_js:
     working_directory: ~/repo
     docker:
@@ -251,31 +271,31 @@ jobs:
           at: ./
       - checkout
       - run:
+          name: Install AWS CLI dependencies
           command: |
             apt-get install -y sudo
             sudo apt-get install -y lsof
             sudo apt-get install -y python
             sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
-          name: 'Install AWS CLI dependencies'
       - run:
+          name: Install Cypress Binary
           command: |
             cd ..
             mkdir videos
             mkdir screenshots
             npm install cypress
-          name: 'Install Cypress Binary'
       - run:
-          name: 'Install AWS CLI'
+          name: Install AWS CLI
           command: pip install awscli
       - run:
-          name: 'Configure AWS CLI'
+          name: Configure AWS CLI
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
             aws configure set region $CLI_REGION --profile default
       - run:
+          name: Run ui tests in JS SDK
           command: 'cd packages/amplify-ui-tests && npm run ui'
-          name: 'Run ui tests in JS SDK'
           no_output_timeout: 45m
       - store_artifacts:
           path: /root/videos
@@ -283,6 +303,7 @@ jobs:
           path: /root/screenshots
       - store_test_results:
           path: packages/amplify-ui-tests/
+
   integration_test_ios:
     macos:
       xcode: '11.0.0'
@@ -290,48 +311,48 @@ jobs:
       - attach_workspace:
           at: ./
       - run:
-          name: 'Set up environment variables'
+          name: Set up environment variables
           command: |
             cd ..
             circleci_root_directory=$(pwd)
             echo "export circleci_root_directory=$circleci_root_directory" >> $BASH_ENV
       - run:
-          name: 'Checkout sample apps repository'
+          name: Checkout sample apps repository
           command: |
             cd ..
             git clone https://github.com/awslabs/aws-sdk-ios-samples.git -b e2e-testing
       - run:
-          name: 'Install AWS CLI'
+          name: Install AWS CLI
           command: pip install awscli
       - run:
-          name: 'Configure AWS CLI'
+          name: Configure AWS CLI
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
             aws configure set region $CLI_REGION --profile default
       - run:
-          name: 'Set-Up configuration for UITests'
+          name: Set-Up configuration for UITests
           command: |
             cd ../aws-sdk-ios-samples/CircleciScripts
             python3 setup_uitest_config.py -s master -l uitest_logs
       - run:
-          name: 'Set-Up Mobile SDK Dependencies'
+          name: Set-Up Mobile SDK Dependencies
           command: |
             cd ../aws-sdk-ios-samples/CircleciScripts
             python3 run_setup_mobile_sdk_dependencies.py -n PhotoAlbum -a ${circleci_root_directory}/aws-sdk-ios-samples
       - run:
-          name: 'Configure AWS Resources'
+          name: Configure AWS Resources
           command: |
             cd packages/amplify-ui-tests
             cp ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum/simple_model.graphql ./schemas/simple_model.graphql
             npm run config ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum ios auth storage api
       - run:
-          name: 'Build and UITest'
+          name: Build and UITest
           command: |
             cd ../aws-sdk-ios-samples/CircleciScripts
             python3 run_build_and_uitest.py -n PhotoAlbum -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}
       - run:
-          name: 'Clean-Up UITest'
+          name: Clean-Up UITest
           command: |
             cd packages/amplify-ui-tests
             npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum
@@ -340,6 +361,7 @@ jobs:
           path: ../uitest_logs
       - store_test_results:
           path: ../uitest_logs
+
   integration_test_android:
     docker:
       - image: circleci/android:api-27-node
@@ -362,7 +384,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install maven
       - run:
-          name: 'Checkout PhotoAlbum Sample App Repo'
+          name: Checkout PhotoAlbum Sample App Repo
           command: |
             cd ..
             git clone https://github.com/awslabs/aws-sdk-android-samples.git -b e2e-tests-sample-app sample_app_repo
@@ -389,10 +411,10 @@ jobs:
           command: |
             sudo apt-get -y install python3-pip
       - run:
-          name: 'Install AWS CLI'
+          name: Install AWS CLI
           command: sudo pip3 install awscli
       - run:
-          name: 'Configure AWS CLI'
+          name: Configure AWS CLI
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
@@ -410,13 +432,13 @@ jobs:
             bash gradlew app:dependencies
             sudo npm install -g apollo-codegen@0.19.1
       - run:
-          name: 'Configure AWS Resources'
+          name: Configure AWS Resources
           command: |
             cd packages/amplify-ui-tests
             cp ${circleci_root_directory}/sample_app_repo/PhotoAlbumSample/simple_model.graphql schemas/simple_model.graphql
             npm run config ${app_root} android auth storage api
       - run:
-          name: 'Set-Up Mobile SDK Dependencies'
+          name: Set-Up Mobile SDK Dependencies
           command: |
             cd ${circleci_root_directory}/sample_app_repo/CircleciScripts
             python3 run_setup_mobile_sdk_dependencies.py -n PhotoAlbumSample -a ${circleci_root_directory}/sample_app_repo
@@ -442,18 +464,19 @@ jobs:
             circle-android wait-for-boot
             python3 ${circleci_root_directory}/sample_app_repo/CircleciScripts/unlock_emulatorscreen.py
       - run:
-          name: 'Build and UITest'
+          name: Build and UITest
           command: |
             cd ${circleci_root_directory}/sample_app_repo/CircleciScripts
             python3 run_build_and_uitest.py -n PhotoAlbumSample -a ${circleci_root_directory}/sample_app_repo -c ${circleci_root_directory}
       - run:
-          name: 'Clean-Up UITest'
+          name: Clean-Up UITest
           command: |
             cd packages/amplify-ui-tests
             npm run delete ${app_root}
           when: always
       - store_artifacts:
           path: ../uitest_android_results
+
 workflows:
   version: 2
   build_test_deploy:
@@ -488,7 +511,6 @@ workflows:
             branches:
               only:
                 - master
-                - e2e-from-verdaccio
           requires:
             - build
       - amplify_e2e_tests:
@@ -496,7 +518,6 @@ workflows:
             branches:
               only:
                 - master
-                - e2e-from-verdaccio
           requires:
             - publish_to_local_registry
       - deploy:
