@@ -1,4 +1,14 @@
-import { config, DynamoDB, S3, CognitoIdentityServiceProvider, Lambda, LexModelBuildingService, Rekognition, AppSync } from 'aws-sdk';
+import {
+  config,
+  DynamoDB,
+  S3,
+  CognitoIdentityServiceProvider,
+  Lambda,
+  LexModelBuildingService,
+  Rekognition,
+  AppSync,
+  CloudWatchLogs,
+} from 'aws-sdk';
 
 const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
@@ -84,6 +94,23 @@ const getAppSyncApi = async (appSyncApiId: string, region: string) => {
   return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
 };
 
+const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
+  const cloudwatchlogs = new CloudWatchLogs({ region });
+
+  let targetStreamName = logStreamName;
+  if (targetStreamName === undefined) {
+    const describeStreamsResp = await cloudwatchlogs.describeLogStreams({ logGroupName, descending: true }).promise();
+    if (describeStreamsResp.logStreams === undefined || describeStreamsResp.logStreams.length == 0) {
+      return [];
+    }
+
+    targetStreamName = describeStreamsResp.logStreams[0].logStreamName;
+  }
+
+  const logsResp = await cloudwatchlogs.getLogEvents({ logGroupName, logStreamName: targetStreamName }).promise();
+  return logsResp.events || [];
+};
+
 export {
   getDDBTable,
   checkIfBucketExists,
@@ -96,4 +123,5 @@ export {
   deleteTable,
   getAppSyncApi,
   getCollection,
+  getCloudWatchLogs,
 };

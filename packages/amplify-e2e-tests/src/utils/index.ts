@@ -34,3 +34,7 @@ export function isCI(): Boolean {
 export function getEnvVars(): { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string } {
   return { ...process.env } as { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string };
 }
+
+export function sleep(millis) {
+  return new Promise(resolve => setTimeout(resolve, millis));
+}
