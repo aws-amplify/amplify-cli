@@ -50,10 +50,10 @@ function addLambdaTrigger(chain: nexpect.IChain, cwd: string, settings: any, ver
     chain
       .wait('What event source do you want to associate with Lambda trigger')
       // Amazon DynamoDB Stream
-      .sendline('\r')
-      .wait('Choose a DynamoDB event source option')
-      // Use API category graphql @model backed DynamoDB table(s) in the current Amplify project
-      .sendline('\r')
+      .sendline(settings.triggerType == 'Kinesis' ? '\x1b[B\r' : '\r')
+      .wait(`Choose a ${settings.triggerType} event source option`)
+    // Use API category graphql @model backed DynamoDB table(s) in the current Amplify project
+    //.sendline('\r')
   );
   // NOTE: uncomment when selecting from multiple models
   // .wait('Please choose graphql @models')

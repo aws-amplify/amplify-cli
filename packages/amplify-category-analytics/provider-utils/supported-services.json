@@ -35,8 +35,8 @@
         "question": "Enter a Stream name",
         "validation": {
           "operator": "regex",
-          "value": "^[a-zA-Z0-9._-]+$",
-          "onErrorMsg": "Name is invalid. Has to be non-empty, using following characters: a-z A-Z 0-9 . - _"
+          "value": "^[a-zA-Z0-9]+$",
+          "onErrorMsg": "Name is invalid. Has to be non-empty and alphanumeric"
         },
         "required": true
       },

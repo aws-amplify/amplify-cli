@@ -8,6 +8,7 @@ import {
   Rekognition,
   AppSync,
   CloudWatchLogs,
+  Kinesis,
 } from 'aws-sdk';
 
 const getDDBTable = async (tableName: string, region: string) => {
@@ -111,6 +112,22 @@ const getCloudWatchLogs = async (region: string, logGroupName: string, logStream
   return logsResp.events || [];
 };
 
+const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
+  const kinesis = new Kinesis({ region });
+
+  return await kinesis
+    .putRecords({
+      Records: [
+        {
+          Data: data,
+          PartitionKey: partitionKey,
+        },
+      ],
+      StreamName: streamName,
+    })
+    .promise();
+};
+
 export {
   getDDBTable,
   checkIfBucketExists,
@@ -124,4 +141,5 @@ export {
   getAppSyncApi,
   getCollection,
   getCloudWatchLogs,
+  putKinesisRecords,
 };

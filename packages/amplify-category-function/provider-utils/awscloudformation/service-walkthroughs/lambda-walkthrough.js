@@ -683,7 +683,7 @@ async function askEventSourceQuestions(context, inputs) {
                 batchSize: 100,
                 startingPosition: 'LATEST',
                 eventSourceArn,
-                functionTemplateName: 'trigger-custom.js',
+                functionTemplateName: 'trigger-kinesis.js',
                 triggerPolicies: [
                   {
                     Effect: 'Allow',
@@ -831,7 +831,7 @@ async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
         batchSize: 100,
         startingPosition: 'LATEST',
         eventSourceArn: streamArnParamRef,
-        functionTemplateName: 'trigger-custom.js',
+        functionTemplateName: 'trigger-kinesis.js',
         triggerPolicies: [
           {
             Effect: 'Allow',
