@@ -424,8 +424,6 @@ async function updateWalkthrough(context) {
 
   let { updateOption } = await inquirer.prompt([updateOptionQuestion]);
 
-  console.log(updateOption);
-
   if (updateOption === 'enableDatastore') {
     resolverConfig = {
       project: { ConflictHandler: 'AUTOMERGE', ConflictDetection: 'VERSION' },
@@ -586,8 +584,6 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
       }
     }
   }
-
-  console.log(resolverConfig);
 
   return resolverConfig;
 }
