@@ -1,13 +1,19 @@
 import { GraphQLResolveInfo, SelectionNode } from 'graphql';
 import { print } from 'graphql/language/printer';
 
-const getSelectionSet = (nodes: readonly SelectionNode[], prefix: string = null) => {
+const getSelectionSet = (nodes: readonly SelectionNode[], info, prefix: string = null) => {
   return nodes.reduce((selectionSetList: string[], node) => {
     if (node.kind == 'Field') {
-      const name = prefix ? `${prefix}/${node.name.value}` : node.name.value;
+      const aliasOrNameField = node.alias || node.name;
+      const name = prefix ? `${prefix}/${aliasOrNameField.value}` : aliasOrNameField.value;
       selectionSetList.push(name);
       if (node.selectionSet) {
-        selectionSetList.push(...getSelectionSet(node.selectionSet.selections, name));
+        selectionSetList.push(...getSelectionSet(node.selectionSet.selections, info, name));
+      }
+    } else if (node.kind === 'InlineFragment' || node.kind === 'FragmentSpread') {
+      const fragment = node.kind === 'FragmentSpread' ? info.fragments[node.name.value] : node;
+      if (fragment && fragment.selectionSet) {
+        selectionSetList.push(...getSelectionSet(fragment.selectionSet.selections, info, prefix));
       }
     }
 
@@ -23,7 +29,7 @@ export function createInfo(info: GraphQLResolveInfo) {
   if (fieldNode && fieldNode.selectionSet) {
     const query = print(fieldNode);
     selectionSetGraphQL = query.substr(query.indexOf('{'));
-    selectionSetList = getSelectionSet(fieldNode.selectionSet.selections);
+    selectionSetList = getSelectionSet(fieldNode.selectionSet.selections, info);
   }
 
   return {
