@@ -23,7 +23,8 @@ function status(context) {
   hosting.status(context);
 }
 
-function publish(context, doSkipBuild) {
+function publish(context, service, args) {
+  const { doSkipBuild } = args || {};
   hosting.publish(context, doSkipBuild);
 }
 
