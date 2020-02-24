@@ -9,7 +9,7 @@ async function generateTableContentForApp(context, appId) {
   let nextToken = null;
   const spinner = ora();
   try {
-    spinner.start('Check default domains');
+    spinner.start('Checking default domains');
     do {
       const { branches } = await amplifyClient.listBranches({
         appId,
@@ -22,8 +22,8 @@ async function generateTableContentForApp(context, appId) {
         domainMap[branchName].push(`https://${branchName}.${appId}.amplifyapp.com`);
       }
     } while (nextToken != null);
-    spinner.stop();
-    spinner.start('Check custom domains');
+    spinner.succeed('Checking default domains completed');
+    spinner.start('Checking custom domains');
 
     nextToken = null;
     do {
@@ -43,7 +43,7 @@ async function generateTableContentForApp(context, appId) {
         }
       }
     } while (nextToken != null);
-    spinner.stop();
+    spinner.succeed(('Checking custom domains completed'));
     // Init table
     const table = new Table({
       head: ['FrontEnd Env', 'Domain'],
@@ -61,7 +61,7 @@ async function generateTableContentForApp(context, appId) {
         }
       }
     }
-
+    console.log('Amplify hosting urls: ');
     console.log(table.toString());
   } catch (err) {
     spinner.fail(err.message);
