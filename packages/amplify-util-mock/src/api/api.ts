@@ -15,6 +15,8 @@ import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
 
+const MIN_JAVA_VERSION = '>=1.8 <= 2.0 ||  >=8.0';
+
 export class APITest {
   private apiName: string;
   private transformerResult: any;
@@ -85,11 +87,10 @@ export class APITest {
     var javaSpawn = spawnSync('java', ['-version'], {
       shell: true,
     });
-    const minJavaVersion = '>=1.8 <= 2.0 ||  >=8.0';
     const regex = /(\d+\.)(\d+\.)(\d)/g;
     if (javaSpawn.stderr !== null) {
       let data = javaSpawn.stderr.toString().split('\n')[0];
-      if (!semver.satisfies(semver.coerce(data.match(regex)[0]), minJavaVersion)) {
+      if (!semver.satisfies(semver.coerce(data.match(regex)[0]), MIN_JAVA_VERSION)) {
         throw new Error('Update java to 1.8+');
       }
     } else {
