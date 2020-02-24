@@ -9,5 +9,7 @@
         "help",
         "status",
         "serve"
-    ]
+    ],
+    "displayName": "amplifyhosting",
+    "services": ["amplifyhosting"]
 }

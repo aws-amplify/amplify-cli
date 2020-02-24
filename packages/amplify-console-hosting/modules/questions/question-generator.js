@@ -36,8 +36,11 @@ async function askViewAppQuestion() {
   return askConfirmQuestion(constants.VIEW_APP_QUESTION);
 }
 
-async function askServeQuestion() {
-  return askConfirmQuestion(constants.APP_SERVE_QUESTION);
+async function askServeQuestion(type) {
+  if (type === constants.TYPE_CICD) {
+    return askConfirmQuestion(constants.APP_CICD_SERVE_QUESTION);
+  }
+  return askConfirmQuestion(constants.APP_MANUAL_SERVE_QUESTION);
 }
 
 async function askConfigureAppQuestion() {

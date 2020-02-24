@@ -19,8 +19,13 @@ function initEnv(context) {
   hosting.initEnv(context);
 }
 
+function status(context) {
+  hosting.status(context);
+}
+
 module.exports = {
   executeAmplifyCommand,
   handleAmplifyEvent,
   initEnv,
+  status,
 };
