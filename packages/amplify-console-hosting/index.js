@@ -23,9 +23,14 @@ function status(context) {
   hosting.status(context);
 }
 
+function publish(context, doSkipBuild) {
+  hosting.publish(context, doSkipBuild);
+}
+
 module.exports = {
   executeAmplifyCommand,
   handleAmplifyEvent,
   initEnv,
   status,
+  publish,
 };
