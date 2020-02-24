@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
-import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
 import { ResourceFactory } from './resources';
 import {
@@ -174,12 +174,10 @@ export class SearchableModelTransformer extends Transformer {
   private generateSearchableInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
     // Create the Scalar filter inputs
     const inputs: string[] = ['String', 'ID', 'Int', 'Float', 'Boolean', 'Date'];
-    inputs.forEach((input: string) => {
-      if (!this.typeExist(`Searchable${input}FilterInput`, ctx)) {
-        const searchableInputFilterInput = makeSearchableScalarInputObject(input);
-        ctx.addInput(searchableInputFilterInput);
-      }
-    });
+    inputs
+      .filter((input: string) => !this.typeExist(`Searchable${input}FilterInput`, ctx))
+      .map((input: string) => makeSearchableScalarInputObject(input))
+      .forEach((node: InputObjectTypeDefinitionNode) => ctx.addInput(node));
 
     const searchableXQueryFilterInput = makeSearchableXFilterInputObject(def);
     if (!this.typeExist(searchableXQueryFilterInput.name.value, ctx)) {

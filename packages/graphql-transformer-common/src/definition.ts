@@ -22,6 +22,7 @@ import {
 type ScalarMap = {
   [k: string]: 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'Date';
 };
+
 export const STANDARD_SCALARS: ScalarMap = {
   String: 'String',
   Int: 'Int',
@@ -61,7 +62,7 @@ export const DEFAULT_SCALARS: ScalarMap = {
   ...APPSYNC_DEFINED_SCALARS,
 };
 
-export const NUMERIC_SCALARS: { [k: string]: boolean } = {
+export const NUMERIC_SCALARS: Record<string, boolean> = {
   BigInt: true,
   Int: true,
   Float: true,
@@ -69,7 +70,7 @@ export const NUMERIC_SCALARS: { [k: string]: boolean } = {
   AWSTimestamp: true,
 };
 
-export const MAP_SCALARS: { [k: string]: boolean } = {
+export const MAP_SCALARS: Record<string, boolean> = {
   AWSJSON: true,
 };
 
