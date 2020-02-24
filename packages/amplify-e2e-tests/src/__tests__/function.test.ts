@@ -112,4 +112,25 @@ describe('amplify add function', () => {
     // dynamoDB event(NewImage) log record found
     expect(kinesisEntry).toBeDefined();
   });
+
+  it('should fail with approp message when adding lambda triggers to unexisting resources', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+
+    // No AppSync resources have been configured in API category.
+    await addFunction(projRoot, {
+      functionTemplate: 'lambdaTrigger',
+      triggerType: 'DynamoDB',
+      eventSource: 'AppSync',
+      expectFailure: true,
+    });
+    // There are no DynamoDB resources configured in your project currently
+    await addFunction(projRoot, {
+      functionTemplate: 'lambdaTrigger',
+      triggerType: 'DynamoDB',
+      eventSource: 'DynamoDB',
+      expectFailure: true,
+    });
+    // No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream
+    await addFunction(projRoot, { functionTemplate: 'lambdaTrigger', triggerType: 'Kinesis', expectFailure: true });
+  });
 });

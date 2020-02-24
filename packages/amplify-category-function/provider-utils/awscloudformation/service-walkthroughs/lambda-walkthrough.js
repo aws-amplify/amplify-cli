@@ -753,6 +753,12 @@ async function askEventSourceQuestions(context, inputs) {
         case 'graphqlModelTable':
           return await askAPICategoryDynamoDBQuestions(context, inputs);
         case 'storageDynamoDBTable':
+          const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;
+          if (!storageResources) {
+            context.print.error('There are no DynamoDB resources configured in your project currently');
+            process.exit(0);
+          }
+
           dynamoDBCategoryStorageRes = await askDynamoDBQuestions(context, inputs, true);
           dynamoDBCategoryStorageStreamArnRef = {
             Ref: `storage${dynamoDBCategoryStorageRes.resourceName}StreamArn`,
@@ -968,6 +974,7 @@ async function askDynamoDBQuestions(context, inputs, currentProjectOnly = false)
     choices: inputs[5].options,
   };
   // eslint-disable-next-line
+
   while (true) {
     //eslint-disable-line
     const dynamoDbTypeAnswer = currentProjectOnly ? { [inputs[5].key]: 'currentProject' } : await inquirer.prompt([dynamoDbTypeQuestion]);

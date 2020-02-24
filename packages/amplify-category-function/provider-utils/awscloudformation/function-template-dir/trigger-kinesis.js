@@ -1,7 +1,7 @@
 exports.handler = (event, context, callback) => {
   // insert code to be executed by your lambda trigger
   console.log(JSON.stringify(event, null, 2));
-  const res = '';
+  let res = '';
   if ('Records' in event) {
     event.Records.forEach(record => {
       console.log(record.eventID);
