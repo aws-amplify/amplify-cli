@@ -19,6 +19,7 @@ export function getCLIPath() {
 }
 
 export function createNewProjectDir(root?: string): string {
+  console.log('in');
   if (!root) {
     root = path.join(__dirname, '../../../..', `amplify-integ-${Math.round(Math.random() * 100)}-test-${Math.round(Math.random() * 1000)}`);
   }
@@ -36,4 +37,13 @@ export function isCI(): Boolean {
 
 export function getEnvVars(): { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string } {
   return { ...process.env } as { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string };
+}
+
+export function createAuthProject(root?: string): string {
+  if (!root) {
+    root = path.join(__dirname, '../../../..', `amplify-integ-${Math.round(Math.random() * 100)}-test-${Math.round(Math.random() * 1000)}`);
+  }
+  fs.mkdirSync(root);
+  fs.copySync(path.join(__dirname, '../../projects-templates/create-react-app-auth-amplify'), root);
+  return root;
 }

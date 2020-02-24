@@ -18,6 +18,8 @@ interface IChain {
   expect(expectation: RegExp): IChain;
   wait(expectation: string): IChain;
   wait(expectation: RegExp): IChain;
+  wait(expectation: string, callback: (data: any) => Promise<void>);
+  wait(expectation: RegExp, callback: (data: any) => Promise<void>);
   send(line: string): IChain;
   sendline(line: string): IChain;
   sendEof(): IChain;

@@ -1,5 +1,6 @@
 import configure from './configure';
 import { isCI } from './utils';
+// import { Amplify } from 'aws-sdk';
 
 async function setupAmplify() {
   if (isCI()) {
@@ -17,6 +18,23 @@ async function setupAmplify() {
     console.log('AWS Profile is already configured');
   }
 }
+
+// async function setupAmplifyConsoleClient() {
+//   if (isCI()) {
+//     const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+//     const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+//     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+//       throw new Error('Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env');
+//     }
+//     return new Amplify({
+//       accessKeyId: AWS_ACCESS_KEY_ID,
+//       secretAccessKey: AWS_SECRET_ACCESS_KEY,
+//       region: "us-west-2"
+//     });
+//   } else {
+//     console.log('AWS Profile is already configured');
+//   }
+// }
 
 process.nextTick(async () => {
   try {
