@@ -1976,7 +1976,7 @@ All @auth directives used on field definitions are performed when the field is r
     // @auth(rules: [{allow: owner},{allow: public, operations: [read]}])
     //
     // Then we need to add @aws_api_key on the create mutation together with the
-    // @aws_cognito_useR_pools, but we cannot add @was_api_key to other operations
+    // @aws_cognito_user_pools, but we cannot add @aws_api_key to other operations
     // since that is not allowed by the rule.
     //
 

@@ -664,6 +664,67 @@ test('Test enum filters List', async () => {
   }
 });
 
+test('Test next token', async () => {
+  const createResponse = await GRAPHQL_CLIENT.query(
+    `mutation {
+            first: createPost(input: { title: "Test create for next token one" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+            second:  createPost(input: { title: "Test create for next token two" }) {
+              id
+              title
+              createdAt
+              updatedAt
+          }
+        }`,
+    {},
+  );
+  expect(createResponse.data.first.id).toBeDefined();
+  expect(createResponse.data.first.title).toEqual('Test create for next token one');
+
+  expect(createResponse.data.second.id).toBeDefined();
+  expect(createResponse.data.second.title).toEqual('Test create for next token two');
+
+  const listResponse = await GRAPHQL_CLIENT.query(
+    /* GraphQL */ `
+      query {
+        listPosts(limit: 1) {
+          items {
+            id
+            title
+          }
+          nextToken
+        }
+      }
+    `,
+    {},
+  );
+  expect(listResponse.data.listPosts.items).toBeDefined();
+  const items = listResponse.data.listPosts.items;
+  expect(items.length).toEqual(1);
+  expect(listResponse.data.listPosts.nextToken).toBeDefined();
+  expect(listResponse.data.listPosts.nextToken).not.toBeNull();
+
+  const listResponsePage2 = await GRAPHQL_CLIENT.query(
+    /* GraphQL */ `query {
+            listPosts(limit: 1, nextToken:"${listResponse.data.listPosts.nextToken}") {
+                items {
+                    id
+                    title
+                }
+                nextToken
+            }
+        }`,
+    {},
+  );
+  expect(listResponsePage2.data.listPosts.items).toBeDefined();
+  const items2 = listResponsePage2.data.listPosts.items;
+  expect(items2.length).toBeGreaterThan(0);
+});
+
 test('Test createPost mutation with non-model types', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(

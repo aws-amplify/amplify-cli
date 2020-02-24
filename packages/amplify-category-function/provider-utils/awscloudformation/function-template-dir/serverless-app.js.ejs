@@ -30,12 +30,12 @@ app.use(function(req, res, next) {
  * Example get method *
  **********************/
 
-app.get('<%= props.path %>', function(req, res) {
+app.get('<%= props.expressPath %>', function(req, res) {
   // Add your code here
   res.json({success: 'get call succeed!', url: req.url});
 });
 
-app.get('<%= props.path %>/*', function(req, res) {
+app.get('<%= props.expressPath %>/*', function(req, res) {
   // Add your code here
   res.json({success: 'get call succeed!', url: req.url});
 });
@@ -44,12 +44,12 @@ app.get('<%= props.path %>/*', function(req, res) {
 * Example post method *
 ****************************/
 
-app.post('<%= props.path %>', function(req, res) {
+app.post('<%= props.expressPath %>', function(req, res) {
   // Add your code here
   res.json({success: 'post call succeed!', url: req.url, body: req.body})
 });
 
-app.post('<%= props.path %>/*', function(req, res) {
+app.post('<%= props.expressPath %>/*', function(req, res) {
   // Add your code here
   res.json({success: 'post call succeed!', url: req.url, body: req.body})
 });
@@ -58,12 +58,12 @@ app.post('<%= props.path %>/*', function(req, res) {
 * Example put method *
 ****************************/
 
-app.put('<%= props.path %>', function(req, res) {
+app.put('<%= props.expressPath %>', function(req, res) {
   // Add your code here
   res.json({success: 'put call succeed!', url: req.url, body: req.body})
 });
 
-app.put('<%= props.path %>/*', function(req, res) {
+app.put('<%= props.expressPath %>/*', function(req, res) {
   // Add your code here
   res.json({success: 'put call succeed!', url: req.url, body: req.body})
 });
@@ -72,12 +72,12 @@ app.put('<%= props.path %>/*', function(req, res) {
 * Example delete method *
 ****************************/
 
-app.delete('<%= props.path %>', function(req, res) {
+app.delete('<%= props.expressPath %>', function(req, res) {
   // Add your code here
   res.json({success: 'delete call succeed!', url: req.url});
 });
 
-app.delete('<%= props.path %>/*', function(req, res) {
+app.delete('<%= props.expressPath %>/*', function(req, res) {
   // Add your code here
   res.json({success: 'delete call succeed!', url: req.url});
 });

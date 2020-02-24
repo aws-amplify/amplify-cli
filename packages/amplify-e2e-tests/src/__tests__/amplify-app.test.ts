@@ -5,6 +5,7 @@ import {
   amplifyAppReact,
   amplifyModelgen,
   amplifyPush,
+  addIntegAccountInConfig,
 } from '../amplify-app-helpers/amplify-app-setup';
 import { createNewProjectDir, deleteProjectDir } from '../utils';
 import { deleteProject } from '../init';
@@ -19,15 +20,16 @@ import {
 
 describe('amplify-app platform tests', () => {
   let projRoot: string;
+
   beforeEach(() => {
     projRoot = createNewProjectDir();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     deleteProjectDir(projRoot);
   });
 
-  jest.setTimeout(600000);
+  jest.setTimeout(1000 * 60 * 30); // 30 minutes is suffice as push operations are taking time
 
   it('should set up an android project', async () => {
     await amplifyAppAndroid(projRoot);
@@ -59,6 +61,7 @@ describe('amplify-app platform tests', () => {
     validateProjectConfig(projRoot, 'javascript', 'react');
     validateApi(projRoot);
     validateBackendConfig(projRoot);
+    await addIntegAccountInConfig(projRoot);
     await amplifyModelgen(projRoot);
     validateModelgen(projRoot);
     await amplifyPush(projRoot);

@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "1.13.2",
+  "version": "1.14.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "simulator"
   ],
   "scripts": {
-    "copy-assets": "rimraf ./public && copyfiles --flat ../amplify-graphiql-explorer/build/* ./public",
+    "copy-assets": "yarn rimraf ./public && yarn copyfiles -u 3 \"../amplify-graphiql-explorer/build/**/*\" ./public",
     "build": "yarn copy-assets && tsc",
     "clean": "rimraf ./lib",
     "watch": "tsc -w",
@@ -28,6 +28,7 @@
   "dependencies": {
     "amplify-velocity-template": "1.1.10",
     "aws-sdk": "^2.608.0",
+    "chalk": "^3.0.0",
     "cors": "^2.8.5",
     "event-to-promise": "^0.8.0",
     "express": "^4.17.1",

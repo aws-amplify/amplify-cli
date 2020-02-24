@@ -29,13 +29,13 @@ module.exports = {
     } else {
       if (currentEnv === envName) {
         context.print.error(
-          'You cannot delete your current environment. Please switch to another environment to delete your current environment'
+          'You cannot delete your current environment. Please switch to another environment to delete your current environment',
         );
         context.print.error("If this is your only environment you can use the 'amplify delete' command to delete your project");
         process.exit(1);
       }
 
-      const confirmation = await getConfirmation(context);
+      const confirmation = await getConfirmation(context, envName);
       if (confirmation.proceed) {
         const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
         spinner.start();
