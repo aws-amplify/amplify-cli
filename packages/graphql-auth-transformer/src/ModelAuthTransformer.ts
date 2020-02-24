@@ -10,7 +10,7 @@ import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi';
 import Resolver from 'cloudform-types/types/appSync/resolver';
 import { StringParameter } from 'cloudform-types';
 import { ResourceFactory } from './resources';
-import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider } from './AuthRule';
+import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider, IndexedRules } from './AuthRule';
 import {
   ObjectTypeDefinitionNode,
   DirectiveNode,
@@ -2319,23 +2319,6 @@ function isTruthyOrNull(obj: any): boolean {
 
 function isUndefined(obj: any): boolean {
   return obj === undefined;
-}
-
-interface IndexedRules {
-  operationRules: OperationRules;
-  queryRules: QueryRules;
-}
-
-interface OperationRules {
-  create: AuthRule[];
-  read: AuthRule[];
-  update: AuthRule[];
-  delete: AuthRule[];
-}
-
-interface QueryRules {
-  get: AuthRule[];
-  list: AuthRule[];
 }
 
 // interfaces / functions like this should ideally be imported from a lib but putting here

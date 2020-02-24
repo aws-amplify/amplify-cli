@@ -13,6 +13,5 @@
     {"path": "../graphql-mapping-template"},
     {"path": "../graphql-transformer-common"},
     {"path": "../graphql-transformer-core"}
-  ],
-  "include": ["./src"]
+  ]
 }

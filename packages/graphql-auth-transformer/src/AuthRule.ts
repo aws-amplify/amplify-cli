@@ -21,3 +21,20 @@ export interface AuthRule {
   queries?: ModelQuery[];
   mutations?: ModelMutation[];
 }
+
+export interface IndexedRules {
+  operationRules: OperationRules;
+  queryRules: QueryRules;
+}
+
+export interface OperationRules {
+  create: AuthRule[];
+  read: AuthRule[];
+  update: AuthRule[];
+  delete: AuthRule[];
+}
+
+export interface QueryRules {
+  get: AuthRule[];
+  list: AuthRule[];
+}
