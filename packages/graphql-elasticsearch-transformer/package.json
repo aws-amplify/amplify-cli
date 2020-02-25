@@ -1,6 +1,6 @@
 {
   "name": "graphql-elasticsearch-transformer",
-  "version": "4.3.1",
+  "version": "4.3.4",
   "description": "An AppSync model transform that creates an ElasticSearch index with the queries to match.",
   "repository": {
     "type": "git",
@@ -17,24 +17,21 @@
     "aws"
   ],
   "scripts": {
-    "build": "tsc && cd streaming-lambda && bestzip ../lib/streaming-lambda.zip python_streaming_function.py",
-    "watch": "tsc -w && cd streaming-lambda && bestzip ../lib/streaming-lambda.zip python_streaming_function.py",
-    "clean": "rm -rf ./lib"
+    "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "cloudform-types": "^4.1.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.13.1",
-    "graphql-transformer-common": "4.13.1",
-    "graphql-transformer-core": "6.13.1"
+    "graphql-mapping-template": "4.13.3",
+    "graphql-transformer-common": "4.13.3",
+    "graphql-transformer-core": "6.13.3"
   },
   "devDependencies": {
-    "@types/jest": "23.1.1",
     "@types/node": "^10.17.13",
     "bestzip": "^2.1.5",
-    "graphql-dynamodb-transformer": "6.13.1",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6"
+    "graphql-dynamodb-transformer": "6.13.4"
   },
   "jest": {
     "transform": {

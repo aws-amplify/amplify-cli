@@ -88,7 +88,7 @@ function structDeclarationForInputObjectType(generator: CodeGenerator, type: Gra
     () => {
       const properties = propertiesFromFields(generator.context, Object.values(type.getFields()));
       propertyDeclarations(generator, properties, true);
-    }
+    },
   );
 }
 
@@ -110,7 +110,7 @@ export function interfaceNameFromOperation({ operationName, operationType }: { o
 
 export function interfaceVariablesDeclarationForOperation(
   generator: CodeGenerator,
-  { operationName, operationType, variables }: LegacyOperation
+  { operationName, operationType, variables }: LegacyOperation,
 ) {
   if (!variables || variables.length < 1) {
     return;
@@ -125,7 +125,7 @@ export function interfaceVariablesDeclarationForOperation(
     () => {
       const properties = propertiesFromFields(generator.context, variables);
       propertyDeclarations(generator, properties, true);
-    }
+    },
   );
 }
 
@@ -184,7 +184,7 @@ export function interfaceDeclarationForOperation(generator: CodeGenerator, { ope
     },
     () => {
       propertyDeclarations(generator, properties);
-    }
+    },
   );
 }
 
@@ -257,7 +257,7 @@ export function interfaceDeclarationForFragment(generator: CodeGenerator, fragme
         const properties = propertiesFromFields(generator.context, fragmentFields);
         propertyDeclarations(generator, properties);
       }
-    }
+    },
   );
 }
 
@@ -271,7 +271,7 @@ export function propertiesFromFields(
     fragmentSpreads?: any;
     inlineFragments?: LegacyInlineFragment[];
     fieldName?: string;
-  }[]
+  }[],
 ) {
   return fields.map(field => propertyFromField(context, field));
 }
@@ -287,7 +287,7 @@ export function propertyFromField(
     fragmentSpreads?: any;
     inlineFragments?: LegacyInlineFragment[];
     fieldName?: string;
-  }
+  },
 ): Property {
   let { name: fieldName, type: fieldType, description, fragmentSpreads, inlineFragments } = field;
   fieldName = fieldName || field.responseName;
@@ -304,7 +304,7 @@ export function propertyFromField(
   }
 
   if (isCompositeType(namedType)) {
-    const typeName = typeNameFromGraphQLType(context, fieldType);
+    const typeName = namedType.toString();
     let isArray = false;
     let isArrayElementNullable = null;
     if (isListType(fieldType)) {
@@ -387,8 +387,19 @@ export function propertyDeclarations(generator: CodeGenerator, properties: Prope
         (property.inlineFragments && property.inlineFragments.length > 0) ||
         (property.fragmentSpreads && property.fragmentSpreads.length > 0)
       ) {
+        const fields = property.fields!.map(field => {
+          if (field.fieldName === '__typename') {
+            return {
+              ...field,
+              typeName: `"${property.typeName}"`,
+              type: { name: `"${property.typeName}"` } as GraphQLType,
+            };
+          } else {
+            return field;
+          }
+        });
         propertyDeclaration(generator, property, () => {
-          const properties = propertiesFromFields(generator.context, property.fields!);
+          const properties = propertiesFromFields(generator.context, fields!);
           propertyDeclarations(generator, properties, isInput);
         });
       } else {

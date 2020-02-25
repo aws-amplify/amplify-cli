@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.13.1",
+  "version": "2.13.3",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
     "amplify",
     "aws"
   ],
-   "scripts": {
+  "scripts": {
     "test": "jest",
     "test-watch": "jest --watch",
     "test-ci": "jest --ci -i"
@@ -32,9 +32,6 @@
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0"
-  },
-  "devDependencies": {
-    "jest": "^23.5.0"
   },
   "jest": {
     "collectCoverage": true,

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.13.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.2...graphql-mapping-template@4.13.3) (2020-02-13)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
+## [4.13.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.1...graphql-mapping-template@4.13.2) (2020-02-07)
+
+
+### Bug Fixes
+
+* **graphql-relational-schema-transformer:** fix [#3025](https://github.com/aws-amplify/amplify-cli/issues/3025) rds resolver correctly handles no data in response ([#3314](https://github.com/aws-amplify/amplify-cli/issues/3314)) ([cb826a7](https://github.com/aws-amplify/amplify-cli/commit/cb826a7ec7680ad9b5fc46fd7a931c30747cd0ce))
+
+
+
+
+
 ## [4.13.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.0...graphql-mapping-template@4.13.1) (2020-01-24)
 
 **Note:** Version bump only for package graphql-mapping-template

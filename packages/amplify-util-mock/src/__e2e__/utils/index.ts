@@ -1,12 +1,12 @@
 import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
-import { ensureDynamoDBTables, configureDDBDataSource } from '../../utils/ddb-utils';
-import { processAppSyncResources } from '../../CFNParser';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { getFunctionDetails } from './lambda-helper';
-import { invoke } from '../../utils/lambda/invoke';
 import { v4 } from 'uuid';
+import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
+import { configureDDBDataSource, ensureDynamoDBTables } from '../../utils/ddb-utils';
+import { invoke } from '../../utils/lambda/invoke';
+import { getFunctionDetails } from './lambda-helper';
 
 export async function launchDDBLocal() {
   let dbPath;
@@ -26,14 +26,7 @@ export async function launchDDBLocal() {
 }
 
 export async function deploy(transformerOutput: any, client = null) {
-  const stacks = Object.values(transformerOutput.stacks).reduce(
-    (prev, stack: any) => {
-      return { ...prev, ...stack.Resources };
-    },
-    { ...transformerOutput.rootStack.Resources }
-  );
-
-  let config: any = processAppSyncResources(stacks, transformerOutput);
+  let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
   if (client) {

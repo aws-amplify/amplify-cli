@@ -478,3 +478,56 @@ export type DroidWithNameFragment = {
 };
 "
 `;
+
+exports[`TypeScript code generation #generateSource() should have the correct __typename(s) for nested fragments 1`] = `
+"/* tslint:disable */
+/* eslint-disable */
+//  This file was automatically generated and should not be edited.
+
+export type FindHumanQueryVariables = {
+  id: string,
+};
+
+export type FindHumanQuery = {
+  human:  {
+    __typename: \\"Human\\",
+    // The ID of the human
+    id: string,
+    // What this human calls themselves
+    name: string,
+    // A list of starships this person has piloted, or an empty list if none
+    starships:  Array< {
+      __typename: \\"Starship\\",
+      // The ID of the starship
+      id: string,
+      // The name of the starship
+      name: string,
+    } | null > | null,
+  } | null,
+};
+
+export type humanDetailsFragment = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id: string,
+  // What this human calls themselves
+  name: string,
+  // A list of starships this person has piloted, or an empty list if none
+  starships:  Array< {
+    __typename: \\"Starship\\",
+    // The ID of the starship
+    id: string,
+    // The name of the starship
+    name: string,
+  } | null > | null,
+};
+
+export type starshipDetailsFragment = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id: string,
+  // The name of the starship
+  name: string,
+};
+"
+`;

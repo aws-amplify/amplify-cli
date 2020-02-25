@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.13.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.3...graphql-transformers-e2e-tests@6.13.4) (2020-02-18)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** prevent doble escape of nextToken ([#3452](https://github.com/aws-amplify/amplify-cli/issues/3452)) ([b6decfd](https://github.com/aws-amplify/amplify-cli/commit/b6decfddf232ed8a1d8b3e51ad881bc083b45114)), closes [#3411](https://github.com/aws-amplify/amplify-cli/issues/3411)
+
+
+
+
+
+## [6.13.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.2...graphql-transformers-e2e-tests@6.13.3) (2020-02-13)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.13.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.1...graphql-transformers-e2e-tests@6.13.2) (2020-02-07)
+
+
+### Bug Fixes
+
+* e2e test dependency and cloudform depe for relational ([#3352](https://github.com/aws-amplify/amplify-cli/issues/3352)) ([6b74433](https://github.com/aws-amplify/amplify-cli/commit/6b74433a4ddf7706fef3834f02247a3cd0fd75c2))
+* e2e tests, tsconfigs, [@deprecated](https://github.com/deprecated) directive for codegen: ([#3338](https://github.com/aws-amplify/amplify-cli/issues/3338)) ([2ed7715](https://github.com/aws-amplify/amplify-cli/commit/2ed77151dd6367ac9547f78fe600e7913a3d37b2))
+* test config update for e2e ([#3345](https://github.com/aws-amplify/amplify-cli/issues/3345)) ([0d8cadc](https://github.com/aws-amplify/amplify-cli/commit/0d8cadcafeeaaaf1f4251017769021d00b8600be))
+
+
+
+
+
 ## [6.13.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.0...graphql-transformers-e2e-tests@6.13.1) (2020-01-24)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

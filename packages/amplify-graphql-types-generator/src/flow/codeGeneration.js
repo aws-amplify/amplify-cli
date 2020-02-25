@@ -89,7 +89,7 @@ function structDeclarationForInputObjectType(generator, type) {
     () => {
       const properties = propertiesFromFields(generator.context, Object.values(type.getFields()));
       propertyDeclarations(generator, properties, true);
-    }
+    },
   );
 }
 
@@ -111,7 +111,7 @@ function interfaceNameFromOperation({ operationName, operationType }) {
 
 export function interfaceVariablesDeclarationForOperation(
   generator,
-  { operationName, operationType, variables, fields, fragmentsReferenced, source }
+  { operationName, operationType, variables, fields, fragmentsReferenced, source },
 ) {
   if (!variables || variables.length < 1) {
     return null;
@@ -126,7 +126,7 @@ export function interfaceVariablesDeclarationForOperation(
     () => {
       const properties = propertiesFromFields(generator.context, variables);
       propertyDeclarations(generator, properties, true);
-    }
+    },
   );
 }
 
@@ -151,7 +151,7 @@ function getObjectTypeName(type) {
 
 export function typeDeclarationForOperation(
   generator,
-  { operationName, operationType, variables, fields, fragmentSpreads, fragmentsReferenced, source }
+  { operationName, operationType, variables, fields, fragmentSpreads, fragmentsReferenced, source },
 ) {
   const interfaceName = interfaceNameFromOperation({ operationName, operationType });
   fields = fields.map(rootField => {
@@ -181,7 +181,7 @@ export function typeDeclarationForOperation(
     },
     () => {
       propertyDeclarations(generator, properties);
-    }
+    },
   );
 }
 
@@ -253,7 +253,7 @@ export function typeDeclarationForFragment(generator, fragment) {
         const properties = propertiesFromFields(generator.context, fragmentFields);
         propertyDeclarations(generator, properties);
       }
-    }
+    },
   );
 }
 
@@ -275,7 +275,7 @@ export function propertyFromField(context, field) {
   }
   const namedType = getNamedType(fieldType);
   if (isCompositeType(namedType)) {
-    const typeName = typeNameFromGraphQLType(context, fieldType);
+    const typeName = namedType.toString();
     let isArray = false;
     let isArrayElementNullable = null;
     if (fieldType instanceof GraphQLList) {
@@ -355,8 +355,19 @@ export function propertyDeclarations(generator, properties, isInput) {
         (property.inlineFragments && property.inlineFragments.length > 0) ||
         (property.fragmentSpreads && property.fragmentSpreads.length > 0)
       ) {
+        const fields = property.fields.map(field => {
+          if (field.fieldName === '__typename') {
+            return {
+              ...field,
+              typeName: `"${property.typeName}"`,
+              type: { name: `"${property.typeName}"` },
+            };
+          } else {
+            return field;
+          }
+        });
         propertyDeclaration(generator, property, () => {
-          const properties = propertiesFromFields(generator.context, property.fields);
+          const properties = propertiesFromFields(generator.context, fields);
           propertyDeclarations(generator, properties, isInput);
         });
       } else {

@@ -66,7 +66,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
 
   if (updateApi.resourceName === 'AdminQueries') {
     context.print.warning(
-      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`
+      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`,
     );
     process.exit(0);
   }
@@ -211,7 +211,7 @@ async function askPrivacy(context, answers, currentPath) {
         if (permissionSelected === 'Learn more') {
           context.print.info('');
           context.print.info(
-            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+            'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
           );
           context.print.info('');
         }
@@ -438,15 +438,9 @@ async function askPaths(context, answers, currentPath) {
     {
       name: 'name',
       type: 'input',
-      message: 'Provide a path (e.g., /items)',
+      message: 'Provide a path (e.g., /book/{isbn}):',
       default: currentPath ? currentPath.name : '/items',
-      validate(value) {
-        const err = validatePathName(value, answers.paths);
-        if (err) {
-          return err;
-        }
-        return true;
-      },
+      validate: (value) => validatePathName(value, answers.paths),
     },
     {
       name: 'functionType',
@@ -492,53 +486,36 @@ async function askPaths(context, answers, currentPath) {
 }
 
 function validatePathName(name, paths) {
-  const err = null;
-
-  if (name.length === 0 || name.substring(name.length - 1) === '/') {
-    return 'Each sub-path must begin with a letter or number.';
+  if (name.length === 0) {
+    return 'The path must not be empty';
   }
 
-  // Set / as a first character of path name
-  if (name.substring(0, 1) !== '/') {
-    return 'Path must begin with / e.g. /items';
-  }
-  if (/[^a-zA-Z0-9\-/]/.test(name)) {
-    return 'You can use the following characters: a-z A-Z 0-9 - /';
+  if (name.charAt(name.length - 1) === '/') {
+    return 'The path must not end with /';
   }
 
-  // If the are is something like /asasd//asa must be detected
-  // Splitting the string with / to find empty sub-path
-  const split = name.split('/');
-  for (let i = 1; i < split.length; i += 1) {
-    const val = split[i];
-    if (val.length === 0) {
-      return 'Each sub-path must begin with a letter or number';
-    }
+  if (name.charAt(0) !== '/') {
+    return 'The path must begin with / e.g. /items';
   }
 
-  // Checking if there is already that path created on the API
-  if (paths.find(path => path.name === name)) {
-    return 'Path name already exists';
+  // Matches parameterized paths such as /book/{isbn}/page/{pageNum}
+  // This regex also catches the above conditions, but those are left in to provide clearer error messages.
+  if (!/^(?:\/(?:[a-zA-Z0-9\-]+|{[a-zA-Z0-9\-]+}))+$/.test(name)) {
+    return 'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.';
   }
 
-  // Create subpath from the beginning to find a match on existing paths
-  const findSubPath = (path, subpath) => path.name === subpath;
+  const split = name.split('/').filter(sub => sub !== ''); // because name starts with a /, this filters out the first empty element
+  // Check if any prefix of this path matches an existing path
   let subpath = '';
-  split.forEach(sub => {
+  const subMatch = split.some(sub => {
     subpath = `${subpath}/${sub}`;
-    const subpathFind = paths.find(path => findSubPath(path, subpath));
-    if (subpathFind) {
-      return `A different path already matches this sub-path: ${subpath}`;
-    }
+    return paths.map(path => path.name).find(name => name === subpath) !== undefined;
   });
-
-  // Check if other paths are a subpath of the new path
-  subpath = paths.find(path => path.name.indexOf(name) === 0);
-  if (subpath) {
-    return `An existing path already match with the one provided: ${subpath.name}`;
+  if (subMatch) {
+    return `An existing path already matches this sub-path: ${subpath}`;
   }
 
-  return err;
+  return true;
 }
 
 async function findDependsOn(paths, context) {
@@ -645,12 +622,20 @@ function newLambdaFunction(context, path) {
   }
   context.api = {
     path,
+    // ExpressJS represents path parameters as /:param instead of /{param}. This expression performs this replacement.
+    expressPath: formatCFNPathParamsForExpressJs(path),
     functionTemplate: 'serverless',
   };
   return add(context, 'awscloudformation', 'Lambda').then(resourceName => {
     context.print.success('Succesfully added the Lambda function locally');
     return { lambdaFunction: resourceName };
   });
+}
+
+// Convert a CloudFormation parameterized path to an ExpressJS parameterized path
+// /library/{libraryId}/book/{isbn} => /library/:libraryId/book/:isbn
+function formatCFNPathParamsForExpressJs(path) {
+  return path.replace(/{([a-zA-Z0-9\-]+)}/g, ':$1');
 }
 
 async function askLambdaFromProject(context, currentPath) {

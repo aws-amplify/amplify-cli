@@ -1,6 +1,6 @@
 {
   "name": "amplify-app",
-  "version": "2.13.1",
+  "version": "2.13.4",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -25,11 +25,15 @@
   },
   "engines": {
     "node": ">=10.0.0",
-    "@aws-amplify/cli": ">=4.13.0"
+    "@aws-amplify/cli": ">=4.13.2"
   },
   "dependencies": {
+    "amplify-frontend-android": "2.13.2",
+    "amplify-frontend-ios": "2.13.2",
+    "amplify-frontend-javascript": "2.13.2",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
+    "graphql": "^14.5.8",
     "ini": "^1.3.5",
     "inquirer": "^7.0.3",
     "node-emoji": "^1.10.0",

@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-hosting",
-  "version": "2.1.9",
+  "version": "2.1.11",
   "description": "amplify-cli hosting plugin",
   "repository": {
     "type": "git",
@@ -30,7 +30,6 @@
     "promise-sequential": "^1.1.1"
   },
   "devDependencies": {
-    "jest": "^23.5.0",
     "mockirer": "^2.0.1"
   },
   "jest": {

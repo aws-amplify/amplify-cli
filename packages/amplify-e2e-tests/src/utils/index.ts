@@ -12,6 +12,9 @@ export * from './api';
 config();
 
 export function getCLIPath() {
+  if (isCI()) {
+    return 'amplify';
+  }
   return path.join(__dirname, '..', '..', '..', 'amplify-cli', 'bin', 'amplify');
 }
 
