@@ -9,7 +9,7 @@ const constants = require('../../constants/plugin-constants');
 async function publish(context, doSkipBuild) {
   let artifactsPath = null;
   try {
-    if (!doSkipBuild) {
+    if (doSkipBuild) {
       await context
         .amplify
         .pushResources(context, constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME);

@@ -124,8 +124,11 @@ async function configure(context) {
   await hostingModule.configure(context);
 }
 
-async function status(context) {
+async function status(context, mute) {
   if (!isHostingEnabled(context)) {
+    if (mute) {
+      return;
+    }
     throw new ValidationError(HOSTING_NOT_ENABLED);
   }
 

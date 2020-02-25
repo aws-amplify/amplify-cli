@@ -1,11 +1,7 @@
 const constants = require('../constants/plugin-constants');
-const ora = require('ora');
 
 async function getAmplifyClient(context) {
-  const spinner = ora();
-  spinner.start('Initializing amplify client');
   const AWS = await getAWSClient(context);
-  spinner.succeed('Initializing amplify client completed');
   return new AWS.Amplify();
 }
 

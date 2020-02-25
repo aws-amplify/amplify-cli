@@ -3,11 +3,13 @@ const ora = require('ora');
 const Table = require('cli-table3');
 
 async function generateTableContentForApp(context, appId) {
+  const spinner = ora();
+  spinner.start('Initializing amplify client');
   const amplifyClient = await clientFactory.getAmplifyClient(context);
+  spinner.succeed('Initializing amplify client completed');
   const domainMap = {};
 
   let nextToken = null;
-  const spinner = ora();
   try {
     spinner.start('Checking default domains');
     do {

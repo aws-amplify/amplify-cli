@@ -8,8 +8,7 @@ async function run(context) {
     if (err.name === 'ValidationError') {
       console.log(chalk.red(err.message));
     } else {
-      console.log(err.name);
-      console.log(err.message);
+      throw err;
     }
   }
 }
