@@ -20,6 +20,7 @@
     "inquirer": "^7.0.3",
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "graphql-transformer-core": "^6.13.1"
   }
 }

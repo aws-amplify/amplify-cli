@@ -1,11 +1,12 @@
 import { initJSProjectWithProfile, amplifyPushUpdate, deleteProject } from '../init';
-import { addAnalytics, removeAnalytics } from '../categories/analytics';
+import { addPinpoint, addKinesis, removeAnalytics } from '../categories/analytics';
 import { createNewProjectDir, deleteProjectDir } from '../utils';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
 describe('amplify add analytics', () => {
   let projRoot: string;
+
   beforeEach(() => {
     projRoot = createNewProjectDir();
   });
@@ -16,10 +17,18 @@ describe('amplify add analytics', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add analytics', async () => {
+  it('add pinpoint', async () => {
     await initJSProjectWithProfile(projRoot, {});
     const rightName = 'myapp';
-    await addAnalytics(projRoot, { rightName, wrongName: '$' });
+    await addPinpoint(projRoot, { rightName, wrongName: '$' });
+    await amplifyPushUpdate(projRoot);
+    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);
+  });
+
+  it('add kinesis', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    const rightName = 'myapp';
+    await addKinesis(projRoot, { rightName, wrongName: '$' });
     await amplifyPushUpdate(projRoot);
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);
   });

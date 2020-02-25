@@ -402,6 +402,14 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
 
               parameters[parameterKey] = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
             }
+
+            if (dependsOn[i].exports) {
+              Object.keys(dependsOn[i].exports)
+                .map(key => ({ key, value: dependsOn[i].exports[key] }))
+                .forEach(({ key, value }) => {
+                  parameters[key] = { 'Fn::ImportValue': value };
+                });
+            }
           }
         }
 

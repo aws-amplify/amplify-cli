@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
+const TransformPackage = require('graphql-transformer-core');
 
 const categoryName = 'function';
 const serviceName = 'Lambda';
@@ -79,6 +80,13 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       });
     }
     allDefaultValues.dependsOn = dependsOn;
+  } else if (answers.functionTemplate === 'lambdaTrigger') {
+    const eventSourceAnswers = await askEventSourceQuestions(context, inputs);
+    Object.assign(allDefaultValues, eventSourceAnswers);
+    if (eventSourceAnswers.dependsOn) {
+      dependsOn.push(...eventSourceAnswers.dependsOn);
+    }
+    allDefaultValues.dependsOn = dependsOn;
   }
 
   let topLevelComment;
@@ -134,7 +142,7 @@ async function updateWalkthrough(context, lambdaToUpdate) {
 
   if (
     await context.amplify.confirmPrompt.run(
-      'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?'
+      'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
     )
   ) {
     // Get current dependsOn for the resource
@@ -151,12 +159,14 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     const cfnContent = context.amplify.readJsonFile(cfnFilePath);
     const dependsOnParams = { env: { Type: 'String' } };
 
-    Object.keys(answers.resourcePropertiesJSON).forEach(resourceProperty => {
-      dependsOnParams[answers.resourcePropertiesJSON[resourceProperty].Ref] = {
-        Type: 'String',
-        Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
-      };
-    });
+    Object.keys(answers.resourcePropertiesJSON)
+      .filter(resourceProperty => 'Ref' in answers.resourcePropertiesJSON[resourceProperty])
+      .forEach(resourceProperty => {
+        dependsOnParams[answers.resourcePropertiesJSON[resourceProperty].Ref] = {
+          Type: 'String',
+          Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
+        };
+      });
 
     cfnContent.Parameters = getNewCFNParameters(cfnContent.Parameters, currentParameters, dependsOnParams, newParams);
 
@@ -191,7 +201,7 @@ async function updateWalkthrough(context, lambdaToUpdate) {
       cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
       currentParameters,
       answers.resourcePropertiesJSON,
-      newParams
+      newParams,
     ); // Need to update
     // Update top level comment in app.js or index.js file
 
@@ -324,6 +334,17 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   let categories = Object.keys(amplifyMeta);
   categories = categories.filter(category => category !== 'providers');
 
+  // retrieve api's appsynch resource name for conditional logic
+  // in blending appsync @model-backed dynamoDB tables into storage category flow
+  const appsyncResourceName =
+    'api' in amplifyMeta ? Object.keys(amplifyMeta.api).find(key => amplifyMeta.api[key].service === 'AppSync') : undefined;
+
+  // if there is api category appsynch resource and no storage category, add it back to selection
+  // since storage category is responsible for managing appsync @model-backed dynamoDB table permissions
+  if (!categories.includes('storage') && appsyncResourceName !== undefined) {
+    categories.push('storage');
+  }
+
   const categoryPermissionQuestion = {
     type: 'checkbox',
     name: 'categories',
@@ -340,10 +361,22 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   parameters.permissions = {};
 
   const categoryPlugins = context.amplify.getCategoryPlugins(context);
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const appsyncTableSuffix = '@model(appsync)';
   for (let i = 0; i < selectedCategories.length; i += 1) {
     const category = selectedCategories[i];
-
-    const resourcesList = Object.keys(amplifyMeta[category]);
+    const resourcesList = category in amplifyMeta ? Object.keys(amplifyMeta[category]) : [];
+    if (category === 'storage' && 'api' in amplifyMeta) {
+      if (appsyncResourceName) {
+        const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
+        const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
+        const directivesMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+        const modelNames = Object.keys(directivesMap.types)
+          .filter(typeName => directivesMap.types[typeName].includes('model'))
+          .map(modelName => `${modelName}:${appsyncTableSuffix}`);
+        resourcesList.push(...modelNames);
+      }
+    }
 
     if (resourcesList.length === 0) {
       context.print.warning(`No resources found for ${category}`);
@@ -416,12 +449,55 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
           if (!parameters.permissions[category]) {
             parameters.permissions[category] = {};
           }
+
           parameters.permissions[category][resourceName] = crudPermissionAnswer.crudOptions;
+          // overload crudOptions when user selects graphql @model-backing DynamoDB table
+          // as there is no actual storage category resource where getPermissionPolicies can derive service and provider
+          if (resourceName.endsWith(appsyncTableSuffix)) {
+            parameters.permissions[category][resourceName].providerPlugin = 'awscloudformation';
+            parameters.permissions[category][resourceName].service = 'DynamoDB';
+            const dynamoDBTableARNComponents = constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
+
+            // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
+            parameters.permissions[category][resourceName].customPolicyResource = [
+              {
+                'Fn::Join': ['', dynamoDBTableARNComponents],
+              },
+              {
+                'Fn::Join': ['', [...dynamoDBTableARNComponents, '/index/*']],
+              },
+            ];
+          }
         }
         if (selectedResources.length > 0) {
           const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, parameters.permissions[category]);
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
-          resources = resources.concat(resourceAttributes);
+
+          // replace resource attributes for @model-backed dynamoDB tables
+          resources = resources.concat(
+            resourceAttributes.map(attributes =>
+              attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
+                ? {
+                    resourceName: appsyncResourceName,
+                    category: 'api',
+                    attributes: ['GraphQLAPIIdOutput'],
+                    needsAdditionalDynamoDBResourceProps: true,
+                    // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+                    _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
+                    _cfJoinComponentTableName: constructCFModelTableNameComponent(
+                      appsyncResourceName,
+                      attributes.resourceName,
+                      appsyncTableSuffix,
+                    ),
+                    _cfJoinComponentTableArn: constructCFModelTableArnComponent(
+                      appsyncResourceName,
+                      attributes.resourceName,
+                      appsyncTableSuffix,
+                    ),
+                  }
+                : attributes,
+            ),
+          );
         }
       }
     } catch (e) {
@@ -436,6 +512,35 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   const categoryMapping = {};
   resources.forEach(resource => {
     const { category, resourceName, attributes } = resource;
+    /**
+     * while resourceProperties and resourcePropertiesJson
+     * (which are utilized to set Lambda environment variables on CF side)
+     * are derived from dependencies on other category resources that in-turn are set as CF-template parameters
+     * we need to inject extra when blending appsync @model-backed dynamoDB tables into storage category flow
+     * as @model-backed DynamoDB table name and full arn is not available in api category resource output
+     */
+    if (resource.needsAdditionalDynamoDBResourceProps) {
+      const modelEnvPrefix = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${resource._modelName.toUpperCase()}`;
+      let modelNameResourcePropValue = {
+        'Fn::Join': ['-', resource._cfJoinComponentTableName],
+      };
+      let modelArnResourcePropValue = {
+        'Fn::Join': ['', resource._cfJoinComponentTableArn],
+      };
+
+      resourceProperties.push(`"${modelEnvPrefix}_NAME": ${JSON.stringify(modelNameResourcePropValue)}`);
+      resourceProperties.push(`"${modelEnvPrefix}_ARN": ${JSON.stringify(modelArnResourcePropValue)}`);
+      resourcePropertiesJSON[`${modelEnvPrefix}_NAME`] = modelNameResourcePropValue;
+      resourcePropertiesJSON[`${modelEnvPrefix}_ARN`] = modelArnResourcePropValue;
+
+      const categoryMappingPrefix = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(resource._modelName)}`;
+      if (!categoryMapping[category]) {
+        categoryMapping[category] = [];
+      }
+      categoryMapping[category].push({ envName: `${modelEnvPrefix}_NAME`, varName: `${categoryMappingPrefix}Name` });
+      categoryMapping[category].push({ envName: `${modelEnvPrefix}_ARN`, varName: `${categoryMappingPrefix}Arn` });
+    }
+
     attributes.forEach(attribute => {
       const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
       const varName = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(attribute)}`;
@@ -520,7 +625,348 @@ async function getTableParameters(context, dynamoAnswers) {
   return parameters;
 }
 
-async function askDynamoDBQuestions(context, inputs) {
+async function askEventSourceQuestions(context, inputs) {
+  const eventSourceTypeInput = inputs.find(input => input.key === 'eventSourceType');
+  if (eventSourceTypeInput === undefined) {
+    throw Error('Unable to find eventSourceType question data. (this is likely an amplify error, please report)');
+  }
+
+  const selectEventSourceQuestion = {
+    type: eventSourceTypeInput.type,
+    name: eventSourceTypeInput.key,
+    message: eventSourceTypeInput.question,
+    choices: eventSourceTypeInput.options,
+  };
+
+  const eventSourceTypeAnswer = await inquirer.prompt([selectEventSourceQuestion]);
+
+  let arnInput;
+  let arnQuestion;
+  let arnAnswer;
+  let eventSourceArn;
+  let streamKindInput;
+  let streamKindQuestion;
+  let streamKindAnswer;
+  let streamKind;
+  let dynamoDBCategoryStorageRes;
+  let dynamoDBCategoryStorageStreamArnRef;
+  switch (eventSourceTypeAnswer[eventSourceTypeInput.key]) {
+    case 'kinesis':
+      streamKindInput = inputs.find(input => input.key === 'kinesisStreamKind');
+      if (streamKindInput === undefined) {
+        throw Error('Unable to find kinesisStreamKind question data. (this is likely an amplify error, please report)');
+      }
+      streamKindQuestion = {
+        type: streamKindInput.type,
+        name: streamKindInput.key,
+        message: streamKindInput.question,
+        choices: streamKindInput.options,
+      };
+      streamKindAnswer = await inquirer.prompt([streamKindQuestion]);
+      streamKind = streamKindAnswer[streamKindInput.key];
+      switch (streamKind) {
+        case 'kinesisStreamRawARN':
+          arnInput = inputs.find(input => input.key === 'amazonKinesisStreamARN');
+          if (arnInput === undefined) {
+            throw Error('Unable to find amazonKinesisStreamARN question data. (this is likely an amplify error, please report)');
+          }
+          arnQuestion = {
+            name: arnInput.key,
+            message: arnInput.question,
+            validate: context.amplify.inputValidation(arnInput),
+          };
+          arnAnswer = await inquirer.prompt([arnQuestion]);
+          eventSourceArn = arnAnswer[arnInput.key];
+          return {
+            triggerEventSourceMappings: [
+              {
+                batchSize: 100,
+                startingPosition: 'LATEST',
+                eventSourceArn,
+                functionTemplateName: 'trigger-kinesis.js',
+                triggerPolicies: [
+                  {
+                    Effect: 'Allow',
+                    Action: [
+                      'kinesis:DescribeStream',
+                      'kinesis:DescribeStreamSummary',
+                      'kinesis:GetRecords',
+                      'kinesis:GetShardIterator',
+                      'kinesis:ListShards',
+                      'kinesis:ListStreams',
+                      'kinesis:SubscribeToShard',
+                    ],
+                    Resource: eventSourceArn,
+                  },
+                ],
+              },
+            ],
+          };
+        case 'analyticsKinesisStream':
+          return await askAnalyticsCategoryKinesisQuestions(context, inputs);
+        default:
+          return {};
+      }
+    case 'dynamoDB':
+      streamKindInput = inputs.find(input => input.key === 'dynamoDbStreamKind');
+      if (streamKindInput === undefined) {
+        throw Error('Unable to find dynamoDBStreamKindInput question data. (this is likely an amplify error, please report)');
+      }
+      streamKindQuestion = {
+        type: streamKindInput.type,
+        name: streamKindInput.key,
+        message: streamKindInput.question,
+        choices: streamKindInput.options,
+      };
+      streamKindAnswer = await inquirer.prompt([streamKindQuestion]);
+      streamKind = streamKindAnswer[streamKindInput.key];
+      switch (streamKind) {
+        case 'dynamoDbStreamRawARN':
+          arnInput = inputs.find(input => input.key === 'dynamoDbARN');
+          if (arnInput === undefined) {
+            throw Error('Unable to find dynamoDbARN question data. (this is likely an amplify error, please report)');
+          }
+          arnQuestion = {
+            name: arnInput.key,
+            message: arnInput.question,
+            validate: context.amplify.inputValidation(arnInput),
+          };
+          arnAnswer = await inquirer.prompt([arnQuestion]);
+          eventSourceArn = arnAnswer[arnInput.key];
+          return {
+            triggerEventSourceMappings: [
+              {
+                batchSize: 100,
+                startingPosition: 'LATEST',
+                eventSourceArn,
+                functionTemplateName: 'trigger-dynamodb.js',
+                triggerPolicies: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+                    Resource: eventSourceArn,
+                  },
+                ],
+              },
+            ],
+          };
+        case 'graphqlModelTable':
+          return await askAPICategoryDynamoDBQuestions(context, inputs);
+        case 'storageDynamoDBTable':
+          const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;
+          if (!storageResources) {
+            context.print.error('There are no DynamoDB resources configured in your project currently');
+            process.exit(0);
+          }
+
+          dynamoDBCategoryStorageRes = await askDynamoDBQuestions(context, inputs, true);
+          dynamoDBCategoryStorageStreamArnRef = {
+            Ref: `storage${dynamoDBCategoryStorageRes.resourceName}StreamArn`,
+          };
+
+          return {
+            triggerEventSourceMappings: [
+              {
+                batchSize: 100,
+                startingPosition: 'LATEST',
+                eventSourceArn: dynamoDBCategoryStorageStreamArnRef,
+                functionTemplateName: 'trigger-dynamodb.js',
+                triggerPolicies: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+                    Resource: dynamoDBCategoryStorageStreamArnRef,
+                  },
+                ],
+              },
+            ],
+            dependsOn: [
+              {
+                category: 'storage',
+                resourceName: dynamoDBCategoryStorageRes.resourceName,
+                attributes: ['StreamArn'],
+              },
+            ],
+          };
+        default:
+          return {};
+      }
+    default:
+      context.print.error('Unrecognized option selected. (this is likely an amplify error, please report)');
+      return {};
+  }
+}
+
+async function askAnalyticsCategoryKinesisQuestions(context, inputs) {
+  const { amplify } = context;
+  const { allResources } = await amplify.getResourceStatus();
+  const kinesisResources = allResources.filter(resource => resource.service === 'Kinesis');
+
+  let targetResourceName;
+  if (kinesisResources.length === 0) {
+    context.print.error('No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream');
+    process.exit(0);
+    return;
+  } else if (kinesisResources.length === 1) {
+    targetResourceName = kinesisResources[0].resourceName;
+    context.print.success(`Selected resource ${targetResourceName}`);
+  } else {
+    const resourceNameInput = inputs.find(input => input.key === 'kinesisAnalyticsResourceName');
+    if (resourceNameInput === undefined) {
+      throw Error('Unable to find kinesisAnalyticsResourceName question data. (this is likely an amplify error, please report)');
+    }
+
+    const resourceNameQuestion = {
+      type: resourceNameInput.type,
+      name: resourceNameInput.key,
+      message: resourceNameInput.question,
+      choices: kinesisResources.map(resource => resource.resourceName),
+    };
+
+    const answer = await inquirer.prompt(resourceNameQuestion);
+    targetResourceName = answer.kinesisAnalyticsResourceName;
+  }
+
+  const streamArnParamRef = {
+    Ref: `analytics${targetResourceName}kinesisStreamArn`,
+  };
+
+  return {
+    triggerEventSourceMappings: [
+      {
+        batchSize: 100,
+        startingPosition: 'LATEST',
+        eventSourceArn: streamArnParamRef,
+        functionTemplateName: 'trigger-kinesis.js',
+        triggerPolicies: [
+          {
+            Effect: 'Allow',
+            Action: [
+              'kinesis:DescribeStream',
+              'kinesis:DescribeStreamSummary',
+              'kinesis:GetRecords',
+              'kinesis:GetShardIterator',
+              'kinesis:ListShards',
+              'kinesis:ListStreams',
+              'kinesis:SubscribeToShard',
+            ],
+            Resource: streamArnParamRef,
+          },
+        ],
+      },
+    ],
+    dependsOn: [
+      {
+        category: 'analytics',
+        resourceName: targetResourceName,
+        attributes: ['kinesisStreamArn'],
+      },
+    ],
+  };
+}
+
+async function askAPICategoryDynamoDBQuestions(context, inputs) {
+  const { allResources } = await context.amplify.getResourceStatus();
+  const appSynchResources = allResources.filter(resource => resource.service === 'AppSync');
+
+  let targetResourceName;
+  if (appSynchResources.length === 0) {
+    context.print.error(`
+      No AppSync resources have been configured in API category. 
+      Please use "amplify add api" command to create a new appsync resource`);
+    process.exit(0);
+    return;
+  } else if (appSynchResources.length === 1) {
+    targetResourceName = appSynchResources[0].resourceName;
+    context.print.success(`Selected resource ${targetResourceName}`);
+  } else {
+    const resourceNameInput = inputs.find(input => input.key === 'dynamoDbAPIResourceName');
+    if (resourceNameInput === undefined) {
+      throw Error('Unable to find dynamoDbAPIResourceName question data. (this is likely an amplify error, please report)');
+    }
+
+    const resourceNameQuestion = {
+      type: resourceNameInput.type,
+      name: resourceNameInput.key,
+      message: resourceNameInput.question,
+      choices: appSynchResources.map(resource => resource.resourceName),
+    };
+
+    const answer = await inquirer.prompt(resourceNameQuestion);
+    targetResourceName = answer.dynamoDbAPIResourceName;
+  }
+
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(backendDir, 'api', targetResourceName);
+  const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
+  const directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+  const modelNames = Object.keys(directiveMap.types).filter(typeName => directiveMap.types[typeName].includes('model'));
+
+  const modelNameInput = inputs.find(input => input.key === 'graphqlAPIModelName');
+  if (modelNameInput === undefined) {
+    throw Error('Unable to find graphqlAPIModelName question data. (this is likely an amplify error, please report)');
+  }
+
+  let targetModelNames = [];
+  if (modelNames.length === 0) {
+    throw Error('Unable to find graphql model info.');
+  } else if (modelNames.length === 1) {
+    const [modelName] = modelNames;
+    context.print.success(`Selected @model ${modelName}`);
+    targetModelNames = modelNames;
+  } else {
+    while (targetModelNames.length === 0) {
+      const modelNameQuestion = {
+        type: modelNameInput.type,
+        name: modelNameInput.key,
+        message: modelNameInput.question,
+        choices: modelNames,
+      };
+      const modelNameAnswer = await inquirer.prompt([modelNameQuestion]);
+      targetModelNames = modelNameAnswer[modelNameInput.key];
+
+      if (targetModelNames.length === 0) {
+        context.print.info('You need to select at least one @model');
+      }
+    }
+  }
+
+  const triggerEventSourceMappings = targetModelNames.map(modelName => {
+    const streamArnParamRef = {
+      'Fn::ImportValue': {
+        'Fn::Sub': [`\${api${targetResourceName}GraphQLAPIIdOutput}`, 'GetAtt', `${modelName}Table`, 'StreamArn'].join(':'),
+      },
+    };
+
+    return {
+      modelName,
+      batchSize: 100,
+      startingPosition: 'LATEST',
+      eventSourceArn: streamArnParamRef,
+      functionTemplateName: 'trigger-dynamodb.js',
+      triggerPolicies: [
+        {
+          Effect: 'Allow',
+          Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:ListStreams'],
+          Resource: streamArnParamRef,
+        },
+      ],
+    };
+  });
+
+  return {
+    triggerEventSourceMappings,
+    dependsOn: [
+      {
+        category: 'api',
+        resourceName: targetResourceName,
+        attributes: ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'],
+      },
+    ],
+  };
+}
+
+async function askDynamoDBQuestions(context, inputs, currentProjectOnly = false) {
   const dynamoDbTypeQuestion = {
     type: inputs[5].type,
     name: inputs[5].key,
@@ -528,8 +974,10 @@ async function askDynamoDBQuestions(context, inputs) {
     choices: inputs[5].options,
   };
   // eslint-disable-next-line
+
   while (true) {
-    const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
+    //eslint-disable-line
+    const dynamoDbTypeAnswer = currentProjectOnly ? { [inputs[5].key]: 'currentProject' } : await inquirer.prompt([dynamoDbTypeQuestion]);
     switch (dynamoDbTypeAnswer[inputs[5].key]) {
       case 'currentProject': {
         const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;
@@ -741,6 +1189,27 @@ function getIAMPolicies(resourceName, crudOptions) {
   const attributes = ['Name'];
 
   return { policy, attributes };
+}
+
+/** CF template component of join function { "Fn::Join": ["": THIS_PART ] } */
+function constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
+  return [
+    'arn:aws:dynamodb:',
+    { Ref: 'AWS::Region' },
+    ':',
+    { Ref: 'AWS::AccountId' },
+    ':table/',
+    {
+      'Fn::ImportValue': {
+        'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
+      },
+    },
+  ];
+}
+
+/** CF template component of join function { "Fn::Join": ["-": THIS_PART ] } */
+function constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
+  return [resourceName.replace(`:${appsyncTableSuffix}`, 'Table'), { Ref: `api${appsyncResourceName}GraphQLAPIIdOutput` }];
 }
 
 module.exports = {

@@ -1,0 +1,108 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Pinpoint resource stack creation using Amplify CLI",
+    "Parameters": {
+        "env": {
+            "Type":  "String"
+        },
+        "kinesisStreamName": {
+            "Type": "String"
+        },
+        "kinesisStreamShardCount": {
+            "Type": "Number",
+            "Default": 1
+        },
+        "authPolicyName": {
+            "Type": "String"
+        },
+        "unauthPolicyName": {
+            "Type": "String"
+        },
+        "authRoleName": {
+            "Type":  "String"
+        },
+        "unauthRoleName": {
+            "Type":  "String"
+        }
+    },
+    "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                { "Ref": "env" },
+                "NONE"
+            ]
+        }
+    },
+    "Resources": {
+        "KinesisStream": {
+            "Type": "AWS::Kinesis::Stream",
+            "Properties": {
+                "Name": {
+                    "Fn::Join": [
+                        "-",
+                        [
+                          { "Ref": "kinesisStreamName" },
+                          { "Ref": "env"}
+                        ]
+                    ]
+                },
+                "ShardCount": { "Ref": "kinesisStreamShardCount" }
+            }
+        },
+        "CognitoUnauthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": {"Ref": "unauthPolicyName" },
+                "Roles": [ 
+                    {"Ref": "unauthRoleName" }
+                ],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Action": [
+                            "kinesis:PutRecord",
+                            "kinesis:PutRecords"
+                        ],
+                        "Resource": {
+                            "Fn::GetAtt": ["KinesisStream", "Arn"]
+                        }
+                    }]
+                }
+            }
+        },
+        "CognitoAuthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": {"Ref": "authPolicyName" },
+                "Roles": [ 
+                    {"Ref": "authRoleName" }
+                ],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Action": [
+                            "kinesis:PutRecord",
+                            "kinesis:PutRecords"
+                        ],
+                        "Resource": {
+                            "Fn::GetAtt": ["KinesisStream", "Arn"]
+                        }
+                    }]
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "kinesisStreamArn": {
+            "Value": {"Fn::GetAtt": ["KinesisStream", "Arn"] }
+        },
+        "kinesisStreamId": { 
+            "Value": {"Ref": "KinesisStream" }
+        },
+        "kinesisStreamShardCount": {
+            "Value": {"Ref": "kinesisStreamShardCount" }
+        }
+    }
+}

@@ -37,3 +37,17 @@ export function isCI(): Boolean {
 export function getEnvVars(): { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string } {
   return { ...process.env } as { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string };
 }
+
+export function sleep(millis) {
+  return new Promise(resolve => setTimeout(resolve, millis));
+}
+
+export function overrideFunctionSrc(root: string, name: string, code: string) {
+  let indexPath = path.join(root, `amplify/backend/function/${name}/src/index.js`);
+  fs.writeFileSync(indexPath, code);
+}
+
+export function getFunctionSrc(root: string, name: string): Buffer {
+  let indexPath = path.join(root, `amplify/backend/function/${name}/src/index.js`);
+  return fs.readFileSync(indexPath);
+}
