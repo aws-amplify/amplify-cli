@@ -3,15 +3,17 @@ const configManager = require('../lib/system-config-manager');
 const uuid = require('uuid');
 describe('test S3 utils', () => {
   const profiles = configManager.getNamedProfiles();
-  const profileNames = Object.keys(profiles);
+  const profileNames = profiles ? Object.keys(profiles) : ['amplify-integ-test-user'];
   const selectProfileName = profileNames.includes('default') ? 'default' : profileNames[0];
   const credentials = configManager.getProfileCredentials(selectProfileName);
+  const warning = console.warn;
   beforeEach(() => {
     jest.setTimeout(1000 * 60 * 60);
   });
+  afterEach(() => {});
 
   it('should upload 3000 objects and delete them', async () => {
-    const s3 = await new S3({ credentials }, {});
+    const s3 = await new S3({ print: { warning: jest.fn(), success: jest.fn() }, credentials }, {});
     const bucketName = uuid.v1();
     const count = 3000;
     await s3.createBucket(bucketName);
