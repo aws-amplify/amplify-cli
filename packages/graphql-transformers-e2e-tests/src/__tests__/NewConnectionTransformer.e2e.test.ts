@@ -608,7 +608,6 @@ test('Test @key directive to support Int as sort key', async () => {
     `,
     mutationData,
   );
-  debugger;
   expect(result).toBeDefined();
   expect(result.data).toBeDefined();
   expect(result.data.createConfigWithParent).toBeDefined();
