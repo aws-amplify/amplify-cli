@@ -8,15 +8,13 @@ describe('test S3 utils', () => {
   const credentials = configManager.getProfileCredentials(selectProfileName);
   let s3;
   beforeEach(() => {
-    s3 = new S3({ print: { warning: jest.fn(), success: jest.fn() }, credentials }, {});
+    s3 = new S3({ print: { warning: jest.fn(), success: jest.fn() } }, { credentials }, true);
     jest.setTimeout(1000 * 60 * 60);
   });
-  afterEach(async () => {
+  afterEach(() => {
     s3 = null;
   });
-
   it('should upload 3000 objects and delete them', async () => {
-    s3 = await s3;
     const bucketName = uuid.v1();
     const count = 3000;
     await s3.createBucket(bucketName);
