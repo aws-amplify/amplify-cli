@@ -10,7 +10,7 @@ export function addSimpleDDB(cwd: string, settings: any, verbose: boolean = !isC
       .sendline('j')
       .sendline('\r')
       .wait('Please provide a friendly name for your resource')
-      .sendline('\r')
+      .sendline(settings.name || '\r')
       .wait('Please provide table name')
       .sendline('\r')
       .wait('What would you like to name this column')

@@ -75,6 +75,11 @@ const getFunction = async (functionName: string, region: string) => {
   return await service.getFunction({ FunctionName: functionName }).promise();
 };
 
+const invokeFunction = async (functionName: string, payload: string, region: string) => {
+  const service = new Lambda({ region });
+  return await service.invoke({ FunctionName: functionName, Payload: payload }).promise();
+};
+
 const getCollection = async (collectionId: string, region: string) => {
   const service = new Rekognition({ region });
   return await service.describeCollection({ CollectionId: collectionId }).promise();
@@ -136,6 +141,7 @@ export {
   getBot,
   getLambdaFunction,
   getFunction,
+  invokeFunction,
   getTable,
   deleteTable,
   getAppSyncApi,

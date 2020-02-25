@@ -1194,7 +1194,7 @@ function getIAMPolicies(resourceName, crudOptions) {
 /** CF template component of join function { "Fn::Join": ["": THIS_PART ] } */
 function constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
   return [
-    'arn:aws:appsync:',
+    'arn:aws:dynamodb:',
     { Ref: 'AWS::Region' },
     ':',
     { Ref: 'AWS::AccountId' },

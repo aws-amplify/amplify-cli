@@ -1,11 +1,12 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../init';
-import { addFunction, functionBuild } from '../categories/function';
+import { addFunction, updateFunction, functionBuild } from '../categories/function';
+import { addSimpleDDB } from '../categories/storage';
 import { addKinesis } from '../categories/analytics';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, sleep } from '../utils';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, sleep, overrideFunctionSrc, getFunctionSrc } from '../utils';
 import { addApiWithSchema } from '../categories/api';
 
 import { appsyncGraphQLRequest } from '../utils/appsync';
-import { getCloudWatchLogs, putKinesisRecords } from '../utils/sdk-calls';
+import { getCloudWatchLogs, putKinesisRecords, invokeFunction } from '../utils/sdk-calls';
 
 describe('amplify add function', () => {
   let projRoot: string;
@@ -132,5 +133,186 @@ describe('amplify add function', () => {
     });
     // No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream
     await addFunction(projRoot, { functionTemplate: 'lambdaTrigger', triggerType: 'Kinesis', expectFailure: true });
+  });
+
+  it('should init and deploy storage DynamoDB + Lambda trigger', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addSimpleDDB(projRoot, {});
+    await addFunction(projRoot, {
+      functionTemplate: 'lambdaTrigger',
+      triggerType: 'DynamoDB',
+      eventSource: 'DynamoDB',
+    });
+
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const { Name: table1Name, Arn: table1Arn, Region: table1Region, StreamArn: table1StreamArn } = Object.keys(meta.storage).map(
+      key => meta.storage[key],
+    )[0].output;
+
+    expect(table1Name).toBeDefined();
+    expect(table1Arn).toBeDefined();
+    expect(table1Region).toBeDefined();
+    expect(table1StreamArn).toBeDefined();
+  });
+});
+
+describe('amplify add function with additional permissions', () => {
+  let projRoot: string;
+  beforeEach(() => {
+    projRoot = createNewProjectDir();
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('lambda with dynamoDB permissions should be able to scan ddb', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+
+    const fnName = 'integtestfn';
+    const ddbName = 'integtestddb';
+
+    // test ability to scan both appsync @model-backed and regular ddb tables
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await addSimpleDDB(projRoot, { name: ddbName });
+
+    await addFunction(projRoot, {
+      name: fnName,
+      functionTemplate: 'helloWorld',
+      additionalPermissions: {
+        permissions: ['storage'],
+        choices: ['api', 'storage', 'function'],
+        resources: [ddbName, 'Todo:@model(appsync)'],
+        resourceChoices: [ddbName, 'Todo:@model(appsync)'],
+        operations: ['read'],
+      },
+    });
+
+    overrideFunctionSrc(
+      projRoot,
+      fnName,
+      `
+      const AWS = require('aws-sdk');
+      const DDB = new AWS.DynamoDB();
+
+      exports.handler = function(event, context) {
+        return DDB.scan({ TableName: event.tableName }).promise()
+      }
+    `,
+    );
+
+    await amplifyPush(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
+    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    expect(appsyncId).toBeDefined();
+    expect(functionName).toBeDefined();
+    expect(region).toBeDefined();
+
+    // test @model-backed dynamoDB scan
+    const result1 = await invokeFunction(functionName, JSON.stringify({ tableName: `Todo-${appsyncId}-integtest` }), region);
+    expect(result1.StatusCode).toBe(200);
+    expect(result1.Payload).toBeDefined();
+
+    const payload1 = JSON.parse(result1.Payload.toString());
+    expect(payload1.errorType).toBeUndefined();
+    expect(payload1.errorMessage).toBeUndefined();
+    expect(payload1.Items).toBeDefined();
+    expect(payload1.Count).toBeDefined();
+    expect(payload1.ScannedCount).toBeDefined();
+
+    // test regular storage resource dynamoDB scan
+    const { Name: tableName } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    const result2 = await invokeFunction(functionName, JSON.stringify({ tableName }), region);
+    expect(result2.StatusCode).toBe(200);
+    expect(result2.Payload).toBeDefined();
+
+    const payload2 = JSON.parse(result2.Payload.toString());
+    expect(payload2.errorType).toBeUndefined();
+    expect(payload2.errorMessage).toBeUndefined();
+    expect(payload2.Items).toBeDefined();
+    expect(payload2.Count).toBeDefined();
+    expect(payload2.ScannedCount).toBeDefined();
+  });
+
+  it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+
+    const fnName = 'integtestfn';
+    await addFunction(projRoot, {
+      name: fnName,
+      functionTemplate: 'helloWorld',
+    });
+
+    overrideFunctionSrc(
+      projRoot,
+      fnName,
+      `
+      const AWS = require('aws-sdk');
+      const DDB = new AWS.DynamoDB();
+
+      exports.handler = function(event, context) {
+        return DDB.scan({ TableName: event.tableName }).promise()
+      }
+    `,
+    );
+
+    await amplifyPushAuth(projRoot);
+    let meta = getProjectMeta(projRoot);
+    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    expect(functionArn).toBeDefined();
+    expect(functionName).toBeDefined();
+    expect(region).toBeDefined();
+
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await updateFunction(projRoot, {
+      name: fnName,
+      additionalPermissions: {
+        permissions: ['storage'],
+        choices: ['function', 'api', 'storage'],
+        resources: ['Todo:@model(appsync)'],
+        resourceChoices: ['Todo:@model(appsync)'],
+        operations: ['read'],
+      },
+    });
+    await amplifyPush(projRoot);
+
+    meta = getProjectMeta(projRoot);
+    const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
+    const result = await invokeFunction(functionName, JSON.stringify({ tableName: `Todo-${appsyncId}-integtest` }), region);
+    expect(result.StatusCode).toBe(200);
+    expect(result.Payload).toBeDefined();
+
+    const payload = JSON.parse(result.Payload.toString());
+    expect(payload.errorType).toBeUndefined();
+    expect(payload.errorMessage).toBeUndefined();
+    expect(payload.Items).toBeDefined();
+    expect(payload.Count).toBeDefined();
+    expect(payload.ScannedCount).toBeDefined();
+  });
+
+  it('@model-backed lambda function should generate envvars TODOTABLE_NAME, TODOTABLE_ARN, GRAPHQLAPIIDOUTPUT', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+
+    let fnName = 'integtestfn';
+    await addFunction(projRoot, {
+      name: fnName,
+      functionTemplate: 'helloWorld',
+      additionalPermissions: {
+        permissions: ['storage'],
+        choices: ['api', 'storage'],
+        resources: ['Todo:@model(appsync)'],
+        resourceChoices: ['Todo:@model(appsync)'],
+        operations: ['read'],
+      },
+    });
+
+    let lambdaSource = getFunctionSrc(projRoot, fnName).toString();
+    expect(lambdaSource.includes('TODOTABLE_NAME')).toBeTruthy();
+    expect(lambdaSource.includes('TODOTABLE_ARN')).toBeTruthy();
+    expect(lambdaSource.includes('GRAPHQLAPIIDOUTPUT')).toBeTruthy();
   });
 });
