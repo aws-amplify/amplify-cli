@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const graphql = require('graphql');
+const path = require('path');
 const { RelationalDBSchemaTransformer } = require('graphql-relational-schema-transformer');
 const { RelationalDBTemplateGenerator, AuroraServerlessMySQLDatabaseReader } = require('graphql-relational-schema-transformer');
 const { mergeTypes } = require('merge-graphql-schemas');
@@ -106,15 +107,16 @@ module.exports = {
         const apiDirPath = `${projectBackendDirPath}/${category}/${resourceName}`;
         fs.ensureDirSync(apiDirPath);
         const graphqlSchemaFilePath = `${apiDirPath}/schema.graphql`;
-        fs.ensureFileSync(graphqlSchemaFilePath);
-        const graphqlSchemaRaw = fs.readFileSync(graphqlSchemaFilePath, 'utf8');
-        const currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
-
         const rdsGraphQLSchemaDoc = graphqlSchemaContext.schemaDoc;
 
+        // to check for both schema.graphql file or schema directory and dump RDS schema
+        const graphqlSchemaRaw = readSchema(apiDirPath, rdsGraphQLSchemaDoc);
+
+        const currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
         const concatGraphQLSchemaDoc = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
 
         fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
+
         const resolversDir = `${projectBackendDirPath}/${category}/${resourceName}/resolvers`;
 
         /**
@@ -205,4 +207,49 @@ async function getAwsClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   return await provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
+}
+
+function readSchema(projectDirectory, rdsSchema) {
+  const schemaFilePath = path.join(projectDirectory, 'schema.graphql');
+  const schemaDirectoryPath = path.join(projectDirectory, 'schema');
+  const schemaFileExists = fs.existsSync(schemaFilePath);
+  const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
+  // convert the object schema to dump as file
+  const rdsSchemaDoc = mergeTypes([{}, rdsSchema], { all: true });
+
+  let schema;
+  if (schemaFileExists) {
+    schema = fs.readFileSync(schemaFilePath).toString();
+    const rdsSchemaFilePath = path.join(projectDirectory, 'rds.graphql');
+    fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
+  } else if (schemaDirectoryExists) {
+    schema = readSchemaDocuments(schemaDirectoryPath).join('\n');
+    const rdsSchemaFilePath = path.join(schemaDirectoryPath, 'rds.graphql');
+    fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
+  } else {
+    const rdsSchemaFilePath = path.join(projectDirectory, 'rds.graphql');
+    fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
+  }
+  return schema;
+}
+
+function readSchemaDocuments(schemaDirectoryPath) {
+  const files = fs.readdirSync(schemaDirectoryPath);
+  let schemaDocuments = [];
+  for (const fileName of files) {
+    if (fileName.indexOf('.') === 0) {
+      continue;
+    }
+
+    const fullPath = `${schemaDirectoryPath}/${fileName}`;
+    const stats = fs.lstatSync(fullPath);
+    if (stats.isDirectory()) {
+      const childDocs = readSchemaDocuments(fullPath);
+      schemaDocuments = schemaDocuments.concat(childDocs);
+    } else if (stats.isFile()) {
+      const schemaDoc = fs.readFileSync(fullPath);
+      schemaDocuments.push(schemaDoc);
+    }
+  }
+  return schemaDocuments;
 }
