@@ -6,13 +6,9 @@ describe('test S3 utils', () => {
   const profileNames = profiles ? Object.keys(profiles) : ['amplify-integ-test-user'];
   const selectProfileName = profileNames.includes('default') ? 'default' : profileNames[0];
   const credentials = configManager.getProfileCredentials(selectProfileName);
-  let s3;
+  const s3 = new S3({ print: { warning: jest.fn(), success: jest.fn() } }, { credentials }, true);
   beforeEach(() => {
-    s3 = new S3({ print: { warning: jest.fn(), success: jest.fn() } }, { credentials }, true);
     jest.setTimeout(1000 * 60 * 60);
-  });
-  afterEach(() => {
-    s3 = null;
   });
   it('should upload 3000 objects and delete them', async () => {
     const bucketName = uuid.v1();
