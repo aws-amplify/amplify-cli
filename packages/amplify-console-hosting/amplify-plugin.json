@@ -1,0 +1,15 @@
+{
+    "name": "hosting",
+    "type": "category",
+    "commands": [
+        "add",
+        "configure",
+        "remove",
+        "publish",
+        "help",
+        "status",
+        "serve"
+    ],
+    "displayName": "Hosting with Amplify Console (Managed Hosting, custom domains, continuous deployment)",
+    "services": ["amplifyhosting"]
+}

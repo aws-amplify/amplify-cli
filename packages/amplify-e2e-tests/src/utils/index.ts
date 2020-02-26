@@ -51,3 +51,12 @@ export function getFunctionSrc(root: string, name: string): Buffer {
   let indexPath = path.join(root, `amplify/backend/function/${name}/src/index.js`);
   return fs.readFileSync(indexPath);
 }
+
+export function createAuthProject(root?: string): string {
+  if (!root) {
+    root = path.join(__dirname, '../../../..', `amplify-integ-${Math.round(Math.random() * 100)}-test-${Math.round(Math.random() * 1000)}`);
+  }
+  fs.mkdirSync(root);
+  fs.copySync(path.join(__dirname, '../../projects-templates/create-react-app-auth-amplify'), root);
+  return root;
+}
