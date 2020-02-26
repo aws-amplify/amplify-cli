@@ -141,7 +141,7 @@ export class StorageTest {
       endpoint: string;
       name: string;
       testMode: boolean;
-    }
+    },
   ) {
     const currentMeta = await getAmplifyMeta(context);
     const override = currentMeta.storage || {};
@@ -151,9 +151,9 @@ export class StorageTest {
         service: 'S3',
         ...storageMeta,
         output: {
+          ...storageMeta.output,
           BucketName: this.bucketName,
           Region: this.storageRegion,
-          ...storageMeta.output,
         },
         testMode: localStorageDetails.testMode,
         lastPushTimeStamp: new Date(),
