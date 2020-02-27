@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const fs = require('fs-extra');
 const archiver = require('archiver');
 
-const DIR_NOT_FOUND_ERROR_MESSAGE = 'Please ensure your build path exist';
+const DIR_NOT_FOUND_ERROR_MESSAGE = 'Please ensure your build artifacts path exists.';
 
 function zipFile(sourceDir, destFilePath) {
   return new Promise((resolve, reject) => {

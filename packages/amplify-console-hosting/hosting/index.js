@@ -12,13 +12,11 @@ const tableUtis = require('../utils/table-utils');
 const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
 const REMOVE_ERROR_MESSAGE = 'There was an error removing the auth resource';
-const HOSTING_NOT_ENABLED = 'Amplify console hosting is not enabled!';
+const HOSTING_NOT_ENABLED = 'Amplify Console hosting is not enabled.';
 const HOSTING_ALREADY_ENABLED =
   'Amplify Console hosting has already been enabled';
-const META_FILE_VALIDATION =
-  'Amplify console hosting information is missed from amplify meta file';
 const FRONTEND_EXISTED_WARNING =
-  'Branches has already been added to amplify app. Can not enable local host';
+  'You have already connected branches to your Amplify Console app. Please visit the Amplify Console to manage your branches.';
 
 async function enable(context) {
   await validateHosting(context);
@@ -140,12 +138,8 @@ function loadDeployType(context) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath(context);
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
-  try {
-    return amplifyMeta[constants.CATEGORY][constants.CONSOLE_RESOURCE_NAME]
-      .type;
-  } catch (err) {
-    throw new ValidationError(META_FILE_VALIDATION);
-  }
+  return amplifyMeta[constants.CATEGORY][constants.CONSOLE_RESOURCE_NAME]
+    .type;
 }
 
 async function validateHosting(context) {

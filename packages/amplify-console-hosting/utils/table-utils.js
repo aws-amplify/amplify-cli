@@ -4,7 +4,7 @@ const Table = require('cli-table3');
 
 async function generateTableContentForApp(context, appId) {
   const spinner = ora();
-  spinner.start('Initializing amplify client');
+  spinner.start('Fetching AWS Amplify Console domains');
   const amplifyClient = await clientFactory.getAmplifyClient(context);
   const domainMap = {};
 
@@ -41,7 +41,10 @@ async function generateTableContentForApp(context, appId) {
         }
       }
     } while (nextToken != null);
-    spinner.succeed(('Checking custom domains completed'));
+    spinner.stop();
+    if (Object.keys(domainMap).length === 0) {
+      console.log('No amplify console domain detected');
+    }
     // Init table
     const table = new Table({
       head: ['FrontEnd Env', 'Domain'],

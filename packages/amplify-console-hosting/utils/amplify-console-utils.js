@@ -5,7 +5,7 @@ const ora = require('ora');
 const DEPLOY_ARTIFACTS_MESSAGE =
   'Deploying build artifacts to the Amplify Console..';
 const DEPLOY_COMPLETE_MESSAGE = 'Deployment complete!';
-const DEPLOY_FAILURE_MESSAGE = 'Deploy failed!';
+const DEPLOY_FAILURE_MESSAGE = 'Deployment failed! Please report an issue on the Amplify Console GitHub issue tracker at https://github.com/aws-amplify/amplify-console/issues.';
 
 function getDefaultDomainForApp(appId) {
   return `https://${appId}.amplifyapp.com`;
