@@ -214,6 +214,35 @@
         }
         <% } %>
         <% } %>
+        <% if (props.cloudwatchEvent && props.cloudwatchEvent != "NONE") { %> 
+        ,"CloudWatchEvent": {
+            "Type" : "AWS::Events::Rule",
+            "Properties":{
+                "Description" : "Schedule rule for Lambda",
+                "ScheduleExpression" : "<%= props.cloudwatchRule %>",
+                "State": "ENABLED",
+                "Targets": [{
+                    "Arn": { "Fn::GetAtt": ["LambdaFunction", "Arn"] },
+                    "Id":{ 
+                        "Ref" : "LambdaFunction"
+                    }
+                }]
+            } 
+        }
+        <% } %>          
+        <% if (props.cloudwatchEvent && props.cloudwatchEvent != "NONE") { %>
+        ,"PermissionForEventsToInvokeLambda": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": {
+                    "Ref": "LambdaFunction" 
+                    },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "events.amazonaws.com",
+                "SourceArn": { "Fn::GetAtt": ["CloudwatchEvent", "Arn"] }
+            }               
+        }
+        <% } %>                 
     },
     "Outputs": {
         "Name": {
