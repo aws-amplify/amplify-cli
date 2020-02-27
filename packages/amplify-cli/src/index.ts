@@ -9,6 +9,11 @@ import { Context } from './domain/context';
 import { constants } from './domain/constants';
 import { checkProjectConfigVersion } from './project-config-version-check';
 
+// Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
+// https://github.com/SBoudrias/Inquirer.js/issues/887
+import { EventEmitter } from 'events';
+EventEmitter.defaultMaxListeners = 1000;
+
 // entry from commandline
 export async function run(): Promise<number> {
   try {
