@@ -27,13 +27,11 @@
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
-    "@types/semver": "^7.1.0",
-    "amplify-appsync-simulator": "1.13.3",
+    "amplify-appsync-simulator": "1.14.0",
     "amplify-category-function": "2.13.3",
     "amplify-codegen": "2.13.3",
     "amplify-dynamodb-simulator": "1.13.3",
     "amplify-storage-simulator": "1.1.10",
-    "child_process": "^1.0.2",
     "chokidar": "^3.3.1",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.15"
