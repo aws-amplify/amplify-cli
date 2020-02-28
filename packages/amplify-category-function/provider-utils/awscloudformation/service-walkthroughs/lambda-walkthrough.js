@@ -96,16 +96,15 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // ask question to add the trigger
   let cloudwatchRule;
-  let cloudwatchEvent;
   if (await context.amplify.confirmPrompt.run('Do you want to schedule this lambda function?', false)) {
     // add service walkthrough for sdding cron exprresson
-    ({ cloudwatchEvent, cloudwatchRule } = await askScheduleRuleQuestions(context, allDefaultValues, parameters));
+    cloudwatchRule = await askScheduleRuleQuestions(context, allDefaultValues, parameters);
   }
 
   allDefaultValues.parameters = parameters;
   allDefaultValues.topLevelComment = topLevelComment;
+  allDefaultValues.cloudwatchEvent = parameters.cloudwatchEvent;
   allDefaultValues.cloudwatchRule = cloudwatchRule;
-  allDefaultValues.cloudwatchEvent = cloudwatchEvent;
 
   ({ dependsOn } = allDefaultValues);
   return { answers: allDefaultValues, dependsOn };
@@ -147,6 +146,7 @@ async function updateWalkthrough(context, lambdaToUpdate) {
   } catch (e) {
     currentParameters = {};
   }
+
   if (currentParameters.permissions) {
     currentDefaults.categories = Object.keys(currentParameters.permissions);
     currentDefaults.categoryPermissionMap = currentParameters.permissions;
@@ -236,42 +236,47 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     }
 
     fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
-    answers.parameters = newParams;
-    ({ dependsOn } = answers);
-    if (!dependsOn) {
-      dependsOn = [];
-    }
   }
   // add question for update / remove schedule from a lambda function
+  if(!currentParameters.cloudwatchEvent && currentParameters.cloudwatchEvent != 'NONE'){
+    newParams.cloudwatchEvent = currentParameters.cloudwatchEvent;
+    if( await context.amplify.confirmPrompt.run(
+      'Do you want to Update/Remove the ScheduleEvent Rule?', false)){
+      const scheduleEventOperationQuestion = {
+        type: 'list',
+        name: 'ScheduleEventOperation',
+        message: 'Select from the following options',
+        choices: ['Update the CronJob', 'Remove the CronJob'],
+      };
 
-  const scheduleEventOperationQuestion = {
-    type: 'list',
-    name: 'ScheduleEventOperation',
-    message: 'Select from the following options',
-    choices: ['Update the CronJob', 'Remove the CronJob', 'Skip Question'],
-  };
+      const scheduleEventOperationAnswer = await inquirer.prompt([scheduleEventOperationQuestion]);
 
-  const scheduleEventOperationAnswer = await inquirer.prompt([scheduleEventOperationQuestion]);
-
-  switch (scheduleEventOperationAnswer.ScheduleEventOperation) {
-    case 'Update the CronJob': {
-      // add service walkthrough to get the cron expression
-      let cloudwatchRule = 'cron(0|3 * * * ? *)';
-      cfnContent.Resources.CloudWatchEvent.Properties.ScheduleExpression = cloudwatchRule;
-      fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
-      break;
+      switch (scheduleEventOperationAnswer.ScheduleEventOperation) {
+        case 'Update the CronJob': {
+          // add service walkthrough to get the cron expression
+          let cloudwatchRule = 'cron(0|3 * * * ? *)';
+          cfnContent.Resources.CloudWatchEvent.Properties.ScheduleExpression = cloudwatchRule;
+          fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
+          break;
+        }
+        case 'Remove the CronJob': {
+          currentParameters.cloudwatchEvent = 'NONE';
+          delete cfnContent.Resources.CloudWatchEvent;
+          delete cfnContent.Resources.PermissionForEventsToInvokeLambda;
+          fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
+          break;
+        }
+        default:
+          console.log(`${scheduleEventOperationAnswer.scheduleEventOperation} not supported`);
+      }
     }
-    case 'Remove the CronJob': {
-      delete cfnContent.Resources.CloudWatchEvent;
-      delete cfnContent.Resources.PermissionForEventsToInvokeLambda;
-      fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
-      break;
-    }
-    case 'Skip Question': {
-      break;
-    }
-    default:
-      console.log(`${tscheduleEventOperationAnswer.scheduleEventOperation} not supported`);
+  }
+  // updated to take changes only for the fields and not to alter full object
+  newParams.cloudwatchEvent = currentParameters.cloudwatchEvent;
+  answers.parameters = newParams;
+  ({ dependsOn } = answers);
+  if (!dependsOn) {
+    dependsOn = [];
   }
   return { answers, dependsOn };
 }
@@ -370,9 +375,9 @@ function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNResourcePa
 }
 
 async function askScheduleRuleQuestions(context, allDefaultValues, parameters) {
-  let cloudwatchEvent = true;
+  parameters.cloudwatchEvent = "true";
   let cloudwatchRule = 'cron(0|15 * * * ? *)';
-  return { cloudwatchEvent, cloudwatchRule };
+  return cloudwatchRule;
 }
 
 async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults) {

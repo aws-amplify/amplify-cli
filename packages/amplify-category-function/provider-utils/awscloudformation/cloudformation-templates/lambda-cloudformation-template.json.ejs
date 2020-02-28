@@ -2,6 +2,9 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
+        "cloudwatchEvent": {
+            "Type": "String"
+        },
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
