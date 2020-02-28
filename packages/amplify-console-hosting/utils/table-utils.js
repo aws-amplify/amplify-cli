@@ -44,6 +44,7 @@ async function generateTableContentForApp(context, appId) {
     spinner.stop();
     if (Object.keys(domainMap).length === 0) {
       console.log('No amplify console domain detected');
+      return;
     }
     // Init table
     const table = new Table({

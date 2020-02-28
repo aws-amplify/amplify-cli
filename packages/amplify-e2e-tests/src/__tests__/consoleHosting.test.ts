@@ -6,8 +6,8 @@ import {
   amplifyPush,
   removeHosting,
   addCICDHostingWithoutFrontend,
-  amplifyConfigure,
-  amplifyServe
+  amplifyStatus,
+  checkoutEnv
 } from '../categories/consoleHosting/consoleHosting';
 import { loadTypeFromTeamProviderInfo } from '../categories/consoleHosting/utils';
 import { deleteProjectDir, createAuthProject } from '../utils';
@@ -58,6 +58,18 @@ describe('amplify console add hosting', () => {
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(false);
     await amplifyPush(projRoot);
   });
+
+   it('amplify status should show correct operations when create/ checkout env/ remove', async () => {
+    await addManualHosting(projRoot);
+    await amplifyStatus(projRoot, 'Create', true);
+    await amplifyPush(projRoot);
+    await amplifyStatus(projRoot, 'No Change', true);
+    await addEnvironment(projRoot, { envName: NWE_ENV});
+    await amplifyStatus(projRoot, 'Create', true);
+    await removeHosting(projRoot);
+    await checkoutEnv(projRoot, ORIGINAL_ENV);
+    await amplifyStatus(projRoot, 'Delete', true);
+   });
 
   // CICD tests
   it('when user does not add frontend in amplify console, no config file will be written in CLI', async () => {

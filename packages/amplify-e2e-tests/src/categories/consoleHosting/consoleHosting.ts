@@ -90,11 +90,12 @@ export function amplifyServe(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function amplifyStatus(cwd: string, verbose: boolean = !isCI()) {
+export function amplifyStatus(cwd: string, expectedStatus: string, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
+    let regex = new RegExp(`.*${expectedStatus}*`);
     nexpect
-      .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
-      .wait('Are you sure you want to continue?')
+      .spawn(getCLIPath(), ['status'], { cwd, stripColors: true, verbose })
+      .wait(regex)
       .sendline('\r')
       .run((err: Error) => {
         if (!err) {
@@ -141,6 +142,20 @@ export function removeHosting(cwd: string, verbose: boolean = !isCI()) {
       .wait(/.*Are you sure you want to delete the resource*/)
       .sendline('\r')
       .wait('Successfully removed resource')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function checkoutEnv(cwd: string, env: string, verbose: boolean = !isCI()) {
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['env', 'checkout', env], { cwd, stripColors: true, verbose:true })
       .run((err: Error) => {
         if (!err) {
           resolve();
