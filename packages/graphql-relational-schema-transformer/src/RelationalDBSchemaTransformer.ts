@@ -1,5 +1,6 @@
 import { Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
 import {
+  getSingletonListTypeNode,
   getNamedType,
   getOperationFieldDefinition,
   getNonNullType,
@@ -34,7 +35,7 @@ export class TableContext {
     primaryKeyField: string,
     primaryKeyType: string,
     stringFieldList: string[],
-    intFieldList: string[]
+    intFieldList: string[],
   ) {
     this.tableTypeDefinition = typeDefinition;
     this.tableKeyField = primaryKeyField;
@@ -70,7 +71,7 @@ export class TemplateContext {
     typePrimaryKeyMap: Map<string, string>,
     stringFieldMap: Map<string, string[]>,
     intFieldMap: Map<string, string[]>,
-    typePrimaryKeyTypeMap?: Map<string, string>
+    typePrimaryKeyTypeMap?: Map<string, string>,
   ) {
     this.schemaDoc = schemaDoc;
     this.typePrimaryKeyMap = typePrimaryKeyMap;
@@ -145,7 +146,7 @@ export class RelationalDBSchemaTransformer {
     types.push(this.getSchemaType());
 
     let context = this.dbReader.hydrateTemplateContext(
-      new TemplateContext({ kind: Kind.DOCUMENT, definitions: types }, pkeyMap, stringFieldMap, intFieldMap, pkeyTypeMap)
+      new TemplateContext({ kind: Kind.DOCUMENT, definitions: types }, pkeyMap, stringFieldMap, intFieldMap, pkeyTypeMap),
     );
     return context;
   };
@@ -184,24 +185,24 @@ export class RelationalDBSchemaTransformer {
           `delete${formattedTypeValue}`,
           [getInputValueDefinition(getNonNullType(getNamedType(typeContext.tableKeyFieldType)), typeContext.tableKeyField)],
           getNamedType(`${type.name.value}`),
-          null
-        )
+          null,
+        ),
       );
       fields.push(
         getOperationFieldDefinition(
           `create${formattedTypeValue}`,
           [getInputValueDefinition(getNonNullType(getNamedType(`Create${formattedTypeValue}Input`)), `create${formattedTypeValue}Input`)],
           getNamedType(`${type.name.value}`),
-          null
-        )
+          null,
+        ),
       );
       fields.push(
         getOperationFieldDefinition(
           `update${formattedTypeValue}`,
           [getInputValueDefinition(getNonNullType(getNamedType(`Update${formattedTypeValue}Input`)), `update${formattedTypeValue}Input`)],
           getNamedType(`${type.name.value}`),
-          null
-        )
+          null,
+        ),
       );
     }
     return getTypeDefinition(fields, 'Mutation');
@@ -222,7 +223,7 @@ export class RelationalDBSchemaTransformer {
       fields.push(
         getOperationFieldDefinition(`onCreate${formattedTypeValue}`, [], getNamedType(`${type.name.value}`), [
           getDirectiveNode(`create${formattedTypeValue}`),
-        ])
+        ]),
       );
     }
     return getTypeDefinition(fields, 'Subscription');
@@ -245,10 +246,12 @@ export class RelationalDBSchemaTransformer {
           `get${formattedTypeValue}`,
           [getInputValueDefinition(getNonNullType(getNamedType(typeContext.tableKeyFieldType)), typeContext.tableKeyField)],
           getNamedType(`${type.name.value}`),
-          null
-        )
+          null,
+        ),
       );
-      fields.push(getOperationFieldDefinition(`list${formattedTypeValue}s`, [], getNamedType(`[${type.name.value}]`), null));
+      // use list type node to match the ast of current schema built by graphql.parse
+      const nameListType = getSingletonListTypeNode(type.name.value);
+      fields.push(getOperationFieldDefinition(`list${formattedTypeValue}s`, [], nameListType, null));
     }
     return getTypeDefinition(fields, 'Query');
   }
@@ -262,7 +265,7 @@ export class RelationalDBSchemaTransformer {
   getConnectionType(tableName: string): ObjectTypeDefinitionNode {
     return getTypeDefinition(
       [getFieldDefinition('items', getNamedType(`[${tableName}]`)), getFieldDefinition('nextToken', getNamedType('String'))],
-      `${tableName}Connection`
+      `${tableName}Connection`,
     );
   }
 }
