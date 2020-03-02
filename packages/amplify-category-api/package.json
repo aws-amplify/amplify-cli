@@ -10,6 +10,10 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test-ci": "jest --ci -i"
+  },
   "dependencies": {
     "amplify-category-auth": "2.13.3",
     "amplify-category-function": "2.13.3",
@@ -29,8 +33,13 @@
   },
   "jest": {
     "testURL": "http://localhost",
-    "testRegex": "(.*/__tests__/.*.test.js)$",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(.*/__tests__/.*.test.(js|ts))$",
     "moduleFileExtensions": [
+      "ts",
+      "tsx",
       "js",
       "jsx",
       "json",
