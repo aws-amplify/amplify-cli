@@ -9,6 +9,8 @@ const functionParametersFileName = 'function-parameters.json';
 
 const parametersFileName = 'parameters.json';
 
+const cron = require('../utils/cron')
+
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const { amplify } = context;
   const { inputs } = serviceMetadata;
@@ -95,16 +97,12 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   }
 
   // ask question to add the trigger
-  let cloudwatchRule;
-  if (await context.amplify.confirmPrompt.run('Do you want to schedule this lambda function?', false)) {
-    // add service walkthrough for sdding cron exprresson
-    cloudwatchRule = await askScheduleRuleQuestions(context, allDefaultValues, parameters);
-  }
+  await cron.askScheduleRuleQuestions(context,answers.resourceName,parameters);
 
   allDefaultValues.parameters = parameters;
   allDefaultValues.topLevelComment = topLevelComment;
   allDefaultValues.cloudwatchEvent = parameters.cloudwatchEvent;
-  allDefaultValues.cloudwatchRule = cloudwatchRule;
+  allDefaultValues.cloudwatchRule = parameters.cloudwatchRule;
 
   ({ dependsOn } = allDefaultValues);
   return { answers: allDefaultValues, dependsOn };
@@ -152,12 +150,6 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     currentDefaults.categoryPermissionMap = currentParameters.permissions;
   }
 
-  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
-  const cfnFileName = `${resourceAnswer.resourceName}-cloudformation-template.json`;
-  const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-  const cfnContent = context.amplify.readJsonFile(cfnFilePath);
-
   if (
     await context.amplify.confirmPrompt.run(
       'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
@@ -165,9 +157,16 @@ async function updateWalkthrough(context, lambdaToUpdate) {
   ) {
     // Get current dependsOn for the resource
 
+    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
     const resourceDependsOn = amplifyMeta.function[answers.resourceName].dependsOn || [];
     answers.dependsOn = resourceDependsOn;
+
     const { topLevelComment } = await askExecRolePermissionsQuestions(context, answers, newParams, currentDefaults);
+
+    const cfnFileName = `${resourceAnswer.resourceName}-cloudformation-template.json`;
+    const cfnFilePath = path.join(resourceDirPath, cfnFileName);
+    const cfnContent = context.amplify.readJsonFile(cfnFilePath);
     const dependsOnParams = { env: { Type: 'String' } };
 
     Object.keys(answers.resourcePropertiesJSON)
@@ -238,41 +237,10 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
   }
   // add question for update / remove schedule from a lambda function
-  if(!currentParameters.cloudwatchEvent && currentParameters.cloudwatchEvent != 'NONE'){
-    newParams.cloudwatchEvent = currentParameters.cloudwatchEvent;
-    if( await context.amplify.confirmPrompt.run(
-      'Do you want to Update/Remove the ScheduleEvent Rule?', false)){
-      const scheduleEventOperationQuestion = {
-        type: 'list',
-        name: 'ScheduleEventOperation',
-        message: 'Select from the following options',
-        choices: ['Update the CronJob', 'Remove the CronJob'],
-      };
-
-      const scheduleEventOperationAnswer = await inquirer.prompt([scheduleEventOperationQuestion]);
-
-      switch (scheduleEventOperationAnswer.ScheduleEventOperation) {
-        case 'Update the CronJob': {
-          // add service walkthrough to get the cron expression
-          let cloudwatchRule = 'cron(0|3 * * * ? *)';
-          cfnContent.Resources.CloudWatchEvent.Properties.ScheduleExpression = cloudwatchRule;
-          fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
-          break;
-        }
-        case 'Remove the CronJob': {
-          currentParameters.cloudwatchEvent = 'NONE';
-          delete cfnContent.Resources.CloudWatchEvent;
-          delete cfnContent.Resources.PermissionForEventsToInvokeLambda;
-          fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
-          break;
-        }
-        default:
-          console.log(`${scheduleEventOperationAnswer.scheduleEventOperation} not supported`);
-      }
-    }
-  }
+  await cron.askScheduleRuleQuestions(context,answers.resourceName,currentParameters);
   // updated to take changes only for the fields and not to alter full object
   newParams.cloudwatchEvent = currentParameters.cloudwatchEvent;
+  newParams.cloudwatchRule = currentParameters.cloudwatchRule;
   answers.parameters = newParams;
   ({ dependsOn } = answers);
   if (!dependsOn) {
@@ -372,12 +340,6 @@ function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNResourcePa
   Object.assign(oldCFNParameters, newCFNResourceParameters);
 
   return oldCFNParameters;
-}
-
-async function askScheduleRuleQuestions(context, allDefaultValues, parameters) {
-  parameters.cloudwatchEvent = "true";
-  let cloudwatchRule = 'cron(0|15 * * * ? *)';
-  return cloudwatchRule;
 }
 
 async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults) {
