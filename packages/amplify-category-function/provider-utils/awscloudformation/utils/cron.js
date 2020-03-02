@@ -113,7 +113,7 @@ async function cronServiceWalkthrough(context,parameters){
             exp.set('minute', timeAnswer.dt.getMinutes().toString().split());
             exp.set('hour',timeAnswer.dt.getHours().toString().split());
             cloudwatchRule = exp.build();
-            cloudwatchRule = replaceAt(cloudwatchRule,cloudwatchRule.lastIndexOf('*'),'?') + ' ' + '*';
+            cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule,cloudwatchRule.lastIndexOf('*'),'?') + ' ' + '*' + ')';
             break;
         }
         case 'weekly' :{
@@ -129,7 +129,7 @@ async function cronServiceWalkthrough(context,parameters){
             exp1.set('hour', timeAnswer.dt.getHours().toString().split());
             exp1.set('dayOfTheWeek',weekAnswer.week.split());
             cloudwatchRule = exp1.build();
-            cloudwatchRule = replaceAt(cloudwatchRule,cloudwatchRule.firstIndexOf('*'),'?') + ' ' + '*';
+            cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule,cloudwatchRule.lastIndexOf('*'),'?') + ' ' + '*' + ')';
 
             break;
         }
@@ -142,7 +142,7 @@ async function cronServiceWalkthrough(context,parameters){
               };
             const dateAnswer = await inquirer.prompt([dateQuestion]);
             cloudwatchRule = makeCron(intervalAnswer.interval,dateAnswer,timeAnswer);
-            cloudwatchRule = replaceAt(cloudwatchRule,cloudwatchRule.lastIndexOf('*'),'?') + ' ' + '*';
+            cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule,cloudwatchRule.lastIndexOf('*'),'?') + ' ' + '*' + ')';
             break;
         }
         case 'yearly' :{
@@ -154,7 +154,7 @@ async function cronServiceWalkthrough(context,parameters){
               };
             const dateAnswer = await inquirer.prompt([dateQuestion]);
             cloudwatchRule = makeCron(intervalAnswer.interval,dateAnswer,timeAnswer);
-            cloudwatchRule = replaceAt(cloudwatchRule,cloudwatchRule.lastIndexOf('*'),'?') + ' ' + '*';
+            cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule,cloudwatchRule.lastIndexOf('*'),'?') + ' ' + '*' + ')';
             break;
         }
     }

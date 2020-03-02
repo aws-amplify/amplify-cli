@@ -3,10 +3,12 @@
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
         "cloudwatchEvent": {
-            "Type": "String"
+            "Type": "String",
+            "Default" : "NONE"
         },
         "cloudwatchRule": {
-            "Type": "String"
+            "Type": "String",
+            "Default" : "NONE"
         },
         "env": {
             "Type": "String"
