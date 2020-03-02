@@ -1,12 +1,11 @@
 const hostingModule = require('../hosting/index');
-const chalk = require('chalk');
 
 async function run(context) {
   try {
     await hostingModule.serve(context);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      console.log(chalk.red(err.message));
+      context.print.error(err.message);
     } else {
       throw err;
     }

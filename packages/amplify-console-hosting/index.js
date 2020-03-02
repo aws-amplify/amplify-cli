@@ -1,6 +1,5 @@
 const path = require('path');
 const hosting = require('./hosting/index');
-const chalk = require('chalk');
 
 async function executeAmplifyCommand(context) {
   const commandsDirPath = path.normalize(path.join(__dirname, 'commands'));
@@ -25,7 +24,7 @@ async function status(context) {
     await hosting.status(context, true);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      console.log(chalk.red(err.message));
+      context.print.error(err.message);
     } else {
       throw err;
     }
@@ -38,7 +37,7 @@ async function publish(context, service, args) {
     await hosting.publish(context, doSkipBuild, true);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      console.log(chalk.red(err.message));
+      context.print.error(err.message);
     } else {
       throw err;
     }

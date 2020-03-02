@@ -13,14 +13,6 @@
         }
     },
     "Conditions": {
-        "ShouldNotCreateEnvResources": {
-            "Fn::Equals": [
-                {
-                    "Ref": "env"
-                },
-                "NONE"
-            ]
-        },
         "isManual": {
             "Fn::Equals": [
                 {
