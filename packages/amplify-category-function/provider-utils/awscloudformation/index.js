@@ -80,7 +80,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
           template: triggerPackagePath,
           target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
         },
-      ]
+      ],
     );
   } else {
     switch (options.functionTemplate) {
@@ -102,7 +102,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
               template: 'function-template-dir/package.json.ejs',
               target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
             },
-          ]
+          ],
         );
         break;
       case 'serverless':
@@ -128,7 +128,28 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
               template: 'function-template-dir/serverless-event.json',
               target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
             },
-          ]
+          ],
+        );
+        break;
+      case 'lambdaTrigger':
+        copyJobs.push(
+          ...[
+            {
+              dir: pluginDir,
+              template: `function-template-dir/${options.triggerEventSourceMappings[0].functionTemplateName}`,
+              target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/event.json',
+              target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+            },
+            {
+              dir: pluginDir,
+              template: 'function-template-dir/package.json.ejs',
+              target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+            },
+          ],
         );
         break;
       default:
@@ -154,7 +175,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
               template: 'function-template-dir/crud-event.json',
               target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
             },
-          ]
+          ],
         );
         break;
     }
@@ -435,7 +456,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
           triggerPath,
           currentTrigger,
           triggers[currentTrigger],
-          currentEnvVariables
+          currentEnvVariables,
         );
       } else {
         envParams = currentEnvVariables;

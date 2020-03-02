@@ -28,12 +28,15 @@
     "ora": "^4.0.3",
     "uuid": "^3.4.0"
   },
+  "devDependencies": {
+    "rewire":"^4.0.1"
+  },
   "jest": {
     "testURL": "http://localhost",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "(__tests__/.*.test.(js|ts))$",
+    "testRegex": "(.*/__tests__/.*.test.(js|ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -42,6 +45,10 @@
       "json",
       "node"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "html"
+    ]
   }
 }

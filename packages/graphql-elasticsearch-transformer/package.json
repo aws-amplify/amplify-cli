@@ -17,8 +17,8 @@
     "aws"
   ],
   "scripts": {
-    "build": "tsc && cd streaming-lambda && bestzip ../lib/streaming-lambda.zip python_streaming_function.py",
-    "watch": "tsc -w && cd streaming-lambda && bestzip ../lib/streaming-lambda.zip python_streaming_function.py",
+    "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
+    "watch": "tsc -w",
     "clean": "rimraf ./lib"
   },
   "dependencies": {

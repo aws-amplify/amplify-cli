@@ -1,12 +1,9 @@
 {
-    "name": "analytics",
-    "type": "category",
-    "commands": [
-        "add",
-        "remove",
-        "push",
-        "console",
-        "help"
-    ],
-    "eventHandlers": []
+  "name": "analytics",
+  "type": "category",
+  "commands": ["add", "remove", "push", "update", "console", "help"],
+  "commandAliases": {
+    "configure": "update"
+  },
+  "eventHandlers": []
 }

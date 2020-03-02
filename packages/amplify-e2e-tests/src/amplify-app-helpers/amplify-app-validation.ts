@@ -6,6 +6,8 @@ function validateProject(projRoot: string, platform: string) {
   switch (platform) {
     case 'android':
       expect(fs.existsSync(path.join(projRoot, 'amplify-gradle-config.json'))).toBeTruthy();
+      expect(fs.existsSync(path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json'))).toBeTruthy();
+      expect(fs.existsSync(path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'amplifyconfiguration.json'))).toBeTruthy();
       break;
     case 'ios':
       expect(fs.existsSync(path.join(projRoot, 'amplifyxc.config'))).toBeTruthy();

@@ -157,7 +157,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       {
         AttributeName: defaultValues.sortKeyName,
         AttributeType: defaultValues.sortKeyType,
-      }
+      },
     );
     continueAttributeQuestion = await amplify.confirmPrompt.run('Would you like to add another column?');
   }
@@ -168,7 +168,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
     if (attributeAnswers.findIndex(attribute => attribute.AttributeName === attributeAnswer[inputs[2].key]) !== -1) {
       continueAttributeQuestion = await amplify.confirmPrompt.run(
-        'This attribute was already added. Do you want to add another attribute?'
+        'This attribute was already added. Do you want to add another attribute?',
       );
       continue;
     }
@@ -187,12 +187,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   print.info('');
   print.info(
-    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.'
+    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.',
   );
   print.info('');
   print.info('To learn more about primary keys, see:');
   print.info(
-    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey'
+    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
   );
   print.info('');
   // Ask for primary key
@@ -276,11 +276,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   print.info('');
   print.info(
-    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.'
+    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.',
   );
   print.info('To learn more about indexes, see:');
   print.info(
-    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes'
+    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
   );
   print.info('');
 
@@ -386,7 +386,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   /* Filter out only attribute
    * definitions which have been used - cfn errors out otherwise */
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(
-    attributeDefinition => usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1
+    attributeDefinition => usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1,
   );
 
   Object.assign(defaultValues, answers);
@@ -547,7 +547,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
     if (lambdaResources.length === 0) {
       throw new Error(
-        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project."
+        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project.",
       );
     }
 
@@ -837,20 +837,22 @@ function getIAMPolicies(resourceName, crudOptions) {
   policy = {
     Effect: 'Allow',
     Action: actions,
-    Resource: [
-      { Ref: `${category}${resourceName}Arn` },
-      {
-        'Fn::Join': [
-          '/',
-          [
-            {
-              Ref: `${category}${resourceName}Arn`,
-            },
-            'index/*',
-          ],
+    Resource: crudOptions.customPolicyResource
+      ? crudOptions.customPolicyResource
+      : [
+          { Ref: `${category}${resourceName}Arn` },
+          {
+            'Fn::Join': [
+              '/',
+              [
+                {
+                  Ref: `${category}${resourceName}Arn`,
+                },
+                'index/*',
+              ],
+            ],
+          },
         ],
-      },
-    ],
   };
   const attributes = ['Name', 'Arn'];
 

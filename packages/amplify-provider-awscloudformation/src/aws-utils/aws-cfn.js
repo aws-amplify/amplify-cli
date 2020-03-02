@@ -354,6 +354,20 @@ class CloudFormation {
       });
   }
 
+  listExports(nextToken = null) {
+    return new Promise((resolve, reject) => {
+      this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, (err, data) => {
+        if (err) {
+          reject(err);
+        } else if (data.NextToken) {
+          this.listExports(data.NextToken).then(innerExports => resolve([...data.Exports, ...innerExports]));
+        } else {
+          resolve(data.Exports);
+        }
+      });
+    });
+  }
+
   describeStack(cfnNestedStackParams, maxTry = 10, timeout = CFN_POLL_TIME) {
     const cfnModel = this.cfn;
     return new Promise((resolve, reject) => {

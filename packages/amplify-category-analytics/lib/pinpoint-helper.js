@@ -42,6 +42,17 @@ function scanCategoryMetaForPinpoint(categoryMeta) {
   return result;
 }
 
+function hasResource(context) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  if (!pinpointApp) {
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.NotificationsCategoryName]);
+  }
+
+  return pinpointApp !== undefined;
+}
+
 module.exports = {
+  hasResource,
   console,
 };

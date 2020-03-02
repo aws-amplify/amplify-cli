@@ -93,7 +93,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
   const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = await context.amplify.getResourceStatus(
     category,
     resourceName,
-    providerName
+    providerName,
   );
 
   const { isReverting, isCLIMigration } = options;
@@ -118,7 +118,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
             Ref: 'UnauthRoleName',
           },
         },
-      })
+      }),
     )
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
@@ -326,10 +326,13 @@ function getCfnFiles(context, category, resourceName) {
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
     const files = fs.readdirSync(resourceBuildDir);
     const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
-    return {
-      resourceDir: resourceBuildDir,
-      cfnFiles,
-    };
+
+    if (cfnFiles.length > 0) {
+      return {
+        resourceDir: resourceBuildDir,
+        cfnFiles,
+      };
+    }
   }
   const files = fs.readdirSync(resourceDir);
   const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
@@ -401,6 +404,14 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
               const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
 
               parameters[parameterKey] = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
+            }
+
+            if (dependsOn[i].exports) {
+              Object.keys(dependsOn[i].exports)
+                .map(key => ({ key, value: dependsOn[i].exports[key] }))
+                .forEach(({ key, value }) => {
+                  parameters[key] = { 'Fn::ImportValue': value };
+                });
             }
           }
         }

@@ -1,4 +1,15 @@
-import { config, DynamoDB, S3, CognitoIdentityServiceProvider, Lambda, LexModelBuildingService, Rekognition, AppSync } from 'aws-sdk';
+import {
+  config,
+  DynamoDB,
+  S3,
+  CognitoIdentityServiceProvider,
+  Lambda,
+  LexModelBuildingService,
+  Rekognition,
+  AppSync,
+  CloudWatchLogs,
+  Kinesis,
+} from 'aws-sdk';
 
 const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
@@ -64,6 +75,11 @@ const getFunction = async (functionName: string, region: string) => {
   return await service.getFunction({ FunctionName: functionName }).promise();
 };
 
+const invokeFunction = async (functionName: string, payload: string, region: string) => {
+  const service = new Lambda({ region });
+  return await service.invoke({ FunctionName: functionName, Payload: payload }).promise();
+};
+
 const getCollection = async (collectionId: string, region: string) => {
   const service = new Rekognition({ region });
   return await service.describeCollection({ CollectionId: collectionId }).promise();
@@ -84,6 +100,39 @@ const getAppSyncApi = async (appSyncApiId: string, region: string) => {
   return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
 };
 
+const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
+  const cloudwatchlogs = new CloudWatchLogs({ region });
+
+  let targetStreamName = logStreamName;
+  if (targetStreamName === undefined) {
+    const describeStreamsResp = await cloudwatchlogs.describeLogStreams({ logGroupName, descending: true }).promise();
+    if (describeStreamsResp.logStreams === undefined || describeStreamsResp.logStreams.length == 0) {
+      return [];
+    }
+
+    targetStreamName = describeStreamsResp.logStreams[0].logStreamName;
+  }
+
+  const logsResp = await cloudwatchlogs.getLogEvents({ logGroupName, logStreamName: targetStreamName }).promise();
+  return logsResp.events || [];
+};
+
+const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
+  const kinesis = new Kinesis({ region });
+
+  return await kinesis
+    .putRecords({
+      Records: [
+        {
+          Data: data,
+          PartitionKey: partitionKey,
+        },
+      ],
+      StreamName: streamName,
+    })
+    .promise();
+};
+
 export {
   getDDBTable,
   checkIfBucketExists,
@@ -92,8 +141,11 @@ export {
   getBot,
   getLambdaFunction,
   getFunction,
+  invokeFunction,
   getTable,
   deleteTable,
   getAppSyncApi,
   getCollection,
+  getCloudWatchLogs,
+  putKinesisRecords,
 };

@@ -18,7 +18,7 @@ from boto3.dynamodb.types import TypeDeserializer
 # The following parameters are required to configure the ES cluster
 ES_ENDPOINT = os.environ['ES_ENDPOINT']
 ES_REGION = os.environ['ES_REGION']
-DEBUG = True if os.environ.get('DEBUG') == 1 else False
+DEBUG = True if os.environ['DEBUG'] == "1" else False
 
 # ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
 DOC_TYPE = 'doc'
@@ -193,10 +193,12 @@ def _lambda_handler(event, context):
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
 
-        logger.debug('Deserialized doc_fields: ', doc_fields)
+        logger.debug('Deserialized doc_fields: %s', doc_fields)
 
-        doc_id = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
-            ddb['Keys'], ddb_deserializer)
+        if ('Keys' in ddb):
+            doc_id = compute_doc_index(ddb['Keys'], ddb_deserializer)
+        else:
+            logger.error('Cannot find keys in ddb record')
 
         # Generate JSON payload
         doc_json = json.dumps(doc_fields, cls=DDBTypesEncoder)
