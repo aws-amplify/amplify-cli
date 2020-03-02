@@ -103,6 +103,11 @@ const customS3Client = new S3Client(AWS_REGION);
 const awsS3Client = new S3({ region: AWS_REGION });
 
 // interface inputs
+interface CreateChatInput {
+  id?: string;
+  message: string;
+  owners: Array<string | null>;
+}
 interface CreateStudentInput {
   id?: string;
   name?: string;
@@ -195,6 +200,15 @@ beforeAll(async () => {
         id: ID!
         title: String
         postOwner: String
+    }
+
+    type Chat @model
+    @auth(rules: [
+      { allow: owner, ownerField: "owners" }
+    ]) {
+      id: ID!
+      message: String!
+      owners: [String]!
     }
 
     type Todo @model @auth(rules: [
@@ -891,7 +905,55 @@ test('test that subscription with apiKey onDelete', async done => {
   });
 });
 
+test('test that subscription with list ownerField will only work with exact values only', async done => {
+  // subscription should still be authorized since user1 is in the list
+  const observer = GRAPHQL_CLIENT_1.subscribe({
+    query: gql`
+    subscription OnCreateChat {
+      onCreateChat(owners: ["${USERNAME1}", "${USERNAME2}"]) {
+        id
+        message
+        owners
+      }
+    }
+    `,
+  });
+
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+  const subscription = observer.subscribe((event: any) => {
+    const chat = event.data.onCreateChat;
+    subscription.unsubscribe();
+    expect(chat.id).toEqual(firstChatID);
+    expect(chat.message).toEqual('message');
+    expect(chat.owners.sort()).toEqual([USERNAME1, USERNAME2].sort());
+    done();
+  });
+
+  const firstChat = await createChat(GRAPHQL_CLIENT_1, {
+    message: 'message',
+    owners: [USERNAME1, USERNAME2],
+  });
+  console.log(firstChat);
+  expect(firstChat.data.createChat.id).toBeDefined();
+  const firstChatID = firstChat.data.createChat.id;
+  expect(firstChat.data.createChat.message).toEqual('message');
+  expect(firstChat.data.createChat.owners.sort()).toEqual([USERNAME1, USERNAME2].sort());
+});
+
 // mutations
+async function createChat(client: AWSAppSyncClient<any>, input: CreateChatInput) {
+  const request = gql`
+    mutation CreateChat($input: CreateChatInput!) {
+      createChat(input: $input) {
+        id
+        message
+        owners
+      }
+    }
+  `;
+  return await client.mutate({ mutation: request, variables: { input } });
+}
+
 async function createStudent(client: AWSAppSyncClient<any>, input: CreateStudentInput) {
   const request = gql`
     mutation CreateStudent($input: CreateStudentInput!) {
