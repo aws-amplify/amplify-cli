@@ -63,7 +63,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
           type: 'list',
           choices: inputs[i].options,
         },
-        question,
+        question
       );
     } else if (inputs[i].type && inputs[i].type === 'multiselect') {
       question = Object.assign(
@@ -71,14 +71,14 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
           type: 'checkbox',
           choices: inputs[i].options,
         },
-        question,
+        question
       );
     } else {
       question = Object.assign(
         {
           type: 'input',
         },
-        question,
+        question
       );
     }
     questions.push(question);
@@ -106,7 +106,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
       if (
         await amplify.confirmPrompt.run(
-          'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
+          'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)'
         )
       ) {
         try {
@@ -118,7 +118,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       } else {
         try {
           context.print.warning(
-            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
+            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.'
           );
           apiRequirements.allowUnauthenticatedIdentities = false;
           await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
