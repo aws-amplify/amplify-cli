@@ -56,7 +56,7 @@ describe('amplify add function', () => {
     // NOTE: the next graphQL request will not get logged unless we wait a bit
     // trigger is not directly available right after cloudformation deploys???
     // I am not sure whether this is an issue on CF side or not
-    await sleep(50 * 1000);
+    await sleep(30 * 1000);
 
     const appsyncResource = Object.keys(meta.api).map(key => meta.api[key])[0];
     let resp = (await appsyncGraphQLRequest(appsyncResource, createGraphQLPayload(Math.round(Math.random() * 1000), 'amplify'))) as {
@@ -66,7 +66,7 @@ describe('amplify add function', () => {
     expect(resp.data.createTodo.id).toBeDefined();
 
     // sleep a bit to make sure lambda logs appear in cloudwatch
-    await sleep(30 * 1000);
+    await sleep(50 * 1000);
 
     const logs = await getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`);
     // NOTE: this expects default Lambda DynamoDB trigger template to log dynamoDB json records
