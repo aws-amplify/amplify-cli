@@ -246,10 +246,10 @@ function console(context) {
   }
 }
 
-async function getPinpointClient(context, action) {
+async function getPinpointClient(context, action, envName) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  return provider.getConfiguredPinpointClient(context, constants.CategoryName, action);
+  return provider.getConfiguredPinpointClient(context, constants.CategoryName, action, envName);
 }
 
 function isAnalyticsAdded(context) {

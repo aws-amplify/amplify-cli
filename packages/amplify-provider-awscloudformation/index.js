@@ -66,8 +66,8 @@ async function getConfiguredAWSClient(context, category, action) {
   return aws;
 }
 
-function getConfiguredPinpointClient(context, category, action, options = {}) {
-  return pinpoint.getConfiguredPinpointClient(context, category, action, options);
+function getConfiguredPinpointClient(context, category, action, envName) {
+  return pinpoint.getConfiguredPinpointClient(context, category, action, envName);
 }
 
 function getPinpointRegionMapping() {
