@@ -101,7 +101,7 @@ const getAppSyncApi = async (appSyncApiId: string, region: string) => {
 };
 
 const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
-  const cloudwatchlogs = new CloudWatchLogs({ region });
+  const cloudwatchlogs = new CloudWatchLogs({ region, retryDelayOptions: { base: 500 } });
 
   let targetStreamName = logStreamName;
   if (targetStreamName === undefined) {

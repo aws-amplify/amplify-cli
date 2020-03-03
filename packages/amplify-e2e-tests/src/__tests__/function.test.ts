@@ -33,7 +33,7 @@ describe('amplify add function', () => {
     expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
   });
 
-  it('graphql mutation should result in trigger called in minimal appSynch + trigger infra', async () => {
+  it('graphql mutation should result in trigger called in minimal AppSync + trigger infra', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addApiWithSchema(projRoot, 'simple_model.graphql');
     await addFunction(projRoot, { functionTemplate: 'lambdaTrigger', triggerType: 'DynamoDB' });
@@ -56,7 +56,7 @@ describe('amplify add function', () => {
     // NOTE: the next graphQL request will not get logged unless we wait a bit
     // trigger is not directly available right after cloudformation deploys???
     // I am not sure whether this is an issue on CF side or not
-    await sleep(10 * 1000);
+    await sleep(50 * 1000);
 
     const appsyncResource = Object.keys(meta.api).map(key => meta.api[key])[0];
     let resp = (await appsyncGraphQLRequest(appsyncResource, createGraphQLPayload(Math.round(Math.random() * 1000), 'amplify'))) as {
@@ -95,7 +95,7 @@ describe('amplify add function', () => {
     // NOTE: the next graphQL request will not get logged unless we wait a bit
     // trigger is not directly available right after cloudformation deploys???
     // I am not sure whether this is an issue on CF side or not
-    await sleep(10 * 1000);
+    await sleep(30 * 1000);
 
     const kinesisResource = Object.keys(meta.analytics).map(key => meta.analytics[key])[0];
     const resp = await putKinesisRecords('integtest', '0', kinesisResource.output.kinesisStreamId, meta.providers.awscloudformation.Region);
@@ -103,7 +103,7 @@ describe('amplify add function', () => {
     expect(resp.Records.length).toBeGreaterThan(0);
 
     // sleep a bit to make sure lambda logs appear in cloudwatch
-    await sleep(30 * 1000);
+    await sleep(50 * 1000);
 
     let eventId = `${resp.Records[0].ShardId}:${resp.Records[0].SequenceNumber}`;
     const logs = await getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`);
