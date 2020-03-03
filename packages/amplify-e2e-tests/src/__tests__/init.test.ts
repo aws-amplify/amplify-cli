@@ -3,8 +3,8 @@ import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } fro
 
 describe('amplify init', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('init');
   });
 
   afterEach(async () => {

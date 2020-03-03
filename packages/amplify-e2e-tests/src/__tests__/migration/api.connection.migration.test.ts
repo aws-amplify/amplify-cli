@@ -4,8 +4,8 @@ import { createNewProjectDir, deleteProjectDir } from '../../utils';
 
 describe('amplify add api', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('api-conn-migration');
   });
 
   afterEach(async () => {
@@ -23,7 +23,7 @@ describe('amplify add api', () => {
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(
       projRoot,
-      /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
+      /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/,
     );
   });
 
@@ -37,7 +37,7 @@ describe('amplify add api', () => {
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(
       projRoot,
-      /Attempting to add and remove a global secondary index at the same time on the CommentTable table in the Comment stack.*/
+      /Attempting to add and remove a global secondary index at the same time on the CommentTable table in the Comment stack.*/,
     );
   });
 
@@ -51,7 +51,7 @@ describe('amplify add api', () => {
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(
       projRoot,
-      /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
+      /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/,
     );
   });
 

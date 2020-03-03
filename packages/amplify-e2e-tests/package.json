@@ -17,26 +17,31 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest",
+    "e2e": "npm run setup-profile && jest --verbose",
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
     "aws-sdk": "^2.608.0",
+    "chalk": "^3.0.0",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
+    "graphql-transformer-core": "6.13.3",
+    "node-pty-prebuilt-multiarch": "^0.9.0",
+    "retimer": "2.0.0",
     "rimraf": "^3.0.0",
-    "graphql-transformer-core": "6.13.3"
+    "strip-ansi": "^6.0.0",
+    "throat": "^5.0.0",
+    "uuid": "7.0.1"
   },
   "devDependencies": {
-    "dotenv": "^8.2.0",
-    "nexpect": "file:./src/utils/nexpect-modified",
     "ts-node": "^8.6.2"
   },
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "jest-circus/runner",
-    "testEnvironment": "node",
+    "testRunner": "<rootDir>/src/cli-test-runner.js",
+    "testEnvironment": "<rootDir>/src/cli-test-environment.js",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -55,7 +60,15 @@
     ],
     "reporters": [
       "default",
-      "jest-junit"
+      "jest-junit",
+      [
+        "<rootDir>/src/nexpect-reporter.js",
+        {
+          "publicPath": "./amplify-e2e-reports",
+          "filename": "index.html",
+          "expand": true
+        }
+      ]
     ],
     "moduleFileExtensions": [
       "ts",

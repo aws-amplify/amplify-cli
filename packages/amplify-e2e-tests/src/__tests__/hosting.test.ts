@@ -6,8 +6,8 @@ import * as path from 'path';
 
 describe('amplify add hosting', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('hosting');
   });
 
   afterEach(async () => {

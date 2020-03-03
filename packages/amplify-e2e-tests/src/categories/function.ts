@@ -1,10 +1,10 @@
-import * as nexpect from 'nexpect';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from '../utils/nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-export let moveDown = (chain: nexpect.IChain, nmoves: number) =>
-  Array.from(Array(nmoves).keys()).reduce((chain, _idx) => chain.send('\x1b[B'), chain);
+export let moveDown = (chain: ExecutionContext, nMoves: number) =>
+  Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send(KEY_DOWN_ARROW), chain);
 
-export function multiselect<T>(chain: nexpect.IChain, items: T[], allChoices: T[]) {
+export function multiSelect<T>(chain: ExecutionContext, items: T[], allChoices: T[]) {
   return (
     items
       .map(item => allChoices.indexOf(item))
@@ -14,40 +14,39 @@ export function multiselect<T>(chain: nexpect.IChain, items: T[], allChoices: T[
       // represents the numbers of moves down we need to make to selection
       .reduce((diffs, move) => (diffs.length > 0 ? [...diffs, move - diffs[diffs.length - 1]] : [move]), [] as number[])
       .reduce((chain, move) => moveDown(chain, move).send(' '), chain)
-      .sendline('\r')
+      .sendCarriageReturn()
   );
 }
 
 function _coreFunction(cwd: string, settings: any, action: 'create' | 'update', verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    let chain = nexpect.spawn(getCLIPath(), [action == 'update' ? 'update' : 'add', 'function'], {
+    let chain = spawn(getCLIPath(), [action == 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
       verbose,
-      stream: settings.expectFailure ? 'all' : 'stdout',
     });
 
     if (action == 'create') {
       chain = chain
         .wait('Provide a friendly name for your resource to be used as a label')
-        .sendline(settings.name || '\r')
+        .sendLine(settings.name || '')
         .wait('Provide the AWS Lambda function name')
-        .sendline(settings.name || '\r')
+        .sendLine(settings.name || '')
         .wait('Choose the function template that you want to use');
 
       switch (settings.functionTemplate || 'helloWorld') {
         case 'crud':
-          chain = addCrud(moveDown(chain, 1).sendline('\r'), cwd, settings, verbose);
+          chain = addCrud(moveDown(chain, 1).sendCarriageReturn(), cwd, settings);
           break;
         case 'lambdaTrigger':
-          chain = addLambdaTrigger(moveDown(chain, 3).sendline('\r'), cwd, settings, verbose);
+          chain = addLambdaTrigger(moveDown(chain, 3).sendCarriageReturn(), cwd, settings);
           break;
         default:
-          chain = chain.sendline('\r');
+          chain = chain.sendCarriageReturn();
           break;
       }
     } else {
-      chain = chain.wait('Please select the Lambda Function you would want to update').sendline('\r');
+      chain = chain.wait('Please select the Lambda Function you would want to update').sendCarriageReturn();
     }
 
     if (!settings.expectFailure) {
@@ -58,14 +57,14 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update', 
       );
 
       if (settings.additionalPermissions) {
-        chain = multiselect(
-          chain.sendline('y').wait('Select the category'),
+        chain = multiSelect(
+          chain.sendLine('y').wait('Select the category'),
           settings.additionalPermissions.permissions,
           settings.additionalPermissions.choices,
         );
         // when single resource, it gets autoselected
         if (settings.additionalPermissions.resources.length > 1) {
-          chain = multiselect(
+          chain = multiSelect(
             chain.wait('Select the one you would like your'),
             settings.additionalPermissions.resources,
             settings.additionalPermissions.resourceChoices,
@@ -75,7 +74,7 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update', 
         // n-resources repeated questions
         chain = settings.additionalPermissions.resources.reduce(
           (chain, elem) =>
-            multiselect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
+            multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
               'create',
               'read',
               'update',
@@ -84,12 +83,12 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update', 
           chain,
         );
       } else {
-        chain = chain.sendline('n');
+        chain = chain.sendLine('n');
       }
 
       chain = chain
         .wait('Do you want to edit the local lambda function now')
-        .sendline('n')
+        .sendLine('n')
         .sendEof();
     }
 
@@ -103,30 +102,30 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update', 
   });
 }
 
-export function addFunction(cwd: string, settings: any, verbose: boolean = !isCI()) {
-  return _coreFunction(cwd, settings, 'create', verbose);
+export function addFunction(cwd: string, settings: any) {
+  return _coreFunction(cwd, settings, 'create');
 }
 
-export function updateFunction(cwd: string, settings: any, verbose: boolean = !isCI()) {
-  return _coreFunction(cwd, settings, 'update', verbose);
+export function updateFunction(cwd: string, settings: any) {
+  return _coreFunction(cwd, settings, 'update');
 }
 
-function addCrud(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
-  return chain.sendline('\r');
+function addCrud(chain: ExecutionContext, cwd: string, settings: any) {
+  return chain.sendCarriageReturn();
 }
 
-function addLambdaTrigger(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
+function addLambdaTrigger(chain: ExecutionContext, cwd: string, settings: any) {
   const res = chain
     .wait('What event source do you want to associate with Lambda trigger')
     // Amazon DynamoDB Stream
-    .sendline(settings.triggerType == 'Kinesis' ? '\x1b[B\r' : '\r')
+    .sendLine(settings.triggerType === 'Kinesis' ? KEY_DOWN_ARROW : '')
     .wait(`Choose a ${settings.triggerType} event source option`)
     /**
      * Use API category graphql @model backed DynamoDB table(s) in the current Amplify project
      * or
      * Use storage category DynamoDB table configured in the current Amplify project
      */
-    .sendline(settings.eventSource == 'DynamoDB' ? `\x1b[B\r` : '\r');
+    .sendLine(settings.eventSource === 'DynamoDB' ? KEY_DOWN_ARROW : '');
 
   switch (settings.triggerType + (settings.eventSource || '')) {
     case 'DynamoDBAppSync':
@@ -134,7 +133,7 @@ function addLambdaTrigger(chain: nexpect.IChain, cwd: string, settings: any, ver
     case 'DynamoDBDynamoDB':
       return settings.expectFailure
         ? res.wait('There are no DynamoDB resources configured in your project currently')
-        : res.wait('Choose from one of the already configured DynamoDB tables').sendline('\r');
+        : res.wait('Choose from one of the already configured DynamoDB tables').sendCarriageReturn();
     case 'Kinesis':
       return settings.expectFailure
         ? res.wait('No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream')
@@ -146,10 +145,9 @@ function addLambdaTrigger(chain: nexpect.IChain, cwd: string, settings: any, ver
 
 export function functionBuild(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true, verbose })
       .wait('Are you sure you want to continue building the resources?')
-      .sendline('Y')
+      .sendLine('Y')
       .sendEof()
       .run((err: Error) => {
         if (!err) {

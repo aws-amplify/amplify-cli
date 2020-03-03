@@ -21,8 +21,8 @@ import {
 describe('amplify-app platform tests', () => {
   let projRoot: string;
 
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('amplify-app');
   });
 
   afterEach(() => {
