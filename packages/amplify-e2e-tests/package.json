@@ -24,13 +24,12 @@
     "aws-sdk": "^2.608.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
+    "rimraf": "^3.0.0",
     "graphql-transformer-core": "6.13.3"
   },
   "devDependencies": {
-    "@types/node": "^10.17.13",
     "dotenv": "^8.2.0",
     "nexpect": "file:./src/utils/nexpect-modified",
-    "rimraf": "^3.0.0",
     "ts-node": "^8.6.2"
   },
   "jest": {
@@ -70,10 +69,7 @@
       "<rootDir>/src/setup-tests.ts"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "diagnostics": false
-      }
+      "window": {}
     }
   },
   "jest-junit": {
