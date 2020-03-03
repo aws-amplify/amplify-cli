@@ -1,4 +1,4 @@
-import { S3 } from 'aws-sdk';
+import { S3, Amplify } from 'aws-sdk';
 import { initJSProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject } from '../init';
 import {
   createNewProjectDir,
@@ -80,7 +80,9 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
   expect(await bucketExists(deploymentBucketName1)).toBe(true);
   expect(await bucketExists(deploymentBucketName2)).toBe(true);
-  await deleteProject(projRoot);
+  if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(true);
+  await deleteProject(projRoot, true);
+  if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(false);
   expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
   expect(await bucketNotExists(deploymentBucketName2)).toBe(true);
   expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
@@ -110,6 +112,16 @@ async function bucketExists(bucket: string) {
       return false;
     }
     throw error;
+  }
+}
+
+async function appExists(appId: string, region: string) {
+  const amplify = new Amplify({ region });
+  try {
+    await amplify.getApp({ appId }).promise();
+    return true;
+  } catch (ex) {
+    return false;
   }
 }
 
