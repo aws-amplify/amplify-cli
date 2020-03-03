@@ -142,6 +142,32 @@ jobs:
           path: packages/amplify-e2e-tests/
     working_directory: ~/repo
 
+  amplify_console_integration_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio and Install Amplify CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            changeNpmGlobalPath
+            npm install -g @aws-amplify/cli
+      - run:
+          command: |
+            export PATH=~/.npm-global/bin:$PATH
+            amplify -v
+            cd packages/amplify-console-integration
+            yarn run console-integration --maxWorkers=3
+          name: 'Run Amplify Console integration tests'
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-console-integration/
+    working_directory: ~/repo
+
   integration_test:
     working_directory: ~/repo
     docker:
@@ -520,10 +546,22 @@ workflows:
                 - master
           requires:
             - publish_to_local_registry
+      - amplify_console_integration_tests:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - publish_to_local_registry
+            - integration_test
+            - graphql_e2e_tests
+            - amplify_e2e_tests
+            - mock_e2e_tests
       - deploy:
           requires:
             - build
             - test
+            - amplify_console_integration_tests
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
