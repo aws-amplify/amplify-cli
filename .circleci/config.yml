@@ -563,7 +563,6 @@ workflows:
           requires:
             - build
             - test
-            - amplify_console_integration_tests
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
