@@ -9,7 +9,8 @@
         "serve"
     ],
     "commandAliases":{
-        "console": "serve"
+        "console": "serve",
+        "configure": "update"
     },
     "displayName": "Hosting with Amplify Console (Managed hosting with custom domains, Continuous deployment)",
     "services": ["amplifyhosting"]
