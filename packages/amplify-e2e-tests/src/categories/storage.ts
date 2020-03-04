@@ -236,7 +236,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any, verbo
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('You need to add auth (Amazon Cognito) to your project in order to add storage')
-      .sendline('y')
+      .sendLine('y')
       .wait('Do you want to use the default authentication and security configuration')
       .sendCarriageReturn() // Default config
       .wait('How do you want users to be able to sign in')
@@ -250,10 +250,10 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any, verbo
       .wait('Who should have access')
       .sendCarriageReturn() // Auth users only
       .wait('What kind of access do you want for Authenticated users')
-      .sendline('i') // Select all
+      .sendLine('i') // Select all
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendline('n')
+      .sendLine('n')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -285,7 +285,7 @@ export function addS3WithGuestAccess(cwd: string, settings: any, verbose: boolea
       .send(' ') // Select read
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendline('n')
+      .sendLine('n')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -322,7 +322,7 @@ export function addS3WithGroupAccess(cwd: string, settings: any, verbose: boolea
       .send(' ') // Select read
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendline('n')
+      .sendLine('n')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
