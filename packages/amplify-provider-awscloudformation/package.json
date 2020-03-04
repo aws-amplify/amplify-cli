@@ -18,7 +18,8 @@
   "scripts": {
     "test": "jest",
     "test-watch": "jest --watch",
-    "test-ci": "jest --ci -i"
+    "test-ci": "jest --ci -i",
+    "build": "npm install"
   },
   "dependencies": {
     "amplify-category-auth": "2.13.3",
