@@ -383,17 +383,17 @@ test('test that subscription with list ownerField will only work with exact valu
   // subscription should still be authorized since user1 is in the list
   const observer = GRAPHQL_CLIENT_1.subscribe({
     query: gql`
-    subscription OnCreateChat {
-      onCreateChat(owners: ["${USERNAME1}", "${USERNAME2}"]) {
-        id
-        message
-        owners
+      subscription OnCreateChat($owners: [String]!) {
+        onCreateChat(owners: $owners) {
+          id
+          message
+          owners
+        }
       }
-    }
     `,
+    variables: { owners: [USERNAME1, USERNAME2] },
   });
 
-  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
   const subscription = observer.subscribe((event: any) => {
     const chat = event.data.onCreateChat;
     subscription.unsubscribe();
@@ -403,11 +403,12 @@ test('test that subscription with list ownerField will only work with exact valu
     done();
   });
 
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+
   const firstChat = await createChat(GRAPHQL_CLIENT_1, {
     message: 'message',
     owners: [USERNAME1, USERNAME2],
   });
-  console.log(firstChat);
   expect(firstChat.data.createChat.id).toBeDefined();
   const firstChatID = firstChat.data.createChat.id;
   expect(firstChat.data.createChat.message).toEqual('message');

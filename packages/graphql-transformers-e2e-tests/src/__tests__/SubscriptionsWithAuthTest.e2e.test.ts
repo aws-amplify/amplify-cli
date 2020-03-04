@@ -641,7 +641,6 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     `,
   });
   const subscription = observer.subscribe((event: any) => {
-    console.log('subscription event: ', event);
     const student = event.data.onCreateStudent;
     subscription.unsubscribe();
     expect(student.name).toEqual('student1');
@@ -906,22 +905,25 @@ test('test that subscription with apiKey onDelete', async done => {
 });
 
 test('test that subscription with list ownerField will only work with exact values only', async done => {
+  let firstChatID: string = '';
   // subscription should still be authorized since user1 is in the list
   const observer = GRAPHQL_CLIENT_1.subscribe({
     query: gql`
-    subscription OnCreateChat {
-      onCreateChat(owners: ["${USERNAME1}", "${USERNAME2}"]) {
-        id
-        message
-        owners
+      subscription OnCreateChat($owners: [String]!) {
+        onCreateChat(owners: $owners) {
+          id
+          message
+          owners
+        }
       }
-    }
     `,
+    variables: { owners: [USERNAME1, USERNAME2] },
   });
+  console.log(JSON.stringify({ observer }, null, 4));
 
-  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
   const subscription = observer.subscribe((event: any) => {
     const chat = event.data.onCreateChat;
+    console.log(JSON.stringify({ chat }, null, 4));
     subscription.unsubscribe();
     expect(chat.id).toEqual(firstChatID);
     expect(chat.message).toEqual('message');
@@ -929,13 +931,14 @@ test('test that subscription with list ownerField will only work with exact valu
     done();
   });
 
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+
   const firstChat = await createChat(GRAPHQL_CLIENT_1, {
     message: 'message',
     owners: [USERNAME1, USERNAME2],
   });
-  console.log(firstChat);
   expect(firstChat.data.createChat.id).toBeDefined();
-  const firstChatID = firstChat.data.createChat.id;
+  firstChatID = firstChat.data.createChat.id;
   expect(firstChat.data.createChat.message).toEqual('message');
   expect(firstChat.data.createChat.owners.sort()).toEqual([USERNAME1, USERNAME2].sort());
 });
