@@ -22,6 +22,7 @@ packages/amplify-codegen-appsync-model-plugin/lib
 packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
+packages/amplify-e2e-tests/amplify-e2e-reports
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env

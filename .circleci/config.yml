@@ -140,6 +140,8 @@ jobs:
           no_output_timeout: 90m
       - store_test_results:
           path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
 
   amplify_console_integration_tests:

@@ -7,8 +7,8 @@ import * as path from 'path';
 describe('amplify add analytics', () => {
   let projRoot: string;
 
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('analytics');
   });
 
   afterEach(async () => {

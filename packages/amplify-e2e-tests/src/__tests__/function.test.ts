@@ -10,8 +10,8 @@ import { getCloudWatchLogs, putKinesisRecords, invokeFunction } from '../utils/s
 
 describe('amplify add function', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('functions');
   });
 
   afterEach(async () => {
@@ -159,8 +159,8 @@ describe('amplify add function', () => {
 
 describe('amplify add function with additional permissions', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('fn-with-perm');
   });
 
   afterEach(async () => {
