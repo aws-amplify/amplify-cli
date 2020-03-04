@@ -12,7 +12,6 @@ async function deleteProject(context) {
     spinner.start();
     await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
     const appId = getAmplifyAppId();
-    console.log(appId);
     if (confirmation.deleteAmpilfyApp && appId) {
       const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');
       const amplifyClient = await awsCloudPlugin.getConfiguredAmplifyClient(context, {});
