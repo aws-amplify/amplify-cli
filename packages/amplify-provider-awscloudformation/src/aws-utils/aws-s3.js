@@ -125,24 +125,32 @@ class S3 {
 
   deleteS3Bucket(bucketName) {
     return new Promise((resolve, reject) => {
-      this.deleteAllObjects(bucketName).then((result, err) => {
+      this.ifBucketExists(bucketName).then((exists, err) => {
         if (err) {
           reject(err);
-          return;
         }
-
-        this.s3
-          .deleteBucket({
-            Bucket: bucketName,
-          })
-          .promise()
-          .then((dresult, derr) => {
-            if (derr) {
-              reject(derr);
+        if (exists) {
+          this.deleteAllObjects(bucketName).then((result, err) => {
+            if (err) {
+              reject(err);
               return;
             }
-            resolve(dresult);
+            this.s3
+              .deleteBucket({
+                Bucket: bucketName,
+              })
+              .promise()
+              .then((dresult, derr) => {
+                if (derr) {
+                  reject(derr);
+                  return;
+                }
+                resolve(dresult);
+              });
           });
+        } else {
+          resolve();
+        }
       });
     });
   }
