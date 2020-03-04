@@ -22,7 +22,7 @@ export function getCLIPath() {
 }
 
 export function getProfileName() {
-  return 'amplify-console-integration-test';
+  return 'amplify-integ-test-user';
 }
 
 export function isCI(): Boolean {

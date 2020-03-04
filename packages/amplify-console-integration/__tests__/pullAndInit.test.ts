@@ -4,7 +4,7 @@ import {
   createConsoleApp,
   generateBackendEnvParams,
   createBackendEnvironment,
-  deleteAllAmplifyProjects,
+  deleteConsoleApp,
 } from '../src/pullAndInit/amplifyConsoleOperations';
 
 import { headlessInit } from '../src/pullAndInit/initProject';
@@ -19,13 +19,9 @@ import {
 import * as util from '../src/util';
 
 describe('amplify console build', () => {
-  beforeAll(() => {
-    return deleteAllAmplifyProjects();
-  });
+  beforeAll(() => {});
 
-  afterAll(() => {
-    return deleteAllAmplifyProjects();
-  });
+  afterAll(() => {});
 
   beforeEach(() => {});
 
@@ -93,6 +89,7 @@ describe('amplify console build', () => {
 
     //clean up after the tests
     await headlessDelete(projectDirPath);
+    await deleteConsoleApp(appId, amplifyClient);
     util.deleteProjectDir(projectDirPath);
   });
 
@@ -101,19 +98,19 @@ describe('amplify console build', () => {
 
     const projectName = 'cliintegrationthirdparty';
     let envName = 'devteama';
-    let appId = await createConsoleApp(projectName, amplifyClient);
-    let backendParams = generateBackendEnvParams(appId, projectName, envName);
+    const appIdA = await createConsoleApp(projectName, amplifyClient);
+    let backendParams = generateBackendEnvParams(appIdA, projectName, envName);
     await createBackendEnvironment(backendParams, amplifyClient);
 
     let amplifyParam = {
       envName,
-      appId,
+      appId: appIdA,
     };
     const providersParam = {
       awscloudformation: {
         configLevel: 'project',
         useProfile: true,
-        profileName: 'default',
+        profileName: util.getProfileName(),
       },
     };
     const codegenParam = {
@@ -134,12 +131,12 @@ describe('amplify console build', () => {
     fs.copySync(originalProjectDirPath, clonedProjectDirPath);
     removeFilesForThirdParty(clonedProjectDirPath);
     envName = 'devteamb';
-    appId = await createConsoleApp(projectName, amplifyClient);
-    backendParams = generateBackendEnvParams(appId, projectName, envName);
+    const appIdB = await createConsoleApp(projectName, amplifyClient);
+    backendParams = generateBackendEnvParams(appIdB, projectName, envName);
     await createBackendEnvironment(backendParams, amplifyClient);
     amplifyParam = {
       envName,
-      appId,
+      appId: appIdB,
     };
     await headlessInit(clonedProjectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(clonedProjectDirPath)).toBeTruthy();
@@ -149,8 +146,10 @@ describe('amplify console build', () => {
 
     //clean up after the tests
     await headlessDelete(originalProjectDirPath);
+    await deleteConsoleApp(appIdA, amplifyClient);
     util.deleteProjectDir(originalProjectDirPath);
     await headlessDelete(clonedProjectDirPath);
+    await deleteConsoleApp(appIdB, amplifyClient);
     util.deleteProjectDir(clonedProjectDirPath);
   });
 });
