@@ -360,9 +360,9 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
   const crudOptions = ['create', 'read', 'update', 'delete'];
   parameters.permissions = {};
 
-  const categoryPlugins = context.amplify.getCategoryPlugins(context);
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const appsyncTableSuffix = '@model(appsync)';
+
   for (let i = 0; i < selectedCategories.length; i += 1) {
     const category = selectedCategories[i];
     const resourcesList = category in amplifyMeta ? Object.keys(amplifyMeta[category]) : [];
@@ -384,43 +384,47 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
     }
 
     try {
-      const { getPermissionPolicies } = require(categoryPlugins[category]);
-      if (!getPermissionPolicies) {
-        context.print.warning(`Policies cannot be added for ${category}`);
-        continue;
+      let selectedResources = [];
+
+      if (resourcesList.length === 1) {
+        context.print.info(`${capitalizeFirstLetter(category)} category has a resource called ${resourcesList[0]}`);
+        selectedResources = [resourcesList[0]];
       } else {
-        let selectedResources = [];
+        const resourceQuestion = {
+          type: 'checkbox',
+          name: 'resources',
+          message: `${capitalizeFirstLetter(category)} has ${
+            resourcesList.length
+          } resources in this project. Select the one you would like your Lambda to access`,
+          choices: resourcesList,
+          validate: value => {
+            if (value.length === 0) {
+              return 'You must select at least resource';
+            }
+            return true;
+          },
+          default: () => {
+            if (currentDefaults && currentDefaults.categoryPermissionMap && currentDefaults.categoryPermissionMap[category]) {
+              return Object.keys(currentDefaults.categoryPermissionMap[category]);
+            }
+          },
+        };
 
-        if (resourcesList.length === 1) {
-          context.print.info(`${capitalizeFirstLetter(category)} category has a resource called ${resourcesList[0]}`);
-          selectedResources = [resourcesList[0]];
+        const resourceAnswer = await inquirer.prompt([resourceQuestion]);
+        selectedResources = resourceAnswer.resources;
+      }
+
+      for (let j = 0; j < selectedResources.length; j += 1) {
+        const resourceName = selectedResources[j];
+
+        const pluginInfo = context.amplify.getCategoryPluginInfo(context, category, resourceName);
+
+        const { getPermissionPolicies } = require(pluginInfo.packageLocation);
+
+        if (!getPermissionPolicies) {
+          context.print.warning(`Policies cannot be added for ${category}/${resourceName}`);
+          continue;
         } else {
-          const resourceQuestion = {
-            type: 'checkbox',
-            name: 'resources',
-            message: `${capitalizeFirstLetter(category)} has ${
-              resourcesList.length
-            } resources in this project. Select the one you would like your Lambda to access`,
-            choices: resourcesList,
-            validate: value => {
-              if (value.length === 0) {
-                return 'You must select at least resource';
-              }
-              return true;
-            },
-            default: () => {
-              if (currentDefaults && currentDefaults.categoryPermissionMap && currentDefaults.categoryPermissionMap[category]) {
-                return Object.keys(currentDefaults.categoryPermissionMap[category]);
-              }
-            },
-          };
-
-          const resourceAnswer = await inquirer.prompt([resourceQuestion]);
-          selectedResources = resourceAnswer.resources;
-        }
-
-        for (let j = 0; j < selectedResources.length; j += 1) {
-          const resourceName = selectedResources[j];
           const crudPermissionQuestion = {
             type: 'checkbox',
             name: 'crudOptions',
@@ -468,8 +472,7 @@ async function askExecRolePermissionsQuestions(context, allDefaultValues, parame
               },
             ];
           }
-        }
-        if (selectedResources.length > 0) {
+
           const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, parameters.permissions[category]);
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
 

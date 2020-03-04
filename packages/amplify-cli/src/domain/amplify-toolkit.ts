@@ -11,7 +11,8 @@ export class AmplifyToolkit {
   private _executeProviderUtils: any;
   private _getAllEnvs: any;
   private _getPlugin: any;
-  private _getCategoryPlugins: any;
+  private _getCategoryPluginInfo: any;
+  private _getAllCategoryPluginInfo: any;
   private _getFrontendPlugins: any;
   private _getEnvDetails: any;
   private _getEnvInfo: any;
@@ -113,10 +114,16 @@ export class AmplifyToolkit {
     this._getPlugin = this._getPlugin || require(path.join(this._amplifyHelpersDirPath, 'get-plugin')).getPlugin;
     return this._getPlugin;
   }
-  get getCategoryPlugins(): any {
-    this._getCategoryPlugins =
-      this._getCategoryPlugins || require(path.join(this._amplifyHelpersDirPath, 'get-category-plugins')).getCategoryPlugins;
-    return this._getCategoryPlugins;
+  get getCategoryPluginInfo(): any {
+    this._getCategoryPluginInfo =
+      this._getCategoryPluginInfo || require(path.join(this._amplifyHelpersDirPath, 'get-category-pluginInfo')).getCategoryPluginInfo;
+    return this._getCategoryPluginInfo;
+  }
+  get getAllCategoryPluginInfo(): any {
+    this._getAllCategoryPluginInfo =
+      this._getAllCategoryPluginInfo ||
+      require(path.join(this._amplifyHelpersDirPath, 'get-all-category-pluginInfos')).getAllCategoryPluginInfo;
+    return this._getAllCategoryPluginInfo;
   }
   get getFrontendPlugins(): any {
     this._getFrontendPlugins =

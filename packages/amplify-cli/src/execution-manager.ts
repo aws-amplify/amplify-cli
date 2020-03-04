@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
@@ -12,6 +13,8 @@ import {
   AmplifyPostInitEventData,
   AmplifyPrePushEventData,
   AmplifyPostPushEventData,
+  AmplifyPrePullEventData,
+  AmplifyPostPullEventData,
 } from './domain/amplify-event';
 
 export async function executeCommand(context: Context) {
@@ -20,22 +23,121 @@ export async function executeCommand(context: Context) {
   if (pluginCandidates.length === 1) {
     await executePluginModuleCommand(context, pluginCandidates[0]);
   } else if (pluginCandidates.length > 1) {
+    const selectedPluginInfo = await selectPluginForExecution(context, pluginCandidates);
+    await executePluginModuleCommand(context, selectedPluginInfo);
+  }
+}
+
+async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
+  let result = pluginCandidates[0];
+
+  let promptForSelection = true;
+
+  const noSmartPickCommands = ['add', 'help'];
+  const commandAllowsSmartPick = !noSmartPickCommands.includes(context.input.command!);
+
+  if (commandAllowsSmartPick) {
+    let candidatesAreAllCategoryPlugins = pluginCandidates.every((pluginInfo: PluginInfo) => {
+      return pluginInfo.manifest.type === 'category';
+    });
+
+    const pluginName = pluginCandidates[0].manifest.name;
+    let candidatesAllHaveTheSameName = pluginCandidates.every((pluginInfo: PluginInfo) => {
+      return pluginInfo.manifest.name === pluginName;
+    });
+
+    if (candidatesAreAllCategoryPlugins && candidatesAllHaveTheSameName) {
+      const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+      if (fs.existsSync(amplifyMetaFilePath)) {
+        const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+
+        const servicesSetInMeta = new Set<string>(Object.keys(amplifyMeta[pluginName] || {}));
+        const pluginWithMatchingServices: PluginInfo[] = [];
+        const pluginWithDisjointServices: PluginInfo[] = [];
+        const pluginWithoutServicesDeclared: PluginInfo[] = [];
+        //Use smart pick in two scenarios:
+        //1. if all the services under the category in metadata are in one and only one plugin candidate
+        //2. if no service in metadata is declared in any candidate's manifest, and only one candiate does not define the optional
+        //"services" field in its manifest, select the candiate, this is for the existing implementation of official plugins
+        let i = 0;
+        while (i < pluginCandidates.length) {
+          if (pluginCandidates[i].manifest.services && pluginCandidates[i].manifest.services!.length > 0) {
+            const servicesSetInPlugin = new Set<string>(pluginCandidates[i].manifest.services);
+            if (twoStringSetsAreEqual(servicesSetInMeta, servicesSetInPlugin)) {
+              pluginWithMatchingServices.push(pluginCandidates[i]);
+            }
+            if (twoStringSetsAreDisjoint(servicesSetInMeta, servicesSetInPlugin)) {
+              pluginWithDisjointServices.push(pluginCandidates[i]);
+            }
+          } else {
+            pluginWithDisjointServices.push(pluginCandidates[i]);
+            pluginWithoutServicesDeclared.push(pluginCandidates[i]);
+          }
+          i++;
+        }
+
+        if (pluginWithMatchingServices.length === 1 && pluginWithDisjointServices.length === pluginCandidates.length - 1) {
+          result = pluginWithMatchingServices[0];
+          promptForSelection = false;
+        } else if (pluginWithDisjointServices.length === pluginCandidates.length && pluginWithoutServicesDeclared.length === 1) {
+          result = pluginWithoutServicesDeclared[0];
+          promptForSelection = false;
+        }
+      }
+    }
+  }
+
+  if (promptForSelection) {
+    //only use the manifest's displayName if there are no duplicates
+    let noDuplicateDisplayNames = true;
+    let displayNameSet = new Set<string>();
+    let i = 0;
+    while (noDuplicateDisplayNames && i < pluginCandidates.length) {
+      const { displayName } = pluginCandidates[i].manifest;
+      if (displayName) {
+        if (displayNameSet.has(displayName)) {
+          noDuplicateDisplayNames = false;
+          break;
+        } else {
+          displayNameSet.add(displayName);
+        }
+      }
+      i++;
+    }
+
+    //special handling for hosting plugins
+    const consoleHostingPlugins = pluginCandidates.filter(pluginInfo => {
+      return pluginInfo.packageName === 'amplify-console-hosting';
+    });
+    if (consoleHostingPlugins.length > 0) {
+      const otherPlugins = pluginCandidates.filter(pluginInfo => {
+        return pluginInfo.packageName !== 'amplify-console-hosting';
+      });
+      //put console hosting plugin at the top
+      pluginCandidates = consoleHostingPlugins.concat(otherPlugins);
+    }
+
     const answer = await inquirer.prompt({
       type: 'list',
       name: 'section',
-      message: 'Select the module to execute',
+      message: 'Select the plugin module to execute',
       choices: pluginCandidates.map(plugin => {
-        const pluginOptions = {
-          name: plugin.packageName + '@' + plugin.packageVersion,
+        let displayName = plugin.packageName + '@' + plugin.packageVersion;
+        if (plugin.manifest.displayName && noDuplicateDisplayNames) {
+          displayName = plugin.manifest.displayName;
+        }
+        const pluginOption = {
+          name: displayName,
           value: plugin,
-          short: plugin.packageName + '@' + plugin.packageVersion,
+          short: displayName,
         };
-        return pluginOptions;
+        return pluginOption;
       }),
     });
-    const pluginModule = answer.section as PluginInfo;
-    await executePluginModuleCommand(context, pluginModule);
+    result = answer.section as PluginInfo;
   }
+
+  return result;
 }
 
 async function executePluginModuleCommand(context: Context, plugin: PluginInfo) {
@@ -99,10 +201,16 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo) 
 
 async function raisePreEvent(context: Context) {
   if (context.input.plugin === constants.CORE) {
-    if (context.input.command === 'init') {
-      await raisePreInitEvent(context);
-    } else if (context.input.command === 'push') {
-      await raisePrePushEvent(context);
+    switch (context.input.command) {
+      case 'init':
+        await raisePreInitEvent(context);
+        break;
+      case 'push':
+        await raisePrePushEvent(context);
+        break;
+      case 'pull':
+        await raisePrePullEvent(context);
+        break;
     }
   }
 }
@@ -115,12 +223,22 @@ async function raisePrePushEvent(context: Context) {
   await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePush, new AmplifyPrePushEventData()));
 }
 
+async function raisePrePullEvent(context: Context) {
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePull, new AmplifyPrePullEventData()));
+}
+
 async function raisePostEvent(context: Context) {
   if (context.input.plugin === constants.CORE) {
-    if (context.input.command === 'init') {
-      await raisePostInitEvent(context);
-    } else if (context.input.command === 'push') {
-      await raisePostPushEvent(context);
+    switch (context.input.command) {
+      case 'init':
+        await raisePostInitEvent(context);
+        break;
+      case 'push':
+        await raisePostPushEvent(context);
+        break;
+      case 'pull':
+        await raisePostPullEvent(context);
+        break;
     }
   }
 }
@@ -131,6 +249,10 @@ async function raisePostInitEvent(context: Context) {
 
 async function raisePostPushEvent(context: Context) {
   await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPush, new AmplifyPostInitEventData()));
+}
+
+async function raisePostPullEvent(context: Context) {
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPull, new AmplifyPostPullEventData()));
 }
 
 export async function raiseEvent(context: Context, args: AmplifyEventArgs) {

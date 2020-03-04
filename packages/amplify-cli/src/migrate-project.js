@@ -86,22 +86,24 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
     // Give each category a chance to migrate their respective files
     const categoryMigrationTasks = [];
 
-    const categoryPlugins = context.amplify.getCategoryPlugins(context);
+    const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     let apiMigrateFunction;
 
-    Object.keys(categoryPlugins).forEach(category => {
-      try {
-        const { migrate } = require(categoryPlugins[category]);
-        if (migrate) {
-          if (category !== 'api') {
-            categoryMigrationTasks.push(() => migrate(context));
-          } else {
-            apiMigrateFunction = migrate;
+    Object.keys(categoryPluginInfoList).forEach(category => {
+      categoryPluginInfoList[category].forEach(pluginInfo => {
+        try {
+          const { migrate } = require(pluginInfo.packageLocation);
+          if (migrate) {
+            if (category !== 'api') {
+              categoryMigrationTasks.push(() => migrate(context));
+            } else {
+              apiMigrateFunction = migrate;
+            }
           }
+        } catch (e) {
+          // do nothing, it's fine if a category is not setup for migration
         }
-      } catch (e) {
-        // do nothing, it's fine if a category is not setup for migration
-      }
+      });
     });
 
     if (apiMigrateFunction) {

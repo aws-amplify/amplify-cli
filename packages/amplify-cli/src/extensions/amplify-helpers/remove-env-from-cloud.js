@@ -1,5 +1,5 @@
 const { getProjectConfig } = require('./get-project-config');
-const { getCategoryPlugins } = require('./get-category-plugins');
+const { getAllCategoryPluginInfo } = require('./get-all-category-pluginInfos');
 const { getProviderPlugins } = require('./get-provider-plugins');
 
 async function removeEnvFromCloud(context, envName, deleteS3) {
@@ -23,9 +23,9 @@ async function removeEnvFromCloud(context, envName, deleteS3) {
     throw e;
   }
 
-  const categoryPlugins = getCategoryPlugins(context);
-  if (categoryPlugins.notifications) {
-    const notificationsModule = require(categoryPlugins.notifications);
+  const categoryPluginInfoList = getAllCategoryPluginInfo(context);
+  if (categoryPluginInfoList.notifications) {
+    const notificationsModule = require(categoryPluginInfoList.notifications[0].packageLocation);
     await notificationsModule.deletePinpointAppForEnv(context, envName);
   }
 }
