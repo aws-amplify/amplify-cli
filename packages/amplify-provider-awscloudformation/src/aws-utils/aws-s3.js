@@ -5,22 +5,17 @@ const configurationManager = require('../../lib/configuration-manager');
 
 class S3 {
   constructor(context, options = {}, test = false) {
-    if (!test) {
-      return (async () => {
-        let cred = {};
-        try {
-          cred = await configurationManager.loadConfiguration(context);
-        } catch (e) {
-          // ignore missing config
-        }
-        this.context = context;
-        this.s3 = new aws.S3({ ...cred, ...options });
-        return this;
-      })();
-    } else {
+    return (async () => {
+      let cred = {};
+      try {
+        cred = await configurationManager.loadConfiguration(context);
+      } catch (e) {
+        // ignore missing config
+      }
       this.context = context;
-      this.s3 = new aws.S3({ ...options });
-    }
+      this.s3 = new aws.S3({ ...cred, ...options });
+      return this;
+    })();
   }
 
   uploadFile(s3Params) {

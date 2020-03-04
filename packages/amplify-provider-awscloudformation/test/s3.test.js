@@ -6,7 +6,7 @@ describe('test S3 utils', () => {
   const profileNames = profiles ? Object.keys(profiles) : ['amplify-integ-test-user'];
   const selectProfileName = profileNames.includes('default') ? 'default' : profileNames[0];
   const credentials = configManager.getProfileCredentials(selectProfileName);
-  const s3 = new S3({ print: { warning: jest.fn(), success: jest.fn() } }, { credentials }, true);
+  const s3 = new S3({ print: { warning: jest.fn(), success: jest.fn() } }, { credentials });
   beforeEach(() => {
     jest.setTimeout(1000 * 60 * 60);
   });
