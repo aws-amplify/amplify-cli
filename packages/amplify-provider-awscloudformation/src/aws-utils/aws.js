@@ -31,4 +31,4 @@ aws.configureWithCreds = async context => {
   return aws;
 };
 
-module.exports = aws;
+module.exports = require('aws-sdk');
