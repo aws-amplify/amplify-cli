@@ -4,7 +4,7 @@ const providerName = require('../../lib/constants').ProviderName;
 const configurationManager = require('../../lib/configuration-manager');
 
 class S3 {
-  constructor(context, options = {}, test = false) {
+  constructor(context, options = {}) {
     return (async () => {
       let cred = {};
       try {
