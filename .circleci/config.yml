@@ -522,7 +522,6 @@ workflows:
           requires:
             - build
             - mock_e2e_tests
-            - amplify_console_integration_tests
       - mock_e2e_tests:
           requires:
             - build
@@ -535,7 +534,6 @@ workflows:
           requires:
             - build
             - mock_e2e_tests
-            - amplify_console_integration_tests
       - publish_to_local_registry:
           filters:
             branches:
@@ -550,7 +548,6 @@ workflows:
                 - master
           requires:
             - publish_to_local_registry
-            - amplify_console_integration_tests
       - amplify_console_integration_tests:
           filters:
             branches:
@@ -563,7 +560,6 @@ workflows:
           requires:
             - build
             - test
-            - amplify_console_integration_tests
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
