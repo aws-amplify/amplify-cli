@@ -1,18 +1,17 @@
-import * as nexpect from 'nexpect';
+import { nspawn as spawn } from '../utils/nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-export async function newPlugin(cwd: string, verbose: Boolean = isCI() ? false : true): Promise<string> {
+export async function newPlugin(cwd: string, verbose: boolean = isCI() ? false : true): Promise<string> {
   const pluginPackageDirName = 'newpluginpackage';
 
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['plugin', 'init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'init'], { cwd, stripColors: true, verbose })
       .wait('What should be the name of the plugin')
-      .send(pluginPackageDirName + '\r')
+      .sendLine(pluginPackageDirName)
       .wait('Specify the plugin type')
-      .send('\r')
+      .sendLine('')
       .wait('What Amplify CLI events do you want the plugin to handle')
-      .send('\r')
+      .sendLine('')
       .run((err: Error) => {
         if (!err) {
           resolve(pluginPackageDirName);
