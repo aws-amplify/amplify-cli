@@ -17,7 +17,7 @@ exports[`Test per-field @auth without model 1`] = `
 
 
 ## [Start] Throw if unauthorized **
-#if( !($listContext_isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+#if( $listContext_isStaticGroupAuthorized == false )
   $util.unauthorized()
 #end
 ## [End] Throw if unauthorized **"
