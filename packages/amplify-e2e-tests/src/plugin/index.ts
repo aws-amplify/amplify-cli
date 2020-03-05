@@ -1,13 +1,12 @@
 export * from './new-plugin';
 export * from './verifyPluginStructure';
 
-import * as nexpect from 'nexpect';
+import { nspawn as spawn } from '../utils/nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-export function help(cwd: string, verbose: Boolean = isCI() ? false : true) {
+export function help(cwd: string, verbose: boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['plugin', 'help'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'help'], { cwd, stripColors: true, verbose })
       .wait(/.*/)
       .run(function(err: Error) {
         if (!err) {
@@ -19,10 +18,9 @@ export function help(cwd: string, verbose: Boolean = isCI() ? false : true) {
   });
 }
 
-export function scan(cwd: string, verbose: Boolean = isCI() ? false : true) {
+export function scan(cwd: string, verbose: boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['plugin', 'scan'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'scan'], { cwd, stripColors: true, verbose })
       .wait(/.*/)
       .run(function(err: Error) {
         if (!err) {
@@ -34,14 +32,13 @@ export function scan(cwd: string, verbose: Boolean = isCI() ? false : true) {
   });
 }
 
-export function listActive(cwd: string, verbose: Boolean = isCI() ? false : true) {
+export function listActive(cwd: string, verbose: boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
       .wait('Select the section to list')
-      .sendline('')
+      .sendLine('')
       .wait('Select the name of the plugin to list')
-      .sendline('k')
+      .sendLine('k')
       .run(function(err: Error) {
         if (!err) {
           resolve();
@@ -52,13 +49,11 @@ export function listActive(cwd: string, verbose: Boolean = isCI() ? false : true
   });
 }
 
-export function listExcluded(cwd: string, verbose: Boolean = isCI() ? false : true) {
+export function listExcluded(cwd: string, verbose: boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
       .wait('Select the section to list')
-      .sendline('j')
-      .sendline('')
+      .sendLine('j')
       .run(function(err: Error) {
         if (!err) {
           resolve();
@@ -69,13 +64,11 @@ export function listExcluded(cwd: string, verbose: Boolean = isCI() ? false : tr
   });
 }
 
-export function listGeneralInfo(cwd: string, verbose: Boolean = isCI() ? false : true) {
+export function listGeneralInfo(cwd: string, verbose: boolean = isCI() ? false : true) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
       .wait('Select the section to list')
-      .send('j')
-      .sendline('j')
+      .sendLine('j')
       .run(function(err: Error) {
         if (!err) {
           resolve();
