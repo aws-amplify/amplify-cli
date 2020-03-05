@@ -8,7 +8,7 @@ import { newPlugin, verifyPlugin, help, scan, listActive, listExcluded, listGene
 describe('amplify plugin', () => {
   let testDirPath: string;
   beforeEach(() => {
-    testDirPath = createNewProjectDir();
+    testDirPath = createNewProjectDir('pluginTest');
   });
 
   afterEach(async () => {
