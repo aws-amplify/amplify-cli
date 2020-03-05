@@ -30,7 +30,7 @@
   "dependencies": {
     "amplify-frontend-android": "2.13.2",
     "amplify-frontend-ios": "2.13.2",
-    "amplify-frontend-javascript": "^2.13.3",
+    "amplify-frontend-javascript": "2.13.2",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
