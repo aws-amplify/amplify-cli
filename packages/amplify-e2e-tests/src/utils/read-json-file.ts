@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+import * as fs from 'fs-extra';
 
 function stripBOM(content) {
   if (content.charCodeAt(0) === 0xfeff) {
@@ -7,10 +7,6 @@ function stripBOM(content) {
   return content;
 }
 
-function readJsonFile(jsonFilePath, encoding = 'utf8') {
+export function readJsonFile(jsonFilePath, encoding = 'utf8') {
   return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
 }
-
-module.exports = {
-  readJsonFile,
-};

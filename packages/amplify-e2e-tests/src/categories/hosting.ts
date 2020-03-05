@@ -4,6 +4,9 @@ import { getCLIPath, isCI } from '../utils';
 export function addHosting(cwd: string, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true, verbose })
+      .wait('Select the plugin module to execute')
+      .sendLine('j')
+      .sendCarriageReturn()
       .wait('Select the environment setup:')
       .sendCarriageReturn()
       .wait('hosting bucket name')
