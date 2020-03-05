@@ -440,7 +440,7 @@ async function askPaths(context, answers, currentPath) {
       type: 'input',
       message: 'Provide a path (e.g., /book/{isbn}):',
       default: currentPath ? currentPath.name : '/items',
-      validate: (value) => validatePathName(value, answers.paths),
+      validate: value => validatePathName(value, answers.paths),
     },
     {
       name: 'functionType',
@@ -809,7 +809,7 @@ function getIAMPolicies(resourceName, crudOptions) {
     ],
   };
 
-  const attributes = ['ApiName'];
+  const attributes = ['ApiName', 'ApiId'];
 
   return { policy, attributes };
 }

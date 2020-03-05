@@ -18,7 +18,7 @@ import * as fs from 'fs-extra';
 describe('amplify delete', () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = createNewProjectDir();
+    projRoot = await createNewProjectDir('delete');
   });
 
   afterEach(() => {

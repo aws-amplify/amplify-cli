@@ -24,21 +24,24 @@ async function onCategoryOutputsChange(context, cloudAmplifyMeta, localMeta) {
   }
 
   const outputChangedEventTasks = [];
-  const categoryPlugins = context.amplify.getCategoryPlugins(context);
-  Object.keys(categoryPlugins).forEach(pluginName => {
-    const packageLocation = categoryPlugins[pluginName];
-    const pluginModule = require(packageLocation);
-    if (pluginModule && typeof pluginModule.onAmplifyCategoryOutputChange === 'function') {
-      outputChangedEventTasks.push(async () => {
-        try {
-          attachContextExtensions(context, packageLocation);
-          await pluginModule.onAmplifyCategoryOutputChange(context, cloudAmplifyMeta);
-        } catch (e) {
-          // do nothing
-        }
-      });
-    }
+  const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
+  Object.keys(categoryPluginInfoList).forEach(category => {
+    categoryPluginInfoList[category].forEach(pluginInfo => {
+      const { packageLocation } = pluginInfo;
+      const pluginModule = require(packageLocation);
+      if (pluginModule && typeof pluginModule.onAmplifyCategoryOutputChange === 'function') {
+        outputChangedEventTasks.push(async () => {
+          try {
+            attachContextExtensions(context, packageLocation);
+            await pluginModule.onAmplifyCategoryOutputChange(context, cloudAmplifyMeta);
+          } catch (e) {
+            // do nothing
+          }
+        });
+      }
+    });
   });
+
   if (outputChangedEventTasks.length > 0) {
     await sequential(outputChangedEventTasks);
   }

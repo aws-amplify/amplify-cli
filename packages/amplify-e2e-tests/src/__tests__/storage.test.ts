@@ -12,8 +12,8 @@ import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, che
 
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('s3-add-update');
   });
 
   afterEach(async () => {
@@ -40,8 +40,8 @@ describe('amplify add/update storage(S3)', () => {
 
 describe('amplify add/update storage(DDB) with GSI', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('ddb-gsi');
   });
 
   afterEach(async () => {
@@ -60,8 +60,8 @@ describe('amplify add/update storage(DDB) with GSI', () => {
 
 describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('ddb-add-update');
   });
 
   afterEach(async () => {
@@ -79,7 +79,7 @@ describe('amplify add/update storage(DDB)', () => {
 
     const meta = getProjectMeta(projRoot);
     const { Name: table1Name, Arn: table1Arn, Region: table1Region, StreamArn: table1StreamArn } = Object.keys(meta.storage).map(
-      key => meta.storage[key]
+      key => meta.storage[key],
     )[0].output;
 
     expect(table1Name).toBeDefined();
@@ -91,7 +91,7 @@ describe('amplify add/update storage(DDB)', () => {
     expect(table1Configs.Table.TableArn).toEqual(table1Arn);
 
     const { Name: table2Name, Arn: table2Arn, Region: table2Region, StreamArn: table2StreamArn } = Object.keys(meta.storage).map(
-      key => meta.storage[key]
+      key => meta.storage[key],
     )[1].output;
 
     expect(table2Name).toBeDefined();

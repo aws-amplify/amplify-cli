@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const path = require('path');
 const categoryManager = require('./lib/category-manager');
+const pluginManifest = require('./amplify-plugin.json');
 
 const category = 'hosting';
 
@@ -25,11 +26,11 @@ async function add(context) {
     } else if (disabledServices.length === 1) {
       return categoryManager.runServiceAction(context, disabledServices[0], 'enable');
     }
-    const errorMessage = 'Hosting is already fully enabled.';
-    context.print.error(errorMessage);
+
+    const errorMessage = `Hosting using ${pluginManifest.displayName} is already enabled.`;
     throw new Error(errorMessage);
   } else {
-    const errorMessage = 'Hosting is not available from enabled providers.';
+    const errorMessage = `${pluginManifest.displayName} hosting is not available from enabled providers.`;
     context.print.error(errorMessage);
     throw new Error(errorMessage);
   }
@@ -55,9 +56,9 @@ async function configure(context) {
     } else if (enabledServices.length === 1) {
       return categoryManager.runServiceAction(context, enabledServices[0], 'configure');
     }
-    throw new Error('No hosting service is enabled.');
+    throw new Error(`No ${pluginManifest.displayName} hosting service is enabled.`);
   } else {
-    throw new Error('Hosting is not available from enabled providers.');
+    throw new Error(`${pluginManifest.displayName} hosting is not available from enabled providers.`);
   }
 }
 
@@ -70,7 +71,7 @@ function publish(context, service, args) {
     }
     throw new Error(`Hosting service ${service} is NOT enabled.`);
   } else {
-    throw new Error('No hosting service is enabled.');
+    throw new Error(`No ${pluginManifest.displayName} hosting service is enabled.`);
   }
 }
 
@@ -90,9 +91,9 @@ async function console(context) {
     } else if (enabledServices.length === 1) {
       return categoryManager.runServiceAction(context, enabledServices[0], 'console');
     }
-    throw new Error('No hosting service is enabled.');
+    throw new Error(`No ${pluginManifest.displayName} hosting service is enabled.`);
   } else {
-    throw new Error('Hosting is not available from enabled providers.');
+    throw new Error(`${pluginManifest.displayName} hosting is not available from enabled providers.`);
   }
 }
 
@@ -119,13 +120,12 @@ async function executeAmplifyCommand(context) {
   } else {
     commandPath = path.join(commandPath, category, context.input.command);
   }
-
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
 
 async function handleAmplifyEvent(context, args) {
-  context.print.info(`${category} handleAmplifyEvent to be implemented`);
+  context.print.info(`${pluginManifest.displayName} hosting handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }
 

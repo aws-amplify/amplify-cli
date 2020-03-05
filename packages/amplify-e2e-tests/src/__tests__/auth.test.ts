@@ -35,8 +35,8 @@ const defaultsSettings = {
 
 describe('amplify add auth...', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('auth');
   });
 
   afterEach(async () => {
@@ -151,8 +151,8 @@ describe('amplify add auth...', () => {
 
 describe('amplify updating auth...', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('auth-update');
   });
 
   afterEach(async () => {

@@ -1,4 +1,4 @@
-import * as nexpect from 'nexpect';
+import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
 import { isCI } from '../utils';
 import { getCLIPath } from '../utils/index';
 
@@ -6,23 +6,21 @@ import { getCLIPath } from '../utils/index';
 export function addConvert(cwd: string, settings: any, verbose: boolean = !isCI()) {
   const resourceName = 'convertTest1';
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the categories below')
-      // j = down arrow
-      .sendline('j')
-      .sendline('\r')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .wait('What would you like to convert?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Provide a friendly name for your resource')
-      .sendline(`${resourceName}\r`)
+      .sendLine(`${resourceName}\r`)
       .wait('What is the source language?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('What is the target language?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Who should have access?')
-      .sendline('j')
-      .sendline('\r')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -38,30 +36,29 @@ export function addConvert(cwd: string, settings: any, verbose: boolean = !isCI(
 export function addIdentifyCollection(cwd: string, settings: any, verbose: boolean = !isCI()) {
   const resourceName = 'identifyCollectionTest1';
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the categories below')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('What would you like to identify?')
-      .sendline('j')
-      .sendline('\r')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .wait('Provide a friendly name for your resource')
-      .sendline(`${resourceName}\r`)
+      .sendLine(`${resourceName}\r`)
       .wait('Would you like use the default configuration?')
-      .sendline('j')
-      .sendline('\r')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .wait('Would you like to enable celebrity detection?')
-      .sendline('y\r')
+      .sendLine('y')
       .wait('Would you like to identify entities from a collection of images?')
-      .sendline('y\r')
+      .sendLine('y')
       .wait('How many entities would you like to identify?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Would you like to allow users to add images to this collection?')
-      .sendline('y\r')
+      .sendLine('y')
       .wait('Who should have access?')
-      .sendline('j\r')
+      .sendLine(KEY_DOWN_ARROW)
       .wait('The CLI would be provisioning an S3 bucket')
-      .sendline('\r')
+      .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -77,19 +74,17 @@ export function addIdentifyCollection(cwd: string, settings: any, verbose: boole
 export function addInterpret(cwd: string, settings: any, verbose: boolean = !isCI()) {
   const resourceName = 'interpretTest1';
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the categories below')
-      // j = down arrow
-      .sendline('jj')
+      .sendLine(`${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}`)
       .wait('What would you like to interpret?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Provide a friendly name for your resource')
-      .sendline(`${resourceName}\r`)
+      .sendLine(`${resourceName}\r`)
       .wait('What kind of interpretation would you like?')
-      .sendline('k')
+      .sendLine('k')
       .wait('Who should have access?')
-      .sendline('j')
+      .sendLine(KEY_DOWN_ARROW)
       .sendEof()
       .run((err: Error) => {
         if (!err) {

@@ -1,20 +1,19 @@
-import * as nexpect from '../utils/nexpect-modified';
+import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
 import { getCLIPath, isCI } from '../utils';
 
 export function addPinpoint(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
       .wait('Select an Analytics provider')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
-      .sendline(settings.wrongName)
+      .sendLine(settings.wrongName)
       .wait('Resource name should be alphanumeric')
-      .sendline('\r')
+      .sendCarriageReturn()
       .send('\b')
-      .sendline(settings.rightName)
+      .sendLine(settings.rightName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-      .sendline('n')
+      .sendLine('n')
       .wait(`Successfully added resource ${settings.rightName} locally`)
       .sendEof()
       .run((err: Error) => {
@@ -29,21 +28,20 @@ export function addPinpoint(cwd: string, settings: any, verbose: boolean = !isCI
 
 export function addKinesis(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
       .wait('Select an Analytics provider')
-      .send('\x1b[B')
-      .sendline('\r')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .wait('Enter a Stream name')
-      .sendline(settings.wrongName)
+      .sendLine(settings.wrongName)
       .wait('Name is invalid.')
-      .sendline('\r')
+      .sendCarriageReturn()
       .send('\b')
-      .sendline(settings.rightName)
+      .sendLine(settings.rightName)
       .wait('Enter number of shards')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-      .sendline('n')
+      .sendLine('n')
       .wait(`Successfully added resource ${settings.rightName} locally`)
       .sendEof()
       .run((err: Error) => {
@@ -58,14 +56,13 @@ export function addKinesis(cwd: string, settings: any, verbose: boolean = !isCI(
 
 export function removeAnalytics(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true, verbose })
       .wait('Choose the resource you would want to remove')
       .send('j')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
       .send('y')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Successfully removed resource')
       .sendEof()
       .run((err: Error) => {
