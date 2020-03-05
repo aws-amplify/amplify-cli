@@ -102,23 +102,21 @@ class S3 {
         if (error) reject(error);
         const chunkedResult = _.chunk(result, 1000);
 
-        Promise.all(
-          chunkedResult.map(res =>
-            this.s3
-              .deleteObjects({
-                Bucket: bucketName,
-                Delete: {
-                  Objects: res,
-                  Quiet: false,
-                },
-              })
-              .promise(),
-          ),
-        )
-          .then(result => {
-            resolve(result);
+        const deleteReq = chunkedResult
+          .map(res => {
+            return {
+              Bucket: bucketName,
+              Delete: {
+                Objects: res,
+                Quiet: false,
+              },
+            };
           })
-          .catch(err => reject(err));
+          .map(delParams => this.s3.deleteObjects(delParams))
+          .map(delRequest => delRequest.promise());
+        Promise.all(deleteReq)
+          .then(resolve)
+          .catch(reject);
       });
     });
   }
