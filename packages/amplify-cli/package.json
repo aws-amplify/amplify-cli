@@ -41,6 +41,7 @@
     "amplify-category-auth": "2.13.3",
     "amplify-category-function": "2.13.3",
     "amplify-category-hosting": "2.1.11",
+    "amplify-console-hosting": "1.0.0",
     "amplify-category-interactions": "2.1.11",
     "amplify-category-notifications": "2.13.3",
     "amplify-category-predictions": "2.1.12",
@@ -131,11 +132,18 @@
         "type": "category",
         "packageName": "amplify-category-function"
       },
-      "hosting": {
-        "name": "hosting",
-        "type": "category",
-        "packageName": "amplify-category-hosting"
-      },
+      "hosting": [
+        {
+          "name": "hosting",
+          "type": "category",
+          "packageName": "amplify-category-hosting"
+        },
+        {
+          "name": "hosting",
+          "type": "category",
+          "packageName": "amplify-console-hosting"
+        }
+      ],
       "interactions": {
         "name": "interactions",
         "type": "category",

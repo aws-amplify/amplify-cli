@@ -26,6 +26,7 @@ module.exports = {
     '<rootDir>/packages/amplify-category-auth',
     '<rootDir>/packages/amplify-category-function',
     '<rootDir>/packages/amplify-category-hosting',
+    '<rootDir>/packages/amplify-console-hosting',
     '<rootDir>/packages/amplify-category-interactions',
     '<rootDir>/packages/amplify-category-notifications',
     '<rootDir>/packages/amplify-category-predictions',
