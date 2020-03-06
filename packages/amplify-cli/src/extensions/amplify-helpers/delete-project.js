@@ -1,7 +1,10 @@
 const ora = require('ora');
+const os = require('os');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 const { getFrontendPlugins } = require('./get-frontend-plugins');
+const { getPluginInstance } = require('./get-plugin-instance');
+const { getAmplifyAppId } = require('./get-amplify-appId');
 async function deleteProject(context) {
   const confirmation = await getConfirmation(context);
   if (confirmation.proceed) {
