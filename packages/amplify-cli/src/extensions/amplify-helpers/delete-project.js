@@ -9,14 +9,19 @@ async function deleteProject(context) {
   if (confirmation.proceed) {
     const allEnvs = context.amplify.getEnvDetails();
     const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
-    spinner.start();
-    await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
-    const appId = getAmplifyAppId();
-    if (confirmation.deleteAmpilfyApp && appId) {
-      const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');
-      const amplifyClient = await awsCloudPlugin.getConfiguredAmplifyClient(context, {});
-      const response = await amplifyClient.deleteApp({ appId }).promise();
-      if (!response) context.print.error(`An error occured deleting the Amplify App ${appId}`);
+
+    try {
+      spinner.start();
+      await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
+      const appId = getAmplifyAppId();
+      if (confirmation.deleteAmpilfyApp && appId) {
+        const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');
+        const amplifyClient = await awsCloudPlugin.getConfiguredAmplifyClient(context, {});
+        await amplifyClient.deleteApp({ appId }).promise();
+      }
+    } catch (ex) {
+      spinner.fail(`Project delete faile ${ex.message}`);
+      throw ex;
     }
     spinner.succeed('Project deleted in the cloud');
     // Remove amplify dir
