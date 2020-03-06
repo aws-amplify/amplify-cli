@@ -1,4 +1,4 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from '../utils/nexpect';
 import { updateSchema } from '../utils';
 import * as fs from 'fs-extra';
 
@@ -173,7 +173,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: bool
 
 export function updateAPIWithResolutionStrategy(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
@@ -202,4 +202,77 @@ export function updateAPIWithResolutionStrategy(cwd: string, settings: any, verb
         }
       });
   });
+}
+
+// Either settings.existingLambda or settings.isCrud is required
+export function addRestApi(cwd: string, settings: any, verbose: boolean = !isCI()) {
+  return new Promise((resolve, reject) => {
+    if (!('existingLambda' in settings) && !('isCrud' in settings)) {
+      reject('Missing property in settings object in addRestApi()');
+    } else {
+      let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+        .wait('Please select from one of the below mentioned services')
+        .send(KEY_DOWN_ARROW)
+        .sendCarriageReturn() // REST
+        .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
+        .sendCarriageReturn()
+        .wait('Provide a path')
+        .sendCarriageReturn()
+        .wait('Choose a lambda source');
+
+      if (settings.existingLambda) {
+        chain = chain
+          .send(KEY_DOWN_ARROW)
+          .sendCarriageReturn() // Existing lambda
+          .wait('Choose the Lambda function to invoke by this path')
+          .sendCarriageReturn(); // Pick first one
+      } else {
+        chain = chain
+          .sendCarriageReturn() // Create new Lambda function
+          .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
+          .sendCarriageReturn()
+          .wait('Provide the AWS Lambda function name')
+          .sendCarriageReturn()
+          .wait('Choose the function template that you want to use');
+
+        chain = settings.isCrud ? _crudRestApi(chain) : _serverlessExpressApi(chain);
+
+        chain = chain
+          .wait('Do you want to access other resources created in this project from your Lambda function')
+          .sendLine('n')
+          .wait('Do you want to edit the local lambda function now')
+          .sendLine('n');
+      }
+
+      chain = chain
+        .wait('Restrict API access')
+        .sendLine('n')
+        .wait('Do you want to add another path')
+        .sendLine('n')
+        .sendEof()
+        .run((err: Error) => {
+          if (!err) {
+            resolve();
+          } else {
+            reject(err);
+          }
+        });
+    }
+  });
+}
+
+// Expects a DDB table to already exist
+function _crudRestApi(chain: ExecutionContext): ExecutionContext {
+  chain = chain
+    .sendCarriageReturn() // CRUD function for Amazon DynamoDB table
+    .wait('Choose a DynamoDB data source option')
+    .sendCarriageReturn() // Use DDB table configured in current project
+    .wait('Choose from one of the already configured DynamoDB tables')
+    .sendCarriageReturn(); // Use first one in the list
+  return chain;
+}
+
+function _serverlessExpressApi(chain: ExecutionContext): ExecutionContext {
+  chain = chain.send(KEY_DOWN_ARROW).sendCarriageReturn(); // Serverless express function
+  return chain;
 }
