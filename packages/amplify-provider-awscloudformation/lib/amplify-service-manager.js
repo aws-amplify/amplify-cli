@@ -197,12 +197,7 @@ async function deleteEnv(context, envName, awsConfig) {
         appId: amplifyAppId,
         environmentName: envName,
       };
-      try {
-        await amplifyClient.deleteBackendEnvironment(deleteEnvParams).promise();
-        await amplifyClient.deleteApp({ appId: amplifyAppId }).promise();
-      } catch (e) {
-        context.print.error(`An error occured deleting: ${e.message}`);
-      }
+      await amplifyClient.deleteBackendEnvironment(deleteEnvParams).promise();
     }
   }
 }
