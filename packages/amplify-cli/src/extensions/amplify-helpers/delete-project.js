@@ -1,5 +1,4 @@
 const ora = require('ora');
-const os = require('os');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 const { getFrontendPlugins } = require('./get-frontend-plugins');
