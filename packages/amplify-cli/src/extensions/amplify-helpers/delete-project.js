@@ -20,7 +20,7 @@ async function deleteProject(context) {
         await amplifyClient.deleteApp({ appId }).promise();
       }
     } catch (ex) {
-      spinner.fail(`Project delete faile ${ex.message}`);
+      spinner.fail(`Project delete failed ${ex.message}`);
       throw ex;
     }
     spinner.succeed('Project deleted in the cloud');
