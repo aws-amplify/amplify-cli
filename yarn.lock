@@ -4416,21 +4416,6 @@ aws-sdk@^2.518.0, aws-sdk@^2.608.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
-aws-sdk@^2.617.0:
-  version "2.620.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.620.0.tgz#033240ff7e2b6290c3de68adba5adc371dd103b5"
-  integrity sha512-j+PGKbYwk5OjzbCFbxzRkcJVEvfdn9YFkrU8dJdjleYf9AzUSUpTjMyZsyUPOKxJxdNdA9FYTs43WdtSKHZa0A==
-  dependencies:
-    buffer "4.9.1"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.3.2"
-    xml2js "0.4.19"
-
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
@@ -9575,11 +9560,6 @@ graphql-language-service-utils@^2.3.3:
     graphql-config "2.2.1"
     graphql-language-service-types "^1.5.2"
 
-graphql-mapping-template@4.13.2:
-  version "4.13.2"
-  resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.13.2.tgz#bce1b5ba165df304b024f48b7530f96efe71f0bf"
-  integrity sha512-a3RBKFNSUwFXqLxI1Vb/yjAt47XD4NfaXceFPwj2GyJD6JPOd60hyoAHmJlnF3F+4wzV5DsdJsP7ZXbTpOdDlA==
-
 graphql-request@^1.5.0:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-1.8.2.tgz#398d10ae15c585676741bde3fc01d5ca948f8fbe"
@@ -9621,26 +9601,6 @@ graphql-tools@^4.0.6:
     deprecated-decorator "^0.1.6"
     iterall "^1.1.3"
     uuid "^3.1.0"
-
-graphql-transformer-common@4.13.2:
-  version "4.13.2"
-  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.13.2.tgz#6be78de8d7d3d6072ad007f7d0d05fbd2c2b2e6a"
-  integrity sha512-6Wz3dF4Yg6DXgBVB+hUru6mpxQ4sLkyBQiUNA/wvIPuE14YDkeWFOkT3iy4HEtNyEyqO3dcOAs+l6B2VxD2zXw==
-  dependencies:
-    graphql "^14.5.8"
-    graphql-mapping-template "4.13.2"
-    md5 "^2.2.1"
-
-graphql-transformer-core@6.13.2:
-  version "6.13.2"
-  resolved "https://registry.yarnpkg.com/graphql-transformer-core/-/graphql-transformer-core-6.13.2.tgz#335694814e13c6f5a2a17ec03803413ac15369d0"
-  integrity sha512-DwYZVBAFGGF6T0mP6hpmtQ8zyuWDurOvVG3zrNUWyHS9Dr9lC6Uo3pQS+Wzu1Ak6iOItjcCQeUWq+JpdRepFCg==
-  dependencies:
-    cloudform-types "^4.1.0"
-    deep-diff "^1.0.2"
-    fs-extra "^8.1.0"
-    graphql "^14.5.8"
-    graphql-transformer-common "4.13.2"
 
 graphql-type-json@^0.3.1:
   version "0.3.1"
