@@ -85,6 +85,18 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
         chain = chain.sendLine('n');
       }
 
+      // scheduling questions
+
+      chain = chain
+        .wait(action == 'create' ? 'Do you want to schedule this lambda function?' : 'Do you want to Update/Remove the ScheduleEvent Rule?')
+        .sendline('y');
+      if (settings.schedulePermissions) {
+        chain = cronWalkthrough(chain, cwd, settings, verbose);
+      } else {
+        chain = chain.sendline('n');
+      }
+      // scheduling questions
+
       chain = chain
         .wait('Do you want to edit the local lambda function now')
         .sendLine('n')
@@ -156,4 +168,42 @@ export function functionBuild(cwd: string, settings: any) {
         }
       });
   });
+}
+
+function cronWalkthrough(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
+  chain = chain
+    .wait('When would you like to start cron')
+    .sendline('\r')
+    .wait('Please select interval');
+
+  switch (settings.schedulePermissions.interval || 'daily') {
+    case 'weekly':
+      chain = addWeekly(moveDown(chain, 1).sendline('\r'), cwd, settings, verbose);
+      break;
+    case 'monthly':
+      chain = addMonthly(moveDown(chain, 2).sendline('\r'), cwd, settings, verbose);
+      break;
+    case 'yearly':
+      chain = addYearly(moveDown(chain, 3).sendline('\r'), cwd, settings, verbose);
+      break;
+    default:
+      chain = chain.sendline('\r');
+      break;
+  }
+  return chain;
+}
+
+function addWeekly(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
+  chain = chain.wait('Please select the  da to start Job');
+  return chain.sendline('\r');
+}
+
+function addMonthly(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
+  chain = chain.wait('Select date to start cron');
+  return chain.sendline('\r');
+}
+
+function addYearly(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
+  chain = chain.wait('select month and date to start cron');
+  return chain.sendline('\r');
 }

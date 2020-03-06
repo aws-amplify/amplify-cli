@@ -9,7 +9,7 @@ const functionParametersFileName = 'function-parameters.json';
 
 const parametersFileName = 'parameters.json';
 
-const cron = require('../utils/cron')
+const cron = require('../utils/cron');
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const { amplify } = context;
@@ -97,7 +97,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   }
 
   // ask question to add the trigger
-  await cron.askScheduleRuleQuestions(context,answers.resourceName,parameters);
+  await cron.askScheduleRuleQuestions(context, answers.resourceName, parameters);
 
   allDefaultValues.parameters = parameters;
   allDefaultValues.topLevelComment = topLevelComment;
@@ -237,7 +237,7 @@ async function updateWalkthrough(context, lambdaToUpdate) {
     fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
   }
   // add question for update / remove schedule from a lambda function
-  await cron.askScheduleRuleQuestions(context,answers.resourceName,currentParameters);
+  await cron.askScheduleRuleQuestions(context, answers.resourceName, currentParameters);
   // updated to take changes only for the fields and not to alter full object
   newParams.cloudwatchEvent = currentParameters.cloudwatchEvent;
   newParams.cloudwatchRule = currentParameters.cloudwatchRule;

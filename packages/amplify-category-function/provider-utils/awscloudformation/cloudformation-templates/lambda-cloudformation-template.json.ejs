@@ -247,7 +247,7 @@
                     },
                 "Action": "lambda:InvokeFunction",
                 "Principal": "events.amazonaws.com",
-                "SourceArn": { "Fn::GetAtt": ["CloudwatchEvent", "Arn"] }
+                "SourceArn": { "Fn::GetAtt": ["CloudWatchEvent", "Arn"] }
             }               
         }
         <% } %>                 
@@ -269,6 +269,11 @@
         "LambdaExecutionRole": {
             "Value": {
                 "Ref": "LambdaExecutionRole"
+            }
+        },
+        "CloudWatchEventRule": {
+            "Value" :{
+                "Ref" : "CloudWatchEvent"
             }
         }
     }
