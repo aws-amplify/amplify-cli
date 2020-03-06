@@ -1,5 +1,4 @@
 const ora = require('ora');
-const os = require('os');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 const { getFrontendPlugins } = require('./get-frontend-plugins');
@@ -12,6 +11,13 @@ async function deleteProject(context) {
     const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
     spinner.start();
     await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
+    const appId = getAmplifyAppId();
+    if (confirmation.deleteAmpilfyApp && appId) {
+      const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');
+      const amplifyClient = await awsCloudPlugin.getConfiguredAmplifyClient(context, {});
+      const response = await amplifyClient.deleteApp({ appId }).promise();
+      if (!response) context.print.error(`An error occured deleting the Amplify App ${appId}`);
+    }
     spinner.succeed('Project deleted in the cloud');
     // Remove amplify dir
     const { frontend } = context.amplify.getProjectConfig();
