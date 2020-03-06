@@ -1,17 +1,16 @@
-import * as nexpect from '../utils/nexpect-modified';
+import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
 
 import { getCLIPath, isCI, getEnvVars } from '../utils';
 
 export function addAuthWithDefault(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
       .wait('Do you want to use the default authentication')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -25,8 +24,7 @@ export function addAuthWithDefault(cwd: string, settings: any, verbose: boolean 
 
 export function addAuthWithGroupTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('\r')
       .wait('How do you want users to be able to sign in')
@@ -57,8 +55,7 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any, verbose: boo
 
 export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the below mentioned services:')
       .send('\r')
       .wait('Provide API name')
@@ -85,7 +82,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: bo
       .send('n')
       .send('\r')
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
       .send('n')
       .send('\r')
@@ -109,8 +106,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: bo
 
 export function addAuthWithCustomTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('j')
       .send('j')
@@ -188,8 +184,7 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any, verbose: bo
 
 export function updateAuthWithoutCustomTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
       .wait('What do you want to do?')
       .send('j')
       .send('j')
@@ -242,8 +237,7 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any, verbo
 
 export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('\r')
       .wait('How do you want users to be able to sign in?')
@@ -280,8 +274,7 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose:
 
 export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
       .wait('What do you want to do')
       .send('j')
       .send('\r')
@@ -359,29 +352,27 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
     if (missingVars.length > 0) {
       throw new Error(`.env file is missing the following key/values: ${missingVars.join(', ')} `);
     }
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
       .wait('Do you want to use the default authentication and security configuration?')
-      // j = down arrow
-      .sendline('j')
-      .sendline('\r')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .wait('How do you want users to be able to sign in?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('What domain name prefix you want us to create for you?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Enter your redirect signin URI:')
-      .sendline('https://www.google.com/')
+      .sendLine('https://www.google.com/')
       .wait('Do you want to add another redirect signin URI')
-      .sendline('n')
-      .sendline('\r')
+      .sendLine('n')
+      .sendCarriageReturn()
       .wait('Enter your redirect signout URI:')
-      .sendline('https://www.nytimes.com/')
-      .sendline('\r')
+      .sendLine('https://www.nytimes.com/')
+      .sendCarriageReturn()
       .wait('Do you want to add another redirect signout URI')
-      .sendline('n')
-      .sendline('\r')
+      .sendLine('n')
+      .sendCarriageReturn()
       .wait('Select the social providers you want to configure for your user pool:')
       .send('a')
       .send('\r')
@@ -416,8 +407,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
 
 export function addAuthWithMaxOptions(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('j')
       .send('j')

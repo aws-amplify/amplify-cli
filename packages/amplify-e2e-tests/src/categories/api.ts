@@ -1,4 +1,4 @@
-import * as nexpect from 'nexpect';
+import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
 import { updateSchema } from '../utils';
 import * as fs from 'fs-extra';
 
@@ -10,30 +10,29 @@ function getSchemaPath(schemaName: string): string {
 
 export function addApiWithoutSchema(cwd: string, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the below mentioned services:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
-      .sendline('n')
+      .sendLine('n')
       .wait('Do you want a guided schema creation')
-      .sendline('y')
+      .sendLine('y')
       .wait('What best describes your project')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendline('n')
+      .sendLine('n')
       .wait(
-        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
       .run((err: Error) => {
         if (!err) {
@@ -48,26 +47,25 @@ export function addApiWithoutSchema(cwd: string, verbose: boolean = !isCI()) {
 export function addApiWithSchema(cwd: string, schemaFile: string, verbose: boolean = !isCI()) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the below mentioned services:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
-      .sendline('y')
+      .sendLine('y')
       .wait('Provide your schema file path:')
-      .sendline(schemaPath)
+      .sendLine(schemaPath)
       .wait(
-        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
       .run((err: Error) => {
         if (!err) {
@@ -82,32 +80,31 @@ export function addApiWithSchema(cwd: string, schemaFile: string, verbose: boole
 export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string, verbose: boolean = !isCI()) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the below mentioned services:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendline('\x1b[B') // Down
+      .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
-      .sendline('n')
+      .sendLine('n')
       .wait(/.*Configure conflict detection.*/)
-      .sendline('y')
+      .sendLine('y')
       .wait(/.*Select the default resolution strategy.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Do you have an annotated GraphQL schema.*/)
-      .sendline('y')
+      .sendLine('y')
       .wait('Provide your schema file path:')
-      .sendline(schemaPath)
+      .sendLine(schemaPath)
       .wait(
-        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
       .run((err: Error) => {
         if (!err) {
@@ -127,42 +124,41 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
 
 export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true, verbose })
       .wait('Please select from one of the below mentioned services:')
-      .sendline('')
+      .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
-      .sendline('')
+      .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
-      .sendline('description')
+      .sendLine('description')
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendline('300')
+      .sendLine('300')
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendline('\x1b[B') // Down
+      .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
-      .sendline('y')
+      .sendLine('y')
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
-      .sendline('a\r') // All items
+      .sendLine('a\r') // All items
       // Cognito
       .wait(/.*Do you want to use the default authentication and security configuration.*/)
-      .sendline('')
+      .sendCarriageReturn()
       .wait('How do you want users to be able to sign in?')
-      .sendline('')
+      .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
-      .sendline('')
+      .sendCarriageReturn()
       // OIDC
       .wait(/.*Enter a name for the OpenID Connect provider:.*/)
-      .sendline('myoidcprovider')
+      .sendLine('myoidcprovider')
       .wait(/.*Enter the OpenID Connect provider domain \(Issuer URL\).*/)
-      .sendline('https://facebook.com/')
+      .sendLine('https://facebook.com/')
       .wait(/.*Enter the Client Id from your OpenID Client Connect application.*/)
-      .sendline('clientId')
+      .sendLine('clientId')
       .wait(/.*Enter the number of milliseconds a token is valid after being issued to a user.*/)
-      .sendline('1000')
+      .sendLine('1000')
       .wait(/.*Enter the number of milliseconds a token is valid after being authenticated.*/)
-      .sendline('2000')
+      .sendLine('2000')
       .wait('Configure conflict detection?')
-      .sendline('n')
+      .sendLine('n')
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {
@@ -177,26 +173,25 @@ export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: bool
 
 export function updateAPIWithResolutionStrategy(cwd: string, settings: any, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
-      .sendline('')
+      .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendline('\x1b[B') // Down
+      .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
-      .sendline('n')
+      .sendLine('n')
       .wait(/.*Configure conflict detection.*/)
-      .sendline('y')
+      .sendLine('y')
       .wait(/.*Select the default resolution strategy.*/)
-      .sendline('\x1b[B') // Down
+      .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Do you want to override default per model settings.*/)
-      .sendline('n')
+      .sendLine('n')
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {

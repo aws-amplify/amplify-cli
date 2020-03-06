@@ -4,8 +4,8 @@ import { createNewProjectDir, deleteProjectDir } from '../../utils';
 
 describe('amplify add api', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('api-key-migration');
   });
 
   afterEach(async () => {
@@ -23,7 +23,7 @@ describe('amplify add api', () => {
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(
       projRoot,
-      /Attempting to add a local secondary index to the TodoTable table in the Todo stack. Local secondary indexes must be created when the table is created.*/
+      /Attempting to add a local secondary index to the TodoTable table in the Todo stack. Local secondary indexes must be created when the table is created.*/,
     );
   });
 

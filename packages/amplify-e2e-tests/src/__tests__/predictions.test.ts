@@ -5,8 +5,8 @@ import { addAuthWithDefault } from '../categories/auth';
 
 describe('amplify add predictions', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('predictions');
   });
 
   afterEach(async () => {
