@@ -207,27 +207,32 @@ function chain(context: Context): ExecutionContext {
       const exitHandler = (code: number, signal: any) => {
         noOutputTimer.clear();
         context.process.removeOnExitHandlers(exitHandler);
-        if (code === EXIT_CODE_TIMEOUT) {
-          const err = new Error(
-            `Killed the process as no output receive for ${context.noOutputTimeout /
-              1000} Sec. The no output timeout is set to ${context.noOutputTimeout / 1000}`,
-          );
-          return onError(err, true);
-        } else if (code === 127) {
-          // XXX(sam) Not how node works (anymore?), 127 is what /bin/sh returns,
-          // but it appears node does not, or not in all conditions, blithely
-          // return 127 to user, it emits an 'error' from the child_process.
+        if (code !== 0) {
+          if (code === EXIT_CODE_TIMEOUT) {
+            const err = new Error(
+              `Killed the process as no output receive for ${context.noOutputTimeout /
+                1000} Sec. The no output timeout is set to ${context.noOutputTimeout / 1000}`,
+            );
+            return onError(err, true);
+          } else if (code === 127) {
+            // XXX(sam) Not how node works (anymore?), 127 is what /bin/sh returns,
+            // but it appears node does not, or not in all conditions, blithely
+            // return 127 to user, it emits an 'error' from the child_process.
 
-          //
-          // If the response code is `127` then `context.command` was not found.
-          //
-          return onError(new Error('Command not found: ' + context.command), false);
-        } else if (context.queue.length && !flushQueue()) {
-          // if flushQueue returned false, onError was called
-          return;
+            //
+            // If the response code is `127` then `context.command` was not found.
+            //
+            return onError(new Error('Command not found: ' + context.command), false);
+          }
+          return onError(new Error(`Process exited with non zero exit code ${code}`), false);
+        } else {
+          if (context.queue.length && !flushQueue()) {
+            // if flushQueue returned false, onError was called
+            return;
+          }
+          recordOutputs(code);
+          callback(null, signal || code);
         }
-        recordOutputs(code);
-        callback(null, signal || code);
       };
       //
       // **onError**
