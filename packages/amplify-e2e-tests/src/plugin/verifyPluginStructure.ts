@@ -44,8 +44,6 @@ function verifyAmplifyManifest(pluginDirPath: string, pluginModule: any): boolea
 function verifyEventHandlers(manifest: any, pluginModule: any): boolean {
   let isVerified = true;
 
-  console.log('manifest', manifest);
-  console.log('pluginModule', pluginModule);
   if (manifest.eventHandlers && manifest.eventHandlers.length > 0) {
     isVerified = pluginModule.hasOwnProperty('handleAmplifyEvent') && typeof pluginModule['handleAmplifyEvent'] === 'function';
   }

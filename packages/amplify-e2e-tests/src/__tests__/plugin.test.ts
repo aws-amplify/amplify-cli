@@ -7,12 +7,12 @@ import { newPlugin, verifyPlugin, help, scan, listActive, listExcluded, listGene
 
 describe('amplify plugin', () => {
   let testDirPath: string;
-  beforeEach(() => {
-    testDirPath = createNewProjectDir();
+  beforeEach(async () => {
+    testDirPath = await createNewProjectDir('pluginTest');
   });
 
   afterEach(async () => {
-    // deleteProjectDir(testDirPath);
+    deleteProjectDir(testDirPath);
   });
 
   it('sets up new plugin package', async () => {
