@@ -35,6 +35,7 @@
     "cloudform-types": "^4.1.0",
     "graphql-dynamodb-transformer": "6.14.1",
     "graphql-elasticsearch-transformer": "4.4.1",
+    "graphql-function-transformer": "2.2.1",
     "rimraf": "^3.0.0"
   },
   "jest": {
