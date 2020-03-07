@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.13.4...graphql-key-transformer@2.15.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* [#2711](https://github.com/aws-amplify/amplify-cli/issues/2711) - usage of [@auth](https://github.com/auth) without [@model](https://github.com/model) on fields ([#3590](https://github.com/aws-amplify/amplify-cli/issues/3590)) ([553186e](https://github.com/aws-amplify/amplify-cli/commit/553186e53050cafdf27120443d176023ef4acebc))
+
+
+
+
+
 ## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.13.6-beta.0...graphql-key-transformer@2.14.1) (2020-03-05)
 
 **Note:** Version bump only for package graphql-key-transformer

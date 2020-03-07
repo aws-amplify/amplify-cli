@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.4...graphql-elasticsearch-transformer@4.5.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** use ddb keys as main id in es ([#3391](https://github.com/aws-amplify/amplify-cli/issues/3391)) ([9aae9a6](https://github.com/aws-amplify/amplify-cli/commit/9aae9a6681c5ff744d908b5292a5b00faa14de4d)), closes [#3359](https://github.com/aws-amplify/amplify-cli/issues/3359)
+
+
+
+
+
 ## [4.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.6-beta.0...graphql-elasticsearch-transformer@4.4.1) (2020-03-05)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

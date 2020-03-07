@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.13.3...amplify-category-api@2.16.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** plumb api id to resources that require it ([#3464](https://github.com/aws-amplify/amplify-cli/issues/3464)) ([2b2d52f](https://github.com/aws-amplify/amplify-cli/commit/2b2d52f05edc1190953965ca0f3ecd880ec66a63)), closes [#3431](https://github.com/aws-amplify/amplify-cli/issues/3431) [#3386](https://github.com/aws-amplify/amplify-cli/issues/3386)
+
+
+### Features
+
+* **amplify-category-api:** support path parameters in REST APIs ([#3394](https://github.com/aws-amplify/amplify-cli/issues/3394)) ([fa7d07e](https://github.com/aws-amplify/amplify-cli/commit/fa7d07e1f6f54185a37851ea9d4c840b092501cc))
+
+
+
+
+
 ## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.13.5-beta.0...amplify-category-api@2.14.1) (2020-03-05)
 
 **Note:** Version bump only for package amplify-category-api

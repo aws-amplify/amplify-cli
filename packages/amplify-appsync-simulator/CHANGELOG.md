@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.14.0...amplify-appsync-simulator@1.17.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* Bubbling error up to Graphiql from Lambda ([#3231](https://github.com/aws-amplify/amplify-cli/issues/3231)) ([12345da](https://github.com/aws-amplify/amplify-cli/commit/12345da3e99990d6f9994917667c30da0b0b2f2e))
+
+
+### Features
+
+* **amplify-appsync-simulator:** add support for IAM authorization ([#3476](https://github.com/aws-amplify/amplify-cli/issues/3476)) ([511dfc2](https://github.com/aws-amplify/amplify-cli/commit/511dfc29dd6787ecd035ac3fe79801cd7538b1d3))
+
+
+
+
+
 ## [1.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.14.2-beta.0...amplify-appsync-simulator@1.15.1) (2020-03-05)
 
 **Note:** Version bump only for package amplify-appsync-simulator

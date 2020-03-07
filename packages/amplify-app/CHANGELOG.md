@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.4...amplify-app@2.15.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* add configuration.json placeholders ([#3508](https://github.com/aws-amplify/amplify-cli/issues/3508)) ([44265c4](https://github.com/aws-amplify/amplify-cli/commit/44265c439d4b7764ff52ab5b82f5fd1c88af799e))
+
+
+
+
+
 ## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.6-beta.0...amplify-app@2.14.1) (2020-03-05)
 
 **Note:** Version bump only for package amplify-app

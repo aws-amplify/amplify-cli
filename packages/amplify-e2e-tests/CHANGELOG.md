@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.13.3...amplify-e2e-tests@2.16.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* **cli:** 'remove env' wording ([#3425](https://github.com/aws-amplify/amplify-cli/issues/3425)) ([ddaeb23](https://github.com/aws-amplify/amplify-cli/commit/ddaeb23d2fbffa7ee7f0769c133b75e0d2be9bcc))
+* add configuration.json placeholders ([#3508](https://github.com/aws-amplify/amplify-cli/issues/3508)) ([44265c4](https://github.com/aws-amplify/amplify-cli/commit/44265c439d4b7764ff52ab5b82f5fd1c88af799e))
+* fix project template ([#3589](https://github.com/aws-amplify/amplify-cli/issues/3589)) ([0c11afc](https://github.com/aws-amplify/amplify-cli/commit/0c11afc476e5c6bb8bbf6e84bd1b7e7e688eed3b))
+* fixing plugin e2e tests ([#3588](https://github.com/aws-amplify/amplify-cli/issues/3588)) ([10d831f](https://github.com/aws-amplify/amplify-cli/commit/10d831f1dcb330fbb9e06a9aaf16ecef05c30e51))
+
+
+### Features
+
+* ability to add custom EventSource and lambda triggers via amplify add function, kinesis support in analytics category ([#2463](https://github.com/aws-amplify/amplify-cli/issues/2463)) ([b25cfd0](https://github.com/aws-amplify/amplify-cli/commit/b25cfd00b21416a82ecefda1f6498206ef71531b))
+* amplify console hosting plugin ([#3525](https://github.com/aws-amplify/amplify-cli/issues/3525)) ([2c84b71](https://github.com/aws-amplify/amplify-cli/commit/2c84b71687a0ebcdeb92ebe462c8cf4eab8c9e3c))
+
+
+
+
+
 ## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.13.5-beta.0...amplify-e2e-tests@2.14.1) (2020-03-05)
 
 **Note:** Version bump only for package amplify-e2e-tests

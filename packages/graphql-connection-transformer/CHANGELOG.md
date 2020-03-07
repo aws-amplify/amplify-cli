@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.13.4...graphql-connection-transformer@4.15.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** support non string type in sort key ([#3492](https://github.com/aws-amplify/amplify-cli/issues/3492)) ([bc4a1d9](https://github.com/aws-amplify/amplify-cli/commit/bc4a1d9bd707c62ea2c4ec685401f34dfeca0bd0)), closes [#3403](https://github.com/aws-amplify/amplify-cli/issues/3403)
+* **graphql-connection-transformer:** valiate composite sortkey ([#3419](https://github.com/aws-amplify/amplify-cli/issues/3419)) ([e9d0e95](https://github.com/aws-amplify/amplify-cli/commit/e9d0e95616075d9f152191bc5eb0ee612f8f65c0))
+
+
+
+
+
 ## [4.14.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.13.6-beta.0...graphql-connection-transformer@4.14.1) (2020-03-05)
 
 **Note:** Version bump only for package graphql-connection-transformer

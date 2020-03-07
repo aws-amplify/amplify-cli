@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.13.3...graphql-relational-schema-transformer@2.15.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* **graphql-relational-schema-transformer:** fix add datasource update ([#3542](https://github.com/aws-amplify/amplify-cli/issues/3542)) ([176f313](https://github.com/aws-amplify/amplify-cli/commit/176f313fea1e7504bbf12255dc44f424ae1ea4a1))
+
+
+
+
+
 ## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.13.5-beta.0...graphql-relational-schema-transformer@2.14.1) (2020-03-05)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

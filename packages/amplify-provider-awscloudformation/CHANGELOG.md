@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.13.4...amplify-provider-awscloudformation@4.16.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix template not found ([#3406](https://github.com/aws-amplify/amplify-cli/issues/3406)) ([93fefe9](https://github.com/aws-amplify/amplify-cli/commit/93fefe900781fe5266fcbb7cc95f30f85399b30b))
+* scoping down user pool group IAM roles and adding --force to amplify push command ([#3609](https://github.com/aws-amplify/amplify-cli/issues/3609)) ([2e10a2f](https://github.com/aws-amplify/amplify-cli/commit/2e10a2ff62b61f57b2d513a7cfd0e4478f429f1f))
+
+
+### Features
+
+* ability to add custom EventSource and lambda triggers via amplify add function, kinesis support in analytics category ([#2463](https://github.com/aws-amplify/amplify-cli/issues/2463)) ([b25cfd0](https://github.com/aws-amplify/amplify-cli/commit/b25cfd00b21416a82ecefda1f6498206ef71531b))
+
+
+
+
+
 ## [4.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.13.6-beta.0...amplify-provider-awscloudformation@4.14.1) (2020-03-05)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
