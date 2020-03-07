@@ -66,7 +66,7 @@ describe('amplify add function', () => {
     expect(resp.data.createTodo.id).toBeDefined();
 
     // sleep a bit to make sure lambda logs appear in cloudwatch
-    await sleep(50 * 1000);
+    await sleep(100 * 1000);
 
     const logs = await getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`);
     // NOTE: this expects default Lambda DynamoDB trigger template to log dynamoDB json records
