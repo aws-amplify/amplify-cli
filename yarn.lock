@@ -3793,6 +3793,16 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+amplify-frontend-javascript@2.13.2:
+  version "2.13.2"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-javascript/-/amplify-frontend-javascript-2.13.2.tgz#c97c6e1e792b08a84a9ab6be5333c54379f2eeaf"
+  integrity sha512-VbvqN6gVTPXKWKLGuCCitCy6QF3i8dPsUDvKwIouJvxjk/RnBqaHbQCv25RBza+l29y2cV7w5HuF7KwLOHa+Zg==
+  dependencies:
+    chalk "^3.0.0"
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.0.3"
+
 ansi-colors@3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.3.tgz#57d35b8686e851e2cc04c403f1c00203976a1813"

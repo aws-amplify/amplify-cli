@@ -12,6 +12,9 @@
     "roleName": {
       "Type": "String"
     },
+    "cloudformationPolicyName": {
+      "Type": "String"
+    },
     "cloudWatchPolicyName": {
       "Type": "String"
     },
@@ -136,6 +139,21 @@
                 }
               ]
             }
+          },
+          {
+            "PolicyName": {
+              "Ref": "cloudformationPolicyName"
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": ["cloudformation:*"],
+                  "Resource": "*"
+                }
+              ]
+            }
           }
         ]
       }
@@ -153,8 +171,33 @@
                 "const aws = require('aws-sdk');",
                 "exports.handler = function(event, context) {",
                 "    if (event.RequestType == 'Delete') {",
-                "        response.send(event, context, response.SUCCESS);",
-                "        return;",
+                "      const stackID = event.StackId;",
+                "      const cloudFormationClient = new aws.CloudFormation({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
+                "      cloudFormationClient.describeStacks({ StackName: stackID }).promise()",
+                "        .then(describeStacksOutput => {",
+                "          let appId;",
+                "          if (describeStacksOutput.Stacks && describeStacksOutput.Stacks.length > 0) {",
+                "            const { Outputs } = describeStacksOutput.Stacks[0];",
+                "            const appIdOutput = Outputs.find((output)=>{ return output.OutputKey === 'Id'});",
+                "            appId = appIdOutput ? appIdOutput.OutputValue : undefined;  ",
+                "          }",
+                "          return appId;",
+                "        })",
+                "        .then(appId => {",
+                "          if (appId) {",
+                "            const pinpointClient = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.pingPointRegion });",
+                "            const params = {",
+                "              ApplicationId: appId,",
+                "            };",
+                "            pinpointClient.deleteApp(params).promise();",
+                "          }",
+                "        })",
+                "        .then(()=>{",
+                "          response.send(event, context, response.SUCCESS, {'message': `Successfully deleted pinpoint project`});",
+                "        })",
+                "        .catch(e=>{",
+                "          response.send(event, context, response.FAILED, {'message': `Failed to deleted Pinpoint project`, 'exception': e});",
+                "        }); ",
                 "    }",
                 "    if (event.RequestType == 'Update') {",
                 "        response.send(event, context, response.SUCCESS);",
@@ -168,7 +211,7 @@
                 "               Name: appName",
                 "           }",
                 "       };",
-                "       const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
+                "       const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.pingPointRegion });",
                 "       pinpoint.createApp(params).promise()",
                 "           .then((res) => {",
                 "               responseData = res.ApplicationResponse;",
@@ -201,6 +244,9 @@
           "Fn::GetAtt": ["PinpointFunction", "Arn"]
         },
         "region": {
+          "Ref": "AWS::Region"
+        },
+        "pingPointRegion": {
           "Fn::FindInMap": ["RegionMapping", { "Ref": "AWS::Region" }, "pinpointRegion"]
         },
         "appName": {
@@ -225,7 +271,8 @@
             }
           ]
         }
-      }
+      },
+      "DependsOn": "PinpointFunction"
     },
     "CognitoUnauthPolicy": {
       "Type": "AWS::IAM::Policy",
