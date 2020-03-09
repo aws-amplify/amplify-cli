@@ -14,7 +14,7 @@ import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../envir
 import { addApiWithoutSchema } from '../categories/api';
 import { addCodegen } from '../codegen/add';
 import * as fs from 'fs-extra';
-import * as pinpointHeler from '../utils/pinpoint';
+import * as pinpointHelper from '../utils/pinpoint';
 
 describe('amplify delete', () => {
   let projRoot: string;
@@ -42,15 +42,15 @@ describe('amplify delete', () => {
   });
 
   it('should delete pinpoint project', async () => {
-    await pinpointHeler.initProject(projRoot, true);
-    const pinpointResourceName = await pinpointHeler.addPinpointAnalytics(projRoot, true);
-    await pinpointHeler.pushToCloud(projRoot, true);
+    await pinpointHelper.initProject(projRoot, true);
+    const pinpointResourceName = await pinpointHelper.addPinpointAnalytics(projRoot, true);
+    await pinpointHelper.pushToCloud(projRoot, true);
     const amplifyMeta = getProjectMeta(projRoot);
     const pintpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
-    let pinpointAppExists = await pinpointHeler.pinpointAppExist(pintpointAppId);
+    let pinpointAppExists = await pinpointHelper.pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeTruthy();
-    await pinpointHeler.amplifyDelete(projRoot, true);
-    pinpointAppExists = await pinpointHeler.pinpointAppExist(pintpointAppId);
+    await pinpointHelper.amplifyDelete(projRoot, true);
+    pinpointAppExists = await pinpointHelper.pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeFalsy();
   });
 
