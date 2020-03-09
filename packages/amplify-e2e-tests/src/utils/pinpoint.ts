@@ -93,7 +93,7 @@ export function initProject(cwd: string, verbose: boolean = !isCI()) {
 export function addPinpointAnalytics(cwd: string, verbose: boolean = !isCI()): Promise<string> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
-      .wait('Select an Analytics provider')
+      .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
       .sendLine(settings.pinpointResourceName)
