@@ -1,10 +1,9 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
+import { getCLIPath, getEnvVars } from '../utils';
+import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
-import { getCLIPath, isCI, getEnvVars } from '../utils';
-
-export function addAuthWithDefault(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithDefault(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')
@@ -22,9 +21,9 @@ export function addAuthWithDefault(cwd: string, settings: any, verbose: boolean 
   });
 }
 
-export function addAuthWithGroupTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithGroupTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('\r')
       .wait('How do you want users to be able to sign in')
@@ -53,9 +52,9 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any, verbose: boo
   });
 }
 
-export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthViaAPIWithTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .send('\r')
       .wait('Provide API name')
@@ -104,9 +103,9 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: bo
   });
 }
 
-export function addAuthWithCustomTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithCustomTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('j')
       .send('j')
@@ -182,9 +181,9 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any, verbose: bo
   });
 }
 
-export function updateAuthWithoutCustomTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateAuthWithoutCustomTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
       .wait('What do you want to do?')
       .send('j')
       .send('j')
@@ -235,9 +234,9 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any, verbo
   });
 }
 
-export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithRecaptchaTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('\r')
       .wait('How do you want users to be able to sign in?')
@@ -272,9 +271,9 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose:
   });
 }
 
-export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
       .wait('What do you want to do')
       .send('j')
       .send('\r')
@@ -325,7 +324,7 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any, ver
   });
 }
 
-export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithDefaultSocial(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
 
@@ -352,7 +351,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
     if (missingVars.length > 0) {
       throw new Error(`.env file is missing the following key/values: ${missingVars.join(', ')} `);
     }
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -405,9 +404,9 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
   });
 }
 
-export function addAuthWithMaxOptions(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithMaxOptions(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('j')
       .send('j')

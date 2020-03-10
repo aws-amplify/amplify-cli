@@ -1,15 +1,15 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import { isCI } from '../utils';
+import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
 const spawnCommand = isCI() ? 'amplify-app' : amplifyAppBinPath;
 
-function amplifyAppAndroid(projRoot: string, verbose: boolean = !isCI()) {
+function amplifyAppAndroid(projRoot: string) {
   return new Promise((resolve, reject) => {
-    spawn(spawnCommand, ['--platform', 'android'], { cwd: projRoot, stripColors: true, verbose })
+    spawn(spawnCommand, ['--platform', 'android'], { cwd: projRoot, stripColors: true })
       .wait('Successfully created base Amplify Project')
       .wait('Amplify setup completed successfully')
       .run(function(err) {
@@ -22,9 +22,9 @@ function amplifyAppAndroid(projRoot: string, verbose: boolean = !isCI()) {
   });
 }
 
-function amplifyAppIos(projRoot: string, verbose: boolean = !isCI()) {
+function amplifyAppIos(projRoot: string) {
   return new Promise((resolve, reject) => {
-    spawn(spawnCommand, ['--platform', 'ios'], { cwd: projRoot, stripColors: true, verbose })
+    spawn(spawnCommand, ['--platform', 'ios'], { cwd: projRoot, stripColors: true })
       .wait('Successfully created base Amplify Project')
       .wait('Amplify setup completed successfully')
       .run(function(err) {
@@ -37,9 +37,9 @@ function amplifyAppIos(projRoot: string, verbose: boolean = !isCI()) {
   });
 }
 
-function amplifyAppAngular(projRoot: string, verbose: boolean = !isCI()) {
+function amplifyAppAngular(projRoot: string) {
   return new Promise((resolve, reject) => {
-    spawn(spawnCommand, [], { cwd: projRoot, stripColors: true, verbose })
+    spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
       .wait('What type of app are you building')
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
@@ -54,9 +54,9 @@ function amplifyAppAngular(projRoot: string, verbose: boolean = !isCI()) {
   });
 }
 
-function amplifyAppReact(projRoot: string, verbose: boolean = !isCI()) {
+function amplifyAppReact(projRoot: string) {
   return new Promise((resolve, reject) => {
-    spawn(spawnCommand, [], { cwd: projRoot, stripColors: true, verbose })
+    spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
       .wait('What type of app are you building')
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
@@ -71,9 +71,9 @@ function amplifyAppReact(projRoot: string, verbose: boolean = !isCI()) {
   });
 }
 
-function amplifyModelgen(projRoot: string, verbose: boolean = !isCI()) {
+function amplifyModelgen(projRoot: string) {
   return new Promise((resolve, reject) => {
-    spawn(npm, ['run', 'amplify-modelgen'], { cwd: projRoot, stripColors: true, verbose }).run(function(err) {
+    spawn(npm, ['run', 'amplify-modelgen'], { cwd: projRoot, stripColors: true }).run(function(err) {
       if (!err) {
         resolve();
       } else {
@@ -83,9 +83,9 @@ function amplifyModelgen(projRoot: string, verbose: boolean = !isCI()) {
   });
 }
 
-function amplifyPush(projRoot: string, verbose: boolean = !isCI()) {
+function amplifyPush(projRoot: string) {
   return new Promise((resolve, reject) => {
-    spawn(npm, ['run', 'amplify-push'], { cwd: projRoot, stripColors: true, verbose }).run(function(err) {
+    spawn(npm, ['run', 'amplify-push'], { cwd: projRoot, stripColors: true }).run(function(err) {
       if (!err) {
         resolve();
       } else {

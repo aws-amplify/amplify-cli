@@ -1,5 +1,5 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { getCLIPath } from '../utils';
+import { ExecutionContext, KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 export let moveDown = (chain: ExecutionContext, nMoves: number) =>
   Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send(KEY_DOWN_ARROW), chain);
@@ -18,12 +18,11 @@ export function multiSelect<T>(chain: ExecutionContext, items: T[], allChoices: 
   );
 }
 
-function _coreFunction(cwd: string, settings: any, action: 'create' | 'update', verbose: boolean = !isCI()) {
+function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), [action == 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
-      verbose,
     });
 
     if (action == 'create') {
@@ -143,9 +142,9 @@ function addLambdaTrigger(chain: ExecutionContext, cwd: string, settings: any) {
   }
 }
 
-export function functionBuild(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function functionBuild(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue building the resources?')
       .sendLine('Y')
       .sendEof()

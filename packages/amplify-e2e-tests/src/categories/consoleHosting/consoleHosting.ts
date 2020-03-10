@@ -1,10 +1,10 @@
-import { nspawn as spawn } from '../../utils/nexpect';
 import * as nexpect from 'nexpect';
-import { getCLIPath, isCI } from '../../utils';
+import { getCLIPath } from '../../utils';
+import { nspawn as spawn } from '../../utils/nexpect';
 
-export function addManualHosting(cwd: string, verbose: boolean = !isCI()) {
+export function addManualHosting(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
       .sendLine('\r')
       .wait('Manual deployment')
@@ -19,9 +19,9 @@ export function addManualHosting(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function addCICDHostingWithoutFrontend(cwd: string, verbose: boolean = !isCI()) {
+export function addCICDHostingWithoutFrontend(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
       .sendLine('\r')
       .wait('Continuous deployment (Git-based deployments)')
@@ -41,9 +41,9 @@ export function addCICDHostingWithoutFrontend(cwd: string, verbose: boolean = !i
   });
 }
 
-export function amplifyPublish(cwd: string, verbose: boolean = !isCI()) {
+export function amplifyPublish(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendLine('\r')
       .run((err: Error) => {
@@ -56,9 +56,9 @@ export function amplifyPublish(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function amplifyConfigure(cwd: string, verbose: boolean = !isCI()) {
+export function amplifyConfigure(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['hosting', 'configure'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['hosting', 'configure'], { cwd, stripColors: true })
       .wait(/.*We recommends you open AWS Amplify Console*/)
       .sendLine('\r')
       .run((err: Error) => {
@@ -71,9 +71,9 @@ export function amplifyConfigure(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function amplifyServe(cwd: string, verbose: boolean = !isCI()) {
+export function amplifyServe(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['hosting', 'configure'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['hosting', 'configure'], { cwd, stripColors: true })
       .wait(/.*You have set up Manual deployment*/)
       .sendLine('\r')
       .run((err: Error) => {
@@ -86,10 +86,10 @@ export function amplifyServe(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function amplifyStatus(cwd: string, expectedStatus: string, verbose: boolean = !isCI()) {
+export function amplifyStatus(cwd: string, expectedStatus: string) {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
-    spawn(getCLIPath(), ['status'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['status'], { cwd, stripColors: true })
       .wait(regex)
       .sendLine('\r')
       .run((err: Error) => {
@@ -102,9 +102,9 @@ export function amplifyStatus(cwd: string, expectedStatus: string, verbose: bool
   });
 }
 
-export function amplifyPush(cwd: string, verbose: boolean = !isCI()) {
+export function amplifyPush(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendLine('\r')
       .run((err: Error) => {
@@ -117,9 +117,9 @@ export function amplifyPush(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function npmInstall(cwd: string, verbose: boolean = !isCI()) {
+export function npmInstall(cwd: string) {
   return new Promise((resolve, reject) => {
-    nexpect.spawn('npm install', { cwd, stripColors: true, verbose }).run((err: Error) => {
+    nexpect.spawn('npm install', { cwd, stripColors: true }).run((err: Error) => {
       if (!err) {
         resolve();
       } else {
@@ -129,9 +129,9 @@ export function npmInstall(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function removeHosting(cwd: string, verbose: boolean = !isCI()) {
+export function removeHosting(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Are you sure you want to delete the resource*/)
       .sendLine('\r')
       .wait('Successfully removed resource')
@@ -145,9 +145,9 @@ export function removeHosting(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function checkoutEnv(cwd: string, env: string, verbose: boolean = !isCI()) {
+export function checkoutEnv(cwd: string, env: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'checkout', env], { cwd, stripColors: true, verbose: true }).run((err: Error) => {
+    spawn(getCLIPath(), ['env', 'checkout', env], { cwd, stripColors: true }).run((err: Error) => {
       if (!err) {
         resolve();
       } else {

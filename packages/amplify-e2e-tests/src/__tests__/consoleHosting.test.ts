@@ -7,7 +7,7 @@ import {
   removeHosting,
   addCICDHostingWithoutFrontend,
   amplifyStatus,
-  checkoutEnv
+  checkoutEnv,
 } from '../categories/consoleHosting/consoleHosting';
 import { loadTypeFromTeamProviderInfo } from '../categories/consoleHosting/utils';
 import { deleteProjectDir, createAuthProject } from '../utils';
@@ -47,7 +47,7 @@ describe('amplify console add hosting', () => {
 
   it('when hosting is enabled, add new env should be able to deploy frontend successfully', async () => {
     await addManualHosting(projRoot);
-    await addEnvironment(projRoot, { envName: NWE_ENV});
+    await addEnvironment(projRoot, { envName: NWE_ENV });
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(true);
     const type = loadTypeFromTeamProviderInfo(projRoot, NWE_ENV);
     expect(type).toBe(TYPE_MANUAL);
@@ -59,17 +59,17 @@ describe('amplify console add hosting', () => {
     await amplifyPush(projRoot);
   });
 
-   it('amplify status should show correct operations when create/ checkout env/ remove', async () => {
+  it('amplify status should show correct operations when create/ checkout env/ remove', async () => {
     await addManualHosting(projRoot);
-    await amplifyStatus(projRoot, 'Create', true);
+    await amplifyStatus(projRoot, 'Create');
     await amplifyPush(projRoot);
-    await amplifyStatus(projRoot, 'No Change', true);
-    await addEnvironment(projRoot, { envName: NWE_ENV});
-    await amplifyStatus(projRoot, 'Create', true);
+    await amplifyStatus(projRoot, 'No Change');
+    await addEnvironment(projRoot, { envName: NWE_ENV });
+    await amplifyStatus(projRoot, 'Create');
     await removeHosting(projRoot);
     await checkoutEnv(projRoot, ORIGINAL_ENV);
-    await amplifyStatus(projRoot, 'Delete', true);
-   });
+    await amplifyStatus(projRoot, 'Delete');
+  });
 
   // CICD tests
   it('when user does not add frontend in amplify console, no config file will be written in CLI', async () => {

@@ -1,9 +1,9 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { getCLIPath } from '../utils';
+import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
-export function addSimpleDDB(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addSimpleDDB(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -41,9 +41,9 @@ export function addSimpleDDB(cwd: string, settings: any, verbose: boolean = !isC
   });
 }
 
-export function addDDBWithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addDDBWithTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -87,9 +87,9 @@ export function addDDBWithTrigger(cwd: string, settings: any, verbose: boolean =
   });
 }
 
-export function updateDDBWithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateDDBWithTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -123,9 +123,9 @@ export function updateDDBWithTrigger(cwd: string, settings: any, verbose: boolea
   });
 }
 
-export function addS3WithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addS3WithTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Please provide a friendly name')
@@ -157,9 +157,9 @@ export function addS3WithTrigger(cwd: string, settings: any, verbose: boolean = 
   });
 }
 
-export function updateSimpleDDBwithGSI(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateSimpleDDBwithGSI(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -206,9 +206,9 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any, verbose: bool
       });
   });
 }
-export function addSimpleDDBwithGSI(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addSimpleDDBwithGSI(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()

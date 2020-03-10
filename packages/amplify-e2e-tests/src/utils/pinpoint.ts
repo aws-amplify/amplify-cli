@@ -1,6 +1,6 @@
-import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 import { Pinpoint } from 'aws-sdk';
+import { getCLIPath } from '../utils';
+import { nspawn as spawn } from '../utils/nexpect';
 
 const settings = {
   name: '\r',
@@ -47,9 +47,9 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
   return result;
 }
 
-export function initProject(cwd: string, verbose: boolean = !isCI()) {
+export function initProject(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(settings.name)
       .wait('Enter a name for the environment')
@@ -90,9 +90,9 @@ export function initProject(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function addPinpointAnalytics(cwd: string, verbose: boolean = !isCI()): Promise<string> {
+export function addPinpointAnalytics(cwd: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
@@ -111,9 +111,9 @@ export function addPinpointAnalytics(cwd: string, verbose: boolean = !isCI()): P
   });
 }
 
-export function pushToCloud(cwd: string, verbose: boolean = !isCI()) {
+export function pushToCloud(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue')
       .sendCarriageReturn()
       .wait('All resources are updated in the cloud')
@@ -128,9 +128,9 @@ export function pushToCloud(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function amplifyDelete(cwd: string, verbose: boolean = !isCI()) {
+export function amplifyDelete(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendLine('Y')
       .wait('Project deleted in the cloud')

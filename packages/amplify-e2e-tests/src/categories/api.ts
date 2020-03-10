@@ -1,16 +1,14 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
-import { updateSchema } from '../utils';
 import * as fs from 'fs-extra';
-
-import { getCLIPath, isCI } from '../utils';
+import { getCLIPath, updateSchema } from '../utils';
+import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../schemas/${schemaName}`;
 }
 
-export function addApiWithoutSchema(cwd: string, verbose: boolean = !isCI()) {
+export function addApiWithoutSchema(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -44,10 +42,10 @@ export function addApiWithoutSchema(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string, verbose: boolean = !isCI()) {
+export function addApiWithSchema(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -77,10 +75,10 @@ export function addApiWithSchema(cwd: string, schemaFile: string, verbose: boole
   });
 }
 
-export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string, verbose: boolean = !isCI()) {
+export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -122,9 +120,9 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
   updateSchema(cwd, projectName, schemaText);
 }
 
-export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateApiWithMultiAuth(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
@@ -171,7 +169,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: bool
   });
 }
 
-export function updateAPIWithResolutionStrategy(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')

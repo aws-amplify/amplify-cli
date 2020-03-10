@@ -1,11 +1,11 @@
+import { getCLIPath } from '../utils';
 import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 
-export async function newPlugin(cwd: string, verbose: boolean = isCI() ? false : true): Promise<string> {
+export async function newPlugin(cwd: string): Promise<string> {
   const pluginPackageDirName = 'newpluginpackage';
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['plugin', 'init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'init'], { cwd, stripColors: true })
       .wait('What should be the name of the plugin')
       .sendLine(pluginPackageDirName)
       .wait('Specify the plugin type')
