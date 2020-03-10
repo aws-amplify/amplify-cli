@@ -1,5 +1,5 @@
+import { getCLIPath } from '../utils';
 import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 
 export async function newPlugin(cwd: string): Promise<string> {
   const pluginPackageDirName = 'newpluginpackage';

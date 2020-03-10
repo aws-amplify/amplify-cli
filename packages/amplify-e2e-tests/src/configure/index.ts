@@ -1,5 +1,5 @@
+import { getCLIPath } from '../utils';
 import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 type AmplifyConfiguration = {
   accessKeyId: string;
   secretAccessKey: string;

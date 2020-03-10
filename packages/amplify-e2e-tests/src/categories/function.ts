@@ -1,5 +1,5 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { getCLIPath } from '../utils';
+import { ExecutionContext, KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 export let moveDown = (chain: ExecutionContext, nMoves: number) =>
   Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send(KEY_DOWN_ARROW), chain);

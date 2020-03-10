@@ -1,8 +1,8 @@
 export * from './new-plugin';
 export * from './verifyPluginStructure';
 
+import { getCLIPath } from '../utils';
 import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 
 export function help(cwd: string) {
   return new Promise((resolve, reject) => {

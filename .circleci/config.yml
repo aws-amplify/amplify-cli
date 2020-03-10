@@ -539,6 +539,7 @@ workflows:
             branches:
               only:
                 - master
+                - e2e-remove-verbose-log
           requires:
             - build
       - amplify_e2e_tests:
@@ -546,6 +547,7 @@ workflows:
             branches:
               only:
                 - master
+                - e2e-remove-verbose-log
           requires:
             - publish_to_local_registry
       - amplify_console_integration_tests:

@@ -1,6 +1,6 @@
-import { nspawn as spawn } from '../../utils/nexpect';
 import * as nexpect from 'nexpect';
-import { getCLIPath, isCI } from '../../utils';
+import { getCLIPath } from '../../utils';
+import { nspawn as spawn } from '../../utils/nexpect';
 
 export function addManualHosting(cwd: string) {
   return new Promise((resolve, reject) => {

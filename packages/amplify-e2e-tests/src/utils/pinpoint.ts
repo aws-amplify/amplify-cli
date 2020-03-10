@@ -1,6 +1,6 @@
-import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 import { Pinpoint } from 'aws-sdk';
+import { getCLIPath } from '../utils';
+import { nspawn as spawn } from '../utils/nexpect';
 
 const settings = {
   name: '\r',

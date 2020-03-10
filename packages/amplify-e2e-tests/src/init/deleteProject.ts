@@ -1,5 +1,5 @@
+import { getCLIPath } from '../utils';
 import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 
 export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true) {
   return new Promise((resolve, reject) => {

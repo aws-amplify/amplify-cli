@@ -1,6 +1,5 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
-
-import { getCLIPath, isCI, getEnvVars } from '../utils';
+import { getCLIPath, getEnvVars } from '../utils';
+import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 export function addAuthWithDefault(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {

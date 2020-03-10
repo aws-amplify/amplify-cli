@@ -1,5 +1,5 @@
+import { getCLIPath } from '../utils';
 import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 
 export function addEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {

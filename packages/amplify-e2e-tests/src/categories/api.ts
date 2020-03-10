@@ -1,8 +1,6 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
-import { updateSchema } from '../utils';
 import * as fs from 'fs-extra';
-
-import { getCLIPath, isCI } from '../utils';
+import { getCLIPath, updateSchema } from '../utils';
+import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../schemas/${schemaName}`;

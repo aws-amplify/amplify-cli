@@ -1,5 +1,5 @@
+import { getCLIPath } from '../utils';
 import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
 
 export function addHosting(cwd: string) {
   return new Promise((resolve, reject) => {

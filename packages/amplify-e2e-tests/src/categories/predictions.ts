@@ -1,6 +1,5 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
-import { isCI } from '../utils';
 import { getCLIPath } from '../utils/index';
+import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 // add convert resource
 export function addConvert(cwd: string, settings: any) {
