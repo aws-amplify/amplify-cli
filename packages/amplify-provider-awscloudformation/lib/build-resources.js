@@ -19,14 +19,17 @@ async function buildResource(context, resource) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const projectRoot = context.amplify.pathManager.searchProjectRootPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
-  const packageJsonPath = path.normalize(path.join(backEndDir, category, resourceName, 'src', 'package.json'));
-  const packageJsonMeta = fs.statSync(packageJsonPath);
+  const lastUpdateTime = fs.readdirSync(resourceDir)
+    .map(file => path.join(resourceDir, file))
+    .map(file => fs.statSync(file))
+    .map(stats => stats.mtime)
+    .reduce((acc, it) => it > acc ? it : acc, 0); // reduce to the latest time
   const distDir = path.normalize(path.join(backEndDir, category, resourceName, 'dist'));
 
   let zipFilename = resource.distZipFilename;
   let zipFilePath = zipFilename ? path.normalize(path.join(distDir, 'latest-build.zip')) : '';
 
-  if (!resource.lastBuildTimeStamp || new Date(packageJsonMeta.mtime) > new Date(resource.lastBuildTimeStamp)) {
+  if (!resource.lastBuildTimeStamp || new Date(lastUpdateTime) > new Date(resource.lastBuildTimeStamp)) {
     installDependencies(resourceDir);
     context.amplify.updateamplifyMetaAfterBuild(resource);
   }

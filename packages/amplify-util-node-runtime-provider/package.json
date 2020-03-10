@@ -1,0 +1,15 @@
+{
+  "name": "amplify-util-node-runtime-provider",
+  "version": "1.0.0",
+  "description": "Provides functionality related to functions in NodeJS on AWS",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf ./lib"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "amplify-function-plugin-interface": "^1.0.0"
+  }
+}

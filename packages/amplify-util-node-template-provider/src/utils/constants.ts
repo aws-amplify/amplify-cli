@@ -1,0 +1,1 @@
+export const TEMPLATE_ROOT = `${__dirname}/../../resources`

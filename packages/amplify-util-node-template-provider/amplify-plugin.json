@@ -1,0 +1,7 @@
+{
+  "name": "function-template-provider",
+  "type": "util",
+  "commands": [],
+  "eventHandlers": [],
+  "implements": ["FunctionTemplateProvider"]
+}

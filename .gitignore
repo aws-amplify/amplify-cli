@@ -22,6 +22,7 @@ packages/amplify-codegen-appsync-model-plugin/lib
 packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
+packages/amplify-category-function/lib
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/*/node_modules
 packages/*/package-lock.json
@@ -29,6 +30,8 @@ packages/*/package-lock.json
 !packages/amplify-e2e-tests/projects-templates/create-react-app-auth-amplify/.env
 amplify-integ*/
 packages/amplify-storage-simulator/lib
+packages/amplify-util*/lib
+packages/amplify-function-plugin-interface/lib
 packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
