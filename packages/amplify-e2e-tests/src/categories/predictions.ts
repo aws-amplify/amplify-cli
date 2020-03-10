@@ -3,10 +3,10 @@ import { isCI } from '../utils';
 import { getCLIPath } from '../utils/index';
 
 // add convert resource
-export function addConvert(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addConvert(cwd: string, settings: any) {
   const resourceName = 'convertTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -33,10 +33,10 @@ export function addConvert(cwd: string, settings: any, verbose: boolean = !isCI(
 }
 
 // add identify test
-export function addIdentifyCollection(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addIdentifyCollection(cwd: string, settings: any) {
   const resourceName = 'identifyCollectionTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
       .sendCarriageReturn()
       .wait('What would you like to identify?')
@@ -71,10 +71,10 @@ export function addIdentifyCollection(cwd: string, settings: any, verbose: boole
 }
 
 // add interpret resource
-export function addInterpret(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addInterpret(cwd: string, settings: any) {
   const resourceName = 'interpretTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
       .sendLine(`${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}`)
       .wait('What would you like to interpret?')

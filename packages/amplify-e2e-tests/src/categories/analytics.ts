@@ -1,9 +1,9 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-export function addPinpoint(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addPinpoint(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
@@ -26,9 +26,9 @@ export function addPinpoint(cwd: string, settings: any, verbose: boolean = !isCI
   });
 }
 
-export function addKinesis(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addKinesis(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -54,9 +54,9 @@ export function addKinesis(cwd: string, settings: any, verbose: boolean = !isCI(
   });
 }
 
-export function removeAnalytics(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function removeAnalytics(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .send('j')
       .sendCarriageReturn()

@@ -15,10 +15,10 @@ const defaultSettings = {
   profileName: '\r',
 };
 
-export function initJSProjectWithProfile(cwd: string, settings: Object, verbose: boolean = !isCI()) {
+export function initJSProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -53,10 +53,10 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, verbose:
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Object, verbose: boolean = !isCI()) {
+export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -83,10 +83,10 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object, ver
   });
 }
 
-export function initIosProjectWithProfile(cwd: string, settings: Object, verbose: boolean = !isCI()) {
+export function initIosProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -112,14 +112,10 @@ export function initIosProjectWithProfile(cwd: string, settings: Object, verbose
   });
 }
 
-export function initProjectWithAccessKey(
-  cwd: string,
-  settings: { accessKeyId: string; secretAccessKey: string },
-  verbose: boolean = !isCI(),
-) {
+export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: string; secretAccessKey: string }) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -160,13 +156,9 @@ export function initProjectWithAccessKey(
   });
 }
 
-export function initNewEnvWithAccessKey(
-  cwd: string,
-  s: { envName: string; accessKeyId: string; secretAccessKey: string },
-  verbose: boolean = !isCI(),
-) {
+export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')
@@ -191,9 +183,9 @@ export function initNewEnvWithAccessKey(
   });
 }
 
-export function initNewEnvWithProfile(cwd: string, s: { envName: string }, verbose: boolean = !isCI()) {
+export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')

@@ -41,8 +41,6 @@ export type Context = {
   command: string;
   cwd: string | undefined;
   env: any | undefined;
-  verbose: boolean;
-  isLogging: boolean; // used to pause printing if recording is stopped
   ignoreCase: boolean;
   params: string[];
   queue: ExecutionStep[];
@@ -70,7 +68,6 @@ export type SpawnOptions = {
   env?: object | any;
   stripColors?: boolean;
   ignoreCase?: boolean;
-  verbose?: boolean;
 };
 
 function chain(context: Context): ExecutionContext {
@@ -79,7 +76,6 @@ function chain(context: Context): ExecutionContext {
       let _pauseRecording: ExecutionStep = {
         fn: () => {
           context.process.pauseRecording();
-          context.isLogging = false;
           return true;
         },
         name: '_pauseRecording',
@@ -95,7 +91,6 @@ function chain(context: Context): ExecutionContext {
       let _resumeRecording: ExecutionStep = {
         fn: data => {
           context.process.resumeRecording();
-          context.isLogging = context.verbose;
           return true;
         },
         name: '_resumeRecording',
@@ -354,7 +349,7 @@ function chain(context: Context): ExecutionContext {
       function onLine(data: string | Buffer) {
         noOutputTimer.reschedule(context.noOutputTimeout);
         data = data.toString();
-        if (context.isLogging) {
+        if (process.env && process.env.VERBOSE_LOGGING_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
           console.log(data);
         }
         if (context.stripColors) {
@@ -504,8 +499,6 @@ export function nspawn(command: string | string[], params: string[] = [], option
     env: options.env || undefined,
     ignoreCase: options.ignoreCase || true,
     noOutputTimeout: options.noOutputTimeout || DEFAULT_NO_OUTPUT_TIMEOUT,
-    verbose: options.verbose || false,
-    isLogging: options.verbose || false,
     params: params,
     queue: [],
     stripColors: options.stripColors,

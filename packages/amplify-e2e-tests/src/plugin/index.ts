@@ -4,9 +4,9 @@ export * from './verifyPluginStructure';
 import { nspawn as spawn } from '../utils/nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-export function help(cwd: string, verbose: boolean = isCI() ? false : true) {
+export function help(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['plugin', 'help'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'help'], { cwd, stripColors: true })
       .wait(/.*/)
       .run(function(err: Error) {
         if (!err) {
@@ -18,9 +18,9 @@ export function help(cwd: string, verbose: boolean = isCI() ? false : true) {
   });
 }
 
-export function scan(cwd: string, verbose: boolean = isCI() ? false : true) {
+export function scan(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['plugin', 'scan'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'scan'], { cwd, stripColors: true })
       .wait(/.*/)
       .run(function(err: Error) {
         if (!err) {
@@ -32,9 +32,9 @@ export function scan(cwd: string, verbose: boolean = isCI() ? false : true) {
   });
 }
 
-export function listActive(cwd: string, verbose: boolean = isCI() ? false : true) {
+export function listActive(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true })
       .wait('Select the section to list')
       .sendLine('')
       .wait('Select the name of the plugin to list')
@@ -49,9 +49,9 @@ export function listActive(cwd: string, verbose: boolean = isCI() ? false : true
   });
 }
 
-export function listExcluded(cwd: string, verbose: boolean = isCI() ? false : true) {
+export function listExcluded(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true })
       .wait('Select the section to list')
       .sendLine('j')
       .run(function(err: Error) {
@@ -64,9 +64,9 @@ export function listExcluded(cwd: string, verbose: boolean = isCI() ? false : tr
   });
 }
 
-export function listGeneralInfo(cwd: string, verbose: boolean = isCI() ? false : true) {
+export function listGeneralInfo(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['plugin', 'list'], { cwd, stripColors: true })
       .wait('Select the section to list')
       .sendLine('j')
       .run(function(err: Error) {

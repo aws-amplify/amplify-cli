@@ -42,14 +42,14 @@ describe('amplify delete', () => {
   });
 
   it('should delete pinpoint project', async () => {
-    await pinpointHelper.initProject(projRoot, true);
-    const pinpointResourceName = await pinpointHelper.addPinpointAnalytics(projRoot, true);
-    await pinpointHelper.pushToCloud(projRoot, true);
+    await pinpointHelper.initProject(projRoot);
+    const pinpointResourceName = await pinpointHelper.addPinpointAnalytics(projRoot);
+    await pinpointHelper.pushToCloud(projRoot);
     const amplifyMeta = getProjectMeta(projRoot);
     const pintpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
     let pinpointAppExists = await pinpointHelper.pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeTruthy();
-    await pinpointHelper.amplifyDelete(projRoot, true);
+    await pinpointHelper.amplifyDelete(projRoot);
     pinpointAppExists = await pinpointHelper.pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeFalsy();
   });
@@ -64,7 +64,7 @@ describe('amplify delete', () => {
     await checkoutEnvironment(projRoot, { envName: 'testdev' });
     await removeEnvironment(projRoot, { envName: 'testprod' });
     await expect(await bucketExists(deploymentBucketName1)).toBe(false);
-    await deleteProject(projRoot, true);
+    await deleteProject(projRoot);
   });
 });
 
@@ -80,7 +80,7 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
   expect(await bucketExists(deploymentBucketName1)).toBe(true);
   expect(await bucketExists(deploymentBucketName2)).toBe(true);
-  await deleteProject(projRoot, true);
+  await deleteProject(projRoot);
   expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
   expect(await bucketNotExists(deploymentBucketName2)).toBe(true);
   expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);

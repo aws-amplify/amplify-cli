@@ -1,9 +1,9 @@
 import { nspawn as spawn } from '../utils/nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-export function addEnvironment(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')
@@ -22,9 +22,9 @@ export function addEnvironment(cwd: string, settings: any, verbose: boolean = !i
       });
   });
 }
-export function checkoutEnvironment(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function checkoutEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'checkout', settings.envName], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['env', 'checkout', settings.envName], { cwd, stripColors: true })
       .wait('Initialized your environment successfully.')
       .run((err: Error) => {
         if (!err) {
@@ -36,9 +36,9 @@ export function checkoutEnvironment(cwd: string, settings: any, verbose: boolean
   });
 }
 
-export function removeEnvironment(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function removeEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
       .wait(`Are you sure you want to continue? (This would delete '${settings.envName}' environment`)
       .sendLine('y')
       .wait('Successfully removed environment from your project locally')

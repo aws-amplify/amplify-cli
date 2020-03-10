@@ -2,9 +2,9 @@ import { nspawn as spawn } from '../utils/nexpect';
 
 import { getCLIPath, isCI } from '../utils';
 
-export function addSampleInteraction(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addSampleInteraction(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'interactions'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'interactions'], { cwd, stripColors: true })
       .wait('Provide a friendly resource name that will be used to label this category')
       .sendCarriageReturn()
       .wait('Would you like to start with a sample chatbot')
