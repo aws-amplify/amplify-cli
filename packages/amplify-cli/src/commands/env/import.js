@@ -83,7 +83,7 @@ module.exports = {
         addNewEnvConfig();
       } else if (
         await context.amplify.confirmPrompt.run(
-          'We found an environment with the same name. Do you want to overwrite existing enviornment config?',
+          'We found an environment with the same name. Do you want to overwrite the existing environment config?',
         )
       ) {
         addNewEnvConfig();
