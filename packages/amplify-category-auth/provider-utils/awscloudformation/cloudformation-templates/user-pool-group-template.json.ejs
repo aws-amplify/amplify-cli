@@ -80,7 +80,7 @@
                             },
                             "Action": "sts:AssumeRoleWithWebIdentity",
                             "Condition": {
-                              "StringEquals": {"cognito-identity.amazonaws.com:aud": "auth<%= props.cognitoResourceName %>IdentityPoolId"},
+                              "StringEquals": {"cognito-identity.amazonaws.com:aud": {"Ref":"auth<%= props.cognitoResourceName %>IdentityPoolId"}},
                               "ForAnyValue:StringLike": {"cognito-identity.amazonaws.com:amr": "authenticated"}
                             }
                         }
