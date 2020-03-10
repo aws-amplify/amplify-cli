@@ -423,7 +423,7 @@ class CloudFormation {
     });
   }
 
-  deleteResourceStack(envName, deleteS3) {
+  deleteResourceStack(envName) {
     const { teamProviderInfo } = this.context.amplify.getProjectDetails();
     const teamProvider = teamProviderInfo[envName][providerName];
     const stackName = teamProvider.StackName;
@@ -438,8 +438,12 @@ class CloudFormation {
     const cfnModel = this.cfn;
 
     return new Promise((resolve, reject) => {
-      cfnModel.describeStacks(cfnStackParams, err => {
+      cfnModel.describeStacks(cfnStackParams, (err, data) => {
         const cfnDeleteStatus = 'stackDeleteComplete';
+        console.log(JSON.stringify(data));
+        if (!data || data.StackStatus !== 'DELETE_COMPLETE') {
+          resolve();
+        }
         if (err === null) {
           cfnModel.deleteStack(cfnStackParams, deleteErr => {
             if (deleteErr) {
@@ -450,14 +454,6 @@ class CloudFormation {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
                 this.collectStackErrors(stackName).then(() => reject(completeErr));
-              } else if (deleteS3) {
-                this.deleteS3Buckets(envName).then((result, err) => {
-                  if (err) {
-                    reject(err);
-                  } else {
-                    resolve(result);
-                  }
-                });
               } else {
                 resolve();
               }
