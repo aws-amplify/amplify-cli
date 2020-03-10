@@ -64,6 +64,20 @@ export async function createConsoleApp(projectName: string, amplifyClient?: any)
   return createAppResponse.app.appId;
 }
 
+export async function deleteConsoleApp(appId: string, amplifyClient?: any) {
+  if (!amplifyClient) {
+    amplifyClient = getConfiguredAmplifyClient();
+  }
+  const deleteAppParams = {
+    appId,
+  };
+  try {
+    await amplifyClient.deleteApp(deleteAppParams).promise();
+  } catch (err) {
+    // Do nothing
+  }
+}
+
 export async function createBackendEnvironment(backendParams: any, amplifyClient?: any) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();

@@ -91,7 +91,7 @@ async function deletePinpointAppForEnv(context, envName) {
     const params = {
       ApplicationId: pinpointApp.Id,
     };
-    const pinpointClient = await pinpointHelper.getPinpointClient(context, 'delete');
+    const pinpointClient = await pinpointHelper.getPinpointClient(context, 'delete', envName);
 
     return pinpointClient
       .deleteApp(params)

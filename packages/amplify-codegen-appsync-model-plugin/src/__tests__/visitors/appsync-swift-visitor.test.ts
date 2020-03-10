@@ -171,4 +171,84 @@ describe('AppSyncSwiftVisitor', () => {
     const generatedMetaData = metaDataVisitor.generate();
     expect(generatedMetaData).toMatchSnapshot();
   });
+
+  describe('reserved word escape', () => {
+    it('should escape swift reserved keywords in enum values', () => {
+      const schema = /* GraphQL */ `
+        enum PostStatus {
+          private
+          public
+        }
+      `;
+      const visitor = getVisitor(schema, 'PostStatus');
+      const generatedCode = visitor.generate();
+
+      expect(generatedCode).toMatchInlineSnapshot(`
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
+
+        public enum PostStatus: String {
+          case \`private\`
+          case \`public\`
+        }"
+      `);
+    });
+
+    it('should escape swift reserved keywords in enum name', () => {
+      const schema = /* GraphQL */ `
+        enum Class {
+          private
+          public
+        }
+
+        type Foo @model {
+          Class: Class
+          nonNullClass: Class!
+          classes: [Class]
+          nonNullClasses: [Class]!
+        }
+      `;
+      const visitor = getVisitor(schema, 'Class');
+      const generatedEnumCode = visitor.generate();
+      expect(generatedEnumCode).toMatchInlineSnapshot(`
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
+
+        public enum \`Class\`: String {
+          case \`private\`
+          case \`public\`
+        }"
+      `);
+
+      const fooVisitor = getVisitor(schema, 'Foo');
+      const fooModel = fooVisitor.generate();
+      expect(fooModel).toMatchInlineSnapshot(`
+"// swiftlint:disable all
+import Amplify
+import Foundation
+
+public struct Foo: Model {
+  public let id: String
+  public var \`Class\`: Class?
+  public var nonNullClass: Class
+  public var classes: [\`Class\`]?
+  public var nonNullClasses: [\`Class\`]
+  
+  public init(id: String = UUID().uuidString,
+      \`Class\`: \`Class\`? = nil,
+      nonNullClass: \`Class\`,
+      classes: [\`Class\`]? = [],
+      nonNullClasses: [\`Class\`] = []) {
+      self.id = id
+      self.\`Class\` = \`Class\`
+      self.nonNullClass = nonNullClass
+      self.classes = classes
+      self.nonNullClasses = nonNullClasses
+  }
+}"
+`);
+    });
+  });
 });

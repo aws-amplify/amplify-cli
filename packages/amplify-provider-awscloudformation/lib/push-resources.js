@@ -24,8 +24,12 @@ const optionalBuildDirectoryName = 'build';
 async function run(context, resourceDefinition) {
   try {
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = resourceDefinition;
-
-    const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+    let resources;
+    if (context.exeInfo.forcePush) {
+      resources = allResources;
+    } else {
+      resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+    }
     let projectDetails = context.amplify.getProjectDetails();
 
     validateCfnTemplates(context, resources);

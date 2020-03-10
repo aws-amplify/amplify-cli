@@ -2,7 +2,7 @@ import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common'
 import { camelCase } from 'change-case';
 import { lowerCaseFirst } from 'lower-case-first';
 import { schemaTypeMap } from '../configs/swift-config';
-import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
+import { SwiftDeclarationBlock, escapeKeywords } from '../languages/swift-declaration-block';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
 
@@ -170,7 +170,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   private getInitBody(fields: CodeGenField[]): string {
     let result = fields.map(field => {
-      const fieldName = this.getFieldName(field);
+      const fieldName = escapeKeywords(this.getFieldName(field));
       return indent(`self.${fieldName} = ${fieldName}`);
     });
 

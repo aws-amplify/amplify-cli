@@ -11,6 +11,9 @@ module.exports = {
   run: async context => {
     try {
       context.amplify.constructExeInfo(context);
+      if (context.parameters.options.force) {
+        context.exeInfo.forcePush = true;
+      }
       await syncCurrentCloudBackend(context);
       return await context.amplify.pushResources(context);
     } catch (e) {

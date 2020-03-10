@@ -554,16 +554,12 @@ workflows:
               only:
                 - master
           requires:
+            - build
             - publish_to_local_registry
-            - integration_test
-            - graphql_e2e_tests
-            - amplify_e2e_tests
-            - mock_e2e_tests
       - deploy:
           requires:
             - build
             - test
-            - amplify_console_integration_tests
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests

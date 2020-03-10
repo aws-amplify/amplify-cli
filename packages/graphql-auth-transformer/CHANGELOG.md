@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.13.4...graphql-auth-transformer@6.15.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** add list support for ownerField in subs ([#3166](https://github.com/aws-amplify/amplify-cli/issues/3166)) ([8d68277](https://github.com/aws-amplify/amplify-cli/commit/8d6827752ebd076424d3c76122b136eca65b02a8))
+* [#2711](https://github.com/aws-amplify/amplify-cli/issues/2711) - usage of [@auth](https://github.com/auth) without [@model](https://github.com/model) on fields ([#3590](https://github.com/aws-amplify/amplify-cli/issues/3590)) ([553186e](https://github.com/aws-amplify/amplify-cli/commit/553186e53050cafdf27120443d176023ef4acebc))
+* fix typo in comment ([#3490](https://github.com/aws-amplify/amplify-cli/issues/3490)) ([ad3a137](https://github.com/aws-amplify/amplify-cli/commit/ad3a1375ff1e81a6ef5567c2518434114c852df0))
+
+
+### Reverts
+
+* Revert "fix(graphql-auth-transformer): add list support for ownerField in subs (#3166)" (#3572) ([d693e6b](https://github.com/aws-amplify/amplify-cli/commit/d693e6b2819a5d20188fa9f68d94ef955e474bd3)), closes [#3166](https://github.com/aws-amplify/amplify-cli/issues/3166) [#3572](https://github.com/aws-amplify/amplify-cli/issues/3572)
+
+
+
+
+
+## [6.14.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.13.6-beta.0...graphql-auth-transformer@6.14.1) (2020-03-05)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 ## [6.13.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.13.3...graphql-auth-transformer@6.13.4) (2020-02-18)
 
 **Note:** Version bump only for package graphql-auth-transformer

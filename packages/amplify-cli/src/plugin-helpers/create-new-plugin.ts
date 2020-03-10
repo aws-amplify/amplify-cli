@@ -14,7 +14,8 @@ const INDENTATIONSPACE = 4;
 export default async function createNewPlugin(context: Context, pluginParentDirPath: string): Promise<string | undefined> {
   const pluginName = await getPluginName(context, pluginParentDirPath);
   if (pluginName) {
-    return await copyAndUpdateTemplateFiles(context, pluginParentDirPath, pluginName!);
+    const pluginDirPath = await copyAndUpdateTemplateFiles(context, pluginParentDirPath, pluginName!);
+    return pluginDirPath;
   }
   return undefined;
 }
@@ -70,11 +71,11 @@ async function copyAndUpdateTemplateFiles(context: Context, pluginParentDirPath:
   const pluginType = await promptForPluginType(context);
   const eventHandlers = await promptForEventSubscription(context);
 
-  let srcDirPath = path.join(__dirname, '../templates/plugin-template');
+  let srcDirPath = path.join(__dirname, '../../templates/plugin-template');
   if (pluginType === AmplifyPluginType.frontend.toString()) {
-    srcDirPath = path.join(__dirname, '../templates/plugin-template-frontend');
+    srcDirPath = path.join(__dirname, '../../templates/plugin-template-frontend');
   } else if (pluginType === AmplifyPluginType.provider.toString()) {
-    srcDirPath = path.join(__dirname, '../templates/plugin-template-provider');
+    srcDirPath = path.join(__dirname, '../../templates/plugin-template-provider');
   }
   fs.copySync(srcDirPath, pluginDirPath);
 
