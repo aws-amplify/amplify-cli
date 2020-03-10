@@ -14,7 +14,7 @@ import {
 describe('environment commands', () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir();
+    projRoot = await createNewProjectDir('env-test');
   });
 
   afterEach(async () => {
