@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.15.1...amplify-category-auth@2.15.2) (2020-03-10)
+
+
+### Bug Fixes
+
+* Fix string literal to be a `Ref` in the cloud formation template ([#3630](https://github.com/aws-amplify/amplify-cli/issues/3630)) ([61e4ac9](https://github.com/aws-amplify/amplify-cli/commit/61e4ac95acc728c46440927c79c158b35abe0e39))
+
+
+
+
+
 ## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.13.3...amplify-category-auth@2.15.1) (2020-03-07)
 
 

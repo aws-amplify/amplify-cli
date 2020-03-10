@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.1...amplify-category-notifications@2.15.2) (2020-03-10)
+
+
+### Bug Fixes
+
+* **amplify-category-analytics:** delete pinpoint project in delete ([#3165](https://github.com/aws-amplify/amplify-cli/issues/3165)) ([acc0240](https://github.com/aws-amplify/amplify-cli/commit/acc0240c02630b4b9424370732706955ea447057)), closes [#2974](https://github.com/aws-amplify/amplify-cli/issues/2974)
+
+
+
+
+
 ## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.13.3...amplify-category-notifications@2.15.1) (2020-03-07)
 
 **Note:** Version bump only for package amplify-category-notifications

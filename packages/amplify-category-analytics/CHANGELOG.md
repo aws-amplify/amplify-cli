@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.16.0...amplify-category-analytics@2.16.1) (2020-03-10)
+
+
+### Bug Fixes
+
+* **amplify-category-analytics:** delete pinpoint project in delete ([#3165](https://github.com/aws-amplify/amplify-cli/issues/3165)) ([acc0240](https://github.com/aws-amplify/amplify-cli/commit/acc0240c02630b4b9424370732706955ea447057)), closes [#2974](https://github.com/aws-amplify/amplify-cli/issues/2974)
+
+
+
+
+
 # [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.13.3...amplify-category-analytics@2.16.0) (2020-03-07)
 
 
