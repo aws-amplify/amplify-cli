@@ -17,7 +17,12 @@ async function deleteProject(context) {
       if (confirmation.deleteAmpilfyApp && appId) {
         const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');
         const amplifyClient = await awsCloudPlugin.getConfiguredAmplifyClient(context, {});
-        await amplifyClient.deleteApp({ appId }).promise();
+        const environments = await amplifyBackendEnvironments(amplifyClient, appId);
+        if (environments.length === 0) {
+          await amplifyClient.deleteApp({ appId }).promise();
+        } else {
+          context.print.warning('Amplify App cannot be deleted, other environments still linked to Application');
+        }
       }
     } catch (ex) {
       spinner.fail(`Project delete failed ${ex.message}`);
@@ -32,6 +37,15 @@ async function deleteProject(context) {
     context.filesystem.remove(pathManager.getAmplifyDirPath());
     context.print.success('Project deleted locally.');
   }
+}
+
+async function amplifyBackendEnvironments(client, appId) {
+  const data = await client
+    .listBackendEnvironments({
+      appId,
+    })
+    .promise();
+  return data.backendEnvironments;
 }
 
 async function getConfirmation(context, env) {
