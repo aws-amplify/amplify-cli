@@ -3,7 +3,6 @@ const inquirer = require('inquirer');
 const fs = require('fs-extra');
 inquirer.registerPrompt('datetime', require('inquirer-datepicker-prompt'));
 const cb = require('cron-builder');
-const cronstrue = require('cronstrue');
 const categoryName = 'function';
 
 var Days = {

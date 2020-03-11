@@ -1,5 +1,6 @@
-import { getCLIPath } from '../utils';
-import { ExecutionContext, KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from '../utils/nexpect';
+import { getCLIPath, isCI } from '../utils';
+import { StartNextPendingJobExecutionRequest } from 'aws-sdk/clients/iotjobsdataplane';
 
 export let moveDown = (chain: ExecutionContext, nMoves: number) =>
   Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send(KEY_DOWN_ARROW), chain);
@@ -89,11 +90,11 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
 
       chain = chain
         .wait(action == 'create' ? 'Do you want to schedule this lambda function?' : 'Do you want to Update/Remove the ScheduleEvent Rule?')
-        .sendline('y');
+        .sendLine('y');
       if (settings.schedulePermissions) {
-        chain = cronWalkthrough(chain, cwd, settings, verbose);
+        chain = cronWalkthrough(chain, settings, settings.schedulePermissions.action);
       } else {
-        chain = chain.sendline('n');
+        chain = chain.sendLine('n');
       }
       // scheduling questions
 
@@ -170,40 +171,60 @@ export function functionBuild(cwd: string, settings: any) {
   });
 }
 
-function cronWalkthrough(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
-  chain = chain
-    .wait('When would you like to start cron')
-    .sendline('\r')
-    .wait('Please select interval');
-
-  switch (settings.schedulePermissions.interval || 'daily') {
-    case 'weekly':
-      chain = addWeekly(moveDown(chain, 1).sendline('\r'), cwd, settings, verbose);
-      break;
-    case 'monthly':
-      chain = addMonthly(moveDown(chain, 2).sendline('\r'), cwd, settings, verbose);
-      break;
-    case 'yearly':
-      chain = addYearly(moveDown(chain, 3).sendline('\r'), cwd, settings, verbose);
-      break;
-    default:
-      chain = chain.sendline('\r');
-      break;
+function cronWalkthrough(chain: ExecutionContext, settings: any, action: string) {
+  if (action === 'create') {
+    chain = addCron(chain, settings);
+  } else {
+    chain = chain.wait('Select from the following options').sendLine('\r');
+    switch (settings.schedulePermissions.action) {
+      case 'Update':
+        chain = addCron(chain, settings);
+        break;
+      case 'Remove':
+        chain = chain.sendLine('\r');
+        break;
+      default:
+        chain = chain.sendLine('\r');
+        break;
+    }
   }
   return chain;
 }
 
-function addWeekly(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
-  chain = chain.wait('Please select the  da to start Job');
-  return chain.sendline('\r');
+function addWeekly(chain: ExecutionContext) {
+  chain = chain.wait('Please select the  day to start Job');
+  return chain.sendLine('\r');
 }
 
-function addMonthly(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
+function addMonthly(chain: ExecutionContext) {
   chain = chain.wait('Select date to start cron');
-  return chain.sendline('\r');
+  return chain.sendLine('\r');
 }
 
-function addYearly(chain: nexpect.IChain, cwd: string, settings: any, verbose: boolean) {
-  chain = chain.wait('select month and date to start cron');
-  return chain.sendline('\r');
+function addYearly(chain: ExecutionContext) {
+  chain = chain.wait('Select date to start cron');
+  return chain.sendLine('\r');
+}
+
+function addCron(chain: ExecutionContext, settings: any) {
+  chain = chain
+    .wait('When would you like to start cron')
+    .sendLine('\r')
+    .wait('Please select interval');
+
+  switch (settings.schedulePermissions.interval || 'daily') {
+    case 'weekly':
+      chain = addWeekly(moveDown(chain, 1).sendLine('\r'));
+      break;
+    case 'monthly':
+      chain = addMonthly(moveDown(chain, 2).sendLine('\r'));
+      break;
+    case 'yearly':
+      chain = addYearly(moveDown(chain, 3).sendLine('\r'));
+      break;
+    default:
+      chain = chain.sendLine('\r');
+      break;
+  }
+  return chain;
 }
