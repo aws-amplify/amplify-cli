@@ -59,32 +59,32 @@ export function listEnvironment(cwd: string, settings: any) {
   });
 }
 
-// Helper function for getEnvironment()
-function _addQuotes(s: string, prefix: string): string {
-  return s.replace(prefix, '"' + prefix + '"').replace(': ', ':"') + '"';
-}
-
 // Get environment details and return them as JSON
-export function getEnvironment(cwd: string, settings: any) {
+export function getEnvironment(cwd: string, settings: any): Promise<string> {
+  const envData = {};
+  let helper = output => {
+    let keyVal = output.split(':');
+    envData[keyVal[0]] = keyVal[1].replace('\r', '');
+  };
   return new Promise((resolve, reject) => {
-    var envData = '';
     spawn(getCLIPath(), ['env', 'get', '--name', settings.envName], { cwd, stripColors: true })
       .wait(settings.envName)
       .wait('--------------')
-      .wait('Provider', output => (envData = envData.concat('', output.replace('Provider: ', '{"') + '":{')))
-      .wait('AuthRoleName', output => (envData = envData.concat('', _addQuotes(output, 'AuthRoleName'))))
-      .wait('UnauthRoleArn', output => (envData = envData.concat(',', _addQuotes(output, 'UnauthRoleArn'))))
-      .wait('Region', output => (envData = envData.concat(',', _addQuotes(output, 'Region'))))
-      .wait('DeploymentBucketName', output => (envData = envData.concat(',', _addQuotes(output, 'DeploymentBucketName'))))
-      .wait('UnauthRoleName', output => (envData = envData.concat(',', _addQuotes(output, 'UnauthRoleName'))))
-      .wait('StackName', output => (envData = envData.concat(',', _addQuotes(output, 'StackName'))))
-      .wait('StackId', output => (envData = envData.concat(',', _addQuotes(output, 'StackId') + '}}')))
+      .wait('Provider')
+      .wait('AuthRoleName', helper)
+      .wait('UnauthRoleArn', helper)
+      .wait('Region', helper)
+      .wait('DeploymentBucketName', helper)
+      .wait('UnauthRoleName', helper)
+      .wait('StackName', helper)
+      .wait('StackId', helper)
       .wait('--------------')
       .sendEof()
       .run((err: Error) => {
+        let jsonEnvData = JSON.stringify({ awscloudformation: envData });
         if (!err) {
-          resolve(envData);
-          return envData;
+          resolve(jsonEnvData);
+          return jsonEnvData;
         } else {
           reject(err);
         }
