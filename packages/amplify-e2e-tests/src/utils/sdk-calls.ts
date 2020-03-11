@@ -44,17 +44,15 @@ const getLambdaFunction = async (functionName, region) => {
   return res;
 };
 
-const getUserPoolClients = async (userpoolId, region) => {
-  config.update({ region });
-  const provider = new CognitoIdentityServiceProvider();
+const getUserPoolClients = async (userPoolId: string, clientIds: string[], region: string) => {
+  const provider = new CognitoIdentityServiceProvider({ region });
   const res = [];
   try {
-    const clients = await provider.listUserPoolClients({ UserPoolId: userpoolId }).promise();
-    for (let i = 0; i < clients.UserPoolClients.length; i++) {
+    for (let i = 0; i < clientIds.length; i++) {
       const clientData = await provider
         .describeUserPoolClient({
-          UserPoolId: userpoolId,
-          ClientId: clients.UserPoolClients[i].ClientId,
+          UserPoolId: userPoolId,
+          ClientId: clientIds[i],
         })
         .promise();
       res.push(clientData);
