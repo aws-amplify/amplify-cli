@@ -2,6 +2,7 @@ const { execSync } = require('child_process');
 const { getPackageManager } = require('../packageManagerHelpers');
 const { normalizePackageManagerForOS } = require('../packageManagerHelpers');
 const { generateLocalEnvInfoFile } = require('./s9-onSuccess');
+const { insertAmplifyIgnore } = require('../extensions/amplify-helpers/git-manager');
 const url = require('url');
 const fs = require('fs-extra');
 const path = require('path');
@@ -95,6 +96,7 @@ async function setLocalEnvDefaults(context) {
  * Extract amplify project structure with backend-config and project-config
  */
 async function createAmplifySkeleton() {
+  insertAmplifyIgnore(path.join(process.cwd(), '.gitignore'));
   const skeletonLocalDir = path.join(__dirname, '../../templates/amplify-skeleton');
   const skeletonProjectDir = path.join(process.cwd(), '/amplify');
   await fs.copySync(skeletonLocalDir, skeletonProjectDir);
