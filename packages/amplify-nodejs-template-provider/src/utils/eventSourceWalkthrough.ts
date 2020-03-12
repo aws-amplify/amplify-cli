@@ -6,7 +6,7 @@ export async function askEventSourceQuestions(context: any) {
   const selectEventSourceQuestion = {
     type: 'list',
     name: 'eventSourceType',
-    message: 'Choose the event source you want to associate with the Lambda trigger?',
+    message: 'What event source do you want to associate with Lambda trigger?',
     choices: [
       {
         "name": "Amazon DynamoDB Stream",

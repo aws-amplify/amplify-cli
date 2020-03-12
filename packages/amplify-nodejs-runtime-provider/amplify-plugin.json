@@ -1,0 +1,19 @@
+{
+  "name": "functionRuntime",
+  "id": "f579f2fa-35c1-49c4-950f-b588e779b4dd",
+  "type": "util",
+  "commands": [],
+  "eventHandlers": [],
+  "functionRuntime": {
+    "conditions": {
+      "provider": "awscloudformation",
+      "service": "Lambda"
+    },
+    "runtimes": [
+      {
+        "name": "NodeJS",
+        "value": "nodejs"
+      }
+    ]
+  }
+}

@@ -65,6 +65,7 @@ export async function askDynamoDBQuestions(context: any, currentProjectOnly = fa
         context.print.error('Invalid option selected');
     }
   }
+  throw new Error('Invalid option selected');
 }
 
 export async function getTableParameters(context: any, dynamoAnswers: any): Promise<any> {

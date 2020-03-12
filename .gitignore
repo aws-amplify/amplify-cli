@@ -30,7 +30,8 @@ packages/*/package-lock.json
 !packages/amplify-e2e-tests/projects-templates/create-react-app-auth-amplify/.env
 amplify-integ*/
 packages/amplify-storage-simulator/lib
-packages/amplify-util*/lib
+packages/*-template-provider/lib
+packages/*-runtime-provider/lib
 packages/amplify-function-plugin-interface/lib
 packages/**/reports/junit/*
 test.out.log
