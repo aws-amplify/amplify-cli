@@ -34,7 +34,6 @@ const getUserPool = async (userpoolId, region) => {
 };
 
 const getLambdaFunction = async (functionName, region) => {
-  config.update({ region });
   const lambda = new Lambda();
   let res;
   try {

@@ -317,7 +317,7 @@ describe('amplify add function with additional permissions', () => {
   });
 });
 
-describe.only('amplify add/update/remove function based on schedule rule', async () => {
+describe.only('amplify add/update/remove function based on schedule rule', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('schedule');
@@ -331,7 +331,7 @@ describe.only('amplify add/update/remove function based on schedule rule', async
   it.only('add a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(projRoot, {
-      functionTemplate: 'HelloWorld',
+      functionTemplate: 'helloWorld',
       schedulePermissions: {
         interval: 'daily',
       },
@@ -352,17 +352,17 @@ describe.only('amplify add/update/remove function based on schedule rule', async
     expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
   });
 
-  it.only('update a schedule rule for daily ', async () => {
+  it('update a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(projRoot, {
-      functionTemplate: 'HelloWorld',
+      functionTemplate: 'helloWorld',
       schedulePermissions: {
-        interval: 'daily',
+        interval: 'minutes',
       },
     });
     await functionBuild(projRoot, {});
     await updateFunction(projRoot, {
-      functionTemplate: 'HelloWorld',
+      functionTemplate: 'helloWorld',
       schedulePermissions: {
         interval: 'daily',
         action: 'Update',
@@ -384,7 +384,7 @@ describe.only('amplify add/update/remove function based on schedule rule', async
     expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
   });
 
-  it.only('remove a schedule rule for daily ', async () => {
+  it('remove a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(projRoot, {
       functionTemplate: 'HelloWorld',
@@ -408,11 +408,9 @@ describe.only('amplify add/update/remove function based on schedule rule', async
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
-    expect(ruleName).toBeDefined();
+    expect(ruleName).toBeUndefined();
 
     const cloudFunction = await getFunction(functionName, region);
     expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
-    const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
-    expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
   });
 });

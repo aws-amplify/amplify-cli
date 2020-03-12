@@ -1,7 +1,7 @@
 const path = require('path');
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
-inquirer.registerPrompt('datetime', require('inquirer-datepicker-prompt'));
+inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 const cb = require('cron-builder');
 const categoryName = 'function';
 
@@ -9,7 +9,7 @@ var Days = {
   MON: '1',
   TUE: '2',
   WED: '3',
-  THURS: '4',
+  THU: '4',
   FRI: '5',
   SAT: '6',
   SUN: '7',
@@ -21,7 +21,7 @@ async function askScheduleRuleQuestions(context, resourceName, parameters) {
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
 
-  if (!parameters || !parameters.cloudwatchEvent || parameters.cloudwatchEvent === 'NONE') {
+  if (!parameters || !parameters.cloudwatchEvent || parameters.cloudwatchEvent === 'false') {
     if (await context.amplify.confirmPrompt.run('Do you want to schedule this lambda function?', false)) {
       parameters.cloudwatchEvent = 'true';
       try {
@@ -87,7 +87,7 @@ async function askScheduleRuleQuestions(context, resourceName, parameters) {
           break;
         }
         case 'Remove the CronJob': {
-          parameters.cloudwatchEvent = 'NONE';
+          parameters.cloudwatchEvent = 'false';
           parameters.cloudwatchRule = 'NONE';
           delete cfnContent.Resources.CloudWatchEvent;
           delete cfnContent.Resources.PermissionForEventsToInvokeLambda;
@@ -108,18 +108,46 @@ async function cronServiceWalkthrough(context, parameters) {
     type: 'datetime',
     name: 'dt',
     message: 'When would you like to start cron?',
-    format: ['h', ':', 'MM', ' ', 'TT'],
+    format: ['HH', ':', 'mm', ' ', 'A'],
   };
   const timeAnswer = await inquirer.prompt([timeQuestion]);
 
   const intervalQuestion = {
     type: 'list',
     name: 'interval',
-    message: 'Please select interval or select custom rule exp?',
-    choices: ['daily', 'weekly', 'monthly', 'yearly', 'customRule'],
+    message: 'Select interval?',
+    choices: ['minutes', 'hourly', 'daily', 'weekly', 'monthly', 'yearly'],
   };
   const intervalAnswer = await inquirer.prompt([intervalQuestion]);
   switch (intervalAnswer.interval) {
+    case 'minutes': {
+      const minuteQuestion = {
+        type: 'input',
+        name: 'minutes',
+        message: 'Enter rate for mintues(1-59)?',
+      };
+      const minuteAnswer = await inquirer.prompt(minuteQuestion);
+      if (minuteAnswer.minutes === '1') {
+        cloudwatchRule = 'rate(' + minuteAnswer.minutes + ' minute )';
+      } else {
+        cloudwatchRule = 'rate(' + minuteAnswer.minutes + ' minutes)';
+      }
+      break;
+    }
+    case 'hourly': {
+      const hourQuestion = {
+        type: 'input',
+        name: 'hours',
+        message: 'Enter rate for hours(1-23)?',
+      };
+      const hourAnswer = await inquirer.prompt(hourQuestion);
+      if (hourAnswer.hours === '1') {
+        cloudwatchRule = 'rate(' + hourAnswer.hours + ' hour )';
+      } else {
+        cloudwatchRule = 'rate(' + hourAnswer.hours + ' hours)';
+      }
+      break;
+    }
     case 'daily': {
       var exp = new cb();
       exp.set(
@@ -144,7 +172,7 @@ async function cronServiceWalkthrough(context, parameters) {
       const WeekQuestion = {
         type: 'list',
         name: 'week',
-        message: 'Please select the  day to start Job?',
+        message: 'Select the  day to start Job?',
         choices: ['MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT', 'SUN'],
       };
       var exp1 = new cb();
@@ -173,7 +201,7 @@ async function cronServiceWalkthrough(context, parameters) {
         type: 'datetime',
         name: 'dt',
         message: 'Select date to start cron?',
-        format: ['d'],
+        format: ['DD'],
       };
       const dateAnswer = await inquirer.prompt([dateQuestion]);
       cloudwatchRule = makeCron(intervalAnswer.interval, dateAnswer, timeAnswer);
@@ -185,7 +213,7 @@ async function cronServiceWalkthrough(context, parameters) {
         type: 'datetime',
         name: 'dt',
         message: 'select month and date to start cron?',
-        format: ['m', '/', 'd'],
+        format: ['MM', '/', 'DD'],
       };
       const dateAnswer = await inquirer.prompt([dateQuestion]);
       cloudwatchRule = makeCron(intervalAnswer.interval, dateAnswer, timeAnswer);

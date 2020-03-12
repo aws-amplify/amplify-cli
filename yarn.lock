@@ -6825,7 +6825,7 @@ data-urls@^1.0.0, data-urls@^1.1.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
-dateformat@^3.0.0, dateformat@^3.0.2:
+dateformat@^3.0.0:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
@@ -10301,18 +10301,15 @@ inquirer-autocomplete-prompt@^1.0.1:
     figures "^2.0.0"
     run-async "^2.3.0"
 
-inquirer-datepicker-prompt@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/inquirer-datepicker-prompt/-/inquirer-datepicker-prompt-0.4.2.tgz#d4419daccf7fdd099751ecb82210560a1437f67c"
-  integrity sha1-1EGdrM9/3QmXUey4IhBWChQ39nw=
+inquirer-datepicker@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/inquirer-datepicker/-/inquirer-datepicker-1.1.0.tgz#8f6258cb30556d1ebace5eb292a883d63b65e70d"
+  integrity sha512-aWGM8vCBX953s+T5fO4ZUm2rLtK668lJnVKKKC4v/HebV4X6ztSy/xB6KAEE9wKh7I/nDvZvMrZptGbsVXst/g==
   dependencies:
-    chalk "^2.1.0"
-    cli-cursor "^2.1.0"
-    dateformat "^3.0.2"
-    datejs "^1.0.0-rc3"
-    inquirer "^3.3.0"
-    lodash "^4.17.4"
-    util "^0.10.3"
+    chalk "^3.0.0"
+    cli-cursor "^3.1.0"
+    lodash "^4.17.15"
+    moment "^2.24.0"
 
 inquirer@6.2.0:
   version "6.2.0"
@@ -10371,7 +10368,7 @@ inquirer@7.0.4:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-inquirer@^3.0.6, inquirer@^3.3.0:
+inquirer@^3.0.6:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-3.3.0.tgz#9dd2f2ad765dcab1ff0443b491442a20ba227dc9"
   integrity sha512-h+xtnyk4EwKvFWHrUYsWErEVR+igKtLdchu+o0Z1RL7VU/jVMFbYir2bp6bAj8efFNxWqHX0dIss6fJQ+/+qeQ==
@@ -18902,13 +18899,6 @@ util@0.10.3:
   integrity sha1-evsa/lCAUkZInj23/g7TeTNqwPk=
   dependencies:
     inherits "2.0.1"
-
-util@^0.10.3:
-  version "0.10.4"
-  resolved "https://registry.yarnpkg.com/util/-/util-0.10.4.tgz#3aa0125bfe668a4672de58857d3ace27ecb76901"
-  integrity sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==
-  dependencies:
-    inherits "2.0.3"
 
 util@^0.11.0:
   version "0.11.1"

@@ -16,11 +16,11 @@
   ],
   "dependencies": {
     "amplify-category-storage": "2.4.1",
+    "cron-builder": "^0.3.0",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.16.0",
-    "cron-builder": "^0.3.0",
     "inquirer": "^7.0.3",
-    "inquirer-datepicker-prompt": "^0.4.2",
+    "inquirer-datepicker": "^1.1.0",
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0"

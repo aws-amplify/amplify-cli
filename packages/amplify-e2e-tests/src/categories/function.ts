@@ -87,17 +87,15 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
       }
 
       // scheduling questions
-
       chain = chain
         .wait(action == 'create' ? 'Do you want to schedule this lambda function?' : 'Do you want to Update/Remove the ScheduleEvent Rule?')
         .sendLine('y');
       if (settings.schedulePermissions) {
-        chain = cronWalkthrough(chain, settings, settings.schedulePermissions.action);
+        chain = cronWalkthrough(chain, settings, action);
       } else {
         chain = chain.sendLine('n');
       }
       // scheduling questions
-
       chain = chain
         .wait('Do you want to edit the local lambda function now')
         .sendLine('n')
@@ -175,55 +173,78 @@ function cronWalkthrough(chain: ExecutionContext, settings: any, action: string)
   if (action === 'create') {
     chain = addCron(chain, settings);
   } else {
-    chain = chain.wait('Select from the following options').sendLine('\r');
+    chain = chain.wait('Select from the following options').sendCarriageReturn();
     switch (settings.schedulePermissions.action) {
       case 'Update':
         chain = addCron(chain, settings);
         break;
       case 'Remove':
-        chain = chain.sendLine('\r');
+        chain = chain.sendCarriageReturn();
         break;
       default:
-        chain = chain.sendLine('\r');
+        chain = chain.sendCarriageReturn();
         break;
     }
   }
   return chain;
 }
-
+function addminutes(chain: ExecutionContext) {
+  chain = chain
+    .wait('Enter rate for mintues(1-59)?')
+    .sendLine('5\r')
+    .sendCarriageReturn();
+  return chain;
+}
+function addhourly(chain: ExecutionContext) {
+  chain = chain
+    .wait('Enter rate for hours(1-23)?')
+    .sendLine('5\r')
+    .sendCarriageReturn();
+  return chain;
+}
 function addWeekly(chain: ExecutionContext) {
-  chain = chain.wait('Please select the  day to start Job');
-  return chain.sendLine('\r');
+  chain = chain.wait('Please select the  day to start Job').sendCarriageReturn();
+  return chain;
 }
 
 function addMonthly(chain: ExecutionContext) {
-  chain = chain.wait('Select date to start cron');
-  return chain.sendLine('\r');
+  chain = chain.wait('Select date to start cron').sendCarriageReturn();
+  return chain;
 }
 
 function addYearly(chain: ExecutionContext) {
-  chain = chain.wait('Select date to start cron');
-  return chain.sendLine('\r');
+  chain = chain.wait('Select date to start cron').sendCarriageReturn();
+  return chain;
 }
 
 function addCron(chain: ExecutionContext, settings: any) {
   chain = chain
     .wait('When would you like to start cron')
-    .sendLine('\r')
-    .wait('Please select interval');
+    .sendCarriageReturn()
+    .wait('Please select interval or select custom rule exp?');
 
+  console.log(settings.schedulePermissions.interval);
   switch (settings.schedulePermissions.interval || 'daily') {
+    case 'minutes':
+      chain = addminutes(chain);
+      break;
+    case 'hourly':
+      chain = addhourly(moveDown(chain, 1).sendCarriageReturn());
+      break;
+    case 'daily':
+      chain = moveDown(chain, 2).sendCarriageReturn();
+      break;
     case 'weekly':
-      chain = addWeekly(moveDown(chain, 1).sendLine('\r'));
+      chain = addWeekly(moveDown(chain, 3).sendCarriageReturn());
       break;
     case 'monthly':
-      chain = addMonthly(moveDown(chain, 2).sendLine('\r'));
+      chain = addMonthly(moveDown(chain, 4).sendCarriageReturn());
       break;
     case 'yearly':
-      chain = addYearly(moveDown(chain, 3).sendLine('\r'));
+      chain = addYearly(moveDown(chain, 5).sendCarriageReturn());
       break;
     default:
-      chain = chain.sendLine('\r');
+      chain = chain.sendCarriageReturn();
       break;
   }
   return chain;
