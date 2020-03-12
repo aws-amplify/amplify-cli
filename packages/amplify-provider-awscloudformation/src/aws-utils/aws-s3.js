@@ -26,7 +26,7 @@ class S3 {
       : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
 
-    this.putFile(s3Params).then(() => projectBucket);
+    return this.putFile(s3Params).then(() => projectBucket);
   }
 
   putFile(s3Params) {
