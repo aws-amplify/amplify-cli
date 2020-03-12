@@ -21,12 +21,12 @@ async function askScheduleRuleQuestions(context, resourceName, parameters) {
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
 
-  if (!parameters || !parameters.cloudwatchEvent || parameters.cloudwatchEvent === 'false') {
+  if (!parameters || !parameters.CloudWatchEnabled || parameters.CloudWatchEnabled === 'false') {
     if (await context.amplify.confirmPrompt.run('Do you want to schedule this lambda function?', false)) {
-      parameters.cloudwatchEvent = 'true';
+      parameters.CloudWatchEnabled = 'true';
       try {
         cloudWatchRule = await cronServiceWalkthrough(context, parameters);
-        parameters.cloudwatchRule = cloudWatchRule;
+        parameters.CloudWatchRule = cloudWatchRule;
         if (context.input.command === 'update') {
           //append cloudwatch events to CFN File
           const cfnContent = context.amplify.readJsonFile(cfnFilePath);
@@ -80,15 +80,15 @@ async function askScheduleRuleQuestions(context, resourceName, parameters) {
         case 'Update the CronJob': {
           // add service walkthrough to get the cron expression
           cloudWatchRule = await cronServiceWalkthrough(context, parameters);
-          parameters.cloudwatchEvent = 'true';
-          parameters.cloudwatchRule = cloudWatchRule;
-          cfnContent.Resources.CloudWatchEvent.Properties.ScheduleExpression = parameters.cloudwatchRule;
+          parameters.CloudWatchEnabled = 'true';
+          parameters.CloudWatchRule = cloudWatchRule;
+          cfnContent.Resources.CloudWatchEvent.Properties.ScheduleExpression = parameters.CloudWatchRule;
           fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
           break;
         }
         case 'Remove the CronJob': {
-          parameters.cloudwatchEvent = 'false';
-          parameters.cloudwatchRule = 'NONE';
+          parameters.CloudWatchEnabled = 'false';
+          parameters.CloudWatchRule = 'NONE';
           delete cfnContent.Resources.CloudWatchEvent;
           delete cfnContent.Resources.PermissionForEventsToInvokeLambda;
           delete cfnContent.Outputs.CloudWatchEventRule;
@@ -175,7 +175,7 @@ async function cronServiceWalkthrough(context, parameters) {
         type: 'list',
         name: 'week',
         message: 'Select the  day to start Job?',
-        choices: ['MON', 'TUE', 'WED', 'THURS', 'FRI', 'SAT', 'SUN'],
+        choices: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
       };
       var exp1 = new cb();
       const weekAnswer = await inquirer.prompt([WeekQuestion]);

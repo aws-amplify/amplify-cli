@@ -101,8 +101,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   allDefaultValues.parameters = parameters;
   allDefaultValues.topLevelComment = topLevelComment;
-  allDefaultValues.cloudwatchEvent = parameters.cloudwatchEvent;
-  allDefaultValues.cloudwatchRule = parameters.cloudwatchRule;
+  allDefaultValues.CloudWatchEnabled = parameters.CloudWatchEnabled;
+  allDefaultValues.CloudWatchRule = parameters.CloudWatchRule;
 
   ({ dependsOn } = allDefaultValues);
   return { answers: allDefaultValues, dependsOn };
@@ -239,8 +239,8 @@ async function updateWalkthrough(context, lambdaToUpdate) {
   // add question for update / remove schedule from a lambda function
   await cron.askScheduleRuleQuestions(context, answers.resourceName, currentParameters);
   // updated to take changes only for the fields and not to alter full object
-  newParams.cloudwatchEvent = currentParameters.cloudwatchEvent;
-  newParams.cloudwatchRule = currentParameters.cloudwatchRule;
+  newParams.CloudWatchEnabled = currentParameters.CloudWatchEnabled;
+  newParams.CloudWatchRule = currentParameters.CloudWatchRule;
   answers.parameters = newParams;
   ({ dependsOn } = answers);
   if (!dependsOn) {
