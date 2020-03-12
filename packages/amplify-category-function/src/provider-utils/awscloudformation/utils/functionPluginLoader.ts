@@ -1,5 +1,12 @@
 import inquirer from 'inquirer'
-import { FunctionParameters } from "amplify-function-plugin-interface";
+import {
+  FunctionParameters,
+  FunctionTemplateCondition,
+  FunctionRuntimeCondition,
+  FunctionRuntimeParameters,
+  FunctionTemplateParameters,
+  ContributorFactory
+} from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 
 /*
@@ -7,79 +14,136 @@ import _ from 'lodash';
  */
 
  /**
-  * Loads function template plugins
-  * @param context Amplify Context object
-  * @param params Current function parameters
-  * @returns FunctionParameters populated with the values required to build the supplied template
+  * Selects a function template
   */
-export async function templateWalkthrough(context: any, params: FunctionParameters): Promise<FunctionParameters> {
-  const pluginType = 'function-template-provider';
-  const selectionItem = 'template';
-  return await loadParametersFromPluginType(context, params, pluginType, selectionItem);
+export async function templateWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<FunctionTemplateParameters> {
+  const selectionOptions: PluginSelectionOptions<FunctionTemplateCondition> = {
+    pluginType: 'functionTemplate',
+    itemName: 'template',
+    listOptionsField: 'templates',
+    predicate: condition => {
+      return condition.provider === params.providerContext.provider
+        && condition.service === params.providerContext.service
+        && condition.runtime === params.runtime.name
+    }
+  }
+  const selection = await getSelectionFromContributors<FunctionTemplateCondition>(context, selectionOptions);
+  const executionParams: PluginExecutionParameters = {
+    ...selection,
+    context,
+    expectedFactoryFunction: 'functionTemplateContributorFactory',
+  }
+  return await getContributionFromPlugin<FunctionTemplateParameters>(executionParams)
 }
 
 /**
- * Loads function runtime plugins
- * @param context Amplify Context object
- * @param params Current function parameters
- * @returns FunctionParameters populated with the value required to build the supplied runtime
+ * Selects a function runtime
  */
-export async function runtimeWalkthrough(context: any, params: FunctionParameters): Promise<FunctionParameters> {
-  const pluginType = 'function-runtime-provider';
-  const selectionItem = 'runtime';
-  return await loadParametersFromPluginType(context, params, pluginType, selectionItem);
+export async function runtimeWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<FunctionRuntimeParameters> {
+  const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
+    pluginType: 'functionRuntime',
+    itemName: 'runtime',
+    listOptionsField: 'runtimes',
+    predicate: condition => {
+      return condition.provider === params.providerContext.provider
+        && condition.service === params.providerContext.service
+    }
+  }
+  const selection = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
+  const executionParams: PluginExecutionParameters = {
+    ...selection,
+    context,
+    expectedFactoryFunction: 'functionRuntimeContributorFactory',
+  }
+  return await getContributionFromPlugin<FunctionRuntimeParameters>(executionParams)
+
 }
 
 /**
- * Handles dynamically requiring function plugins and executing the options exposed in the plugin
- * @param context Amplify Context object
- * @param params Current function parameters
- * @param pluginType The type of function plugin to load
- * @param itemName The name of the item that should be shown to the user
+ * Parses plugin metadat to present plugin selections to the user and return the selection.
  */
-async function loadParametersFromPluginType(context: any, params: FunctionParameters, pluginType: string, itemName: string): Promise<FunctionParameters> {
+async function getSelectionFromContributors<T>(context: any, selectionOptions: PluginSelectionOptions<T>): Promise<PluginSelection> {
   // get providers from context
-  const templateProviders = context.pluginPlatform.plugins[pluginType];
+  const templateProviders = context.pluginPlatform.plugins[selectionOptions.pluginType];
   if (!templateProviders) {
     throw 'No template plugins found. You can either create your function from scratch or download and install template plugins then rerun this command.'
   }
 
-  const paramsCopy = _.assign({}, params) // copy params to pass to plugins so they cannot be modified
+  // load the selections contributed from each provider, constructing a map of selection to provider as we go
+  const selectionMap: Map<string, string> = new Map();
+  const selections = templateProviders
+    .filter(meta => selectionOptions.predicate(meta.manifest[selectionOptions.pluginType].conditions))
+    .map(meta => {
+      const packageLoc = meta.packageLocation;
+      (meta.manifest[selectionOptions.pluginType][selectionOptions.listOptionsField] as ListOption[]).forEach(op => {
+        selectionMap.set(op.value, packageLoc)
+      })
+      return meta;
+    })
+    .map(meta => meta.manifest[selectionOptions.pluginType])
+    .flatMap(contributes => contributes[selectionOptions.listOptionsField]);
 
-    // load the options from each provider
-  const options = templateProviders
-    .map(providerMeta => providerMeta.packageLocation)
-    .map(packageLoc => {
-        try {
-          return require(packageLoc); // dynamic require each template provider
-        } catch(err) {
-          context.print.warning('Some plugins could not be loaded. Run "amplify plugin scan" to fix');
-          return false;
-        }
-      }
-    )
-    .filter(provider => !!provider) // get rid of any cases above where we failed to load the plugin
-    .flatMap(provider => provider.getOptions(context, paramsCopy)) // copy params so that plugin cannot modify them
-    .map(op => {return {name: op.name, value: op.create}}); // the create function is set as the value of the selection
 
   // sanity checks
-  if (options.length === 0) {
-    context.print.warning(`No ${itemName} found for the selected function configuration`)
-    context.print.warning(`You can download and install ${itemName} plugins then rerun this command`)
-    return {};
-  } else if (options.length === 1) {
-    context.print.info(`${options[0].name} found for selected function configuration.`)
-    return await options[0].value();
+  let selection;
+  if (selections.length === 0) {
+    context.print.warning(`No ${selectionOptions.itemName} found for the selected function configuration`)
+    context.print.warning(`You can download and install ${selectionOptions.itemName} plugins then rerun this command`)
+  } else if (selections.length === 1) {
+    context.print.info(`${selections[0].name} found for selected function configuration.`)
+    selection = selections[0].value;
+  } else {
+    // ask which template to use
+    let answer = await inquirer.prompt([{
+      type: 'list',
+      name: 'selection',
+      message: `Select the function ${selectionOptions.itemName}:`,
+      choices: selections
+    }]);
+    selection = answer.selection;
   }
 
-  // ask which template to use
-  const selection = await inquirer.prompt([{
-    type: 'list',
-    name: 'create',
-    message: `Select the function ${itemName}:`,
-    choices: options
-  }]);
+  return {
+    selection,
+    pluginPath: selectionMap.get(selection),
+  }
+}
 
-  // execute the template creation function associated with the selection
-  return await selection.create();
+// Executes the selected option using the given plugin
+async function getContributionFromPlugin<T extends Partial<FunctionParameters>>(params: PluginExecutionParameters): Promise<T> {
+  let plugin;
+  try {
+    plugin = await import(params.pluginPath);
+  } catch (err) {
+    throw new Error('Could not load selected plugin');
+  }
+  if (!plugin) {
+    throw new Error('Could not load selected plugin');
+  }
+  return await (plugin[params.expectedFactoryFunction] as ContributorFactory<T>)(params.context)
+    .contribute(params.selection)
+}
+
+
+// Convenience interfaces that are private to this class
+
+interface PluginSelectionOptions<T extends FunctionRuntimeCondition | FunctionTemplateCondition> {
+  pluginType: string
+  itemName: string
+  predicate: (condition: T) => boolean
+  listOptionsField: string
+}
+
+type PluginSelection = Pick<PluginExecutionParameters, 'pluginPath' | 'selection'>
+
+interface PluginExecutionParameters {
+  pluginPath: string
+  selection: string
+  expectedFactoryFunction: string
+  context: any // Amplify core context
+}
+
+interface ListOption {
+  name: string
+  value: string
 }

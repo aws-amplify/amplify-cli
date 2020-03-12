@@ -1,19 +1,20 @@
 {
-  "name": "amplify-function-plugin-interface",
+  "name": "amplify-nodejs-runtime-provider",
   "version": "1.0.0",
-  "description": "Interface for plugins that provide additional functionality to function category plugins",
+  "description": "Provides functionality related to functions in NodeJS on AWS",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
-    "directory": "packages/amplify-function-plugin-interface"
+    "directory": "packages/amplfiy-nodejs-runtime-provider"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf ./lib"
+  },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.0.0"
   }
-  
 }

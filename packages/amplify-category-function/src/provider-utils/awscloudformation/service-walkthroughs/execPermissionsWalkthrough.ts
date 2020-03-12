@@ -39,8 +39,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const appsyncTableSuffix = '@model(appsync)';
 
-  for (let i = 0; i < selectedCategories.length; i += 1) {
-    const category = selectedCategories[i];
+  for (let category of selectedCategories) {
     const resourcesList = category in amplifyMeta ? Object.keys(amplifyMeta[category]) : [];
     if (category === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
@@ -90,8 +89,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
         selectedResources = resourceAnswer.resources;
       }
 
-      for (let j = 0; j < selectedResources.length; j += 1) {
-        const resourceName = selectedResources[j];
+      for (let resourceName of selectedResources) {
 
         const pluginInfo = context.amplify.getCategoryPluginInfo(context, category, resourceName);
 

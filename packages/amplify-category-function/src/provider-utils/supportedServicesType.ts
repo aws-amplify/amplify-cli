@@ -1,4 +1,3 @@
-import { MergeableFunctionParameters } from "./awscloudformation/MergeableFunctionParameters";
 import { FunctionParameters } from "amplify-function-plugin-interface";
 
 export type SupportedServices = Record<Service, ServiceConfig>;
@@ -15,7 +14,7 @@ export enum Service {
 }
 
 export interface WalkthroughProvider {
-  createWalkthrough: (context: any, params: MergeableFunctionParameters) => Promise<FunctionParameters>
+  createWalkthrough: (context: any, params: Partial<FunctionParameters>) => Promise<Partial<FunctionParameters>>
   updateWalkthrough: Function
   migrate?: Function
   getIAMPolicies: Function

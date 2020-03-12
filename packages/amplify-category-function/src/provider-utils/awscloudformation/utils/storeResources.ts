@@ -4,8 +4,6 @@ import fs from 'fs-extra';
 import {categoryName, provider, serviceName} from './constants';
 import _ from 'lodash';
 
-const OVERWRITE = true;
-
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
 
@@ -33,7 +31,7 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
     return {
       dir: parameters.functionTemplate.sourceRoot,
       template: file,
-      target: path.join(destDir, categoryName, parameters.resourceName, 'src', _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, '')))
+      target: path.join(destDir, categoryName, parameters.resourceName, _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, '')))
     }
   })
 
@@ -49,7 +47,7 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
     templateParams = _.assign(templateParams, triggerEnvs);
   }
 
-  context.amplify.copyBatch(context, copyJobs, templateParams, !OVERWRITE, {}); // last input is writeParams. Not needed anymore because it is handled above in copyFunctionResources
+  context.amplify.copyBatch(context, copyJobs, templateParams, false);
 
   // copy cloud resource template
   const cloudTemplateJob = {
@@ -57,7 +55,7 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
     template: parameters.cloudResourceTemplatePath,
     target: path.join(destDir, categoryName, parameters.resourceName, `${parameters.resourceName}-cloudformation-template.json`),
   }
-  context.amplify.copyBatch(context, [cloudTemplateJob], parameters, !OVERWRITE, {})
+  context.amplify.copyBatch(context, [cloudTemplateJob], parameters, false)
 }
 
 export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {

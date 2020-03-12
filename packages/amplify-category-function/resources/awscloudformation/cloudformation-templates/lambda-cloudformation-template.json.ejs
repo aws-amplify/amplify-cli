@@ -72,7 +72,7 @@
                 }
             },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
-            "Runtime": "<%= props.runtime.name %>",
+            "Runtime": "<%= props.runtime.value %>",
             "Timeout": "25"
           }
         },

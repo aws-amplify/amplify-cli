@@ -1,15 +1,15 @@
-import * as lambdaWalkthroughs from './awscloudformation/service-walkthroughs/lambda-walkthrough';
+import {migrate, createWalkthrough, updateWalkthrough} from './awscloudformation/service-walkthroughs/lambda-walkthrough';
 import * as lambdaController from './awscloudformation';
 import { SupportedServices } from './supportedServicesType';
 import { getIAMPolicies } from './awscloudformation/utils/cloudformationHelpers';
 import { askExecRolePermissionsQuestions } from './awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 
-export const SUPPORTED_SERVICES: SupportedServices = {
+export const supportedServices: SupportedServices = {
   Lambda: {
     walkthroughs: {
-      createWalkthrough: lambdaWalkthroughs.createWalkthrough,
-      updateWalkthrough: lambdaWalkthroughs.updateWalkthrough,
-      migrate: lambdaWalkthroughs.migrate,
+      createWalkthrough: createWalkthrough,
+      updateWalkthrough: updateWalkthrough,
+      migrate: migrate,
       getIAMPolicies: getIAMPolicies,
       askExecRolePermissionsQuestions: askExecRolePermissionsQuestions
     },

@@ -1,18 +1,18 @@
 import { categoryName } from '../../provider-utils/awscloudformation/utils/constants';
-import { SUPPORTED_SERVICES } from '../../provider-utils/supported-services';
+import { supportedServices } from '../../provider-utils/supported-services';
 
 const subcommand = 'invoke';
 
 module.exports = {
   name: subcommand,
   run: async context => {
-    const servicesMetadata = SUPPORTED_SERVICES;
+    const servicesMetadata = supportedServices;
     const { amplify } = context;
 
     return amplify
       .serviceSelectionPrompt(context, categoryName, servicesMetadata)
       .then(result => {
-        const providerController = require(`../../provider-utils/${result.providerName}/index`);
+        const providerController = servicesMetadata[result.service].providerController;
         if (!providerController) {
           context.print.error('Provider not confgiured for this category');
           return;

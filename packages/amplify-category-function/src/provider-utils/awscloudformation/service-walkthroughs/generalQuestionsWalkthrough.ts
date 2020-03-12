@@ -1,12 +1,12 @@
-import inquirer from 'inquirer'
-import uuid = require('uuid');
+import inquirer from 'inquirer';
+import uuid from 'uuid';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
 
 /**
  * Asks general questions about the function and populates corresponding FunctionParameters
  * @param context The Amplify Context object
  */
-export default async function generalQuestionsWalkthrough(context: any): Promise<FunctionParameters> {
+export default async function generalQuestionsWalkthrough(context: any): Promise<Partial<FunctionParameters>> {
   return await inquirer.prompt(generalQuestions(context));
 }
 
