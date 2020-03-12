@@ -30,7 +30,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     const q = await parseInputs(questionObj, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers, context);
 
     // ASK QUESTION
-    const answer = await inquirer.prompt([q]);
+    const answer = await inquirer.prompt(q);
 
     if (answer.userPoolGroups === true) {
       userPoolGroupList = await updateUserPoolGroups(context);

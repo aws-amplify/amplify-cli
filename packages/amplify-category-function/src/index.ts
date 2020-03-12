@@ -1,4 +1,5 @@
 import path from 'path'
+import { category } from './constants'
 
 const sequential = require('promise-sequential');
 const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
@@ -6,8 +7,6 @@ const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
 const { invokeFunction } = require('./provider-utils/awscloudformation/utils/invoke');
 
 const { run } = require('./commands/function/invoke');
-
-const category = 'function';
 
 export async function add(context, providerName, service, parameters) {
   const options = {

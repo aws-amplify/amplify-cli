@@ -1,27 +1,31 @@
-import { FunctionParameters } from "amplify-function-plugin-interface";
-import {TEMPLATE_ROOT} from '../utils/constants';
+import { FunctionTemplateParameters } from "amplify-function-plugin-interface";
+import {templateRoot} from '../utils/constants';
 import path from 'path';
 import fs from 'fs-extra';
 import { askDynamoDBQuestions, getTableParameters } from "../utils/dynamoDBWalkthrough";
+import _ from "lodash";
+import { getDstMap } from "../utils/destFileMapper";
 
-const PATH_TO_TEMPLATE_FILES = path.join(TEMPLATE_ROOT, 'lambda/crud')
+const pathToTemplateFiles = path.join(templateRoot, 'lambda/crud')
 
 // copied from legacy lambda-walkthrough with slight modifications for typescript and refactored FunctionParameters object
-export async function provideCrud(context: any, params: FunctionParameters): Promise<FunctionParameters> {
+export async function provideCrud(context: any): Promise<FunctionTemplateParameters> {
   const dynamoResource = await askDynamoDBQuestions(context);
 
   const tableParameters = await getTableParameters(context, dynamoResource);
   Object.assign(dynamoResource, { category: 'storage' }, { tableDefinition: { ...tableParameters } });
-
+  const files = fs.readdirSync(pathToTemplateFiles);
   return {
     functionTemplate: {
-      sourceRoot: PATH_TO_TEMPLATE_FILES,
-      sourceFiles: fs.readdirSync(PATH_TO_TEMPLATE_FILES),
+      sourceRoot: pathToTemplateFiles,
+      sourceFiles: files,
       parameters: {
         path: '/item', // this is the default. If a different value is already specified, this will not overwrite it
+        expressPath: '/item',
         database: dynamoResource,
       },
-      defaultEditorFile: 'app.js',
+      defaultEditorFile: path.join('src', 'app.js'),
+      destMap: getDstMap(files),
     },
     dependsOn: [
       {

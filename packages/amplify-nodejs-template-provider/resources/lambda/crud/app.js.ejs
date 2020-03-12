@@ -28,7 +28,7 @@ const partitionKeyType = "<%= props.functionTemplate.parameters.database.tableDe
 const sortKeyName = "<%= props.functionTemplate.parameters.database.tableDefinition.sortKeyName %>";
 const sortKeyType = "<%= props.functionTemplate.parameters.database.tableDefinition.sortKeyType %>";
 const hasSortKey = sortKeyName !== "";
-const path = "<%= props.functionTemplate.parameters.path %>";
+const path = "<%= props.functionTemplate.parameters.expressPath %>";
 const UNAUTH = 'UNAUTH';
 const hashKeyPath = '/:' + partitionKeyName;
 const sortKeyPath = hasSortKey ? '/:' + sortKeyName : '';
