@@ -49,7 +49,7 @@ export function listEnvironment(cwd: string, settings: any) {
       chain = chain.wait(regex);
     }
 
-    chain = chain.sendEof().run((err: Error) => {
+    chain.sendEof().run((err: Error) => {
       if (!err) {
         resolve();
       } else {

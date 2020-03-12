@@ -20,7 +20,7 @@ export function amplifyPull(cwd: string, settings: any) {
         .sendLine('y');
     }
 
-    chain = chain
+    chain
       // .wait('Successfully pulled backend environment') // nexpect hates this line for some reason
       .wait('Post-pull status')
       .wait('Current Environment')
