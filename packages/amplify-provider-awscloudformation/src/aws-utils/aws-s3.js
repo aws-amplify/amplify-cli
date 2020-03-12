@@ -26,11 +26,10 @@ class S3 {
       : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
 
-    this.putFile(s3Params).then(() => projectBucket);
-  }
-
-  putFile(s3Params) {
-    return this.s3.putObject(s3Params).promise();
+    return this.s3
+      .putObject(s3Params)
+      .promise()
+      .then(() => projectBucket);
   }
 
   getFile(s3Params, envName = this.context.amplify.getEnvInfo().envName) {
@@ -53,7 +52,7 @@ class S3 {
     return this.ifBucketExists(bucketName).then(result => {
       if (!result) {
         this.context.print.warning(
-          'The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....',
+          'The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....'
         );
         this.context.print.warning(`Bucket name: ${bucketName}`);
 
@@ -68,87 +67,47 @@ class S3 {
       }
     });
   }
-  getAllObjectKeys(bucketName, continuationToken = null) {
+
+  deleteAllObjects(bucketName) {
     return new Promise((resolve, reject) => {
       this.s3
-        .listObjectsV2({ Bucket: bucketName, ContinuationToken: continuationToken })
+        .listObjects({ Bucket: bucketName })
         .promise()
         .then((result, lerr) => {
           if (lerr) {
             reject(lerr);
             return;
           }
-          const objects = result.Contents.map(r => {
-            return { Key: r.Key };
+
+          const promises = result.Contents.map(r => this.s3.deleteObject({ Bucket: bucketName, Key: r.Key }).promise());
+          Promise.all(promises).then((results, errors) => {
+            if (!_.compact(errors).length) resolve();
+            else reject(errors);
           });
-          if (result.IsTruncated) {
-            this.getAllObjectKeys(bucketName, result.NextContinuationToken).then((result, error) => {
-              if (error) {
-                reject(error);
-              } else {
-                resolve(objects.concat(result));
-              }
-            });
-          } else {
-            resolve(objects);
-          }
         });
-    });
-  }
-
-  deleteAllObjects(bucketName) {
-    return new Promise((resolve, reject) => {
-      this.getAllObjectKeys(bucketName).then((result, error) => {
-        if (error) reject(error);
-        const chunkedResult = _.chunk(result, 1000);
-
-        const deleteReq = chunkedResult
-          .map(res => {
-            return {
-              Bucket: bucketName,
-              Delete: {
-                Objects: res,
-                Quiet: false,
-              },
-            };
-          })
-          .map(delParams => this.s3.deleteObjects(delParams))
-          .map(delRequest => delRequest.promise());
-        Promise.all(deleteReq)
-          .then(resolve)
-          .catch(reject);
-      });
     });
   }
 
   deleteS3Bucket(bucketName) {
     return new Promise((resolve, reject) => {
-      this.ifBucketExists(bucketName).then((exists, err) => {
+      this.deleteAllObjects(bucketName).then((result, err) => {
         if (err) {
           reject(err);
+          return;
         }
-        if (exists) {
-          this.deleteAllObjects(bucketName).then((result, err) => {
-            if (err) {
-              reject(err);
+
+        this.s3
+          .deleteBucket({
+            Bucket: bucketName,
+          })
+          .promise()
+          .then((dresult, derr) => {
+            if (derr) {
+              reject(derr);
               return;
             }
-            this.s3
-              .deleteBucket({
-                Bucket: bucketName,
-              })
-              .promise()
-              .then((dresult, derr) => {
-                if (derr) {
-                  reject(derr);
-                  return;
-                }
-                resolve(dresult);
-              });
+            resolve(dresult);
           });
-        } else {
-          resolve();
-        }
       });
     });
   }
