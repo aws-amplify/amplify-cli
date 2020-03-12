@@ -4,11 +4,13 @@
     "Parameters": {
         "cloudwatchEvent": {
             "Type": "String",
-            "Default" : "false"
+            "Default" : "false",
+            "Description" : "Parameters to check whether CloudWatchEvent is Enabled"
         },
         "cloudwatchRule": {
             "Type": "String",
-            "Default" : "NONE"
+            "Default" : "NONE",
+            "Description" : " Schedule Expression"
         },
         "env": {
             "Type": "String"
@@ -222,7 +224,7 @@
         }
         <% } %>
         <% } %>
-        <% if (props.cloudwatchEvent && props.cloudwatchEvent != "NONE") { %> 
+        <% if (props.cloudwatchEvent && props.cloudwatchEvent != "false") { %> 
         ,"CloudWatchEvent": {
             "Type" : "AWS::Events::Rule",
             "Properties":{
@@ -237,8 +239,6 @@
                 }]
             } 
         }
-        <% } %>          
-        <% if (props.cloudwatchEvent && props.cloudwatchEvent != "NONE") { %>
         ,"PermissionForEventsToInvokeLambda": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {

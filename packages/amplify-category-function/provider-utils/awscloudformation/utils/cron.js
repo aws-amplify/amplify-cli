@@ -91,6 +91,8 @@ async function askScheduleRuleQuestions(context, resourceName, parameters) {
           parameters.cloudwatchRule = 'NONE';
           delete cfnContent.Resources.CloudWatchEvent;
           delete cfnContent.Resources.PermissionForEventsToInvokeLambda;
+          delete cfnContent.Outputs.CloudWatchEventRule;
+
           fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
           break;
         }
@@ -128,7 +130,7 @@ async function cronServiceWalkthrough(context, parameters) {
       };
       const minuteAnswer = await inquirer.prompt(minuteQuestion);
       if (minuteAnswer.minutes === '1') {
-        cloudwatchRule = 'rate(' + minuteAnswer.minutes + ' minute )';
+        cloudwatchRule = 'rate(' + minuteAnswer.minutes + ' minute)';
       } else {
         cloudwatchRule = 'rate(' + minuteAnswer.minutes + ' minutes)';
       }
@@ -142,7 +144,7 @@ async function cronServiceWalkthrough(context, parameters) {
       };
       const hourAnswer = await inquirer.prompt(hourQuestion);
       if (hourAnswer.hours === '1') {
-        cloudwatchRule = 'rate(' + hourAnswer.hours + ' hour )';
+        cloudwatchRule = 'rate(' + hourAnswer.hours + ' hour)';
       } else {
         cloudwatchRule = 'rate(' + hourAnswer.hours + ' hours)';
       }

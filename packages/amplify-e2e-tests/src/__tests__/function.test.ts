@@ -328,7 +328,7 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
     deleteProjectDir(projRoot);
   });
 
-  it.only('add a schedule rule for daily ', async () => {
+  it('add a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(projRoot, {
       functionTemplate: 'helloWorld',
@@ -357,7 +357,7 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
     await addFunction(projRoot, {
       functionTemplate: 'helloWorld',
       schedulePermissions: {
-        interval: 'minutes',
+        interval: 'daily',
       },
     });
     await functionBuild(projRoot, {});
@@ -365,7 +365,7 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
       functionTemplate: 'helloWorld',
       schedulePermissions: {
         interval: 'daily',
-        action: 'Update',
+        action: 'Update the CronJob',
       },
     });
     await amplifyPushAuth(projRoot);
@@ -387,17 +387,17 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
   it('remove a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(projRoot, {
-      functionTemplate: 'HelloWorld',
+      functionTemplate: 'helloWorld',
       schedulePermissions: {
         interval: 'daily',
       },
     });
     await functionBuild(projRoot, {});
     await updateFunction(projRoot, {
-      functionTemplate: 'HelloWorld',
+      functionTemplate: 'helloWorld',
       schedulePermissions: {
         interval: 'daily',
-        action: 'Remove',
+        action: 'Remove the CronJob',
       },
     });
     await amplifyPushAuth(projRoot);

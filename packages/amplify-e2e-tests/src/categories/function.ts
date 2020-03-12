@@ -173,13 +173,13 @@ function cronWalkthrough(chain: ExecutionContext, settings: any, action: string)
   if (action === 'create') {
     chain = addCron(chain, settings);
   } else {
-    chain = chain.wait('Select from the following options').sendCarriageReturn();
+    chain = chain.wait('Select from the following options');
     switch (settings.schedulePermissions.action) {
-      case 'Update':
-        chain = addCron(chain, settings);
+      case 'Update the CronJob':
+        chain = addCron(chain.sendCarriageReturn(), settings);
         break;
-      case 'Remove':
-        chain = chain.sendCarriageReturn();
+      case 'Remove the CronJob':
+        chain = moveDown(chain, 1).sendCarriageReturn();
         break;
       default:
         chain = chain.sendCarriageReturn();
@@ -221,9 +221,8 @@ function addCron(chain: ExecutionContext, settings: any) {
   chain = chain
     .wait('When would you like to start cron')
     .sendCarriageReturn()
-    .wait('Please select interval or select custom rule exp?');
+    .wait('Select interval?');
 
-  console.log(settings.schedulePermissions.interval);
   switch (settings.schedulePermissions.interval || 'daily') {
     case 'minutes':
       chain = addminutes(chain);
