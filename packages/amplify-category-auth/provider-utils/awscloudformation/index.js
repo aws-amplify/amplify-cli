@@ -326,8 +326,10 @@ async function updateResource(context, category, serviceResult) {
         delete props.authProvidersUserPool;
       }
 
-      await copyCfnTemplate(context, category, props, cfnFilename);
-      saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
+      if(result.updateFlow !== "updateUserPoolGroups"  && result.updateFlow !== "updateAdminQueries") {
+        await copyCfnTemplate(context, category, props, cfnFilename);
+        saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
+      }
     })
     .then(async () => {
       await copyS3Assets(context, props);

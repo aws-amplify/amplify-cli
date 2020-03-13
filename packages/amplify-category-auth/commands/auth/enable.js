@@ -54,6 +54,27 @@ module.exports = {
         options.customAuth = customAuthConfigured;
 
         amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+
+
+        // Remove Identity Pool dependency attributes on userpool groups if Identity Pool not enabled
+        const allResources = context.amplify.getProjectMeta();
+        if(allResources.auth && allResources.auth.userPoolGroups) {
+          if(!authParameters.identityPoolName) {
+            const userPoolGroupDependsOn =  [
+                {
+                  category: 'auth',
+                  resourceName,
+                  attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID'],
+                },
+            ];
+            amplify.updateamplifyMetaAfterResourceUpdate('auth',
+              'userPoolGroups',
+              'dependsOn',
+              userPoolGroupDependsOn);
+
+          }
+        }
+
         const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally`);
         print.info('');

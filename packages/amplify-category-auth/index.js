@@ -120,28 +120,55 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   };
 
   try {
-    authProps = removeDeprecatedProps(authProps);
+    authProps = await removeDeprecatedProps(authProps);
     await copyCfnTemplate(context, category, authProps, cfnFilename);
-    saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
+    await saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
+    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', authProps.resourceName, 'parameters.json');
+    const authParameters = await amplify.readJsonFile(resourceDirPath);
     if (!authExists) {
       const options = {
         service: 'Cognito',
         providerPlugin: 'awscloudformation',
       };
-      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', authProps.resourceName, 'parameters.json');
-      const authParameters = amplify.readJsonFile(resourceDirPath);
 
       if (authParameters.dependsOn) {
         options.dependsOn = authParameters.dependsOn;
       }
       await amplify.updateamplifyMetaAfterResourceAdd(category, authProps.resourceName, options);
     }
+
+    // Update Identity Pool dependency attributes on userpool groups
+    const allResources = context.amplify.getProjectMeta();
+    if(allResources.auth && allResources.auth.userPoolGroups) {
+      let attributes;
+      if(!authParameters.identityPoolName) {
+       attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
+      } else {
+        attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId']
+      }
+     const userPoolGroupDependsOn =  [
+          {
+            category: 'auth',
+            resourceName: authProps.resourceName,
+            attributes
+          },
+      ];
+
+      amplify.updateamplifyMetaAfterResourceUpdate('auth',
+        'userPoolGroups',
+        'dependsOn',
+        userPoolGroupDependsOn);
+      await transformUserPoolGroupSchema(context);
+    }
+
     const action = authExists ? 'updated' : 'added';
     context.print.success(`Successfully ${action} auth resource locally.`);
 
+
     return requirements.resourceName;
   } catch (e) {
-    return new Error('Error updating Cognito resource');
+    throw new Error('Error updating Cognito resource');
+    context.print.error(e.stack);
   }
 }
 
