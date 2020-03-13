@@ -1,4 +1,4 @@
-# Create-react-app with AWS Amplify Auth 
+# Create-react-app with AWS Amplify Auth
 
 This auth starter implements withAuthenticator HOC to provide a basic authentication flow for signing up signing in users as well as protected client side routing using AWS Amplify. Auth features: User sign up, User sign in, Multi-factor Authentication, User sign-out.
 
@@ -10,8 +10,8 @@ This auth starter implements withAuthenticator HOC to provide a basic authentica
 
 1. <a class="github-button" href="https://github.com/aws-samples/create-react-app-auth-amplify/fork" data-icon="octicon-repo-forked" aria-label="Fork repo">Fork repo</a>
 
+2) Clone locally
 
-2. Clone locally 
 ```
 git clone git@github.com:<your-username>/create-react-app-auth-amplify.git
 ```
@@ -48,9 +48,9 @@ amplify init
 
 > Here, walk through the following steps. At the end of the `init` command a project will be initialized in the cloud for you.
 
-- Enter a name for the environment __master__
-- Choose your default editor: __Sublime Text__ (or your editor of choice)
-- Do you want to use an AWS profile? __y__ (choose default)
+- Enter a name for the environment **master**
+- Choose your default editor: **Sublime Text** (or your editor of choice)
+- Do you want to use an AWS profile? **y** (choose default)
 
 6. Run `amplify status`. The status should reflect as below. This indicates that an `Auth` resource is configured and ready to be created.
 
@@ -67,13 +67,14 @@ amplify push
 ```
 
 7. Then you can run it by:
+
 ```sh
 npm start
 ```
 
 ## Hosting with the AWS Amplify Console
 
-The AWS Amplify Console provides continuous deployment and hosting for modern web apps (single page apps and static site generators). Continuous deployment allows developers to deploy updates to their frontend and backend on every code commit to their Git repository. If the build succeeds, the app is deployed and hosted on a global CDN with an *amplifyapp.com* domain. The Amplify Console offers globally available CDNs, easy custom domain setup, feature branch deployments, and password protection.
+The AWS Amplify Console provides continuous deployment and hosting for modern web apps (single page apps and static site generators). Continuous deployment allows developers to deploy updates to their frontend and backend on every code commit to their Git repository. If the build succeeds, the app is deployed and hosted on a global CDN with an _amplifyapp.com_ domain. The Amplify Console offers globally available CDNs, easy custom domain setup, feature branch deployments, and password protection.
 
 1. Push your code to Git.
 1. Login to the [AWS Amplify Console](https://console.aws.amazon.com/amplify/home) and choose **Connect app**
@@ -85,5 +86,5 @@ The AWS Amplify Console provides continuous deployment and hosting for modern we
 The Amplify Console will first check for changes to your backend, and then build and deploy your frontend to a managed hosting environment. You can now continuously deploy changes to your frontend or backend and Amplify will automatically deploy those changes. Learn how to customize the sign-in UI [here](https://aws-amplify.github.io/docs/js/authentication#customize-ui).
 
 <!-- <img src="https://github.com/swaminator/gatsby-auth-starter-aws-amplify/blob/master/src/images/amplify-console.gif" width="800"/> -->
-![Amplify Console](src/images/amplifyconsole-cra.gif)
 
+![Amplify Console](src/images/amplifyconsole-cra.gif)

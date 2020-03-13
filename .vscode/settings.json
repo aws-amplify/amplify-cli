@@ -2,7 +2,7 @@
   "editor.rulers": [140],
   "files.exclude": {
     "**/.git": true,
-    "**/node_modules": true,
+    "**/node_modules": false,
     "**/build": true,
     "**/coverage": true
   },
