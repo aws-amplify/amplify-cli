@@ -1,0 +1,32 @@
+{
+  "name": "functionTemplate",
+  "id": "f579f2fa-35c1-49c4-950f-b588e779b4dd",
+  "type": "util",
+  "commands": [],
+  "eventHandlers": [],
+  "functionTemplate": {
+    "conditions": {
+      "provider": "awscloudformation",
+      "service": "Lambda",
+      "runtime": "nodejs"
+    },
+    "templates": [
+      {
+        "name": "Hello World",
+        "value": "helloworld"
+      },
+      {
+        "name": "CRUD function for DynamoDB",
+        "value": "crud"
+      },
+      {
+        "name": "Serverless function",
+        "value": "serverless"
+      },
+      {
+        "name": "Lambda trigger",
+        "value": "trigger"
+      }
+    ]
+  }
+}

@@ -317,7 +317,7 @@ describe('amplify add function with additional permissions', () => {
   });
 });
 
-describe('amplify add/update/remove function based on schedule rule', () => {
+describe.only('amplify add/update/remove function based on schedule rule', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('schedule');

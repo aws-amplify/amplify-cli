@@ -1,32 +1,50 @@
-function inputValidation(question) {
-  const validator = input => {
-    if (!question.validation) {
-      if (question.required) {
-        return input ? true : 'A response is required for this field';
-      }
-      return true;
+/**
+ * question is either of the legacy form:
+ * {
+ *    validation: {
+ *      operator: string
+ *      value: string
+ *      onErrorMsg: string
+ *    },
+ *    required: boolean
+ * }
+ *
+ * or the new form:
+ * {
+ *    operator: string
+ *    value: string
+ *    onErrorMsg: string
+ *    required: boolean
+ * }
+ *
+ * There is some translation logic at the top of the function to translate the legacy parameter into the new form
+ */
+function inputValidation(validation) {
+  if (validation.hasOwnProperty('validation')) {
+    Object.assign(validation, { ...validation.validation });
+    delete validation.validation;
+  }
+  return input => {
+    if (validation.operator === 'includes') {
+      return input.includes(validation.value) ? true : validation.onErrorMsg;
     }
-    if (question.validation.operator === 'includes') {
-      return input.includes(question.validation.value) ? true : question.validation.onErrorMsg;
+    if (validation.operator === 'regex') {
+      const regex = new RegExp(validation.value);
+      return regex.test(input) ? true : validation.onErrorMsg;
     }
-    if (question.validation.operator === 'regex') {
-      const regex = new RegExp(question.validation.value);
+    if (validation.operator === 'range') {
+      const isGood = input >= validation.value.min && input <= validation.value.max;
+      return isGood ? true : validation.onErrorMsg;
+    }
+    if (validation.operator === 'noEmptyArray') {
+      return Array.isArray(input) && input.length > 0 ? true : validation.onErrorMsg;
+    }
 
-      return regex.test(input) ? true : question.validation.onErrorMsg;
-    }
-    if (question.validation.operator === 'range') {
-      const isGood = input >= question.validation.value.min && input <= question.validation.value.max;
-      return isGood ? true : question.validation.onErrorMsg;
-    }
-    if (question.validation.operator === 'noEmptyArray') {
-      return Array.isArray(input) && input.length > 0 ? true : question.validation.onErrorMsg;
-    }
-    if (question.required) {
+    // no validation rule specified
+    if (validation.required) {
       return input ? true : 'A response is required for this field';
     }
   };
-  // RETURN THE FUNCTION SO IT CAN BE SET AS THE QUESTION'S "VALIDATE" VALUE
-  return validator;
 }
 
 module.exports = { inputValidation };

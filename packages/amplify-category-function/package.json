@@ -9,7 +9,12 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf ./lib"
+  },
   "keywords": [
     "amplify",
     "aws"
@@ -17,6 +22,7 @@
   "dependencies": {
     "amplify-category-storage": "2.4.1",
     "cron-builder": "^0.3.0",
+    "amplify-function-plugin-interface": "1.0.0",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.16.0",
     "inquirer": "^7.0.3",
