@@ -272,11 +272,13 @@
             "Value": {
                 "Ref": "LambdaExecutionRole"
             }
-        },
-        "CloudWatchEventRule": {
+        }
+        <% if (props.cloudwatchEnabled && props.cloudwatchEnabled != "false") { %> 
+        ,"CloudWatchEventRule": {
             "Value" :{
                 "Ref" : "CloudWatchEvent"
             }
         }
+        <% } %>  
     }
 }

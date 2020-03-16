@@ -61,6 +61,12 @@ export async function scheduleWalkthrough(context: any, params: Partial<Function
               SourceArn: { 'Fn::GetAtt': ['CloudWatchEvent', 'Arn'] },
             },
           };
+          // append the outputs section of cloudwatchRULE
+          cfnContent.Outputs.CloudWatchEventRule = {
+            Value: {
+              Ref: 'CloudWatchEvent',
+            },
+          };
           fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
         }
       } catch (e) {

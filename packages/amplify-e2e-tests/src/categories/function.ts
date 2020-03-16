@@ -28,11 +28,11 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
 
     if (action == 'create') {
       chain = chain
-        .wait('Provide a friendly name for your resource to be used as a label')
+        .wait('Provide a friendly name for your resource to be used as a label for this category in the project:')
         .sendLine(settings.name || '')
-        .wait('Provide the AWS Lambda function name')
+        .wait('Provide the AWS Lambda function name:')
         .sendLine(settings.name || '')
-        .wait('Choose the function template that you want to use');
+        .wait('Choose the function template that you want to use:');
 
       switch (settings.functionTemplate || 'helloWorld') {
         case 'crud':
@@ -52,7 +52,7 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
     if (!settings.expectFailure) {
       chain = chain.wait(
         action == 'create'
-          ? 'Do you want to access other resources created in this project from your Lambda'
+          ? 'Do you want to access other resources created in this project from your Lambda function?'
           : 'Do you want to update permissions granted to this Lambda function',
       );
 
@@ -86,18 +86,20 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
         chain = chain.sendLine('n');
       }
 
-      // scheduling questions
-      chain = chain
-        .wait(action == 'create' ? 'Do you want to schedule this lambda function?' : 'Do you want to Update/Remove the ScheduleEvent Rule?')
-        .sendLine('y');
+      //scheduling questions
+      chain = chain.wait(
+        action == 'create' ? 'Do you want to schedule this lambda function?' : 'Do you want to Update/Remove the ScheduleEvent Rule?',
+      );
+      console.log('settings on akshay', settings.schedulePermissions);
       if (settings.schedulePermissions) {
+        chain = chain.sendLine('y');
         chain = cronWalkthrough(chain, settings, action);
       } else {
         chain = chain.sendLine('n');
       }
       // scheduling questions
       chain = chain
-        .wait('Do you want to edit the local lambda function now')
+        .wait('Do you want to edit the local lambda function now?')
         .sendLine('n')
         .sendEof();
     }
@@ -219,7 +221,7 @@ function addYearly(chain: ExecutionContext) {
 
 function addCron(chain: ExecutionContext, settings: any) {
   chain = chain
-    .wait('When would you like to start cron')
+    .wait('When would you like to start cron?')
     .sendCarriageReturn()
     .wait('Select interval?');
 
