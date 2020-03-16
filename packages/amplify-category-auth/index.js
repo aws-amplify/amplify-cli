@@ -140,11 +140,9 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     // Update Identity Pool dependency attributes on userpool groups
     const allResources = context.amplify.getProjectMeta();
     if(allResources.auth && allResources.auth.userPoolGroups) {
-      let attributes;
-      if(!authParameters.identityPoolName) {
-       attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
-      } else {
-        attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId']
+      let attributesm = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
+      if(authParameters.identityPoolName) {
+        attributes.push('IdentityPoolId');
       }
      const userPoolGroupDependsOn =  [
           {
