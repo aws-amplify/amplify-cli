@@ -41,14 +41,9 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
     return {
       dir: parameters.functionTemplate.sourceRoot,
       template: file,
-      target: path.join(
-        destDir,
-        categoryName,
-        parameters.resourceName,
-        _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, '')),
-      ),
-    };
-  });
+      target: path.join(destDir, categoryName, parameters.resourceName, _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, '')))
+    }
+  })
 
   // this is a hack to reuse some old code
   let templateParams: any = parameters;
@@ -69,8 +64,8 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
     dir: '',
     template: parameters.cloudResourceTemplatePath,
     target: path.join(destDir, categoryName, parameters.resourceName, `${parameters.resourceName}-cloudformation-template.json`),
-  };
-  context.amplify.copyBatch(context, [cloudTemplateJob], parameters, false);
+  }
+  context.amplify.copyBatch(context, [cloudTemplateJob], parameters, false)
 }
 
 export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {

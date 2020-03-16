@@ -1,5 +1,5 @@
-import { FunctionParameters } from 'amplify-function-plugin-interface';
-import _ from 'lodash';
+import { FunctionParameters } from "amplify-function-plugin-interface";
+import _ from "lodash";
 
 // Merges other with existing in a non-destructive way.
 // Specifically, scalar values will not be overwritten
@@ -13,7 +13,7 @@ export function merge(existing: Partial<FunctionParameters>, other: Partial<Func
     if (_.isArray(oldVal)) {
       return oldVal.concat(newVal);
     }
-  };
+  }
   return _.mergeWith(existing, other, mergeFunc);
 }
 

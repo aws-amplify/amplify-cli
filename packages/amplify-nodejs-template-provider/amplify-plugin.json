@@ -16,11 +16,11 @@
         "value": "helloworld"
       },
       {
-        "name": "CRUD function for DynamoDB",
+        "name": "CRUD function for DynamoDB (Integration with API Gateway)",
         "value": "crud"
       },
       {
-        "name": "Serverless function",
+        "name": "Serverless ExpressJS function (Integration with API Gateway)",
         "value": "serverless"
       },
       {

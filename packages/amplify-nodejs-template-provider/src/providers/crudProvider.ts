@@ -1,12 +1,12 @@
-import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
-import { templateRoot } from '../utils/constants';
+import { FunctionTemplateParameters } from "amplify-function-plugin-interface";
+import {templateRoot} from '../utils/constants';
 import path from 'path';
 import fs from 'fs-extra';
-import { askDynamoDBQuestions, getTableParameters } from '../utils/dynamoDBWalkthrough';
-import _ from 'lodash';
-import { getDstMap } from '../utils/destFileMapper';
+import { askDynamoDBQuestions, getTableParameters } from "../utils/dynamoDBWalkthrough";
+import _ from "lodash";
+import { getDstMap } from "../utils/destFileMapper";
 
-const pathToTemplateFiles = path.join(templateRoot, 'lambda/crud');
+const pathToTemplateFiles = path.join(templateRoot, 'lambda/crud')
 
 // copied from legacy lambda-walkthrough with slight modifications for typescript and refactored FunctionParameters object
 export async function provideCrud(context: any): Promise<FunctionTemplateParameters> {

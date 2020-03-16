@@ -1,4 +1,4 @@
-import { migrate, createWalkthrough, updateWalkthrough } from './awscloudformation/service-walkthroughs/lambda-walkthrough';
+import {migrate, createWalkthrough, updateWalkthrough} from './awscloudformation/service-walkthroughs/lambda-walkthrough';
 import * as lambdaController from './awscloudformation';
 import { SupportedServices } from './supportedServicesType';
 import { getIAMPolicies } from './awscloudformation/utils/cloudformationHelpers';

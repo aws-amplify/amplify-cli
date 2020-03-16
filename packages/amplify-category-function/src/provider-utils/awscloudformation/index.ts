@@ -4,7 +4,7 @@ import { serviceName, provider } from './utils/constants';
 import { createParametersFile, copyFunctionResources } from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
-import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
+import {merge, convertToComplete, isComplete} from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
 import inquirer from 'inquirer';
@@ -18,15 +18,9 @@ import { invokeFunction } from './utils/invoke';
  * @param options Legacy parameter
  * @param parameters Parameters used to define the function. If not specified, a walkthrough will be launched to populate it.
  */
-export async function addResource(
-  context,
-  category,
-  service,
-  options,
-  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
-): Promise<string> {
+export async function addResource(context, category, service, options, parameters?: Partial<FunctionParameters> | FunctionTriggerParameters): Promise<string> {
   // load the service config for this service
-  const serviceConfig: ServiceConfig = supportedServices[service];
+  const serviceConfig: ServiceConfig = supportedServices[service]
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
   }
@@ -40,11 +34,11 @@ export async function addResource(
         provider: provider,
         service: serviceName,
         projectName: context.amplify.getProjectDetails().projectConfig.projectName,
-      },
-    };
+      }
+    }
 
     // merge in given parameters
-    funcParams = merge(funcParams, parameters);
+    funcParams = merge(funcParams, parameters)
 
     // merge in the CFN file
     funcParams = merge(funcParams, { cloudResourceTemplatePath: serviceConfig.cfnFilename });
@@ -57,7 +51,7 @@ export async function addResource(
     completeParams = parameters;
   }
 
-  copyFunctionResources(context, completeParams);
+  copyFunctionResources(context, completeParams)
 
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams);

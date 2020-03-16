@@ -3,10 +3,10 @@
 */
 
 // All Function Runtime Contributor plugins must export a function of this type named 'functionRuntimeContributorFactory'
-export type FunctionRuntimeContributorFactory = (context: any) => Contributor<FunctionRuntimeParameters> & FunctionRuntimeLifecycleManager;
+export type FunctionRuntimeContributorFactory = (context: any) => Contributor<FunctionRuntimeParameters> & FunctionRuntimeLifecycleManager
 
 // Subset of FunctionParameters that defines the function runtime
-export type FunctionRuntimeParameters = Pick<FunctionParameters, 'runtime'>;
+export type FunctionRuntimeParameters = Pick<FunctionParameters, 'runtime'>
 
 /*
   Function Template Contributor Types
@@ -115,9 +115,9 @@ export interface ProviderContext {
 }
 
 export interface FunctionRuntime {
-  name: string;
-  value: string;
-  defaultHandler: string;
+  name: string
+  value: string
+  defaultHandler: string
 }
 
 export interface FunctionTemplate {
@@ -148,10 +148,10 @@ export interface FunctionDependency {
 }
 
 interface FunctionContributorCondition {
-  provider?: string;
-  service?: string;
-  runtime?: string;
+  provider?: string
+  service?: string
+  runtime?: string
 }
 
-export type FunctionTemplateCondition = FunctionContributorCondition;
-export type FunctionRuntimeCondition = Pick<FunctionContributorCondition, 'provider' | 'service'>;
+export type FunctionTemplateCondition = FunctionContributorCondition
+export type FunctionRuntimeCondition = Pick<FunctionContributorCondition, 'provider' | 'service'>

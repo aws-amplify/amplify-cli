@@ -1,11 +1,11 @@
-import inquirer from 'inquirer';
+import inquirer from 'inquirer'
 import {
   FunctionParameters,
   FunctionTemplateCondition,
   FunctionRuntimeCondition,
   FunctionRuntimeParameters,
   FunctionTemplateParameters,
-  ContributorFactory,
+  ContributorFactory
 } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 
@@ -13,29 +13,27 @@ import _ from 'lodash';
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
 
-/**
- * Selects a function template
- */
+ /**
+  * Selects a function template
+  */
 export async function templateWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<FunctionTemplateParameters> {
   const selectionOptions: PluginSelectionOptions<FunctionTemplateCondition> = {
     pluginType: 'functionTemplate',
     itemName: 'template',
     listOptionsField: 'templates',
     predicate: condition => {
-      return (
-        condition.provider === params.providerContext.provider &&
-        condition.service === params.providerContext.service &&
-        condition.runtime === params.runtime.name
-      );
-    },
-  };
+      return condition.provider === params.providerContext.provider
+        && condition.service === params.providerContext.service
+        && condition.runtime === params.runtime.name
+    }
+  }
   const selection = await getSelectionFromContributors<FunctionTemplateCondition>(context, selectionOptions);
   const executionParams: PluginExecutionParameters = {
     ...selection,
     context,
     expectedFactoryFunction: 'functionTemplateContributorFactory',
-  };
-  return await getContributionFromPlugin<FunctionTemplateParameters>(executionParams);
+  }
+  return await getContributionFromPlugin<FunctionTemplateParameters>(executionParams)
 }
 
 /**
@@ -47,16 +45,18 @@ export async function runtimeWalkthrough(context: any, params: Partial<FunctionP
     itemName: 'runtime',
     listOptionsField: 'runtimes',
     predicate: condition => {
-      return condition.provider === params.providerContext.provider && condition.service === params.providerContext.service;
-    },
-  };
+      return condition.provider === params.providerContext.provider
+        && condition.service === params.providerContext.service
+    }
+  }
   const selection = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const executionParams: PluginExecutionParameters = {
     ...selection,
     context,
     expectedFactoryFunction: 'functionRuntimeContributorFactory',
-  };
-  return await getContributionFromPlugin<FunctionRuntimeParameters>(executionParams);
+  }
+  return await getContributionFromPlugin<FunctionRuntimeParameters>(executionParams)
+
 }
 
 /**
@@ -76,8 +76,8 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     .map(meta => {
       const packageLoc = meta.packageLocation;
       (meta.manifest[selectionOptions.pluginType][selectionOptions.listOptionsField] as ListOption[]).forEach(op => {
-        selectionMap.set(op.value, packageLoc);
-      });
+        selectionMap.set(op.value, packageLoc)
+      })
       return meta;
     })
     .map(meta => meta.manifest[selectionOptions.pluginType])
@@ -86,28 +86,26 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
   // sanity checks
   let selection;
   if (selections.length === 0) {
-    context.print.warning(`No ${selectionOptions.itemName} found for the selected function configuration`);
-    context.print.warning(`You can download and install ${selectionOptions.itemName} plugins then rerun this command`);
+    context.print.warning(`No ${selectionOptions.itemName} found for the selected function configuration`)
+    context.print.warning(`You can download and install ${selectionOptions.itemName} plugins then rerun this command`)
   } else if (selections.length === 1) {
-    context.print.info(`${selections[0].name} found for selected function configuration.`);
+    context.print.info(`${selections[0].name} found for selected function configuration.`)
     selection = selections[0].value;
   } else {
     // ask which template to use
-    let answer = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'selection',
-        message: `Select the function ${selectionOptions.itemName}:`,
-        choices: selections,
-      },
-    ]);
+    let answer = await inquirer.prompt([{
+      type: 'list',
+      name: 'selection',
+      message: `Choose the function ${selectionOptions.itemName} that you want to use:`,
+      choices: selections
+    }]);
     selection = answer.selection;
   }
 
   return {
     selection,
     pluginPath: selectionMap.get(selection),
-  };
+  }
 }
 
 // Executes the selected option using the given plugin
@@ -121,28 +119,30 @@ async function getContributionFromPlugin<T extends Partial<FunctionParameters>>(
   if (!plugin) {
     throw new Error('Could not load selected plugin');
   }
-  return await (plugin[params.expectedFactoryFunction] as ContributorFactory<T>)(params.context).contribute(params.selection);
+  return await (plugin[params.expectedFactoryFunction] as ContributorFactory<T>)(params.context)
+    .contribute(params.selection)
 }
+
 
 // Convenience interfaces that are private to this class
 
 interface PluginSelectionOptions<T extends FunctionRuntimeCondition | FunctionTemplateCondition> {
-  pluginType: string;
-  itemName: string;
-  predicate: (condition: T) => boolean;
-  listOptionsField: string;
+  pluginType: string
+  itemName: string
+  predicate: (condition: T) => boolean
+  listOptionsField: string
 }
 
-type PluginSelection = Pick<PluginExecutionParameters, 'pluginPath' | 'selection'>;
+type PluginSelection = Pick<PluginExecutionParameters, 'pluginPath' | 'selection'>
 
 interface PluginExecutionParameters {
-  pluginPath: string;
-  selection: string;
-  expectedFactoryFunction: string;
-  context: any; // Amplify core context
+  pluginPath: string
+  selection: string
+  expectedFactoryFunction: string
+  context: any // Amplify core context
 }
 
 interface ListOption {
-  name: string;
-  value: string;
+  name: string
+  value: string
 }

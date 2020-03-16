@@ -1,5 +1,5 @@
-import path from 'path';
-import { category } from './constants';
+import path from 'path'
+import { category } from './constants'
 
 const sequential = require('promise-sequential');
 const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
