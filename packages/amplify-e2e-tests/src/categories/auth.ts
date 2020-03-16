@@ -404,7 +404,6 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any) {
   });
 }
 
-
 export function addAuthUserPoolOnly(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -526,15 +525,20 @@ export function addAuthUserPoolOnly(cwd: string, settings: any) {
       .send(' ')
       .sendCarriageReturn()
       .wait('What functionality do you want to use for Create Auth Challenge')
-      .send('jjj')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendLine(KEY_DOWN_ARROW)
+      .sendLine(KEY_DOWN_ARROW)
       .send(' ')
       .sendCarriageReturn()
       .wait('What functionality do you want to use for Custom Message')
-      .send('jj')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendLine(KEY_DOWN_ARROW)
       .send(' ')
       .sendCarriageReturn()
       .wait('What functionality do you want to use for Define Auth Challenge')
-      .send('jjj')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendLine(KEY_DOWN_ARROW)
+      .sendLine(KEY_DOWN_ARROW)
       .send(' ')
       .sendCarriageReturn()
       .wait('What functionality do you want to use for Post Authentication')
