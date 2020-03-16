@@ -79,7 +79,8 @@ describe('amplify add function', () => {
 
   it('records put into kinesis stream should result in trigger called in minimal kinesis + trigger infra', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addKinesis(projRoot, { rightName: 'kinesisintegtest', wrongName: '$' });
+    const random = Math.floor(Math.random() * 10000);
+    await addKinesis(projRoot, { rightName: `kinesisintegtest-${random}`, wrongName: '$' });
     await addFunction(projRoot, { functionTemplate: 'lambdaTrigger', triggerType: 'Kinesis' });
 
     await functionBuild(projRoot, {});
