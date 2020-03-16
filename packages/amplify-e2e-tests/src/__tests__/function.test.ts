@@ -172,8 +172,9 @@ describe('amplify add function with additional permissions', () => {
   it('lambda with dynamoDB permissions should be able to scan ddb', async () => {
     await initJSProjectWithProfile(projRoot, {});
 
-    const fnName = 'integtestfn';
-    const ddbName = 'integtestddb';
+    const random = Math.floor(Math.random() * 10000);
+    const fnName = `integtestfn${random}`;
+    const ddbName = `integtestddb${random}`;
 
     // test ability to scan both appsync @model-backed and regular ddb tables
     await addApiWithSchema(projRoot, 'simple_model.graphql');
@@ -241,7 +242,8 @@ describe('amplify add function with additional permissions', () => {
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
     await initJSProjectWithProfile(projRoot, {});
 
-    const fnName = 'integtestfn';
+    const random = Math.floor(Math.random() * 10000);
+    const fnName = `integtestfn${random}`;
     await addFunction(projRoot, {
       name: fnName,
       functionTemplate: 'helloWorld',
@@ -298,7 +300,9 @@ describe('amplify add function with additional permissions', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addApiWithSchema(projRoot, 'simple_model.graphql');
 
-    let fnName = 'integtestfn';
+    const random = Math.floor(Math.random() * 10000);
+    const fnName = `integtestfn${random}`;
+
     await addFunction(projRoot, {
       name: fnName,
       functionTemplate: 'helloWorld',
