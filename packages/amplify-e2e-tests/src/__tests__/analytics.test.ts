@@ -28,7 +28,7 @@ describe('amplify add analytics', () => {
   it('add kinesis', async () => {
     await initJSProjectWithProfile(projRoot, {});
     const random = Math.floor(Math.random() * 10000);
-    const rightName = `myapp-${random}`;
+    const rightName = `myapp${random}`;
     await addKinesis(projRoot, { rightName, wrongName: '$' });
     await amplifyPushUpdate(projRoot);
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);
