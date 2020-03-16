@@ -47,7 +47,7 @@ async function add(context) {
         service: resultMetadata.service,
         providerPlugin: resultMetadata.providerName,
       };
-      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', resourceName, 'parameters.json');
+      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
       const authParameters = amplify.readJsonFile(resourceDirPath);
 
       if (authParameters.dependsOn) {
@@ -123,7 +123,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     authProps = await removeDeprecatedProps(authProps);
     await copyCfnTemplate(context, category, authProps, cfnFilename);
     await saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
-    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', authProps.resourceName, 'parameters.json');
+    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', authProps.resourceName, 'parameters.json');
     const authParameters = await amplify.readJsonFile(resourceDirPath);
     if (!authExists) {
       const options = {
@@ -139,29 +139,25 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
     // Update Identity Pool dependency attributes on userpool groups
     const allResources = context.amplify.getProjectMeta();
-    if(allResources.auth && allResources.auth.userPoolGroups) {
+    if (allResources.auth && allResources.auth.userPoolGroups) {
       let attributesm = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
-      if(authParameters.identityPoolName) {
+      if (authParameters.identityPoolName) {
         attributes.push('IdentityPoolId');
       }
-     const userPoolGroupDependsOn =  [
-          {
-            category: 'auth',
-            resourceName: authProps.resourceName,
-            attributes
-          },
+      const userPoolGroupDependsOn = [
+        {
+          category: 'auth',
+          resourceName: authProps.resourceName,
+          attributes,
+        },
       ];
 
-      amplify.updateamplifyMetaAfterResourceUpdate('auth',
-        'userPoolGroups',
-        'dependsOn',
-        userPoolGroupDependsOn);
+      amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
       await transformUserPoolGroupSchema(context);
     }
 
     const action = authExists ? 'updated' : 'added';
     context.print.success(`Successfully ${action} auth resource locally.`);
-
 
     return requirements.resourceName;
   } catch (e) {
@@ -282,7 +278,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName]
+          resourceOpsMapping[resourceName],
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });
