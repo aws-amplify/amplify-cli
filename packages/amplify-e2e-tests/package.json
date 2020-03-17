@@ -21,6 +21,7 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
+    "amplify-e2e-core": "1.0.0",
     "aws-sdk": "^2.608.0",
     "chalk": "^3.0.0",
     "dotenv": "^8.2.0",
@@ -40,8 +41,8 @@
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "<rootDir>/src/cli-test-runner.js",
-    "testEnvironment": "<rootDir>/src/cli-test-environment.js",
+    "testRunner": "amplify-e2e-core/runner",
+    "testEnvironment": "amplify-e2e-core/environment",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -62,7 +63,7 @@
       "default",
       "jest-junit",
       [
-        "<rootDir>/src/nexpect-reporter.js",
+        "amplify-e2e-core/reporter",
         {
           "publicPath": "./amplify-e2e-reports",
           "filename": "index.html",

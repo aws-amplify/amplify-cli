@@ -1,5 +1,6 @@
+import { nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
-import { nspawn as spawn } from '../utils/nexpect';
+
 type AmplifyConfiguration = {
   accessKeyId: string;
   secretAccessKey: string;
