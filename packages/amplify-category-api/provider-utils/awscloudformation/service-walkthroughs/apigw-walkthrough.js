@@ -626,7 +626,15 @@ function newLambdaFunction(context, path) {
     expressPath: formatCFNPathParamsForExpressJs(path),
     functionTemplate: 'serverless',
   };
-  return add(context, 'awscloudformation', 'Lambda').then(resourceName => {
+  let params = {
+    functionTemplate: {
+      parameters: {
+        path,
+        expressPath: formatCFNPathParamsForExpressJs(path)
+      }
+    }
+  }
+  return add(context, 'awscloudformation', 'Lambda', params).then(resourceName => {
     context.print.success('Succesfully added the Lambda function locally');
     return { lambdaFunction: resourceName };
   });

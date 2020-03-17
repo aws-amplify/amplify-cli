@@ -6,6 +6,6 @@
     "outDir": "lib"
   },
   "references": [
-    {"path": "../graphql-mapping-template"}
+    {"path": "../graphql-mapping-template"},
   ]
 }
