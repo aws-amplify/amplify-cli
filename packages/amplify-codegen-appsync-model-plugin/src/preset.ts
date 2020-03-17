@@ -83,7 +83,7 @@ const generateSwiftPreset = (
         selectedType: modelName,
       },
     });
-    if (model.kind !== Kind.ENUM_TYPE_DEFINITION) {
+    if (model.kind !== Kind.ENUM_TYPE_DEFINITION && hasDirective('model')(model)) {
       config.push({
         ...options,
         filename: join(options.baseOutputDir, `${modelName}+Schema.swift`),
@@ -198,10 +198,8 @@ export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
   buildGeneratesSection: (options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>): Types.GenerateOptions[] => {
     const codeGenTarget = options.config.target;
 
-    const hasModelDirective = hasDirective('model');
     const models: TypeDefinitionNode[] = options.schema.definitions.filter(
-      t =>
-        (t.kind === 'ObjectTypeDefinition' && hasModelDirective(t)) || (t.kind === 'EnumTypeDefinition' && !t.name.value.startsWith('__')),
+      t => t.kind === 'ObjectTypeDefinition' || (t.kind === 'EnumTypeDefinition' && !t.name.value.startsWith('__')),
     ) as any;
 
     switch (codeGenTarget) {

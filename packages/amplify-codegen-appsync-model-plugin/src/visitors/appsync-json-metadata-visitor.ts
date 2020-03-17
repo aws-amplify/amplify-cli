@@ -6,9 +6,15 @@ import { METADATA_SCALAR_MAP } from '../scalars';
 type JSONSchema = {
   models: JSONSchemaModels;
   enums: JSONSchemaEnums;
+  nonModels: JSONSchemaTypes;
   version: string;
 };
 type JSONSchemaModels = Record<string, JSONSchemaModel>;
+type JSONSchemaTypes = Record<string, JSONSchemaType>;
+type JSONSchemaType = {
+  name: string;
+  fields: JSONModelFields;
+};
 type JSONSchemaModel = {
   name: string;
   attributes?: JSONModelAttributes;
@@ -43,7 +49,7 @@ type AssociationBelongsTo = AssociationBaseType & {
 
 type AssociationType = AssociationHasMany | AssociationHasOne | AssociationBelongsTo;
 
-type JSONModelFieldType = keyof typeof METADATA_SCALAR_MAP | { model: string } | { enum: string };
+type JSONModelFieldType = keyof typeof METADATA_SCALAR_MAP | { model: string } | { enum: string } | { nonModel: string };
 type JSONModelField = {
   name: string;
   type: JSONModelFieldType;
@@ -87,7 +93,7 @@ export class AppSyncJSONVisitor<
     schema: GraphQLSchema,
     rawConfig: TRawConfig,
     additionalConfig: Partial<TPluginConfig>,
-    defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS
+    defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS,
   ) {
     super(schema, rawConfig, additionalConfig, defaultScalars);
     this._parsedConfig.metadataTarget = rawConfig.metadataTarget || 'javascript';
@@ -131,42 +137,26 @@ export class AppSyncJSONVisitor<
     const result: JSONSchema = {
       models: {},
       enums: {},
+      nonModels: {},
       version: this.computeVersion(),
     };
 
-    Object.entries(this.getSelectedModels()).forEach(([name, obj]) => {
-      const model = {
-        syncable: true,
-        name: this.getModelName(obj),
-        pluralName: this.pluralizeModelName(obj),
-        attributes: this.generateModelAttributes(obj),
-        fields: obj.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
-          const fieldMeta: JSONModelField = {
-            name: this.getFieldName(field),
-            isArray: field.isList,
-            type: this.getType(field.type),
-            isRequired: !field.isNullable,
-            attributes: [],
-          };
-          const association: AssociationType | void = this.getFieldAssociation(field);
-          if (association) {
-            fieldMeta.association = association;
-          }
-          acc[this.getFieldName(field)] = fieldMeta;
-          return acc;
-        }, {}),
-      };
-      result.models[obj.name] = model;
-    });
+    const models = Object.values(this.getSelectedModels()).reduce((acc, model: CodeGenModel) => {
+      return { ...acc, [model.name]: this.generateModelMeta(model) };
+    }, {});
 
-    Object.entries(this.enumMap).forEach(([name, enumObj]) => {
+    const nonModels = Object.values(this.getSelectedNonModels()).reduce((acc, nonModel: CodeGenModel) => {
+      return { ...acc, [nonModel.name]: this.generateNonModelMetaData(nonModel) };
+    }, {});
+
+    const enums = Object.entries(this.enumMap).reduce((acc, [name, enumObj]) => {
       const enumV = {
         name,
         values: Object.values(enumObj.values),
       };
-      result.enums[this.getEnumName(enumObj)] = enumV;
-    });
-    return result;
+      return { ...acc, [this.getEnumName(enumObj)]: enumV };
+    }, {});
+    return { ...result, models, nonModels: nonModels, enums };
   }
 
   private getFieldAssociation(field: CodeGenField): AssociationType | void {
@@ -188,6 +178,35 @@ export class AppSyncJSONVisitor<
       properties: d.arguments,
     }));
   }
+  private generateModelMeta(model: CodeGenModel): JSONSchemaModel {
+    return {
+      ...this.generateNonModelMetaData(model),
+      syncable: true,
+      pluralName: this.pluralizeModelName(model),
+      attributes: this.generateModelAttributes(model),
+    };
+  }
+
+  private generateNonModelMetaData(nonModel: CodeGenModel): JSONSchemaType {
+    return {
+      name: this.getModelName(nonModel),
+      fields: nonModel.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
+        const fieldMeta: JSONModelField = {
+          name: this.getFieldName(field),
+          isArray: field.isList,
+          type: this.getType(field.type),
+          isRequired: !field.isNullable,
+          attributes: [],
+        };
+        const association: AssociationType | void = this.getFieldAssociation(field);
+        if (association) {
+          fieldMeta.association = association;
+        }
+        acc[this.getFieldName(field)] = fieldMeta;
+        return acc;
+      }, {}),
+    };
+  }
 
   private getType(gqlType: string): JSONModelFieldType {
     // Todo: Handle unlisted scalars
@@ -196,6 +215,9 @@ export class AppSyncJSONVisitor<
     }
     if (gqlType in this.enumMap) {
       return { enum: this.enumMap[gqlType].name };
+    }
+    if (gqlType in this.nonModelMap) {
+      return { nonModel: gqlType };
     }
     return { model: gqlType };
   }
