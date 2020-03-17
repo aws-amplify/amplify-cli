@@ -127,7 +127,7 @@ async function cronServiceWalkthrough() {
     type: 'list',
     name: 'interval',
     message: 'Select interval?',
-    choices: ['minutes', 'hourly', 'daily', 'weekly', 'monthly', 'yearly'],
+    choices: ['minutes', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'customRule'],
   };
   const intervalAnswer = await inquirer.prompt([intervalQuestion]);
   switch (intervalAnswer.interval) {
@@ -229,6 +229,17 @@ async function cronServiceWalkthrough() {
       const dateAnswer = await inquirer.prompt([dateQuestion]);
       cloudwatchRule = makeCron(intervalAnswer.interval, dateAnswer, timeAnswer);
       cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule, cloudwatchRule.lastIndexOf('*'), '?') + ' ' + '*' + ')';
+
+      break;
+    }
+    case 'customRule': {
+      const customRuleQuestion = {
+        type: 'input',
+        name: 'customRule',
+        message: 'Add your own customRule?',
+      };
+      const customRuleAnswer = await inquirer.prompt([customRuleQuestion]);
+      cloudwatchRule = 'cron(' + customRuleAnswer.customRule + ')';
 
       break;
     }
