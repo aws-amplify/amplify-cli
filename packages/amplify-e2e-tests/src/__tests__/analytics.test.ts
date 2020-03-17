@@ -19,7 +19,8 @@ describe('amplify add analytics', () => {
 
   it('add pinpoint', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    const rightName = 'myapp';
+    const random = Math.floor(Math.random() * 10000);
+    const rightName = `myapp${random}`;
     await addPinpoint(projRoot, { rightName, wrongName: '$' });
     await amplifyPushUpdate(projRoot);
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'analytics', rightName))).toBe(true);

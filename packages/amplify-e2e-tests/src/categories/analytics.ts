@@ -1,5 +1,5 @@
 import { getCLIPath } from '../utils';
-import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
+import { KEY_DOWN_ARROW, KEY_CLEAR_LINE, nspawn as spawn } from '../utils/nexpect';
 
 export function addPinpoint(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
@@ -10,7 +10,7 @@ export function addPinpoint(cwd: string, settings: any) {
       .sendLine(settings.wrongName)
       .wait('Resource name should be alphanumeric')
       .sendCarriageReturn()
-      .send('\b')
+      .send(KEY_CLEAR_LINE)
       .sendLine(settings.rightName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
       .sendLine('n')
@@ -36,7 +36,7 @@ export function addKinesis(cwd: string, settings: any) {
       .sendLine(settings.wrongName)
       .wait('Name is invalid.')
       .sendCarriageReturn()
-      .send('\b')
+      .send(KEY_CLEAR_LINE)
       .sendLine(settings.rightName)
       .wait('Enter number of shards')
       .sendCarriageReturn()

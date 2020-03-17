@@ -27,6 +27,7 @@ const EXIT_CODE_GENERIC_ERROR = 3;
 // https://notes.burke.libbey.me/ansi-escape-codes/
 export const KEY_UP_ARROW = '\x1b[A';
 export const KEY_DOWN_ARROW = '\x1b[B';
+export const KEY_CLEAR_LINE = '\x1b[K';
 
 type ExecutionStep = {
   fn: (data: string) => boolean;
