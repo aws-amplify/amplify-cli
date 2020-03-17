@@ -38,7 +38,7 @@ export class AppSyncModelJavascriptVisitor<
     schema: GraphQLSchema,
     rawConfig: TRawConfig,
     additionalConfig: Partial<TPluginConfig>,
-    defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS
+    defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS,
   ) {
     super(schema, rawConfig, additionalConfig, defaultScalars);
     this._parsedConfig.isDeclaration = rawConfig.isDeclaration || false;
@@ -52,20 +52,31 @@ export class AppSyncModelJavascriptVisitor<
         .map(enumObj => this.generateEnumDeclarations(enumObj, true))
         .join('\n\n');
 
-      const modelDeclarations = Object.values(this.typeMap)
+      const modelDeclarations = Object.values(this.modelMap)
         .map(typeObj => this.generateModelDeclaration(typeObj, true))
         .join('\n\n');
 
-      return [imports, '', enumDeclarations, '', modelDeclarations].join('\n');
+      const nonModelDeclarations = Object.values(this.nonModelMap)
+        .map(typeObj => this.generateModelDeclaration(typeObj, true))
+        .join('\n\n');
+
+      return [imports, '', enumDeclarations, '', nonModelDeclarations, '', modelDeclarations].join('\n');
     } else {
       const imports = this.generateImportsJavaScriptImplementation();
       const enumDeclarations = Object.values(this.enumMap)
         .map((e: CodeGenEnum) => this.generateEnumObject(e))
         .join('\n');
 
-      const modelInitialization = this.generateModelInitialization(Object.values(this.typeMap), false);
+      const modelInitialization = this.generateModelInitialization(
+        [...Object.values(this.modelMap), ...Object.values(this.nonModelMap)],
+        false,
+      );
 
-      const modelExports = this.generateExports([...Object.values(this.typeMap), ...Object.values(this.enumMap)]);
+      const modelExports = this.generateExports([
+        ...Object.values(this.modelMap),
+        ...Object.values(this.enumMap),
+        ...Object.values(this.nonModelMap),
+      ]);
       return [imports, '', enumDeclarations, '', modelInitialization, '', modelExports].join('\n');
     }
   }
