@@ -1,5 +1,5 @@
+import { nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
-import { nspawn as spawn } from '../utils/nexpect';
 
 export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true) {
   return new Promise((resolve, reject) => {
