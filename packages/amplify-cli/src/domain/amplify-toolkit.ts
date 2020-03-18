@@ -71,6 +71,8 @@ export class AmplifyToolkit {
   private _forceRemoveResource: any;
   private _writeObjectAsJson: any;
   private _hashDir: any;
+  private _leaveBreadcrumbs: any;
+  private _readBreadcrumbs: any;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -403,8 +405,18 @@ export class AmplifyToolkit {
   }
 
   get hashDir(): any {
-    this._hashDir =
-      this._hashDir || require(path.join(this._amplifyHelpersDirPath, 'hash-dir')).hashDir;
+    this._hashDir = this._hashDir || require(path.join(this._amplifyHelpersDirPath, 'hash-dir')).hashDir;
     return this._hashDir;
+  }
+
+  get leaveBreadcrumbs(): any {
+    this._leaveBreadcrumbs =
+      this._leaveBreadcrumbs || require(path.join(this._amplifyHelpersDirPath, 'leave-breadcrumbs')).leaveBreadcrumbs;
+    return this._leaveBreadcrumbs;
+  }
+
+  get readBreadcrumbs(): any {
+    this._readBreadcrumbs = this._readBreadcrumbs || require(path.join(this._amplifyHelpersDirPath, 'read-breadcrumbs')).readBreadcrumbs;
+    return this._readBreadcrumbs;
   }
 }

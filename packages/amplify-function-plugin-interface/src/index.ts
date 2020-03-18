@@ -27,11 +27,13 @@ export interface Contributor<T extends Partial<FunctionParameters>> {
 }
 
 export interface FunctionRuntimeLifecycleManager {
-  package(request: PackageRequest): Promise<PackageResult>; // Returns void if no new packaging required. Returns unique package hash if repackaging was performed
-  build(request: BuildRequest): Promise<BuildResult>; // Returns whether or not the project required rebuilding
+  checkDependencies(selection: string): Promise<CheckDependenciesResult>;
+  package(request: PackageRequest): Promise<PackageResult>;
+  build(request: BuildRequest): Promise<BuildResult>;
   invoke(request: InvocationRequest): Promise<any>;
 }
 
+// Request sent to invoke a function
 export type InvocationRequest = {
   srcRoot: string;
   handler: string;
@@ -40,6 +42,7 @@ export type InvocationRequest = {
   env: { [key: string]: string };
 };
 
+// Request sent to build a function
 export type BuildRequest = {
   env: string;
   srcRoot: string;
@@ -51,6 +54,7 @@ export type BuildRequest = {
   lastBuildTimestamp?: Date;
 };
 
+// Request sent to package a function
 export type PackageRequest = {
   env: string;
   srcRoot: string;
@@ -60,13 +64,20 @@ export type PackageRequest = {
   lastPackageTimestamp?: Date;
 };
 
+// Result of building a function
 export type BuildResult = {
-  rebuilt: boolean
-}
+  rebuilt: boolean; // whether or not a rebuild was performed
+};
 
+// Result of packaging a function
 export type PackageResult = {
-  packageHash?: string
-}
+  packageHash?: string; // undefined if no repacking necessary. Otherwise, it is a hash that uniquiely identifies the package
+};
+
+export type CheckDependenciesResult = {
+  hasRequiredDependencies: boolean;
+  errorMessage?: string;
+};
 
 /**
  * Data structure that represents a Function.

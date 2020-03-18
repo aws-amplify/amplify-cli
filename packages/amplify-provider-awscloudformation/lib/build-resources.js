@@ -16,15 +16,15 @@ async function run(context, category, resourceName) {
 // For legacy purposes, the method builds and packages the resource
 async function buildResource(context, resource) {
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-  const breadcrumbsPath = path.join(resourcePath, 'amplify.function');
-  let breadcrumbs = context.amplify.readJsonFile(breadcrumbsPath);
+  let breadcrumbs = context.amplify.readBreadcrumbs(context, resource.category, resource.resourceName);
   if (!breadcrumbs) {
-    // fallback to old behavior for backwards compatibility
+    // fallback to old behavior for backwards compatibility and store breadcrumbs for future use
     breadcrumbs = {
       pluginId: 'amplify-nodejs-function-runtime-provider',
       functionRuntime: 'nodejs',
       useLegacyBuild: true,
     };
+    context.amplify.leaveBreadcrumbs(context, resource.category, resource.resourceName, breadcrumbs);
   }
 
   let zipFilename = resource.distZipFilename;
@@ -87,13 +87,13 @@ async function buildResource(context, resource) {
 async function loadRuntimePlugin(context, pluginId) {
   const pluginMeta = context.pluginPlatform.plugins.functionRuntime.find(meta => meta.manifest.functionRuntime.pluginId === pluginId);
   if (!pluginMeta) {
-    throw new Error(`Could not find runtime plugin with id [${pluginId}] to build the resource`)
+    throw new Error(`Could not find runtime plugin with id [${pluginId}] to build the resource ${resource.resourceName}`);
   }
   try {
     const plugin = await import(pluginMeta.packageLocation);
     return plugin.functionRuntimeContributorFactory(context);
-  } catch(err) {
-    throw new Error(`Could not load runtime plugin with id [${pluginId}]. Underlying error is ${err}`)
+  } catch (err) {
+    throw new Error(`Could not load runtime plugin with id [${pluginId}]. Underlying error is ${err}`);
   }
 }
 

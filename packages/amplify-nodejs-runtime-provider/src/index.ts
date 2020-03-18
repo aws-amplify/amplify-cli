@@ -1,8 +1,8 @@
-import {FunctionRuntimeContributorFactory} from 'amplify-function-plugin-interface'
+import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
 import { buildResource } from './utils/legacyBuild';
 import { packageResource } from './utils/legacyPackage';
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
-  context.amplify
+  context.amplify;
   return {
     contribute: selection => {
       if (selection !== 'nodejs') {
@@ -13,14 +13,15 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           name: 'NodeJS',
           value: 'nodejs',
           cloudTemplateValue: 'nodejs12.x',
-          defaultHandler: 'index.handler'
-        }
-      })
+          defaultHandler: 'index.handler',
+        },
+      });
     },
+    checkDependencies: () => Promise.resolve({ hasRequiredDependencies: true }),
     package: params => packageResource(params, context),
     build: params => buildResource(params),
     invoke: params => {
       throw new Error('not yet implemented');
-    }
-  }
-}
+    },
+  };
+};

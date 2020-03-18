@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
+import glob from 'glob';
 import childProcess from 'child_process';
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
@@ -10,9 +11,9 @@ export async function buildResource(request: BuildRequest): Promise<BuildResult>
   if (!request.lastBuildTimestamp || isBuildStale(request.srcRoot, request.lastBuildTimestamp)) {
     installDependencies(resourceDir);
     runBuildScriptHook(request.legacyBuildHookParams.resourceName, request.legacyBuildHookParams.projectRoot);
-    return Promise.resolve({rebuilt: true});
+    return Promise.resolve({ rebuilt: true });
   }
-  return Promise.resolve({rebuilt: false});
+  return Promise.resolve({ rebuilt: false });
 }
 
 function runBuildScriptHook(resourceName: string, projectRoot: string) {
@@ -59,30 +60,13 @@ function toPackageManagerArgs(useYarn: boolean, scriptName?: string) {
   return useYarn ? [] : ['install'];
 }
 
-function isBuildStale(resourceDir: string, lastBuildTimestamp: any) {
-  const lastBuildDate = new Date(lastBuildTimestamp);
-  const sourceFiles = getSourceFiles(resourceDir, 'node_modules');
-  const dirMTime = fs.statSync(resourceDir).mtime;
-  if (new Date(dirMTime) > lastBuildDate) {
+function isBuildStale(resourceDir: string, lastBuildTimestamp: Date) {
+  const dirTime = new Date(fs.statSync(resourceDir).mtime);
+  if (dirTime > lastBuildTimestamp) {
     return true;
   }
-
-  for (let i = 0; i < sourceFiles.length; i += 1) {
-    const file = sourceFiles[i];
-    const fileMTime = fs.statSync(file).mtime;
-    if (new Date(fileMTime) > lastBuildDate) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function getSourceFiles(dir: string, ignoredDir?: any): string[] {
-  if (!fs.statSync(dir).isDirectory()) return [dir];
-  return fs.readdirSync(dir).reduce((acc, f) => {
-    if (f === ignoredDir) {
-      return acc;
-    }
-    return acc.concat(getSourceFiles(path.join(dir, f)));
-  }, new Array<string>());
+  const fileUpdatedAfterLastBuild = glob
+    .sync(`${resourceDir}/*/!(node_modules)/**`)
+    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
+  return !!fileUpdatedAfterLastBuild;
 }
