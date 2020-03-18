@@ -69,6 +69,8 @@ export class AmplifyToolkit {
   private _getTriggerEnvInputs: any;
   private _getUserPoolGroupList: any;
   private _forceRemoveResource: any;
+  private _writeObjectAsJson: any;
+  private _hashDir: any;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -392,5 +394,17 @@ export class AmplifyToolkit {
     this._forceRemoveResource =
       this._forceRemoveResource || require(path.join(this._amplifyHelpersDirPath, 'remove-resource')).forceRemoveResource;
     return this._forceRemoveResource;
+  }
+
+  get writeObjectAsJson(): any {
+    this._writeObjectAsJson =
+      this._writeObjectAsJson || require(path.join(this._amplifyHelpersDirPath, 'write-object-as-json')).writeObjectAsJson;
+    return this._writeObjectAsJson;
+  }
+
+  get hashDir(): any {
+    this._hashDir =
+      this._hashDir || require(path.join(this._amplifyHelpersDirPath, 'hash-dir')).hashDir;
+    return this._hashDir;
   }
 }

@@ -8,6 +8,9 @@ function stripBOM(content) {
 }
 
 function readJsonFile(jsonFilePath, encoding = 'utf8') {
+  if (!fs.existsSync(jsonFilePath)) {
+    return undefined;
+  }
   return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
 }
 

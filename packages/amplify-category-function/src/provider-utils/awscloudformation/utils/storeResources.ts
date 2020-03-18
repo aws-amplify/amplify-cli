@@ -1,4 +1,4 @@
-import {FunctionParameters, FunctionTriggerParameters} from 'amplify-function-plugin-interface';
+import {FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs} from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import {categoryName, provider, serviceName} from './constants';
@@ -22,6 +22,7 @@ export function copyFunctionResources(context: any, parameters: FunctionParamete
     };
     createParametersFile(context, params, parameters.resourceName, 'parameters.json')
   }
+  leaveBreadcrumbs(context, parameters);
 }
 
 export function copyTemplateFiles(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
@@ -84,4 +85,23 @@ function translateFuncParamsToResourceOpts(params: FunctionParameters | Function
     result.dependsOn = params.dependsOn
   }
   return result;
+}
+
+function leaveBreadcrumbs(context: any, params: FunctionParameters | FunctionTriggerParameters): void {
+  let breadcrumbs: FunctionBreadcrumbs;
+  if ('trigger' in params) {
+    breadcrumbs = {
+      pluginId: 'amplify-node-runtime-provider',
+      functionRuntime: 'nodejs',
+      useLegacyBuild: true
+    }
+  } else {
+    breadcrumbs = {
+      pluginId: params.runtimePluginId,
+      functionRuntime: params.runtime.value,
+      useLegacyBuild: false,
+    }
+  }
+  const destPath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, params.resourceName, 'amplify.function');
+  context.amplify.writeObjectAsJson(destPath, breadcrumbs, true);
 }
