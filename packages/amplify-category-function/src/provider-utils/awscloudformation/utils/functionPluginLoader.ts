@@ -86,7 +86,8 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
       return meta;
     })
     .map(meta => meta.manifest[selectionOptions.pluginType])
-    .flatMap(contributes => contributes[selectionOptions.listOptionsField]);
+    .map(contributes => contributes[selectionOptions.listOptionsField])
+    .reduce((acc, it) => acc.concat(it), []);
 
 
   // sanity checks
