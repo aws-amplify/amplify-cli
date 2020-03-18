@@ -53,7 +53,7 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
       chain = chain.wait(
         action == 'create'
           ? 'Do you want to access other resources created in this project from your Lambda function?'
-          : 'Do you want to update permissions granted to this Lambda function',
+          : 'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
       );
 
       if (settings.additionalPermissions) {
@@ -88,10 +88,9 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
 
       //scheduling questions
       chain = chain.wait(
-        action == 'create' ? 'Do you want to schedule this lambda function?' : 'Do you want to Update/Remove the ScheduleEvent Rule?',
+        action == 'create' || settings.schedulePermissions!= undefined ? 'Do you want this function to be invoked on a schedule?' : 'Do you want to update or remove the function schedule?',
       );
-      console.log('settings on akshay', settings.schedulePermissions);
-      if (settings.schedulePermissions) {
+      if (settings.schedulePermissions != undefined) {
         chain = chain.sendLine('y');
         chain = cronWalkthrough(chain, settings, action);
       } else {
@@ -175,12 +174,13 @@ function cronWalkthrough(chain: ExecutionContext, settings: any, action: string)
   if (action === 'create') {
     chain = addCron(chain, settings);
   } else {
-    chain = chain.wait('Select from the following options');
+    chain = chain.wait('Select from the following options (Use arrow keys)');
     switch (settings.schedulePermissions.action) {
-      case 'Update the CronJob':
-        chain = addCron(chain.sendCarriageReturn(), settings);
+      case 'Update the schedule':
+        chain = chain.sendCarriageReturn();
+        chain = addCron(chain, settings);
         break;
-      case 'Remove the CronJob':
+      case 'Remove the schedule':
         chain = moveDown(chain, 1).sendCarriageReturn();
         break;
       default:
@@ -220,12 +220,9 @@ function addYearly(chain: ExecutionContext) {
 }
 
 function addCron(chain: ExecutionContext, settings: any) {
-  chain = chain
-    .wait('When would you like to start cron?')
-    .sendCarriageReturn()
-    .wait('Select interval?');
-
-  switch (settings.schedulePermissions.interval || 'daily') {
+  chain = chain.wait('At which interval should the function be invoked?');
+  console.log('here',settings.schedulePermissions.interval);
+  switch (settings.schedulePermissions.interval) {
     case 'minutes':
       chain = addminutes(chain);
       break;
@@ -234,6 +231,7 @@ function addCron(chain: ExecutionContext, settings: any) {
       break;
     case 'daily':
       chain = moveDown(chain, 2).sendCarriageReturn();
+      chain = chain.wait('Select the start time (use arrow keys)?').sendCarriageReturn();
       break;
     case 'weekly':
       chain = addWeekly(moveDown(chain, 3).sendCarriageReturn());
@@ -243,6 +241,9 @@ function addCron(chain: ExecutionContext, settings: any) {
       break;
     case 'yearly':
       chain = addYearly(moveDown(chain, 5).sendCarriageReturn());
+      break;
+    case 'customRule':
+      chain = moveDown(chain, 6).sendCarriageReturn();
       break;
     default:
       chain = chain.sendCarriageReturn();

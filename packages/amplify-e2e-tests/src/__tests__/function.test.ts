@@ -351,8 +351,32 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
     const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
     expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
   });
+  it('update a schedule rule for daily without schedule premissions', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, {});
+    await updateFunction(projRoot, {
+      functionTemplate: 'helloWorld',
+      schedulePermissions: {
+        interval: 'daily',
+        action: 'Update the schedule',
+      },
+    });
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
+      key => meta.function[key],
+    )[0].output;
+    expect(functionArn).toBeDefined();
+    expect(functionName).toBeDefined();
+    expect(region).toBeDefined();
+    expect(ruleName).toBeDefined();
 
-  it('update a schedule rule for daily ', async () => {
+    const cloudFunction = await getFunction(functionName, region);
+    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
+    const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
+    expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
+  });
+  it.only('update a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(projRoot, {
       functionTemplate: 'helloWorld',
@@ -365,7 +389,7 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
       functionTemplate: 'helloWorld',
       schedulePermissions: {
         interval: 'daily',
-        action: 'Update the CronJob',
+        action: 'Update the schedule',
       },
     });
     await amplifyPushAuth(projRoot);
@@ -397,7 +421,7 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
       functionTemplate: 'helloWorld',
       schedulePermissions: {
         interval: 'daily',
-        action: 'Remove the CronJob',
+        action: 'Remove the schedule',
       },
     });
     await amplifyPushAuth(projRoot);
