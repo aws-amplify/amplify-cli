@@ -16,7 +16,7 @@ import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, che
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('s3-add-update');
+    projRoot = await createNewProjectDir('s3-test');
   });
 
   afterEach(async () => {
@@ -24,11 +24,7 @@ describe('amplify add/update storage(S3)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add S3 bucket with Auth user access only', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
-    await amplifyPushAuth(projRoot);
-
+  async function validate(projRoot) {
     const meta = getProjectMeta(projRoot);
     const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
 
@@ -37,6 +33,13 @@ describe('amplify add/update storage(S3)', () => {
 
     const bucketExists = await checkIfBucketExists(bucketName, region);
     expect(bucketExists).toMatchObject({});
+  }
+
+  it('init a project and add S3 bucket with Auth user access only', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
   });
 
   it('init a project and add S3 bucket with guest access', async () => {
@@ -44,15 +47,7 @@ describe('amplify add/update storage(S3)', () => {
     await addAuthWithDefault(projRoot, {});
     await addS3WithGuestAccess(projRoot, {});
     await amplifyPushAuth(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
-
-    expect(bucketName).toBeDefined();
-    expect(region).toBeDefined();
-
-    const bucketExists = await checkIfBucketExists(bucketName, region);
-    expect(bucketExists).toMatchObject({});
+    await validate(projRoot);
   });
 
   it('init a project and add S3 bucket with user pool groups and Admin API', async () => {
@@ -60,15 +55,7 @@ describe('amplify add/update storage(S3)', () => {
     await addAuthWithGroupsAndAdminAPI(projRoot, {});
     await addS3WithGroupAccess(projRoot, {});
     await amplifyPushAuth(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
-
-    expect(bucketName).toBeDefined();
-    expect(region).toBeDefined();
-
-    const bucketExists = await checkIfBucketExists(bucketName, region);
-    expect(bucketExists).toMatchObject({});
+    await validate(projRoot);
   });
 
   it('init a project and add S3 bucket with trigger', async () => {
@@ -76,15 +63,7 @@ describe('amplify add/update storage(S3)', () => {
     await addAuthWithDefault(projRoot, {});
     await addS3WithTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
-
-    expect(bucketName).toBeDefined();
-    expect(region).toBeDefined();
-
-    const bucketExists = await checkIfBucketExists(bucketName, region);
-    expect(bucketExists).toMatchObject({});
+    await validate(projRoot);
   });
 });
 

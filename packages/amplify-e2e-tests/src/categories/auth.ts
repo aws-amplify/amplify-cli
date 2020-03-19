@@ -1,5 +1,6 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import { getCLIPath, getEnvVars } from '../utils';
+
 export function addAuthWithDefault(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -678,6 +679,7 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any) {
       .sendCarriageReturn() // No
       .wait('Please provide a name for your user pool')
       .sendCarriageReturn() // Default
+      .wait('Warning: you will not be able to edit these selections')
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn() // Username
       .wait('Do you want to add User Pool Groups')
