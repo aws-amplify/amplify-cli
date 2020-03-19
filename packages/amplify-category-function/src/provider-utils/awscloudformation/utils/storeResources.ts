@@ -1,16 +1,18 @@
-import {FunctionParameters, FunctionTriggerParameters} from 'amplify-function-plugin-interface';
+import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import {categoryName, provider, serviceName} from './constants';
+import { categoryName, provider, serviceName } from './constants';
 import _ from 'lodash';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
 
 export function copyFunctionResources(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
-  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName,
+  context.amplify.updateamplifyMetaAfterResourceAdd(
+    categoryName,
     parameters.resourceName || parameters.functionName,
-    translateFuncParamsToResourceOpts(parameters));
+    translateFuncParamsToResourceOpts(parameters),
+  );
 
   // copy template, CFN and parameter files
   copyTemplateFiles(context, parameters);
@@ -18,10 +20,11 @@ export function copyFunctionResources(context: any, parameters: FunctionParamete
   if ('trigger' in parameters) {
     const params = {
       modules: parameters.modules.join(),
-      resourceName: parameters.resourceName
+      resourceName: parameters.resourceName,
     };
-    createParametersFile(context, params, parameters.resourceName, 'parameters.json')
+    createParametersFile(context, params, parameters.resourceName, 'parameters.json');
   }
+  context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
 
 export function copyTemplateFiles(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
@@ -31,12 +34,17 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
     return {
       dir: parameters.functionTemplate.sourceRoot,
       template: file,
-      target: path.join(destDir, categoryName, parameters.resourceName, _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, '')))
-    }
-  })
+      target: path.join(
+        destDir,
+        categoryName,
+        parameters.resourceName,
+        _.get(parameters.functionTemplate.destMap, file, file.replace(/\.ejs$/, '')),
+      ),
+    };
+  });
 
   // this is a hack to reuse some old code
-  let templateParams: any = parameters
+  let templateParams: any = parameters;
   if ('trigger' in parameters) {
     let triggerEnvs = context.amplify.loadEnvResourceParameters(context, 'function', parameters.resourceName);
     parameters.triggerEnvs = JSON.parse(parameters.triggerEnvs) || [];
@@ -54,8 +62,8 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
     dir: '',
     template: parameters.cloudResourceTemplatePath,
     target: path.join(destDir, categoryName, parameters.resourceName, `${parameters.resourceName}-cloudformation-template.json`),
-  }
-  context.amplify.copyBatch(context, [cloudTemplateJob], parameters, false)
+  };
+  context.amplify.copyBatch(context, [cloudTemplateJob], parameters, false);
 }
 
 export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
@@ -81,7 +89,22 @@ function translateFuncParamsToResourceOpts(params: FunctionParameters | Function
     service: serviceName,
   };
   if (!('trigger' in params)) {
-    result.dependsOn = params.dependsOn
+    result.dependsOn = params.dependsOn;
   }
   return result;
+}
+
+function createBreadcrumbs(params: FunctionParameters | FunctionTriggerParameters): FunctionBreadcrumbs {
+  if ('trigger' in params) {
+    return {
+      pluginId: 'amplify-node-runtime-provider',
+      functionRuntime: 'nodejs',
+      useLegacyBuild: true,
+    };
+  }
+  return {
+    pluginId: params.runtimePluginId,
+    functionRuntime: params.runtime.value,
+    useLegacyBuild: false,
+  };
 }

@@ -25,6 +25,7 @@
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.16.0",
     "inquirer": "^7.0.3",
+    "lodash": "^4.17.15",
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0"
