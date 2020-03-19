@@ -1,6 +1,6 @@
 import { Pinpoint } from 'aws-sdk';
 import { getCLIPath } from '../utils';
-import { nspawn as spawn } from '../utils/nexpect';
+import { nspawn as spawn } from 'amplify-e2e-core';
 
 const settings = {
   name: '\r',
