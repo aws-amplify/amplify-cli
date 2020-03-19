@@ -123,11 +123,14 @@ def get_table_name_from_arn(arn):
 
 
 # Compute a compound doc index from the key(s) of the object in lexicographic order: "k1=key_val1|k2=key_val2"
-def compute_doc_index(keys_raw, deserializer):
+def compute_doc_index(keys_raw, deserializer, formatIndex=False):
     index = []
     for key in sorted(keys_raw):
-        index.append('{}={}'.format(
-            key, deserializer.deserialize(keys_raw[key])))
+        if formatIndex:
+            index.append('{}={}'.format(
+                key, deserializer.deserialize(keys_raw[key])))
+        else:
+            index.append(deserializer.deserialize(keys_raw[key]))
     return '|'.join(index)
 
 
@@ -212,7 +215,11 @@ def _lambda_handler(event, context):
             es_actions.append(json.dumps(action))
             # Payload line
             es_actions.append(doc_json)
-
+            # migration step remove old key if it exists
+            if ('id' in doc_fields) and (event_name == 'MODIFY') :
+                action = {'delete': {'_index': doc_es_index_name, '_type': doc_type,
+                    '_id': compute_doc_index(ddb['Keys'], ddb_deserializer, True)}}
+                es_actions.append(json.dumps(action))
         # If DynamoDB REMOVE, send 'delete' to ES
         elif is_ddb_delete:
             action = {'delete': {'_index': doc_es_index_name,

@@ -21,7 +21,8 @@ const {
   readTransformerConfiguration,
   writeTransformerConfiguration,
   TRANSFORM_CONFIG_FILE_NAME,
-  TRANSFORM_BASE_VERSION,
+  TRANSFORM_CURRENT_VERSION,
+  TRANSFORM_CONFIG_VERSION_MAP,
   CLOUDFORMATION_FILE_NAME,
   getAppSyncServiceExtraDirectives,
 } = TransformPackage;
@@ -40,6 +41,15 @@ function warnOnAuth(context, map) {
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
     context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth \n');
+  }
+}
+
+class TransformerConfVersionNotSupportedError extends Error {
+  constructor() {
+    super(
+      "The transformer conf version entered is higher than the current supported version."
+    );
+    this.name = 'TransformerConfVersionNotSupportedError';
   }
 }
 
@@ -145,8 +155,8 @@ function getTransformerFactory(context, resourceDir, authConfig) {
  * @TODO Include a map of versions to keep track
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
-  const versionChangeMessage =
-    'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+  let transformerVersion = 0;
+  let versionChangeMessage = '';
   const checkVersionExist = config => config && config.Version;
 
   // this is where we check if there is a prev version of the transformer being used
@@ -161,17 +171,33 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   // if we already asked the confirmation question before at a previous push
   // or during current operations we should not ask again.
   const showPrompt = !(cloudVersionExist || localVersionExist);
+  if (showPrompt) {
+    transformerVersion = 3;
+  } else if (localTransformerConfig.Version) {
+    transformerVersion = localTransformerConfig.Version;
+  }
+  // check if the version in the file is supported.
+  if (transformerVersion < TRANSFORM_CURRENT_VERSION) {
+    for(let i = transformerVersion; i < TRANSFORM_CONFIG_VERSION_MAP; i++) {
+      // add the warning if it exists
+      if(TRANSFORM_CONFIG_VERSION_MAP[i]) {
+        versionChangeMessage += TRANSFORM_CONFIG_VERSION_MAP[i](usedDirectives);
+      }
+    }
+  } else {
+    throw new TransformerConfVersionNotSupportedError();
+  }
 
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
 
-  if (showPrompt && usedDirectives.includes('auth') && resources.length > 0) {
+  if (versionChangeMessage && resources.length > 0) {
     if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
-      context.print.warning(`\n${versionChangeMessage}\n`);
+      context.print.warning(`\n${versionChangeMessage}`);
     } else {
       const response = await inquirer.prompt({
         name: 'transformerConfig',
         type: 'confirm',
-        message: `${versionChangeMessage}\nDo you wish to continue?`,
+        message: `${versionChangeMessage}Do you wish to continue?`,
         default: false,
       });
       if (!response.transformerConfig) {
@@ -179,12 +205,9 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
       }
     }
   }
-
-  // Only touch the file if it misses the Version property
-  // Always set to the base version, to not to break existing projects when coming
-  // from an older version of the CLI.
-  if (!localTransformerConfig.Version) {
-    localTransformerConfig.Version = TRANSFORM_BASE_VERSION;
+  // If the warnings were accepted move to the current transformer conf version
+  if (!localTransformerConfig.Version || transformerVersion) {
+    localTransformerConfig.Version = TRANSFORM_CURRENT_VERSION;
     await writeTransformerConfiguration(resourceDir, localTransformerConfig);
   }
 }

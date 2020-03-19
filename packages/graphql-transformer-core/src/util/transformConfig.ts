@@ -6,7 +6,7 @@ const fs = require('fs-extra');
 
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 export const TRANSFORM_BASE_VERSION = 4;
-export const TRANSFORM_CURRENT_VERSION = 5;
+export const TRANSFORM_CURRENT_VERSION = 6;
 
 export interface TransformMigrationConfig {
   V1?: {
