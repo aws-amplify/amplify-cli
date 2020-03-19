@@ -18,7 +18,7 @@ console.log(chalk.green('Successfully installed the Amplify CLI'));
 console.log(chalk.green('----------------------------------------'));
 console.log('\n');
 
-console.log(chalk.green('Javascript Getting Started - https://aws-amplify.github.io/docs/js/start'));
+console.log(chalk.green('JavaScript Getting Started - https://aws-amplify.github.io/docs/js/start'));
 console.log('\n');
 console.log(chalk.green('Android Getting Started - https://aws-amplify.github.io/docs/android/start'));
 console.log('\n');

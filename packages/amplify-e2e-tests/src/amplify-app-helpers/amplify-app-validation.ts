@@ -3,6 +3,7 @@ import * as path from 'path';
 
 function validateProject(projRoot: string, platform: string) {
   expect(fs.existsSync(path.join(projRoot, 'amplify'))).toBeTruthy();
+  expect(fs.existsSync(path.join(projRoot, '.gitignore'))).toBeTruthy();
   switch (platform) {
     case 'android':
       expect(fs.existsSync(path.join(projRoot, 'amplify-gradle-config.json'))).toBeTruthy();

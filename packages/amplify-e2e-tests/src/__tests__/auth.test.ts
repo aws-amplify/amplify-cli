@@ -59,9 +59,13 @@ describe('amplify add auth...', () => {
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
@@ -74,11 +78,15 @@ describe('amplify add auth...', () => {
     await addAuthWithGroupTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+
     const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
 
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
@@ -91,11 +99,14 @@ describe('amplify add auth...', () => {
     await addAuthViaAPIWithTrigger(projRoot, {});
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-    const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
 
+    const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
@@ -108,12 +119,17 @@ describe('amplify add auth...', () => {
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+
     const createFunctionName = `${Object.keys(meta.auth)[0]}CreateAuthChallenge-integtest`;
     const defineFunctionName = `${Object.keys(meta.auth)[0]}DefineAuthChallenge-integtest`;
     const verifyFunctionName = `${Object.keys(meta.auth)[0]}VerifyAuthChallengeResponse-integtest`;
+
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
     const createFunction = await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region);
     const defineFunction = await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region);
     const verifyFunction = await getLambdaFunction(verifyFunctionName, meta.providers.awscloudformation.Region);
@@ -131,11 +147,16 @@ describe('amplify add auth...', () => {
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[1].output.UserPoolId;
+
     const createFunctionName = `${Object.keys(meta.auth)[1]}CreateAuthChallenge-integtest`;
     const defineFunctionName = `${Object.keys(meta.auth)[1]}DefineAuthChallenge-integtest`;
+
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[1];
+    const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
     const createFunction = await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region);
     const defineFunction = await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region);
 
@@ -165,10 +186,15 @@ describe('amplify updating auth...', () => {
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
+
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const dirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
     expect(dirContents.includes('custom.js')).toBeTruthy();

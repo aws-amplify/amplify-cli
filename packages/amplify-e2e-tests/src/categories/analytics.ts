@@ -1,5 +1,5 @@
+import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
-import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 export function addPinpoint(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {

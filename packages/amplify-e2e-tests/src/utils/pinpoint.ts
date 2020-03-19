@@ -1,6 +1,6 @@
 import { Pinpoint } from 'aws-sdk';
 import { getCLIPath } from '../utils';
-import { nspawn as spawn } from '../utils/nexpect';
+import { nspawn as spawn } from 'amplify-e2e-core';
 
 const settings = {
   name: '\r',
@@ -93,7 +93,7 @@ export function initProject(cwd: string) {
 export function addPinpointAnalytics(cwd: string): Promise<string> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
       .sendLine(settings.pinpointResourceName)
