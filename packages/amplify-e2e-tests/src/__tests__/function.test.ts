@@ -317,7 +317,7 @@ describe('amplify add function with additional permissions', () => {
   });
 });
 
-describe.only('amplify add/update/remove function based on schedule rule', () => {
+describe('amplify add/update/remove function based on schedule rule', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('schedule');
@@ -351,32 +351,7 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
     const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
     expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
   });
-  it('update a schedule rule for daily without schedule premissions', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, {});
-    await updateFunction(projRoot, {
-      functionTemplate: 'helloWorld',
-      schedulePermissions: {
-        interval: 'daily',
-        action: 'Update the schedule',
-      },
-    });
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
-      key => meta.function[key],
-    )[0].output;
-    expect(functionArn).toBeDefined();
-    expect(functionName).toBeDefined();
-    expect(region).toBeDefined();
-    expect(ruleName).toBeDefined();
-
-    const cloudFunction = await getFunction(functionName, region);
-    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
-    const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
-    expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
-  });
-  it.only('update a schedule rule for daily ', async () => {
+  it('update a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(projRoot, {
       functionTemplate: 'helloWorld',

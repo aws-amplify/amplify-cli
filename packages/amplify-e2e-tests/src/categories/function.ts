@@ -32,7 +32,19 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
         .sendLine(settings.name || '')
         .wait('Provide the AWS Lambda function name:')
         .sendLine(settings.name || '')
-        .wait('Choose the function template that you want to use:');
+        .wait('Choose the function runtime that you want to use:')
+        switch (settings.runtime || 'NodeJS') {
+          case 'Java':
+            chain = chain.sendCarriageReturn();
+            break;
+          case 'NodeJS':
+            chain = moveDown(chain, 1).sendCarriageReturn();
+            break;
+          default:
+            chain = chain.sendCarriageReturn();
+            break;
+        }
+        chain = chain.wait('Choose the function template that you want to use:');
 
       switch (settings.functionTemplate || 'helloWorld') {
         case 'crud':
@@ -87,14 +99,23 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
       }
 
       //scheduling questions
-      chain = chain.wait(
-        action == 'create' || settings.schedulePermissions!= undefined ? 'Do you want this function to be invoked on a schedule?' : 'Do you want to update or remove the function schedule?',
-      );
-      if (settings.schedulePermissions != undefined) {
+      if(action == 'create'){
+        chain = chain.wait('Do you want this function to be invoked on a schedule?');
+      }
+      else{
+        if(settings.schedulePermissions.noScheduleAdd === 'true'){
+          chain = chain.wait('Do you want this function to be invoked on a schedule?');
+        }
+        else{
+          chain = chain.wait('Do you want to update or remove the function schedule?');
+        }
+      }
+
+      if (settings.schedulePermissions === undefined) {
+        chain = chain.sendLine('n');
+      } else {
         chain = chain.sendLine('y');
         chain = cronWalkthrough(chain, settings, action);
-      } else {
-        chain = chain.sendLine('n');
       }
       // scheduling questions
       chain = chain
