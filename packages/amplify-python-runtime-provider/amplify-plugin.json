@@ -1,0 +1,19 @@
+{
+  "name": "functionRuntime",
+  "type": "util",
+  "commands": [],
+  "eventHandlers": [],
+  "functionRuntime": {
+    "pluginId": "amplify-python-function-runtime-provider",
+    "conditions": {
+      "provider": "awscloudformation",
+      "service": "Lambda"
+    },
+    "runtimes": [
+      {
+        "name": "Python",
+        "value": "python"
+      }
+    ]
+  }
+}
