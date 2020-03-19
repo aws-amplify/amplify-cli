@@ -23,15 +23,23 @@ export type FunctionTemplateParameters = Pick<FunctionParameters, 'dependsOn' | 
 export type ContributorFactory<T extends Partial<FunctionParameters>> = (context: any) => Contributor<T>;
 
 export interface Contributor<T extends Partial<FunctionParameters>> {
-  contribute(selection: string): Promise<T>;
+  contribute(request: ContributionRequest): Promise<T>;
 }
 
 export interface FunctionRuntimeLifecycleManager {
-  checkDependencies(selection: string): Promise<CheckDependenciesResult>;
+  checkDependencies(runtimeValue: string): Promise<CheckDependenciesResult>;
   package(request: PackageRequest): Promise<PackageResult>;
   build(request: BuildRequest): Promise<BuildResult>;
   invoke(request: InvocationRequest): Promise<any>;
 }
+
+export type ContributionRequest = {
+  selection: string;
+  contributionContext: {
+    functionName: string;
+    resourceName: string;
+  };
+};
 
 // Request sent to invoke a function
 export type InvocationRequest = {
