@@ -1,6 +1,6 @@
-import inquirer from 'inquirer'
+import inquirer from 'inquirer';
 import { askAnalyticsCategoryKinesisQuestions } from './analyticsWalkthrough';
-import { askAPICategoryDynamoDBQuestions, askDynamoDBQuestions } from './dynamoDBWalkthrough'
+import { askAPICategoryDynamoDBQuestions, askDynamoDBQuestions } from './dynamoDBWalkthrough';
 
 export async function askEventSourceQuestions(context: any) {
   const selectEventSourceQuestion = {
@@ -9,13 +9,13 @@ export async function askEventSourceQuestions(context: any) {
     message: 'What event source do you want to associate with Lambda trigger?',
     choices: [
       {
-        "name": "Amazon DynamoDB Stream",
-        "value": "dynamoDB"
+        name: 'Amazon DynamoDB Stream',
+        value: 'dynamoDB',
       },
       {
-        "name": "Amazon Kinesis Stream",
-        "value": "kinesis"
-      }
+        name: 'Amazon Kinesis Stream',
+        value: 'kinesis',
+      },
     ],
   };
 
@@ -37,13 +37,13 @@ export async function askEventSourceQuestions(context: any) {
         message: 'Choose a Kinesis event source option',
         choices: [
           {
-            "name": "Use Analytics category kinesis stream in the current Amplify project",
-            "value": "analyticsKinesisStream"
+            name: 'Use Analytics category kinesis stream in the current Amplify project',
+            value: 'analyticsKinesisStream',
           },
           {
-            "name": "Provide the ARN of Kinesis stream directly",
-            "value": "kinesisStreamRawARN"
-          }
+            name: 'Provide the ARN of Kinesis stream directly',
+            value: 'kinesisStreamRawARN',
+          },
         ],
       };
       streamKindAnswer = await inquirer.prompt([streamKindQuestion]);
@@ -54,10 +54,10 @@ export async function askEventSourceQuestions(context: any) {
             name: 'amazonKinesisStreamARN',
             message: 'Provide the ARN of Amazon Kinesis data stream or a stream consumer',
             validate: context.amplify.inputValidation({
-              operator: "regex",
-              value: "arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)",
-              onErrorMsg: "Invalid ARN format",
-              required: true
+              operator: 'regex',
+              value: 'arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)',
+              onErrorMsg: 'Invalid ARN format',
+              required: true,
             }),
           };
           arnAnswer = await inquirer.prompt([arnQuestion]);
@@ -99,17 +99,17 @@ export async function askEventSourceQuestions(context: any) {
         message: 'Choose a DynamoDB event source option',
         choices: [
           {
-            "name": "Use API category graphql @model backed DynamoDB table(s) in the current Amplify project",
-            "value": "graphqlModelTable"
+            name: 'Use API category graphql @model backed DynamoDB table(s) in the current Amplify project',
+            value: 'graphqlModelTable',
           },
           {
-            "name": "Use storage category DynamoDB table configured in the current Amplify project",
-            "value": "storageDynamoDBTable"
+            name: 'Use storage category DynamoDB table configured in the current Amplify project',
+            value: 'storageDynamoDBTable',
           },
           {
-            "name": "Provide the ARN of DynamoDB stream directly",
-            "value": "dynamoDbStreamRawARN"
-          }
+            name: 'Provide the ARN of DynamoDB stream directly',
+            value: 'dynamoDbStreamRawARN',
+          },
         ],
       };
       streamKindAnswer = await inquirer.prompt([streamKindQuestion]);
@@ -120,10 +120,10 @@ export async function askEventSourceQuestions(context: any) {
             name: 'dynamoDbARN',
             message: 'Provide the ARN of Amazon DynamoDB stream',
             validate: context.amplify.inputValidation({
-              operator: "regex",
-              value: "arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)",
-              onErrorMsg: "ARN format is invalid",
-              required: true
+              operator: 'regex',
+              value: 'arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)',
+              onErrorMsg: 'ARN format is invalid',
+              required: true,
             }),
           };
           arnAnswer = await inquirer.prompt([arnQuestion]);

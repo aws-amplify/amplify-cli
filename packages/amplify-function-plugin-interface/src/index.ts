@@ -18,6 +18,8 @@ export type FunctionTemplateContributorFactory = ContributorFactory<FunctionTemp
 // Subset of FunctionParameters that defines the function template
 export type FunctionTemplateParameters = Pick<FunctionParameters, 'dependsOn' | 'functionTemplate' | 'triggerEventSourceMappings'>;
 
+//ScheduleParameters that defines the function template
+export type scheduleParameters = Pick<FunctionParameters, 'cloudwatchEnabled' | 'cloudwatchRule'>;
 // Generic interfaces / types for all contributors
 // context is the Amplify core context object (unfourtunately no type for this)
 export type ContributorFactory<T extends Partial<FunctionParameters>> = (context: any) => Contributor<T>;
@@ -98,6 +100,8 @@ export type FunctionParameters = {
   triggerEventSourceMappings?: any; // Used for dynamo / kinesis function triggers. May want to refactor
   topLevelComment?: string; // LEGACY Used to write available environment variables at top of template files
   runtimePluginId: string;
+  cloudwatchEnabled: string;
+  cloudwatchRule: string;
 };
 
 /**

@@ -8,6 +8,7 @@ import {
   Rekognition,
   AppSync,
   CloudWatchLogs,
+  CloudWatchEvents,
   Kinesis,
 } from 'aws-sdk';
 
@@ -33,7 +34,6 @@ const getUserPool = async (userpoolId, region) => {
 };
 
 const getLambdaFunction = async (functionName, region) => {
-  config.update({ region });
   const lambda = new Lambda();
   let res;
   try {
@@ -131,6 +131,21 @@ const putKinesisRecords = async (data: string, partitionKey: string, streamName:
     .promise();
 };
 
+const getCloudWatchEventRule = async (targetName: string, region: string) => {
+  config.update({ region });
+  const service = new CloudWatchEvents();
+  var params = {
+    TargetArn: targetName /* required */,
+  };
+  let ruleName;
+  try {
+    ruleName = await service.listRuleNamesByTarget(params).promise();
+  } catch (e) {
+    console.log(e);
+  }
+  return ruleName;
+};
+
 export {
   getDDBTable,
   checkIfBucketExists,
@@ -146,4 +161,5 @@ export {
   getCollection,
   getCloudWatchLogs,
   putKinesisRecords,
+  getCloudWatchEventRule,
 };

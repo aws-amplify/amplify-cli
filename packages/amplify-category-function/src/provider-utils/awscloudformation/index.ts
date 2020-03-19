@@ -95,8 +95,10 @@ export async function updateResource(context, category, service, parameters, res
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName, 'dependsOn', result.dependsOn);
   }
 
+  // not a good implementation, will refractor when runtimePR changes will happen
   if (answers.parameters) {
     createParametersFile(context, answers.parameters, answers.resourceName);
+    createParametersFile(context, answers.parameters, answers.resourceName, 'parameters.json');
   }
 
   if (answers.trigger) {

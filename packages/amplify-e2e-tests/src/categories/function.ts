@@ -27,11 +27,23 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
 
     if (action == 'create') {
       chain = chain
-        .wait('Provide a friendly name for your resource to be used as a label')
+        .wait('Provide a friendly name for your resource to be used as a label for this category in the project:')
         .sendLine(settings.name || '')
-        .wait('Provide the AWS Lambda function name')
+        .wait('Provide the AWS Lambda function name:')
         .sendLine(settings.name || '')
-        .wait('Choose the function template that you want to use');
+        .wait('Choose the function runtime that you want to use:');
+      switch (settings.runtime || 'NodeJS') {
+        case 'Java':
+          chain = chain.sendCarriageReturn();
+          break;
+        case 'NodeJS':
+          chain = moveDown(chain, 1).sendCarriageReturn();
+          break;
+        default:
+          chain = chain.sendCarriageReturn();
+          break;
+      }
+      chain = chain.wait('Choose the function template that you want to use:');
 
       switch (settings.functionTemplate || 'helloWorld') {
         case 'crud':
@@ -51,8 +63,8 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
     if (!settings.expectFailure) {
       chain = chain.wait(
         action == 'create'
-          ? 'Do you want to access other resources created in this project from your Lambda'
-          : 'Do you want to update permissions granted to this Lambda function',
+          ? 'Do you want to access other resources created in this project from your Lambda function?'
+          : 'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
       );
 
       if (settings.additionalPermissions) {
@@ -85,8 +97,26 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
         chain = chain.sendLine('n');
       }
 
+      //scheduling questions
+      if (action == 'create') {
+        chain = chain.wait('Do you want this function to be invoked on a schedule?');
+      } else {
+        if (settings.schedulePermissions.noScheduleAdd === 'true') {
+          chain = chain.wait('Do you want this function to be invoked on a schedule?');
+        } else {
+          chain = chain.wait('Do you want to update or remove the function schedule?');
+        }
+      }
+
+      if (settings.schedulePermissions === undefined) {
+        chain = chain.sendLine('n');
+      } else {
+        chain = chain.sendLine('y');
+        chain = cronWalkthrough(chain, settings, action);
+      }
+      // scheduling questions
       chain = chain
-        .wait('Do you want to edit the local lambda function now')
+        .wait('Do you want to edit the local lambda function now?')
         .sendLine('n')
         .sendEof();
     }
@@ -156,4 +186,86 @@ export function functionBuild(cwd: string, settings: any) {
         }
       });
   });
+}
+
+function cronWalkthrough(chain: ExecutionContext, settings: any, action: string) {
+  if (action === 'create') {
+    chain = addCron(chain, settings);
+  } else {
+    chain = chain.wait('Select from the following options (Use arrow keys)');
+    switch (settings.schedulePermissions.action) {
+      case 'Update the schedule':
+        chain = chain.sendCarriageReturn();
+        chain = addCron(chain, settings);
+        break;
+      case 'Remove the schedule':
+        chain = moveDown(chain, 1).sendCarriageReturn();
+        break;
+      default:
+        chain = chain.sendCarriageReturn();
+        break;
+    }
+  }
+  return chain;
+}
+function addminutes(chain: ExecutionContext) {
+  chain = chain
+    .wait('Enter rate for mintues(1-59)?')
+    .sendLine('5\r')
+    .sendCarriageReturn();
+  return chain;
+}
+function addhourly(chain: ExecutionContext) {
+  chain = chain
+    .wait('Enter rate for hours(1-23)?')
+    .sendLine('5\r')
+    .sendCarriageReturn();
+  return chain;
+}
+function addWeekly(chain: ExecutionContext) {
+  chain = chain.wait('Please select the  day to start Job').sendCarriageReturn();
+  return chain;
+}
+
+function addMonthly(chain: ExecutionContext) {
+  chain = chain.wait('Select date to start cron').sendCarriageReturn();
+  return chain;
+}
+
+function addYearly(chain: ExecutionContext) {
+  chain = chain.wait('Select date to start cron').sendCarriageReturn();
+  return chain;
+}
+
+function addCron(chain: ExecutionContext, settings: any) {
+  chain = chain.wait('At which interval should the function be invoked?');
+  console.log('here', settings.schedulePermissions.interval);
+  switch (settings.schedulePermissions.interval) {
+    case 'minutes':
+      chain = addminutes(chain);
+      break;
+    case 'hourly':
+      chain = addhourly(moveDown(chain, 1).sendCarriageReturn());
+      break;
+    case 'daily':
+      chain = moveDown(chain, 2).sendCarriageReturn();
+      chain = chain.wait('Select the start time (use arrow keys)?').sendCarriageReturn();
+      break;
+    case 'weekly':
+      chain = addWeekly(moveDown(chain, 3).sendCarriageReturn());
+      break;
+    case 'monthly':
+      chain = addMonthly(moveDown(chain, 4).sendCarriageReturn());
+      break;
+    case 'yearly':
+      chain = addYearly(moveDown(chain, 5).sendCarriageReturn());
+      break;
+    case 'customRule':
+      chain = moveDown(chain, 6).sendCarriageReturn();
+      break;
+    default:
+      chain = chain.sendCarriageReturn();
+      break;
+  }
+  return chain;
 }

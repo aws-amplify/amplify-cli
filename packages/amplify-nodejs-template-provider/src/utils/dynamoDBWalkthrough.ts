@@ -1,25 +1,26 @@
-import inquirer from 'inquirer'
-import path from 'path'
+import inquirer from 'inquirer';
+import path from 'path';
 const TransformPackage = require('graphql-transformer-core');
 
-export async function askDynamoDBQuestions(context: any, currentProjectOnly = false): Promise<{resourceName: string}> {
+export async function askDynamoDBQuestions(context: any, currentProjectOnly = false): Promise<{ resourceName: string }> {
   const dynamoDbTypeQuestion = {
     type: 'list',
     name: 'dynamoDbType',
     message: 'Choose a DynamoDB data source option',
     choices: [
       {
-        name: "Use DynamoDB table configured in the current Amplify project",
-        value: "currentProject"
+        name: 'Use DynamoDB table configured in the current Amplify project',
+        value: 'currentProject',
       },
       {
-        name: "Create a new DynamoDB table",
-        value: "newResource"
-      }
-    ]
+        name: 'Create a new DynamoDB table',
+        value: 'newResource',
+      },
+    ],
   };
-  for (let count = 0; count < 2; count++) { // give the developer a chance to go back and select a valid response
-    const dynamoDbTypeAnswer = currentProjectOnly ? {dynamoDbType: 'currentProject'} : await inquirer.prompt([dynamoDbTypeQuestion]);
+  for (let count = 0; count < 2; count++) {
+    // give the developer a chance to go back and select a valid response
+    const dynamoDbTypeAnswer = currentProjectOnly ? { dynamoDbType: 'currentProject' } : await inquirer.prompt([dynamoDbTypeQuestion]);
     switch (dynamoDbTypeAnswer.dynamoDbType) {
       case 'currentProject': {
         const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;

@@ -1,1 +1,1 @@
-export const templateRoot = `${__dirname}/../../resources`
+export const templateRoot = `${__dirname}/../../resources`;
