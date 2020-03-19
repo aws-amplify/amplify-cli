@@ -140,7 +140,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     // Update Identity Pool dependency attributes on userpool groups
     const allResources = context.amplify.getProjectMeta();
     if (allResources.auth && allResources.auth.userPoolGroups) {
-      let attributesm = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
+      let attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
       if (authParameters.identityPoolName) {
         attributes.push('IdentityPoolId');
       }
@@ -161,8 +161,8 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
     return requirements.resourceName;
   } catch (e) {
-    throw new Error('Error updating Cognito resource');
-    context.print.error(e.stack);
+    context.print.error('Error updating Cognito resource');
+    throw e;
   }
 }
 
