@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 async function transformUserPoolGroupSchema(context) {
   const resourceDirPath = path.join(
@@ -47,12 +48,31 @@ async function transformUserPoolGroupSchema(context) {
     },
   ];
 
+  const authResourceParameters = loadResourceParameters(context, authResourceName);
+
+
   const props = {
     groups,
     cognitoResourceName: authResourceName,
+    identityPoolName: authResourceParameters.identityPoolName
   };
 
   await context.amplify.copyBatch(context, copyJobs, props, true);
+}
+
+function loadResourceParameters(context, authResourceName) {
+  let parameters = {};
+  let category = 'auth';
+  const backendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(backendDirPath, category, authResourceName);
+  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
+  if (fs.existsSync(parametersFilePath)) {
+    parameters = context.amplify.readJsonFile(parametersFilePath);
+  } else {
+    throw new Error ('Auth resource missing parameters file');
+  }
+
+  return parameters;
 }
 
 module.exports = {
