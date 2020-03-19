@@ -7,8 +7,8 @@ import { provideTrigger } from './providers/triggerProvider';
 
 export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = context => {
   return {
-    contribute: selection => {
-      switch (selection) {
+    contribute: request => {
+      switch (request.selection) {
         case 'helloworld': {
           return provideHelloWorld();
         }
@@ -22,7 +22,7 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
           return provideTrigger(context);
         }
         default: {
-          throw new Error(`Unknown template selection [${selection}]`);
+          throw new Error(`Unknown template selection [${request.selection}]`);
         }
       }
     },
