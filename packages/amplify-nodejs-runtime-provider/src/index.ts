@@ -2,9 +2,9 @@ import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-inter
 import { buildResource } from './utils/legacyBuild';
 import { packageResource } from './utils/legacyPackage';
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
-  context.amplify;
   return {
-    contribute: selection => {
+    contribute: request => {
+      const selection = request.selection;
       if (selection !== 'nodejs') {
         return Promise.reject(new Error(`Unknown selection ${selection}`));
       }

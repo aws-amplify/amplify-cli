@@ -7,6 +7,7 @@ import {
   FunctionTemplateParameters,
   Contributor,
   FunctionRuntimeLifecycleManager,
+  ContributionRequest,
 } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 
@@ -33,7 +34,14 @@ export async function templateWalkthrough(context: any, params: Partial<Function
   };
   const selection = await getSelectionFromContributors<FunctionTemplateCondition>(context, selectionOptions);
   const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionTemplateContributorFactory', context);
-  return await getContributionFromPlugin<FunctionTemplateParameters>(plugin, selection.selection);
+  const contributionRequest: ContributionRequest = {
+    selection: selection.value,
+    contributionContext: {
+      functionName: params.functionName,
+      resourceName: params.resourceName,
+    },
+  };
+  return await plugin.contribute(contributionRequest);
 }
 
 /**
@@ -54,11 +62,18 @@ export async function runtimeWalkthrough(
   };
   const selection = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
-  const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.selection);
+  const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
   if (!depCheck.hasRequiredDependencies) {
     context.print.warning(depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed');
   }
-  const contribution = await getContributionFromPlugin<FunctionRuntimeParameters>(plugin, selection.selection);
+  const contributionRequest: ContributionRequest = {
+    selection: selection.value,
+    contributionContext: {
+      functionName: params.functionName,
+      resourceName: params.resourceName,
+    },
+  };
+  const contribution = await plugin.contribute(contributionRequest);
   return {
     ...contribution,
     runtimePluginId: selection.pluginId,
@@ -117,15 +132,10 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
   }
 
   return {
-    selection,
+    value: selection,
     pluginPath: selectionMap.get(selection).path,
     pluginId: selectionMap.get(selection).pluginId,
   };
-}
-
-// Executes the selected option using the given plugin
-async function getContributionFromPlugin<T extends Partial<FunctionParameters>>(plugin: Contributor<T>, selection: string): Promise<T> {
-  return await plugin.contribute(selection);
 }
 
 async function loadPluginFromFactory(pluginPath, expectedFactoryFunction, context): Promise<any> {
@@ -152,7 +162,7 @@ interface PluginSelectionOptions<T extends FunctionRuntimeCondition | FunctionTe
 }
 interface PluginSelection {
   pluginPath: string;
-  selection: string;
+  value: string;
   pluginId: string;
 }
 
