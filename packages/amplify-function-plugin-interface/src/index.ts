@@ -83,6 +83,7 @@ export type BuildResult = {
 // Result of packaging a function
 export type PackageResult = {
   packageHash?: string; // undefined if no repacking necessary. Otherwise, it is a hash that uniquiely identifies the package
+  zipFileName?: string; // defined for certain plugins like Java
 };
 
 export type CheckDependenciesResult = {
