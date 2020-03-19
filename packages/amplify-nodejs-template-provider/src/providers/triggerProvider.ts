@@ -1,7 +1,7 @@
-import { FunctionTemplateParameters } from "amplify-function-plugin-interface";
-import {templateRoot} from '../utils/constants'
-import path from 'path'
-import { askEventSourceQuestions } from "../utils/eventSourceWalkthrough";
+import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
+import { templateRoot } from '../utils/constants';
+import path from 'path';
+import { askEventSourceQuestions } from '../utils/eventSourceWalkthrough';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda/trigger');
 
@@ -21,6 +21,6 @@ export async function provideTrigger(context: any): Promise<FunctionTemplatePara
         'event.json': path.join('src', 'event.json'),
       },
       defaultEditorFile: path.join('src', templateFile),
-    }
-  }
+    },
+  };
 }

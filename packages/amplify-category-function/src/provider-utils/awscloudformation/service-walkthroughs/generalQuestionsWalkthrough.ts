@@ -41,7 +41,7 @@ function generalQuestions(context: any): object[] {
         onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 . - _',
         required: true,
       }),
-      default: (answers) => answers.resourceName,
-    }
+      default: answers => answers.resourceName,
+    },
   ];
 }

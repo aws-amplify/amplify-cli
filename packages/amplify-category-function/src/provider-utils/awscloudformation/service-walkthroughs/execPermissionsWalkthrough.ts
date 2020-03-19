@@ -1,4 +1,4 @@
-import { constructCFModelTableNameComponent, constructCFModelTableArnComponent } from "../utils/cloudformationHelpers";
+import { constructCFModelTableNameComponent, constructCFModelTableArnComponent } from '../utils/cloudformationHelpers';
 import inquirer from 'inquirer';
 import path from 'path';
 import * as TransformPackage from 'graphql-transformer-core';
@@ -90,7 +90,6 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
       }
 
       for (let resourceName of selectedResources) {
-
         const pluginInfo = context.amplify.getCategoryPluginInfo(context, category, resourceName);
 
         const { getPermissionPolicies } = require(pluginInfo.packageLocation);

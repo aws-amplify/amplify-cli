@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import inquirer from 'inquirer';
 
 export async function askAnalyticsCategoryKinesisQuestions(context: any) {
   const { amplify } = context;

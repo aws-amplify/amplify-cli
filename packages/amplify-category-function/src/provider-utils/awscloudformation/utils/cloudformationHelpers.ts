@@ -1,4 +1,4 @@
-import { categoryName } from "./constants";
+import { categoryName } from './constants';
 
 export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults) {
   const currentResources = [];
