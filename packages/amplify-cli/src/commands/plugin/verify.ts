@@ -8,7 +8,7 @@ export const run = async (context: Context) => {
     context.print.success('The current directory is verified to be a valid Amplify CLI plugin package.');
     context.print.info('');
   } else {
-    context.print.error('The current directory faied Amplify CLI plugin verification.');
+    context.print.error('The current directory failed Amplify CLI plugin verification.');
     context.print.info(`Error code: ${verificatonResult.error}`);
     context.print.info('');
   }
