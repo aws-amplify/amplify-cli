@@ -1,17 +1,24 @@
 import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-plugin-common';
 import { GraphQLSchema } from 'graphql';
 import { CodeGenConnectionType } from '../utils/process-connections';
-import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
+import {
+  AppSyncModelVisitor,
+  CodeGenField,
+  CodeGenModel,
+  ParsedAppSyncModelConfig,
+  RawAppSyncModelConfig,
+  CodeGenEnum,
+} from './appsync-visitor';
 import { METADATA_SCALAR_MAP } from '../scalars';
-type JSONSchema = {
+export type JSONSchema = {
   models: JSONSchemaModels;
   enums: JSONSchemaEnums;
   nonModels: JSONSchemaTypes;
   version: string;
 };
-type JSONSchemaModels = Record<string, JSONSchemaModel>;
-type JSONSchemaTypes = Record<string, JSONSchemaType>;
-type JSONSchemaType = {
+export type JSONSchemaModels = Record<string, JSONSchemaModel>;
+export type JSONSchemaTypes = Record<string, JSONSchemaNonModel>;
+export type JSONSchemaNonModel = {
   name: string;
   fields: JSONModelFields;
 };
@@ -35,7 +42,7 @@ type AssociationBaseType = {
   connectionType: CodeGenConnectionType;
 };
 
-type AssociationHasMany = AssociationBaseType & {
+export type AssociationHasMany = AssociationBaseType & {
   connectionType: CodeGenConnectionType.HAS_MANY;
   associatedWith: string;
 };
@@ -142,18 +149,15 @@ export class AppSyncJSONVisitor<
     };
 
     const models = Object.values(this.getSelectedModels()).reduce((acc, model: CodeGenModel) => {
-      return { ...acc, [model.name]: this.generateModelMeta(model) };
+      return { ...acc, [model.name]: this.generateModelMetaData(model) };
     }, {});
 
     const nonModels = Object.values(this.getSelectedNonModels()).reduce((acc, nonModel: CodeGenModel) => {
       return { ...acc, [nonModel.name]: this.generateNonModelMetaData(nonModel) };
     }, {});
 
-    const enums = Object.entries(this.enumMap).reduce((acc, [name, enumObj]) => {
-      const enumV = {
-        name,
-        values: Object.values(enumObj.values),
-      };
+    const enums = Object.values(this.enumMap).reduce((acc, enumObj) => {
+      const enumV = this.generateEnumMetaData(enumObj);
       return { ...acc, [this.getEnumName(enumObj)]: enumV };
     }, {});
     return { ...result, models, nonModels: nonModels, enums };
@@ -178,7 +182,7 @@ export class AppSyncJSONVisitor<
       properties: d.arguments,
     }));
   }
-  private generateModelMeta(model: CodeGenModel): JSONSchemaModel {
+  private generateModelMetaData(model: CodeGenModel): JSONSchemaModel {
     return {
       ...this.generateNonModelMetaData(model),
       syncable: true,
@@ -187,7 +191,7 @@ export class AppSyncJSONVisitor<
     };
   }
 
-  private generateNonModelMetaData(nonModel: CodeGenModel): JSONSchemaType {
+  private generateNonModelMetaData(nonModel: CodeGenModel): JSONSchemaNonModel {
     return {
       name: this.getModelName(nonModel),
       fields: nonModel.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
@@ -202,9 +206,15 @@ export class AppSyncJSONVisitor<
         if (association) {
           fieldMeta.association = association;
         }
-        acc[this.getFieldName(field)] = fieldMeta;
+        acc[fieldMeta.name] = fieldMeta;
         return acc;
       }, {}),
+    };
+  }
+  private generateEnumMetaData(enumObj: CodeGenEnum): JSONSchemaEnum {
+    return {
+      name: enumObj.name,
+      values: Object.values(enumObj.values),
     };
   }
 
@@ -219,6 +229,9 @@ export class AppSyncJSONVisitor<
     if (gqlType in this.nonModelMap) {
       return { nonModel: gqlType };
     }
-    return { model: gqlType };
+    if (gqlType in this.modelMap) {
+      return { model: gqlType };
+    }
+    throw new Error(`Unknown type ${gqlType}`);
   }
 }
