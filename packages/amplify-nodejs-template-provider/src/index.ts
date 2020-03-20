@@ -9,7 +9,7 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
   return {
     contribute: request => {
       switch (request.selection) {
-        case 'hello-world': {
+        case 'helloworld': {
           return provideHelloWorld();
         }
         case 'crud': {

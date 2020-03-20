@@ -55,7 +55,7 @@ export type BuildRequest = {
   env: string;
   srcRoot: string;
   runtime: string;
-  legacyBuildHookParams?: {
+  legacyBuildHookParams: {
     projectRoot: string;
     resourceName: string;
   };
