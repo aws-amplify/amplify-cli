@@ -1,12 +1,11 @@
 import path from 'path';
 import { category } from './constants';
-
-const sequential = require('promise-sequential');
-const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
-
-const { invokeFunction } = require('./provider-utils/awscloudformation/utils/invoke');
-
-const { run } = require('./commands/function/invoke');
+import { categoryName } from './provider-utils/awscloudformation/utils/constants';
+import { FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { getAllLambdaFunctions } from './provider-utils/awscloudformation/CFNParser';
+import sequential from 'promise-sequential';
+import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
+import { run } from './commands/function/invoke';
 
 export async function add(context, providerName, service, parameters) {
   const options = {
@@ -111,10 +110,28 @@ export async function initEnv(context) {
   await sequential(functionTasks);
 }
 
-export function invoke(options) {
-  invokeFunction(options);
+// returns a function that can be used to invoke the lambda locally
+export async function getInvoker(context: any, resourceName: string): Promise<(request: InternalInvocation) => Promise<any>> {
+  const breadcrumbs: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(context, categoryName, resourceName);
+  const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, breadcrumbs.pluginId);
+
+  const lambdaConfig = getAllLambdaFunctions(context, context.amplify.pathManager.getBackendDirPath()).find(
+    lambda => lambda.name === resourceName,
+  );
+  return async request =>
+    await runtimeManager.invoke({
+      handler: lambdaConfig.handler,
+      event: request.event,
+      srcRoot: lambdaConfig.basePath,
+      env: {
+        ...lambdaConfig.environment,
+        ...request.env,
+      },
+      context: request.context,
+    });
 }
 
+// called by amplify mock function (basically an alias of amplify function invoke)
 export function invokeWalkthroughRun(context) {
   run(context);
 }
@@ -136,15 +153,9 @@ export async function handleAmplifyEvent(context, args) {
   context.print.info(`Received event args ${args}`);
 }
 
-module.exports = {
-  add,
-  update,
-  console,
-  migrate,
-  initEnv,
-  getPermissionPolicies,
-  invoke,
-  invokeWalkthroughRun,
-  executeAmplifyCommand,
-  handleAmplifyEvent,
+// Object used for internal invocation of lambda functions
+export type InternalInvocation = {
+  event: any;
+  context?: any;
+  env?: { [key: string]: string };
 };

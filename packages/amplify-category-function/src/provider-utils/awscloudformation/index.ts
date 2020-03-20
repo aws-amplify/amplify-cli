@@ -8,7 +8,7 @@ import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
 import inquirer from 'inquirer';
-import { invokeFunction } from './utils/invoke';
+import { getInvoker } from '../..';
 
 /**
  * Entry point for creating a new function
@@ -141,61 +141,27 @@ async function openEditor(context, category, options: FunctionParameters | Funct
 
 export async function invoke(context, category, service, resourceName) {
   const { amplify } = context;
+  const resourcePath = path.join(amplify.pathManager.getBackendDirPath(), category, resourceName);
   const resourceQuestions = [
     {
       type: 'input',
-      name: 'handlerFilename',
-      message: 'Provide the name of the file that contains your handler function:',
-      validate: amplify.inputValidation({
-        operator: 'regex',
-        value: '^[a-zA-Z0-9._-]+$',
-        onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 . - _',
-        required: true,
-      }),
-      default: 'index.js',
-    },
-    {
-      type: 'input',
-      name: 'handlerName',
-      message: 'Provide the name of the handler function to invoke:',
-      validate: amplify.inputValidation({
-        operator: 'regex',
-        value: '^[a-zA-Z0-9_]+$',
-        onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 _',
-        required: true,
-      }),
-      default: 'handler',
-    },
-    {
-      type: 'input',
       name: 'eventName',
-      message: 'Provide the relative path to the event JSON object:',
+      message: `Provide the path to the event JSON object relative to ${resourcePath}`,
       validate: amplify.inputValidation({
         operator: 'regex',
         value: '^[a-zA-Z0-9/._-]+?\\.json$',
         onErrorMsg: 'Provide a valid unix-like path to a .json file',
         required: true,
       }),
-      default: 'event.json',
+      default: 'src/event.json',
     },
   ];
 
-  // Ask handler and function file name questions
-
   const resourceAnswers = await inquirer.prompt(resourceQuestions);
+  const event = context.amplify.readJsonFile(path.resolve(path.join(resourcePath, resourceAnswers.eventName as string)));
 
-  const backEndDir = context.amplify.pathManager.getBackendDirPath();
-  const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
-  const event = context.amplify.readJsonFile(path.resolve(`${srcDir}/${resourceAnswers.eventName}`));
-
-  const invokeOptions = {
-    packageFolder: srcDir,
-    fileName: `${srcDir}/${resourceAnswers.handlerFilename}`,
-    handler: `${resourceAnswers.handlerName}`,
-    event,
-  };
-
-  invokeFunction(invokeOptions);
+  const invoker = await getInvoker(context, resourceName);
+  await invoker({ event });
 }
 
 // TODO refactor this to not depend on supported-service.json

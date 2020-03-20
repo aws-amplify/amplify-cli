@@ -29,7 +29,7 @@ export function lambdaFunctionHandler(resourceName, resource, cfnContext: CloudF
             ...acc,
             [varName]: parseValue(varValue, cfnContext),
           }),
-          {}
+          {},
         )
       : {};
   return {

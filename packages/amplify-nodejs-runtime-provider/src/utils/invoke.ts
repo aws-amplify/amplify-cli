@@ -1,11 +1,11 @@
 import { fork } from 'child_process';
-import * as path from 'path';
+import { InvokeOptions } from './invokeOptions';
 
-export function invoke(options) {
+// copied from amplify-util-mock with slight modifications
+export function invoke(options: InvokeOptions): Promise<any> {
   return new Promise((resolve, reject) => {
     try {
-      // XXX: Make the path work in both e2e and
-      const lambdaFn = fork(path.join(__dirname, '../../../lib/utils/lambda', 'execute.js'), [], {
+      const lambdaFn = fork(`${__dirname}/execute.js`, [], {
         execArgv: [],
         env: options.environment || {},
       });

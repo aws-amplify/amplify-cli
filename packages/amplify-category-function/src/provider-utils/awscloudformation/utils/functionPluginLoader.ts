@@ -138,7 +138,7 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
   };
 }
 
-async function loadPluginFromFactory(pluginPath, expectedFactoryFunction, context): Promise<any> {
+export async function loadPluginFromFactory(pluginPath, expectedFactoryFunction, context): Promise<any> {
   let plugin;
   try {
     plugin = await import(pluginPath);

@@ -1,6 +1,9 @@
 import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
 import { buildResource } from './utils/legacyBuild';
 import { packageResource } from './utils/legacyPackage';
+import { invoke } from './utils/invoke';
+import path from 'path';
+
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
     contribute: request => {
@@ -20,8 +23,13 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     checkDependencies: () => Promise.resolve({ hasRequiredDependencies: true }),
     package: params => packageResource(params, context),
     build: params => buildResource(params),
-    invoke: params => {
-      throw new Error('not yet implemented');
-    },
+    invoke: params =>
+      invoke({
+        packageFolder: path.join(params.srcRoot, 'src'),
+        handler: params.handler,
+        event: JSON.stringify(params.event),
+        context: params.context,
+        environment: params.env,
+      }),
   };
 };

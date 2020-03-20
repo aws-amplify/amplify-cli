@@ -1,4 +1,3 @@
-import { lambdaFunctionHandler } from '../lambda-resource-processor';
 import { CloudFormationResource } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
 import {
@@ -43,8 +42,4 @@ export function registerAppSyncResourceProcessor(): void {
 export function registerIAMResourceProcessor(): void {
   registerResourceProcessors('AWS::IAM::Policy', iamPolicyResourceHandler);
   registerResourceProcessors('AWS::IAM::Role', iamRoleResourceHandler);
-}
-
-export function registerLambdaResourceProcessor(): void {
-  registerResourceProcessors('AWS::Lambda::Function', lambdaFunctionHandler);
 }
