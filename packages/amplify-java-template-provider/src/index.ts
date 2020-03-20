@@ -4,7 +4,8 @@ import { provideHelloWorld } from './providers/helloWorldProvider';
 
 export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = context => {
   return {
-    contribute: selection => {
+    contribute: request => {
+      const selection = request.selection;
       switch (selection) {
         case 'helloworld': {
           return provideHelloWorld();

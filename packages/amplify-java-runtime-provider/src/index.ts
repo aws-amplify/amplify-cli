@@ -4,7 +4,8 @@ import { packageResource } from './utils/Package';
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   context.amplify;
   return {
-     contribute: selection => {
+    contribute: request => {
+      const selection = request.selection;
        if (selection !== 'java') {
          return Promise.reject(new Error(`Unknown selection ${selection}`));
        }
