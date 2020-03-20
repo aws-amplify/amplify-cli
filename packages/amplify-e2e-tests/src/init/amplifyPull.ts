@@ -1,4 +1,4 @@
-import { nspawn as spawn } from '../utils/nexpect';
+import { nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
 
 export function amplifyPull(cwd: string, settings: any) {

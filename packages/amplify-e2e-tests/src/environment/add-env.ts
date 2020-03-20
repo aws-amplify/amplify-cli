@@ -63,8 +63,8 @@ export function listEnvironment(cwd: string, settings: any) {
 export function getEnvironment(cwd: string, settings: any): Promise<string> {
   const envData = {};
   let helper = output => {
-    let keyVal = output.split(':');
-    envData[keyVal[0]] = keyVal[1].replace('\r', '');
+    let keyVal = output.split(/:(.+)/); // Split string on first ':' only
+    envData[keyVal[0].trim()] = keyVal[1].trim();
   };
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'get', '--name', settings.envName], { cwd, stripColors: true })
