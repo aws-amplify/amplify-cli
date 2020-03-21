@@ -162,20 +162,20 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   // check local resource if the question has been answered before
   const localTransformerConfig = await readTransformerConfiguration(resourceDir);
   const localVersionExist = checkVersionExist(localTransformerConfig);
-  const localWarningExist = checkESWarningExists(cloudTransformerConfig);
+  const localWarningExist = checkESWarningExists(localTransformerConfig);
 
   // if we already asked the confirmation question before at a previous push
   // or during current operations we should not ask again.
-  const showPrompt = (!(cloudVersionExist || localVersionExist));
-  const showWarning = (!(cloudWarningExist || localWarningExist));
+  const showPrompt = !(cloudVersionExist || localVersionExist);
+  const showWarning = !(cloudWarningExist || localWarningExist);
 
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
   if (resources.length > 0) {
     if (showPrompt && usedDirectives.includes('auth')) {
-      warningMessage(context, versionChangeMessage);
+      await warningMessage(context, versionChangeMessage);
     }
-    if (showWarning  && usedDirectives.includes('searchable'))  {
-      warningMessage(context, warningESMessage);
+    if (showWarning && usedDirectives.includes('searchable')) {
+      await warningMessage(context, warningESMessage);
     }
   }
 
@@ -198,14 +198,15 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   }
 }
 
-function warningMessage(context, warningMessage) {
+async function warningMessage(context, warningMessage) {
   if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.warning(`\n${warningMessage}\n`);
   } else {
+    context.print.warning(`\n${warningMessage}\n`);
     const response = await inquirer.prompt({
       name: 'transformerConfig',
       type: 'confirm',
-      message: `${warningMessage}\nDo you wish to continue?`,
+      message: `Do you wish to continue?`,
       default: false,
     });
     if (!response.transformerConfig) {
