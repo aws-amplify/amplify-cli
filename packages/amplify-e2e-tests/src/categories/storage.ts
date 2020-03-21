@@ -141,7 +141,7 @@ export function addS3WithTrigger(cwd: string, settings: any) {
       .sendLine('y')
       .sendCarriageReturn()
       .wait('Select from the following options')
-      .sendLine(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Do you want to edit the local')
       .sendLine('n')
