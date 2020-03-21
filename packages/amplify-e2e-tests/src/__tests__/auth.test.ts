@@ -17,6 +17,7 @@ import {
   updateAuthRemoveRecaptchaTrigger,
   addAuthViaAPIWithTrigger,
   addAuthWithMaxOptions,
+  addAuthUserPoolOnly,
 } from '../categories/auth';
 import {
   createNewProjectDir,
@@ -140,6 +141,17 @@ describe('amplify add auth...', () => {
     expect(defineFunction).toBeDefined();
     expect(verifyFunction).toBeDefined();
     expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual('dummykey');
+  });
+
+  it('...should init a project with only user pool and no identity pool', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthUserPoolOnly(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[1].output.UserPoolId;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+
+    expect(userPool.UserPool).toBeDefined();
   });
 
   it('...should init a project where all possible options are selected', async () => {

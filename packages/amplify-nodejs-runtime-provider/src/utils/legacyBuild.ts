@@ -10,9 +10,7 @@ export async function buildResource(request: BuildRequest): Promise<BuildResult>
 
   if (!request.lastBuildTimestamp || isBuildStale(request.srcRoot, request.lastBuildTimestamp)) {
     installDependencies(resourceDir);
-    if (request.legacyBuildHookParams) {
-      runBuildScriptHook(request.legacyBuildHookParams.resourceName, request.legacyBuildHookParams.projectRoot);
-    }
+    runBuildScriptHook(request.legacyBuildHookParams.resourceName, request.legacyBuildHookParams.projectRoot);
     return Promise.resolve({ rebuilt: true });
   }
   return Promise.resolve({ rebuilt: false });

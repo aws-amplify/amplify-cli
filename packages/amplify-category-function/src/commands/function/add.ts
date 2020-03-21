@@ -1,5 +1,5 @@
-import { categoryName } from "../../provider-utils/awscloudformation/utils/constants";
-import { supportedServices } from "../../provider-utils/supported-services";
+import { categoryName } from '../../provider-utils/awscloudformation/utils/constants';
+import { supportedServices } from '../../provider-utils/supported-services';
 
 const subcommand = 'add';
 

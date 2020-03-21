@@ -13,6 +13,7 @@ import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
 import { invoke } from '../utils/lambda/invoke';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
+import { getMockConfig } from '../utils/mock-config-file';
 
 export class APITest {
   private apiName: string;
@@ -255,9 +256,11 @@ export class APITest {
     const { projectPath } = context.amplify.getEnvInfo();
     const dbPath = path.join(await getMockDataDirectory(context), 'dynamodb');
     fs.ensureDirSync(dbPath);
+    const mockConfig = await getMockConfig(context);
     this.ddbEmulator = await dynamoEmulator.launch({
       dbPath,
       port: null,
+      ...mockConfig,
     });
     return dynamoEmulator.getClient(this.ddbEmulator);
   }

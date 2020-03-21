@@ -5,14 +5,14 @@ import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface
 
 export async function packageResource(request: PackageRequest, context: any): Promise<PackageResult> {
   if (!request.lastPackageTimestamp || request.lastBuildTimestamp > request.lastPackageTimestamp) {
-    const packageHash = await context.amplify.hashDir(path.join(request.srcRoot, 'src'), ['node_modules']) as string;
+    const packageHash = (await context.amplify.hashDir(path.join(request.srcRoot, 'src'), ['node_modules'])) as string;
     const output = fs.createWriteStream(request.dstFilename);
 
     return new Promise((resolve, reject) => {
       output.on('close', () => {
-        resolve({packageHash});
+        resolve({ packageHash });
       });
-      output.on('error', (err) => {
+      output.on('error', err => {
         reject(new Error(`Failed to zip with error: [${err}]`));
       });
       const zip = archiver.create('zip', {});

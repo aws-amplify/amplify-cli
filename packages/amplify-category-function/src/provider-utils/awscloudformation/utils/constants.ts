@@ -1,4 +1,4 @@
-import {category} from '../../../constants'
+import { category } from '../../../constants';
 
 export const categoryName = category;
 export const serviceName = 'Lambda';

@@ -21,8 +21,8 @@
  */
 function inputValidation(validation) {
   if (validation.hasOwnProperty('validation')) {
-    Object.assign(validation, {...validation.validation})
-    delete validation.validation
+    Object.assign(validation, { ...validation.validation });
+    delete validation.validation;
   }
   return input => {
     if (validation.operator === 'includes') {
