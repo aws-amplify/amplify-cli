@@ -37,6 +37,7 @@ export async function templateWalkthrough(context: any, params: Partial<Function
   const contributionRequest: ContributionRequest = {
     selection: selection.value,
     contributionContext: {
+      runtime: params.runtime,
       functionName: params.functionName,
       resourceName: params.resourceName,
     },
@@ -69,6 +70,7 @@ export async function runtimeWalkthrough(
   const contributionRequest: ContributionRequest = {
     selection: selection.value,
     contributionContext: {
+      runtime: params.runtime,
       functionName: params.functionName,
       resourceName: params.resourceName,
     },

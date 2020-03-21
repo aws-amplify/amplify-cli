@@ -36,6 +36,7 @@ export interface FunctionRuntimeLifecycleManager {
 export type ContributionRequest = {
   selection: string;
   contributionContext: {
+    runtime: FunctionRuntime;
     functionName: string;
     resourceName: string;
   };
