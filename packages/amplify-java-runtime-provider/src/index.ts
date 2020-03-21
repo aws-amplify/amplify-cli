@@ -1,6 +1,6 @@
 import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
 import { buildResource } from './utils/build';
-import { packageResource } from './utils/Package';
+import { packageResource } from './utils/package';
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   context.amplify;
   return {
