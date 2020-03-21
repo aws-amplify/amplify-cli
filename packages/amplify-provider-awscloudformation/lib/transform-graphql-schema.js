@@ -156,7 +156,7 @@ function getTransformerFactory(context, resourceDir, authConfig) {
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
   let transformerVersion = 0;
-  let versionChangeMessage = '';
+  let versionChangeMessage;
   const checkVersionExist = config => config && config.Version;
 
   // this is where we check if there is a prev version of the transformer being used
@@ -181,10 +181,11 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
     for(let i = transformerVersion; i < TRANSFORM_CONFIG_VERSION_MAP; i++) {
       // add the warning if it exists
       if(TRANSFORM_CONFIG_VERSION_MAP[i]) {
+        versionChangeMessage = (versionChangeMessage || '')
         versionChangeMessage += TRANSFORM_CONFIG_VERSION_MAP[i](usedDirectives);
       }
     }
-  } else {
+  } else if (transformerVersion > TRANSFORM_CURRENT_VERSION) {
     throw new TransformerConfVersionNotSupportedError();
   }
 
