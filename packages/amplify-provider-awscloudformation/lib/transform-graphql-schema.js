@@ -21,8 +21,7 @@ const {
   readTransformerConfiguration,
   writeTransformerConfiguration,
   TRANSFORM_CONFIG_FILE_NAME,
-  TRANSFORM_CURRENT_VERSION,
-  TRANSFORM_CONFIG_VERSION_MAP,
+  TRANSFORM_BASE_VERSION,
   CLOUDFORMATION_FILE_NAME,
   getAppSyncServiceExtraDirectives,
 } = TransformPackage;
@@ -164,64 +163,72 @@ function getTransformerFactory(context, resourceDir, authConfig) {
  * @TODO Include a map of versions to keep track
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
-  let transformerVersion = 0;
-  let versionChangeMessage = '';
+  const versionChangeMessage =
+    'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+  const warningESMessage =
+    'The behavior for @searchable has changed after version 4.14.1.\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#searchable';
   const checkVersionExist = config => config && config.Version;
+  const checkESWarningExists = config => config && config.ElasticsearchWarning;
+  let writeToConfig = false;
 
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
   const cloudTransformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
   const cloudVersionExist = checkVersionExist(cloudTransformerConfig);
+  const cloudWarningExist = checkESWarningExists(cloudTransformerConfig);
 
   // check local resource if the question has been answered before
   const localTransformerConfig = await readTransformerConfiguration(resourceDir);
   const localVersionExist = checkVersionExist(localTransformerConfig);
+  const localWarningExist = checkESWarningExists(cloudTransformerConfig);
 
   // if we already asked the confirmation question before at a previous push
   // or during current operations we should not ask again.
-  const showPrompt = !(cloudVersionExist || localVersionExist);
-  if (showPrompt) {
-    transformerVersion = 3;
-  } else if (localTransformerConfig.Version) {
-    transformerVersion = localTransformerConfig.Version;
-  }
-  // check if the version in the file is supported.
-  if (transformerVersion < TRANSFORM_CURRENT_VERSION) {
-    for(let i = transformerVersion; i < TRANSFORM_CONFIG_VERSION_MAP; i++) {
-      // add the warning if it exists
-      if(TRANSFORM_CONFIG_VERSION_MAP[i]) {
-        versionChangeMessage += TRANSFORM_CONFIG_VERSION_MAP[i](usedDirectives);
-      }
-    }
-  } else if (transformerVersion > TRANSFORM_CURRENT_VERSION) {
-    throw new TransformerVersionNotSupportedError();
-  }
+  const showPrompt = (!(cloudVersionExist || localVersionExist));
+  const showWarning = (!(cloudWarningExist || localWarningExist));
 
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
-
-  if (versionChangeMessage != '' && resources.length > 0) {
-    if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
-      context.print.warning(`\n${versionChangeMessage}`);
-    } else {
-      const response = await inquirer.prompt({
-        name: 'transformerConfig',
-        type: 'confirm',
-        message: `${versionChangeMessage}Do you wish to continue?`,
-        default: false,
-      });
-      if (!response.transformerConfig) {
-        process.exit(0);
-      }
+  if (resources.length > 0) {
+    if (showPrompt && usedDirectives.includes('auth')) {
+      warningMessage(context, versionChangeMessage);
+    }
+    if (showWarning  && usedDirectives.includes('searchable'))  {
+      warningMessage(context, warningESMessage);
     }
   }
-  // If the warnings were accepted move to the current transformer conf version
-  if (!localTransformerConfig.Version || transformerVersion) {
-    // check to ensure this isn't a version mismatch
-    if (cloudVersionExist && cloudTransformerConfig.Version > TRANSFORM_CURRENT_VERSION) {
-      throw new TransformerVersionMistachError();
-    }
-    localTransformerConfig.Version = TRANSFORM_CURRENT_VERSION;
+
+  // searchable warning flag
+
+  // Only touch the file if it misses the Version property
+  // Always set to the base version, to not to break existing projects when coming
+  // from an older version of the CLI.
+  if (!localTransformerConfig.Version) {
+    localTransformerConfig.Version = TRANSFORM_BASE_VERSION;
+    writeToConfig = true;
+  }
+  // Add the warning as noted in the elasticsearch
+  if (!localTransformerConfig.warningESMessage) {
+    localTransformerConfig.ElasticsearchWarning = true;
+    writeToConfig = true;
+  }
+  if (writeToConfig) {
     await writeTransformerConfiguration(resourceDir, localTransformerConfig);
+  }
+}
+
+function warningMessage(context, warningMessage) {
+  if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
+    context.print.warning(`\n${warningMessage}\n`);
+  } else {
+    const response = await inquirer.prompt({
+      name: 'transformerConfig',
+      type: 'confirm',
+      message: `${warningMessage}\nDo you wish to continue?`,
+      default: false,
+    });
+    if (!response.transformerConfig) {
+      process.exit(0);
+    }
   }
 }
 

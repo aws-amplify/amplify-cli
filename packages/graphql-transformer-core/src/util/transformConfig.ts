@@ -1,12 +1,12 @@
 import * as path from 'path';
-import { Template } from 'cloudform-types';
+import { Template, Elasticsearch } from 'cloudform-types';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
 
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 export const TRANSFORM_BASE_VERSION = 4;
-export const TRANSFORM_CURRENT_VERSION = 6;
+export const TRANSFORM_CURRENT_VERSION = 5;
 
 export interface TransformMigrationConfig {
   V1?: {
@@ -90,6 +90,10 @@ export interface TransformConfig {
    * Keeping a track of transformer version changes
    */
   Version?: number;
+  /**
+   * A flag added to keep a track of a change noted in elasticsearch
+   */
+  ElasticsearchWarning?: boolean;
   /**
    * Object which states info about a resolver's configuration
    * Such as sync configuration for appsync local support
