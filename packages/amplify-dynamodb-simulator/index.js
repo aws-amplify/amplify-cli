@@ -73,7 +73,13 @@ async function which(bin) {
 }
 
 function buildArgs(options) {
-  const args = ['-Djava.library.path=./DynamoDBLocal_lib', '-jar', 'DynamoDBLocal.jar', '-port', options.port];
+  const args = [];
+
+  if (options.javaOpts) {
+    args.push(...options.javaOpts.split(' '));
+  }
+
+  args.push(...['-Djava.library.path=./DynamoDBLocal_lib', '-jar', 'DynamoDBLocal.jar', '-port', options.port]);
   if (options.dbPath) {
     args.push('-dbPath');
     args.push(options.dbPath);
@@ -153,7 +159,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
                 host: 'localhost',
                 port,
                 output: 'silent',
-              })
+              }),
             );
           }
         }

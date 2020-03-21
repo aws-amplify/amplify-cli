@@ -10,7 +10,9 @@ async function hashDir(dir, exclude) {
   const { hash: folderHash } = await hashElement(dir, {
     folders: { exclude: exclude },
   });
-  return Buffer.from(folderHash).toString('hex').substr(0, 20);
+  return Buffer.from(folderHash)
+    .toString('hex')
+    .substr(0, 20);
 }
 
 module.exports = {

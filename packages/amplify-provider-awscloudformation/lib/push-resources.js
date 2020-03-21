@@ -453,7 +453,10 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   });
 
   if (authResourceName) {
-    updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+    const authParameters = loadResourceParameters(context, 'auth', authResourceName);
+    if (authParameters.identityPoolName) {
+      updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+    }
   }
   return nestedStack;
 }
