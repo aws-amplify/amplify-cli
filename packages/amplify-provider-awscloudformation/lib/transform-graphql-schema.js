@@ -43,24 +43,6 @@ function warnOnAuth(context, map) {
   }
 }
 
-class TransformerVersionNotSupportedError extends Error {
-  constructor() {
-    super(
-      "The transformer conf version entered is higher than the current supported version."
-    );
-    this.name = 'TransformerConfVersionNotSupportedError';
-  }
-}
-class TransformerVersionMistachError extends Error {
-  constructor() {
-    super(
-      "There is a version mismatch between the GraphQL transformer used to compile your schema localy and what we found in the cloud."
-      + " Please install the latest version of the CLI and try deploying again."
-    );
-    this.name = 'TransformerVersionMistachError';
-  }
-}
-
 function getTransformerFactory(context, resourceDir, authConfig) {
   return async (addSearchableTransformer, storageConfig) => {
     const transformerList = [
