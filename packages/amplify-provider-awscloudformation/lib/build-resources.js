@@ -29,7 +29,7 @@ async function buildResource(context, resource) {
 
   let zipFilename = resource.distZipFilename;
 
-  const runtimePlugin = await loadRuntimePlugin(context, breadcrumbs.pluginId);
+  const runtimePlugin = await loadRuntimePlugin(context, breadcrumbs.pluginId, resource);
 
   // build the function
   let rebuilt = false;
@@ -84,7 +84,7 @@ async function buildResource(context, resource) {
   });
 }
 
-async function loadRuntimePlugin(context, pluginId) {
+async function loadRuntimePlugin(context, pluginId, resource) {
   const pluginMeta = context.pluginPlatform.plugins.functionRuntime.find(meta => meta.manifest.functionRuntime.pluginId === pluginId);
   if (!pluginMeta) {
     throw new Error(`Could not find runtime plugin with id [${pluginId}] to build the resource ${resource.resourceName}`);
