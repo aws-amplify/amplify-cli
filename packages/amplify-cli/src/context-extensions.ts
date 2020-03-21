@@ -316,8 +316,10 @@ function attachTemplate(context: Context) {
       const data = {
         props,
       };
-      const directory = opts.directory;
-      const pathToTemplate = `${directory}/${template}`;
+      // If a directory was supplied, append a directory seprator.
+      // Otherwise, the template path will be use as-is.
+      const directory = opts.directory ? opts.directory + '/' : '';
+      const pathToTemplate = `${directory}${template}`;
 
       if (!contextFileSystem.isFile(pathToTemplate)) {
         throw new Error(`template not found ${pathToTemplate}`);
