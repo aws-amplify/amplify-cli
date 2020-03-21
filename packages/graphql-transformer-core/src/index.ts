@@ -25,7 +25,6 @@ import {
   SyncConfig,
 } from './util/transformConfig';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './validation';
-import { TRANSFORM_CONFIG_VERSION_MAP } from './util/transfomConfigVersionMap';
 export * from './errors';
 export * from './util';
 

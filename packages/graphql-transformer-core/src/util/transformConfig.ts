@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template, Elasticsearch } from 'cloudform-types';
+import { Template } from 'cloudform-types';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
