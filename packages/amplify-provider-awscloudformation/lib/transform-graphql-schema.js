@@ -44,12 +44,21 @@ function warnOnAuth(context, map) {
   }
 }
 
-class TransformerConfVersionNotSupportedError extends Error {
+class TransformerVersionNotSupportedError extends Error {
   constructor() {
     super(
       "The transformer conf version entered is higher than the current supported version."
     );
     this.name = 'TransformerConfVersionNotSupportedError';
+  }
+}
+class TransformerVersionMistachError extends Error {
+  constructor() {
+    super(
+      "There is a version mismatch between the GraphQL transformer used to compile your schema localy and what we found in the cloud."
+      + " Please install the latest version of the CLI and try deploying again."
+    );
+    this.name = 'TransformerVersionMistachError';
   }
 }
 
@@ -156,7 +165,7 @@ function getTransformerFactory(context, resourceDir, authConfig) {
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
   let transformerVersion = 0;
-  let versionChangeMessage;
+  let versionChangeMessage = '';
   const checkVersionExist = config => config && config.Version;
 
   // this is where we check if there is a prev version of the transformer being used
@@ -181,17 +190,16 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
     for(let i = transformerVersion; i < TRANSFORM_CONFIG_VERSION_MAP; i++) {
       // add the warning if it exists
       if(TRANSFORM_CONFIG_VERSION_MAP[i]) {
-        versionChangeMessage = (versionChangeMessage || '')
         versionChangeMessage += TRANSFORM_CONFIG_VERSION_MAP[i](usedDirectives);
       }
     }
   } else if (transformerVersion > TRANSFORM_CURRENT_VERSION) {
-    throw new TransformerConfVersionNotSupportedError();
+    throw new TransformerVersionNotSupportedError();
   }
 
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
 
-  if (versionChangeMessage && resources.length > 0) {
+  if (versionChangeMessage != '' && resources.length > 0) {
     if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       context.print.warning(`\n${versionChangeMessage}`);
     } else {
@@ -208,6 +216,10 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   }
   // If the warnings were accepted move to the current transformer conf version
   if (!localTransformerConfig.Version || transformerVersion) {
+    // check to ensure this isn't a version mismatch
+    if (cloudVersionExist && cloudTransformerConfig.Version > TRANSFORM_CURRENT_VERSION) {
+      throw new TransformerVersionMistachError();
+    }
     localTransformerConfig.Version = TRANSFORM_CURRENT_VERSION;
     await writeTransformerConfiguration(resourceDir, localTransformerConfig);
   }
