@@ -148,7 +148,7 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   const versionChangeMessage =
     'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
   const warningESMessage =
-    'The behavior for @searchable has changed after version 4.14.1.\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#searchable';
+    'The behavior for @searchable has changed after version 4.14.1.\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#migration-warning';
   const checkVersionExist = config => config && config.Version;
   const checkESWarningExists = config => config && config.ElasticsearchWarning;
   let writeToConfig = false;
