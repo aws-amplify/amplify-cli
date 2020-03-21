@@ -1,6 +1,6 @@
 {
   "name": "amplify-function-plugin-interface",
-  "version": "1.0.0",
+  "version": "1.0.1-beta.0",
   "description": "Interface for plugins that provide additional functionality to function category plugins",
   "repository": {
     "type": "git",
@@ -15,5 +15,4 @@
     "build": "tsc",
     "clean": "rimraf ./lib"
   }
-  
 }

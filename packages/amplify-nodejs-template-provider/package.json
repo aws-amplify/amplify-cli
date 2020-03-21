@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-template-provider",
-  "version": "1.0.0",
+  "version": "1.0.1-beta.0",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -15,9 +15,9 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.0.0",
+    "amplify-function-plugin-interface": "1.0.1-beta.0",
     "graphql-transformer-core": "6.13.1",
-    "lodash":"^4.17.15"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0"
