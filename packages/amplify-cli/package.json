@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "4.16.2-beta.0",
+  "version": "4.16.2-beta.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -51,10 +51,10 @@
     "amplify-frontend-android": "2.13.2",
     "amplify-frontend-ios": "2.13.2",
     "amplify-frontend-javascript": "2.15.1",
-    "amplify-provider-awscloudformation": "4.16.2-beta.0",
-    "amplify-util-mock": "3.16.3-beta.0",
     "amplify-nodejs-runtime-provider": "1.0.1-beta.0",
     "amplify-nodejs-template-provider": "1.0.1-beta.0",
+    "amplify-provider-awscloudformation": "4.16.2-beta.0",
+    "amplify-util-mock": "3.16.3-beta.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
     "cli-table3": "^0.5.1",
