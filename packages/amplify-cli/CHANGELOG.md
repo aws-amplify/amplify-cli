@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.0...@aws-amplify/cli@4.17.1) (2020-03-22)
+
+
+### Bug Fixes
+
+* add function runtime and template provider dependencies to core ([0936ec7](https://github.com/aws-amplify/amplify-cli/commit/0936ec795b2401257450e2a6d7e2d897712b546c))
+
+
+
+
+
 # [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.16.1...@aws-amplify/cli@4.17.0) (2020-03-22)
 
 
