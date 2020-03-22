@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@2.1.11...amplify-graphql-docs-generator@2.1.12) (2020-03-22)
+
+
+### Bug Fixes
+
+* append eslint-disable to template ([#3707](https://github.com/aws-amplify/amplify-cli/issues/3707)) ([12f8797](https://github.com/aws-amplify/amplify-cli/commit/12f8797701f63111f525c809566f1471873c424f)), closes [#3706](https://github.com/aws-amplify/amplify-cli/issues/3706)
+
+
+
+
+
 ## [2.1.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@2.1.10...amplify-graphql-docs-generator@2.1.11) (2020-02-13)
 
 **Note:** Version bump only for package amplify-graphql-docs-generator
