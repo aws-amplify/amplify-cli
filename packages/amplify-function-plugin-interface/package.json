@@ -11,6 +11,10 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "dependencies": {
+    "amplify-nodejs-runtime-provider": "1.0.1-beta.0",
+    "amplify-nodejs-template-provider": "1.0.1-beta.0"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf ./lib"

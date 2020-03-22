@@ -22,6 +22,8 @@
   "dependencies": {
     "amplify-category-storage": "2.4.2-beta.0",
     "amplify-function-plugin-interface": "1.0.1-beta.0",
+    "amplify-nodejs-runtime-provider": "1.0.1-beta.0",
+    "amplify-nodejs-template-provider": "1.0.1-beta.0",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.16.1-beta.0",
     "inquirer": "^7.0.3",

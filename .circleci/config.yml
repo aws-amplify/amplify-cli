@@ -530,7 +530,6 @@ workflows:
             branches:
               only:
                 - master
-                - beta
           requires:
             - build
             - mock_e2e_tests
