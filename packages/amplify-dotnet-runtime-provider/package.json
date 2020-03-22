@@ -1,0 +1,20 @@
+{
+  "name": "amplify-dotnet-runtime-provider",
+  "version": "1.0.0",
+  "description": "Provides functionality related to functions in .NET Core on AWS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplfiy-dotnet-runtime-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf ./lib"
+  },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.0.0"
+  }
+}
