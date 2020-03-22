@@ -53,6 +53,8 @@
     "amplify-frontend-javascript": "2.15.1",
     "amplify-provider-awscloudformation": "4.16.2-beta.0",
     "amplify-util-mock": "3.16.3-beta.0",
+    "amplify-nodejs-runtime-provider": "1.0.1-beta.0",
+    "amplify-nodejs-template-provider": "1.0.1-beta.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
     "cli-table3": "^0.5.1",
