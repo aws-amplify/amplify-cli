@@ -105,7 +105,7 @@ function translateFuncParamsToResourceOpts(params: FunctionParameters | Function
 function createBreadcrumbs(params: FunctionParameters | FunctionTriggerParameters): FunctionBreadcrumbs {
   if ('trigger' in params) {
     return {
-      pluginId: 'amplify-node-runtime-provider',
+      pluginId: 'amplify-nodejs-function-runtime-provider',
       functionRuntime: 'nodejs',
       useLegacyBuild: true,
     };
