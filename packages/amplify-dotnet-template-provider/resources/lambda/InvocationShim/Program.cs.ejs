@@ -1,0 +1,59 @@
+﻿using System;
+using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
+
+namespace InvocationShim
+{
+    partial class Program
+    {
+        public static async Task Main(string[] args) {
+            /*
+            The below two lines need to match the namespace.class and handler method name
+            defined in your Lambda function. If you change them in your function, you
+            will need to update the two lines below.
+            */
+            var handlerType = typeof(<%= props.resourceName %>.<%= props.functionName %>);
+            var handlerMethod = handlerType.GetMethod("LambdaHandler");
+
+            // Prepare to deserialize the event data
+            var inputType = handlerMethod.GetParameters()[0].ParameterType;
+            var serializerType = typeof(Amazon.Lambda.Serialization.Json.JsonSerializer);
+            var serializer = new Amazon.Lambda.Serialization.Json.JsonSerializer();
+
+            string pathToEventJson;
+            if (args.Length > 0) {
+                pathToEventJson = args[0];
+            } else {
+                // If no path to a json file was supplied, use the default
+                // look in the function folder for 'event.json'
+                pathToEventJson = $"../<%= props.functionName %>/event.json";
+            }
+
+            if (!System.IO.File.Exists(pathToEventJson)) {
+                Console.Error.WriteLine("ERROR: invalid path");
+                return;
+            }
+            Console.WriteLine($"Loading event file from '{pathToEventJson}'");
+            object eventData;
+            using (var eventFile = new System.IO.FileStream(
+                pathToEventJson, 
+                System.IO.FileMode.Open, 
+                System.IO.FileAccess.Read))
+            {
+                var deserializeMethod = serializerType.GetMethod("Deserialize").MakeGenericMethod(inputType);
+                eventData = deserializeMethod.Invoke(serializer, new[] { eventFile });
+            }
+
+            var task = (Task)handlerMethod.Invoke(new <%= props.resourceName %>.<%= props.functionName %>(), new[] { eventData, new MockContext() });
+            
+            await task.ConfigureAwait(false);
+            var resultProperty = task.GetType().GetProperty("Result");
+            object result = resultProperty.GetValue(task);
+            var serializeMethod = serializerType.GetMethod("Serialize").MakeGenericMethod(resultProperty.PropertyType);
+            using (var outStream = Console.OpenStandardOutput())
+            {
+                serializeMethod.Invoke(serializer, new[] { result, outStream });
+            }
+        }
+    }
+}

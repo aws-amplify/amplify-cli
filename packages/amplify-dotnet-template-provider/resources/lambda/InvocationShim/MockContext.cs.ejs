@@ -1,0 +1,20 @@
+using System;
+using Amazon.Lambda.Core;
+
+namespace InvocationShim
+{
+    internal class MockContext : ILambdaContext
+    {
+        public string AwsRequestId => Guid.NewGuid().ToString();
+        public IClientContext ClientContext => throw new NotImplementedException();
+        public string FunctionName => "<%= props.functionName %>";
+        public string FunctionVersion => "HEAD";
+        public ICognitoIdentity Identity => null;
+        public string InvokedFunctionArn => "arn:aws:lambda:us-east-1:000000000000:function:<%= props.functionName %>";
+        public ILambdaLogger Logger => throw new NotImplementedException();
+        public string LogGroupName => "YourCloudWatchLogGroupName";
+        public string LogStreamName => "YourCloudWatchStreamName";
+        public int MemoryLimitInMB => 128;
+        public TimeSpan RemainingTime => TimeSpan.FromSeconds(30);
+    }
+}
