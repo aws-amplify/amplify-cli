@@ -238,8 +238,7 @@ function addYearly(chain: ExecutionContext) {
 }
 
 function addCron(chain: ExecutionContext, settings: any) {
-  chain = chain.wait('At which interval should the function be invoked?');
-  console.log('here', settings.schedulePermissions.interval);
+  chain = chain.wait('At which interval should the function be invoked:');
   switch (settings.schedulePermissions.interval) {
     case 'minutes':
       chain = addminutes(chain);
@@ -249,7 +248,7 @@ function addCron(chain: ExecutionContext, settings: any) {
       break;
     case 'daily':
       chain = moveDown(chain, 2).sendCarriageReturn();
-      chain = chain.wait('Select the start time (use arrow keys)?').sendCarriageReturn();
+      chain = chain.wait('Select the start time (use arrow keys):').sendCarriageReturn();
       break;
     case 'weekly':
       chain = addWeekly(moveDown(chain, 3).sendCarriageReturn());

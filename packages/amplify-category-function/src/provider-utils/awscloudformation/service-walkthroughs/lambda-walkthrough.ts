@@ -6,7 +6,7 @@ import { FunctionParameters } from 'amplify-function-plugin-interface';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
-import { serviceName, categoryName, functionParametersFileName, ParametersFileName } from '../utils/constants';
+import { serviceName, categoryName, functionParametersFileName, parametersFileName } from '../utils/constants';
 import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformationHelpers';
 import { askExecRolePermissionsQuestions } from './execPermissionsWalkthrough';
 import { scheduleWalkthrough } from './scheduleWalkthrough';
@@ -181,7 +181,7 @@ export async function updateWalkthrough(context, lambdaToUpdate) {
     }
   }
   // ask scheduling Lambda questions and merge in results
-  const scheduleParametersFilePath = path.join(resourceDirPath, ParametersFileName);
+  const scheduleParametersFilePath = path.join(resourceDirPath, parametersFileName);
   let params;
   try {
     params = context.amplify.readJsonFile(scheduleParametersFilePath);

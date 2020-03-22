@@ -95,10 +95,11 @@ export async function updateResource(context, category, service, parameters, res
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName, 'dependsOn', result.dependsOn);
   }
 
-  // not a good implementation, will refractor when runtimePR changes will happen
   if (answers.parameters) {
-    createParametersFile(context, answers.parameters, answers.resourceName);
-    createParametersFile(context, answers.parameters, answers.resourceName, 'parameters.json');
+    let cloudWatchParams = _.pick(answers.parameters, ['CloudWatchRule', 'CloudWatchEvent']);
+    let params = _.omit(answers.parameters, ['CloudWatchRule', 'CloudWatchEvent']);
+    createParametersFile(context, params, answers.resourceName);
+    createParametersFile(context, cloudWatchParams, answers.resourceName, 'parameters.json');
   }
 
   if (answers.trigger) {
