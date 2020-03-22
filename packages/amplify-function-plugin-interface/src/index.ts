@@ -178,7 +178,7 @@ export interface FunctionDependency {
 interface FunctionContributorCondition {
   provider?: string;
   service?: string;
-  runtime?: string;
+  runtime?: string | Array<string>;
 }
 
 export type FunctionTemplateCondition = FunctionContributorCondition;
