@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.16.1...amplify-e2e-tests@2.16.2) (2020-03-22)
+
+
+### Bug Fixes
+
+* enable only-userpool flow without idp and addition of groups without roles tied to idp ([#3662](https://github.com/aws-amplify/amplify-cli/issues/3662)) ([67e0401](https://github.com/aws-amplify/amplify-cli/commit/67e04018d758e617374c4b8ba2298872e728d01e))
+* **cli:** deleting the amplify app on delete ([#3568](https://github.com/aws-amplify/amplify-cli/issues/3568)) ([f39bbcb](https://github.com/aws-amplify/amplify-cli/commit/f39bbcb715875eeeb612bcbc40b275b33f85eaf6)), closes [#3239](https://github.com/aws-amplify/amplify-cli/issues/3239)
+* fixing name of nodej function provider plugin name ([7e27785](https://github.com/aws-amplify/amplify-cli/commit/7e27785e9d4208d8e0d0674f1f1644e670139a86))
+* update import ([#3690](https://github.com/aws-amplify/amplify-cli/issues/3690)) ([3bf6877](https://github.com/aws-amplify/amplify-cli/commit/3bf68778880b2a72ee792dcdbb7c976ddbeedcdc))
+* update import ([#3716](https://github.com/aws-amplify/amplify-cli/issues/3716)) ([cd7f9eb](https://github.com/aws-amplify/amplify-cli/commit/cd7f9eb1be40681f7262631afd8fef7d5c68568f))
+
+
+
+
+
 ## [2.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.16.0...amplify-e2e-tests@2.16.1) (2020-03-10)
 
 

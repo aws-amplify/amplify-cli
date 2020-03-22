@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.15.2...amplify-category-auth@2.15.3) (2020-03-22)
+
+
+### Bug Fixes
+
+* enable only-userpool flow without idp and addition of groups without roles tied to idp ([#3662](https://github.com/aws-amplify/amplify-cli/issues/3662)) ([67e0401](https://github.com/aws-amplify/amplify-cli/commit/67e04018d758e617374c4b8ba2298872e728d01e))
+
+
+
+
+
 ## [2.15.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.15.1...amplify-category-auth@2.15.2) (2020-03-10)
 
 
