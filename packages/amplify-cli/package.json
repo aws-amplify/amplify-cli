@@ -52,6 +52,8 @@
     "amplify-frontend-ios": "2.13.2",
     "amplify-frontend-javascript": "2.15.1",
     "amplify-provider-awscloudformation": "4.17.0",
+    "amplify-nodejs-runtime-provider": "1.1.0",
+    "amplify-nodejs-template-provider": "1.1.0",
     "amplify-util-mock": "3.17.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
