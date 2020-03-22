@@ -23,7 +23,6 @@ export async function templateWalkthrough(context: any, params: Partial<Function
     pluginType: 'functionTemplate',
     listOptionsField: 'templates',
     predicate: condition => {
-      console.log(`Inspecting plugin. Condition: ${JSON.stringify(condition)} params.runtime.value: ${params.runtime.value}`);
       return (
         condition.provider === params.providerContext.provider &&
         condition.service === params.providerContext.service &&
