@@ -1,4 +1,8 @@
 import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+const constants = {
+  dotnetcore21: 'dotnetcore2.1',
+  dotnetcore31: 'dotnetcore3.1',
+};
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context: any) => {
   return {
     checkDependencies: async () => ({
@@ -6,21 +10,21 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     }),
     contribute: async contributionRequest => {
       switch (contributionRequest.selection) {
-        case 'dotnet2.1':
+        case constants.dotnetcore21:
           return {
             runtime: {
               name: '.NET Core 2.1',
-              value: 'dotnet2.1',
-              cloudTemplateValue: 'dotnetcore2.1',
+              value: constants.dotnetcore21,
+              cloudTemplateValue: constants.dotnetcore21,
               defaultHandler: `${contributionRequest.contributionContext.resourceName}::${contributionRequest.contributionContext.functionName}.Function::FunctionHandler`,
             },
           };
-        case 'dotnet3.1':
+        case constants.dotnetcore31:
           return {
             runtime: {
               name: '.NET Core 3.1',
-              value: 'dotnet3.1',
-              cloudTemplateValue: 'dotnetcore3.1',
+              value: constants.dotnetcore31,
+              cloudTemplateValue: constants.dotnetcore31,
               defaultHandler: `${contributionRequest.contributionContext.resourceName}::${contributionRequest.contributionContext.functionName}.Function::FunctionHandler`,
             },
           };
