@@ -1,5 +1,6 @@
 import inquirer from 'inquirer';
 import path from 'path';
+import fs from 'fs-extra';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
 inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 import { CronBuilder } from '../utils/cronBuilder';
@@ -59,7 +60,7 @@ export async function scheduleWalkthrough(context: any, params: Partial<Function
           break;
         }
       }
-      context.amplify.writeObjectAsJson(cfnFilePath,cfnContent)
+      fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
     }
   }
   return scheduleParams;

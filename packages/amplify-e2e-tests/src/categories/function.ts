@@ -192,7 +192,7 @@ function cronWalkthrough(chain: ExecutionContext, settings: any, action: string)
   if (action === 'create') {
     chain = addCron(chain, settings);
   } else {
-    chain = chain.wait('Select from the following options (Use arrow keys)');
+    chain = chain.wait('Select from the following options:');
     switch (settings.schedulePermissions.action) {
       case 'Update the schedule':
         chain = chain.sendCarriageReturn();

@@ -26,7 +26,7 @@ export async function minuteHelper(context : any){
       };
     const minuteAnswer = await inquirer.prompt([minuteQuestion]);
     const plural = minuteAnswer.minutes === 1 ? '' : 's';
-    let cloudwatchRule = `rate(${minuteAnswer.minutes} minute${plural}`
+    let cloudwatchRule = `rate(${minuteAnswer.minutes} minute${plural})`
     return cloudwatchRule;
 }
 
@@ -46,7 +46,7 @@ export async function hourHelper(context : any){
       };
     const hourAnswer = await inquirer.prompt([hourQuestion]);
     const plural = hourAnswer.hours === 1 ? '' : 's';
-    let cloudwatchRule = `rate(${hourAnswer.hours} hour${plural}`
+    let cloudwatchRule = `rate(${hourAnswer.hours} hour${plural})`
     return cloudwatchRule
 }
 
