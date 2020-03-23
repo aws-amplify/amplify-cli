@@ -440,7 +440,8 @@ class CloudFormation {
     return new Promise((resolve, reject) => {
       cfnModel.describeStacks(cfnStackParams, (err, data) => {
         const cfnDeleteStatus = 'stackDeleteComplete';
-        if (!data || data.StackStatus !== 'DELETE_COMPLETE') {
+        if ((err && err.message.includes(`${stackName} does not exist`)) || data.StackStatus === 'DELETE_COMPLETE') {
+          this.context.print.warning('Stack has already been deleted or does not exist');
           resolve();
         }
         if (err === null) {
