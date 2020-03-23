@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.17.0...amplify-appsync-simulator@1.18.0) (2020-03-22)
+
+
+### Features
+
+* **amplify-appsync-simulator:** implement GraphQL Info Object ([#3450](https://github.com/aws-amplify/amplify-cli/issues/3450)) ([24c31e2](https://github.com/aws-amplify/amplify-cli/commit/24c31e24b2978df02e4d217a2f93dd4623d36922))
+
+
+
+
+
 # [1.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.14.0...amplify-appsync-simulator@1.17.0) (2020-03-07)
 
 

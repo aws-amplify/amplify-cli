@@ -302,6 +302,7 @@ async function writeResolverConfig(resolverConfig, resourceDir) {
 async function updateTransformerConfigVersion(resourceDir) {
   const localTransformerConfig = await readTransformerConfiguration(resourceDir);
   localTransformerConfig.Version = TRANSFORM_CURRENT_VERSION;
+  localTransformerConfig.ElasticsearchWarning = true;
   await writeTransformerConfiguration(resourceDir, localTransformerConfig);
 }
 
