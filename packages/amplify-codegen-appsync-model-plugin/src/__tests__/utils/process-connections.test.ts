@@ -63,7 +63,6 @@ describe('process connection', () => {
         expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
         expect(connectionInfo.associatedWith).toEqual(modelMap.Comment.fields[0]);
         expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
-
       });
 
       it('should return BELONGS_TO for Comment.post field connection info', () => {
@@ -278,24 +277,12 @@ describe('process connection', () => {
         },
       };
     });
-    it('should support connection with keyName on HAS_MANY side', () => {
-      const commentsField = modelMap.Post.fields[0];
-      const connectionInfo = (processConnections(commentsField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionHasMany;
-      expect(connectionInfo).toBeDefined();
-      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
-      expect(connectionInfo.associatedWith).toEqual(modelMap.Comment.fields[2]);
-      expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(false);
-    });
 
-    it('should support connection with keyName on HAS_MANY side with no corresponding connection on other side ', () => {
-      // remove post: Post @connection(fields:['postID']) field
-      modelMap.Comment.fields.splice(2);
+    it('should throw error if connection directive has keyName', () => {
       const commentsField = modelMap.Post.fields[0];
-      const connectionInfo = (processConnections(commentsField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionHasMany;
-      expect(connectionInfo).toBeDefined();
-      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
-      expect(connectionInfo.associatedWith).toEqual(modelMap.Comment.fields[0]);
-      expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(false);
+      expect(() => processConnections(commentsField, modelMap.Post, modelMap)).toThrowError(
+        'DataStore does not support connection directive with keyName',
+      );
     });
 
     it('should support connection with @key on BELONGS_TO side', () => {
@@ -305,69 +292,6 @@ describe('process connection', () => {
       expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
       expect(connectionInfo.targetName).toEqual(modelMap.Comment.fields[0].name);
       expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(false);
-    });
-
-    it('should throw an error if the key is missing in connected type', () => {
-      const missingKeySchema = /* GraphQL */ `
-        type Post @model {
-          comments: [Comment] @connection(keyName: "missingKey", fields: ["id"])
-        }
-
-        type Comment @model @key(name: "byPost", fields: ["postID", "content"]) {
-          postID: ID!
-          content: String!
-          post: Post @connection(fields:['postID'])
-        }
-      `;
-      const missingKey = {
-        Post: {
-          name: 'Post',
-          type: 'model',
-          directives: [],
-          fields: [
-            {
-              type: 'Comment',
-              isNullable: true,
-              isList: true,
-              name: 'comments',
-              directives: [{ name: 'connection', arguments: { keyName: 'missingKey', fields: ['id'] } }],
-            },
-          ],
-        },
-        Comment: {
-          name: 'Comment',
-          type: 'model',
-          directives: [{ name: 'key', arguments: { name: 'byPost', fields: ['postID', 'content'] } }],
-          fields: [
-            {
-              type: 'id',
-              isNullable: false,
-              isList: false,
-              name: 'postID',
-              directives: [],
-            },
-            {
-              type: 'String',
-              isNullable: false,
-              isList: false,
-              name: 'content',
-              directives: [],
-            },
-            {
-              type: 'Post',
-              isNullable: false,
-              isList: false,
-              name: 'post',
-              directives: [{ name: 'connection', arguments: { fields: ['postID'] } }],
-            },
-          ],
-        },
-      };
-
-      const commentsField = missingKey.Post.fields[0];
-      expect(() => processConnections(commentsField, missingKey.Post, modelMap)).toThrowError(
-        'Error processing @connection directive on Post.comments, @key directive with name missingKey was not found in connected model Comment',
-      );
     });
   });
   describe('getConnectedField', () => {
@@ -415,6 +339,7 @@ describe('process connection', () => {
           },
         };
       });
+
       it('should return connected field when connection is Many to one', () => {
         const commentsField = modelMap.Post.fields[0];
         const postField = modelMap.Comment.fields[0];
