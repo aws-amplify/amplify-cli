@@ -440,7 +440,6 @@ class CloudFormation {
     return new Promise((resolve, reject) => {
       cfnModel.describeStacks(cfnStackParams, (err, data) => {
         const cfnDeleteStatus = 'stackDeleteComplete';
-        console.log(JSON.stringify(data));
         if (!data || data.StackStatus !== 'DELETE_COMPLETE') {
           resolve();
         }
