@@ -1,6 +1,5 @@
 {
   "name": "functionTemplate",
-  "id": "d579f2fa-35c1-49c4-950f-b588e779b4dd",
   "type": "util",
   "commands": [],
   "eventHandlers": [],
@@ -14,18 +13,6 @@
       {
         "name": "Hello World",
         "value": "helloworld"
-      },
-      {
-        "name": "CRUD function for DynamoDB (Integration with API Gateway)",
-        "value": "crud"
-      },
-      {
-        "name": "Serverless ExpressJS function (Integration with API Gateway)",
-        "value": "serverless"
-      },
-      {
-        "name": "Lambda trigger",
-        "value": "trigger"
       }
     ]
   }

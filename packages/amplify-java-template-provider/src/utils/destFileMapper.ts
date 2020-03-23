@@ -5,6 +5,6 @@ import path from 'path';
 // removes .ejs from file extension and appends src to the path
 // ['a.js.ejs', 'b.json'] => {'a.js.ejs': 'src/a.js', 'b.json': 'src/b.json'}
 export function getDstMap(files: string[]): { [key: string]: string } {
-  return files.reduce((acc, it) => _.assign(acc, { [it]: it.includes('.xml') ?
+  return files.reduce((acc, it) => _.assign(acc, { [it]: it.includes('.gradle') ?
    it.replace(/\.ejs$/, '') : path.join('src','main','java','example',it.replace(/\.ejs$/, '')) }), {});
 }

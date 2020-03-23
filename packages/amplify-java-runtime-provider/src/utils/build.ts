@@ -7,32 +7,19 @@ import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 export async function buildResource(request: BuildRequest): Promise<BuildResult>{
   const resourceDir = path.join(request.srcRoot);
 
-  if (!request.lastBuildTimestamp || isValidProject(resourceDir)) {
+  if (!request.lastBuildTimestamp || isBuildStale(request.srcRoot, request.lastBuildTimestamp)) {
     installDependencies(resourceDir);
-    return Promise.resolve({ rebuilt: true });  }
+    return Promise.resolve({ rebuilt: true }); }
     return Promise.resolve({ rebuilt: false });
   }
-
-function isValidProject(cwd : string){
-  const packageManager = 'mvn';
-  const args = ['validate'];
-  const childProcessResult = childProcess.spawnSync(packageManager, args, {
-    cwd,
-    stdio: 'pipe',
-    encoding: 'utf-8',
-  });
-  if (childProcessResult.status !== 0) {
-    throw new Error(childProcessResult.output.join());
-  }
-}
 
 function installDependencies(resourceDir: string) {
   runPackageManager(resourceDir);
 }
 
 function runPackageManager(cwd: string) {
-  const packageManager = 'mvn';
-  const args = ['compile'];
+  const packageManager = 'gradle';
+  const args = ["build"];
   const childProcessResult = childProcess.spawnSync(packageManager, args, {
     cwd,
     stdio: 'pipe',
@@ -41,4 +28,12 @@ function runPackageManager(cwd: string) {
   if (childProcessResult.status !== 0) {
     throw new Error(childProcessResult.output.join());
   }
+}
+
+function isBuildStale(resourceDir: string, lastBuildTimestamp: Date) {
+  const dirTime = new Date(fs.statSync(resourceDir).mtime);
+  if (dirTime > lastBuildTimestamp) {
+    return true;
+  }
+  return false;
 }

@@ -15,7 +15,7 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.0.0",
+    "amplify-function-plugin-interface": "1.1.0",
     "lodash":"^4.17.15"
   },
   "devDependencies": {
