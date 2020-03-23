@@ -98,9 +98,9 @@ class S3 {
 
   deleteAllObjects(bucketName) {
     return new Promise((resolve, reject) => {
-      this.getAllObjectKeys(bucketName).then((result, error) => {
+      this.getAllObjectKeys(bucketName).then((bucketObjects, error) => {
         if (error) reject(error);
-        const chunkedResult = _.chunk(result, 1000);
+        const chunkedResult = _.chunk(bucketObjects, 1000);
 
         const deleteReq = chunkedResult
           .map(res => {
