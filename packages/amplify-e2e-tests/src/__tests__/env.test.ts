@@ -59,7 +59,6 @@ describe('environment commands', () => {
   //     await importEnvironment(projRoot2, { providerConfig, envName: 'env' });
   //     const meta2 = getProjectMeta(projRoot2);
   //     await validate(meta2);
-  //     await listEnvironment(projRoot2, {});
 
   //   } catch(e) {
   //     console.error(e);
@@ -70,7 +69,7 @@ describe('environment commands', () => {
   //   await pullEnvironment(projRoot, {});
   //   await amplifyPull(projRoot, {});
 
-  //   let meta1 = getProjectMeta(projRoot);
+  //   const meta1 = getProjectMeta(projRoot);
   //   await validate(meta1);
   // });
 
