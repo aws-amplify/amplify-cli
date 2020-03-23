@@ -8,24 +8,12 @@
     "conditions": {
       "provider": "awscloudformation",
       "service": "Lambda",
-      "runtime": "dotnet2.1"
+      "runtime": ["dotnetcore2.1", "dotnetcore3.1"]
     },
     "templates": [
       {
         "name": "Hello World",
         "value": "helloworld"
-      },
-      {
-        "name": "CRUD function for DynamoDB (Integration with API Gateway)",
-        "value": "crud"
-      },
-      {
-        "name": "Serverless ExpressJS function (Integration with API Gateway)",
-        "value": "serverless"
-      },
-      {
-        "name": "Lambda trigger",
-        "value": "trigger"
       }
     ]
   }
