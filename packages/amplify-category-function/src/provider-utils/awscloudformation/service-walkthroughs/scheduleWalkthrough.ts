@@ -4,9 +4,9 @@ import fs from 'fs-extra';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
 inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 import { CronBuilder } from '../utils/cronBuilder';
-import {constructCloudWatchEventComponent} from '../utils/cloudformationHelpers'
-import {minuteHelper , hourHelper ,timeHelper , weekHelper ,monthHelper , yearHelper} from '../utils/cronHelper'
-import {UPDATE_SCHEDULE , REMOVE_SCHEDULE , MINUTES, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM} from '../utils/constants'
+import { constructCloudWatchEventComponent } from '../utils/cloudformationHelpers';
+import { minuteHelper, hourHelper, timeHelper, weekHelper, monthHelper, yearHelper } from '../utils/cronHelper';
+import { UPDATE_SCHEDULE, REMOVE_SCHEDULE, MINUTES, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM } from '../utils/constants';
 const categoryName = 'function';
 
 export async function scheduleWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<Partial<FunctionParameters>> {
@@ -16,7 +16,7 @@ export async function scheduleWalkthrough(context: any, params: Partial<Function
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
   let scheduleParams: Partial<FunctionParameters> = params;
   if (params.cloudwatchEnabled === undefined || params.cloudwatchEnabled === 'false') {
-    if (await context.amplify.confirmPrompt.run('Do you want this function to be invoked on a schedule?', false)) {
+    if (await context.amplify.confirmPrompt.run('Do you want to invoke this function on a recurring schedule?', false)) {
       scheduleParams.cloudwatchEnabled = 'true';
       try {
         let cloudWatchRule = await cronServiceWalkthrough(context);
@@ -24,15 +24,15 @@ export async function scheduleWalkthrough(context: any, params: Partial<Function
         if (context.input.command === 'update') {
           //append cloudwatch events to CFN File
           const cfnContent = context.amplify.readJsonFile(cfnFilePath);
-          constructCloudWatchEventComponent(cfnFilePath,cfnContent);
-          context.amplify.writeObjectAsJson(cfnFilePath,cfnContent)
+          constructCloudWatchEventComponent(cfnFilePath, cfnContent);
+          context.amplify.writeObjectAsJson(cfnFilePath, cfnContent);
         }
       } catch (e) {
         context.print.error(e.message);
       }
     }
   } else {
-    if (await context.amplify.confirmPrompt.run('Do you want to update or remove the function schedule?', false)) {
+    if (await context.amplify.confirmPrompt.run(`Do you want to update or remove the function's schedule?`, false)) {
       const cfnContent = context.amplify.readJsonFile(cfnFilePath);
       const scheduleEventOperationQuestion = {
         type: 'list',
@@ -73,7 +73,7 @@ async function cronServiceWalkthrough(context: any) {
     type: 'list',
     name: 'interval',
     message: 'At which interval should the function be invoked:',
-    choices: ['minutes', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'customRule'],
+    choices: [MINUTES, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM],
   };
   const intervalAnswer = await inquirer.prompt([intervalQuestion]);
   switch (intervalAnswer.interval) {
@@ -102,7 +102,7 @@ async function cronServiceWalkthrough(context: any) {
     }
     case MONTHLY: {
       var exp2 = new CronBuilder();
-      exp2 = await monthHelper(exp2);
+      exp2 = await monthHelper(exp2, context);
       exp2 = await timeHelper(exp2);
       cloudwatchRule = exp2.build();
       cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule, cloudwatchRule.lastIndexOf('*'), '?') + ' ' + '*' + ')';
@@ -110,7 +110,7 @@ async function cronServiceWalkthrough(context: any) {
     }
     case YEARLY: {
       var exp3 = new CronBuilder();
-      exp3 = await yearHelper(exp3);
+      exp3 = await yearHelper(exp3, context);
       exp3 = await timeHelper(exp3);
       cloudwatchRule = exp3.build();
       cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule, cloudwatchRule.lastIndexOf('*'), '?') + ' ' + '*' + ')';

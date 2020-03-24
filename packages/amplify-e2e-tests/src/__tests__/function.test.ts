@@ -338,7 +338,7 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
     await addFunction(projRoot, {
       functionTemplate: 'helloWorld',
       schedulePermissions: {
-        interval: 'daily',
+        interval: 'Daily',
       },
     });
     await functionBuild(projRoot, {});
@@ -361,14 +361,14 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
     await addFunction(projRoot, {
       functionTemplate: 'helloWorld',
       schedulePermissions: {
-        interval: 'daily',
+        interval: 'Daily',
       },
     });
     await functionBuild(projRoot, {});
     await updateFunction(projRoot, {
       functionTemplate: 'helloWorld',
       schedulePermissions: {
-        interval: 'daily',
+        interval: 'Daily',
         action: 'Update the schedule',
       },
     });
@@ -393,14 +393,14 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
     await addFunction(projRoot, {
       functionTemplate: 'helloWorld',
       schedulePermissions: {
-        interval: 'daily',
+        interval: 'Daily',
       },
     });
     await functionBuild(projRoot, {});
     await updateFunction(projRoot, {
       functionTemplate: 'helloWorld',
       schedulePermissions: {
-        interval: 'daily',
+        interval: 'Daily',
         action: 'Remove the schedule',
       },
     });

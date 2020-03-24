@@ -99,12 +99,12 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
 
       //scheduling questions
       if (action == 'create') {
-        chain = chain.wait('Do you want this function to be invoked on a schedule?');
+        chain = chain.wait('Do you want to invoke this function on a recurring schedule?');
       } else {
         if (settings.schedulePermissions.noScheduleAdd === 'true') {
-          chain = chain.wait('Do you want this function to be invoked on a schedule?');
+          chain = chain.wait('Do you want to invoke this function on a recurring schedule?');
         } else {
-          chain = chain.wait('Do you want to update or remove the function schedule?');
+          chain = chain.wait(`Do you want to update or remove the function's schedule?`);
         }
       }
 
@@ -240,26 +240,26 @@ function addYearly(chain: ExecutionContext) {
 function addCron(chain: ExecutionContext, settings: any) {
   chain = chain.wait('At which interval should the function be invoked:');
   switch (settings.schedulePermissions.interval) {
-    case 'minutes':
+    case 'Minutes':
       chain = addminutes(chain);
       break;
-    case 'hourly':
+    case 'Hourly':
       chain = addhourly(moveDown(chain, 1).sendCarriageReturn());
       break;
-    case 'daily':
+    case 'Daily':
       chain = moveDown(chain, 2).sendCarriageReturn();
       chain = chain.wait('Select the start time (use arrow keys):').sendCarriageReturn();
       break;
-    case 'weekly':
+    case 'Weekly':
       chain = addWeekly(moveDown(chain, 3).sendCarriageReturn());
       break;
-    case 'monthly':
+    case 'Monthly':
       chain = addMonthly(moveDown(chain, 4).sendCarriageReturn());
       break;
-    case 'yearly':
+    case 'Yearly':
       chain = addYearly(moveDown(chain, 5).sendCarriageReturn());
       break;
-    case 'customRule':
+    case 'Custom AWS cron expression':
       chain = moveDown(chain, 6).sendCarriageReturn();
       break;
     default:
