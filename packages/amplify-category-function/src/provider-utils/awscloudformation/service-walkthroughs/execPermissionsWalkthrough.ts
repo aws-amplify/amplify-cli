@@ -197,16 +197,13 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
      */
     if (resource.needsAdditionalDynamoDBResourceProps) {
       const modelEnvPrefix = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${resource._modelName.toUpperCase()}`;
-      let modelNameResourcePropValue = {
-        'Fn::Join': ['-', resource._cfJoinComponentTableName],
-      };
       let modelArnResourcePropValue = {
         'Fn::Join': ['', resource._cfJoinComponentTableArn],
       };
 
-      resourceProperties.push(`"${modelEnvPrefix}_NAME": ${JSON.stringify(modelNameResourcePropValue)}`);
+      resourceProperties.push(`"${modelEnvPrefix}_NAME": ${JSON.stringify(resource._cfJoinComponentTableName)}`);
       resourceProperties.push(`"${modelEnvPrefix}_ARN": ${JSON.stringify(modelArnResourcePropValue)}`);
-      resourcePropertiesJSON[`${modelEnvPrefix}_NAME`] = modelNameResourcePropValue;
+      resourcePropertiesJSON[`${modelEnvPrefix}_NAME`] = resource._cfJoinComponentTableName;
       resourcePropertiesJSON[`${modelEnvPrefix}_ARN`] = modelArnResourcePropValue;
 
       const categoryMappingPrefix = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(resource._modelName)}`;
@@ -250,7 +247,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
     }
   });
 
-  allDefaultValues.resourceProperties = resourceProperties.join(',');
+  allDefaultValues.resourceProperties = resourceProperties.join(',\n');
   allDefaultValues.resourcePropertiesJSON = resourcePropertiesJSON;
 
   context.print.info('');
