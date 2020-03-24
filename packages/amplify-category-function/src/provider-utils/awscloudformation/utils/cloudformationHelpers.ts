@@ -153,15 +153,15 @@ export function constructCFModelTableArnComponent(appsyncResourceName, resourceN
     ':',
     { Ref: 'AWS::AccountId' },
     ':table/',
-    {
-      'Fn::ImportValue': {
-        'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
-      },
-    },
+    constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix),
   ];
 }
 
 /** CF template component of join function { "Fn::Join": ["-": THIS_PART ] } */
 export function constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
-  return [resourceName.replace(`:${appsyncTableSuffix}`, 'Table'), { Ref: `api${appsyncResourceName}GraphQLAPIIdOutput` }];
+  return {
+    'Fn::ImportValue': {
+      'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
+    },
+  };
 }
