@@ -3761,6 +3761,9 @@ amplify-frontend-javascript@2.13.2:
     graphql-config "^2.2.1"
     inquirer "^7.0.3"
 
+amplify-function-plugin-interface@1.0.0:
+  version "1.1.0"
+
 ansi-colors@3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.3.tgz#57d35b8686e851e2cc04c403f1c00203976a1813"
