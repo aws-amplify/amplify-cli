@@ -22,6 +22,12 @@ async function buildResource(context, resource) {
 
   const runtimePlugin = await context.amplify.loadRuntimePlugin(context, breadcrumbs.pluginId);
 
+  const depCheck = await runtimePlugin.checkDependencies();
+  if (!depCheck.hasRequiredDependencies) {
+    context.print.error(depCheck.errorMessage || `You are missing dependencies required to package ${resourceName}`);
+    throw new Error(`Missing required dependencies to package ${resourceName}`);
+  }
+
   // build the function
   let rebuilt = false;
   if (breadcrumbs.scripts && breadcrumbs.scripts.build) {
