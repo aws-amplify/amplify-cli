@@ -454,7 +454,7 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
 
   if (authResourceName) {
     const authParameters = loadResourceParameters(context, 'auth', authResourceName);
-    if(authParameters.identityPoolName) {
+    if (authParameters.identityPoolName) {
       updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
     }
   }

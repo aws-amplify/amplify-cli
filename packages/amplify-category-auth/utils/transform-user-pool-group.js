@@ -6,7 +6,7 @@ async function transformUserPoolGroupSchema(context) {
     context.amplify.pathManager.getBackendDirPath(),
     'auth',
     'userPoolGroups',
-    'user-pool-group-precedence.json'
+    'user-pool-group-precedence.json',
   );
 
   const { allResources } = await context.amplify.getResourceStatus();
@@ -50,11 +50,10 @@ async function transformUserPoolGroupSchema(context) {
 
   const authResourceParameters = loadResourceParameters(context, authResourceName);
 
-
   const props = {
     groups,
     cognitoResourceName: authResourceName,
-    identityPoolName: authResourceParameters.identityPoolName
+    identityPoolName: authResourceParameters.identityPoolName,
   };
 
   await context.amplify.copyBatch(context, copyJobs, props, true);
@@ -69,7 +68,7 @@ function loadResourceParameters(context, authResourceName) {
   if (fs.existsSync(parametersFilePath)) {
     parameters = context.amplify.readJsonFile(parametersFilePath);
   } else {
-    throw new Error ('Auth resource missing parameters file');
+    throw new Error('Auth resource missing parameters file');
   }
 
   return parameters;

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.4.1...amplify-category-storage@2.4.2) (2020-03-22)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fixes[#3509](https://github.com/aws-amplify/amplify-cli/issues/3509) adds policy to list Bucket ([#3612](https://github.com/aws-amplify/amplify-cli/issues/3612)) ([55f9846](https://github.com/aws-amplify/amplify-cli/commit/55f9846c4ea05f09983c5d9c3ef1827510fbfe7a))
+
+
+
+
+
 ## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.4.0...amplify-category-storage@2.4.1) (2020-03-10)
 
 **Note:** Version bump only for package amplify-category-storage
