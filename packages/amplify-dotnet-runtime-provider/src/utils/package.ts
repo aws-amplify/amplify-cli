@@ -1,5 +1,3 @@
-import childProcess from 'child_process';
-import { build } from './build';
 import archiver from 'archiver';
 import fs from 'fs-extra';
 import path from 'path';
