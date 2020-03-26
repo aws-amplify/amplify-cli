@@ -4,6 +4,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
+  getS3StorageBucketName,
   getAWSExportsPath,
   getAWSConfigIOSPath,
   getAmplifyConfigIOSPath,
@@ -13,39 +14,11 @@ import {
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/add-env';
 import { addApiWithoutSchema } from '../categories/api';
 import { addCodegen } from '../codegen/add';
+import { addS3 } from '../categories/storage';
+import { amplifyPush } from '../categories/hosting';
+import { addAuthWithDefault } from '../categories/auth';
 import * as fs from 'fs-extra';
 import * as pinpointHelper from '../utils/pinpoint';
-
-const reactconfig = {
-  SourceDir: 'src',
-  DistributionDir: 'build',
-  BuildCommand: 'npm run-script build',
-  StartCommand: 'npm run-script start',
-};
-const amplify = {
-  projectName: 'headlessProjectName',
-  appId: 'amplifyServiceProjectAppId',
-  envName: 'testenv',
-  defaultEditor: 'code',
-};
-const frontend = {
-  frontend: 'javascript',
-  framework: 'react',
-  config: {
-    SourceDir: 'src',
-    DistributionDir: 'build',
-    BuildCommand: 'npm run-script build',
-    StartCommand: 'npm run-script start',
-  },
-};
-const providers = {
-  awscloudformation: {
-    configLevel: 'project',
-    useProfile: false,
-    profileName: 'true',
-    region: 'us-east-1',
-  },
-};
 
 describe('amplify delete', () => {
   let projRoot: string;
@@ -116,6 +89,18 @@ describe('amplify delete', () => {
     await expect(await bucketExists(deploymentBucketName1)).toBe(false);
     await deleteProject(projRoot);
   });
+
+  it('should delete bucket', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot, {});
+    await addS3(projRoot, {});
+    await amplifyPush(projRoot);
+    const bucketName = getS3StorageBucketName(projRoot);
+    await putFiles(bucketName);
+    expect(await bucketExists(bucketName)).toBeTruthy();
+    await deleteProject(projRoot);
+    expect(await bucketExists(bucketName)).toBeFalsy();
+  });
 });
 
 async function testDeletion(projRoot: string, settings: { ios?: Boolean; android?: Boolean }) {
@@ -147,6 +132,18 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   } else {
     expect(fs.existsSync(getAWSExportsPath(projRoot))).toBe(false);
   }
+}
+
+async function putFiles(bucket: string, count = 1001) {
+  const s3 = new S3();
+  const s3Params = [...Array(count)].map((_, num) => {
+    return {
+      Bucket: bucket,
+      Body: 'dummy body',
+      Key: `${num}.txt`,
+    };
+  });
+  await Promise.all(s3Params.map(p => s3.putObject(p).promise()));
 }
 
 async function bucketExists(bucket: string) {
