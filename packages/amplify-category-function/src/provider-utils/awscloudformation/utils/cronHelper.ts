@@ -20,7 +20,7 @@ export async function minuteHelper(context: any) {
     validate: context.amplify.inputValidation({
       operator: 'regex',
       value: '^[1-9][0-9]*$', // change to /d after checking
-      onErrorMsg: 'Value needs to be a positive integer"',
+      onErrorMsg: 'Value needs to be a positive integer',
       required: true,
     }),
   };
@@ -39,7 +39,7 @@ export async function hourHelper(context: any) {
       validation: {
         operator: 'regex',
         value: '^[1-9][0-9]*$',
-        onErrorMsg: 'Value needs to be a positive integer"',
+        onErrorMsg: 'Value needs to be a positive integer',
       },
       required: true,
     }),
@@ -80,7 +80,7 @@ export async function weekHelper(exp: CronBuilder) {
     type: 'list',
     name: 'week',
     message: 'Select the day to invoke the function:',
-    choices: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturady'],
+    choices: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   };
   const weekAnswer = await inquirer.prompt([WeekQuestion]);
   exp.set('dayOfTheWeek', Days[(weekAnswer as any).week].split());
@@ -95,8 +95,9 @@ export async function monthHelper(exp, context) {
     format: ['DD'],
   };
   const dateAnswer = await inquirer.prompt([dateQuestion]);
-  if ((dateAnswer.dt as any).getDate() > '28') {
-    context.print.warning(`function won't be invoked on months without the ${(dateAnswer.dt as any).getDate()}th day`);
+  if ((dateAnswer.dt as any).getDate() > 28) {
+    const suffix = (dateAnswer.dt as any).getDate() === 31 ? 'st' : 'th';
+    context.print.warning(`Function won't be invoked on months without the ${(dateAnswer.dt as any).getDate()}${suffix} day`);
   }
   exp.set(
     'dayOfTheMonth',
@@ -116,8 +117,9 @@ export async function yearHelper(exp, context) {
     format: ['MM', '/', 'DD'],
   };
   const dateAnswer = await inquirer.prompt([dateQuestion]);
-  if ((dateAnswer.dt as any).getDate() > '28') {
-    context.print.warning(`Function won't be invoked on months without the ${(dateAnswer.dt as any).getDate()}th day`);
+  if ((dateAnswer.dt as any).getDate() > 28) {
+    const suffix = (dateAnswer.dt as any).getDate() === 31 ? 'st' : 'th';
+    context.print.warning(`Function won't be invoked on months without the ${(dateAnswer.dt as any).getDate()}${suffix} day`);
   }
   exp.set(
     'dayOfTheMonth',

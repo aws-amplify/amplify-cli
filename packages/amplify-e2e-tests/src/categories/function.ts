@@ -32,19 +32,8 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
         .wait('Provide the AWS Lambda function name:')
         .sendLine(settings.name || '')
         .wait('Choose the function runtime that you want to use:');
-      switch (settings.runtime || 'NodeJS') {
-        case 'Java':
-          chain = chain.sendCarriageReturn();
-          break;
-        case 'NodeJS':
-          chain = moveDown(chain, 1).sendCarriageReturn();
-          break;
-        default:
-          chain = chain.sendCarriageReturn();
-          break;
-      }
-      chain = chain.wait('Choose the function template that you want to use:');
 
+      chain = chain.wait('Choose the function template that you want to use:');
       switch (settings.functionTemplate || 'helloWorld') {
         case 'crud':
           chain = addCrud(moveDown(chain, 1).sendCarriageReturn(), cwd, settings);

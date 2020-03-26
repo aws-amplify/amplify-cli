@@ -6,7 +6,8 @@ inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 import { CronBuilder } from '../utils/cronBuilder';
 import { constructCloudWatchEventComponent } from '../utils/cloudformationHelpers';
 import { minuteHelper, hourHelper, timeHelper, weekHelper, monthHelper, yearHelper } from '../utils/cronHelper';
-import { UPDATE_SCHEDULE, REMOVE_SCHEDULE, MINUTES, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM } from '../utils/constants';
+import { MINUTES, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM } from '../utils/constants';
+import {CronExpression} from '../utils/cronExpression'
 const categoryName = 'function';
 
 export async function scheduleWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<Partial<FunctionParameters>> {
@@ -38,20 +39,28 @@ export async function scheduleWalkthrough(context: any, params: Partial<Function
         type: 'list',
         name: 'ScheduleEventOperation',
         message: 'Select from the following options:',
-        choices: ['Update the schedule', 'Remove the schedule'],
+        choices: [
+          {
+            name: 'Update the schedule',
+            value: 'update',
+          },
+          {
+            name: 'Remove the schedule',
+            value: 'remove',
+          }
+        ]
       };
 
       const scheduleEventOperationAnswer = await inquirer.prompt([scheduleEventOperationQuestion]);
-
       switch (scheduleEventOperationAnswer.ScheduleEventOperation) {
-        case UPDATE_SCHEDULE: {
+        case 'update': {
           // add service walkthrough to get the cron expression
           let cloudWatchRule = await cronServiceWalkthrough(context);
           scheduleParams.cloudwatchEnabled = 'true';
           scheduleParams.cloudwatchRule = cloudWatchRule;
           break;
         }
-        case REMOVE_SCHEDULE: {
+        case 'remove': {
           scheduleParams.cloudwatchEnabled = 'false';
           scheduleParams.cloudwatchRule = 'NONE';
           delete cfnContent.Resources.CloudWatchEvent;
@@ -121,7 +130,10 @@ async function cronServiceWalkthrough(context: any) {
       const customRuleQuestion = {
         type: 'input',
         name: 'customRule',
-        message: 'Custom Schedule expression(Learn more : https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html)',
+        message: 'Custom Schedule expression(Learn more : https://amzn.to/3akXtJF)',
+        validate: ValidCronExpression({
+        onErrorMsg: 'Enter a valid Schedule Expression (Learn more : https://amzn.to/3akXtJF)',
+        })
       };
       const customRuleAnswer = await inquirer.prompt([customRuleQuestion]);
       cloudwatchRule = 'cron(' + customRuleAnswer.customRule + ')';
@@ -129,7 +141,6 @@ async function cronServiceWalkthrough(context: any) {
       break;
     }
   }
-  // check if the given cron is valid
   return cloudwatchRule;
 }
 
@@ -141,3 +152,19 @@ module.exports = {
   scheduleWalkthrough,
   cronServiceWalkthrough,
 };
+
+
+function  ValidCronExpression(validation) {
+  return input => {
+    return  isValidCronExpression(input) ? true : validation.onErrorMsg;
+  };
+}
+
+function isValidCronExpression(cronExpression: string): boolean {
+  try {
+      new CronExpression(cronExpression);
+      return true;
+  } catch (e) {
+      return false;
+  }
+}

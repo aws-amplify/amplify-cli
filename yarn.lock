@@ -12259,6 +12259,11 @@ jstransformer@0.0.2:
     is-promise "^2.0.0"
     promise "^6.0.1"
 
+jstreemap@^1.28.2:
+  version "1.28.2"
+  resolved "https://registry.yarnpkg.com/jstreemap/-/jstreemap-1.28.2.tgz#fe884994039e5ee23a157cf7ddd6c01c3a6d134d"
+  integrity sha512-JYVDYwLat+OVXLpIXgUPy06wPSEkQafGOeotpGFodkM5+K8x3IrVPGaTw+Fd9MmZy092cLG/N+3q90oSBHZoQQ==
+
 jsx-ast-utils@^2.2.1:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-2.2.3.tgz#8a9364e402448a3ce7f14d357738310d9248054f"
