@@ -281,25 +281,25 @@ describe('AppSyncModelVisitor', () => {
     });
 
     it('should support types without model', () => {
-      const metaDataType = visitor.nonModels.Metadata;
+      const metadataType = visitor.nonModels.Metadata;
 
-      expect(metaDataType).toBeDefined();
-      const metaDataFields = metaDataType.fields;
+      expect(metadataType).toBeDefined();
+      const metadataFields = metadataType.fields;
 
-      expect(metaDataFields[0].name).toEqual('authorName');
-      expect(metaDataFields[0].type).toEqual('String');
-      expect(metaDataFields[0].isNullable).toEqual(false);
-      expect(metaDataFields[0].isList).toEqual(false);
+      expect(metadataFields[0].name).toEqual('authorName');
+      expect(metadataFields[0].type).toEqual('String');
+      expect(metadataFields[0].isNullable).toEqual(false);
+      expect(metadataFields[0].isList).toEqual(false);
 
-      expect(metaDataFields[1].name).toEqual('tags');
-      expect(metaDataFields[1].type).toEqual('String');
-      expect(metaDataFields[1].isNullable).toEqual(true);
-      expect(metaDataFields[1].isList).toEqual(true);
+      expect(metadataFields[1].name).toEqual('tags');
+      expect(metadataFields[1].type).toEqual('String');
+      expect(metadataFields[1].isNullable).toEqual(true);
+      expect(metadataFields[1].isList).toEqual(true);
 
-      expect(metaDataFields[2].name).toEqual('rating');
-      expect(metaDataFields[2].type).toEqual('Int');
-      expect(metaDataFields[2].isNullable).toEqual(false);
-      expect(metaDataFields[2].isList).toEqual(false);
+      expect(metadataFields[2].name).toEqual('rating');
+      expect(metadataFields[2].type).toEqual('Int');
+      expect(metadataFields[2].isNullable).toEqual(false);
+      expect(metadataFields[2].isList).toEqual(false);
     });
   });
 });

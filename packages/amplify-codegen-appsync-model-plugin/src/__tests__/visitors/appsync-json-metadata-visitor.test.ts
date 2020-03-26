@@ -66,12 +66,12 @@ describe('Metadata visitor', () => {
     });
   });
 
-  describe('generateNonModelMetaData', () => {
+  describe('generateNonModelMetadata', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
 
-    it('should generate nonModelMetaData', () => {
+    it('should generate nonModelMetadata', () => {
       const nonModelType = (visitor as any).getSelectedNonModels()['SimpleNonModelType'];
       const getFieldAssociationSpy = jest.spyOn(visitor as any, 'getFieldAssociation').mockReturnValueOnce(null);
       const getFieldNameSpy = jest.spyOn(visitor as any, 'getFieldName');
@@ -103,7 +103,7 @@ describe('Metadata visitor', () => {
           },
         },
       };
-      expect((visitor as any).generateNonModelMetaData(nonModelType)).toEqual(expectedValue);
+      expect((visitor as any).generateNonModelMetadata(nonModelType)).toEqual(expectedValue);
 
       expect(getFieldAssociationSpy).toHaveBeenCalledTimes(2);
       expect(getFieldAssociationSpy).toHaveBeenNthCalledWith(1, nonModelType.fields[0]);
@@ -117,30 +117,30 @@ describe('Metadata visitor', () => {
     });
   });
 
-  describe('generateModelMetaData', () => {
+  describe('generateModelMetadata', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
 
     it('should generate model metadata', () => {
       const modelType = (visitor as any).getSelectedModels()['SimpleModel'];
-      const nonModelMetaData: JSONSchemaNonModel = {
+      const nonModelMetadata: JSONSchemaNonModel = {
         name: 'SimpleModel',
         fields: {},
       };
 
-      const getNonModelMetaDataSpy = jest.spyOn(visitor as any, 'generateNonModelMetaData').mockReturnValueOnce(nonModelMetaData);
+      const getNonModelMetadataSpy = jest.spyOn(visitor as any, 'generateNonModelMetadata').mockReturnValueOnce(nonModelMetadata);
       const pluralizeSpy = jest.spyOn(visitor as any, 'pluralizeModelName').mockReturnValueOnce('SimpleModels');
       const generateModelAttributesSpy = jest.spyOn(visitor as any, 'generateModelAttributes').mockReturnValue([]);
 
-      expect((visitor as any).generateModelMetaData(modelType)).toEqual({
-        ...nonModelMetaData,
+      expect((visitor as any).generateModelMetadata(modelType)).toEqual({
+        ...nonModelMetadata,
         syncable: true,
         pluralName: 'SimpleModels',
         attributes: [],
       });
 
-      expect(getNonModelMetaDataSpy).toHaveBeenCalledWith(modelType);
+      expect(getNonModelMetadataSpy).toHaveBeenCalledWith(modelType);
       expect(pluralizeSpy).toBeCalledWith(modelType);
       expect(generateModelAttributesSpy).toHaveBeenCalledWith(modelType);
     });
@@ -247,24 +247,24 @@ describe('Metadata visitor', () => {
           val2: 'val2',
         },
       };
-      expect((visitor as any).generateEnumMetaData(enumObj)).toEqual({
+      expect((visitor as any).generateEnumMetadata(enumObj)).toEqual({
         name: 'MyEnum',
         values: ['val1', 'val2'],
       });
     });
 
-    describe('generateMetaData', () => {
+    describe('generateMetadata', () => {
       beforeEach(() => {
         jest.resetAllMocks();
       });
 
       it('should include models, nonModels, enums and version info', () => {
-        const generateModelSpy = jest.spyOn(visitor as any, 'generateModelMetaData');
-        const generateNonModelSpy = jest.spyOn(visitor as any, 'generateNonModelMetaData');
-        const generateEnumSpy = jest.spyOn(visitor as any, 'generateEnumMetaData');
+        const generateModelSpy = jest.spyOn(visitor as any, 'generateModelMetadata');
+        const generateNonModelSpy = jest.spyOn(visitor as any, 'generateNonModelMetadata');
+        const generateEnumSpy = jest.spyOn(visitor as any, 'generateEnumMetadata');
         const computeVersionSpy = jest.spyOn(visitor as any, 'computeVersion');
 
-        const metadata = (visitor as any).generateMetaData();
+        const metadata = (visitor as any).generateMetadata();
 
         expect(metadata).toMatchInlineSnapshot(`
           Object {
@@ -346,7 +346,7 @@ describe('Metadata visitor', () => {
     });
   });
 
-  describe('metaData snapshots', () => {
+  describe('metadata snapshots', () => {
     it('should generate for Javascript', () => {
       const jsVisitor = getVisitor(schema, 'javascript');
       expect(jsVisitor.generate()).toMatchInlineSnapshot(`
