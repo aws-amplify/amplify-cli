@@ -12,6 +12,7 @@ import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
 import { getMockConfig } from '../utils/mock-config-file';
+import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
 
 export class APITest {
@@ -171,6 +172,7 @@ export class APITest {
     if (lambdaDataSources.length === 0) {
       return config;
     }
+    const provisionedLambdas = getAllLambdaFunctions(context, path.join(this.projectRoot, 'amplify', 'backend'));
 
     return {
       ...config,
@@ -184,7 +186,15 @@ export class APITest {
           let functionName = arnParts[arnParts.length - 1];
           if (functionName.endsWith('-${env}')) {
             functionName = functionName.replace('-${env}', '');
-            const invoker = await getInvoker(context, functionName);
+            const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
+            if (!lambdaConfig) {
+              throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
+            }
+            const invoker = await getInvoker(context, {
+              resourceName: functionName,
+              handler: lambdaConfig.handler,
+              envVars: lambdaConfig.environment,
+            });
             return {
               ...d,
               invoke: payload => {

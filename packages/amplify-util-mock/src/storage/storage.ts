@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { getInvoker } from 'amplify-category-function';
+import { loadMinimalLambdaConfig } from '../utils/lambda/loadMinimal';
 
 const port = 20005; // port for S3
 
@@ -111,7 +112,8 @@ export class StorageTest {
         }
       }
 
-      const invoker = await getInvoker(context, triggerName);
+      const config = loadMinimalLambdaConfig(context, triggerName);
+      const invoker = await getInvoker(context, { handler: config.handler, resourceName: triggerName });
       await invoker({ event: eventObj });
     });
   }

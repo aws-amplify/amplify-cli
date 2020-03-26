@@ -1,7 +1,7 @@
 import { existsSync } from 'fs-extra';
-import { serializer } from './error-serializer';
 import { InvokeOptions } from './invokeOptions';
 import path from 'path';
+import _ from 'lodash';
 
 //  copied from amplify-util-mock with slight modifications
 
@@ -37,7 +37,7 @@ function invokeFunction(options: InvokeOptions) {
       },
       fail(error: any) {
         returned = true;
-        reject(serializer(error));
+        reject(_.assign({}, error));
       },
       awsRequestId: 'LAMBDA_INVOKE',
       logStreamName: 'LAMBDA_INVOKE',
@@ -46,7 +46,7 @@ function invokeFunction(options: InvokeOptions) {
     if (options.packageFolder) {
       const p = path.resolve(options.packageFolder);
       if (!existsSync(p)) {
-        context.fail('packageFolder does not exist');
+        context.fail(`packageFolder ${options.packageFolder} does not exist`);
         return;
       }
       process.chdir(p);

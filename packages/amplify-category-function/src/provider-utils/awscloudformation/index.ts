@@ -7,8 +7,6 @@ import _ from 'lodash';
 import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
-import inquirer from 'inquirer';
-import { getInvoker } from '../..';
 
 /**
  * Entry point for creating a new function
@@ -139,31 +137,6 @@ async function openEditor(context, category, options: FunctionParameters | Funct
   }
 }
 
-export async function invoke(context, category, service, resourceName) {
-  const { amplify } = context;
-  const resourcePath = path.join(amplify.pathManager.getBackendDirPath(), category, resourceName);
-  const resourceQuestions = [
-    {
-      type: 'input',
-      name: 'eventName',
-      message: `Provide the path to the event JSON object relative to ${resourcePath}`,
-      validate: amplify.inputValidation({
-        operator: 'regex',
-        value: '^[a-zA-Z0-9/._-]+?\\.json$',
-        onErrorMsg: 'Provide a valid unix-like path to a .json file',
-        required: true,
-      }),
-      default: 'src/event.json',
-    },
-  ];
-
-  const resourceAnswers = await inquirer.prompt(resourceQuestions);
-  const event = context.amplify.readJsonFile(path.resolve(path.join(resourcePath, resourceAnswers.eventName as string)));
-
-  const invoker = await getInvoker(context, resourceName);
-  await invoker({ event });
-}
-
 // TODO refactor this to not depend on supported-service.json
 export function migrateResource(context, projectPath, service, resourceName) {
   const serviceConfig: ServiceConfig = supportedServices[service];
@@ -249,7 +222,6 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
 module.exports = {
   addResource,
   updateResource,
-  invoke,
   migrateResource,
   getPermissionPolicies,
   updateConfigOnEnvInit,

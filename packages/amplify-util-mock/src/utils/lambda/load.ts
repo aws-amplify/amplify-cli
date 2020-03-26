@@ -1,13 +1,13 @@
-import fs from 'fs-extra';
-import path from 'path';
-import { LambdaFunctionConfig, processResources } from './lambda-resource-processor';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { LambdaFunctionConfig, processResources } from '../../CFNParser/lambda-resource-processor';
 
 export function getAllLambdaFunctions(context, backendPath: string): LambdaFunctionConfig[] {
   const lambdas: LambdaFunctionConfig[] = [];
   const lambdaCategoryPath = path.join(backendPath, 'function');
   if (fs.existsSync(lambdaCategoryPath) && fs.lstatSync(lambdaCategoryPath).isDirectory) {
     fs.readdirSync(lambdaCategoryPath)
-      .filter(p => !p.startsWith('.')) // filter out hidden files / folders
+      .filter(p => !p.startsWith('.'))
       .filter(p => {
         const lambdaDir = path.join(lambdaCategoryPath, p);
         return fs.existsSync(lambdaDir) && fs.lstatSync(lambdaDir).isDirectory;

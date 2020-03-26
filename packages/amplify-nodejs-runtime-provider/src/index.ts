@@ -23,13 +23,14 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     checkDependencies: () => Promise.resolve({ hasRequiredDependencies: true }),
     package: params => packageResource(params, context),
     build: params => buildResource(params),
-    invoke: params =>
-      invoke({
+    invoke: async params => {
+      await buildResource(params);
+      return invoke({
         packageFolder: path.join(params.srcRoot, 'src'),
         handler: params.handler,
-        event: JSON.stringify(params.event),
-        context: params.context,
-        environment: params.env,
-      }),
+        event: params.event,
+        environment: params.envVars,
+      });
+    },
   };
 };

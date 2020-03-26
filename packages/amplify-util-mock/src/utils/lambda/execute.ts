@@ -1,5 +1,5 @@
-import { fstat, existsSync } from 'fs-extra';
-import { serializer } from '../error-serializer';
+import { existsSync } from 'fs-extra';
+import _ = require('lodash');
 const path = require('path');
 
 function loadFunction(fileName) {
@@ -35,7 +35,7 @@ function invokeFunction(options: InvokeOptions) {
       },
       fail(error) {
         returned = true;
-        reject(serializer(error));
+        reject(_.assign({}, error));
       },
       awsRequestId: 'LAMBDA_INVOKE',
       logStreamName: 'LAMBDA_INVOKE',

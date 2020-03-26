@@ -44,10 +44,12 @@ export type ContributionRequest = {
 // Request sent to invoke a function
 export type InvocationRequest = {
   srcRoot: string;
+  env: string;
+  runtime: string;
   handler: string;
-  event: any;
-  context: any;
-  env: { [key: string]: string };
+  event: string;
+  lastBuildTimestamp?: Date;
+  envVars?: { [key: string]: string };
 };
 
 // Request sent to build a function

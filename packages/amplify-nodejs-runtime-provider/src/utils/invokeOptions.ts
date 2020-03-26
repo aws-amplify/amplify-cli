@@ -3,5 +3,5 @@ export type InvokeOptions = {
   handler: string;
   event: string;
   context?: object;
-  environment?: any;
+  environment?: { [key: string]: string };
 };

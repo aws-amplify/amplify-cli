@@ -5,7 +5,7 @@ export type LambdaFunctionConfig = {
   name: string;
   handler: string;
   basePath?: string;
-  environment?: object;
+  environment?: { [key: string]: string };
 };
 
 const CFN_DEFAULT_PARAMS = {
