@@ -185,8 +185,12 @@ export class AppSyncModelJavaVisitor<
 
     // equals
     this.generateEqualsMethod(model, classDeclarationBlock);
+
     // hash code
     this.generateHashCodeMethod(model, classDeclarationBlock);
+
+    // toString
+    this.generateToStringMethod(model, classDeclarationBlock);
 
     // builder
     this.generateBuilderMethod(model, classDeclarationBlock);
@@ -599,6 +603,25 @@ export class AppSyncModelJavaVisitor<
       '.hashCode();',
     ].join('\n');
     declarationBlock.addClassMethod('hashCode', 'int', indentMultiline(body).trimLeft(), [], [], 'public', {}, ['Override']);
+  }
+
+  protected generateToStringMethod(model: CodeGenModel, declarationBlock: JavaDeclarationBlock): void {
+    const body = [
+      'return new StringBuilder()',
+      `.append("${this.getModelName(model)} {")`,
+      ...this.getNonConnectedField(model).map((field, index) => {
+        const fieldName = this.getFieldName(field);
+        const fieldGetterName = this.getFieldGetterName(field);
+        if (index == 0) {
+          return '.append("' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
+        } else {
+          return '.append(" , ' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
+        }
+      }),
+      '.append("}")',
+      '.toString();',
+    ].join('\n');
+    declarationBlock.addClassMethod('toString', 'String', indentMultiline(body).trimLeft(), [], [], 'public', {}, ['Override']);
   }
 
   /**
