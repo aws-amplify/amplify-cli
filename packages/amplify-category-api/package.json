@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "2.17.0",
+  "version": "2.17.1",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "amplify-category-auth": "2.15.3",
-    "amplify-category-function": "2.17.0",
+    "amplify-category-function": "2.18.0",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",

@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "2.17.0",
+  "version": "2.18.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "amplify-category-storage": "2.4.2",
-    "amplify-function-plugin-interface": "1.1.0",
+    "amplify-function-plugin-interface": "1.2.0",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.16.1",
     "inquirer": "^7.0.3",

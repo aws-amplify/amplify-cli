@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.17.0...amplify-category-function@2.18.0) (2020-03-26)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fix ddb table name env var ([#3755](https://github.com/aws-amplify/amplify-cli/issues/3755)) ([9725a38](https://github.com/aws-amplify/amplify-cli/commit/9725a389b5d9c3c0d053a83a304f73b573c4b439)), closes [#3748](https://github.com/aws-amplify/amplify-cli/issues/3748) [#3737](https://github.com/aws-amplify/amplify-cli/issues/3737)
+* **amplify-category-function:** updated trigger template path ([#3747](https://github.com/aws-amplify/amplify-cli/issues/3747)) ([f27f65a](https://github.com/aws-amplify/amplify-cli/commit/f27f65ac2deb135a3ec2944dc05a77d179952d47)), closes [#3746](https://github.com/aws-amplify/amplify-cli/issues/3746)
+* **amplify-function-plugin-interface:** guard against undefined runtime ([#3769](https://github.com/aws-amplify/amplify-cli/issues/3769)) ([3943f9b](https://github.com/aws-amplify/amplify-cli/commit/3943f9b673e2889bdd3985419ead5eeace56fd67))
+
+
+### Features
+
+* **amplify-category-function:** support list in plugin runtime condition ([#3757](https://github.com/aws-amplify/amplify-cli/issues/3757)) ([b36c09d](https://github.com/aws-amplify/amplify-cli/commit/b36c09d6ef21c40999d1f5930aabece0a4315d21))
+
+
+
+
+
 # [2.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.16.1...amplify-category-function@2.17.0) (2020-03-22)
 
 
