@@ -26,7 +26,8 @@ export async function templateWalkthrough(context: any, params: Partial<Function
       return (
         condition.provider === params.providerContext.provider &&
         condition.service === params.providerContext.service &&
-        (condition.runtime === params.runtime.value || condition.runtime.includes(params.runtime.value))
+        (condition.runtime === params.runtime.value ||
+          (Array.isArray(condition.runtime) && condition.runtime.includes(params.runtime.value)))
       );
     },
     selectionPrompt: 'Choose the function template that you want to use:',
