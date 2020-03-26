@@ -209,7 +209,7 @@ export class CronExpression {
               throw new Error("Invalid Day-of-Week value: '" + sub + "'" + String(i));
             }
             if (sVal > eVal) {
-              throw new Error('Invalid Day-of-Week sequence: ' + String(sVal) + ' > ' + String(eval) + String(i));
+              throw new Error('Invalid Day-of-Week sequence: ' + String(sVal) + ' > ' + String(eVal) + String(i));
             }
           } else if (c === '#') {
             try {
@@ -312,7 +312,7 @@ export class CronExpression {
       }
       return i;
     } else if (c >= '0' && c <= '9') {
-      let val: number = parseInt(c.valueOf());
+      let val: number = Number(c.valueOf());
       i++;
       if (i >= s.length) {
         this.addToSet(val, -1, -1, type);
@@ -484,14 +484,14 @@ export class CronExpression {
     }
     let val: [number, number];
 
-    val = [i < s.length ? i : i + 1, parseInt(s1)];
+    val = [i < s.length ? i : i + 1, Number(s1)];
     return val;
   };
 
   protected getNumericValue = function(s: string, i: number): number {
     let endOfVal = this.findNextWhiteSpace(i, s);
     let val: string = s.substring(i, endOfVal);
-    return parseInt(val);
+    return Number(val);
   };
 
   protected findNextWhiteSpace = function(i: number, s: String) {
@@ -539,7 +539,7 @@ export class CronExpression {
       }
       i++;
       try {
-        this.nthdayOfWeek = parseInt(s.substring(i));
+        this.nthdayOfWeek = Number(s.substring(i));
         if (this.nthdayOfWeek < 1 || this.nthdayOfWeek > 5) {
           throw new Error();
         }
@@ -556,7 +556,7 @@ export class CronExpression {
     if (c === '-') {
       i++;
       c = s.charAt(i);
-      let v: number = parseInt(c);
+      let v: number = Number(c);
       end = v;
       i++;
       if (i >= s.length) {
@@ -573,7 +573,7 @@ export class CronExpression {
       if (i < s.length && (c = s.charAt(i)) === '/') {
         i++;
         c = s.charAt(i);
-        let v2: number = parseInt(c);
+        let v2: number = Number(c);
         i++;
         if (i >= s.length) {
           this.addToSet(val, end, v2, type);
@@ -599,7 +599,7 @@ export class CronExpression {
     if (c === '/') {
       i++;
       c = s.charAt(i);
-      let v2 = parseInt(c);
+      let v2 = Number(c);
       i++;
       if (i >= s.length) {
         this.addToSet(val, end, v2, type);
