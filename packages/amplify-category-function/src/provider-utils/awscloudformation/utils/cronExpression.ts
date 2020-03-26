@@ -465,8 +465,6 @@ export class CronExpression {
         return this.daysOfWeek;
       case YEAR:
         return this.years;
-      default:
-        return null;
     }
   };
 
