@@ -1,0 +1,9 @@
+package InvocationShim;
+import com.amazonaws.services.lambda.runtime.*;
+
+public class MockLogger implements LambdaLogger {
+    @Override
+    public void log(String var1) {
+        System.out.println(var1);
+    }
+}

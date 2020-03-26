@@ -1,20 +1,37 @@
-import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters, ContributionRequest } from 'amplify-function-plugin-interface';
 import { templateRoot } from '../utils/constants';
-import fs from 'fs-extra';
 import path from 'path';
-import _ from 'lodash';
-import { getDstMap } from '../utils/destFileMapper';
 
-const pathToTemplateFiles = path.join(templateRoot, 'lambda/hello-world');
+const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 
-export function provideHelloWorld(): Promise<FunctionTemplateParameters> {
-  const files = fs.readdirSync(pathToTemplateFiles);
-  return Promise.resolve({
+export async function provideHelloWorld(request: ContributionRequest): Promise<FunctionTemplateParameters> {
+  const files = [
+    'hello-world/build.gradle.ejs',
+    'hello-world/HelloPojo.java.ejs',
+    'hello-world/RequestClass.java.ejs',
+    'hello-world/ResponseClass.java.ejs',
+    'hello-world/event.json',
+    'InvocationShim/build.gradle.ejs',
+    'InvocationShim/MockContext.java.ejs',
+    'InvocationShim/MockLogger.java.ejs',
+    'InvocationShim/Program.java.ejs',
+  ];
+  return {
     functionTemplate: {
       sourceRoot: pathToTemplateFiles,
       sourceFiles: files,
-      defaultEditorFile: path.join('src','main','java', 'example','HelloPojo.java'),
-      destMap: getDstMap(files),
+      defaultEditorFile: path.join('src', 'main', 'java', 'HelloPojo.java'),
+      destMap: {
+        'hello-world/build.gradle.ejs': path.join('build.gradle'),
+        'hello-world/event.json': path.join('src', 'main', 'java', 'event.json'),
+        'hello-world/HelloPojo.java.ejs': path.join('src', 'main', 'java', 'HelloPojo.java'),
+        'hello-world/RequestClass.java.ejs': path.join('src', 'main', 'java', 'RequestClass.java'),
+        'hello-world/ResponseClass.java.ejs': path.join('src', 'main', 'java', 'ResponseClass.java'),
+        'InvocationShim/build.gradle.ejs': path.join('src', 'InvocationShim', 'build.gradle'),
+        'InvocationShim/MockContext.java.ejs': path.join('src', 'InvocationShim', 'src', 'main', 'java', 'MockContext.java'),
+        'InvocationShim/MockLogger.java.ejs': path.join('src', 'InvocationShim', 'src', 'main', 'java', 'MockLogger.java'),
+        'InvocationShim/Program.java.ejs': path.join('src', 'InvocationShim', 'src', 'main', 'java', 'Program.java'),
+      },
     },
-  });
+  };
 }

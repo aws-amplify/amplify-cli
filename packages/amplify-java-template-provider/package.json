@@ -1,6 +1,6 @@
 {
   "name": "amplify-java-template-provider",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "JAVA templates supplied by the Amplify Team",
   "repository": {
     "type": "git",

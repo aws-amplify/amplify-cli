@@ -8,7 +8,7 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
       const selection = request.selection;
       switch (selection) {
         case 'helloworld': {
-          return provideHelloWorld();
+          return provideHelloWorld(request);
         }
         default: {
           throw new Error(`Unknown template selection [${selection}]`);
