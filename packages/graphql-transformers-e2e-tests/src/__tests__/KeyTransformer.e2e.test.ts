@@ -6,11 +6,11 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 
 jest.setTimeout(2000000);
 
@@ -97,7 +97,7 @@ beforeAll(async () => {
     LOCAL_FS_BUILD_DIR,
     BUCKET_NAME,
     S3_ROOT_DIR_KEY,
-    BUILD_TIMESTAMP
+    BUILD_TIMESTAMP,
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
@@ -139,6 +139,46 @@ afterAll(async () => {
 /**
  * Test queries below
  */
+test('Test next token with key', async () => {
+  const status = 'PENDING';
+  const createdAt = '2019-06-06T00:01:01.000Z';
+  // createItems
+  await createItem('order1', status, 'item1', '2019-01-06T00:01:01.000Z');
+  await createItem('order2', status, 'item2', '2019-02-06T00:01:01.000Z');
+  await createItem('order3', status, 'item3', '2019-03-06T00:01:01.000Z');
+  await createItem('order4', status, 'item4', '2019-06-06T00:01:01.000Z');
+  // query itemsByCreatedAt with limit of 2
+  // const items = await itemsByCreatedAt(createdAt, { beginsWith: status }, 2);
+  const items = await itemsByStatus(status, { beginsWith: '2019' }, 2);
+  expect(items.data).toBeDefined();
+  const itemsNextToken = items.data.itemsByStatus.nextToken;
+  expect(itemsNextToken).toBeDefined();
+  // get first two values
+  expect(items.data.itemsByStatus.items).toHaveLength(2);
+  expect(items.data.itemsByStatus.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ orderId: 'order1', name: 'item1' }),
+      expect.objectContaining({ orderId: 'order2', name: 'item2' }),
+    ]),
+  );
+  // use next token to get other values
+  const items2 = await itemsByStatus(status, { beginsWith: '2019' }, 2, itemsNextToken);
+  expect(items2.data).toBeDefined();
+  // get last two values
+  expect(items2.data.itemsByStatus.items).toHaveLength(2);
+  expect(items2.data.itemsByStatus.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ orderId: 'order3', name: 'item3' }),
+      expect.objectContaining({ orderId: 'order4', name: 'item4' }),
+    ]),
+  );
+  // deleteItems
+  await deleteItem('order1', status, createdAt);
+  await deleteItem('order2', status, createdAt);
+  await deleteItem('order3', status, createdAt);
+  await deleteItem('order4', status, createdAt);
+});
+
 test('Test getX with a two part primary key.', async () => {
   const order1 = await createOrder('test@gmail.com', '1');
   const getOrder1 = await getOrder('test@gmail.com', order1.data.createOrder.createdAt);
@@ -210,7 +250,10 @@ test('Test listX with three part primary key.', async () => {
   items = await listItem(hashKey, { eq: { status: 'PENDING', createdAt: '2018-09-01T00:01:01.000Z' } });
   expect(items.data.listItems.items).toHaveLength(1);
   items = await listItem(hashKey, {
-    between: [{ status: 'PENDING', createdAt: '2018-08-01' }, { status: 'PENDING', createdAt: '2018-10-01' }],
+    between: [
+      { status: 'PENDING', createdAt: '2018-08-01' },
+      { status: 'PENDING', createdAt: '2018-10-01' },
+    ],
   });
   expect(items.data.listItems.items).toHaveLength(1);
   items = await listItem(hashKey, { gt: { status: 'PENDING', createdAt: '2018-08-1' } });
@@ -381,7 +424,7 @@ async function createCustomer(email: string, addresslist: string[], username: st
     }`,
     {
       input: { email, addresslist, username },
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -398,7 +441,7 @@ async function updateCustomer(email: string, addresslist: string[], username: st
     }`,
     {
       input: { email, addresslist, username },
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -415,7 +458,7 @@ async function getCustomer(email: string) {
     }`,
     {
       email,
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -432,7 +475,7 @@ async function createOrder(customerEmail: string, orderId: string, createdAt: st
     }`,
     {
       input: { customerEmail, orderId, createdAt },
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -449,7 +492,7 @@ async function updateOrder(customerEmail: string, createdAt: string, orderId: st
     }`,
     {
       input: { customerEmail, orderId, createdAt },
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -466,7 +509,7 @@ async function deleteOrder(customerEmail: string, createdAt: string) {
     }`,
     {
       input: { customerEmail, createdAt },
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -481,7 +524,7 @@ async function getOrder(customerEmail: string, createdAt: string) {
             createdAt
         }
     }`,
-    { customerEmail, createdAt }
+    { customerEmail, createdAt },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -510,7 +553,7 @@ async function listOrders(customerEmail: string, createdAt: ModelStringKeyCondit
                 }
             }
         }`,
-    input
+    input,
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -529,7 +572,7 @@ async function createItem(orderId: string, status: string, name: string, created
     }`,
     {
       input,
-    }
+    },
   );
   console.log(`Running create: ${JSON.stringify(input)}`);
   console.log(JSON.stringify(result, null, 4));
@@ -549,7 +592,7 @@ async function updateItem(orderId: string, status: string, createdAt: string, na
     }`,
     {
       input,
-    }
+    },
   );
   console.log(`Running create: ${JSON.stringify(input)}`);
   console.log(JSON.stringify(result, null, 4));
@@ -569,7 +612,7 @@ async function deleteItem(orderId: string, status: string, createdAt: string) {
     }`,
     {
       input,
-    }
+    },
   );
   console.log(`Running delete: ${JSON.stringify(input)}`);
   console.log(JSON.stringify(result, null, 4));
@@ -586,7 +629,7 @@ async function getItem(orderId: string, status: string, createdAt: string) {
             name
         }
     }`,
-    { orderId, status, createdAt }
+    { orderId, status, createdAt },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -629,7 +672,7 @@ async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyCond
             nextToken
         }
     }`,
-    { orderId, statusCreatedAt, limit, nextToken }
+    { orderId, statusCreatedAt, limit, nextToken },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -649,7 +692,7 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
             nextToken
         }
     }`,
-    { status, createdAt, limit, nextToken }
+    { status, createdAt, limit, nextToken },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -669,7 +712,7 @@ async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionIn
             nextToken
         }
     }`,
-    { createdAt, status, limit, nextToken }
+    { createdAt, status, limit, nextToken },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -689,7 +732,7 @@ async function createShippingUpdate(orderId: string, itemId: string, status: str
     }`,
     {
       input,
-    }
+    },
   );
   console.log(`Running create: ${JSON.stringify(input)}`);
   console.log(JSON.stringify(result, null, 4));
@@ -714,7 +757,7 @@ async function listGSIShippingUpdate(orderId: string, itemId: object, sortDirect
                 }
             }
         }`,
-    input
+    input,
   );
   console.log(`Running create: ${JSON.stringify(input)}`);
   console.log(JSON.stringify(result, null, 4));
@@ -742,7 +785,7 @@ async function updateShippingUpdate(input: UpdateShippingInput) {
     }`,
     {
       input,
-    }
+    },
   );
   console.log(`Running update: ${JSON.stringify(input)}`);
   console.log(JSON.stringify(result, null, 4));
@@ -763,7 +806,7 @@ async function getShippingUpdates(orderId: string) {
             nextToken
         }
     }`,
-    { orderId }
+    { orderId },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -783,7 +826,7 @@ async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
             nextToken
         }
     }`,
-    { orderId, name }
+    { orderId, name },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;

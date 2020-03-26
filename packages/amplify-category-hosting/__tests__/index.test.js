@@ -2,6 +2,7 @@ jest.mock('../lib/category-manager');
 
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');
+const fs = require('fs-extra');
 
 const categoryManager = require('../lib/category-manager');
 
@@ -14,6 +15,11 @@ describe('index', () => {
       warning: jest.fn(),
       error: jest.fn(),
       success: jest.fn(),
+    },
+    amplify: {
+      readJsonFile: jest.fn(filePath => {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      }),
     },
   };
   const S3ANDCLOUDFRONT = 'S3AndCloudFront';

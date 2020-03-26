@@ -13,6 +13,7 @@ import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
 import { invoke } from '../utils/lambda/invoke';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
+import { getMockConfig } from '../utils/mock-config-file';
 
 export class APITest {
   private apiName: string;
@@ -25,6 +26,7 @@ export class APITest {
   private configOverrideManager: ConfigOverrideManager;
 
   private projectRoot: string;
+  private apiParameters: object = {};
 
   async start(context, port: number = 20002, wsPort: number = 20003) {
     try {
@@ -37,6 +39,7 @@ export class APITest {
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
       this.resolverOverrideManager = new ResolverOverrides(resolverDirectory);
+      this.apiParameters = await this.loadAPIParameters(context);
       this.appSyncSimulator = new AmplifyAppSyncSimulator({
         port,
         wsPort,
@@ -44,7 +47,7 @@ export class APITest {
       await this.appSyncSimulator.start();
       await this.resolverOverrideManager.start();
       await this.watch(context);
-      const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context);
+      const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
       this.appSyncSimulator.init(appSyncConfig);
 
       await this.generateTestFrontendExports(context);
@@ -76,15 +79,16 @@ export class APITest {
     this.resolverOverrideManager.stop();
   }
 
-  private async runTransformer(context) {
-    const { transformerOutput, stack } = await runTransformer(context);
-    let config: any = processAppSyncResources(stack, transformerOutput);
+  private async runTransformer(context, parameters = {}) {
+    const { transformerOutput } = await runTransformer(context);
+    let config: any = processAppSyncResources(transformerOutput, parameters);
     await this.ensureDDBTables(config);
     config = this.configureDDBDataSource(config);
     this.transformerResult = this.configureLambdaDataSource(context, config);
     const overriddenTemplates = await this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates);
     return { ...this.transformerResult, mappingTemplates: overriddenTemplates };
   }
+
   private async generateCode(context, transformerOutput = null) {
     try {
       context.print.info('Running GraphQL codegen');
@@ -107,6 +111,7 @@ export class APITest {
   private async reload(context, filePath, action) {
     const apiDir = await this.getAPIBackendDirectory(context);
     const inputSchemaPath = path.join(apiDir, 'schema');
+    const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
       if (this.resolverOverrideManager.isTemplateFile(filePath, action === 'unlink' ? true : false)) {
@@ -132,7 +137,13 @@ export class APITest {
         }
       } else if (filePath.includes(inputSchemaPath)) {
         context.print.info('GraphQL Schema change detected. Reloading...');
-        const config = await this.runTransformer(context);
+        const config = await this.runTransformer(context, this.apiParameters);
+        await this.appSyncSimulator.reload(config);
+        await this.generateCode(context);
+      } else if (filePath.includes(parameterFilePath)) {
+        context.print.info('API Parameter change detected. Reloading...');
+        this.apiParameters = await this.loadAPIParameters(context);
+        const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
       }
@@ -198,7 +209,7 @@ export class APITest {
           };
         } else {
           throw new Error(
-            'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function'
+            'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function',
           );
         }
       }),
@@ -245,9 +256,11 @@ export class APITest {
     const { projectPath } = context.amplify.getEnvInfo();
     const dbPath = path.join(await getMockDataDirectory(context), 'dynamodb');
     fs.ensureDirSync(dbPath);
+    const mockConfig = await getMockConfig(context);
     this.ddbEmulator = await dynamoEmulator.launch({
       dbPath,
       port: null,
+      ...mockConfig,
     });
     return dynamoEmulator.getClient(this.ddbEmulator);
   }
@@ -255,6 +268,24 @@ export class APITest {
   private async getAPIBackendDirectory(context) {
     const { projectPath } = context.amplify.getEnvInfo();
     return path.join(projectPath, 'amplify', 'backend', 'api', this.apiName);
+  }
+
+  private async getAPIParameterFilePath(context): Promise<string> {
+    const backendPath = await this.getAPIBackendDirectory(context);
+    return path.join(backendPath, 'parameters.json');
+  }
+
+  private async loadAPIParameters(context): Promise<object> {
+    const paramPath = await this.getAPIParameterFilePath(context);
+    if (!fs.existsSync(paramPath)) {
+      return {};
+    }
+    try {
+      return JSON.parse(fs.readFileSync(paramPath, 'utf8'));
+    } catch (e) {
+      e.message = `Failed to load API parameters.json \n ${e.message}`;
+      throw e;
+    }
   }
 
   private async getResolverTemplateDirectory(context) {
@@ -281,7 +312,7 @@ export class APITest {
       GraphQLAPIKeyOutput?: string;
       region?: string;
       testMode: boolean;
-    }
+    },
   ) {
     const currentMeta = await getAmplifyMeta(context);
     const override = currentMeta.api || {};

@@ -7,8 +7,8 @@ import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
-import * as moment from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 
 jest.setTimeout(2000000);
@@ -105,7 +105,7 @@ beforeAll(async () => {
       TMP_ROOT,
       BUCKET_NAME,
       ROOT_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
     console.log(JSON.stringify(finishedStack, null, 4));
@@ -160,7 +160,7 @@ afterEach(async () => {
         }
       }
     }`,
-      {}
+      {},
     );
     const rows = response.data.listPosts.items || [];
     const deletePromises = [];
@@ -168,7 +168,7 @@ afterEach(async () => {
       deletePromises.push(
         GRAPHQL_CLIENT.query(`mutation delete{
         deletePost(input: {id: "${row.id}"}) { id }
-      }`)
+      }`),
       );
     });
     await Promise.all(deletePromises);
@@ -199,7 +199,7 @@ test('Test createAuthor mutation', async () => {
             isActive: true,
           },
         },
-      }
+      },
     );
     expect(response.data.createAuthor.id).toBeDefined();
     expect(response.data.createAuthor.name).toEqual('Jeff B');
@@ -223,7 +223,7 @@ test('Test createPost mutation', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Hello, World!');
@@ -247,7 +247,7 @@ test('Test updatePost mutation', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(createResponse, null, 4));
     expect(createResponse.data.createPost.id).toBeDefined();
@@ -259,7 +259,7 @@ test('Test updatePost mutation', async () => {
                 title
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(updateResponse, null, 4));
     expect(updateResponse.data.updatePost.title).toEqual('Bye, World!');
@@ -282,7 +282,7 @@ test('Test createPost and updatePost mutation with a client generated id.', asyn
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(createResponse, null, 4));
     expect(createResponse.data.createPost.id).toEqual(clientId);
@@ -294,7 +294,7 @@ test('Test createPost and updatePost mutation with a client generated id.', asyn
                 title
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(updateResponse, null, 4));
     expect(updateResponse.data.updatePost.id).toEqual(clientId);
@@ -306,7 +306,7 @@ test('Test createPost and updatePost mutation with a client generated id.', asyn
                 title
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(getResponse, null, 4));
     expect(getResponse.data.getPost.id).toEqual(clientId);
@@ -319,7 +319,7 @@ test('Test createPost and updatePost mutation with a client generated id.', asyn
                 title
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(deleteResponse, null, 4));
     expect(deleteResponse.data.deletePost.id).toEqual(clientId);
@@ -332,7 +332,7 @@ test('Test createPost and updatePost mutation with a client generated id.', asyn
                 title
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(getResponse2, null, 4));
     expect(getResponse2.data.getPost).toBeNull();
@@ -354,7 +354,7 @@ test('Test deletePost mutation', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(createResponse, null, 4));
     expect(createResponse.data.createPost.id).toBeDefined();
@@ -366,7 +366,7 @@ test('Test deletePost mutation', async () => {
                 title
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(deleteResponse, null, 4));
     expect(deleteResponse.data.deletePost.title).toEqual('Test Delete');
@@ -377,7 +377,7 @@ test('Test deletePost mutation', async () => {
                 title
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(getResponse, null, 4));
     expect(getResponse.data.getPost).toBeNull();
@@ -399,7 +399,7 @@ test('Test getPost query', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     expect(createResponse.data.createPost.id).toBeTruthy();
     expect(createResponse.data.createPost.title).toEqual('Test Get');
@@ -410,7 +410,7 @@ test('Test getPost query', async () => {
                 title
             }
         }`,
-      {}
+      {},
     );
     expect(getResponse.data.getPost.title).toEqual('Test Get');
   } catch (e) {
@@ -431,7 +431,7 @@ test('Test listPosts query', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     expect(createResponse.data.createPost.id).toBeDefined();
     expect(createResponse.data.createPost.title).toEqual('Test List');
@@ -444,7 +444,7 @@ test('Test listPosts query', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(listResponse.data.listPosts.items).toBeDefined();
     const items = listResponse.data.listPosts.items;
@@ -467,7 +467,7 @@ test('Test listPosts query with filter', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     expect(createResponse.data.createPost.id).toBeDefined();
     expect(createResponse.data.createPost.title).toEqual('Test List with filter');
@@ -484,7 +484,7 @@ test('Test listPosts query with filter', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(listWithFilterResponse, null, 4));
     expect(listWithFilterResponse.data.listPosts.items).toBeDefined();
@@ -509,7 +509,7 @@ test('Test enum filters List', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     await GRAPHQL_CLIENT.query(
       `mutation {
@@ -520,7 +520,7 @@ test('Test enum filters List', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     await GRAPHQL_CLIENT.query(
       `mutation {
@@ -531,7 +531,7 @@ test('Test enum filters List', async () => {
                   updatedAt
               }
           }`,
-      {}
+      {},
     );
 
     await GRAPHQL_CLIENT.query(
@@ -543,7 +543,7 @@ test('Test enum filters List', async () => {
                   updatedAt
               }
           }`,
-      {}
+      {},
     );
 
     // filter list of enums
@@ -557,7 +557,7 @@ test('Test enum filters List', async () => {
             }
         }
         `,
-      {}
+      {},
     );
     expect(appearsInWithFilterResponseJedi.data.listPosts.items).toBeDefined();
     const items = appearsInWithFilterResponseJedi.data.listPosts.items;
@@ -574,7 +574,7 @@ test('Test enum filters List', async () => {
             }
         }
         `,
-      {}
+      {},
     );
     expect(appearsInWithFilterResponseNonJedi.data.listPosts.items).toBeDefined();
     const appearsInNonJediItems = appearsInWithFilterResponseNonJedi.data.listPosts.items;
@@ -593,7 +593,7 @@ test('Test enum filters List', async () => {
             }
         }
         `,
-      {}
+      {},
     );
     expect(appearsInContainingJedi.data.listPosts.items).toBeDefined();
     const appearsInWithJediItems = appearsInContainingJedi.data.listPosts.items;
@@ -612,7 +612,7 @@ test('Test enum filters List', async () => {
             }
         }
         `,
-      {}
+      {},
     );
     expect(appearsInNotContainingJedi.data.listPosts.items).toBeDefined();
     const appearsInWithNonJediItems = appearsInNotContainingJedi.data.listPosts.items;
@@ -632,7 +632,7 @@ test('Test enum filters List', async () => {
             }
         }
         `,
-      {}
+      {},
     );
     expect(jediEpisode.data.listPosts.items).toBeDefined();
     const jediEpisodeItems = jediEpisode.data.listPosts.items;
@@ -649,7 +649,7 @@ test('Test enum filters List', async () => {
             }
         }
         `,
-      {}
+      {},
     );
     expect(nonJediEpisode.data.listPosts.items).toBeDefined();
     const nonJediEpisodeItems = nonJediEpisode.data.listPosts.items;
@@ -662,6 +662,67 @@ test('Test enum filters List', async () => {
     // fail
     expect(e).toBeUndefined();
   }
+});
+
+test('Test next token', async () => {
+  const createResponse = await GRAPHQL_CLIENT.query(
+    `mutation {
+            first: createPost(input: { title: "Test create for next token one" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+            second:  createPost(input: { title: "Test create for next token two" }) {
+              id
+              title
+              createdAt
+              updatedAt
+          }
+        }`,
+    {},
+  );
+  expect(createResponse.data.first.id).toBeDefined();
+  expect(createResponse.data.first.title).toEqual('Test create for next token one');
+
+  expect(createResponse.data.second.id).toBeDefined();
+  expect(createResponse.data.second.title).toEqual('Test create for next token two');
+
+  const listResponse = await GRAPHQL_CLIENT.query(
+    /* GraphQL */ `
+      query {
+        listPosts(limit: 1) {
+          items {
+            id
+            title
+          }
+          nextToken
+        }
+      }
+    `,
+    {},
+  );
+  expect(listResponse.data.listPosts.items).toBeDefined();
+  const items = listResponse.data.listPosts.items;
+  expect(items.length).toEqual(1);
+  expect(listResponse.data.listPosts.nextToken).toBeDefined();
+  expect(listResponse.data.listPosts.nextToken).not.toBeNull();
+
+  const listResponsePage2 = await GRAPHQL_CLIENT.query(
+    /* GraphQL */ `query {
+            listPosts(limit: 1, nextToken:"${listResponse.data.listPosts.nextToken}") {
+                items {
+                    id
+                    title
+                }
+                nextToken
+            }
+        }`,
+    {},
+  );
+  expect(listResponsePage2.data.listPosts.items).toBeDefined();
+  const items2 = listResponsePage2.data.listPosts.items;
+  expect(items2.length).toBeGreaterThan(0);
 });
 
 test('Test createPost mutation with non-model types', async () => {
@@ -701,7 +762,7 @@ test('Test createPost mutation with non-model types', async () => {
           },
           appearsIn: ['NEWHOPE'],
         },
-      }
+      },
     );
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Check that metadata exists');
@@ -729,7 +790,7 @@ test('Test updatePost mutation with non-model types', async () => {
                 updatedAt
             }
         }`,
-      {}
+      {},
     );
     console.log(JSON.stringify(createResponse, null, 4));
     expect(createResponse.data.createPost.id).toBeDefined();
@@ -770,7 +831,7 @@ test('Test updatePost mutation with non-model types', async () => {
           },
           appearsIn: ['NEWHOPE', 'EMPIRE'],
         },
-      }
+      },
     );
     console.log(JSON.stringify(updateResponse, null, 4));
     expect(updateResponse.data.updatePost.title).toEqual('Add some metadata');

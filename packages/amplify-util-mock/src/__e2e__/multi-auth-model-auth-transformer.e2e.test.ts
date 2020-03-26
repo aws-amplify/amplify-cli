@@ -205,19 +205,23 @@ afterAll(async () => {
  */
 test(`Test 'public' authStrategy`, async () => {
   try {
-    const createMutation = gql(`mutation {
-            createPostPublic(input: { title: "Hello, World!" }) {
-                id
-                title
-            }
-        }`);
+    const createMutation = gql`
+      mutation {
+        createPostPublic(input: { title: "Hello, World!" }) {
+          id
+          title
+        }
+      }
+    `;
 
-    const getQuery = gql(`query ($id: ID!) {
-            getPostPublic(id: $id) {
-                id
-                title
-            }
-        }`);
+    const getQuery = gql`
+      query($id: ID!) {
+        getPostPublic(id: $id) {
+          id
+          title
+        }
+      }
+    `;
 
     const response = await APIKEY_GRAPHQL_CLIENT.mutate({
       mutation: createMutation,
@@ -249,19 +253,23 @@ test(`Test 'public' authStrategy`, async () => {
 
 test(`Test 'private' authStrategy`, async () => {
   try {
-    const createMutation = gql(`mutation {
-            createPostPrivate(input: { title: "Hello, World!" }) {
-                id
-                title
-            }
-        }`);
+    const createMutation = gql`
+      mutation {
+        createPostPrivate(input: { title: "Hello, World!" }) {
+          id
+          title
+        }
+      }
+    `;
 
-    const getQuery = gql(`query ($id: ID!) {
-            getPostPrivate(id: $id) {
-                id
-                title
-            }
-        }`);
+    const getQuery = gql`
+      query($id: ID!) {
+        getPostPrivate(id: $id) {
+          id
+          title
+        }
+      }
+    `;
 
     const response = await USER_POOL_AUTH_CLIENT.mutate({
       mutation: createMutation,
@@ -293,61 +301,69 @@ test(`Test 'private' authStrategy`, async () => {
 });
 
 describe(`Connection tests with @auth on type`, () => {
-  const createPostMutation = gql(`mutation {
-        createPostConnection(input: { title: "Hello, World!" }) {
-            id
-            title
-        }
-    }`);
+  const createPostMutation = gql`
+    mutation {
+      createPostConnection(input: { title: "Hello, World!" }) {
+        id
+        title
+      }
+    }
+  `;
 
-  const createCommentMutation = gql(`mutation ( $postId: ID! ) {
-        createCommentConnection(input: { content: "Comment", commentConnectionPostId: $postId }) {
+  const createCommentMutation = gql`
+    mutation($postId: ID!) {
+      createCommentConnection(input: { content: "Comment", commentConnectionPostId: $postId }) {
+        id
+        content
+      }
+    }
+  `;
+
+  const getPostQuery = gql`
+    query($postId: ID!) {
+      getPostConnection(id: $postId) {
+        id
+        title
+      }
+    }
+  `;
+
+  const getPostQueryWithComments = gql`
+    query($postId: ID!) {
+      getPostConnection(id: $postId) {
+        id
+        title
+        comments {
+          items {
             id
             content
+          }
         }
-    }`);
-
-  const getPostQuery = gql(`query ( $postId: ID! ) {
-        getPostConnection ( id: $postId ) {
-            id
-            title
-        }
+      }
     }
-    `);
+  `;
 
-  const getPostQueryWithComments = gql(`query ( $postId: ID! ) {
-        getPostConnection ( id: $postId ) {
-            id
-            title
-            comments {
-                items {
-                    id
-                    content
-                }
-            }
-        }
+  const getCommentQuery = gql`
+    query($commentId: ID!) {
+      getCommentConnection(id: $commentId) {
+        id
+        content
+      }
     }
-    `);
+  `;
 
-  const getCommentQuery = gql(`query ( $commentId: ID! ) {
-        getCommentConnection ( id: $commentId ) {
-            id
-            content
+  const getCommentWithPostQuery = gql`
+    query($commentId: ID!) {
+      getCommentConnection(id: $commentId) {
+        id
+        content
+        post {
+          id
+          title
         }
+      }
     }
-    `);
-
-  const getCommentWithPostQuery = gql(`query ( $commentId: ID! ) {
-        getCommentConnection ( id: $commentId ) {
-            id
-            content
-            post {
-                id
-                title
-            }
-        }
-    }
-    `);
+  `;
 
   let postId = '';
   let commentId = '';
@@ -384,7 +400,7 @@ describe(`Connection tests with @auth on type`, () => {
       USER_POOL_AUTH_CLIENT.mutate({
         mutation: createPostMutation,
         fetchPolicy: 'no-cache',
-      })
+      }),
     ).rejects.toThrow('GraphQL error: Not Authorized to access createPostConnection on type Mutation');
   });
 
@@ -397,7 +413,7 @@ describe(`Connection tests with @auth on type`, () => {
         variables: {
           postId,
         },
-      })
+      }),
     ).rejects.toThrow('Not Authorized to access createCommentConnection on type Mutation');
   });
 
@@ -422,7 +438,7 @@ describe(`Connection tests with @auth on type`, () => {
         variables: {
           postId,
         },
-      })
+      }),
     ).rejects.toThrow('Not Authorized to access items on type ModelCommentConnectionConnection');
   });
 
@@ -435,7 +451,7 @@ describe(`Connection tests with @auth on type`, () => {
         variables: {
           postId,
         },
-      })
+      }),
     ).rejects.toThrow('Not Authorized to access getPostConnection on type Query');
   });
 
@@ -460,7 +476,7 @@ describe(`Connection tests with @auth on type`, () => {
         variables: {
           commentId,
         },
-      })
+      }),
     ).rejects.toThrow('Not Authorized to access getCommentConnection on type Query');
   });
 

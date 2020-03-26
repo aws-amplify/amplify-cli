@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.16.1...amplify-e2e-tests@2.16.2) (2020-03-22)
+
+
+### Bug Fixes
+
+* enable only-userpool flow without idp and addition of groups without roles tied to idp ([#3662](https://github.com/aws-amplify/amplify-cli/issues/3662)) ([67e0401](https://github.com/aws-amplify/amplify-cli/commit/67e04018d758e617374c4b8ba2298872e728d01e))
+* **cli:** deleting the amplify app on delete ([#3568](https://github.com/aws-amplify/amplify-cli/issues/3568)) ([f39bbcb](https://github.com/aws-amplify/amplify-cli/commit/f39bbcb715875eeeb612bcbc40b275b33f85eaf6)), closes [#3239](https://github.com/aws-amplify/amplify-cli/issues/3239)
+* fixing name of nodej function provider plugin name ([7e27785](https://github.com/aws-amplify/amplify-cli/commit/7e27785e9d4208d8e0d0674f1f1644e670139a86))
+* update import ([#3690](https://github.com/aws-amplify/amplify-cli/issues/3690)) ([3bf6877](https://github.com/aws-amplify/amplify-cli/commit/3bf68778880b2a72ee792dcdbb7c976ddbeedcdc))
+* update import ([#3716](https://github.com/aws-amplify/amplify-cli/issues/3716)) ([cd7f9eb](https://github.com/aws-amplify/amplify-cli/commit/cd7f9eb1be40681f7262631afd8fef7d5c68568f))
+
+
+
+
+
+## [2.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.16.0...amplify-e2e-tests@2.16.1) (2020-03-10)
+
+
+### Bug Fixes
+
+* **amplify-category-analytics:** delete pinpoint project in delete ([#3165](https://github.com/aws-amplify/amplify-cli/issues/3165)) ([acc0240](https://github.com/aws-amplify/amplify-cli/commit/acc0240c02630b4b9424370732706955ea447057)), closes [#2974](https://github.com/aws-amplify/amplify-cli/issues/2974)
+
+
+
+
+
+# [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.13.3...amplify-e2e-tests@2.16.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* **cli:** 'remove env' wording ([#3425](https://github.com/aws-amplify/amplify-cli/issues/3425)) ([ddaeb23](https://github.com/aws-amplify/amplify-cli/commit/ddaeb23d2fbffa7ee7f0769c133b75e0d2be9bcc))
+* add configuration.json placeholders ([#3508](https://github.com/aws-amplify/amplify-cli/issues/3508)) ([44265c4](https://github.com/aws-amplify/amplify-cli/commit/44265c439d4b7764ff52ab5b82f5fd1c88af799e))
+* fix project template ([#3589](https://github.com/aws-amplify/amplify-cli/issues/3589)) ([0c11afc](https://github.com/aws-amplify/amplify-cli/commit/0c11afc476e5c6bb8bbf6e84bd1b7e7e688eed3b))
+* fixing plugin e2e tests ([#3588](https://github.com/aws-amplify/amplify-cli/issues/3588)) ([10d831f](https://github.com/aws-amplify/amplify-cli/commit/10d831f1dcb330fbb9e06a9aaf16ecef05c30e51))
+
+
+### Features
+
+* ability to add custom EventSource and lambda triggers via amplify add function, kinesis support in analytics category ([#2463](https://github.com/aws-amplify/amplify-cli/issues/2463)) ([b25cfd0](https://github.com/aws-amplify/amplify-cli/commit/b25cfd00b21416a82ecefda1f6498206ef71531b))
+* amplify console hosting plugin ([#3525](https://github.com/aws-amplify/amplify-cli/issues/3525)) ([2c84b71](https://github.com/aws-amplify/amplify-cli/commit/2c84b71687a0ebcdeb92ebe462c8cf4eab8c9e3c))
+
+
+
+
+
+## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.13.5-beta.0...amplify-e2e-tests@2.14.1) (2020-03-05)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.13.2...amplify-e2e-tests@2.13.3) (2020-02-13)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.13.1...amplify-e2e-tests@2.13.2) (2020-02-07)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 ## [2.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.13.0...amplify-e2e-tests@2.13.1) (2020-01-24)
 
 **Note:** Version bump only for package amplify-e2e-tests

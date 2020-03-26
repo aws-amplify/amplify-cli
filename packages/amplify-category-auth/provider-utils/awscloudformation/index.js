@@ -180,7 +180,7 @@ async function createUserPoolGroups(context, resourceName, userPoolGroupList) {
       context.amplify.pathManager.getBackendDirPath(),
       'auth',
       'userPoolGroups',
-      'user-pool-group-precedence.json'
+      'user-pool-group-precedence.json',
     );
 
     const userPoolGroupParams = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'parameters.json');
@@ -229,7 +229,7 @@ async function updateUserPoolGroups(context, resourceName, userPoolGroupList) {
       context.amplify.pathManager.getBackendDirPath(),
       'auth',
       'userPoolGroups',
-      'user-pool-group-precedence.json'
+      'user-pool-group-precedence.json',
     );
 
     fs.outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
@@ -298,7 +298,7 @@ async function updateResource(context, category, serviceResult) {
         let functionName;
         if (resources.api.AdminQueries.dependsOn) {
           const adminFunctionResource = resources.api.AdminQueries.dependsOn.find(
-            resource => resource.category === 'function' && resource.resourceName.includes('AdminQueries')
+            resource => resource.category === 'function' && resource.resourceName.includes('AdminQueries'),
           );
           if (adminFunctionResource) {
             functionName = adminFunctionResource.resourceName;
@@ -340,8 +340,10 @@ async function updateResource(context, category, serviceResult) {
         delete props.authProvidersUserPool;
       }
 
-      await copyCfnTemplate(context, category, props, cfnFilename);
-      saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
+      if (result.updateFlow !== 'updateUserPoolGroups' && result.updateFlow !== 'updateAdminQueries') {
+        await copyCfnTemplate(context, category, props, cfnFilename);
+        saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
+      }
     })
     .then(async () => {
       await copyS3Assets(context, props);
@@ -394,7 +396,7 @@ async function updateConfigOnEnvInit(context, category, service) {
   }
 
   srvcMetaData.inputs = srvcMetaData.inputs.filter(
-    input => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key)
+    input => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key),
   );
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
@@ -489,7 +491,7 @@ function parseCredsForHeadless(mergedValues, envParams) {
       ProviderName: el,
       client_id: mergedValues[`${el.toLowerCase()}AppIdUserPool`],
       client_secret: mergedValues[`${el.toLowerCase()}AppSecretUserPool`],
-    }))
+    })),
   );
   oAuthProviders.forEach(i => {
     delete envParams[`${i.toLowerCase()}AppIdUserPool`];
@@ -836,7 +838,7 @@ async function createAdminAuthAPI(context, authResourceName, functionName, opera
       category: 'function',
       resourceName: functionName,
       attributes: ['Arn', 'Name'],
-    }
+    },
   );
 
   const apiProps = {

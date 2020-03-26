@@ -6,8 +6,8 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { S3Client } from '../S3Client';
 import { deploy } from '../deployNestedStacks';
 import emptyBucket from '../emptyBucket';
@@ -76,7 +76,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
 
@@ -134,7 +134,7 @@ test('Test createPost mutation', async () => {
             version
         }
     }`,
-    {}
+    {},
   );
   expect(response.data.createPost.id).toBeDefined();
   expect(response.data.createPost.title).toEqual('Hello, World!');
@@ -154,7 +154,7 @@ test('Test updatePost mutation', async () => {
             version
         }
     }`,
-    {}
+    {},
   );
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual('Test Update');
@@ -171,7 +171,7 @@ test('Test updatePost mutation', async () => {
             version
         }
     }`,
-    {}
+    {},
   );
   expect(updateResponse.data.updatePost.title).toEqual('Bye, World!');
   expect(updateResponse.data.updatePost.version).toEqual(2);
@@ -188,7 +188,7 @@ test('Test failed updatePost mutation with wrong version', async () => {
             version
         }
     }`,
-    {}
+    {},
   );
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual('Test Update');
@@ -205,7 +205,7 @@ test('Test failed updatePost mutation with wrong version', async () => {
             version
         }
     }`,
-    {}
+    {},
   );
   expect(updateResponse.errors.length).toEqual(1);
   expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
@@ -222,7 +222,7 @@ test('Test deletePost mutation', async () => {
             updatedAt
         }
     }`,
-    {}
+    {},
   );
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual('Test Delete');
@@ -235,7 +235,7 @@ test('Test deletePost mutation', async () => {
             version
         }
     }`,
-    {}
+    {},
   );
   expect(deleteResponse.data.deletePost.title).toEqual('Test Delete');
   expect(deleteResponse.data.deletePost.version).toEqual(createResponse.data.createPost.version);
@@ -252,7 +252,7 @@ test('Test deletePost mutation with wrong version', async () => {
             updatedAt
         }
     }`,
-    {}
+    {},
   );
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual('Test Delete');
@@ -265,7 +265,7 @@ test('Test deletePost mutation with wrong version', async () => {
             version
         }
     }`,
-    {}
+    {},
   );
   expect(deleteResponse.errors.length).toEqual(1);
   expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');

@@ -1,6 +1,6 @@
-import * as nexpect from 'nexpect';
+import { nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath } from '../utils';
 
-import { getCLIPath, isCI } from '../utils';
 type AmplifyConfiguration = {
   accessKeyId: string;
   secretAccessKey: string;
@@ -14,7 +14,7 @@ const defaultSettings = {
 };
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey'];
-export default function amplifyConfigure(settings: AmplifyConfiguration, verbose: Boolean = isCI() ? false : true) {
+export default function amplifyConfigure(settings: AmplifyConfiguration) {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {
@@ -22,23 +22,24 @@ export default function amplifyConfigure(settings: AmplifyConfiguration, verbose
   }
 
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['configure'], { stripColors: true, verbose })
+    spawn(getCLIPath(), ['configure'], { stripColors: true })
       .wait('Sign in to your AWS administrator account:')
       .wait('Press Enter to continue')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Specify the AWS Region')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('user name:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Press Enter to continue')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('accessKeyId')
-      .sendline(s.accessKeyId)
+      .pauseRecording()
+      .sendLine(s.accessKeyId)
       .wait('secretAccessKey')
-      .sendline(s.secretAccessKey)
+      .sendLine(s.secretAccessKey)
+      .resumeRecording()
       .wait('Profile Name:')
-      .sendline(s.profileName)
+      .sendLine(s.profileName)
       .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {

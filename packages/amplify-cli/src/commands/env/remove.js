@@ -29,17 +29,22 @@ module.exports = {
     } else {
       if (currentEnv === envName) {
         context.print.error(
-          'You cannot delete your current environment. Please switch to another environment to delete your current environment'
+          'You cannot delete your current environment. Please switch to another environment to delete your current environment',
         );
         context.print.error("If this is your only environment you can use the 'amplify delete' command to delete your project");
         process.exit(1);
       }
 
-      const confirmation = await getConfirmation(context);
+      const confirmation = await getConfirmation(context, envName);
       if (confirmation.proceed) {
         const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
         spinner.start();
-        await context.amplify.removeEnvFromCloud(context, envName, confirmation.deleteS3);
+        try {
+          await context.amplify.removeEnvFromCloud(context, envName, confirmation.deleteS3);
+        } catch (ex) {
+          spinner.fail(`remove env failed: ${ex.message}`);
+          throw ex;
+        }
         spinner.succeed('Successfully removed environment from the cloud');
 
         // Remove from team-provider-info

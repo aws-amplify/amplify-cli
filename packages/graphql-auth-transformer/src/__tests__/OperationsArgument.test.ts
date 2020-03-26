@@ -28,7 +28,7 @@ test('Test "read" auth operation', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS'
+    'AMAZON_COGNITO_USER_POOLS',
   );
   expect(out.resolvers['Query.getPost.res.vtl']).toContain('Authorization rule:');
   expect(out.resolvers['Query.listPosts.res.vtl']).toContain('Authorization rule:');
@@ -59,7 +59,7 @@ test('Test "create", "update", "delete" auth operations', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS'
+    'AMAZON_COGNITO_USER_POOLS',
   );
   expect(out.resolvers['Query.getPost.res.vtl']).not.toContain('Authorization rule:');
   expect(out.resolvers['Query.getPost.res.vtl']).toMatchSnapshot();
@@ -98,7 +98,7 @@ test('Test that operation overwrites queries in auth operations', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS'
+    'AMAZON_COGNITO_USER_POOLS',
   );
   expect(out.resolvers['Query.getPost.res.vtl']).not.toContain('Authorization rule:');
   expect(out.resolvers['Query.getPost.res.vtl']).toMatchSnapshot();
@@ -140,7 +140,7 @@ test('Test that checks subscription resolvers are generated with auth logic', ()
   // expect to generate subcriptions resolvers
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS'
+    'AMAZON_COGNITO_USER_POOLS',
   );
   expect(out.resolvers['Subscription.onCreateSalary.res.vtl']).toContain('Authorization rule:');
   expect(out.resolvers['Subscription.onCreateSalary.res.vtl']).toMatchSnapshot();
@@ -180,7 +180,7 @@ test('Test that checks subscription resolvers are created without auth logic', (
   // expect to generate subcriptions resolvers
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS'
+    'AMAZON_COGNITO_USER_POOLS',
   );
   expect(out.resolvers['Subscription.onCreateSalary.res.vtl']).not.toContain('Authorization rule:');
   expect(out.resolvers['Subscription.onCreateSalary.res.vtl']).toMatchSnapshot();
@@ -223,7 +223,7 @@ test('Test that subscriptions are only generated if the respective mutation oper
   // expect to generate subscription resolvers for create and update only
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS'
+    'AMAZON_COGNITO_USER_POOLS',
   );
   expect(out.resolvers['Subscription.onCreateSalary.res.vtl']).toContain('Authorization rule:');
   expect(out.resolvers['Subscription.onCreateSalary.res.vtl']).toMatchSnapshot();

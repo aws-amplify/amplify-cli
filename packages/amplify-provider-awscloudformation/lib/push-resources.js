@@ -24,8 +24,12 @@ const optionalBuildDirectoryName = 'build';
 async function run(context, resourceDefinition) {
   try {
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = resourceDefinition;
-
-    const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+    let resources;
+    if (context.exeInfo.forcePush) {
+      resources = allResources;
+    } else {
+      resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+    }
     let projectDetails = context.amplify.getProjectDetails();
 
     validateCfnTemplates(context, resources);
@@ -93,7 +97,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
   const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = await context.amplify.getResourceStatus(
     category,
     resourceName,
-    providerName
+    providerName,
   );
 
   const { isReverting, isCLIMigration } = options;
@@ -118,7 +122,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
             Ref: 'UnauthRoleName',
           },
         },
-      })
+      }),
     )
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
@@ -326,10 +330,13 @@ function getCfnFiles(context, category, resourceName) {
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
     const files = fs.readdirSync(resourceBuildDir);
     const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
-    return {
-      resourceDir: resourceBuildDir,
-      cfnFiles,
-    };
+
+    if (cfnFiles.length > 0) {
+      return {
+        resourceDir: resourceBuildDir,
+        cfnFiles,
+      };
+    }
   }
   const files = fs.readdirSync(resourceDir);
   const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
@@ -402,6 +409,14 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
 
               parameters[parameterKey] = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
             }
+
+            if (dependsOn[i].exports) {
+              Object.keys(dependsOn[i].exports)
+                .map(key => ({ key, value: dependsOn[i].exports[key] }))
+                .forEach(({ key, value }) => {
+                  parameters[key] = { 'Fn::ImportValue': value };
+                });
+            }
           }
         }
 
@@ -438,7 +453,10 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   });
 
   if (authResourceName) {
-    updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+    const authParameters = loadResourceParameters(context, 'auth', authResourceName);
+    if (authParameters.identityPoolName) {
+      updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+    }
   }
   return nestedStack;
 }

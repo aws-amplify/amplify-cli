@@ -9,7 +9,7 @@ module.exports = {
     const { amplify } = context;
     const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
     return amplify
-      .serviceSelectionPrompt(context, category, servicesMetadata)
+      .serviceSelectionPrompt(context, category, servicesMetadata, 'Select an Analytics provider')
       .then(result => {
         options = {
           service: result.service,

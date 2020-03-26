@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const providerName = 'awscloudformation';
+// FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = 'analytics';
 const parametersFileName = 'parameters.json';
 const serviceName = 'Pinpoint';

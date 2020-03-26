@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-docs-generator",
-  "version": "2.1.9",
+  "version": "2.1.12",
   "description": "amplify graphql docs generator plugin",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
     "change-case": "^4.1.1",
@@ -40,11 +40,8 @@
     "yargs": "^15.1.0"
   },
   "devDependencies": {
-    "@types/jest": "23.3.1",
     "@types/node": "^10.17.13",
-    "@types/prettier": "^1.19.0",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6"
+    "@types/prettier": "^1.19.0"
   },
   "jest": {
     "transform": {
@@ -62,6 +59,11 @@
       "js",
       "jsx",
       "node"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
   }
 }

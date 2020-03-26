@@ -8,6 +8,20 @@ function addResource(context, category, service) {
   return addWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
+function updateResource(context, category, service) {
+  const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { updateWalkthrough } = require(serviceWalkthroughSrc);
+
+  if (!updateWalkthrough) {
+    context.print.error('Update functionality not available for this service');
+    process.exit(0);
+  }
+
+  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
+}
+
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
@@ -22,4 +36,4 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-module.exports = { addResource, getPermissionPolicies };
+module.exports = { addResource, getPermissionPolicies, updateResource };

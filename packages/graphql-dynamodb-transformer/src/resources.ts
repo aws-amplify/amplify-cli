@@ -77,16 +77,16 @@ export class ResourceFactory {
       Conditions: {
         [ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling]: Fn.Equals(
           Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode),
-          'PAY_PER_REQUEST'
+          'PAY_PER_REQUEST',
         ),
 
         [ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery]: Fn.Equals(
           Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
-          'true'
+          'true',
         ),
         [ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption]: Fn.Equals(
           Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption),
-          'true'
+          'true',
         ),
       },
     };
@@ -100,7 +100,7 @@ export class ResourceFactory {
       Name: Fn.If(
         ResourceConstants.CONDITIONS.HasEnvironmentParameter,
         Fn.Join('-', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName), Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
-        Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName)
+        Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName),
       ),
       AuthenticationType: 'API_KEY',
     });
@@ -174,7 +174,7 @@ export class ResourceFactory {
     hashKey: string = 'id',
     rangeKey?: string,
     deletionPolicy: DeletionPolicy = DeletionPolicy.Delete,
-    isSyncEnabled: boolean = false
+    isSyncEnabled: boolean = false,
   ) {
     const keySchema =
       hashKey && rangeKey
@@ -222,7 +222,7 @@ export class ResourceFactory {
         {
           PointInTimeRecoveryEnabled: true,
         },
-        Refs.NoValue
+        Refs.NoValue,
       ) as any,
       ...(isSyncEnabled && {
         TimeToLiveSpecification: SyncUtils.syncTTLConfig(),
@@ -238,7 +238,7 @@ export class ResourceFactory {
         Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
         Fn.Ref(ResourceConstants.PARAMETERS.Env),
       ]),
-      Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+      Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
     );
   }
 
@@ -261,7 +261,7 @@ export class ResourceFactory {
           typeName.slice(0, 31), // max of 64. 64-26-4-3 = 31
           'role',
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-        ])
+        ]),
       ),
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
@@ -313,7 +313,7 @@ export class ResourceFactory {
                             Fn.Join('-', [
                               SyncResourceIDs.syncTableName,
                               Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                            ])
+                            ]),
                           ),
                         }),
                         Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
@@ -327,7 +327,7 @@ export class ResourceFactory {
                             Fn.Join('-', [
                               SyncResourceIDs.syncTableName,
                               Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                            ])
+                            ]),
                           ),
                         }),
                       ]
@@ -388,7 +388,7 @@ export class ResourceFactory {
               expressionNames: obj({
                 '#id': str('id'),
               }),
-            })
+            }),
           ),
           iff(
             ref('context.args.condition'),
@@ -396,13 +396,13 @@ export class ResourceFactory {
               set(ref('condition.expressionValues'), obj({})),
               set(
                 ref('conditionFilterExpressions'),
-                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))')
+                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))'),
               ),
               // tslint:disable-next-line
               qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
               qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
               qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
-            ])
+            ]),
           ),
           iff(
             and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
@@ -411,8 +411,8 @@ export class ResourceFactory {
               obj({
                 expression: ref('condition.expression'),
                 expressionNames: ref('condition.expressionNames'),
-              })
-            )
+              }),
+            ),
           ),
           DynamoDBMappingTemplate.putItem(
             {
@@ -422,14 +422,14 @@ export class ResourceFactory {
                 obj({
                   id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`),
                 }),
-                true
+                true,
               ),
               attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
               condition: ref('util.toJson($condition)'),
             },
-            syncConfig ? '2018-05-29' : '2017-02-28'
+            syncConfig ? '2018-05-29' : '2017-02-28',
           ),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: syncConfig ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
@@ -459,7 +459,7 @@ export class ResourceFactory {
                 compoundExpression([
                   qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
                   qref('$condition.expressionNames.put("#id", "id")'),
-                ])
+                ]),
               ),
             ]),
             ifElse(
@@ -471,14 +471,14 @@ export class ResourceFactory {
                     expression: str(''),
                     expressionNames: obj({}),
                     expressionValues: obj({}),
-                  })
+                  }),
                 ),
                 forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
                   ifElse(
                     raw('$velocityCount == 1'),
                     qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
                     qref('$condition.put(\
-"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")')
+"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                   ),
                   qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")'),
                 ]),
@@ -491,9 +491,9 @@ export class ResourceFactory {
                     '#id': str('id'),
                   }),
                   expressionValues: obj({}),
-                })
-              )
-            )
+                }),
+              ),
+            ),
           ),
           comment('Automatically set the updatedAt timestamp.'),
           qref('$context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601()))'),
@@ -504,24 +504,24 @@ export class ResourceFactory {
             compoundExpression([
               // tslint:disable-next-line
               qref(
-                `$condition.put("expression", "($condition.expression) AND $${ResourceConstants.SNIPPETS.VersionedCondition}.expression")`
+                `$condition.put("expression", "($condition.expression) AND $${ResourceConstants.SNIPPETS.VersionedCondition}.expression")`,
               ),
               qref(`$condition.expressionNames.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionNames)`),
               qref(`$condition.expressionValues.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionValues)`),
-            ])
+            ]),
           ),
           iff(
             ref('context.args.condition'),
             compoundExpression([
               set(
                 ref('conditionFilterExpressions'),
-                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))')
+                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))'),
               ),
               // tslint:disable-next-line
               qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
               qref(`$condition.expressionNames.putAll($conditionFilterExpressions.expressionNames)`),
               qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
-            ])
+            ]),
           ),
           iff(
             and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
@@ -530,24 +530,24 @@ export class ResourceFactory {
               obj({
                 expression: ref('condition.expression'),
                 expressionNames: ref('condition.expressionNames'),
-              })
-            )
+              }),
+            ),
           ),
           DynamoDBMappingTemplate.updateItem({
             key: ifElse(
               ref(ResourceConstants.SNIPPETS.ModelObjectKey),
               raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
               obj({
-                id: obj({ S: str('$context.args.input.id') }),
+                id: obj({ S: ref('util.toJson($context.args.input.id)') }),
               }),
-              true
+              true,
             ),
             condition: ref('util.toJson($condition)'),
             objectKeyVariable: ResourceConstants.SNIPPETS.ModelObjectKey,
             nameOverrideMap: ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap,
             isSyncEnabled,
           }),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
@@ -573,10 +573,10 @@ export class ResourceFactory {
             obj({
               id: ref('util.dynamodb.toDynamoDBJson($ctx.args.id)'),
             }),
-            true
+            true,
           ),
           isSyncEnabled,
-        })
+        }),
       ),
       ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
     });
@@ -599,7 +599,7 @@ export class ResourceFactory {
           limit: ref('util.defaultIfNull($ctx.args.limit, 100)'),
           lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
           nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
-        })
+        }),
       ),
       ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse()),
     });
@@ -634,20 +634,20 @@ export class ResourceFactory {
             scanIndexForward: ifElse(
               ref('context.args.sortDirection'),
               ifElse(equals(ref('context.args.sortDirection'), str('ASC')), bool(true), bool(false)),
-              bool(true)
+              bool(true),
             ),
             filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
             limit: ref('limit'),
-            nextToken: ifElse(ref('context.args.nextToken'), str('$context.args.nextToken'), nul()),
+            nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
             isSyncEnabled,
           }),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: isSyncEnabled
         ? print(
             DynamoDBMappingTemplate.dynamoDBResponse(
-              compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')])
-            )
+              compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+            ),
           )
         : print(ref('util.toJson($ctx.result)')),
     });
@@ -675,12 +675,12 @@ export class ResourceFactory {
             obj({
               version: isSyncEnabled ? str('2018-05-29') : str('2017-02-28'),
               limit: ref('limit'),
-            })
+            }),
           ),
-          iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), str('$context.args.nextToken'))),
+          iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken'))),
           iff(
             ref('context.args.filter'),
-            set(ref(`${requestVariable}.filter`), ref('util.parseJson("$util.transform.toDynamoDBFilterExpression($ctx.args.filter)")'))
+            set(ref(`${requestVariable}.filter`), ref('util.parseJson("$util.transform.toDynamoDBFilterExpression($ctx.args.filter)")')),
           ),
           ifElse(
             raw(`!$util.isNull($${ResourceConstants.SNIPPETS.ModelQueryExpression})
@@ -691,13 +691,13 @@ export class ResourceFactory {
               ifElse(
                 raw(`!$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == "DESC"`),
                 set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
-                set(ref(`${requestVariable}.scanIndexForward`), bool(true))
+                set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
               ),
             ]),
-            qref(`$${requestVariable}.put("operation", "Scan")`)
+            qref(`$${requestVariable}.put("operation", "Scan")`),
           ),
           raw(`$util.toJson($${requestVariable})`),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
     });
@@ -731,7 +731,7 @@ export class ResourceFactory {
                 compoundExpression([
                   qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
                   qref('$condition.expressionNames.put("#id", "id")'),
-                ])
+                ]),
               ),
             ]),
             ifElse(
@@ -742,14 +742,14 @@ export class ResourceFactory {
                   obj({
                     expression: str(''),
                     expressionNames: obj({}),
-                  })
+                  }),
                 ),
                 forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
                   ifElse(
                     raw('$velocityCount == 1'),
                     qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
                     qref('$condition.put(\
-"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")')
+"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                   ),
                   qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")'),
                 ]),
@@ -761,29 +761,29 @@ export class ResourceFactory {
                   expressionNames: obj({
                     '#id': str('id'),
                   }),
-                })
-              )
-            )
+                }),
+              ),
+            ),
           ),
           iff(
             ref(ResourceConstants.SNIPPETS.VersionedCondition),
             compoundExpression([
               // tslint:disable-next-line
               qref(
-                `$condition.put("expression", "($condition.expression) AND $${ResourceConstants.SNIPPETS.VersionedCondition}.expression")`
+                `$condition.put("expression", "($condition.expression) AND $${ResourceConstants.SNIPPETS.VersionedCondition}.expression")`,
               ),
               qref(`$condition.expressionNames.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionNames)`),
               set(ref('expressionValues'), raw('$util.defaultIfNull($condition.expressionValues, {})')),
               qref(`$expressionValues.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionValues)`),
               set(ref('condition.expressionValues'), ref('expressionValues')),
-            ])
+            ]),
           ),
           iff(
             ref('context.args.condition'),
             compoundExpression([
               set(
                 ref('conditionFilterExpressions'),
-                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))')
+                raw('$util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition))'),
               ),
               // tslint:disable-next-line
               qref(`$condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression")`),
@@ -792,7 +792,7 @@ export class ResourceFactory {
               qref(`$conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues)`),
               set(ref('condition.expressionValues'), ref('conditionExpressionValues')),
               qref(`$condition.expressionValues.putAll($conditionFilterExpressions.expressionValues)`),
-            ])
+            ]),
           ),
           iff(
             and([ref('condition.expressionValues'), raw('$condition.expressionValues.size() == 0')]),
@@ -801,8 +801,8 @@ export class ResourceFactory {
               obj({
                 expression: ref('condition.expression'),
                 expressionNames: ref('condition.expressionNames'),
-              })
-            )
+              }),
+            ),
           ),
           DynamoDBMappingTemplate.deleteItem({
             key: ifElse(
@@ -811,12 +811,12 @@ export class ResourceFactory {
               obj({
                 id: ref('util.dynamodb.toDynamoDBJson($ctx.args.input.id)'),
               }),
-              true
+              true,
             ),
             condition: ref('util.toJson($condition)'),
             isSyncEnabled,
           }),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),

@@ -147,6 +147,36 @@ describe('Test put api', () => {
 
   const file = __dirname + '/test-data/abc.txt';
   const buf1 = fs.readFileSync(file);
+  const Jsonobj = {
+    __typename: 'UserData',
+    id: 'a9a394ea-feaa-4bf9-a612-d80aa38e6b31',
+    name: 'Test Mock Storage',
+    users: null,
+    completionStatus: null,
+    parentId: null,
+    time: { __typename: 'Time', cDate: 1578985237505, mDate: null, rDate: null, freq: null },
+    Type: 'ROOT',
+    Manager: null,
+    logo: {
+      __typename: 'S3File',
+      id: null,
+      name: 'logo.png',
+      names: null,
+      typeId: 'a9a394ea-feaa-4bf9-a612-d80aa38e6b31',
+      fileType: 'LOGO',
+      contentType: 'image/png',
+      length: null,
+      key: 'a9a394ea-feaa-4bf9-a612-d80aa38e6b31/LOGO/logo.png.png',
+    },
+    integrate: null,
+    Setting: { __typename: 'Setting', dueInDays: null, fre: 'ANN', sur: 'high', art: null, access: 'PHYSICAL' },
+    createdBy: null,
+    createdAt: 1578985237505,
+    modifiedBy: null,
+    modifiedAt: 1578985237505,
+    Details: null,
+    effect: 'HEALTH',
+  };
 
   test('put text', async () => {
     const params = {
@@ -156,6 +186,21 @@ describe('Test put api', () => {
     };
     const data = await s3client.upload(params).promise();
     expect(data).toBeDefined();
+  });
+
+  test('put JSON', async () => {
+    const params = {
+      Bucket: bucket, // pass your bucket name
+      Key: 'upload/abc.json',
+      Body: JSON.stringify(Jsonobj),
+      ContentType: 'application/json',
+    };
+    const data = await s3client.upload(params).promise();
+    const jsonFile = __dirname + '/test-data/upload/abc.json';
+    const contents = fs.readFileSync(jsonFile);
+    const obj = JSON.parse(contents.toString());
+    expect(data).toBeDefined();
+    expect(JSON.stringify(obj)).toBe(JSON.stringify(Jsonobj));
   });
 
   const file1 = __dirname + '/test-data/Snake_River_(5mb).jpg';

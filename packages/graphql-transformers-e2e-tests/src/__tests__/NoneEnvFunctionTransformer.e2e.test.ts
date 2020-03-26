@@ -6,11 +6,11 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
 
@@ -98,7 +98,7 @@ beforeAll(async () => {
     LOCAL_FS_BUILD_DIR,
     BUCKET_NAME,
     S3_ROOT_DIR_KEY,
-    BUILD_TIMESTAMP
+    BUILD_TIMESTAMP,
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
@@ -171,7 +171,7 @@ test('Test simple echo function', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.echoNoEnv.arguments.msg).toEqual('Hello');

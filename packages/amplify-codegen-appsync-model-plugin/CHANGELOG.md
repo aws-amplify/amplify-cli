@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.4...amplify-codegen-appsync-model-plugin@1.13.5) (2020-03-22)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
+## [1.13.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.3...amplify-codegen-appsync-model-plugin@1.13.4) (2020-03-10)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** use Java Long for AWSTimestamp ([#3615](https://github.com/aws-amplify/amplify-cli/issues/3615)) ([051b2fb](https://github.com/aws-amplify/amplify-cli/commit/051b2fb4de7266d950af8a51170f30b43d0d9b50)), closes [#3593](https://github.com/aws-amplify/amplify-cli/issues/3593)
+
+
+
+
+
+## [1.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.2...amplify-codegen-appsync-model-plugin@1.13.3) (2020-02-13)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
+## [1.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.1...amplify-codegen-appsync-model-plugin@1.13.2) (2020-02-07)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
 ## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.0...amplify-codegen-appsync-model-plugin@1.13.1) (2020-01-24)
 
 

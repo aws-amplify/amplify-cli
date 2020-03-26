@@ -711,6 +711,10 @@
         "ApiName": {
           "Description": "API Friendly name",
           "Value": "<%= props.resourceName %>"
+        },
+        "ApiId": {
+          "Description": "API ID (prefix of API URL)",
+          "Value": {"Ref": "<%= props.apiName %>"}
         }
     }
   }

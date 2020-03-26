@@ -1,5 +1,5 @@
-import * as nexpect from '../utils/nexpect-modified';
-import { getCLIPath, isCI } from '../utils';
+import { nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath } from '../utils';
 
 const defaultSettings = {
   name: '\r',
@@ -15,34 +15,33 @@ const defaultSettings = {
   profileName: '\r',
 };
 
-export function initJSProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
+export function initJSProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
-      .sendline(s.name)
+      .sendLine(s.name)
       .wait('Enter a name for the environment')
-      .sendline(s.envName)
+      .sendLine(s.envName)
       .wait('Choose your default editor:')
-      .sendline(s.editor)
+      .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendline(s.appType)
+      .sendLine(s.appType)
       .wait('What javascript framework are you using')
-      .sendline(s.framework)
+      .sendLine(s.framework)
       .wait('Source Directory Path:')
-      .sendline(s.srcDir)
+      .sendLine(s.srcDir)
       .wait('Distribution Directory Path:')
-      .sendline(s.distDir)
+      .sendLine(s.distDir)
       .wait('Build Command:')
-      .sendline(s.buildCmd)
+      .sendLine(s.buildCmd)
       .wait('Start Command:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
-      .sendline('y')
+      .sendLine('y')
       .wait('Please choose the profile you want to use')
-      .sendline(s.profileName)
+      .sendLine(s.profileName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
@@ -54,26 +53,25 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, verbose:
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
+export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
-      .sendline(s.name)
+      .sendLine(s.name)
       .wait('Enter a name for the environment')
-      .sendline(s.envName)
+      .sendLine(s.envName)
       .wait('Choose your default editor:')
-      .sendline(s.editor)
+      .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
       .send('j')
-      .sendline('')
+      .sendCarriageReturn()
       .wait('Where is your Res directory')
-      .sendline('')
+      .sendCarriageReturn()
       .wait('Do you want to use an AWS profile?')
-      .sendline('y')
+      .sendLine('y')
       .wait('Please choose the profile you want to use')
-      .sendline(s.profileName)
+      .sendLine(s.profileName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
@@ -85,25 +83,24 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object, ver
   });
 }
 
-export function initIosProjectWithProfile(cwd: string, settings: Object, verbose: Boolean = isCI() ? false : true) {
+export function initIosProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
-      .sendline(s.name)
+      .sendLine(s.name)
       .wait('Enter a name for the environment')
-      .sendline(s.envName)
+      .sendLine(s.envName)
       .wait('Choose your default editor:')
-      .sendline(s.editor)
+      .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
       .send('j')
       .send('j')
-      .sendline('')
+      .sendCarriageReturn()
       .wait('Do you want to use an AWS profile?')
-      .sendline('y')
+      .sendLine('y')
       .wait('Please choose the profile you want to use')
-      .sendline(s.profileName)
+      .sendLine(s.profileName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
@@ -115,42 +112,39 @@ export function initIosProjectWithProfile(cwd: string, settings: Object, verbose
   });
 }
 
-export function initProjectWithAccessKey(
-  cwd: string,
-  settings: { accessKeyId: string; secretAccessKey: string },
-  verbose: Boolean = isCI() ? false : true
-) {
+export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: string; secretAccessKey: string }) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
-      .sendline(s.name)
+      .sendLine(s.name)
       .wait('Enter a name for the environment')
-      .sendline(s.envName)
+      .sendLine(s.envName)
       .wait('Choose your default editor:')
-      .sendline(s.editor)
+      .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendline(s.appType)
+      .sendLine(s.appType)
       .wait('What javascript framework are you using')
-      .sendline(s.framework)
+      .sendLine(s.framework)
       .wait('Source Directory Path:')
-      .sendline(s.srcDir)
+      .sendLine(s.srcDir)
       .wait('Distribution Directory Path:')
-      .sendline(s.distDir)
+      .sendLine(s.distDir)
       .wait('Build Command:')
-      .sendline(s.buildCmd)
+      .sendLine(s.buildCmd)
       .wait('Start Command:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
-      .sendline('n')
+      .sendLine('n')
+      .pauseRecording()
       .wait('accessKeyId')
-      .sendline(s.accessKeyId)
+      .sendLine(s.accessKeyId)
       .wait('secretAccessKey')
-      .sendline(s.secretAccessKey)
+      .sendLine(s.secretAccessKey)
+      .resumeRecording()
       .wait('region')
-      .sendline('us-east-1')
+      .sendLine('us-east-1')
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
@@ -162,27 +156,22 @@ export function initProjectWithAccessKey(
   });
 }
 
-export function initNewEnvWithAccessKey(
-  cwd: string,
-  s: { envName: string; accessKeyId: string; secretAccessKey: string },
-  verbose: Boolean = isCI() ? false : true
-) {
+export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
-      .sendline('n')
+      .sendLine('n')
       .wait('Enter a name for the environment')
-      .sendline(s.envName)
+      .sendLine(s.envName)
       .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
-      .sendline('n')
+      .sendLine('n')
       .wait('accessKeyId')
-      .sendline(s.accessKeyId)
+      .sendLine(s.accessKeyId)
       .wait('secretAccessKey')
-      .sendline(s.secretAccessKey)
+      .sendLine(s.secretAccessKey)
       .wait('region')
-      .sendline('us-east-1')
+      .sendLine('us-east-1')
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
@@ -194,19 +183,18 @@ export function initNewEnvWithAccessKey(
   });
 }
 
-export function initNewEnvWithProfile(cwd: string, s: { envName: string }, verbose: Boolean = isCI() ? false : true) {
+export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
-      .sendline('n')
+      .sendLine('n')
       .wait('Enter a name for the environment')
-      .sendline(s.envName)
+      .sendLine(s.envName)
       .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
-      .sendline('y')
+      .sendLine('y')
       .wait('Please choose the profile you want to use')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {

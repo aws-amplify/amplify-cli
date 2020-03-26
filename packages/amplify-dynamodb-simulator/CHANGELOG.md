@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.13.3...amplify-dynamodb-simulator@1.14.0) (2020-03-22)
+
+
+### Features
+
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+* **amplify-util-mock:** add mock config for JAVA_OPTS ([#3503](https://github.com/aws-amplify/amplify-cli/issues/3503)) ([24d8085](https://github.com/aws-amplify/amplify-cli/commit/24d8085325d435284b9c49a43592e61891fd72bc))
+
+
+
+
+
+## [1.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.13.2...amplify-dynamodb-simulator@1.13.3) (2020-02-13)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
+## [1.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.13.1...amplify-dynamodb-simulator@1.13.2) (2020-02-07)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
 ## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.13.0...amplify-dynamodb-simulator@1.13.1) (2020-01-24)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

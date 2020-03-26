@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.0...@aws-amplify/cli@4.17.1) (2020-03-22)
+
+
+### Bug Fixes
+
+* add function runtime and template provider dependencies to core ([0936ec7](https://github.com/aws-amplify/amplify-cli/commit/0936ec795b2401257450e2a6d7e2d897712b546c))
+
+
+
+
+
+# [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.16.1...@aws-amplify/cli@4.17.0) (2020-03-22)
+
+
+### Bug Fixes
+
+* **cli:** deleting the amplify app on delete ([#3568](https://github.com/aws-amplify/amplify-cli/issues/3568)) ([f39bbcb](https://github.com/aws-amplify/amplify-cli/commit/f39bbcb715875eeeb612bcbc40b275b33f85eaf6)), closes [#3239](https://github.com/aws-amplify/amplify-cli/issues/3239)
+
+
+### Features
+
+* **amplify-category-function:** refactor to support build and package interface of runtime plugins ([8c4ec55](https://github.com/aws-amplify/amplify-cli/commit/8c4ec55e46ed8a153eee306c23f9665d58d3c5f4))
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+
+
+
+
+
+## [4.16.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.16.0...@aws-amplify/cli@4.16.1) (2020-03-10)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.13.4...@aws-amplify/cli@4.16.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* **cli:** 'remove env' wording ([#3425](https://github.com/aws-amplify/amplify-cli/issues/3425)) ([ddaeb23](https://github.com/aws-amplify/amplify-cli/commit/ddaeb23d2fbffa7ee7f0769c133b75e0d2be9bcc))
+* [#3304](https://github.com/aws-amplify/amplify-cli/issues/3304) - MaxListenersExceededWarning ([#3527](https://github.com/aws-amplify/amplify-cli/issues/3527)) ([aa391ef](https://github.com/aws-amplify/amplify-cli/commit/aa391ef86071672b8e0f7b61f9593a9aff3bea71))
+* scoping down user pool group IAM roles and adding --force to amplify push command ([#3609](https://github.com/aws-amplify/amplify-cli/issues/3609)) ([2e10a2f](https://github.com/aws-amplify/amplify-cli/commit/2e10a2ff62b61f57b2d513a7cfd0e4478f429f1f))
+
+
+### Features
+
+* ability to add custom EventSource and lambda triggers via amplify add function, kinesis support in analytics category ([#2463](https://github.com/aws-amplify/amplify-cli/issues/2463)) ([b25cfd0](https://github.com/aws-amplify/amplify-cli/commit/b25cfd00b21416a82ecefda1f6498206ef71531b))
+
+
+
+
+
+## [4.14.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.13.6-beta.1...@aws-amplify/cli@4.14.1) (2020-03-05)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.13.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.13.3...@aws-amplify/cli@4.13.4) (2020-02-18)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.13.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.13.2...@aws-amplify/cli@4.13.3) (2020-02-13)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.13.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.13.1...@aws-amplify/cli@4.13.2) (2020-02-07)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [4.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.13.0...@aws-amplify/cli@4.13.1) (2020-01-24)
 
 **Note:** Version bump only for package @aws-amplify/cli

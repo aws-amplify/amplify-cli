@@ -1,17 +1,15 @@
-import * as nexpect from '../utils/nexpect-modified';
+import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
+import { getCLIPath, getEnvVars } from '../utils';
 
-import { getCLIPath, isCI, getEnvVars } from '../utils';
-
-export function addAuthWithDefault(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithDefault(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -23,10 +21,9 @@ export function addAuthWithDefault(cwd: string, settings: any, verbose: boolean 
   });
 }
 
-export function addAuthWithGroupTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithGroupTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('\r')
       .wait('How do you want users to be able to sign in')
@@ -55,10 +52,9 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any, verbose: boo
   });
 }
 
-export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthViaAPIWithTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .send('\r')
       .wait('Provide API name')
@@ -85,7 +81,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: bo
       .send('n')
       .send('\r')
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
       .send('n')
       .send('\r')
@@ -107,10 +103,9 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any, verbose: bo
   });
 }
 
-export function addAuthWithCustomTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithCustomTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('j')
       .send('j')
@@ -186,10 +181,9 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any, verbose: bo
   });
 }
 
-export function updateAuthWithoutCustomTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateAuthWithoutCustomTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
       .wait('What do you want to do?')
       .send('j')
       .send('j')
@@ -240,10 +234,9 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any, verbo
   });
 }
 
-export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithRecaptchaTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('\r')
       .wait('How do you want users to be able to sign in?')
@@ -278,10 +271,9 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any, verbose:
   });
 }
 
-export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
       .wait('What do you want to do')
       .send('j')
       .send('\r')
@@ -332,7 +324,7 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any, ver
   });
 }
 
-export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthWithDefaultSocial(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET, 
       OIDC_APP_ID, OIDC_APP_SECRET, OIDC_APP_ISSUER, OIDC_APP_SCOPES, OIDC_APP_MAPPING }: any = getEnvVars();
@@ -375,29 +367,27 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
     if (missingVars.length > 0) {
       throw new Error(`.env file is missing the following key/values: ${missingVars.join(', ')} `);
     }
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
-      // j = down arrow
-      .sendline('j')
-      .sendline('\r')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .wait('How do you want users to be able to sign in?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('What domain name prefix you want us to create for you?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Enter your redirect signin URI:')
-      .sendline('https://www.google.com/')
+      .sendLine('https://www.google.com/')
       .wait('Do you want to add another redirect signin URI')
-      .sendline('n')
-      .sendline('\r')
+      .sendLine('n')
+      .sendCarriageReturn()
       .wait('Enter your redirect signout URI:')
-      .sendline('https://www.nytimes.com/')
-      .sendline('\r')
+      .sendLine('https://www.nytimes.com/')
+      .sendCarriageReturn()
       .wait('Do you want to add another redirect signout URI')
-      .sendline('n')
-      .sendline('\r')
+      .sendLine('n')
+      .sendCarriageReturn()
       .wait('Select the social providers you want to configure for your user pool:')
       .send('a')
       .send('\r')
@@ -447,10 +437,192 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any, verbose: bo
   });
 }
 
-export function addAuthWithMaxOptions(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addAuthUserPoolOnly(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+      .wait('Do you want to use the default authentication and security configuration?')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Select the authentication/authorization services that you want to use')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Please provide a friendly name for your resource that will be used')
+      .sendCarriageReturn()
+      .wait('Please provide a name for your user pool')
+      .sendCarriageReturn()
+      .wait('How do you want users to be able to sign in')
+      .sendCarriageReturn()
+      .wait('Do you want to add User Pool Groups?')
+      .sendCarriageReturn()
+      .wait('Provide a name for your user pool group')
+      .send('userPoolGroup1')
+      .sendCarriageReturn()
+      .wait('Do you want to add another User Pool Group')
+      .send('y')
+      .sendCarriageReturn()
+      .wait('Provide a name for your user pool group')
+      .send('userPoolGroup2')
+      .sendCarriageReturn()
+      .wait('Do you want to add another User Pool Group')
+      .sendCarriageReturn()
+      .wait('Sort the user pool groups in order of preference')
+      .sendCarriageReturn()
+      .wait('Do you want to add an admin queries API?')
+      .sendCarriageReturn()
+      .wait('Do you want to restrict access to the admin queries API')
+      .sendCarriageReturn()
+      .wait('Select the group to restrict access with')
+      .sendCarriageReturn()
+      .wait('Multifactor authentication (MFA) user login options')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('For user login, select the MFA types')
+      .send('a')
+      .sendCarriageReturn()
+      .wait('Please specify an SMS authentication message')
+      .sendCarriageReturn()
+      .wait('Email based user registration/forgot password')
+      .sendCarriageReturn()
+      .wait('Please specify an email verification subject')
+      .sendCarriageReturn()
+      .wait('Please specify an email verification message')
+      .sendCarriageReturn()
+      .wait('Do you want to override the default password policy')
+      .send('y')
+      .sendCarriageReturn()
+      .wait('Enter the minimum password length for this User Pool')
+      .sendCarriageReturn()
+      .wait('Select the password character requirements for your userpool')
+      .send('a')
+      .sendCarriageReturn()
+      .wait('What attributes are required for signing up?')
+      .sendCarriageReturn()
+      .wait('Specify the app')
+      .sendCarriageReturn()
+      .wait('Do you want to specify the user attributes this app')
+      .send('y')
+      .sendCarriageReturn()
+      .wait('Specify read attributes')
+      .sendCarriageReturn()
+      .wait('Specify write attributes')
+      .sendCarriageReturn()
+      .wait('Do you want to enable any of the following capabilities?')
+      .sendCarriageReturn()
+      .wait('Do you want to use an OAuth flow')
+      .sendCarriageReturn()
+      .wait('What domain name prefix you want us to create for you')
+      .sendCarriageReturn()
+      .wait('Enter your redirect signin URI')
+      .send('https://signin1/')
+      .sendCarriageReturn()
+      .wait('Do you want to add another redirect signin URI')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Enter your redirect signout URI')
+      .send('https://signout1/')
+      .sendCarriageReturn()
+      .wait('Do you want to add another redirect signout URI')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Select the OAuth flows enabled for this project')
+      .sendCarriageReturn()
+      .wait('Select the OAuth scopes enabled for this project')
+      .sendCarriageReturn()
+      .wait('Select the social providers you want to configure for your user pool')
+      .send('a')
+      .sendCarriageReturn()
+      .wait('Enter your Facebook App ID for your OAuth flow')
+      .send('fbOAUTHid')
+      .sendCarriageReturn()
+      .wait('Enter your Facebook App Secret for your OAuth flow')
+      .send('fbOAUTHsecret')
+      .sendCarriageReturn()
+      .wait('Enter your Google Web Client ID for your OAuth flow')
+      .send('googOAUTHid')
+      .sendCarriageReturn()
+      .wait('Enter your Google Web Client Secret for your OAuth flow')
+      .send('googOAUTHsecret')
+      .sendCarriageReturn()
+      .wait('Enter your Amazon App ID for your OAuth flow')
+      .send('amzOAUTHid')
+      .sendCarriageReturn()
+      .wait('Enter your Amazon App Secret for your OAuth flow')
+      .send('amzOAUTHsecret')
+      .sendCarriageReturn()
+      .wait('Do you want to configure Lambda Triggers for Cognito')
+      .send('y')
+      .sendCarriageReturn()
+      .wait('Which triggers do you want to enable for Cognito')
+      .send('a')
+      .send(' ')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Create Auth Challenge')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .send(' ')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Custom Message')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .send(' ')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Define Auth Challenge')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .send(' ')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Post Authentication')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Post Confirmation')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Pre Authentication')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Pre Sign-up')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Verify')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Pre Token')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your custom function now')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your custom function now')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your custom function now')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your custom function now')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your custom function now')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your custom function now')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your custom function now')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your custom function now')
+      .send('n')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addAuthWithMaxOptions(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send('j')
       .send('j')

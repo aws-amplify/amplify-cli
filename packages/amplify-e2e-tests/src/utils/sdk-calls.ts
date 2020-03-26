@@ -1,4 +1,15 @@
-import { config, DynamoDB, S3, CognitoIdentityServiceProvider, Lambda, LexModelBuildingService, Rekognition, AppSync } from 'aws-sdk';
+import {
+  config,
+  DynamoDB,
+  S3,
+  CognitoIdentityServiceProvider,
+  Lambda,
+  LexModelBuildingService,
+  Rekognition,
+  AppSync,
+  CloudWatchLogs,
+  Kinesis,
+} from 'aws-sdk';
 
 const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
@@ -33,17 +44,15 @@ const getLambdaFunction = async (functionName, region) => {
   return res;
 };
 
-const getUserPoolClients = async (userpoolId, region) => {
-  config.update({ region });
-  const provider = new CognitoIdentityServiceProvider();
+const getUserPoolClients = async (userPoolId: string, clientIds: string[], region: string) => {
+  const provider = new CognitoIdentityServiceProvider({ region });
   const res = [];
   try {
-    const clients = await provider.listUserPoolClients({ UserPoolId: userpoolId }).promise();
-    for (let i = 0; i < clients.UserPoolClients.length; i++) {
+    for (let i = 0; i < clientIds.length; i++) {
       const clientData = await provider
         .describeUserPoolClient({
-          UserPoolId: userpoolId,
-          ClientId: clients.UserPoolClients[i].ClientId,
+          UserPoolId: userPoolId,
+          ClientId: clientIds[i],
         })
         .promise();
       res.push(clientData);
@@ -62,6 +71,11 @@ const getBot = async (botName: string, region: string) => {
 const getFunction = async (functionName: string, region: string) => {
   const service = new Lambda({ region });
   return await service.getFunction({ FunctionName: functionName }).promise();
+};
+
+const invokeFunction = async (functionName: string, payload: string, region: string) => {
+  const service = new Lambda({ region });
+  return await service.invoke({ FunctionName: functionName, Payload: payload }).promise();
 };
 
 const getCollection = async (collectionId: string, region: string) => {
@@ -84,6 +98,39 @@ const getAppSyncApi = async (appSyncApiId: string, region: string) => {
   return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
 };
 
+const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
+  const cloudwatchlogs = new CloudWatchLogs({ region, retryDelayOptions: { base: 500 } });
+
+  let targetStreamName = logStreamName;
+  if (targetStreamName === undefined) {
+    const describeStreamsResp = await cloudwatchlogs.describeLogStreams({ logGroupName, descending: true }).promise();
+    if (describeStreamsResp.logStreams === undefined || describeStreamsResp.logStreams.length == 0) {
+      return [];
+    }
+
+    targetStreamName = describeStreamsResp.logStreams[0].logStreamName;
+  }
+
+  const logsResp = await cloudwatchlogs.getLogEvents({ logGroupName, logStreamName: targetStreamName }).promise();
+  return logsResp.events || [];
+};
+
+const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
+  const kinesis = new Kinesis({ region });
+
+  return await kinesis
+    .putRecords({
+      Records: [
+        {
+          Data: data,
+          PartitionKey: partitionKey,
+        },
+      ],
+      StreamName: streamName,
+    })
+    .promise();
+};
+
 export {
   getDDBTable,
   checkIfBucketExists,
@@ -92,8 +139,11 @@ export {
   getBot,
   getLambdaFunction,
   getFunction,
+  invokeFunction,
   getTable,
   deleteTable,
   getAppSyncApi,
   getCollection,
+  getCloudWatchLogs,
+  putKinesisRecords,
 };

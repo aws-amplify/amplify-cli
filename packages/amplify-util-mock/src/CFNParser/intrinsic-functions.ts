@@ -51,10 +51,17 @@ export function cfnGetAtt(valNode, { params, conditions, resources, exports }: C
   }
   const selectedResource = resources[resourceName];
   const attributeName = valNode[1];
-  if (!Object.keys(selectedResource).includes(attributeName)) {
+  if (!selectedResource.result.cfnExposedAttributes) {
+    throw new Error(`No attributes are exposed to Fn::GetAtt on resource type ${selectedResource.Type}`);
+  }
+  if (!Object.keys(selectedResource.result.cfnExposedAttributes).includes(attributeName)) {
+    throw new Error(`Attribute ${attributeName} is not exposed to Fn::GetAtt on resource ${selectedResource.Type}`);
+  }
+  const effectiveAttrKey = selectedResource.result.cfnExposedAttributes[attributeName];
+  if (!Object.keys(selectedResource.result).includes(effectiveAttrKey)) {
     throw new Error(`Could not get attribute ${attributeName} on resource ${resourceName}`);
   }
-  return selectedResource[attributeName];
+  return selectedResource.result[effectiveAttrKey];
 }
 
 export function cfnSplit(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
@@ -86,10 +93,10 @@ export function cfnRef(valNode, { params, conditions, resources, exports }: Clou
   }
 
   if (Object.keys(resources).includes(key)) {
-    if (!('name' in resources[key])) {
-      throw new Error(`name is missing in resource ${key}`);
+    if (!('ref' in resources[key].result)) {
+      throw new Error(`Ref is missing in resource ${key}`);
     }
-    return resources[key].name;
+    return resources[key].result.ref;
   }
   throw new Error(`Could not find ref for ${JSON.stringify(valNode)}`);
 }

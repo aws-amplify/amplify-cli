@@ -14,6 +14,7 @@ import {
   SchemaDefinitionNode,
   ArgumentNode,
   ListValueNode,
+  ListTypeNode,
   StringValueNode,
   InputObjectTypeDefinitionNode,
   DocumentNode,
@@ -66,6 +67,7 @@ export function getInputValueDefinition(typeNode: NamedTypeNode | NonNullTypeNod
       value: name,
     },
     type: typeNode,
+    directives: [],
   };
 }
 
@@ -81,8 +83,8 @@ export function getInputValueDefinition(typeNode: NamedTypeNode | NonNullTypeNod
 export function getOperationFieldDefinition(
   name: string,
   args: InputValueDefinitionNode[],
-  type: NamedTypeNode,
-  directives: ReadonlyArray<DirectiveNode>
+  type: NamedTypeNode | ListTypeNode,
+  directives: ReadonlyArray<DirectiveNode>,
 ): FieldDefinitionNode {
   return {
     kind: Kind.FIELD_DEFINITION,
@@ -92,7 +94,7 @@ export function getOperationFieldDefinition(
     },
     arguments: args,
     type: type,
-    directives: directives,
+    directives: directives || [],
   };
 }
 
@@ -111,6 +113,7 @@ export function getFieldDefinition(fieldName: string, type: NonNullTypeNode | Na
       value: fieldName,
     },
     type,
+    directives: [],
   };
 }
 
@@ -129,6 +132,8 @@ export function getTypeDefinition(fields: ReadonlyArray<FieldDefinitionNode>, ty
       value: typeName,
     },
     fields: fields,
+    directives: [],
+    interfaces: [],
   };
 }
 
@@ -147,6 +152,7 @@ export function getInputTypeDefinition(fields: ReadonlyArray<InputValueDefinitio
       value: typeName,
     },
     fields: fields,
+    directives: [],
   };
 }
 
@@ -160,6 +166,18 @@ export function getNameNode(name: string): NameNode {
   return {
     kind: Kind.NAME,
     value: name,
+  };
+}
+/**
+ * Create a singleton list type node for queries
+ *
+ * @param name the singleton named type for the list
+ * @return singleton ListTypeNode
+ */
+export function getSingletonListTypeNode(name: string): ListTypeNode {
+  return {
+    kind: Kind.LIST_TYPE,
+    type: getNamedType(name),
   };
 }
 

@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.15.1...graphql-transformers-e2e-tests@6.15.2) (2020-03-22)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.15.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.4...graphql-transformers-e2e-tests@6.15.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** add list support for ownerField in subs ([#3166](https://github.com/aws-amplify/amplify-cli/issues/3166)) ([8d68277](https://github.com/aws-amplify/amplify-cli/commit/8d6827752ebd076424d3c76122b136eca65b02a8))
+* **graphql-connection-transformer:** support non string type in sort key ([#3492](https://github.com/aws-amplify/amplify-cli/issues/3492)) ([bc4a1d9](https://github.com/aws-amplify/amplify-cli/commit/bc4a1d9bd707c62ea2c4ec685401f34dfeca0bd0)), closes [#3403](https://github.com/aws-amplify/amplify-cli/issues/3403)
+* **graphql-elasticsearch-transformer:** use ddb keys as main id in es ([#3391](https://github.com/aws-amplify/amplify-cli/issues/3391)) ([9aae9a6](https://github.com/aws-amplify/amplify-cli/commit/9aae9a6681c5ff744d908b5292a5b00faa14de4d)), closes [#3359](https://github.com/aws-amplify/amplify-cli/issues/3359)
+* [#2711](https://github.com/aws-amplify/amplify-cli/issues/2711) - usage of [@auth](https://github.com/auth) without [@model](https://github.com/model) on fields ([#3590](https://github.com/aws-amplify/amplify-cli/issues/3590)) ([553186e](https://github.com/aws-amplify/amplify-cli/commit/553186e53050cafdf27120443d176023ef4acebc))
+
+
+### Reverts
+
+* Revert "fix(graphql-auth-transformer): add list support for ownerField in subs (#3166)" (#3572) ([d693e6b](https://github.com/aws-amplify/amplify-cli/commit/d693e6b2819a5d20188fa9f68d94ef955e474bd3)), closes [#3166](https://github.com/aws-amplify/amplify-cli/issues/3166) [#3572](https://github.com/aws-amplify/amplify-cli/issues/3572)
+
+
+
+
+
+## [6.14.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.6-beta.0...graphql-transformers-e2e-tests@6.14.1) (2020-03-05)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.13.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.3...graphql-transformers-e2e-tests@6.13.4) (2020-02-18)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** prevent doble escape of nextToken ([#3452](https://github.com/aws-amplify/amplify-cli/issues/3452)) ([b6decfd](https://github.com/aws-amplify/amplify-cli/commit/b6decfddf232ed8a1d8b3e51ad881bc083b45114)), closes [#3411](https://github.com/aws-amplify/amplify-cli/issues/3411)
+
+
+
+
+
+## [6.13.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.2...graphql-transformers-e2e-tests@6.13.3) (2020-02-13)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.13.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.1...graphql-transformers-e2e-tests@6.13.2) (2020-02-07)
+
+
+### Bug Fixes
+
+* e2e test dependency and cloudform depe for relational ([#3352](https://github.com/aws-amplify/amplify-cli/issues/3352)) ([6b74433](https://github.com/aws-amplify/amplify-cli/commit/6b74433a4ddf7706fef3834f02247a3cd0fd75c2))
+* e2e tests, tsconfigs, [@deprecated](https://github.com/deprecated) directive for codegen: ([#3338](https://github.com/aws-amplify/amplify-cli/issues/3338)) ([2ed7715](https://github.com/aws-amplify/amplify-cli/commit/2ed77151dd6367ac9547f78fe600e7913a3d37b2))
+* test config update for e2e ([#3345](https://github.com/aws-amplify/amplify-cli/issues/3345)) ([0d8cadc](https://github.com/aws-amplify/amplify-cli/commit/0d8cadcafeeaaaf1f4251017769021d00b8600be))
+
+
+
+
+
 ## [6.13.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.13.0...graphql-transformers-e2e-tests@6.13.1) (2020-01-24)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

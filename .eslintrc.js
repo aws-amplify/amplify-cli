@@ -203,6 +203,7 @@ module.exports = {
 
     '/packages/amplify-graphql-types-generator/test', // Not linting tests yet
     'amplify-e2e-tests', // Not linting test projects yet
+    'amplify-console-integration',
     'graphql-transformers-e2e-tests', // Not linting test projects yet
     'amplify-velocity-template', // Exclude for now as this was existing code before
 
@@ -219,6 +220,7 @@ module.exports = {
     '/packages/amplify-appsync-simulator/lib',
     '/packages/amplify-cli/lib',
     '/packages/amplify-codegen-appsync-model-plugin/lib',
+    '/packages/amplify-e2e-core/lib',
     '/packages/amplify-graphql-docs-generator/lib',
     '/packages/amplify-graphql-types-generator/lib',
     '/packages/amplify-storage-simulator/lib',

@@ -14,7 +14,8 @@ const INDENTATIONSPACE = 4;
 export default async function createNewPlugin(context: Context, pluginParentDirPath: string): Promise<string | undefined> {
   const pluginName = await getPluginName(context, pluginParentDirPath);
   if (pluginName) {
-    return await copyAndUpdateTemplateFiles(context, pluginParentDirPath, pluginName!);
+    const pluginDirPath = await copyAndUpdateTemplateFiles(context, pluginParentDirPath, pluginName!);
+    return pluginDirPath;
   }
   return undefined;
 }

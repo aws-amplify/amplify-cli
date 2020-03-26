@@ -60,12 +60,12 @@ export class ResourceFactory {
     table: Table,
     connectionName: string,
     connectionAttributeName: string,
-    sortField: { name: string; type: string } = null
+    sortField: { name: string; type: string } = null,
   ): Table {
     const gsis = <GlobalSecondaryIndex[]>table.Properties.GlobalSecondaryIndexes || ([] as GlobalSecondaryIndex[]);
     if (gsis.length >= 20) {
       throw new InvalidDirectiveError(
-        `Cannot create connection ${connectionName}. Table ${table.Properties.TableName} out of GSI capacity.`
+        `Cannot create connection ${connectionName}. Table ${table.Properties.TableName} out of GSI capacity.`,
       );
     }
     const connectionGSIName = `gsi-${connectionName}`;
@@ -88,7 +88,7 @@ export class ResourceFactory {
             ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
             WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
           }) as any,
-        })
+        }),
       );
     }
 
@@ -100,7 +100,7 @@ export class ResourceFactory {
         new AttributeDefinition({
           AttributeName: connectionAttributeName,
           AttributeType: 'S',
-        })
+        }),
       );
     }
 
@@ -134,11 +134,11 @@ export class ResourceFactory {
     relatedType: string,
     connectionAttribute: string,
     idFieldName: string,
-    sortFieldInfo?: { primarySortFieldName: string; sortFieldName: string; sortFieldIsStringLike: boolean }
+    sortFieldInfo?: { primarySortFieldName: string; sortFieldName: string; sortFieldIsStringLike: boolean },
   ): Resolver {
     let keyObj: ObjectNode = obj({
       [`${idFieldName}`]: ref(
-        `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`
+        `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`,
       ),
     });
 
@@ -165,7 +165,7 @@ export class ResourceFactory {
       RequestMappingTemplate: print(
         DynamoDBMappingTemplate.getItem({
           key: keyObj,
-        })
+        }),
       ),
       ResponseMappingTemplate: print(ref('util.toJson($context.result)')),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
@@ -183,7 +183,7 @@ export class ResourceFactory {
     connectionName: string,
     idFieldName: string,
     sortKeyInfo?: { fieldName: string; attributeType: 'S' | 'B' | 'N' },
-    limit?: number
+    limit?: number,
   ) {
     const defaultPageLimit = 10;
     const pageLimit = limit || defaultPageLimit;
@@ -201,7 +201,7 @@ export class ResourceFactory {
               S: str(`$context.source.${idFieldName}`),
             }),
           }),
-        })
+        }),
       ),
     ];
     if (sortKeyInfo) {
@@ -220,17 +220,17 @@ export class ResourceFactory {
             scanIndexForward: ifElse(
               ref('context.args.sortDirection'),
               ifElse(equals(ref('context.args.sortDirection'), str('ASC')), bool(true), bool(false)),
-              bool(true)
+              bool(true),
             ),
             filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
             limit: ref('limit'),
-            nextToken: ifElse(ref('context.args.nextToken'), str('$context.args.nextToken'), nul()),
+            nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
             index: str(`gsi-${connectionName}`),
           }),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: print(
-        compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')])
+        compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
       ),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
   }
@@ -250,13 +250,13 @@ export class ResourceFactory {
     field: string,
     relatedType: string,
     connectionAttributes: string[],
-    keySchema: KeySchema[]
+    keySchema: KeySchema[],
   ): Resolver {
     const partitionKeyName = keySchema[0].AttributeName as string;
 
     let keyObj: ObjectNode = obj({
       [partitionKeyName]: ref(
-        `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`
+        `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`,
       ),
     });
 
@@ -288,7 +288,7 @@ export class ResourceFactory {
           DynamoDBMappingTemplate.getItem({
             key: keyObj,
           }),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: print(ref('util.toJson($context.result)')),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
@@ -309,7 +309,7 @@ export class ResourceFactory {
     relatedType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     connectionAttributes: string[],
     keySchema: KeySchema[],
-    indexName: string
+    indexName: string,
   ) {
     const defaultPageLimit = 10;
     const setup: Expression[] = [
@@ -330,8 +330,8 @@ export class ResourceFactory {
             this.getSortKeyNames(String(keySchema[1].AttributeName)),
             'query',
             this.makeCompositeSortKeyName(String(keySchema[1].AttributeName)),
-            String(keySchema[1].AttributeName)
-          )
+            String(keySchema[1].AttributeName),
+          ),
         );
       }
     }
@@ -341,11 +341,11 @@ export class ResourceFactory {
       scanIndexForward: ifElse(
         ref('context.args.sortDirection'),
         ifElse(equals(ref('context.args.sortDirection'), str('ASC')), bool(true), bool(false)),
-        bool(true)
+        bool(true),
       ),
       filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
       limit: ref('limit'),
-      nextToken: ifElse(ref('context.args.nextToken'), str('$context.args.nextToken'), nul()),
+      nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
       index: indexName ? str(indexName) : undefined,
     };
 
@@ -363,7 +363,7 @@ export class ResourceFactory {
       TypeName: type,
       RequestMappingTemplate: print(compoundExpression([...setup, queryObj])),
       ResponseMappingTemplate: print(
-        compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')])
+        compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
       ),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
   }

@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.16.1...amplify-provider-awscloudformation@4.17.0) (2020-03-22)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fixed deletion for large buckets ([#3512](https://github.com/aws-amplify/amplify-cli/issues/3512)) ([21951c1](https://github.com/aws-amplify/amplify-cli/commit/21951c135dc0228fe58191dda2cabd0e5d296aa1)), closes [#3447](https://github.com/aws-amplify/amplify-cli/issues/3447) [#3451](https://github.com/aws-amplify/amplify-cli/issues/3451)
+* enable only-userpool flow without idp and addition of groups without roles tied to idp ([#3662](https://github.com/aws-amplify/amplify-cli/issues/3662)) ([67e0401](https://github.com/aws-amplify/amplify-cli/commit/67e04018d758e617374c4b8ba2298872e728d01e))
+* fixing name of nodej function provider plugin name ([7e27785](https://github.com/aws-amplify/amplify-cli/commit/7e27785e9d4208d8e0d0674f1f1644e670139a86))
+* **graphql-elasticsearch-transformer:** fix duplicate records in es lambda ([#3712](https://github.com/aws-amplify/amplify-cli/issues/3712)) ([dd9f7e0](https://github.com/aws-amplify/amplify-cli/commit/dd9f7e0031a0dc68a9027de02f60bbe69d315c3d)), closes [#3602](https://github.com/aws-amplify/amplify-cli/issues/3602) [#3705](https://github.com/aws-amplify/amplify-cli/issues/3705)
+* fixing searchable migration document link in the cli flow ([#3735](https://github.com/aws-amplify/amplify-cli/issues/3735)) ([fed2f5d](https://github.com/aws-amplify/amplify-cli/commit/fed2f5dac6443dab60c522fa2cced1f2a7adc6c9))
+
+
+### Features
+
+* **amplify-category-function:** refactor to support build and package interface of runtime plugins ([8c4ec55](https://github.com/aws-amplify/amplify-cli/commit/8c4ec55e46ed8a153eee306c23f9665d58d3c5f4))
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+* **amplify-python-runtime-provider:** implement python runtime provider ([#3710](https://github.com/aws-amplify/amplify-cli/issues/3710)) ([cddb5a7](https://github.com/aws-amplify/amplify-cli/commit/cddb5a7b47abacae11205776cb56d68a56286f45))
+
+
+### Reverts
+
+* Revert "feat(amplify-python-runtime-provider): implement python runtime provider (#3710)" (#3719) ([e20ed97](https://github.com/aws-amplify/amplify-cli/commit/e20ed975ea46f124e736b4dfc940e1be1a781f87)), closes [#3710](https://github.com/aws-amplify/amplify-cli/issues/3710) [#3719](https://github.com/aws-amplify/amplify-cli/issues/3719)
+* Revert "fix(amplify-provider-awscloudformation): fixed deletion for large buckets (#3512)" (#3649) ([4694834](https://github.com/aws-amplify/amplify-cli/commit/469483482f182d24ffe22af12a9f40e5cc484b2e)), closes [#3512](https://github.com/aws-amplify/amplify-cli/issues/3512) [#3649](https://github.com/aws-amplify/amplify-cli/issues/3649)
+
+
+
+
+
+## [4.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.16.0...amplify-provider-awscloudformation@4.16.1) (2020-03-10)
+
+
+### Bug Fixes
+
+* **amplify-category-analytics:** delete pinpoint project in delete ([#3165](https://github.com/aws-amplify/amplify-cli/issues/3165)) ([acc0240](https://github.com/aws-amplify/amplify-cli/commit/acc0240c02630b4b9424370732706955ea447057)), closes [#2974](https://github.com/aws-amplify/amplify-cli/issues/2974)
+
+
+
+
+
+# [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.13.4...amplify-provider-awscloudformation@4.16.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix template not found ([#3406](https://github.com/aws-amplify/amplify-cli/issues/3406)) ([93fefe9](https://github.com/aws-amplify/amplify-cli/commit/93fefe900781fe5266fcbb7cc95f30f85399b30b))
+* scoping down user pool group IAM roles and adding --force to amplify push command ([#3609](https://github.com/aws-amplify/amplify-cli/issues/3609)) ([2e10a2f](https://github.com/aws-amplify/amplify-cli/commit/2e10a2ff62b61f57b2d513a7cfd0e4478f429f1f))
+
+
+### Features
+
+* ability to add custom EventSource and lambda triggers via amplify add function, kinesis support in analytics category ([#2463](https://github.com/aws-amplify/amplify-cli/issues/2463)) ([b25cfd0](https://github.com/aws-amplify/amplify-cli/commit/b25cfd00b21416a82ecefda1f6498206ef71531b))
+
+
+
+
+
+## [4.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.13.6-beta.0...amplify-provider-awscloudformation@4.14.1) (2020-03-05)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.13.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.13.3...amplify-provider-awscloudformation@4.13.4) (2020-02-18)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.13.2...amplify-provider-awscloudformation@4.13.3) (2020-02-13)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.13.1...amplify-provider-awscloudformation@4.13.2) (2020-02-07)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [4.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.13.0...amplify-provider-awscloudformation@4.13.1) (2020-01-24)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

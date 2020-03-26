@@ -1,4 +1,4 @@
-const { inputValidation } = require('../../src/extensions/amplify-helpers/input-validation');
+const { inputValidation } = require('../../lib/extensions/amplify-helpers/input-validation');
 
 describe('input-validation helper: ', () => {
   let question = {};

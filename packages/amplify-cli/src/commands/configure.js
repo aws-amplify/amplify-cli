@@ -1,10 +1,10 @@
-const analyzeProject = require('../lib/config-steps/c0-analyzeProject');
-const configFrontendHandler = require('../lib/config-steps/c1-configFrontend');
-const configProviders = require('../lib/config-steps/c2-configProviders');
-const configureNewUser = require('../lib/configure-new-user');
-const onFailure = require('../lib/config-steps/c9-onFailure');
-const onSuccess = require('../lib/config-steps/c9-onSuccess');
-const { normalizeInputParams } = require('../lib/input-params-manager');
+const analyzeProject = require('../config-steps/c0-analyzeProject');
+const configFrontendHandler = require('../config-steps/c1-configFrontend');
+const configProviders = require('../config-steps/c2-configProviders');
+const configureNewUser = require('../configure-new-user');
+const onFailure = require('../config-steps/c9-onFailure');
+const onSuccess = require('../config-steps/c9-onSuccess');
+const { normalizeInputParams } = require('../input-params-manager');
 
 module.exports = {
   name: 'configure',

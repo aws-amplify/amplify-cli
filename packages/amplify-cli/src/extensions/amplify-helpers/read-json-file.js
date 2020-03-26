@@ -7,7 +7,10 @@ function stripBOM(content) {
   return content;
 }
 
-function readJsonFile(jsonFilePath, encoding = 'utf8') {
+function readJsonFile(jsonFilePath, encoding = 'utf8', throwOnError = true) {
+  if (!fs.existsSync(jsonFilePath) && !throwOnError) {
+    return undefined;
+  }
   return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
 }
 

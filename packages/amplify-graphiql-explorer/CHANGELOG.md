@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.1.10...amplify-graphiql-explorer@1.3.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* [#3376](https://github.com/aws-amplify/amplify-cli/issues/3376) - AppSync Simulator with IAM fails to load ([#3514](https://github.com/aws-amplify/amplify-cli/issues/3514)) ([1438f71](https://github.com/aws-amplify/amplify-cli/commit/1438f71f235a1da3e4d66d64247e824c327fa1dc))
+
+
+
+
+
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.1.12-beta.0...amplify-graphiql-explorer@1.2.1) (2020-03-05)
+
+**Note:** Version bump only for package amplify-graphiql-explorer
+
+
+
+
+
+## [1.1.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.1.9...amplify-graphiql-explorer@1.1.10) (2020-02-07)
+
+**Note:** Version bump only for package amplify-graphiql-explorer
+
+
+
+
+
 ## [1.1.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.1.8...amplify-graphiql-explorer@1.1.9) (2020-01-24)
 
 **Note:** Version bump only for package amplify-graphiql-explorer

@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.16.1...amplify-category-function@2.17.0) (2020-03-22)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** revert invoke method signature ([#3703](https://github.com/aws-amplify/amplify-cli/issues/3703)) ([8ed6b9b](https://github.com/aws-amplify/amplify-cli/commit/8ed6b9b06c19663dc97cae32452c54937b51933d))
+* **cli:** deleting the amplify app on delete ([#3568](https://github.com/aws-amplify/amplify-cli/issues/3568)) ([f39bbcb](https://github.com/aws-amplify/amplify-cli/commit/f39bbcb715875eeeb612bcbc40b275b33f85eaf6)), closes [#3239](https://github.com/aws-amplify/amplify-cli/issues/3239)
+
+
+### Features
+
+* **amplify-category-function:** refactor to support build and package interface of runtime plugins ([8c4ec55](https://github.com/aws-amplify/amplify-cli/commit/8c4ec55e46ed8a153eee306c23f9665d58d3c5f4))
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+* **amplify-function-plugin-interface:** update contribute params ([#3711](https://github.com/aws-amplify/amplify-cli/issues/3711)) ([3a38f9e](https://github.com/aws-amplify/amplify-cli/commit/3a38f9ee021f51f48b4e978f0ed96d4cbfb1ff96))
+
+
+
+
+
+## [2.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.16.0...amplify-category-function@2.16.1) (2020-03-10)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+# [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.13.3...amplify-category-function@2.16.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** plumb api id to resources that require it ([#3464](https://github.com/aws-amplify/amplify-cli/issues/3464)) ([2b2d52f](https://github.com/aws-amplify/amplify-cli/commit/2b2d52f05edc1190953965ca0f3ecd880ec66a63)), closes [#3431](https://github.com/aws-amplify/amplify-cli/issues/3431) [#3386](https://github.com/aws-amplify/amplify-cli/issues/3386)
+
+
+### Features
+
+* **amplify-category-api:** support path parameters in REST APIs ([#3394](https://github.com/aws-amplify/amplify-cli/issues/3394)) ([fa7d07e](https://github.com/aws-amplify/amplify-cli/commit/fa7d07e1f6f54185a37851ea9d4c840b092501cc))
+* ability to add custom EventSource and lambda triggers via amplify add function, kinesis support in analytics category ([#2463](https://github.com/aws-amplify/amplify-cli/issues/2463)) ([b25cfd0](https://github.com/aws-amplify/amplify-cli/commit/b25cfd00b21416a82ecefda1f6498206ef71531b))
+
+
+
+
+
+## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.13.5-beta.0...amplify-category-function@2.14.1) (2020-03-05)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.13.2...amplify-category-function@2.13.3) (2020-02-13)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.13.1...amplify-category-function@2.13.2) (2020-02-07)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [2.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.13.0...amplify-category-function@2.13.1) (2020-01-24)
 
 **Note:** Version bump only for package amplify-category-function

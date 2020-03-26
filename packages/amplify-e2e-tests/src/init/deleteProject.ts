@@ -1,13 +1,13 @@
-import * as nexpect from 'nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath } from '../utils';
 
-export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true, verbose: Boolean = isCI() ? false : true) {
+export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, verbose })
+    const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
+    spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
       .wait('Are you sure you want to continue?')
-      .sendline('y')
-      .sendline('')
+      .sendLine('y')
+      .sendCarriageReturn()
       .wait('Project deleted locally.')
       .run((err: Error) => {
         if (!err) {

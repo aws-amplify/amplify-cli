@@ -1,4 +1,4 @@
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 const awsS3Client = new S3({ region: 'us-west-2' });
 
 const emptyBucket = async (bucket: string) => {
@@ -44,6 +44,11 @@ const emptyBucket = async (bucket: string) => {
         Bucket: bucket,
       })
       .promise();
+    const params = {
+      Bucket: bucket,
+      $waiter: { maxAttempts: 10 },
+    };
+    await awsS3Client.waitFor('bucketNotExists', params).promise();
   } catch (e) {
     console.error(`Error deleting bucket: ${e}`);
   }

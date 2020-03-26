@@ -1,4 +1,4 @@
-const { initializeEnv } = require('../../lib/initialize-env');
+const { initializeEnv } = require('../../initialize-env');
 
 module.exports = {
   name: 'pull',

@@ -6,11 +6,11 @@ import { HttpTransformer } from '../../../graphql-http-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 
 jest.setTimeout(2000000);
 
@@ -110,7 +110,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     // Arbitrary wait to make sure everything is ready.
     await cf.wait(5, () => Promise.resolve());
@@ -170,7 +170,7 @@ test('Test HTTP GET request', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
     const post1Title = 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit';
     expect(response.data.createComment.id).toBeDefined();
@@ -198,7 +198,7 @@ test('Test HTTP GET request 2', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
     const post2Title = 'qui est esse';
     expect(response.data.createComment.id).toBeDefined();
@@ -233,7 +233,7 @@ test('Test HTTP POST request', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
@@ -271,7 +271,7 @@ test('Test HTTP PUT request', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
@@ -295,7 +295,7 @@ test('Test HTTP DELETE request', async () => {
                 deleter
             }
         }`,
-      {}
+      {},
     );
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
@@ -329,7 +329,7 @@ test('Test GET with URL param and query values', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
@@ -365,7 +365,7 @@ test('Test GET with multiple URL params and query values', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
@@ -396,7 +396,7 @@ test('Test that GET errors when missing a required Query input object', async ()
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(response.data).toBeNull();
   } catch (e) {
@@ -425,7 +425,7 @@ test('Test that POST errors when missing a non-null arg in query/body', async ()
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(response.data.createComment.complexPost).toBeNull();
   } catch (e) {

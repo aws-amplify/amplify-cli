@@ -25,6 +25,31 @@
     "defaultValuesFilename": "pinpoint-defaults.js",
     "serviceWalkthroughFilename": "pinpoint-walkthrough.js",
     "cfnFilename": "pinpoint-cloudformation-template.yml.ejs",
-    "provider": "awscloudformation"
+    "provider": "awscloudformation",
+    "alias": "Amazon Pinpoint"
+  },
+  "Kinesis": {
+    "inputs": [
+      {
+        "key": "kinesisStreamName",
+        "question": "Enter a Stream name",
+        "validation": {
+          "operator": "regex",
+          "value": "^[a-zA-Z0-9]+$",
+          "onErrorMsg": "Name is invalid. Has to be non-empty and alphanumeric"
+        },
+        "required": true
+      },
+      {
+        "key": "kinesisStreamShardCount",
+        "question": "Enter number of shards",
+        "type": "number"
+      }
+    ],
+    "defaultValuesFilename": "kinesis-defaults.js",
+    "serviceWalkthroughFilename": "kinesis-walkthrough.js",
+    "cfnFilename": "kinesis-cloudformation-template.json",
+    "provider": "awscloudformation",
+    "alias": "Amazon Kinesis Streams"
   }
 }

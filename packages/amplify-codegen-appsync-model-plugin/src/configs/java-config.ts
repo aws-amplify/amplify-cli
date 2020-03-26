@@ -28,7 +28,7 @@ export const ENUM_IMPORT_PACKAGES = ['com.amplifyframework.core.model.ModelEnum;
 
 // packages to be imported in loader class
 export const LOADER_IMPORT_PACKAGES = [
-  'com.amplifyframework.core.Immutable',
+  'com.amplifyframework.util.Immutable',
   'com.amplifyframework.core.model.Model',
   'com.amplifyframework.core.model.ModelProvider',
   '',

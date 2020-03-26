@@ -1,18 +1,20 @@
-import * as nexpect from 'nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath } from '../utils';
 
-export function addHosting(cwd: string, verbose: boolean = !isCI()) {
+export function addHosting(cwd: string) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+      .wait('Select the plugin module to execute')
+      .sendLine('j')
+      .sendCarriageReturn()
       .wait('Select the environment setup:')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('hosting bucket name')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('index doc for the website')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('error doc for the website')
-      .sendline('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -23,12 +25,11 @@ export function addHosting(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function amplifyPush(cwd: string, verbose: boolean = !isCI()) {
+export function amplifyPush(cwd: string) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -39,14 +40,13 @@ export function amplifyPush(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function removeHosting(cwd: string, verbose: boolean = !isCI()) {
+export function removeHosting(cwd: string) {
   return new Promise((resolve, reject) => {
-    nexpect
-      .spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Successfully removed resource')
       .run((err: Error) => {
         if (!err) {

@@ -125,6 +125,20 @@ export function not(expr: Expression): NotNode {
 }
 
 /**
+ * Early return from the transformer
+ */
+export interface ReturnNode {
+  kind: 'Return';
+  value: Expression;
+}
+export function ret(value?: Expression): ReturnNode {
+  return {
+    kind: 'Return',
+    value,
+  };
+}
+
+/**
  * Iterates through a collection.
  */
 export interface ForEachNode {
@@ -328,11 +342,17 @@ export function comment(text: string): CommentNode {
 export interface CompoundExpressionNode {
   kind: 'CompoundExpression';
   expressions: Expression[];
+  joiner: string;
+  // Flag to determine if compound expression should pass it's indent level to each sub expression
+  // Useful to set to false if concatenating a compound espression on a single line
+  recurseIndent: boolean;
 }
-export function compoundExpression(expressions: Expression[]): CompoundExpressionNode {
+export function compoundExpression(expressions: Expression[], joiner: string = `\n`, recurseIndent = true): CompoundExpressionNode {
   return {
     kind: 'CompoundExpression',
     expressions,
+    joiner,
+    recurseIndent: recurseIndent,
   };
 }
 
@@ -358,6 +378,10 @@ export function newline(): NewLineNode {
 
 export function block(name: string, exprs: Expression[]): CompoundExpressionNode {
   return compoundExpression([comment(`[Start] ${name}`), ...exprs, comment(`[End] ${name}`)]);
+}
+
+export function methodCall(methodName: ReferenceNode, ...params: Expression[]): CompoundExpressionNode {
+  return compoundExpression([methodName, parens(compoundExpression(params, ', '))], '', false);
 }
 
 /**
@@ -388,4 +412,5 @@ export type Expression =
   | CompoundExpressionNode
   | ToJsonNode
   | NotNode
-  | NewLineNode;
+  | NewLineNode
+  | ReturnNode;

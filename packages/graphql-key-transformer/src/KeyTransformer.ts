@@ -204,7 +204,7 @@ export class KeyTransformer extends Transformer {
         const field = definition.fields.find(field => field.name.value === compositeKeyFieldName);
         if (!field) {
           throw new InvalidDirectiveError(
-            `Can't find field: ${compositeKeyFieldName} in ${definition.name.value}, but it was specified in the @key definition.`
+            `Can't find field: ${compositeKeyFieldName} in ${definition.name.value}, but it was specified in the @key definition.`,
           );
         } else {
           compositeKeyFields.push(field);
@@ -231,7 +231,7 @@ export class KeyTransformer extends Transformer {
       if (!sortKeyConditionInput) {
         const checkedKeyName = args.name ? args.name : '<unnamed>';
         throw new InvalidDirectiveError(
-          `Cannot resolve type for field '${finalSortKeyFieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`
+          `Cannot resolve type for field '${finalSortKeyFieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`,
         );
       }
 
@@ -261,7 +261,7 @@ export class KeyTransformer extends Transformer {
     if (getResolverResource && this.isPrimaryKey(directive)) {
       // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
       let getField: FieldDefinitionNode = query.fields.find(
-        field => field.name.value === getResolverResource.Properties.FieldName
+        field => field.name.value === getResolverResource.Properties.FieldName,
       ) as FieldDefinitionNode;
       const args: KeyArguments = getDirectiveArguments(directive);
       const getArguments = args.fields.map(keyAttributeName => {
@@ -283,7 +283,7 @@ export class KeyTransformer extends Transformer {
       // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
       let query = ctx.getQuery();
       let listField: FieldDefinitionNode = query.fields.find(
-        field => field.name.value === listResolverResource.Properties.FieldName
+        field => field.name.value === listResolverResource.Properties.FieldName,
       ) as FieldDefinitionNode;
       let listArguments: InputValueDefinitionNode[] = [...listField.arguments];
       const args: KeyArguments = getDirectiveArguments(directive);
@@ -388,11 +388,11 @@ export class KeyTransformer extends Transformer {
               raw(`$hasSeenSomeKeyArg && !$ctx.args.input.containsKey("$keyFieldName")`),
               raw(
                 `$util.error("When updating any part of the composite sort key for @key '${directiveArgs.name}',` +
-                  ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`
-              )
+                  ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`,
+              ),
             ),
           ]),
-        ])
+        ]),
       );
     }
     return '';
@@ -432,7 +432,7 @@ export class KeyTransformer extends Transformer {
           throw new InvalidDirectiveError(
             `Invalid @key "${otherArgs.name}". You may not create a @key where the first field in 'fields' ` +
               `is the same as that of the primary @key unless the primary @key has multiple 'fields'. ` +
-              `You cannot have a local secondary index without a sort key in the primary index.`
+              `You cannot have a local secondary index without a sort key in the primary index.`,
           );
         }
       }
@@ -446,7 +446,7 @@ export class KeyTransformer extends Transformer {
         const otherArgs = getDirectiveArguments(otherDirective);
         if (otherDirective !== directive && otherArgs.name === directiveArgs.name) {
           throw new InvalidDirectiveError(
-            `You may only supply one @key with the name '${directiveArgs.name}' on type '${definition.name.value}'.`
+            `You may only supply one @key with the name '${directiveArgs.name}' on type '${definition.name.value}'.`,
           );
         }
       }
@@ -460,7 +460,7 @@ export class KeyTransformer extends Transformer {
       if (!fieldMap.has(fieldName)) {
         const checkedKeyName = directiveArgs.name ? directiveArgs.name : '<unnamed>';
         throw new InvalidDirectiveError(
-          `You cannot specify a non-existant field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`
+          `You cannot specify a non-existant field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`,
         );
       } else {
         const existingField = fieldMap.get(fieldName);
@@ -503,7 +503,7 @@ export class KeyTransformer extends Transformer {
       for (const existingKey of tableResource.Properties.KeySchema) {
         if (existingAttrDefSet.has(existingKey.AttributeName)) {
           tableResource.Properties.AttributeDefinitions = tableResource.Properties.AttributeDefinitions.filter(
-            ad => ad.AttributeName !== existingKey.AttributeName
+            ad => ad.AttributeName !== existingKey.AttributeName,
           );
           existingAttrDefSet.delete(existingKey.AttributeName);
         }
@@ -547,7 +547,7 @@ export class KeyTransformer extends Transformer {
         // Add the new secondary index and update the table's attribute definitions.
         tableResource.Properties.LocalSecondaryIndexes = append(
           tableResource.Properties.LocalSecondaryIndexes,
-          new LocalSecondaryIndex(baseIndexProperties)
+          new LocalSecondaryIndex(baseIndexProperties),
         );
       } else {
         // This is a GSI.
@@ -560,7 +560,7 @@ export class KeyTransformer extends Transformer {
               ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
               WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
             }) as any,
-          })
+          }),
         );
       }
       const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map(ad => ad.AttributeName));
@@ -703,7 +703,7 @@ function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string
 function replaceCreateInput(
   definition: ObjectTypeDefinitionNode,
   input: InputObjectTypeDefinitionNode,
-  keyFields: string[]
+  keyFields: string[],
 ): InputObjectTypeDefinitionNode {
   return {
     ...input,
@@ -721,7 +721,7 @@ function replaceCreateInput(
 function replaceUpdateInput(
   definition: ObjectTypeDefinitionNode,
   input: InputObjectTypeDefinitionNode,
-  keyFields: string[]
+  keyFields: string[],
 ): InputObjectTypeDefinitionNode {
   return {
     ...input,
@@ -739,7 +739,7 @@ function replaceUpdateInput(
 function replaceDeleteInput(
   definition: ObjectTypeDefinitionNode,
   input: InputObjectTypeDefinitionNode,
-  keyFields: string[]
+  keyFields: string[],
 ): InputObjectTypeDefinitionNode {
   const idFields = primaryIdFields(definition, keyFields);
   // Existing fields will contain extra fields in input type that was added/updated by other transformers
@@ -747,7 +747,7 @@ function replaceDeleteInput(
   // field id of type ID is a special case that we need to filter as this is automatically inserted to input by dynamo db transformer
   // Todo: Find out a better way to handle input types
   const existingFields = input.fields.filter(
-    f => !(idFields.find(pf => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id'))
+    f => !(idFields.find(pf => pf.name.value === f.name.value) || (getBaseType(f.type) === 'ID' && f.name.value === 'id')),
   );
 
   return {
@@ -799,12 +799,12 @@ function ensureCompositeKeySnippet(dir: DirectiveNode): string {
             ref(ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap),
             obj({
               [condensedSortKey]: str(dynamoDBFriendlySortKeyName),
-            })
+            }),
           ),
-          qref(`$${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap}.put("${condensedSortKey}", "${dynamoDBFriendlySortKeyName}")`)
+          qref(`$${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap}.put("${condensedSortKey}", "${dynamoDBFriendlySortKeyName}")`),
         ),
         qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`),
-      ])
+      ]),
     );
   }
   return '';
@@ -839,22 +839,22 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
             limit: ref('limit'),
             query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
             index: str(index),
-          })
+          }),
         ),
         ifElse(
           raw(`!$util.isNull($ctx.args.sortDirection)
                     && $ctx.args.sortDirection == "DESC"`),
           set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
-          set(ref(`${requestVariable}.scanIndexForward`), bool(true))
+          set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
         ),
-        iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), str('$context.args.nextToken')), true),
+        iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
         iff(
           ref('context.args.filter'),
           set(ref(`${requestVariable}.filter`), ref('util.parseJson("$util.transform.toDynamoDBFilterExpression($ctx.args.filter)")')),
-          true
+          true,
         ),
         raw(`$util.toJson($${requestVariable})`),
-      ])
+      ]),
     ),
     ResponseMappingTemplate: print(raw('$util.toJson($ctx.result)')),
   });
@@ -876,7 +876,7 @@ function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: Direct
 function addHashField(
   definition: ObjectTypeDefinitionNode,
   args: KeyArguments,
-  elems: InputValueDefinitionNode[]
+  elems: InputValueDefinitionNode[],
 ): InputValueDefinitionNode[] {
   let hashFieldName = args.fields[0];
   const hashField = definition.fields.find(field => field.name.value === hashFieldName);
@@ -887,7 +887,7 @@ function addSimpleSortKey(
   ctx: TransformerContext,
   definition: ObjectTypeDefinitionNode,
   args: KeyArguments,
-  elems: InputValueDefinitionNode[]
+  elems: InputValueDefinitionNode[],
 ): InputValueDefinitionNode[] {
   let sortKeyName = args.fields[1];
   const sortField = definition.fields.find(field => field.name.value === sortKeyName);
@@ -900,13 +900,13 @@ function addSimpleSortKey(
 function addCompositeSortKey(
   definition: ObjectTypeDefinitionNode,
   args: KeyArguments,
-  elems: InputValueDefinitionNode[]
+  elems: InputValueDefinitionNode[],
 ): InputValueDefinitionNode[] {
   let sortKeyNames = args.fields.slice(1);
   const compositeSortKeyName = toCamelCase(sortKeyNames);
   const hashKey = makeInputValueDefinition(
     compositeSortKeyName,
-    makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(definition.name.value, toUpper(args.name || 'Primary')))
+    makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(definition.name.value, toUpper(args.name || 'Primary'))),
   );
   return [hashKey, ...elems];
 }

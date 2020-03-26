@@ -6,23 +6,17 @@
     "**/build": true,
     "**/coverage": true
   },
+  "editor.formatOnSave": false,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
-  "editor.formatOnSave": true,
-  "[javascript]": {
-    "editor.formatOnSave": false
-  },
-  "[javascriptreact]": {
-    "editor.formatOnSave": false
-  },
-  "[typescript]": {
-    "editor.formatOnSave": false
-  },
-  "[typescriptreact]": {
-    "editor.formatOnSave": false
-  },
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,
   "eslint.lintTask.enable": true,
   "eslint.packageManager": "yarn",
-  "eslint.quiet": true
+  "eslint.quiet": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "jest.enableInlineErrorMessages": true,
+  "jest.showCoverageOnLoad": true,
+  "jest.runAllTestsFirst": false
 }
