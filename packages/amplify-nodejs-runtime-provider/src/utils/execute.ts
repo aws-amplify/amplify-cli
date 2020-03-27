@@ -1,25 +1,27 @@
 import { existsSync } from 'fs-extra';
-import _ = require('lodash');
-const path = require('path');
+import { InvokeOptions } from './invokeOptions';
+import path from 'path';
+import _ from 'lodash';
 
-function loadFunction(fileName) {
-  return require(path.resolve(fileName));
+//  copied from amplify-util-mock with slight modifications
+
+// handler is a string like 'path/to/handler.func'
+async function loadHandler(root: string, handler: string): Promise<Function> {
+  const handlerParts = path.parse(handler);
+  try {
+    const handler = await import(path.join(root, handlerParts.dir, handlerParts.name));
+    return handler[handlerParts.ext.replace('.', '')];
+  } catch (err) {
+    throw new Error(`Could not load lambda handler function due to ${err}`);
+  }
 }
-
-type InvokeOptions = {
-  packageFolder: string;
-  handler: string;
-  fileName: string;
-  event: string;
-  context?: object;
-};
 
 function invokeFunction(options: InvokeOptions) {
   return new Promise(async (resolve, reject) => {
     let returned = false;
 
     const context = {
-      done(error, result) {
+      done(error: any, result: any) {
         if (!returned) {
           returned = true;
           if (error === null || typeof error === 'undefined') {
@@ -29,11 +31,11 @@ function invokeFunction(options: InvokeOptions) {
           }
         }
       },
-      succeed(result) {
+      succeed(result: any) {
         returned = true;
         resolve(result);
       },
-      fail(error) {
+      fail(error: any) {
         returned = true;
         reject(_.assign({}, error));
       },
@@ -44,7 +46,7 @@ function invokeFunction(options: InvokeOptions) {
     if (options.packageFolder) {
       const p = path.resolve(options.packageFolder);
       if (!existsSync(p)) {
-        context.fail('packageFolder does not exist');
+        context.fail(`packageFolder ${options.packageFolder} does not exist`);
         return;
       }
       process.chdir(p);
@@ -62,21 +64,15 @@ function invokeFunction(options: InvokeOptions) {
       Object.assign(context, options.context);
     }
 
-    const callback = (error, object) => {
+    const callback = (error: any, object: any) => {
       context.done(error, object);
     };
 
-    const lambda = loadFunction(options.fileName);
+    const lambdaHandler = await loadHandler(options.packageFolder, options.handler);
 
     const { event } = options;
     try {
-      if (!lambda[options.handler]) {
-        context.fail(
-          `handler ${options.handler} does not exist in the lambda function ${path.join(options.packageFolder, options.fileName)}`,
-        );
-        return;
-      }
-      const result = await lambda[options.handler](event, context, callback);
+      const result = await lambdaHandler(event, context, callback);
       if (result !== undefined) {
         context.done(null, result);
       } else {
@@ -91,9 +87,9 @@ function invokeFunction(options: InvokeOptions) {
 process.on('message', async options => {
   try {
     const result = await invokeFunction(JSON.parse(options));
-    process.send(JSON.stringify({ result, error: null }));
+    process.send!(JSON.stringify({ result, error: null }));
   } catch (error) {
-    process.send(JSON.stringify({ result: null, error }));
+    process.send!(JSON.stringify({ result: null, error }));
   }
   process.exit(1);
 });

@@ -1,6 +1,5 @@
 {
   "name": "functionTemplate",
-  "id": "f579f2fa-35c1-49c4-950f-b588e779b4dd",
   "type": "util",
   "commands": [],
   "eventHandlers": [],
@@ -13,7 +12,7 @@
     "templates": [
       {
         "name": "Hello World",
-        "value": "helloworld"
+        "value": "hello-world"
       },
       {
         "name": "CRUD function for DynamoDB (Integration with API Gateway)",
