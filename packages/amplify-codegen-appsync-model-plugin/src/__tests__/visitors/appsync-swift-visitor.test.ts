@@ -51,9 +51,9 @@ describe('AppSyncSwiftVisitor', () => {
         }
       }"
     `);
-    const metaDataVisitor = getVisitor(schema, 'SimpleModel', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'SimpleModel', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -104,9 +104,9 @@ describe('AppSyncSwiftVisitor', () => {
         case done
       }"
     `);
-    const metaDataVisitor = getVisitor(schema, 'status', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'status', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -141,9 +141,9 @@ describe('AppSyncSwiftVisitor', () => {
       }"
     `);
 
-    const metaDataVisitor = getVisitor(schema, 'snake_case', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'snake_case', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -238,9 +238,9 @@ describe('AppSyncSwiftVisitor', () => {
       }"
     `);
 
-    const metaDataVisitor = getVisitor(schema, 'authorBook', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'authorBook', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -336,9 +336,9 @@ describe('AppSyncSwiftVisitor', () => {
           }"
         `);
 
-        const metaDataVisitor = getVisitor(schema, 'Todo', CodeGenGenerateEnum.metadata);
-        const generatedMetaData = metaDataVisitor.generate();
-        expect(generatedMetaData).toMatchInlineSnapshot(`
+        const metadataVisitor = getVisitor(schema, 'Todo', CodeGenGenerateEnum.metadata);
+        const generatedMetadata = metadataVisitor.generate();
+        expect(generatedMetadata).toMatchInlineSnapshot(`
           "// swiftlint:disable all
           import Amplify
           import Foundation
@@ -411,9 +411,9 @@ describe('AppSyncSwiftVisitor', () => {
           }"
         `);
 
-        const metaDataVisitor = getVisitor(schema, 'task', CodeGenGenerateEnum.metadata);
-        const generatedMetaData = metaDataVisitor.generate();
-        expect(generatedMetaData).toMatchInlineSnapshot(`
+        const metadataVisitor = getVisitor(schema, 'task', CodeGenGenerateEnum.metadata);
+        const generatedMetadata = metadataVisitor.generate();
+        expect(generatedMetadata).toMatchInlineSnapshot(`
           "// swiftlint:disable all
           import Amplify
           import Foundation
@@ -501,9 +501,9 @@ describe('AppSyncSwiftVisitor', () => {
       }"
     `);
 
-    const metaDataVisitor = getVisitor(schema, 'ObjectWithNativeTypes', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'ObjectWithNativeTypes', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
