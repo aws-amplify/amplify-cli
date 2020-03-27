@@ -1,0 +1,41 @@
+{
+  "name": "amplify-python-function-runtime-provider",
+  "version": "1.0.0",
+  "description": "Provides functionality related to functions in Python on AWS",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf ./lib"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.2.0",
+    "archiver": "^3.1.1",
+    "execa": "^4.0.0",
+    "glob": "^7.1.6"
+  },
+  "devDependencies": {
+    "@types/archiver": "^3.1.0"
+  },
+  "jest": {
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(.*/__tests__/.*.test.(j|t)s)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "html"
+    ]
+  }
+}
