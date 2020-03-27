@@ -1,6 +1,5 @@
 package InvocationShim;
 import com.amazonaws.services.lambda.runtime.Context;
-import example.*;
 import com.google.gson.Gson;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -10,26 +9,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
-public class Main {
+public class Program {
 
-    public static void main(String[] args) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-
-        string pathToEventJson;
-        if (args.Length > 0) {
-            pathToEventJson = args[0];
-        } 
-
-        if (!System.IO.File.Exists(pathToEventJson)) {
-            System.out.println("ERROR: invalid path");
-            return;
-        }
-        System.out.println($"Loading event file from '{pathToEventJson}'");
-
+    public static void main(String[] args) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
         // read the jSON file to JSON object
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
 
-        try (Reader reader = new FileReader(pathToEventJson)) {
+        String  eventFile = args[1] != null ? args[1] : "/Users/akz/IdeaProjects/Java_Test/src/com/company/event.json";
+        System.out.println("Loading Event File" + eventFile);
+        try (Reader reader = new FileReader(eventFile)) {
 
             jsonObject = (JSONObject) parser.parse(reader);
             System.out.println(jsonObject);
@@ -42,16 +31,27 @@ public class Main {
 
         MockContext ct  = new MockContext();
         //reflection
-        HelloPojo obj = new HelloPojo();
+        String handlerName = args[0].split("::")[1];
+        String className = args[0].split("::")[0];
+        System.out.println(handlerName +" " + className );
+        // loading class name and handler name based on the input passed
+        Class<?> cl = Class.forName(className);
+        Constructor<?> cons = cl.getConstructor();
+        Object obj = cons.newInstance();
         Class cls = obj.getClass();
+        // getting methods of the handler class
         Method[] methods = cls.getMethods();
 
-        // Printing method names
+        // checking the interface used for the lambda invocation
         if(cls.getInterfaces()[0].getName().indexOf("RequestHandler") != -1) {
+            // converting the json object to the java object
             var eventObj = new Gson().fromJson(jsonObject.toString(), (Type) methods[0].getParameterTypes()[0]);
-            Method m = HelloPojo.class.getDeclaredMethod("handleRequest", (Class<?>) methods[0].getParameterTypes()[0], Context.class);
+            // getting the handler name
+            Method m = cls.getDeclaredMethod(handlerName, (Class<?>) methods[0].getParameterTypes()[0], Context.class);
+            // invoking the handler function
             Object response = m.invoke(obj, eventObj, new MockContext());
             System.out.println("EVENT: " + new Gson().toJson(response));
+            System.out.println("EVENT TYPE: " + response.getClass().toString());
         }
         else{
             // implement for requestStreamHandler

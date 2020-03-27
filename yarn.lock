@@ -3838,6 +3838,11 @@ amplify-frontend-javascript@2.13.2:
     graphql-config "^2.2.1"
     inquirer "^7.0.3"
 
+amplify-function-plugin-interface@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/amplify-function-plugin-interface/-/amplify-function-plugin-interface-1.1.0.tgz#60e54fb425b4a3436bb5eae438420eb2bf45c8d7"
+  integrity sha512-BnMhVuOgjpP0nFvalJcUMZHjMQyIQHD+MgoPq1V/RbY0VUNjtSr2P+BOtifgJnaLWeB9a81ZamT0KOBYfvLjTg==
+
 ansi-colors@3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.3.tgz#57d35b8686e851e2cc04c403f1c00203976a1813"

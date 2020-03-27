@@ -11,12 +11,15 @@ dependencies {
     )
 }
 
+jar.baseName = 'latest_build'
+
 task buildZip(type: Zip) {
     from compileJava
     from processResources
     into('lib') {
         from configurations.runtimeClasspath
     }
+    archiveFileName = 'latest_build.zip'
 }
 
 build.dependsOn buildZip

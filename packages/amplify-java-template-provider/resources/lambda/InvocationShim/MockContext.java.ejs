@@ -56,7 +56,17 @@ public class MockContext implements Context {
     }
 
     @Override
-    public LambdaLogger getLogger() {
+    public MockLogger getLogger() {
         return Logger;
+    }
+
+    @Override
+    public String getInvokedFunctionArn() {
+        return null;
+    }
+
+    @Override
+    public String getFunctionVersion() {
+        return null;
     }
 }

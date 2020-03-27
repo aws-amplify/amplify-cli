@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import childProcess from 'child_process';
 import glob from 'glob';
+import _ from 'lodash'
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
 // copied from the existing build-resources.js file in amplify-cli with changes for new interface
@@ -16,12 +17,22 @@ export async function buildResource(request: BuildRequest): Promise<BuildResult>
 }
 
 function installDependencies(resourceDir: string) {
-  runPackageManager(resourceDir);
+  runPackageManager(resourceDir ,'build' );
+  //to build invocation jar file
+  const jarPath = path.join(resourceDir,'src','Mock');
+  //copy the jar file to lib folder for gradle build
+  let jarFile : string = 'latest_build.jar'
+  const jarPathDir = path.join(jarPath,'lib');
+  fs.ensureDirSync(jarPathDir);
+  const output = fs.createWriteStream(path.join(jarPathDir,jarFile));
+  fs.createReadStream(path.join(resourceDir, 'build','libs',jarFile)).pipe(output);
+  runPackageManager(jarPath,"fatJar");
+
 }
 
-function runPackageManager(cwd: string) {
+function runPackageManager(cwd: string, buildArgs : string) {
   const packageManager = 'gradle';
-  const args = ['build'];
+  const args = [buildArgs];
   const childProcessResult = childProcess.spawnSync(packageManager, args, {
     cwd,
     stdio: 'pipe',
@@ -37,9 +48,9 @@ function isBuildStale(resourceDir: string, lastBuildTimestamp: Date) {
   if (dirTime > lastBuildTimestamp) {
     return true;
   }
-  // change this
+
   const fileUpdatedAfterLastBuild = glob
-    .sync(`${resourceDir}/*/!(bin|obj)/**`)
+    .sync(`${resourceDir}/*/!(build | dist)/**`)
     .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
   return !!fileUpdatedAfterLastBuild;
 }
