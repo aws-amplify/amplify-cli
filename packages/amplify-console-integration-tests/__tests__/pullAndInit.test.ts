@@ -87,7 +87,7 @@ describe('amplify console build', () => {
     expect(teamProviderInfo).toBeDefined();
     expect(teamProviderInfo['envb']).toBeDefined();
 
-    //clean up after the tests
+    // clean up after the tests
     await headlessDelete(projectDirPath);
     await deleteConsoleApp(appId, amplifyClient);
     util.deleteProjectDir(projectDirPath);

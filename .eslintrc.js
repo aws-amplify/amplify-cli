@@ -203,7 +203,7 @@ module.exports = {
 
     '/packages/amplify-graphql-types-generator/test', // Not linting tests yet
     'amplify-e2e-tests', // Not linting test projects yet
-    'amplify-console-integration',
+    'amplify-console-integration-tests',
     'graphql-transformers-e2e-tests', // Not linting test projects yet
     'amplify-velocity-template', // Exclude for now as this was existing code before
 

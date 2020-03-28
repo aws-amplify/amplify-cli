@@ -2,6 +2,8 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as moment from 'moment';
 
+export { getCLIPath, isCI, npmInstall } from 'amplify-e2e-core';
+
 export function createNewProjectDir(mark?: string): string {
   const timeStamp = moment().format('YYYYMMDDHHmmss');
   const testProjectDirName = mark ? `console-integ-${mark}-${timeStamp}` : `console-integ-${timeStamp}`;
@@ -14,19 +16,8 @@ export function deleteProjectDir(projectDirpath: string) {
   return fs.removeSync(projectDirpath);
 }
 
-export function getCLIPath() {
-  if (isCI()) {
-    return 'amplify';
-  }
-  return path.normalize(path.join(__dirname, '../../amplify-cli/bin/amplify'));
-}
-
 export function getProfileName() {
-  return 'amplify-integ-test-user';
-}
-
-export function isCI(): Boolean {
-  return process.env.CI ? true : false;
+  return 'console-integration-test-user';
 }
 
 function stripBOM(content: string) {
