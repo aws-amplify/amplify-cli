@@ -1,9 +1,12 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
 
+const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
+
 export function addSimpleDDB(cwd: string, settings: any) {
+  const amplifySpawn = settings.local ? amplify : getCLIPath();
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(amplifySpawn, ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Please provide a friendly name for your resource')
@@ -36,8 +39,9 @@ export function addSimpleDDB(cwd: string, settings: any) {
 }
 
 export function addDDBWithTrigger(cwd: string, settings: any) {
+  const amplifySpawn = settings.local ? amplify : getCLIPath();
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(amplifySpawn, ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Please provide a friendly name for your resource')

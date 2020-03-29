@@ -37,7 +37,8 @@ export function amplifyPushUpdate(cwd: string, waitForText?: RegExp) {
   });
 }
 
-export function amplifyPushAuth(cwd: string) {
+export function amplifyPushAuth(cwd: string, useLocalCLI: Boolean = false) {
+  const amplifySpawn = useLocalCLI ? amplify : getCLIPath();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
