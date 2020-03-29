@@ -1,0 +1,86 @@
+{
+  "name": "amplify-migration-tests",
+  "version": "2.13.3",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-migration-tests"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "private": true,
+  "scripts": {
+    "migration": "npm run setup-profile && jest",
+    "e2e": "npm run setup-profile && jest",
+    "setup-profile": "ts-node ./src/configure_tests.ts"
+  },
+  "dependencies": {
+    "amplify-e2e-core": "1.0.1",
+    "aws-sdk": "^2.608.0",
+    "esm": "^3.2.25",
+    "fs-extra": "^8.1.0",
+    "graphql-transformer-core": "6.13.3"
+  },
+  "devDependencies": {
+    "@types/node": "^10.17.13",
+    "dotenv": "^8.2.0",
+    "rimraf": "^3.0.0",
+    "ts-node": "^8.6.2"
+  },
+  "jest": {
+    "verbose": false,
+    "preset": "ts-jest",
+    "testRunner": "jest-circus/runner",
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "lib"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!src/__tests__/**",
+      "!**/*.d.ts"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setup-tests.ts"
+    ],
+    "globals": {
+      "window": {},
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
+  }
+}

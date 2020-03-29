@@ -3,6 +3,8 @@ import { getCLIPath, getProjectMeta, invokeFunction } from '../utils';
 import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 
+const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
+
 type FunctionActions = 'create' | 'update';
 
 type FunctionRuntimes = 'dotnetCore31' | 'go' | 'java' | 'nodejs' | 'python';
@@ -41,7 +43,8 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), [action == 'update' ? 'update' : 'add', 'function'], {
+    const amplifySpawn = settings.local ? amplify : getCLIPath();
+    let chain = spawn(amplifySpawn, [action == 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });

@@ -4,6 +4,8 @@ import { getCLIPath, updateSchema } from '../utils';
 import { nodeJSTemplateChoices, selectRuntime } from './function';
 import { singleSelect } from '../utils/selectors';
 
+const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
+
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../schemas/${schemaName}`;
 }
@@ -44,10 +46,11 @@ export function addApiWithoutSchema(cwd: string) {
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string) {
+export function addApiWithSchema(cwd: string, schemaFile: string, useLocalCLI: boolean = false) {
   const schemaPath = getSchemaPath(schemaFile);
+  const amplifySpawn = useLocalCLI ? amplify : getCLIPath();
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(amplifySpawn, ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -77,10 +80,11 @@ export function addApiWithSchema(cwd: string, schemaFile: string) {
   });
 }
 
-export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string) {
+export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string, useLocalCLI: boolean = false) {
   const schemaPath = getSchemaPath(schemaFile);
+  const amplifySpawn = useLocalCLI ? amplify : getCLIPath();
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(amplifySpawn, ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
