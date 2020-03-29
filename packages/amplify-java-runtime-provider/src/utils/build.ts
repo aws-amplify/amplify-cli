@@ -5,7 +5,6 @@ import glob from 'glob';
 import _ from 'lodash'
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
-// copied from the existing build-resources.js file in amplify-cli with changes for new interface
 export async function buildResource(request: BuildRequest): Promise<BuildResult> {
   const resourceDir = path.join(request.srcRoot);
   const projectPath = path.join(resourceDir);
