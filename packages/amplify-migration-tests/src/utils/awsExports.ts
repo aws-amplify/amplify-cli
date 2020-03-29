@@ -1,4 +1,3 @@
-require = require('esm')(module);
 import * as path from 'path';
 
 export function getAWSExportsPath(projRoot: string): string {
