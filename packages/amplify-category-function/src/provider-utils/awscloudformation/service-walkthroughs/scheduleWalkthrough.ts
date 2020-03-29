@@ -7,7 +7,7 @@ import { CronBuilder } from '../utils/cronBuilder';
 import { constructCloudWatchEventComponent } from '../utils/cloudformationHelpers';
 import { minuteHelper, hourHelper, timeHelper, weekHelper, monthHelper, yearHelper } from '../utils/cronHelper';
 import { MINUTES, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM } from '../utils/constants';
-import {CronExpression} from '../utils/cronExpression'
+import { CronExpression } from '../utils/cronExpression';
 const categoryName = 'function';
 
 export async function scheduleWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<Partial<FunctionParameters>> {
@@ -47,8 +47,8 @@ export async function scheduleWalkthrough(context: any, params: Partial<Function
           {
             name: 'Remove the schedule',
             value: 'remove',
-          }
-        ]
+          },
+        ],
       };
 
       const scheduleEventOperationAnswer = await inquirer.prompt([scheduleEventOperationQuestion]);
@@ -132,8 +132,8 @@ async function cronServiceWalkthrough(context: any) {
         name: 'customRule',
         message: 'Custom Schedule expression(Learn more : https://amzn.to/3akXtJF)',
         validate: ValidCronExpression({
-        onErrorMsg: 'Enter a valid Schedule Expression (Learn more : https://amzn.to/3akXtJF)',
-        })
+          onErrorMsg: 'Enter a valid Schedule Expression (Learn more : https://amzn.to/3akXtJF)',
+        }),
       };
       const customRuleAnswer = await inquirer.prompt([customRuleQuestion]);
       cloudwatchRule = 'cron(' + customRuleAnswer.customRule + ')';
@@ -151,20 +151,20 @@ function replaceAt(string, index, replace) {
 module.exports = {
   scheduleWalkthrough,
   cronServiceWalkthrough,
+  isValidCronExpression,
 };
 
-
-function  ValidCronExpression(validation) {
+function ValidCronExpression(validation) {
   return input => {
-    return  isValidCronExpression(input) ? true : validation.onErrorMsg;
+    return isValidCronExpression(input) ? true : validation.onErrorMsg;
   };
 }
 
-function isValidCronExpression(cronExpression: string): boolean {
+export function isValidCronExpression(cronExpression: string): boolean {
   try {
-      new CronExpression(cronExpression);
-      return true;
+    new CronExpression(cronExpression);
+    return true;
   } catch (e) {
-      return false;
+    return false;
   }
 }

@@ -13,7 +13,8 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib",
+    "test": "jest  src/__tests__/**/**/**/*.test.ts"
   },
   "keywords": [
     "amplify",
