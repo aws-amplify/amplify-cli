@@ -335,9 +335,9 @@ describe('intrinsic-functions', () => {
       expect(parseValue).toHaveBeenCalled();
     });
 
-    it('should throw error if the value is not presnt in exports', () => {
+    it('should return key if the value is not presnt in exports', () => {
       const node = 'bar';
-      expect(() => cfnImportValue(node, cfnContext, parseValue)).toThrow();
+      expect(cfnImportValue(node, cfnContext, parseValue)).toEqual(node);
     });
   });
 

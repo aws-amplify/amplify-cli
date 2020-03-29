@@ -60,12 +60,12 @@ export class AppSyncModelJavascriptVisitor<
         .map(typeObj => this.generateModelDeclaration(typeObj, true))
         .join('\n\n');
 
-      return [imports, '', enumDeclarations, '', nonModelDeclarations, '', modelDeclarations].join('\n');
+      return [imports, enumDeclarations, nonModelDeclarations, modelDeclarations].join('\n\n');
     } else {
       const imports = this.generateImportsJavaScriptImplementation();
       const enumDeclarations = Object.values(this.enumMap)
         .map((e: CodeGenEnum) => this.generateEnumObject(e))
-        .join('\n');
+        .join('\n\n');
 
       const modelInitialization = this.generateModelInitialization(
         [...Object.values(this.modelMap), ...Object.values(this.nonModelMap)],
@@ -77,12 +77,12 @@ export class AppSyncModelJavascriptVisitor<
         ...Object.values(this.enumMap),
         ...Object.values(this.nonModelMap),
       ]);
-      return [imports, '', enumDeclarations, '', modelInitialization, '', modelExports].join('\n');
+      return [imports, enumDeclarations, modelInitialization, modelExports].join('\n\n');
     }
   }
 
   /**
-   * Generate JavaScript object for enum. The generated objet. For an enum with value
+   * Generate Ja\nvaScript object for enum. The generated objet. For an enum with value
    * enum status {
    * pending
    * done

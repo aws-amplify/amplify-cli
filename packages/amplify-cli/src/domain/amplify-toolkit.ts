@@ -73,6 +73,7 @@ export class AmplifyToolkit {
   private _hashDir: any;
   private _leaveBreadcrumbs: any;
   private _readBreadcrumbs: any;
+  private _loadRuntimePlugin: any;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -418,5 +419,11 @@ export class AmplifyToolkit {
   get readBreadcrumbs(): any {
     this._readBreadcrumbs = this._readBreadcrumbs || require(path.join(this._amplifyHelpersDirPath, 'read-breadcrumbs')).readBreadcrumbs;
     return this._readBreadcrumbs;
+  }
+
+  get loadRuntimePlugin(): any {
+    this._loadRuntimePlugin =
+      this._loadRuntimePlugin || require(path.join(this._amplifyHelpersDirPath, 'load-runtime-plugin')).loadRuntimePlugin;
+    return this._loadRuntimePlugin;
   }
 }

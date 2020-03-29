@@ -113,6 +113,6 @@ function createBreadcrumbs(params: FunctionParameters | FunctionTriggerParameter
   return {
     pluginId: params.runtimePluginId,
     functionRuntime: params.runtime.value,
-    useLegacyBuild: false,
+    useLegacyBuild: true, // unconditionally setting to true for now until new node build is implemented
   };
 }

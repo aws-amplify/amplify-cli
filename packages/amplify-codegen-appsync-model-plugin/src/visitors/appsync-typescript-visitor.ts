@@ -53,9 +53,7 @@ export class AppSyncModelTypeScriptVisitor<
 
     const modelExports = this.generateExports(Object.values(this.modelMap));
 
-    return [imports, '', enumDeclarations, '', modelDeclarations, '', nonModelDeclarations, '', modelInitialization, '', modelExports].join(
-      '\n',
-    );
+    return [imports, enumDeclarations, modelDeclarations, nonModelDeclarations, modelInitialization, modelExports].join('\n\n');
   }
 
   protected generateImports(): string {

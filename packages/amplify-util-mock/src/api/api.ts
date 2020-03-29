@@ -11,9 +11,9 @@ import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
-import { invoke } from '../utils/lambda/invoke';
-import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getMockConfig } from '../utils/mock-config-file';
+import { getAllLambdaFunctions } from '../utils/lambda/load';
+import { getInvoker } from 'amplify-category-function';
 
 export class APITest {
   private apiName: string;
@@ -84,7 +84,7 @@ export class APITest {
     let config: any = processAppSyncResources(transformerOutput, parameters);
     await this.ensureDDBTables(config);
     config = this.configureDDBDataSource(config);
-    this.transformerResult = this.configureLambdaDataSource(context, config);
+    this.transformerResult = await this.configureLambdaDataSource(context, config);
     const overriddenTemplates = await this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates);
     return { ...this.transformerResult, mappingTemplates: overriddenTemplates };
   }
@@ -167,7 +167,7 @@ export class APITest {
     await ensureDynamoDBTables(this.ddbClient, config);
   }
 
-  private configureLambdaDataSource(context, config) {
+  private async configureLambdaDataSource(context, config) {
     const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
     if (lambdaDataSources.length === 0) {
       return config;
@@ -176,43 +176,40 @@ export class APITest {
 
     return {
       ...config,
-      dataSources: config.dataSources.map(d => {
-        if (d.type !== 'AWS_LAMBDA') {
-          return d;
-        }
-        const arn = d.LambdaFunctionArn;
-        const arnParts = arn.split(':');
-        let functionName = arnParts[arnParts.length - 1];
-        if (functionName.endsWith('-${env}')) {
-          functionName = functionName.replace('-${env}', '');
-          const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
-          if (!lambdaConfig) {
-            throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
+      dataSources: await Promise.all(
+        config.dataSources.map(async d => {
+          if (d.type !== 'AWS_LAMBDA') {
+            return d;
           }
-          const [fileName, handlerFn] = lambdaConfig.handler.split('.');
-
-          const lambdaPath = path.join(lambdaConfig.basePath, `${fileName}.js`);
-          if (!fs.existsSync(lambdaPath)) {
-            throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
+          const arn = d.LambdaFunctionArn;
+          const arnParts = arn.split(':');
+          let functionName = arnParts[arnParts.length - 1];
+          if (functionName.endsWith('-${env}')) {
+            functionName = functionName.replace('-${env}', '');
+            const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
+            if (!lambdaConfig) {
+              throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
+            }
+            const invoker = await getInvoker(context, {
+              resourceName: functionName,
+              handler: lambdaConfig.handler,
+              envVars: lambdaConfig.environment,
+            });
+            return {
+              ...d,
+              invoke: payload => {
+                return invoker({
+                  event: payload,
+                });
+              },
+            };
+          } else {
+            throw new Error(
+              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function',
+            );
           }
-          return {
-            ...d,
-            invoke: payload => {
-              return invoke({
-                packageFolder: lambdaConfig.basePath,
-                handler: handlerFn,
-                fileName: `${fileName}.js`,
-                event: payload,
-                environment: lambdaConfig.environment,
-              });
-            },
-          };
-        } else {
-          throw new Error(
-            'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function',
-          );
-        }
-      }),
+        }),
+      ),
     };
   }
 

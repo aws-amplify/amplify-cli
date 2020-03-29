@@ -5,7 +5,7 @@ export type LambdaFunctionConfig = {
   name: string;
   handler: string;
   basePath?: string;
-  environment?: object;
+  environment?: { [key: string]: string };
 };
 
 const CFN_DEFAULT_PARAMS = {
@@ -29,7 +29,7 @@ export function lambdaFunctionHandler(resourceName, resource, cfnContext: CloudF
             ...acc,
             [varName]: parseValue(varValue, cfnContext),
           }),
-          {}
+          {},
         )
       : {};
   return {

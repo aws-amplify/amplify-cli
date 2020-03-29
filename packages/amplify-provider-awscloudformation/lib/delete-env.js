@@ -5,7 +5,11 @@ const { deleteEnv } = require('./amplify-service-manager');
 async function run(context, envName, deleteS3) {
   const awsConfig = await loadConfigurationForEnv(context, envName);
   const cfn = await new Cloudformation(context, null, awsConfig);
-  await cfn.deleteResourceStack(envName, deleteS3);
+  await cfn.deleteResourceStack(envName);
+  if (deleteS3) {
+    await cfn.deleteS3Buckets(envName);
+  }
+
   await deleteEnv(context, envName, awsConfig);
 }
 
