@@ -2,6 +2,7 @@ import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-inter
 import { buildResource } from './utils/build';
 import { packageResource } from './utils/package';
 import { checkDependencies } from './utils/detect';
+import { invokeResource } from './utils/invoke';
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   context.amplify;
   return {
@@ -23,7 +24,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     package: params => packageResource(params, context),
     build: params => buildResource(params),
     invoke: params => {
-      throw new Error('not yet implemented');
+      return invokeResource(params,context);
     },
   };
 };

@@ -1,20 +1,16 @@
-/*
 import path from 'path';
-import fs from 'fs-extra';
-import glob from 'glob';
+import { InvocationRequest} from 'amplify-function-plugin-interface';
 import childProcess from 'child_process';
-import { InvokeRequest, InvokeResult } from 'amplify-function-plugin-interface';
-export async function invoke(request: InvokeRequest): Promise<InvokeResult> {
-  return new Promise<InvokeResult>((resolve, reject) => {
-    const shimPath = path.join(request.srcRoot, 'InvocationShim');
-    const buildCommand = childProcess.spawn('dotnet', ['run'], { cwd: shimPath });
-    buildCommand.on('close', (code) => {
-    if (code === 0) {
-        return Promise.resolve({ rebuilt: true });
-    } else {
-        return Promise.resolve({ rebuilt: false });
-    }
-    });
-  });
+export async function invokeResource(request: InvocationRequest , context : any){
+  const shimPath = path.join(request.srcRoot, 'src','Mock','build','libs');
+  const cp = childProcess.spawnSync('java', [ '-jar', 'Mock-all.jar' ,request.handler , request.event], { cwd: shimPath , stdio : 'pipe' , encoding: 'utf-8' });
+
+  let result  = JSON.stringify(cp.stdout);
+  try {
+    result = JSON.parse(result);
+  } catch (err) {
+    context.print.warning('Could not parse function output as JSON. Using raw output.');
+  }
+  return Promise.resolve({result});
 };
-*/
+

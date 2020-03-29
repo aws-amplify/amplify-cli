@@ -15,25 +15,11 @@ public class Program {
         // read the jSON file to JSON object
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
-
         String  eventFile = args[1] != null ? args[1] : "/Users/akz/IdeaProjects/Java_Test/src/com/company/event.json";
-        System.out.println("Loading Event File" + eventFile);
-        try (Reader reader = new FileReader(eventFile)) {
-
-            jsonObject = (JSONObject) parser.parse(reader);
-            System.out.println(jsonObject);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         MockContext ct  = new MockContext();
         //reflection
         String handlerName = args[0].split("::")[1];
         String className = args[0].split("::")[0];
-        System.out.println(handlerName +" " + className );
         // loading class name and handler name based on the input passed
         Class<?> cl = Class.forName(className);
         Constructor<?> cons = cl.getConstructor();
@@ -45,13 +31,12 @@ public class Program {
         // checking the interface used for the lambda invocation
         if(cls.getInterfaces()[0].getName().indexOf("RequestHandler") != -1) {
             // converting the json object to the java object
-            var eventObj = new Gson().fromJson(jsonObject.toString(), (Type) methods[0].getParameterTypes()[0]);
+            var eventObj = new Gson().fromJson(eventFile, (Type) methods[0].getParameterTypes()[0]);
             // getting the handler name
             Method m = cls.getDeclaredMethod(handlerName, (Class<?>) methods[0].getParameterTypes()[0], Context.class);
             // invoking the handler function
             Object response = m.invoke(obj, eventObj, new MockContext());
             System.out.println("EVENT: " + new Gson().toJson(response));
-            System.out.println("EVENT TYPE: " + response.getClass().toString());
         }
         else{
             // implement for requestStreamHandler
