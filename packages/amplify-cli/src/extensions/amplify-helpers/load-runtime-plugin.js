@@ -1,4 +1,7 @@
 async function loadRuntimePlugin(context, pluginId) {
+  if (!context.pluginPlatform.plugins.functionRuntime) {
+    throw new Error('No function runtime plugins found. Try "amplify plugin scan" and then rerun the command.');
+  }
   const pluginMeta = context.pluginPlatform.plugins.functionRuntime.find(meta => meta.manifest.functionRuntime.pluginId === pluginId);
   if (!pluginMeta) {
     throw new Error(`Could not find runtime plugin with id [${pluginId}]`);
