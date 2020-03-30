@@ -17,7 +17,7 @@
   ],
   "private": true,
   "scripts": {
-    "migration": "npm run setup-profile && jest",
+    "migration": "npm run setup-profile latest && jest",
     "e2e": "npm run setup-profile && jest",
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
