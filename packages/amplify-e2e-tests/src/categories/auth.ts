@@ -1,6 +1,5 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import { getCLIPath, getEnvVars } from '../utils';
-
 export function addAuthWithDefault(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -181,6 +180,42 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any) {
   });
 }
 
+export function updateAuthSignInSignOutUrl(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+      .wait('What do you want to do?')
+      .send('j')
+      .send('j')
+      .sendCarriageReturn()
+      .wait('Which redirect signin URIs do you want to edit?')
+      .send(' ')
+      .sendCarriageReturn()
+      .wait(`Update ${settings.signinUrl}`)
+      .send(settings.updatesigninUrl)
+      .sendCarriageReturn()
+      .wait('Do you want to add redirect signin URIs?')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('Which redirect signout URIs do you want to edit?')
+      .send(' ')
+      .sendCarriageReturn()
+      .wait(`Update ${settings.signoutUrl}`)
+      .send(settings.updatesignoutUrl)
+      .sendCarriageReturn()
+      .wait('Do you want to add redirect signout URIs?')
+      .send('n')
+      .sendCarriageReturn()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function updateAuthWithoutCustomTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
@@ -314,6 +349,42 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any) {
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .send('n')
       .send('\r')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addAuthWithSignInSignOutUrl(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+      .wait('Do you want to use the default authentication and security configuration?')
+      .sendLine(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('How do you want users to be able to sign in?')
+      .sendCarriageReturn()
+      .wait('Do you want to configure advanced settings?')
+      .sendCarriageReturn()
+      .wait('What domain name prefix you want us to create for you?')
+      .sendCarriageReturn()
+      .wait('Enter your redirect signin URI:')
+      .sendLine(settings.signinUrl)
+      .wait('Do you want to add another redirect signin URI')
+      .sendLine('n')
+      .sendCarriageReturn()
+      .wait('Enter your redirect signout URI:')
+      .sendLine(settings.signoutUrl)
+      .sendCarriageReturn()
+      .wait('Do you want to add another redirect signout URI')
+      .sendLine('n')
+      .sendCarriageReturn()
+      .wait('Select the social providers you want to configure for your user pool:')
+      .sendCarriageReturn()
+      .sendEof()
       .run((err: Error) => {
         if (!err) {
           resolve();
