@@ -1,22 +1,29 @@
-/*
 import path from 'path';
-import fs from 'fs-extra';
-import glob from 'glob';
 import childProcess from 'child_process';
-import { InvokeRequest, InvokeResult } from 'amplify-function-plugin-interface';
+import { InvocationRequest } from 'amplify-function-plugin-interface';
 
-export async function invoke(request: InvokeRequest): Promise<InvokeResult> {
-  return new Promise<InvokeResult>((resolve, reject) => {
-    const shimPath = path.join(request.srcRoot, 'InvocationShim');
+export async function invoke(request: InvocationRequest): Promise<InvocationRequest> {
+  return new Promise<InvocationRequest>((resolve, reject) => {
+    const shimPath = path.join(request.srcRoot, 'src', 'InvocationShim');
 
-    const buildCommand = childProcess.spawn('dotnet', ['run'], { cwd: shimPath });
-    buildCommand.on('close', (code) => {
-    if (code === 0) {
-        return Promise.resolve({ rebuilt: true });
-    } else {
-        return Promise.resolve({ rebuilt: false });
-    }
+    const invokeCommand = childProcess.spawn('dotnet', ['run'], {
+      cwd: shimPath,
+      env: {
+        ...process.env,
+        ...request.envVars,
+      },
+      stdio: ['pipe', process.stdout, process.stderr],
+    });
+
+    invokeCommand.stdin.setDefaultEncoding('utf-8');
+    invokeCommand.stdin.write(request.event);
+    invokeCommand.stdin.end();
+    invokeCommand.on('close', code => {
+      if (code === 0) {
+        return resolve();
+      } else {
+        return reject();
+      }
     });
   });
-};
-*/
+}

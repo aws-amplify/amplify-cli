@@ -3,6 +3,7 @@ import { constants } from './constants';
 import { detectDotNetCore } from './utils/detect';
 import { build } from './utils/build';
 import { packageAssemblies } from './utils/package';
+import { invoke } from './utils/invoke';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context: any) => {
   return {
@@ -35,8 +36,6 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     },
     package: async request => packageAssemblies(request, context),
     build: build,
-    invoke: async request => {
-      throw new Error('not yet implemented');
-    },
+    invoke: invoke,
   };
 };

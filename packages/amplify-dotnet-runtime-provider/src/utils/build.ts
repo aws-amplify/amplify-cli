@@ -6,6 +6,7 @@ import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
 export async function build(request: BuildRequest): Promise<BuildResult> {
   return new Promise<BuildResult>((resolve, reject) => {
+    if (!request.legacyBuildHookParams) throw new Error('Missing resource information');
     const sourceDir = path.join(request.srcRoot, 'src', request.legacyBuildHookParams.resourceName);
     const distPath = path.join(request.srcRoot, 'dist');
 

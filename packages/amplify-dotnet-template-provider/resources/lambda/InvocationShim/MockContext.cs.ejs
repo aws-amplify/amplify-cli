@@ -11,7 +11,7 @@ namespace InvocationShim
         public string FunctionVersion => "HEAD";
         public ICognitoIdentity Identity => null;
         public string InvokedFunctionArn => "arn:aws:lambda:us-east-1:000000000000:function:<%= props.functionName %>";
-        public ILambdaLogger Logger => throw new NotImplementedException();
+        public ILambdaLogger Logger => new MockLogger();
         public string LogGroupName => "YourCloudWatchLogGroupName";
         public string LogStreamName => "YourCloudWatchStreamName";
         public int MemoryLimitInMB => 128;

@@ -2,38 +2,44 @@ import { FunctionTemplateParameters, ContributionRequest } from 'amplify-functio
 import { templateRoot } from '../utils/constants';
 import { shimSourceFiles, shimMappings } from './shimProvider';
 import path from 'path';
+import fs from 'fs-extra';
+import _ from 'lodash';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 
-export async function provideHelloWorld(request: ContributionRequest): Promise<FunctionTemplateParameters> {
+export function provideServerless(request: ContributionRequest): Promise<FunctionTemplateParameters> {
   const files = [
-    'HelloWorld/aws-lambda-tools-defaults.json.ejs',
-    'HelloWorld/Function.csproj.ejs',
-    'HelloWorld/FunctionHandler.cs.ejs',
-    'HelloWorld/event.json',
+    'Serverless/aws-lambda-tools-defaults.json.ejs',
+    'Serverless/Function.csproj.ejs',
+    'Serverless/FunctionHandler.cs.ejs',
+    'Serverless/event.json',
     ...shimSourceFiles(),
   ];
   const handlerSource = path.join('src', request.contributionContext.functionName, `${request.contributionContext.functionName}.cs`);
-  return {
+  return Promise.resolve({
     functionTemplate: {
       sourceRoot: pathToTemplateFiles,
       sourceFiles: files,
+      parameters: {
+        path: '/item',
+        expressPath: '/item',
+      },
       defaultEditorFile: handlerSource,
       destMap: {
-        'HelloWorld/aws-lambda-tools-defaults.json.ejs': path.join(
+        'Serverless/aws-lambda-tools-defaults.json.ejs': path.join(
           'src',
           request.contributionContext.functionName,
           'aws-lambda-tools-defaults.json',
         ),
-        'HelloWorld/Function.csproj.ejs': path.join(
+        'Serverless/Function.csproj.ejs': path.join(
           'src',
           request.contributionContext.functionName,
           `${request.contributionContext.functionName}.csproj`,
         ),
-        'HelloWorld/FunctionHandler.cs.ejs': handlerSource,
-        'HelloWorld/event.json': path.join('src', 'event.json'),
+        'Serverless/FunctionHandler.cs.ejs': handlerSource,
+        'Serverless/event.json': path.join('src', 'event.json'),
         ...shimMappings(),
       },
     },
-  };
+  });
 }

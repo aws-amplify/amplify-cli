@@ -14,6 +14,14 @@
       {
         "name": "Hello World",
         "value": "helloworld"
+      },
+      {
+        "name": "Serverless",
+        "value": "serverless"
+      },
+      {
+        "name": "Trigger (DynamoDb, Kinesis)",
+        "value": "trigger"
       }
     ]
   }

@@ -20,28 +20,11 @@ namespace InvocationShim
             var serializerType = typeof(Amazon.Lambda.Serialization.Json.JsonSerializer);
             var serializer = new Amazon.Lambda.Serialization.Json.JsonSerializer();
 
-            string pathToEventJson;
-            if (args.Length > 0) {
-                pathToEventJson = args[0];
-            } else {
-                // If no path to a json file was supplied, use the default
-                // look in the function folder for 'event.json'
-                pathToEventJson = $"../<%= props.functionName %>/event.json";
-            }
-
-            if (!System.IO.File.Exists(pathToEventJson)) {
-                Console.Error.WriteLine("ERROR: invalid path");
-                return;
-            }
-            Console.WriteLine($"Loading event file from '{pathToEventJson}'");
             object eventData;
-            using (var eventFile = new System.IO.FileStream(
-                pathToEventJson, 
-                System.IO.FileMode.Open, 
-                System.IO.FileAccess.Read))
+            using (var eventStream = Console.OpenStandardInput())
             {
                 var deserializeMethod = serializerType.GetMethod("Deserialize").MakeGenericMethod(inputType);
-                eventData = deserializeMethod.Invoke(serializer, new[] { eventFile });
+                eventData = deserializeMethod.Invoke(serializer, new[] { eventStream });
             }
 
             var task = (Task)handlerMethod.Invoke(new <%= props.resourceName %>.<%= props.functionName %>(), new[] { eventData, new MockContext() });
