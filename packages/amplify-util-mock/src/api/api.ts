@@ -5,7 +5,7 @@ import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-c
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
-import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
+import { getAmplifyMeta, addCleanupTask, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
@@ -338,38 +338,12 @@ export class APITest {
   private async hydrateLambdaEnvVars(context, sourceEnvVars: Record<string, any>, config): Promise<Record<string, any>> {
     const resources = await context.amplify.getResourceStatus();
     const allResources = resources.allResources;
-    const outputMap = allResources.reduce((acc, r) => {
-      const category = r.category;
-      const resourceName = r.resourceName.toLowerCase();
-      const outputs = Object.entries(r.output || {}).reduce((sum, [name, value]) => {
-        return { ...sum, [name.toLowerCase()]: value };
-      }, {});
-
-      return { ...acc, [category]: { ...acc.category, [resourceName]: outputs } };
-    }, {});
-    outputMap.api = {
-      ...outputMap.api,
-      [this.apiName]: {
-        graphqlapiendpointoutput: this.appSyncSimulator.url,
-        graphqlapikeyoutput: config.appSync.apiKey,
-        graphqlapiidoutput: 'fake-api-id',
-        ...config.dataSources
-          .filter(ds => ds.type === 'AMAZON_DYNAMODB')
-          .reduce((acc, ds) => {
-            return { ...acc, [`${ds.name}_NAME`.toLowerCase()]: ds.name, [`${ds.name}_ARN`.toLowerCase()]: ds.Arn };
-          }, {}),
-      },
-    };
-    return Object.entries(sourceEnvVars).reduce((acc, [name, value]) => {
-      const [category, resourceName, ...outputName] = name.split('_').map(f => f.toLowerCase());
-      let computedValue = value;
-      if (category && resourceName && outputName) {
-        if (outputMap[category] && outputMap[category][resourceName] && outputMap[category][resourceName][outputName.join('_')]) {
-          computedValue = outputMap[category][resourceName][outputName.join('_')];
-        }
-      }
-
-      return { ...acc, [name]: computedValue };
-    }, {});
+    return hydrateAllEnvVars(allResources, sourceEnvVars, {
+      apiId: 'fake-api-id',
+      apiKey: config.appSync.apiKey,
+      apiName: this.apiName,
+      url: `${this.appSyncSimulator.url}/graphql`,
+      dataSources: config.dataSources,
+    });
   }
 }
