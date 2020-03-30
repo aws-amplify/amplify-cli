@@ -16,7 +16,7 @@ using Amazon.DynamoDBv2.Model;
 namespace <%= props.resourceName %>
 {
     // If you rename this class, you will need to update the invocation shim
-    // to match if you intend to test the function with 'amplify function invoke'
+    // to match if you intend to test the function with 'amplify mock function'
     public class <%= props.functionName %>
     {
         private static readonly JsonSerializer _jsonSerializer = new JsonSerializer();

@@ -12,7 +12,7 @@ export function provideServerless(request: ContributionRequest): Promise<Functio
     'Serverless/aws-lambda-tools-defaults.json.ejs',
     'Serverless/Function.csproj.ejs',
     'Serverless/FunctionHandler.cs.ejs',
-    'Serverless/event.json',
+    'Serverless/event.json.ejs',
     ...shimSourceFiles(),
   ];
   const handlerSource = path.join('src', request.contributionContext.functionName, `${request.contributionContext.functionName}.cs`);
@@ -37,7 +37,7 @@ export function provideServerless(request: ContributionRequest): Promise<Functio
           `${request.contributionContext.functionName}.csproj`,
         ),
         'Serverless/FunctionHandler.cs.ejs': handlerSource,
-        'Serverless/event.json': path.join('src', 'event.json'),
+        'Serverless/event.json.ejs': path.join('src', 'event.json'),
         ...shimMappings(),
       },
     },

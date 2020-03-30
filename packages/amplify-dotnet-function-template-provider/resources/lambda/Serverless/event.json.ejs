@@ -1,7 +1,7 @@
 {
   "body": "eyJ0ZXN0IjoiYm9keSJ9",
   "resource": "/{proxy+}",
-  "path": "/items",
+  "path": "<%= props.functionTemplate.parameters.path %>",
   "httpMethod": "POST",
   "isBase64Encoded": true,
   "queryStringParameters": {
@@ -11,7 +11,7 @@
     "foo": ["bar"]
   },
   "pathParameters": {
-    "proxy": "/items"
+    "proxy": "<%= props.functionTemplate.parameters.path %>"
   },
   "stageVariables": {
     "baz": "qux"
@@ -76,7 +76,7 @@
       "userAgent": "Custom User Agent String",
       "user": null
     },
-    "path": "/prod/path/to/resource",
+    "path": "<%= props.functionTemplate.parameters.path %>",
     "resourcePath": "/{proxy+}",
     "httpMethod": "POST",
     "apiId": "1234567890",
