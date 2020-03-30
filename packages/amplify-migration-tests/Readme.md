@@ -1,4 +1,4 @@
-# Amplify CLI E2E tests
+# Amplify CLI Migration tests
 
 This packages contains migration tests that are run in CircleCI to ensure that changes do not break an existing amplify project created with an older version of the cli
 
@@ -12,7 +12,7 @@ The `.env` file does not get commited as its in the `.gitignore` file.
 
 ## Running individual tests
 
-Amplify E2E tests use Jest. So all the standard Jest comnmads work.
+Amplify Migration tests use Jest. So all the standard Jest comnmads work.
 You can run a single test while adding a new test by running
 
 ```bash
