@@ -5,7 +5,7 @@ import { createNewProjectDir, deleteProjectDir } from '../../utils';
 describe('amplify add api migration', () => {
   let projRoot: string;
   beforeEach(() => {
-    projRoot = createNewProjectDir();
+    projRoot = createNewProjectDir('api-conn-cli-migration');
   });
 
   afterEach(async () => {
@@ -23,10 +23,12 @@ describe('amplify add api migration', () => {
     await amplifyPush(projRoot, true);
     // update and push with codebase cli
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(
-      projRoot,
-      /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/,
-    );
+    await expect(
+      amplifyPushUpdate(
+        projRoot,
+        /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/,
+      ),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   it('init project, run invalid migration trying to change add and remove connection at same time, and check for error', async () => {
@@ -39,10 +41,12 @@ describe('amplify add api migration', () => {
     await amplifyPush(projRoot, true);
     // update and push with codebase cli
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(
-      projRoot,
-      /Attempting to add and remove a global secondary index at the same time on the CommentTable table in the Comment stack.*/,
-    );
+    await expect(
+      amplifyPushUpdate(
+        projRoot,
+        /Attempting to add and remove a global secondary index at the same time on the CommentTable table in the Comment stack.*/,
+      ),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   it('init project, run invalid migration trying to change a @connection field name, and check for error', async () => {
@@ -55,10 +59,12 @@ describe('amplify add api migration', () => {
     await amplifyPush(projRoot, true);
     // update and push with codebase cli
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(
-      projRoot,
-      /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/,
-    );
+    await expect(
+      amplifyPushUpdate(
+        projRoot,
+        /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/,
+      ),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   it('init project, run valid migration to remove a connection, then run another migration that adds a slightly different GSI.', async () => {
