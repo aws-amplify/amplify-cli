@@ -42,6 +42,8 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   if (input.type && ['list', 'multiselect'].includes(input.type)) {
     if (context.updatingAuth && input.iterator) {
       question = iteratorQuestion(input, question, context);
+      // if selecting existing value to edit it's not require to validate inputs
+      question.validate = () => true;
     } else if (input.filter) {
       question = filterInputs(input, question, getAllMaps, context, currentAnswers);
     } else if (input.requiredOptions) {
@@ -51,7 +53,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         {
           choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,
         },
-        question
+        question,
       );
     }
   }
@@ -61,28 +63,28 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       {
         type: 'list',
       },
-      question
+      question,
     );
   } else if (input.type && input.type === 'multiselect') {
     question = Object.assign(
       {
         type: 'checkbox',
       },
-      question
+      question,
     );
   } else if (input.type && input.type === 'confirm') {
     question = Object.assign(
       {
         type: 'confirm',
       },
-      question
+      question,
     );
   } else {
     question = Object.assign(
       {
         type: 'input',
       },
-      question
+      question,
     );
   }
 
@@ -98,7 +100,7 @@ function iteratorQuestion(input, question, context) {
           value: i,
         })),
       },
-      question
+      question,
     );
   } else if (input.iterator) {
     // TODO: make iterator key useful for non-update actions
@@ -106,7 +108,7 @@ function iteratorQuestion(input, question, context) {
       {
         choices: [],
       },
-      question
+      question,
     );
   }
   return question;
@@ -144,7 +146,7 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
             const newList = choice.missingAttributes.join(', ');
             choice.disabled = `Your userpool is configured to require ${newList.substring(
               0,
-              newList.length
+              newList.length,
             )}, which cannot be retrieved from ${choice.name}`;
           }
         });
