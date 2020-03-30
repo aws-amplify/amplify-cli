@@ -157,6 +157,34 @@ export function addS3WithTrigger(cwd: string, settings: any) {
   });
 }
 
+export function addS3(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services')
+      .sendCarriageReturn()
+      .wait('Please provide a friendly name')
+      .sendCarriageReturn()
+      .wait('Please provide bucket name')
+      .sendCarriageReturn()
+      .wait('Who should have access')
+      .sendCarriageReturn()
+      .wait('What kind of access do you want')
+      .send(' ')
+      .sendCarriageReturn()
+      .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
+      .sendLine('n')
+      .sendCarriageReturn()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function updateSimpleDDBwithGSI(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })

@@ -17,19 +17,16 @@ async function run(context, category, resourceName) {
 async function buildResource(context, resource) {
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
   let breadcrumbs = context.amplify.readBreadcrumbs(context, resource.category, resource.resourceName);
-  if (!breadcrumbs) {
-    // fallback to old behavior for backwards compatibility and store breadcrumbs for future use
-    breadcrumbs = {
-      pluginId: 'amplify-nodejs-function-runtime-provider',
-      functionRuntime: 'nodejs',
-      useLegacyBuild: true,
-    };
-    context.amplify.leaveBreadcrumbs(context, resource.category, resource.resourceName, breadcrumbs);
-  }
 
   let zipFilename = resource.distZipFilename;
 
-  const runtimePlugin = await loadRuntimePlugin(context, breadcrumbs.pluginId, resource);
+  const runtimePlugin = await context.amplify.loadRuntimePlugin(context, breadcrumbs.pluginId);
+
+  const depCheck = await runtimePlugin.checkDependencies();
+  if (!depCheck.hasRequiredDependencies) {
+    context.print.error(depCheck.errorMessage || `You are missing dependencies required to package ${resourceName}`);
+    throw new Error(`Missing required dependencies to package ${resourceName}`);
+  }
 
   // build the function
   let rebuilt = false;
@@ -82,19 +79,6 @@ async function buildResource(context, resource) {
       })
       .catch(err => reject(new Error(`Package command failed with error [${err}]`)));
   });
-}
-
-async function loadRuntimePlugin(context, pluginId, resource) {
-  const pluginMeta = context.pluginPlatform.plugins.functionRuntime.find(meta => meta.manifest.functionRuntime.pluginId === pluginId);
-  if (!pluginMeta) {
-    throw new Error(`Could not find runtime plugin with id [${pluginId}] to build the resource ${resource.resourceName}`);
-  }
-  try {
-    const plugin = await import(pluginMeta.packageLocation);
-    return plugin.functionRuntimeContributorFactory(context);
-  } catch (err) {
-    throw new Error(`Could not load runtime plugin with id [${pluginId}]. Underlying error is ${err}`);
-  }
 }
 
 module.exports = {

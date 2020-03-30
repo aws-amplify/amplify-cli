@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.1...@aws-amplify/cli@4.17.2) (2020-03-26)
+
+
+### Bug Fixes
+
+* **cli:** added logic for use of dir separator in generate() ([#3739](https://github.com/aws-amplify/amplify-cli/issues/3739)) ([da17add](https://github.com/aws-amplify/amplify-cli/commit/da17adda27addc9fd37834f8968093c123988fce)), closes [#3761](https://github.com/aws-amplify/amplify-cli/issues/3761)
+
+
+
+
+
 ## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.0...@aws-amplify/cli@4.17.1) (2020-03-22)
 
 

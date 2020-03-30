@@ -82,15 +82,15 @@ describe('CloudFormation stack', () => {
       ).toEqual({ CreateProdResources: true, VerboseLogs: false });
     });
 
-    it('should throw error when an No existent value is used in Ref', () => {
-      expect(() =>
+    it('should use ref key when no value found', () => {
+      expect(
         processConditions(
           {
-            CreateProdResources: { 'Fn::Equals': [{ Ref: 'EnvType' }, 'prod'] },
+            CreateProdResources: { 'Fn::Equals': [{ Ref: 'EnvType' }, 'EnvType'] },
           },
           {},
         ),
-      ).toThrowError('Could not find ref');
+      ).toEqual({ CreateProdResources: true });
     });
   });
 

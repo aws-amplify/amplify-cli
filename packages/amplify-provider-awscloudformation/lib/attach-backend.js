@@ -15,7 +15,8 @@ async function run(context) {
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
-    const message = `Amplify service is not available in the region ${awsConfig.region ? awsConfig.region : ''}`;
+    const region = awsConfig && awsConfig.region ? awsConfig.region : '<unknown>';
+    const message = `Amplify service is not available in the region ${region}`;
     context.print.error(message);
     throw new Error(message);
   }

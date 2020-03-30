@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.1.0...amplify-function-plugin-interface@1.2.0) (2020-03-26)
+
+
+### Features
+
+* **amplify-category-function:** support list in plugin runtime condition ([#3757](https://github.com/aws-amplify/amplify-cli/issues/3757)) ([b36c09d](https://github.com/aws-amplify/amplify-cli/commit/b36c09d6ef21c40999d1f5930aabece0a4315d21))
+
+
+
+
+
 # 1.1.0 (2020-03-22)
 
 

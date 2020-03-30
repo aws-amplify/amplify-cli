@@ -2,7 +2,7 @@ import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common'
 import { camelCase } from 'change-case';
 import { lowerCaseFirst } from 'lower-case-first';
 import { schemaTypeMap } from '../configs/swift-config';
-import { SwiftDeclarationBlock, escapeKeywords } from '../languages/swift-declaration-block';
+import { SwiftDeclarationBlock, escapeKeywords, ListType } from '../languages/swift-declaration-block';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
 
@@ -18,6 +18,8 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       code.push(this.generateClassLoader());
     } else if (this.selectedTypeIsEnum()) {
       code.push(this.generateEnums());
+    } else if (this.selectedTypeIsNonModel()) {
+      code.push(this.generateNonModelType());
     } else {
       code.push(this.generateStruct());
     }
@@ -33,11 +35,13 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       Object.entries(obj.fields).forEach(([fieldName, field]) => {
         const fieldType = this.getNativeType(field);
         const isVariable = field.name !== 'id';
+        const listType: ListType = field.connectionInfo ? ListType.LIST : ListType.ARRAY;
         structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'public', {
           optional: !this.isFieldRequired(field),
           isList: field.isList,
           variable: isVariable,
           isEnum: this.isEnumType(field),
+          listType: field.isList ? listType : undefined,
         });
       });
       const initImpl: string = this.getInitBody(obj.fields);
@@ -45,12 +49,20 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
         'init',
         null,
         initImpl,
-        obj.fields.map(field => ({
-          name: this.getFieldName(field),
-          type: this.getNativeType(field),
-          value: field.name === 'id' ? 'UUID().uuidString' : undefined,
-          flags: { optional: field.isNullable, isList: field.isList, isEnum: this.isEnumType(field) },
-        })),
+        obj.fields.map(field => {
+          const listType: ListType = field.connectionInfo ? ListType.LIST : ListType.ARRAY;
+          return {
+            name: this.getFieldName(field),
+            type: this.getNativeType(field),
+            value: field.name === 'id' ? 'UUID().uuidString' : undefined,
+            flags: {
+              optional: field.isNullable,
+              isList: field.isList,
+              isEnum: this.isEnumType(field),
+              listType: field.isList ? listType : undefined,
+            },
+          };
+        }),
         'public',
         {},
       );
@@ -64,7 +76,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       const enumDeclaration = new SwiftDeclarationBlock()
         .asKind('enum')
         .access('public')
-        .withProtocols(['String'])
+        .withProtocols(['String', 'EnumPersistable'])
         .withName(this.getEnumName(enumValue));
 
       Object.entries(enumValue.values).forEach(([name, value]) => {
@@ -72,6 +84,27 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       });
 
       result.push(enumDeclaration.string);
+    });
+    return result.join('\n');
+  }
+  generateNonModelType(): string {
+    let result: string[] = [...this.imports, ''];
+    Object.entries(this.getSelectedNonModels()).forEach(([name, obj]) => {
+      const structBlock: SwiftDeclarationBlock = new SwiftDeclarationBlock()
+        .withName(this.getModelName(obj))
+        .access('public')
+        .withProtocols(['Codable']);
+      Object.values(obj.fields).forEach(field => {
+        const fieldType = this.getNativeType(field);
+        structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'DEFAULT', {
+          optional: !this.isFieldRequired(field),
+          isList: field.isList,
+          variable: true,
+          isEnum: this.isEnumType(field),
+          listType: field.isList ? ListType.ARRAY : undefined,
+        });
+      });
+      result.push(structBlock.string);
     });
     return result.join('\n');
   }
@@ -139,7 +172,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   }
 
   protected generateClassLoader(): string {
-    const structList = Object.values(this.typeMap).map(typeObj => {
+    const structList = Object.values(this.modelMap).map(typeObj => {
       return `${this.getModelName(typeObj)}.self`;
     });
 
@@ -187,6 +220,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     let ofType;
     const isEnumType = this.isEnumType(field);
     const isModelType = this.isModelType(field);
+    const isNonModelType = this.isNonModelType(field);
     const name = `${modelKeysName}.${this.getFieldName(field)}`;
     const typeName = this.getSwiftModelTypeName(field);
     const { connectionInfo } = field;
@@ -209,12 +243,18 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     }
 
     if (field.isList) {
-      ofType = `.collection(of: ${this.getSwiftModelTypeName(field)})`;
+      if (isModelType) {
+        ofType = `.collection(of: ${this.getSwiftModelTypeName(field)})`;
+      } else {
+        ofType = `.customType(${this.getSwiftModelTypeName(field)})`;
+      }
     } else {
       if (isEnumType) {
-        ofType = `.enum(${typeName})`;
+        ofType = `.enum(type: ${typeName})`;
       } else if (isModelType) {
         ofType = `.model(${typeName})`;
+      } else if (isNonModelType) {
+        ofType = `.customType(${typeName})`;
       } else {
         ofType = typeName;
       }
@@ -226,12 +266,20 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   private getSwiftModelTypeName(field: CodeGenField) {
     if (this.isEnumType(field)) {
-      return `${this.getEnumName(field.type)}.self`;
+      const name = this.getEnumName(field.type);
+      return field.isList ? `[${name}].self` : `${name}.self`;
     }
     if (this.isModelType(field)) {
-      return `${this.getModelName(this.typeMap[field.type])}.self`;
+      return `${this.getModelName(this.modelMap[field.type])}.self`;
+    }
+    if (this.isNonModelType(field)) {
+      const name = this.getNonModelName(this.nonModelMap[field.type]);
+      return field.isList ? `[${name}].self` : `${name}.self`;
     }
     if (field.type in schemaTypeMap) {
+      if (field.isList) {
+        return `[${this.getNativeType(field)}].self`;
+      }
       return schemaTypeMap[field.type];
     }
     // TODO: investigate if returning string is acceptable or should throw an exception
