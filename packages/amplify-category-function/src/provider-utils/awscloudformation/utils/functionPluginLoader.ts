@@ -110,7 +110,8 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     })
     .map(meta => meta.manifest[selectionOptions.pluginType])
     .map(contributes => contributes[selectionOptions.listOptionsField])
-    .reduce((acc, it) => acc.concat(it), []);
+    .reduce((acc, it) => acc.concat(it), [])
+    .sort((a, b) => a.name.localeCompare(b.name)); // sort by display name so that selections order is deterministic
 
   // sanity checks
   let selection;

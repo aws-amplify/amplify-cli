@@ -49,7 +49,7 @@ export function appSyncDataSourceHandler(
   const typeName = resource.Properties.Type;
   const commonProps = {
     cfnExposedAttributes: { DataSourceArn: 'Arn', Name: 'name' },
-    Arn: `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/datasources/${resource.Properties.Name}`,
+    Arn: `arn:aws:appsync:us-fake-1:123456789012:apis/graphqlapiid/datasources/${resource.Properties.Name}`,
   };
   if (typeName === 'AMAZON_DYNAMODB') {
     return {

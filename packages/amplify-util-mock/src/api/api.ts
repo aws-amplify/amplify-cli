@@ -5,7 +5,7 @@ import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-c
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
-import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
+import { getAmplifyMeta, addCleanupTask, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
@@ -190,10 +190,11 @@ export class APITest {
             if (!lambdaConfig) {
               throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
             }
+            const envVars = await this.hydrateLambdaEnvVars(context, lambdaConfig.environment, config);
             const invoker = await getInvoker(context, {
               resourceName: functionName,
               handler: lambdaConfig.handler,
-              envVars: lambdaConfig.environment,
+              envVars,
             });
             return {
               ...d,
@@ -332,5 +333,17 @@ export class APITest {
 
     this.configOverrideManager.addOverride('api', override);
     await this.configOverrideManager.generateOverriddenFrontendExports(context);
+  }
+
+  private async hydrateLambdaEnvVars(context, sourceEnvVars: Record<string, any>, config): Promise<Record<string, any>> {
+    const resources = await context.amplify.getResourceStatus();
+    const allResources = resources.allResources;
+    return hydrateAllEnvVars(allResources, sourceEnvVars, {
+      apiId: 'fake-api-id',
+      apiKey: config.appSync.apiKey,
+      apiName: this.apiName,
+      url: `${this.appSyncSimulator.url}/graphql`,
+      dataSources: config.dataSources,
+    });
   }
 }
