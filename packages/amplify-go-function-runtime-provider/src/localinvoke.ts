@@ -71,12 +71,6 @@ export const localInvoke = async (request: InvocationRequest, context: any) => {
 
   const buildResult = await buildResourceInternal(buildRequest, context, false, true);
 
-  if (buildResult.rebuilt === false) {
-    context.print.info('Function executable is up-to-date, no rebuild required.');
-  } else {
-    context.print.info('Function built successfully.');
-  }
-
   // Find a free tcp port for the Lambda to launch on
   const portNumber = await portfinder.getPortPromise({
     startPort: BASE_PORT,
@@ -99,9 +93,7 @@ export const localInvoke = async (request: InvocationRequest, context: any) => {
   let envelopeString = JSON.stringify(envelope, null);
 
   // Make sure that envelope is ending with a newline because the child process expects a line input
-  if (!envelopeString.endsWith('\n')) {
-    envelopeString += '\n';
-  }
+  envelopeString += '\n';
 
   const processResult = execa.sync(localInvoker.executable, {
     input: envelopeString,

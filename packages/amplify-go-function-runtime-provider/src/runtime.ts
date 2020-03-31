@@ -125,7 +125,7 @@ export const checkDependencies = async (_runtimeValue: string): Promise<CheckDep
   if (executablePath === null) {
     return {
       hasRequiredDependencies: false,
-      errorMessage: `${executableName} executable was not found in PATH, make sure it's available or provide a custom path in the function.state file`,
+      errorMessage: `${executableName} executable was not found in PATH, make sure it's available`,
     };
   }
 

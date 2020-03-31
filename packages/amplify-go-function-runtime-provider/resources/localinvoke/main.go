@@ -56,11 +56,12 @@ func invokeLambda(input LambdaInput) ([]byte, error) {
 		}
 
 		connectionRetries++
-		time.Sleep(connectionDelay)
 
 		if connectionRetries > maxConnectionRetries {
 			break
 		}
+
+		time.Sleep(connectionDelay)
 	}
 
 	if !connected {

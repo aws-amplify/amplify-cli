@@ -42,6 +42,11 @@ jobs:
           name: Install Java
           command: sudo apt-get install default-jdk
       - run:
+          name: Install Go
+          command: |
+            sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
+            sudo apt-get install golang
+      - run:
           name: lint
           command: yarn lint
       - run:

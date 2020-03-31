@@ -10,6 +10,6 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-function-plugin-interface": "^1.0.0"
+    "amplify-function-plugin-interface": "1.2.0"
   }
 }
