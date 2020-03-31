@@ -107,11 +107,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ask additonal questions
 
-  /* eslint-disable */
   ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
   ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType));
   await checkForCognitoUserPools(context, parameters, authConfig);
-  /* eslint-disable */
 
   // Ask schema file question
 
@@ -355,7 +353,9 @@ async function updateWalkthrough(context) {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
-  let authConfig, defaultAuthType, resolverConfig;
+  let authConfig;
+  let defaultAuthType;
+  let resolverConfig;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
 
   // There can only be one appsync resource
@@ -429,17 +429,13 @@ async function updateWalkthrough(context) {
       project: { ConflictHandler: 'AUTOMERGE', ConflictDetection: 'VERSION' },
     };
   } else if (updateOption === 'authUpdate') {
-    /* eslint-disable */
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
     await checkForCognitoUserPools(context, parameters, authConfig);
-    /* eslint-disable */
   } else if (updateOption === 'all') {
-    /* eslint-disable */
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
     ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
     await checkForCognitoUserPools(context, parameters, authConfig);
-    /* eslint-disable */
   }
 
   if (authConfig) {
@@ -451,7 +447,7 @@ async function updateWalkthrough(context) {
     }
 
     amplifyMeta[category][resourceName].output.authConfig = authConfig;
-    let jsonString = JSON.stringify(amplifyMeta, null, '\t');
+    let jsonString = JSON.stringify(amplifyMeta, null, 4);
     fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
     const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
@@ -462,7 +458,7 @@ async function updateWalkthrough(context) {
     }
 
     backendConfig[category][resourceName].output.authConfig = authConfig;
-    jsonString = JSON.stringify(backendConfig, null, '\t');
+    jsonString = JSON.stringify(backendConfig, null, 4);
     fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
   }
 
