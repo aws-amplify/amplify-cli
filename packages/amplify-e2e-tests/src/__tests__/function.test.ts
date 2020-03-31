@@ -339,7 +339,7 @@ describe('nodejs', () => {
       expect(payload.ScannedCount).toBeDefined();
     });
 
-    it.only('@model-backed lambda function should generate envvars TODOTABLE_NAME, TODOTABLE_ARN, GRAPHQLAPIIDOUTPUT', async () => {
+    it('@model-backed lambda function should generate envvars TODOTABLE_NAME, TODOTABLE_ARN, GRAPHQLAPIIDOUTPUT', async () => {
       await initJSProjectWithProfile(projRoot, {});
       await addApiWithSchema(projRoot, 'simple_model.graphql');
 

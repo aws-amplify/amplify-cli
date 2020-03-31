@@ -12,6 +12,8 @@ expect "Provide a friendly name for your resource to be used as a label for this
 send -- "\r"
 expect "Provide the AWS Lambda function name:"
 send -- "\r"
+expect "Choose the function runtime that you want to use:"
+send -- "j\r"
 expect "Choose the function template that you want to use:"
 send -- "j\r"
 expect "Choose a DynamoDB data source option"

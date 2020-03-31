@@ -1,6 +1,7 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../utils';
+import { singleSelect, runtimeChoices, addFunction, nodeJSTemplateChoices } from './function';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../schemas/${schemaName}`;
@@ -219,23 +220,35 @@ export function addRestApi(cwd: string, settings: any) {
         .wait('Choose a lambda source');
 
       if (settings.existingLambda) {
-        chain = chain
+        chain
           .send(KEY_DOWN_ARROW)
           .sendCarriageReturn() // Existing lambda
           .wait('Choose the Lambda function to invoke by this path')
           .sendCarriageReturn(); // Pick first one
       } else {
-        chain = chain
+        chain
           .sendCarriageReturn() // Create new Lambda function
           .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
           .sendCarriageReturn()
           .wait('Provide the AWS Lambda function name')
-          .sendCarriageReturn()
-          .wait('Choose the function template that you want to use');
+          .sendCarriageReturn();
 
-        chain = settings.isCrud ? _crudRestApi(chain) : _serverlessExpressApi(chain);
+        singleSelect(chain.wait('Choose the function runtime that you want to use'), 'NodeJS', runtimeChoices);
 
-        chain = chain
+        const templateName = settings.isCrud
+          ? 'CRUD function for DynamoDB (Integration with API Gateway)'
+          : 'Serverless ExpressJS function (Integration with API Gateway)';
+        singleSelect(chain.wait('Choose the function template that you want to use'), templateName, nodeJSTemplateChoices);
+
+        if (settings.isCrud) {
+          chain
+            .wait('Choose a DynamoDB data source option')
+            .sendCarriageReturn() // Use DDB table configured in current project
+            .wait('Choose from one of the already configured DynamoDB tables')
+            .sendCarriageReturn(); // Use first one in the list
+        }
+
+        chain
           .wait('Do you want to access other resources created in this project from your Lambda function')
           .sendLine('n')
           .wait('Do you want to edit the local lambda function now')
@@ -257,24 +270,4 @@ export function addRestApi(cwd: string, settings: any) {
         });
     }
   });
-}
-
-// Expects a DDB table to already exist
-function _crudRestApi(chain: ExecutionContext): ExecutionContext {
-  chain = chain
-    .send(KEY_DOWN_ARROW)
-    .sendCarriageReturn() // CRUD function for Amazon DynamoDB table
-    .wait('Choose a DynamoDB data source option')
-    .sendCarriageReturn() // Use DDB table configured in current project
-    .wait('Choose from one of the already configured DynamoDB tables')
-    .sendCarriageReturn(); // Use first one in the list
-  return chain;
-}
-
-function _serverlessExpressApi(chain: ExecutionContext): ExecutionContext {
-  chain = chain
-    .send(KEY_DOWN_ARROW)
-    .send(KEY_DOWN_ARROW)
-    .sendCarriageReturn(); // Serverless express function
-  return chain;
 }

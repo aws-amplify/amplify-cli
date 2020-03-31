@@ -8,7 +8,7 @@ type FunctionRuntimes = 'netCore21' | 'netCore31' | 'go' | 'java' | 'nodejs' | '
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
 // runtimeChoices are shared between tests
-const runtimeChoices = [/*'.NET Core 2.1', '.NET Core 3.1',*/ 'Go' /*, 'Java'*/, 'NodeJS' /*, 'Python'*/];
+export const runtimeChoices = [/*'.NET Core 2.1', '.NET Core 3.1',*/ 'Go' /*, 'Java'*/, 'NodeJS' /*, 'Python'*/];
 
 // templateChoices is per runtime
 const dotNetCore21TemplateChoices = ['Hello World'];
@@ -19,7 +19,7 @@ const goTemplateChoices = ['Hello World'];
 
 const javaTemplateChoices = ['Hello World'];
 
-const nodeJSTemplateChoices = [
+export const nodeJSTemplateChoices = [
   'CRUD function for DynamoDB (Integration with API Gateway)',
   'Hello World',
   'Lambda trigger',
