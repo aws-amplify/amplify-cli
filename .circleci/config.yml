@@ -44,8 +44,11 @@ jobs:
       - run:
           name: Install Go
           command: |
-            sudo add-apt-repository ppa:ubuntu-lxc/lxd-stable
-            sudo apt-get install golang
+            curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
+            rm go1.14.1.linux-amd64.tar.gz
+            export PATH=$PATH:/usr/local/go/bin
+            go version
       - run:
           name: lint
           command: yarn lint
