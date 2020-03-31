@@ -25,7 +25,7 @@ async function run(context, resourceDefinition) {
   try {
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = resourceDefinition;
     let resources;
-    if (context.exeInfo.forcePush) {
+    if (context.exeInfo && context.exeInfo.forcePush) {
       resources = allResources;
     } else {
       resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
