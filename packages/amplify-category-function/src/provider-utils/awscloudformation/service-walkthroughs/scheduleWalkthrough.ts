@@ -130,9 +130,9 @@ async function cronServiceWalkthrough(context: any) {
       const customRuleQuestion = {
         type: 'input',
         name: 'customRule',
-        message: 'Custom Schedule expression(Learn more : https://amzn.to/3akXtJF)',
+        message: 'Custom Schedule expression(Learn more: https://amzn.to/3akXtJF)',
         validate: ValidCronExpression({
-          onErrorMsg: 'Enter a valid Schedule Expression (Learn more : https://amzn.to/3akXtJF)',
+          onErrorMsg: 'Enter a valid Schedule Expression (Learn more: https://amzn.to/3akXtJF)',
         }),
       };
       const customRuleAnswer = await inquirer.prompt([customRuleQuestion]);
