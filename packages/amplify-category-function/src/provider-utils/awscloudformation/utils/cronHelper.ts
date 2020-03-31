@@ -2,16 +2,6 @@ import inquirer from 'inquirer';
 inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 import { CronBuilder } from '../utils/cronBuilder';
 
-var Days = {
-  Sunday: '1',
-  Monday: '2',
-  Tuesday: '3',
-  Wednesday: '4',
-  Thursday: '5',
-  Friday: '6',
-  Saturday: '7',
-};
-
 export async function minuteHelper(context: any) {
   const minuteQuestion = {
     type: 'input',
@@ -26,8 +16,7 @@ export async function minuteHelper(context: any) {
   };
   const minuteAnswer = await inquirer.prompt([minuteQuestion]);
   const plural = minuteAnswer.minutes === '1' ? '' : 's';
-  let cloudwatchRule = `rate(${minuteAnswer.minutes} minute${plural})`;
-  return cloudwatchRule;
+  return `rate(${minuteAnswer.minutes} minute${plural})`;
 }
 
 export async function hourHelper(context: any) {
@@ -46,8 +35,7 @@ export async function hourHelper(context: any) {
   };
   const hourAnswer = await inquirer.prompt([hourQuestion]);
   const plural = hourAnswer.hours === '1' ? '' : 's';
-  let cloudwatchRule = `rate(${hourAnswer.hours} hour${plural})`;
-  return cloudwatchRule;
+  return `rate(${hourAnswer.hours} hour${plural})`;
 }
 
 export async function timeHelper(exp: CronBuilder) {
@@ -80,10 +68,18 @@ export async function weekHelper(exp: CronBuilder) {
     type: 'list',
     name: 'week',
     message: 'Select the day to invoke the function:',
-    choices: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    choices: [
+      { name: 'Sunday', value: '1' },
+      { name: 'Monday', value: '2' },
+      { name: 'Tuesday', value: '3' },
+      { name: 'Wednesday', value: '4' },
+      { name: 'Thursday', value: '5' },
+      { name: 'Friday', value: '6' },
+      { name: 'Saturday', value: '7' },
+    ],
   };
   const weekAnswer = await inquirer.prompt([WeekQuestion]);
-  exp.set('dayOfTheWeek', Days[(weekAnswer as any).week].split());
+  exp.set('dayOfTheWeek', Array(weekAnswer.week));
   return exp;
 }
 

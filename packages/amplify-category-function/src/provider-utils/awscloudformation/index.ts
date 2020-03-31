@@ -94,8 +94,8 @@ export async function updateResource(context, category, service, parameters, res
   }
 
   if (answers.parameters) {
-    let cloudWatchParams = _.pick(answers.parameters, ['CloudWatchRule', 'CloudWatchEnabled']);
-    let params = _.omit(answers.parameters, ['CloudWatchRule', 'CloudWatchEnabled']);
+    let cloudWatchParams = _.pick(answers.parameters, ['CloudWatchRule']);
+    let params = _.omit(answers.parameters, ['CloudWatchRule']);
     createParametersFile(context, params, answers.resourceName);
     createParametersFile(context, cloudWatchParams, answers.resourceName, 'parameters.json');
   }

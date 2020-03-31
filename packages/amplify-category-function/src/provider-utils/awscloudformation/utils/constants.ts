@@ -5,10 +5,12 @@ export const serviceName = 'Lambda';
 export const functionParametersFileName = 'function-parameters.json';
 export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
-export const MINUTES = 'Minutes';
-export const HOURLY = 'Hourly';
-export const DAILY = 'Daily';
-export const WEEKLY = 'Weekly';
-export const MONTHLY = 'Monthly';
-export const YEARLY = 'Yearly';
-export const CUSTOM = 'Custom AWS cron expression';
+export enum CronExpressionsMode {
+  Minutes = 'Minutes',
+  Hourly = 'Hourly',
+  Daily = 'Daily',
+  Weekly = 'Weekly',
+  Monthly = 'Monthly',
+  Yearly = 'Yearly',
+  CUSTOM = 'Custom AWS cron expression',
+}

@@ -189,12 +189,10 @@ export async function updateWalkthrough(context, lambdaToUpdate) {
     params = {};
   }
   let scheduleParameters: Partial<FunctionParameters> = params;
-  scheduleParameters.cloudwatchEnabled = params.CloudWatchEnabled;
   scheduleParameters.cloudwatchRule = params.CloudWatchRule;
   scheduleParameters.resourceName = answers.resourceName;
   let scheduleParams = await scheduleWalkthrough(context, scheduleParameters);
   answers.parameters = newParams;
-  answers.parameters.CloudWatchEnabled = scheduleParams.cloudwatchEnabled;
   answers.parameters.CloudWatchRule = scheduleParams.cloudwatchRule;
   return { answers, dependsOn };
 }

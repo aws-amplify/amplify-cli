@@ -2,11 +2,6 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
-        "CloudWatchEnabled": {
-            "Type": "String",
-            "Default" : "false",
-            "Description" : "Parameters to check whether CloudWatchEvent is Enabled"
-        },
         "CloudWatchRule": {
             "Type": "String",
             "Default" : "NONE",
@@ -224,7 +219,7 @@
         }
         <% } %>
         <% } %>
-        <% if (props.cloudwatchEnabled && props.cloudwatchEnabled != "false") { %> 
+        <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %> 
         ,"CloudWatchEvent": {
             "Type" : "AWS::Events::Rule",
             "Properties":{
@@ -273,7 +268,7 @@
                 "Ref": "LambdaExecutionRole"
             }
         }
-        <% if (props.cloudwatchEnabled && props.cloudwatchEnabled != "false") { %> 
+        <% if (props.cloudwatchRule && props.cloudwatchRule != "false") { %> 
         ,"CloudWatchEventRule": {
             "Value" :{
                 "Ref" : "CloudWatchEvent"

@@ -26,9 +26,8 @@ export function copyFunctionResources(context: any, parameters: FunctionParamete
   }
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 
-  if ('cloudwatchEnabled' in parameters) {
+  if ('cloudwatchRule' in parameters) {
     const params = {
-      CloudWatchEnabled: parameters.cloudwatchEnabled,
       CloudWatchRule: parameters.cloudwatchRule,
     };
     createParametersFile(context, params, parameters.resourceName, 'parameters.json');

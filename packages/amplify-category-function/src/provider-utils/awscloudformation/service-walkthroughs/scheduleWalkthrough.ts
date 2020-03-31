@@ -6,19 +6,21 @@ inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 import { CronBuilder } from '../utils/cronBuilder';
 import { constructCloudWatchEventComponent } from '../utils/cloudformationHelpers';
 import { minuteHelper, hourHelper, timeHelper, weekHelper, monthHelper, yearHelper } from '../utils/cronHelper';
-import { MINUTES, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM } from '../utils/constants';
+import { CronExpressionsMode } from '../utils/constants';
 import { CronExpression } from '../utils/cronExpression';
 const categoryName = 'function';
 
-export async function scheduleWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<Partial<FunctionParameters>> {
+export async function scheduleWalkthrough(
+  context: any,
+  params: Partial<FunctionParameters>,
+): Promise<Pick<FunctionParameters, 'cloudwatchRule'>> {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, params.resourceName);
   const cfnFileName = `${params.resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-  let scheduleParams: Partial<FunctionParameters> = params;
-  if (params.cloudwatchEnabled === undefined || params.cloudwatchEnabled === 'false') {
+  let scheduleParams = params;
+  if (params.cloudwatchRule === undefined || params.cloudwatchRule === 'false') {
     if (await context.amplify.confirmPrompt.run('Do you want to invoke this function on a recurring schedule?', false)) {
-      scheduleParams.cloudwatchEnabled = 'true';
       try {
         let cloudWatchRule = await cronServiceWalkthrough(context);
         scheduleParams.cloudwatchRule = cloudWatchRule;
@@ -56,12 +58,10 @@ export async function scheduleWalkthrough(context: any, params: Partial<Function
         case 'update': {
           // add service walkthrough to get the cron expression
           let cloudWatchRule = await cronServiceWalkthrough(context);
-          scheduleParams.cloudwatchEnabled = 'true';
           scheduleParams.cloudwatchRule = cloudWatchRule;
           break;
         }
         case 'remove': {
-          scheduleParams.cloudwatchEnabled = 'false';
           scheduleParams.cloudwatchRule = 'NONE';
           delete cfnContent.Resources.CloudWatchEvent;
           delete cfnContent.Resources.PermissionForEventsToInvokeLambda;
@@ -72,36 +72,38 @@ export async function scheduleWalkthrough(context: any, params: Partial<Function
       fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
     }
   }
-  return scheduleParams;
+  return {
+    cloudwatchRule: scheduleParams.cloudwatchRule,
+  };
 }
 
-async function cronServiceWalkthrough(context: any) {
+export async function cronServiceWalkthrough(context: any) {
   let cloudwatchRule;
   // resource questions for setting cron
   const intervalQuestion = {
     type: 'list',
     name: 'interval',
     message: 'At which interval should the function be invoked:',
-    choices: [MINUTES, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM],
+    choices: ['Minutes', 'Hourly', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom AWS cron expression'],
   };
   const intervalAnswer = await inquirer.prompt([intervalQuestion]);
   switch (intervalAnswer.interval) {
-    case MINUTES: {
+    case CronExpressionsMode.Minutes: {
       cloudwatchRule = minuteHelper(context);
       break;
     }
-    case HOURLY: {
+    case CronExpressionsMode.Hourly: {
       cloudwatchRule = hourHelper(context);
       break;
     }
-    case DAILY: {
+    case CronExpressionsMode.Daily: {
       var exp = new CronBuilder();
       exp = await timeHelper(exp);
       cloudwatchRule = exp.build();
       cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule, cloudwatchRule.lastIndexOf('*'), '?') + ' ' + '*' + ')';
       break;
     }
-    case WEEKLY: {
+    case CronExpressionsMode.Weekly: {
       var exp1 = new CronBuilder();
       exp1 = await weekHelper(exp1);
       exp1 = await timeHelper(exp1);
@@ -109,7 +111,7 @@ async function cronServiceWalkthrough(context: any) {
       cloudwatchRule = 'cron(' + cloudwatchRule + ' ' + '*' + ')';
       break;
     }
-    case MONTHLY: {
+    case CronExpressionsMode.Monthly: {
       var exp2 = new CronBuilder();
       exp2 = await monthHelper(exp2, context);
       exp2 = await timeHelper(exp2);
@@ -117,7 +119,7 @@ async function cronServiceWalkthrough(context: any) {
       cloudwatchRule = 'cron(' + replaceAt(cloudwatchRule, cloudwatchRule.lastIndexOf('*'), '?') + ' ' + '*' + ')';
       break;
     }
-    case YEARLY: {
+    case CronExpressionsMode.Yearly: {
       var exp3 = new CronBuilder();
       exp3 = await yearHelper(exp3, context);
       exp3 = await timeHelper(exp3);
@@ -126,7 +128,7 @@ async function cronServiceWalkthrough(context: any) {
 
       break;
     }
-    case CUSTOM: {
+    case CronExpressionsMode.CUSTOM: {
       const customRuleQuestion = {
         type: 'input',
         name: 'customRule',
@@ -147,12 +149,6 @@ async function cronServiceWalkthrough(context: any) {
 function replaceAt(string, index, replace) {
   return string.substring(0, index) + replace + string.substring(index + 1);
 }
-
-module.exports = {
-  scheduleWalkthrough,
-  cronServiceWalkthrough,
-  isValidCronExpression,
-};
 
 function ValidCronExpression(validation) {
   return input => {
