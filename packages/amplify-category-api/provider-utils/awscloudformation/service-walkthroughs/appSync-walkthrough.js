@@ -107,11 +107,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ask additonal questions
 
-  /* eslint-disable */
   ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
   ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType));
   await checkForCognitoUserPools(context, parameters, authConfig);
-  /* eslint-disable */
 
   // Ask schema file question
 
@@ -355,7 +353,9 @@ async function updateWalkthrough(context) {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
-  let authConfig, defaultAuthType, resolverConfig;
+  let authConfig;
+  let defaultAuthType;
+  let resolverConfig;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
 
   // There can only be one appsync resource
@@ -402,35 +402,69 @@ async function updateWalkthrough(context) {
     });
   }
 
-  /* eslint-disable */
-  ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
-  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
-  await checkForCognitoUserPools(context, parameters, authConfig);
-  /* eslint-disable */
+  const updateOptionQuestion = {
+    type: 'list',
+    name: 'updateOption',
+    message: 'Select from the options below',
+    choices: [
+      {
+        name: 'Walkthrough all configurations',
+        value: 'all',
+      },
+      {
+        name: 'Update auth settings',
+        value: 'authUpdate',
+      },
+      {
+        name: 'Enable DataStore for entire API',
+        value: 'enableDatastore',
+      },
+    ],
+  };
 
-  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+  let { updateOption } = await inquirer.prompt([updateOptionQuestion]);
 
-  if (amplifyMeta[category][resourceName].output.securityType) {
-    delete amplifyMeta[category][resourceName].output.securityType;
+  if (updateOption === 'enableDatastore') {
+    resolverConfig = {
+      project: { ConflictHandler: 'AUTOMERGE', ConflictDetection: 'VERSION' },
+    };
+  } else if (updateOption === 'authUpdate') {
+    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
+    authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
+    await checkForCognitoUserPools(context, parameters, authConfig);
+  } else if (updateOption === 'all') {
+    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
+    ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
+    await checkForCognitoUserPools(context, parameters, authConfig);
   }
 
-  amplifyMeta[category][resourceName].output.authConfig = authConfig;
-  let jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  if (authConfig) {
+    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
-  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
-  const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
+    if (amplifyMeta[category][resourceName].output.securityType) {
+      delete amplifyMeta[category][resourceName].output.securityType;
+    }
 
-  if (backendConfig[category][resourceName].output.securityType) {
-    delete backendConfig[category][resourceName].output.securityType;
+    amplifyMeta[category][resourceName].output.authConfig = authConfig;
+    let jsonString = JSON.stringify(amplifyMeta, null, 4);
+    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
+    const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
+
+    if (backendConfig[category][resourceName].output.securityType) {
+      delete backendConfig[category][resourceName].output.securityType;
+    }
+
+    backendConfig[category][resourceName].output.authConfig = authConfig;
+    jsonString = JSON.stringify(backendConfig, null, 4);
+    fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
   }
 
-  backendConfig[category][resourceName].output.authConfig = authConfig;
-  jsonString = JSON.stringify(backendConfig, null, '\t');
-  fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
-
-  await writeResolverConfig(resolverConfig, resourceDir);
+  if (resolverConfig) {
+    await writeResolverConfig(resolverConfig, resourceDir);
+  }
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     resourceDir,
