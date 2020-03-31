@@ -24,6 +24,9 @@ const optionalBuildDirectoryName = 'build';
 async function run(context, resourceDefinition) {
   try {
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = resourceDefinition;
+    const {
+      parameters: { options },
+    } = context;
     let resources;
     if (context.exeInfo && context.exeInfo.forcePush) {
       resources = allResources;
@@ -38,6 +41,7 @@ async function run(context, resourceDefinition) {
 
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
+      minify: options['minify'],
     });
 
     await uploadAppSyncFiles(context, resources, allResources);
