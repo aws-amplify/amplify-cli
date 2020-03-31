@@ -25,7 +25,7 @@ export function helloWorld(): Promise<FunctionTemplateParameters> {
         'index.py': 'src/index.py',
         'testEvent.json': 'tst/testEvent.json',
       },
-      defaultEditorFile: 'index.py',
+      defaultEditorFile: 'src/index.py',
     },
   });
 }

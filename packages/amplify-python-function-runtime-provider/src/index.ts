@@ -21,10 +21,8 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
       });
     },
     checkDependencies: checkDeps,
-    package: params => pythonPackage(context, params),
+    package: request => pythonPackage(context, request),
     build: pythonBuild,
-    invoke: params => {
-      return pythonBuild(params).then(() => pythonInvoke(context, params));
-    },
+    invoke: request => pythonBuild(request).then(() => pythonInvoke(context, request)),
   };
 };

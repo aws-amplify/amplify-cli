@@ -8,10 +8,13 @@ export async function getPipenvDir(srcRoot: string): Promise<string> {
   const pipEnvDir = await execAsStringPromise('pipenv --venv', { cwd: srcRoot });
   const pyVersion = await execAsStringPromise('python3 --version');
   let pipEnvPath = path.join(pipEnvDir, 'lib', 'python' + majMinPyVersion(pyVersion), 'site-packages');
+  if (process.platform.startsWith('win')) {
+    pipEnvPath = path.join(pipEnvDir, 'Lib', 'site-packages');
+  }
   if (fs.existsSync(pipEnvPath)) {
     return pipEnvPath;
   }
-  throw new Error('Could not find a pipenv site-packages directory');
+  throw new Error(`Could not find a pipenv site-packages directory at ${pipEnvPath}`);
 }
 
 export function majMinPyVersion(pyVersion: string): string {
