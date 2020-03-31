@@ -32,10 +32,13 @@ export async function invoke(request: InvocationRequest): Promise<string> {
     invokeCommand.stdin.write(request.event);
     invokeCommand.stdin.end();
 
-    const dataBuffer = Buffer.alloc(4096);
+    let dataBuffer = Buffer.from('');
     invokeCommand.stdout.setEncoding('utf-8');
     invokeCommand.stdout.on('data', data => {
-      dataBuffer.write(data);
+      if (typeof data === 'string') {
+        data = Buffer.from(data);
+      }
+      dataBuffer = Buffer.concat([dataBuffer, data]);
     });
 
     invokeCommand.on('close', code => {

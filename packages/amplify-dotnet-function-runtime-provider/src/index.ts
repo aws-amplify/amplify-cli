@@ -1,4 +1,4 @@
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeContributorFactory, CheckDependenciesResult } from 'amplify-function-plugin-interface';
 import { constants } from './constants';
 import { detectDotNetCore } from './utils/detect';
 import { build } from './utils/build';
@@ -7,27 +7,25 @@ import { invoke } from './utils/invoke';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context: any) => {
   return {
-    checkDependencies: async () => ({
-      hasRequiredDependencies: await detectDotNetCore(),
-    }),
+    checkDependencies: async () => {
+      const dotNetCorePresent = await detectDotNetCore();
+      var result: CheckDependenciesResult = {
+        hasRequiredDependencies: dotNetCorePresent,
+      };
+      if (!dotNetCorePresent) {
+        result.errorMessage = `Unable to find dotnet version ${constants.currentSupportedVersion} on the path.`;
+      }
+      return result;
+    },
     contribute: async contributionRequest => {
       switch (contributionRequest.selection) {
-        case constants.dotnetcore21:
-          return {
-            runtime: {
-              name: '.NET Core 2.1',
-              value: constants.dotnetcore21,
-              cloudTemplateValue: constants.dotnetcore21,
-              defaultHandler: `${contributionRequest.contributionContext.resourceName}::${contributionRequest.contributionContext.resourceName}.${contributionRequest.contributionContext.functionName}::${constants.handlerMethodName}`,
-            },
-          };
         case constants.dotnetcore31:
           return {
             runtime: {
               name: '.NET Core 3.1',
               value: constants.dotnetcore31,
               cloudTemplateValue: constants.dotnetcore31,
-              defaultHandler: `${contributionRequest.contributionContext.resourceName}::${contributionRequest.contributionContext.functionName}.Function::FunctionHandler`,
+              defaultHandler: `${contributionRequest.contributionContext.resourceName}::${contributionRequest.contributionContext.resourceName}.${contributionRequest.contributionContext.functionName}::FunctionHandler`,
             },
           };
         default:

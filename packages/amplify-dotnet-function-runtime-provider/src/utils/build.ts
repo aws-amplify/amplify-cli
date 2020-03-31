@@ -27,6 +27,10 @@ export async function build(request: BuildRequest): Promise<BuildResult> {
 }
 
 function isBuildStale(sourceFolder: string, lastBuildTimestamp: Date) {
+  // Guard against invalid timestamp
+  if (!(lastBuildTimestamp instanceof Date && !isNaN(<number>(<unknown>lastBuildTimestamp)))) {
+    return true;
+  }
   const dirTime = new Date(fs.statSync(sourceFolder).mtime);
   if (dirTime > lastBuildTimestamp) {
     return true;

@@ -66,6 +66,7 @@ namespace InvocationShim
             var resultProperty = task.GetType().GetProperty("Result");
             object result = resultProperty.GetValue(task);
             var serializeMethod = serializerType.GetMethod("Serialize").MakeGenericMethod(resultProperty.PropertyType);
+            Console.WriteLine("----- Execution Result -----");
             using (var outStream = Console.OpenStandardOutput())
             {
                 serializeMethod.Invoke(serializer, new[] { result, outStream });

@@ -33,7 +33,7 @@ namespace <%= props.resourceName %>
 #pragma warning disable CS1998
         public async Task<dynamic> LambdaHandler(LambdaEvent input, ILambdaContext context)
         {
-            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(input));
+            context.Logger.LogLine($"Received data: {Newtonsoft.Json.JsonConvert.SerializeObject(input)}");
             return new {
                 key1 = input.key1.ToUpper(),
                 key2 = input.key2.ToUpper(),
