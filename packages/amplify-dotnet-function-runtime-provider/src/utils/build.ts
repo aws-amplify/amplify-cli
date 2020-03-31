@@ -5,16 +5,14 @@ import childProcess from 'child_process';
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
 export async function build(request: BuildRequest): Promise<BuildResult> {
+  const distPath = path.join(request.srcRoot, 'dist');
   return new Promise<BuildResult>((resolve, reject) => {
-    if (!request.legacyBuildHookParams) throw new Error('Missing resource information');
-    const sourceDir = path.join(request.srcRoot, 'src', request.legacyBuildHookParams.resourceName);
-    const distPath = path.join(request.srcRoot, 'dist');
-
-    if (!request.lastBuildTimestamp || !fs.existsSync(distPath) || isBuildStale(sourceDir, request.lastBuildTimestamp)) {
+    const sourceFolder = path.join(request.srcRoot, 'src');
+    if (!request.lastBuildTimestamp || !fs.existsSync(distPath) || isBuildStale(sourceFolder, request.lastBuildTimestamp)) {
       if (!fs.existsSync(distPath)) {
         fs.mkdirSync(distPath);
       }
-      const buildCommand = childProcess.spawn('dotnet', ['publish', '-o', distPath], { cwd: sourceDir });
+      const buildCommand = childProcess.spawn('dotnet', ['publish', '-c', 'Release', '-o', distPath], { cwd: sourceFolder });
       buildCommand.on('close', code => {
         if (code === 0) {
           return resolve({ rebuilt: true });
@@ -28,13 +26,13 @@ export async function build(request: BuildRequest): Promise<BuildResult> {
   });
 }
 
-function isBuildStale(resourceDir: string, lastBuildTimestamp: Date) {
-  const dirTime = new Date(fs.statSync(resourceDir).mtime);
+function isBuildStale(sourceFolder: string, lastBuildTimestamp: Date) {
+  const dirTime = new Date(fs.statSync(sourceFolder).mtime);
   if (dirTime > lastBuildTimestamp) {
     return true;
   }
   const fileUpdatedAfterLastBuild = glob
-    .sync(`${resourceDir}/*/!(bin|obj)/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
+    .sync('**/*', { cwd: sourceFolder, ignore: ['bin', 'obj', '+(bin|obj)/**/*'] })
+    .find(file => new Date(fs.statSync(path.join(sourceFolder, file)).mtime) > lastBuildTimestamp);
   return !!fileUpdatedAfterLastBuild;
 }
