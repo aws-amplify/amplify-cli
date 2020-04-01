@@ -51,6 +51,20 @@ jobs:
             export PATH=$PATH:/usr/local/go/bin
             go version
       - run:
+          name: Install Python
+          command: |
+            sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl
+            curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
+            sudo tar -C /usr/local -xf Python-3.8.2.tar.xz
+            cd /usr/local/Python-3.8.2
+            sudo ./configure
+            sudo make -j 4
+            sudo make install
+            sudo apt install python3-pip
+            pip3 install --user pipenv
+            python3 --version
+            pipenv --version
+      - run:
           name: lint
           command: yarn lint
       - run:

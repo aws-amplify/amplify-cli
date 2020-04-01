@@ -370,7 +370,7 @@ describe('nodejs', () => {
   });
 });
 
-describe('go function tests', async () => {
+describe('go function tests', () => {
   let projRoot: string;
 
   beforeEach(async () => {
@@ -412,5 +412,43 @@ describe('go function tests', async () => {
       },
       'nodejs',
     );
+  });
+});
+
+describe('python function tests', () => {
+  let projRoot: string;
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('py-functions');
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('add python hello world function', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+
+    const random = Math.floor(Math.random() * 10000);
+    const fnName = `pytestfn${random}`;
+
+    await addFunction(
+      projRoot,
+      {
+        name: fnName,
+        functionTemplate: 'Hello World',
+      },
+      'python',
+    );
+    await functionBuild(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    expect(functionArn).toBeDefined();
+    expect(functionName).toBeDefined();
+    expect(region).toBeDefined();
+    const cloudFunction = await getFunction(functionName, region);
+    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
   });
 });
