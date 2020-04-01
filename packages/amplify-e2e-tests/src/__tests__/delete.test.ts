@@ -86,7 +86,7 @@ describe('amplify delete', () => {
     await expect(await bucketExists(deploymentBucketName1)).toBe(true);
     await checkoutEnvironment(projRoot, { envName: 'testdev' });
     await removeEnvironment(projRoot, { envName: 'testprod' });
-    await expect(await bucketExists(deploymentBucketName1)).toBe(false);
+    await expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
     await deleteProject(projRoot);
   });
 
@@ -99,7 +99,7 @@ describe('amplify delete', () => {
     await putFiles(bucketName);
     expect(await bucketExists(bucketName)).toBeTruthy();
     await deleteProject(projRoot);
-    expect(await bucketExists(bucketName)).toBeFalsy();
+    expect(await bucketNotExists(bucketName)).toBeTruthy();
   });
 });
 

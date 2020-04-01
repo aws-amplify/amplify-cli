@@ -7,6 +7,7 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
     - image: circleci/node:10.18
+  resource_class: large
 
 jobs:
   build:
@@ -41,6 +42,28 @@ jobs:
       - run:
           name: Install Java
           command: sudo apt-get install default-jdk
+      - run:
+          name: Install Go
+          command: |
+            curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
+            rm go1.14.1.linux-amd64.tar.gz
+            export PATH=$PATH:/usr/local/go/bin
+            go version
+      - run:
+          name: Install Python
+          command: |
+            sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl
+            curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
+            sudo tar -C /usr/local -xf Python-3.8.2.tar.xz
+            cd /usr/local/Python-3.8.2
+            sudo ./configure
+            sudo make -j 4
+            sudo make install
+            sudo apt install python3-pip
+            pip3 install --user pipenv
+            python3 --version
+            pipenv --version
       - run:
           name: lint
           command: yarn lint
@@ -162,12 +185,14 @@ jobs:
           command: |
             export PATH=~/.npm-global/bin:$PATH
             amplify -v
-            cd packages/amplify-console-integration
+            cd packages/amplify-console-integration-tests
             yarn run console-integration --maxWorkers=3
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - store_test_results:
-          path: packages/amplify-console-integration/
+          path: packages/amplify-console-integration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-console-integration-tests/console-integration-reports
     working_directory: ~/repo
 
   integration_test:
@@ -507,6 +532,23 @@ jobs:
 
 workflows:
   version: 2
+  nightly_console_integration_tests:
+    triggers:
+      - schedule:
+          cron: '0 0 * * *'
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
+      - publish_to_local_registry:
+          requires:
+            - build
+      - amplify_console_integration_tests:
+          requires:
+            - build
+            - publish_to_local_registry
   build_test_deploy:
     jobs:
       - build
@@ -539,6 +581,7 @@ workflows:
             branches:
               only:
                 - master
+                - beta
           requires:
             - build
       - amplify_e2e_tests:
@@ -552,7 +595,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - beta
           requires:
             - build
             - publish_to_local_registry
@@ -563,6 +606,7 @@ workflows:
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
+            - amplify_console_integration_tests
             - mock_e2e_tests
           filters:
             branches:

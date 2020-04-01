@@ -336,7 +336,7 @@ describe('amplify add api (REST)', () => {
 
   it('init a project, create lambda and attach it to an api', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, {});
+    await addFunction(projRoot, {}, 'nodejs');
     await addRestApi(projRoot, { existingLambda: true });
     await amplifyPushUpdate(projRoot);
   });
