@@ -73,7 +73,7 @@ async function buildResource(context, resource) {
     packagePromise
       .then(result => {
         const packageHash = result.packageHash;
-        zipFilename = packageHash ? `${resource.resourceName}-${packageHash}-build.zip` : result.zipFileName;
+        zipFilename = packageHash ? `${resource.resourceName}-${packageHash}-build.zip` : zipFileName;
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
         resolve({ zipFilename, zipFilePath: destination });
       })
