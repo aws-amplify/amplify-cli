@@ -18,7 +18,7 @@ namespace InvocationShim
             }
 
             var pathToAssembly = System.IO.Path.Join(Environment.CurrentDirectory, "dist", handlerSegments[0] + ".dll");
-            System.Reflection.Assembly lambdaAssembly = null;           
+            System.Reflection.Assembly lambdaAssembly = null;
             try {
                 var resolver = new AssemblyResolver(pathToAssembly);
                 lambdaAssembly = resolver.Assembly;
@@ -61,12 +61,12 @@ namespace InvocationShim
 
             var lambdaInstance = Activator.CreateInstance(handlerType);
             var task = (Task)handlerMethod.Invoke(lambdaInstance, new[] { eventData, new MockContext(handlerType.Name) });
-            
+
             await task.ConfigureAwait(false);
             var resultProperty = task.GetType().GetProperty("Result");
             object result = resultProperty.GetValue(task);
             var serializeMethod = serializerType.GetMethod("Serialize").MakeGenericMethod(resultProperty.PropertyType);
-            Console.WriteLine("----- Execution Result -----");
+
             using (var outStream = Console.OpenStandardOutput())
             {
                 serializeMethod.Invoke(serializer, new[] { result, outStream });
