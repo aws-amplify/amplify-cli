@@ -3,7 +3,6 @@ import { buildResource } from './utils/build';
 import { packageResource } from './utils/package';
 import { checkJava,checkJavaCompiler,checkGradle} from './utils/detect';
 import { invokeResource } from './utils/invoke';
-import {constants} from './utils/constants';
 import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
 
 
@@ -28,13 +27,22 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
       var result: CheckDependenciesResult = {
         hasRequiredDependencies: true,
       };
-      try{
-        await checkJava();
-        await checkJavaCompiler();
-        await checkGradle();
-      }catch(err){
-        result.errorMessage = err;
-        result.hasRequiredDependencies = false;
+      const resultJava : CheckDependenciesResult = await checkJava();
+      const resultCompileJava : CheckDependenciesResult = await checkJavaCompiler();
+      const resultGradle : CheckDependenciesResult = await checkGradle();
+      var errArray : Array<string> = [];
+      if(resultJava.errorMessage != undefined){
+        errArray.push(resultJava.errorMessage);
+      }
+      if(resultCompileJava.errorMessage != undefined){
+        errArray.push(resultCompileJava.errorMessage);
+      }
+      if(resultGradle.errorMessage != undefined){
+        errArray.push(resultGradle.errorMessage);
+      }
+      result.hasRequiredDependencies = (resultJava.hasRequiredDependencies && resultCompileJava.hasRequiredDependencies && resultGradle.hasRequiredDependencies)
+      if(!result.hasRequiredDependencies){
+        result.errorMessage = errArray.toString();
       }
       return result;
     },
