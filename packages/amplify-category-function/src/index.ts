@@ -126,7 +126,7 @@ export async function getInvoker(context: any, params: InvokerParameters): Promi
       runtime: breadcrumbs.functionRuntime,
       srcRoot: resourcePath,
       envVars: params.envVars,
-      lastBuildTimestamp: new Date(lastBuildTimestampStr),
+      lastBuildTimestamp: lastBuildTimestampStr ? new Date(lastBuildTimestampStr) : undefined,
     });
 }
 

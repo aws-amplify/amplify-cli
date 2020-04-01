@@ -24,8 +24,8 @@ async function buildResource(context, resource) {
 
   const depCheck = await runtimePlugin.checkDependencies();
   if (!depCheck.hasRequiredDependencies) {
-    context.print.error(depCheck.errorMessage || `You are missing dependencies required to package ${resourceName}`);
-    throw new Error(`Missing required dependencies to package ${resourceName}`);
+    context.print.error(depCheck.errorMessage || `You are missing dependencies required to package ${resource.resourceName}`);
+    throw new Error(`Missing required dependencies to package ${resource.resourceName}`);
   }
 
   // build the function

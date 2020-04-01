@@ -10,9 +10,15 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "nodejs"
+  ],
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "amplify-function-plugin-interface": "1.2.0",
@@ -20,6 +26,7 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@types/inquirer": "^6.5.0"
+    "@types/inquirer": "^6.5.0",
+    "@types/node": "^10.17.13"
   }
 }
