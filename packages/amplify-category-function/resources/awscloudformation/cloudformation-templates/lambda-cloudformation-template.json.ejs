@@ -268,7 +268,7 @@
                 "Ref": "LambdaExecutionRole"
             }
         }
-        <% if (props.cloudwatchRule && props.cloudwatchRule != "false") { %> 
+        <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %> 
         ,"CloudWatchEventRule": {
             "Value" :{
                 "Ref" : "CloudWatchEvent"

@@ -19,7 +19,7 @@ export async function scheduleWalkthrough(
   const cfnFileName = `${params.resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
   let scheduleParams = params;
-  if (params.cloudwatchRule === undefined || params.cloudwatchRule === 'false') {
+  if (params.cloudwatchRule === undefined || params.cloudwatchRule === 'NONE') {
     if (await context.amplify.confirmPrompt.run('Do you want to invoke this function on a recurring schedule?', false)) {
       try {
         let cloudWatchRule = await cronServiceWalkthrough(context);
