@@ -11,26 +11,20 @@ export async function provideHelloWorld(request: ContributionRequest): Promise<F
     'hello-world/RequestClass.java.ejs',
     'hello-world/ResponseClass.java.ejs',
     'hello-world/event.json',
-    'InvocationShim/build.gradle.ejs',
-    'InvocationShim/MockContext.java.ejs',
-    'InvocationShim/MockLogger.java.ejs',
-    'InvocationShim/Program.java.ejs',
   ];
+  const handlerSource = path.join('src', 'main', 'java','example' ,'HelloPojo.java');
+
   return {
     functionTemplate: {
       sourceRoot: pathToTemplateFiles,
       sourceFiles: files,
-      defaultEditorFile: path.join('src', 'main', 'java', 'HelloPojo.java'),
+      defaultEditorFile: handlerSource,
       destMap: {
         'hello-world/build.gradle.ejs': path.join('build.gradle'),
-        'hello-world/event.json': path.join('src', 'main', 'java', 'event.json'),
+        'hello-world/event.json': path.join('src','event.json'),
         'hello-world/HelloPojo.java.ejs': path.join('src', 'main', 'java','example' ,'HelloPojo.java'),
         'hello-world/RequestClass.java.ejs': path.join('src', 'main', 'java','example' , 'RequestClass.java'),
         'hello-world/ResponseClass.java.ejs': path.join('src', 'main', 'java','example' , 'ResponseClass.java'),
-        'InvocationShim/build.gradle.ejs': path.join('src', 'Mock', 'build.gradle'),
-        'InvocationShim/MockContext.java.ejs': path.join('src', 'Mock', 'src', 'main', 'java','InvocationShim', 'MockContext.java'),
-        'InvocationShim/MockLogger.java.ejs': path.join('src', 'Mock', 'src', 'main', 'java','InvocationShim', 'MockLogger.java'),
-        'InvocationShim/Program.java.ejs': path.join('src', 'Mock', 'src', 'main', 'java','InvocationShim','Program.java'),
       },
     },
   };

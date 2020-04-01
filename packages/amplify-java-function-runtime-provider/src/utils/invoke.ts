@@ -1,9 +1,9 @@
 import path from 'path';
 import { InvocationRequest} from 'amplify-function-plugin-interface';
+import {constants} from './constants'
 import childProcess from 'child_process';
 export async function invokeResource(request: InvocationRequest , context : any){
-  const shimPath = path.join(request.srcRoot, 'src','Mock','build','libs');
-  const cp = childProcess.spawnSync('java', [ '-jar', 'Mock-all.jar' ,request.handler , request.event], { cwd: shimPath , stdio : 'pipe' , encoding: 'utf-8' });
+  const cp = childProcess.spawnSync('java', [ '-jar', 'localinvoke-all.jar' ,request.handler , request.event], { cwd: constants.shimBinPath , stdio : 'pipe' , encoding: 'utf-8' });
 
   let result  = JSON.stringify(cp.stdout);
   try {

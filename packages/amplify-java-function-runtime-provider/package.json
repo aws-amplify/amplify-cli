@@ -1,11 +1,11 @@
 {
-  "name": "amplify-java-runtime-provider",
-  "version": "1.1.0",
+  "name": "amplify-java-function-runtime-provider",
+  "version": "1.0.0",
   "description": "Provides functionality related to functions in JAVA on AWS",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
-    "directory": "packages/amplify-java-runtime-provider"
+    "directory": "packages/amplify-java-function-runtime-provider"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -15,7 +15,8 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.1.0",
+    "@types/semver": "^7.1.0",
+    "amplify-function-plugin-interface": "1.2.0",
     "execa": "^4.0.0"
   }
 }

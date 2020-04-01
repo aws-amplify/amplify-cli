@@ -1,8 +1,12 @@
 import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
 import { buildResource } from './utils/build';
 import { packageResource } from './utils/package';
-import { checkDependencies } from './utils/detect';
+import { checkJava,checkJavaCompiler,checkGradle} from './utils/detect';
 import { invokeResource } from './utils/invoke';
+import {constants} from './utils/constants';
+import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
+
+
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   context.amplify;
   return {
@@ -15,16 +19,27 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
         runtime: {
           name: 'Java',
           value: 'java',
-          cloudTemplateValue: 'java8',
+          cloudTemplateValue: 'java11',
           defaultHandler: 'example.HelloPojo::handleRequest',
         },
       });
     },
-    checkDependencies: params => checkDependencies(params),
+    checkDependencies: async () => {
+      var result: CheckDependenciesResult = {
+        hasRequiredDependencies: true,
+      };
+      try{
+        await checkJava();
+        await checkJavaCompiler();
+        await checkGradle();
+      }catch(err){
+        result.errorMessage = err;
+        result.hasRequiredDependencies = false;
+      }
+      return result;
+    },
     package: params => packageResource(params, context),
     build: params => buildResource(params),
-    invoke: params => {
-      return invokeResource(params,context);
-    },
+    invoke: params => invokeResource(params,context),
   };
 };

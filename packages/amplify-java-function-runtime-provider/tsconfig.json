@@ -3,8 +3,9 @@
   "compilerOptions": {
     "outDir": "./lib",
     "rootDir": "./src",
-    "composite": true,
-    "strict": true,
+    "lib": [
+      "es5", "es6", "dom", "dom.iterable"
+  ]
   },
   "references": [
     {"path": "../amplify-function-plugin-interface"}

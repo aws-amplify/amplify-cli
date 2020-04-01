@@ -2,7 +2,8 @@ import path from 'path';
 import fs from 'fs-extra';
 import childProcess from 'child_process';
 import glob from 'glob';
-import _ from 'lodash'
+import _ from 'lodash';
+import {constants} from "./constants"
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
 export async function buildResource(request: BuildRequest): Promise<BuildResult> {
@@ -16,17 +17,22 @@ export async function buildResource(request: BuildRequest): Promise<BuildResult>
 }
 
 function installDependencies(resourceDir: string) {
+  try{
   runPackageManager(resourceDir ,'build' );
+  }catch(e){
+    console.log(e);
+  }
   //to build invocation jar file
-  const jarPath = path.join(resourceDir,'src','Mock');
   //copy the jar file to lib folder for gradle build
-  let jarFile : string = 'latest_build.jar'
-  const jarPathDir = path.join(jarPath,'lib');
+  const jarPathDir = path.join(constants.shimSrcPath,'lib');
   fs.ensureDirSync(jarPathDir);
-  const output = fs.createWriteStream(path.join(jarPathDir,jarFile));
-  fs.createReadStream(path.join(resourceDir, 'build','libs',jarFile)).pipe(output);
-  runPackageManager(jarPath,"fatJar");
-
+  fs.copySync(path.join(resourceDir, 'build','libs',constants.shimBinaryName), path.join(jarPathDir,constants.shimBinaryName));
+  console.log(constants.shimSrcPath);
+  try{
+  runPackageManager(constants.shimSrcPath,"fatJar");
+  }catch(e){
+    console.log(e);
+  }
 }
 
 function runPackageManager(cwd: string, buildArgs : string) {

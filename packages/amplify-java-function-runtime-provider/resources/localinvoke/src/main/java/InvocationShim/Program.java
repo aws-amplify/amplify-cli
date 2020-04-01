@@ -15,7 +15,7 @@ public class Program {
         // read the jSON file to JSON object
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
-        String  eventFile = args[1] != null ? args[1] : "/Users/akz/IdeaProjects/Java_Test/src/com/company/event.json";
+        String  eventFile = args[1];
         MockContext ct  = new MockContext();
         //reflection
         String handlerName = args[0].split("::")[1];
