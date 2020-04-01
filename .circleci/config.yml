@@ -170,12 +170,14 @@ jobs:
           command: |
             export PATH=~/.npm-global/bin:$PATH
             amplify -v
-            cd packages/amplify-console-integration
+            cd packages/amplify-console-integration-tests
             yarn run console-integration --maxWorkers=3
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - store_test_results:
-          path: packages/amplify-console-integration/
+          path: packages/amplify-console-integration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-console-integration-tests/console-integration-reports
     working_directory: ~/repo
 
   integration_test:
@@ -515,6 +517,23 @@ jobs:
 
 workflows:
   version: 2
+  nightly_console_integration_tests:
+    triggers:
+      - schedule:
+          cron: '0 0 * * *'
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
+      - publish_to_local_registry:
+          requires:
+            - build
+      - amplify_console_integration_tests:
+          requires:
+            - build
+            - publish_to_local_registry
   build_test_deploy:
     jobs:
       - build
@@ -547,6 +566,7 @@ workflows:
             branches:
               only:
                 - master
+                - beta
           requires:
             - build
       - amplify_e2e_tests:
@@ -560,7 +580,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - beta
           requires:
             - build
             - publish_to_local_registry
@@ -571,6 +591,7 @@ workflows:
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
+            - amplify_console_integration_tests
             - mock_e2e_tests
           filters:
             branches:

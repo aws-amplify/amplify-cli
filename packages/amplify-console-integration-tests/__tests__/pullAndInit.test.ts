@@ -55,7 +55,7 @@ describe('amplify console build', () => {
 
     let teamProviderInfo;
     //test for init a clean frontend project
-    const projectDirPath = util.createNewProjectDir();
+    const projectDirPath = await util.createNewProjectDir('console');
     await headlessInit(projectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(projectDirPath)).toBeTruthy();
     teamProviderInfo = getTeamProviderInfo(projectDirPath);
@@ -87,7 +87,7 @@ describe('amplify console build', () => {
     expect(teamProviderInfo).toBeDefined();
     expect(teamProviderInfo['envb']).toBeDefined();
 
-    //clean up after the tests
+    // clean up after the tests
     await headlessDelete(projectDirPath);
     await deleteConsoleApp(appId, amplifyClient);
     util.deleteProjectDir(projectDirPath);
@@ -119,7 +119,7 @@ describe('amplify console build', () => {
     };
 
     //create the original project
-    const originalProjectDirPath = util.createNewProjectDir('original');
+    const originalProjectDirPath = await util.createNewProjectDir('console-original');
     await headlessInit(originalProjectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(originalProjectDirPath)).toBeTruthy();
     let originalTeamProviderInfo = getTeamProviderInfo(originalProjectDirPath);
@@ -127,7 +127,7 @@ describe('amplify console build', () => {
     expect(originalTeamProviderInfo['devteama']).toBeDefined();
 
     //test for third party setup
-    const clonedProjectDirPath = util.createNewProjectDir('cloned');
+    const clonedProjectDirPath = await util.createNewProjectDir('console-cloned');
     fs.copySync(originalProjectDirPath, clonedProjectDirPath);
     removeFilesForThirdParty(clonedProjectDirPath);
     envName = 'devteamb';

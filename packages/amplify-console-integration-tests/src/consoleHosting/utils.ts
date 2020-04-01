@@ -1,5 +1,8 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { spawnSync } from 'child_process';
+import * as util from '../util';
+
 import { HOSTING, RESOURCE, TYPE, TYPE_UNKNOWN, CATEGORIES, APPID, PROVIDER } from './constants';
 
 export function loadTypeFromTeamProviderInfo(cwd: string, currEnv: string) {
@@ -33,4 +36,14 @@ export function loadAppIdFromTeamProviderInfo(cwd: string, currEnv: string) {
 
 function readJsonFile(jsonFilePath: string, encoding = 'utf8') {
   return JSON.parse(fs.readFileSync(jsonFilePath, encoding));
+}
+
+export async function createTestProject(): Promise<string> {
+  const projRoot = await util.createNewProjectDir('console-hosting');
+  const projectName = path.basename(projRoot);
+  const projectDir = path.dirname(projRoot);
+
+  spawnSync('npx', ['create-react-app', projectName], { cwd: projectDir });
+
+  return projRoot;
 }

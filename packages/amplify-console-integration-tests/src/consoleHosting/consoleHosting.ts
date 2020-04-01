@@ -1,6 +1,88 @@
 import { nspawn as spawn } from 'amplify-e2e-core';
-import * as nexpect from 'nexpect';
-import { getCLIPath } from '../../utils';
+import { getCLIPath } from '../util';
+
+const defaultSettings = {
+  name: '\r',
+  envName: 'integtest',
+  editor: '\r',
+  appType: '\r',
+  framework: '\r',
+  srcDir: '\r',
+  distDir: '\r',
+  buildCmd: '\r',
+  startCmd: '\r',
+  useProfile: '\r',
+  profileName: '\r',
+};
+
+export function initJSProjectWithProfile(cwd: string, providersParam: any) {
+  const s = { ...defaultSettings };
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['init', '--providers', JSON.stringify(providersParam)], { cwd, stripColors: true })
+      .wait('Enter a name for the project')
+      .sendLine(s.name)
+      .wait('Enter a name for the environment')
+      .sendLine(s.envName)
+      .wait('Choose your default editor:')
+      .sendLine(s.editor)
+      .wait("Choose the type of app that you're building")
+      .sendLine(s.appType)
+      .wait('What javascript framework are you using')
+      .sendLine(s.framework)
+      .wait('Source Directory Path:')
+      .sendLine(s.srcDir)
+      .wait('Distribution Directory Path:')
+      .sendLine(s.distDir)
+      .wait('Build Command:')
+      .sendLine(s.buildCmd)
+      .wait('Start Command:')
+      .sendCarriageReturn()
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true) {
+  return new Promise((resolve, reject) => {
+    const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
+    spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
+      .wait('Are you sure you want to continue?')
+      .sendLine('y')
+      .sendCarriageReturn()
+      .wait('Project deleted locally.')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addEnvironment(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['env', 'add', '--providers', JSON.stringify(settings.providersParam)], { cwd, stripColors: true })
+      .wait('Do you want to use an existing environment?')
+      .sendLine('n')
+      .wait('Enter a name for the environment')
+      .sendLine(settings.envName)
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
 
 export function addManualHosting(cwd: string) {
   return new Promise((resolve, reject) => {
@@ -114,18 +196,6 @@ export function amplifyPush(cwd: string) {
           reject(err);
         }
       });
-  });
-}
-
-export function npmInstall(cwd: string) {
-  return new Promise((resolve, reject) => {
-    nexpect.spawn('npm install', { cwd, stripColors: true }).run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
   });
 }
 

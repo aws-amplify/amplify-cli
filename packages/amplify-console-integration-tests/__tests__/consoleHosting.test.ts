@@ -1,27 +1,36 @@
-import { initJSProjectWithProfile, deleteProject } from '../init';
 import {
   addManualHosting,
-  npmInstall,
   amplifyPublish,
   amplifyPush,
   removeHosting,
   addCICDHostingWithoutFrontend,
   amplifyStatus,
   checkoutEnv,
-} from '../categories/consoleHosting/consoleHosting';
-import { loadTypeFromTeamProviderInfo } from '../categories/consoleHosting/utils';
-import { deleteProjectDir, createAuthProject } from '../utils';
-import { addEnvironment } from '../environment/add-env';
+  initJSProjectWithProfile,
+  deleteProject,
+  addEnvironment,
+} from '../src/consoleHosting/consoleHosting';
+import { loadTypeFromTeamProviderInfo, createTestProject } from '../src/consoleHosting/utils';
+import { deleteProjectDir, getProfileName, npmInstall } from '../src/util';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { TYPE_MANUAL, TYPE_CICD } from '../categories/consoleHosting/constants';
-import { ORIGINAL_ENV, NWE_ENV } from '../categories/consoleHosting/constants';
+import { TYPE_MANUAL } from '../src/consoleHosting/constants';
+import { ORIGINAL_ENV, NEW_ENV } from '../src/consoleHosting/constants';
 
 describe('amplify console add hosting', () => {
   let projRoot: string;
+
+  const providersParam = {
+    awscloudformation: {
+      configLevel: 'project',
+      useProfile: true,
+      profileName: getProfileName(),
+    },
+  };
+
   beforeEach(async () => {
-    projRoot = createAuthProject();
-    await initJSProjectWithProfile(projRoot, {});
+    projRoot = await createTestProject();
+    await initJSProjectWithProfile(projRoot, providersParam);
   });
 
   afterEach(async () => {
@@ -36,7 +45,7 @@ describe('amplify console add hosting', () => {
       expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(true);
       const type = loadTypeFromTeamProviderInfo(projRoot, ORIGINAL_ENV);
       expect(type).toBe(TYPE_MANUAL);
-      await npmInstall(projRoot);
+      npmInstall(projRoot);
       await amplifyPublish(projRoot);
       await removeHosting(projRoot);
       await amplifyPush(projRoot);
@@ -47,11 +56,11 @@ describe('amplify console add hosting', () => {
 
   it('when hosting is enabled, add new env should be able to deploy frontend successfully', async () => {
     await addManualHosting(projRoot);
-    await addEnvironment(projRoot, { envName: NWE_ENV });
+    await addEnvironment(projRoot, { providersParam, envName: NEW_ENV });
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(true);
-    const type = loadTypeFromTeamProviderInfo(projRoot, NWE_ENV);
+    const type = loadTypeFromTeamProviderInfo(projRoot, NEW_ENV);
     expect(type).toBe(TYPE_MANUAL);
-    await npmInstall(projRoot);
+    npmInstall(projRoot);
     await amplifyPublish(projRoot);
 
     await removeHosting(projRoot);
@@ -64,7 +73,7 @@ describe('amplify console add hosting', () => {
     await amplifyStatus(projRoot, 'Create');
     await amplifyPush(projRoot);
     await amplifyStatus(projRoot, 'No Change');
-    await addEnvironment(projRoot, { envName: NWE_ENV });
+    await addEnvironment(projRoot, { providersParam, envName: NEW_ENV });
     await amplifyStatus(projRoot, 'Create');
     await removeHosting(projRoot);
     await checkoutEnv(projRoot, ORIGINAL_ENV);

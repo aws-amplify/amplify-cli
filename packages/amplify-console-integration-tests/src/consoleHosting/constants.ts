@@ -7,5 +7,5 @@ export const TYPE_MANUAL = 'manual';
 export const APPID = 'AmplifyAppId';
 export const TYPE_UNKNOWN = 'unknown';
 export const ORIGINAL_ENV = 'integtest';
-export const NWE_ENV = 'test';
+export const NEW_ENV = 'test';
 export const PROVIDER = 'awscloudformation';

@@ -25,11 +25,13 @@ packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
 packages/amplify-category-function/lib
 packages/amplify-e2e-tests/amplify-e2e-reports
+packages/amplify-console-integration-tests/console-integration-reports
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env
 !packages/amplify-e2e-tests/projects-templates/create-react-app-auth-amplify/.env
 amplify-integ*/
+console-integ*/
 packages/amplify-storage-simulator/lib
 packages/*-template-provider/lib
 packages/*-runtime-provider/lib

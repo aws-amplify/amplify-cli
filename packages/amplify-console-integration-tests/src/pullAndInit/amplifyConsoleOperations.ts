@@ -1,14 +1,10 @@
 import * as aws from 'aws-sdk';
 import * as moment from 'moment';
-import * as dotenv from 'dotenv';
+
+import { getConfigFromProfile } from '../profile-helper';
 
 export function getConfiguredAmplifyClient() {
-  dotenv.config();
-  const config = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.CLI_REGION,
-  };
+  const config = getConfigFromProfile();
   return new aws.Amplify(config);
 }
 
