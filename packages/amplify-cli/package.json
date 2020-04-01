@@ -55,6 +55,8 @@
     "amplify-go-function-template-provider": "1.0.0",
     "amplify-nodejs-function-runtime-provider": "1.0.0",
     "amplify-nodejs-function-template-provider": "1.0.0",
+    "amplify-python-function-runtime-provider": "1.0.0",
+    "amplify-python-function-template-provider": "1.0.0",
     "amplify-provider-awscloudformation": "4.17.1",
     "amplify-util-mock": "3.17.1",
     "chalk": "^3.0.0",
