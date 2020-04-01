@@ -20,7 +20,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           name: 'Java',
           value: 'java',
           cloudTemplateValue: 'java11',
-          defaultHandler: 'example.HelloPojo::handleRequest',
+          defaultHandler: 'example.LambdaRequestHandler::handleRequest',
         },
       });
     },

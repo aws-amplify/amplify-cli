@@ -36,7 +36,7 @@ public class Program {
             Method m = cls.getDeclaredMethod(handlerName, (Class<?>) methods[0].getParameterTypes()[0], Context.class);
             // invoking the handler function
             Object response = m.invoke(obj, eventObj, new MockContext());
-            System.out.println("EVENT: " + new Gson().toJson(response));
+            System.out.println(new Gson().toJson(response));
         }
         else{
             // implement for requestStreamHandler

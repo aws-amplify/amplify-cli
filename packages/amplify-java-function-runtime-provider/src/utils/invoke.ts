@@ -11,6 +11,6 @@ export async function invokeResource(request: InvocationRequest , context : any)
   } catch (err) {
     context.print.warning('Could not parse function output as JSON. Using raw output.');
   }
-  return Promise.resolve({result});
+  return Promise.resolve(result);
 };
 
