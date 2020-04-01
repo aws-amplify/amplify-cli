@@ -1,4 +1,4 @@
-import { amplifyPushAuth, amplifyPull, deleteProject, initJSProjectWithProfile } from '../init';
+import { amplifyPushUpdate, amplifyPull, deleteProject, initJSProjectWithProfile } from '../init';
 import { checkIfBucketExists, createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
 import { addAuthWithDefault } from '../categories/auth';
 import {
@@ -51,7 +51,7 @@ describe('environment commands', () => {
   //   await addAuthWithDefault(projRoot, {});
   //   const providerConfig: string = await getEnvironment(projRoot, { envName: 'env' });
   //   expect(providerConfig === JSON.stringify(JSON.parse(providerConfig))).toBeTruthy();
-  //   await amplifyPushAuth(projRoot);
+  //   await amplifyPushUpdate(projRoot);
   //   let projRoot2: string;
   //   try {
   //     projRoot2 = await createNewProjectDir('env-test2');
