@@ -3,9 +3,8 @@
   "compilerOptions": {
     "outDir": "./lib",
     "rootDir": "./src",
-    "strict": true,
   },
   "references": [
-    {"path": "../amplify-function-plugin-interface"},
+    { "path": "../amplify-function-plugin-interface" }
   ]
 }
