@@ -35,10 +35,16 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
 
       switch (settings.functionTemplate || 'helloWorld') {
         case 'crud':
-          chain = addCrud(moveDown(chain, 1).sendCarriageReturn(), cwd, settings);
+          chain = addCrud(chain.sendCarriageReturn(), cwd, settings);
+          break;
+        case 'helloWorld':
+          chain = moveDown(chain, 1).sendCarriageReturn();
           break;
         case 'lambdaTrigger':
-          chain = addLambdaTrigger(moveDown(chain, 3).sendCarriageReturn(), cwd, settings);
+          chain = addLambdaTrigger(moveDown(chain, 2).sendCarriageReturn(), cwd, settings);
+          break;
+        case 'serverless':
+          chain = moveDown(chain, 3).sendCarriageReturn();
           break;
         default:
           chain = chain.sendCarriageReturn();

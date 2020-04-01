@@ -9,6 +9,7 @@ export function addSimpleDDB(cwd: string, settings: any) {
       .sendCarriageReturn()
       .wait('Please provide a friendly name for your resource')
       .sendLine(settings.name || '')
+      .sendCarriageReturn()
       .wait('Please provide table name')
       .sendCarriageReturn()
       .wait('What would you like to name this column')

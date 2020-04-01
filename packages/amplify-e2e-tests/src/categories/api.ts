@@ -262,7 +262,6 @@ export function addRestApi(cwd: string, settings: any) {
 // Expects a DDB table to already exist
 function _crudRestApi(chain: ExecutionContext): ExecutionContext {
   chain = chain
-    .send(KEY_DOWN_ARROW)
     .sendCarriageReturn() // CRUD function for Amazon DynamoDB table
     .wait('Choose a DynamoDB data source option')
     .sendCarriageReturn() // Use DDB table configured in current project
@@ -273,6 +272,7 @@ function _crudRestApi(chain: ExecutionContext): ExecutionContext {
 
 function _serverlessExpressApi(chain: ExecutionContext): ExecutionContext {
   chain = chain
+    .send(KEY_DOWN_ARROW)
     .send(KEY_DOWN_ARROW)
     .send(KEY_DOWN_ARROW)
     .sendCarriageReturn(); // Serverless express function
