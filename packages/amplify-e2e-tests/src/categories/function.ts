@@ -72,7 +72,6 @@ const coreFunction = (
 
       if (templateChoices.length > 1) {
         chain = singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
-        .wait('Choose the function template that you want to use');
       }
     } else {
       chain.wait('Please select the Lambda Function you would want to update').sendCarriageReturn();
