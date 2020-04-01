@@ -20,6 +20,7 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@types/inquirer": "^6.5.0"
+    "@types/inquirer": "^6.5.0",
+    "@types/node": "^10.17.13"
   }
 }
