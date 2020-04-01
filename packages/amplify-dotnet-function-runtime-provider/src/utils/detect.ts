@@ -1,53 +1,35 @@
-import os from 'os';
-import childProcess from 'child_process';
+import * as which from 'which';
+import * as execa from 'execa';
+import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
+import { executableName, currentSupportedVersion } from '../constants';
 
-export async function detectDotNetCore(): Promise<boolean> {
-  const dotnetCheck = new Promise<boolean>((resolve, reject) => {
-    try {
-      // Detect whether we're running on Windows
-      const isWin = os.platform().startsWith('win');
-      const where = isWin ? 'where' : 'which';
-      const pathCheck = childProcess.spawn(where, ['dotnet'], { windowsHide: true });
-
-      pathCheck.on('close', (code: number) => {
-        if (code === 0) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      });
-    } catch (err) {
-      reject(err);
-    }
+export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
+  const executablePath = which.sync(executableName, {
+    nothrow: true,
   });
-  if (await dotnetCheck) {
-    return new Promise<boolean>((resolve, reject) => {
-      try {
-        var versionCheck = childProcess.spawn('dotnet', ['--version'], { stdio: ['pipe', 'pipe', process.stderr], windowsHide: true });
-        let dataBuffer = Buffer.from('');
-        versionCheck.stdout.on('data', data => {
-          if (typeof data === 'string') {
-            data = Buffer.from(data);
-          }
-          dataBuffer = Buffer.concat([dataBuffer, data]);
-        });
 
-        versionCheck.on('close', code => {
-          if (code !== 0) {
-            resolve(false);
-          }
-          const versionString = dataBuffer.toString('ascii');
-          if (versionString && versionString.startsWith('3.1')) {
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        });
-      } catch (err) {
-        reject(err);
-      }
-    });
-  } else {
-    return false;
+  if (executablePath === null) {
+    return {
+      hasRequiredDependencies: false,
+      errorMessage: `Unable to find ${executableName} version ${currentSupportedVersion} on the path.`,
+    };
   }
-}
+
+  const result = execa.sync(executableName, ['--version']);
+  const versionString = result.stdout;
+
+  if (result.exitCode !== 0) {
+    throw new Error(`${executableName} failed, exit code was ${result.exitCode}`);
+  }
+
+  if (versionString && versionString.startsWith('3.1')) {
+    return {
+      hasRequiredDependencies: true,
+    };
+  } else {
+    return {
+      hasRequiredDependencies: false,
+      errorMessage: `Expected ${executableName} minimum version ${currentSupportedVersion}, but found: ${versionString}`,
+    };
+  }
+};

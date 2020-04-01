@@ -1,15 +1,16 @@
 import path from 'path';
 import fs from 'fs-extra';
 import glob from 'glob';
-import childProcess from 'child_process';
-import { constants } from '../constants';
+import * as execa from 'execa';
 import { InvocationRequest } from 'amplify-function-plugin-interface';
 import { build } from './build';
+import { shimSrcPath, shimExecutablePath, executableName, shimBinPath } from '../constants';
 
-export async function invoke(request: InvocationRequest): Promise<string> {
-  if (await isInvokerStale(constants.shimSrcPath, constants.shimExecutablePath)) {
+export const invoke = async (request: InvocationRequest): Promise<string> => {
+  if (await isInvokerStale(shimSrcPath, shimExecutablePath)) {
     await buildInvoker();
   }
+
   await build({
     env: request.env,
     runtime: request.runtime,
@@ -17,66 +18,41 @@ export async function invoke(request: InvocationRequest): Promise<string> {
     lastBuildTimestamp: request.lastBuildTimestamp,
   });
 
-  const distPath = path.join(request.srcRoot, 'dist');
-  return new Promise<string>((resolve, reject) => {
-    const invokeCommand = childProcess.spawn('dotnet', [constants.shimExecutablePath, request.handler], {
-      cwd: request.srcRoot,
-      env: {
-        ...process.env,
-        ...request.envVars,
-      },
-      stdio: ['pipe', 'pipe', process.stderr],
-    });
-
-    invokeCommand.stdin.setDefaultEncoding('utf-8');
-    invokeCommand.stdin.write(request.event);
-    invokeCommand.stdin.end();
-
-    let dataBuffer = Buffer.from('');
-    invokeCommand.stdout.setEncoding('utf-8');
-    invokeCommand.stdout.on('data', data => {
-      if (typeof data === 'string') {
-        data = Buffer.from(data);
-      }
-      dataBuffer = Buffer.concat([dataBuffer, data]);
-    });
-
-    invokeCommand.on('close', code => {
-      if (code === 0) {
-        return resolve(dataBuffer.toString());
-      } else {
-        return reject();
-      }
-    });
+  const result = execa.sync(executableName, [shimExecutablePath, request.handler], {
+    cwd: request.srcRoot,
+    env: {
+      ...process.env,
+      ...request.envVars,
+    },
+    input: request.event,
   });
 
-  function isInvokerStale(shimSrcPath: string, shimBinPath: string) {
-    if (!fs.existsSync(shimBinPath)) {
-      return true;
-    }
-    const lastBuildTime = new Date(fs.statSync(shimBinPath).mtime);
-    const fileUpdatedAfterLastBuild = glob
-      .sync('**/*', { cwd: shimSrcPath, ignore: ['bin', 'obj', '+(bin|obj)/**/*'] })
-      .find(file => new Date(fs.statSync(path.join(shimSrcPath, file)).mtime) > lastBuildTime);
-    return !!fileUpdatedAfterLastBuild;
+  if (result.exitCode !== 0) {
+    throw new Error(`${executableName} ${shimExecutablePath} failed, exit code was ${result.exitCode}`);
   }
 
-  async function buildInvoker() {
-    return new Promise((resolve, reject) => {
-      const invokeCommand = childProcess.spawn('dotnet', ['publish', '-c', 'Release', '-o', constants.shimBinPath], {
-        cwd: constants.shimSrcPath,
-      });
+  return result.stdout;
+};
 
-      invokeCommand.stdin.setDefaultEncoding('utf-8');
-      invokeCommand.stdin.write(request.event);
-      invokeCommand.stdin.end();
-      invokeCommand.on('close', code => {
-        if (code === 0) {
-          return resolve();
-        } else {
-          return reject();
-        }
-      });
-    });
+const isInvokerStale = (shimSrcPath: string, shimBinPath: string) => {
+  if (!fs.existsSync(shimBinPath)) {
+    return true;
   }
-}
+
+  const lastBuildTime = new Date(fs.statSync(shimBinPath).mtime);
+  const fileUpdatedAfterLastBuild = glob
+    .sync('**/*', { cwd: shimSrcPath, ignore: ['bin', 'obj', '+(bin|obj)/**/*'] })
+    .find(file => new Date(fs.statSync(path.join(shimSrcPath, file)).mtime) > lastBuildTime);
+
+  return !!fileUpdatedAfterLastBuild;
+};
+
+const buildInvoker = async () => {
+  const result = execa.sync(executableName, ['publish', '-c', 'Release', '-o', shimBinPath], {
+    cwd: shimSrcPath,
+  });
+
+  if (result.exitCode !== 0) {
+    throw new Error(`Shim build failed, exit code was ${result.exitCode}`);
+  }
+};

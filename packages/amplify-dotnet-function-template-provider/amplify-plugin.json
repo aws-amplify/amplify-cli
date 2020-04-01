@@ -7,12 +7,12 @@
     "conditions": {
       "provider": "awscloudformation",
       "service": "Lambda",
-      "runtime": ["dotnetcore2.1", "dotnetcore3.1"]
+      "runtime": ["dotnetcore3.1"]
     },
     "templates": [
       {
         "name": "Hello World",
-        "value": "helloworld"
+        "value": "hello-world"
       },
       {
         "name": "Serverless",
