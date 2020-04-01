@@ -2,6 +2,7 @@ import inquirer from 'inquirer';
 inquirer.registerPrompt('datetime', require('inquirer-datepicker'));
 import { CronBuilder } from '../utils/cronBuilder';
 
+export type dtType = any;
 export async function minuteHelper(context: any) {
   const minuteQuestion = {
     type: 'input',
@@ -45,17 +46,18 @@ export async function timeHelper(exp: CronBuilder) {
     message: 'Select the start time (use arrow keys):',
     format: ['hh', ':', 'mm', ' ', 'A'],
   };
+
   const timeAnswer = await inquirer.prompt([timeQuestion]);
   exp.set(
     'minute',
-    (timeAnswer.dt as any)
+    (<dtType>timeAnswer.dt)
       .getMinutes()
       .toString()
       .split(),
   );
   exp.set(
     'hour',
-    (timeAnswer.dt as any)
+    (<dtType>timeAnswer.dt)
       .getHours()
       .toString()
       .split(),
@@ -91,13 +93,13 @@ export async function monthHelper(exp, context) {
     format: ['DD'],
   };
   const dateAnswer = await inquirer.prompt([dateQuestion]);
-  if ((dateAnswer.dt as any).getDate() > 28) {
-    const suffix = (dateAnswer.dt as any).getDate() === 31 ? 'st' : 'th';
-    context.print.warning(`Function won't be invoked on months without the ${(dateAnswer.dt as any).getDate()}${suffix} day`);
+  if ((<dtType>dateAnswer.dt).getDate() > 28) {
+    const suffix = (<dtType>dateAnswer.dt).getDate() === 31 ? 'st' : 'th';
+    context.print.warning(`Function won't be invoked on months without the ${(<dtType>dateAnswer.dt).getDate()}${suffix} day`);
   }
   exp.set(
     'dayOfTheMonth',
-    (dateAnswer.dt as any)
+    (<dtType>dateAnswer.dt)
       .getDate()
       .toString()
       .split(),
@@ -113,20 +115,20 @@ export async function yearHelper(exp, context) {
     format: ['MM', '/', 'DD'],
   };
   const dateAnswer = await inquirer.prompt([dateQuestion]);
-  if ((dateAnswer.dt as any).getDate() > 28) {
-    const suffix = (dateAnswer.dt as any).getDate() === 31 ? 'st' : 'th';
-    context.print.warning(`Function won't be invoked on months without the ${(dateAnswer.dt as any).getDate()}${suffix} day`);
+  if ((<dtType>dateAnswer.dt).getDate() > 28) {
+    const suffix = (<dtType>dateAnswer.dt).getDate() === 31 ? 'st' : 'th';
+    context.print.warning(`Function won't be invoked on months without the ${(<dtType>dateAnswer.dt).getDate()}${suffix} day`);
   }
   exp.set(
     'dayOfTheMonth',
-    (dateAnswer.dt as any)
+    (<dtType>dateAnswer.dt)
       .getDate()
       .toString()
       .split(),
   );
   exp.set(
     'month',
-    (dateAnswer.dt as any)
+    (<dtType>dateAnswer.dt)
       .getMonth()
       .toString()
       .split(),

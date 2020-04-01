@@ -128,7 +128,7 @@ export async function cronServiceWalkthrough(context: any) {
 
       break;
     }
-    case CronExpressionsMode.CUSTOM: {
+    case CronExpressionsMode.Custom: {
       const customRuleQuestion = {
         type: 'input',
         name: 'customRule',

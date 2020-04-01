@@ -1,6 +1,5 @@
 /*
 AWS Cron Expression generator
-Code Taken from : https://code.amazon.com/packages/JetstreamUtils/blobs/mainline/--/src/com/amazon/jetstream/model/schedule/CronExpression.java
 */
 
 import { TreeSet } from 'jstreemap';
@@ -39,24 +38,24 @@ dayMap.set('SAT', 7);
 
 export class CronExpression {
   private cronExpression: string = null;
-  protected seconds = new TreeSet();
-  protected minutes = new TreeSet();
-  protected hours = new TreeSet();
-  protected daysOfMonth = new TreeSet();
-  protected months = new TreeSet();
-  protected daysOfWeek = new TreeSet();
-  protected years = new TreeSet();
-  protected lastdayOfWeek: boolean = false;
-  protected nthdayOfWeek: Number = 0;
-  protected lastdayOfMonth: boolean = false;
-  protected nearestWeekday: boolean = false;
-  protected expressionParsed: boolean = false;
+  seconds = new TreeSet();
+  minutes = new TreeSet();
+  hours = new TreeSet();
+  daysOfMonth = new TreeSet();
+  months = new TreeSet();
+  daysOfWeek = new TreeSet();
+  years = new TreeSet();
+  lastdayOfWeek: boolean = false;
+  nthdayOfWeek: Number = 0;
+  lastdayOfMonth: boolean = false;
+  nearestWeekday: boolean = false;
+  expressionParsed: boolean = false;
 
-  protected strMinutes: string = null;
-  protected strHours: string = null;
-  protected strWeekdays: string = null;
-  protected strMonths: string = null;
-  protected strDaysOfMonth: string = null;
+  strMinutes: string = null;
+  strHours: string = null;
+  strWeekdays: string = null;
+  strMonths: string = null;
+  strDaysOfMonth: string = null;
 
   constructor(cronExpression: string) {
     if (cronExpression === null) {
@@ -94,7 +93,7 @@ export class CronExpression {
     }
   };
 
-  protected buildExpression = function(cronExpression: string): void {
+  buildExpression = function(cronExpression: string): void {
     this.expressionParsed = true;
     try {
       if (this.seconds === null) {
@@ -167,7 +166,7 @@ export class CronExpression {
     }
   };
 
-  protected storeExpressionVals = function(pos: number, s: string, type: number): number {
+  storeExpressionVals = function(pos: number, s: string, type: number): number {
     let incr: number = 0;
     let i: number = this.skipWhiteSpace(pos, s);
     if (i >= s.length) {
@@ -333,13 +332,13 @@ export class CronExpression {
     return i;
   };
 
-  protected skipWhiteSpace = function(i: number, s: String): number {
+  skipWhiteSpace = function(i: number, s: String): number {
     for (; i < s.length && (s.charAt(i) === ' ' || s.charAt(i) === '\t'); i++) {}
 
     return i;
   };
 
-  protected getMonthNumber = function(s: String): number {
+  getMonthNumber = function(s: String): number {
     let integer: number = monthMap.get(s);
 
     if (integer === undefined) {
@@ -349,7 +348,7 @@ export class CronExpression {
     return integer;
   };
 
-  protected getDayOfWeekNumber = function(s: String): number {
+  getDayOfWeekNumber = function(s: String): number {
     let integer: number = dayMap.get(s);
 
     if (integer === undefined) {
@@ -358,7 +357,7 @@ export class CronExpression {
 
     return integer;
   };
-  protected addToSet = function(val: number, end: number, incr: number, type: number) {
+  addToSet = function(val: number, end: number, incr: number, type: number) {
     let set = this.getSet(type);
 
     if (type === SECOND || type === MINUTE) {
@@ -449,7 +448,7 @@ export class CronExpression {
     }
   };
 
-  protected getSet = function(type: number) {
+  getSet = function(type: number) {
     switch (type) {
       case SECOND:
         return this.seconds;
@@ -469,7 +468,7 @@ export class CronExpression {
   };
 
   // get the string value
-  protected getValue = function(v: number, s: string, i: number) {
+  getValue = function(v: number, s: string, i: number) {
     let c: string = s.charAt(i);
     let s1: string = String(v);
     while (c >= '0' && c <= '9') {
@@ -486,17 +485,17 @@ export class CronExpression {
     return val;
   };
 
-  protected getNumericValue = function(s: string, i: number): number {
+  getNumericValue = function(s: string, i: number): number {
     let endOfVal = this.findNextWhiteSpace(i, s);
     let val: string = s.substring(i, endOfVal);
     return Number(val);
   };
 
-  protected findNextWhiteSpace = function(i: number, s: String) {
+  findNextWhiteSpace = function(i: number, s: String) {
     for (; i < s.length && (s.charAt(i) != ' ' || s.charAt(i) != '\t'); i++) {}
     return i;
   };
-  protected checkNext = function(pos: number, s: string, val: number, type: number): number {
+  checkNext = function(pos: number, s: string, val: number, type: number): number {
     let end = -1;
     let i = pos;
 
@@ -620,7 +619,7 @@ export class CronExpression {
     return i;
   };
 
-  protected resetState = function() {
+  resetState = function() {
     // reset internal state
     this.expressionParsed = false;
 

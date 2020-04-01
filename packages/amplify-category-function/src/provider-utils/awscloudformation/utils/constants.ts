@@ -12,5 +12,5 @@ export enum CronExpressionsMode {
   Weekly = 'Weekly',
   Monthly = 'Monthly',
   Yearly = 'Yearly',
-  CUSTOM = 'Custom AWS cron expression',
+  Custom = 'Custom AWS cron expression',
 }
