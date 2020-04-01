@@ -5,9 +5,9 @@ export async function detectDotNetCore(): Promise<boolean> {
   const dotnetCheck = new Promise<boolean>((resolve, reject) => {
     try {
       // Detect whether we're running on Windows
-      var isWin = os.platform().startsWith('win');
-      var where = isWin ? 'where' : 'whereis';
-      var pathCheck = childProcess.spawn(where, ['dotnet.exe'], { windowsHide: true });
+      const isWin = os.platform().startsWith('win');
+      const where = isWin ? 'where' : 'which';
+      const pathCheck = childProcess.spawn(where, ['dotnet'], { windowsHide: true });
 
       pathCheck.on('close', (code: number) => {
         if (code === 0) {
