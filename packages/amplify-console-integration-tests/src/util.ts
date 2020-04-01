@@ -1,16 +1,6 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as moment from 'moment';
 
-export { getCLIPath, isCI, npmInstall } from 'amplify-e2e-core';
-
-export function createNewProjectDir(mark?: string): string {
-  const timeStamp = moment().format('YYYYMMDDHHmmss');
-  const testProjectDirName = mark ? `console-integ-${mark}-${timeStamp}` : `console-integ-${timeStamp}`;
-  const projectDirpath = path.normalize(path.join(__dirname, '../../..', testProjectDirName));
-  fs.mkdirSync(projectDirpath);
-  return projectDirpath;
-}
+export { getCLIPath, isCI, npmInstall, createNewProjectDir } from 'amplify-e2e-core';
 
 export function deleteProjectDir(projectDirpath: string) {
   return fs.removeSync(projectDirpath);

@@ -29,7 +29,7 @@ describe('amplify console add hosting', () => {
   };
 
   beforeEach(async () => {
-    projRoot = createTestProject();
+    projRoot = await createTestProject();
     await initJSProjectWithProfile(projRoot, providersParam);
   });
 

@@ -7,34 +7,11 @@ export * from './transformConfig';
 export * from './awsExports';
 export * from './sdk-calls';
 export * from './api';
-import { execSync } from 'child_process';
 
-export { getCLIPath, isCI } from 'amplify-e2e-core';
-
-declare global {
-  namespace NodeJS {
-    interface Global {
-      getRandomId: () => string;
-    }
-  }
-}
+export { getCLIPath, isCI, createNewProjectDir } from 'amplify-e2e-core';
 
 // run dotenv config to update env variable
 config();
-
-export async function createNewProjectDir(projectName: string, prefix = path.join('/tmp', 'amplify-e2e-tests')): Promise<string> {
-  const currentHash = execSync('git rev-parse --short HEAD', { cwd: __dirname })
-    .toString()
-    .trim();
-  let projectDir;
-  do {
-    const randomId = await global.getRandomId();
-    projectDir = path.join(prefix, `${projectName}_${currentHash}_${randomId}`);
-  } while (fs.existsSync(projectDir));
-
-  fs.ensureDirSync(projectDir);
-  return projectDir;
-}
 
 export function deleteProjectDir(root: string) {
   return rimraf.sync(root);
