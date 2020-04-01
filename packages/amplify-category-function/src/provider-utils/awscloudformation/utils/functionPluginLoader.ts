@@ -120,7 +120,14 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     context.print.error(notFoundSuffix);
     throw new Error('Plugins found but no selections supplied for function configuration');
   } else if (selections.length === 1) {
-    context.print.info(`${selections[0].name} found for selected function configuration.`);
+    // quick hack to print custom messages for single selection options
+    let singleOptionMsg = `Only one selection option found for ${selectionOptions.listOptionsField}. Using ${selections[0].name} by default`;
+    if (selectionOptions.listOptionsField === 'templates') {
+      singleOptionMsg = `Only one template found - using ${selections[0].name} by default.`;
+    } else if (selectionOptions.listOptionsField === 'functions') {
+      singleOptionMsg = `Only one runtime detected: ${selections[0].name}. Learn more about additional runtimes at https://docs.amplify.aws/cli/function`;
+    }
+    context.print.info(singleOptionMsg);
     selection = selections[0].value;
   } else {
     // ask which template to use
