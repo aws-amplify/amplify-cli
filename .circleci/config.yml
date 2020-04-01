@@ -42,6 +42,14 @@ jobs:
           name: Install Java
           command: sudo apt-get install default-jdk
       - run:
+          name: Install Go
+          command: |
+            curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
+            rm go1.14.1.linux-amd64.tar.gz
+            export PATH=$PATH:/usr/local/go/bin
+            go version
+      - run:
           name: lint
           command: yarn lint
       - run:

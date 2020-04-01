@@ -1,57 +1,84 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
 
-export let moveDown = (chain: ExecutionContext, nMoves: number) =>
+type FunctionActions = 'create' | 'update';
+
+type FunctionRuntimes = 'netCore21' | 'netCore31' | 'go' | 'java' | 'nodejs' | 'python';
+
+type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
+
+// runtimeChoices are shared between tests
+export const runtimeChoices = [/*'.NET Core 2.1', '.NET Core 3.1',*/ 'Go' /*, 'Java'*/, 'NodeJS' /*, 'Python'*/];
+
+// templateChoices is per runtime
+const dotNetCore21TemplateChoices = ['Hello World'];
+
+const dotNetCore31TemplateChoices = ['Hello World'];
+
+const goTemplateChoices = ['Hello World'];
+
+const javaTemplateChoices = ['Hello World'];
+
+export const nodeJSTemplateChoices = [
+  'CRUD function for DynamoDB (Integration with API Gateway)',
+  'Hello World',
+  'Lambda trigger',
+  'Serverless ExpressJS function (Integration with API Gateway)',
+];
+
+const pythonTemplateChoices = ['Hello World'];
+
+export const moveDown = (chain: ExecutionContext, nMoves: number) =>
   Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send(KEY_DOWN_ARROW), chain);
 
-export function multiSelect<T>(chain: ExecutionContext, items: T[], allChoices: T[]) {
-  return (
-    items
-      .map(item => allChoices.indexOf(item))
-      .filter(idx => idx > -1)
-      .sort()
-      // calculate the diff with the latest, since items are sorted, always positive
-      // represents the numbers of moves down we need to make to selection
-      .reduce((diffs, move) => (diffs.length > 0 ? [...diffs, move - diffs[diffs.length - 1]] : [move]), [] as number[])
-      .reduce((chain, move) => moveDown(chain, move).send(' '), chain)
-      .sendCarriageReturn()
-  );
-}
+export const singleSelect = <T>(chain: ExecutionContext, item: T, allChoices: T[]) => multiSelect(chain, [item], allChoices);
 
-function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') {
+export const multiSelect = <T>(chain: ExecutionContext, items: T[], allChoices: T[]) =>
+  items
+    .map(item => allChoices.indexOf(item))
+    .filter(idx => idx > -1)
+    .sort()
+    // calculate the diff with the latest, since items are sorted, always positive
+    // represents the numbers of moves down we need to make to selection
+    .reduce((diffs, move) => (diffs.length > 0 ? [...diffs, move - diffs[diffs.length - 1]] : [move]), [] as number[])
+    .reduce((chain, move) => moveDown(chain, move).send(' '), chain)
+    .sendCarriageReturn();
+
+const coreFunction = (
+  cwd: string,
+  settings: any,
+  action: FunctionActions,
+  runtime: FunctionRuntimes,
+  functionConfigCallback: FunctionCallback,
+) => {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), [action == 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
 
-    if (action == 'create') {
-      chain = chain
+    const runtimeName = getRuntimeDisplayName(runtime);
+    const templateChoices = getTemplateChoices(runtime);
+
+    if (action === 'create') {
+      chain
         .wait('Provide a friendly name for your resource to be used as a label')
         .sendLine(settings.name || '')
         .wait('Provide the AWS Lambda function name')
         .sendLine(settings.name || '')
-        .wait('Choose the function template that you want to use');
+        .wait('Choose the function runtime that you want to use');
 
-      switch (settings.functionTemplate || 'helloWorld') {
-        case 'crud':
-          chain = addCrud(chain.sendCarriageReturn(), cwd, settings);
-          break;
-        case 'helloWorld':
-          chain = moveDown(chain, 1).sendCarriageReturn();
-          break;
-        case 'lambdaTrigger':
-          chain = addLambdaTrigger(moveDown(chain, 2).sendCarriageReturn(), cwd, settings);
-          break;
-        case 'serverless':
-          chain = moveDown(chain, 3).sendCarriageReturn();
-          break;
-        default:
-          chain = chain.sendCarriageReturn();
-          break;
+      chain = singleSelect(chain.wait('Choose the function runtime that you want to use'), runtimeName, runtimeChoices);
+
+      if (templateChoices.length > 1) {
+        chain = singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
       }
     } else {
-      chain = chain.wait('Please select the Lambda Function you would want to update').sendCarriageReturn();
+      chain.wait('Please select the Lambda Function you would want to update').sendCarriageReturn();
+    }
+
+    if (functionConfigCallback) {
+      functionConfigCallback(chain, cwd, settings);
     }
 
     if (!settings.expectFailure) {
@@ -105,25 +132,29 @@ function _coreFunction(cwd: string, settings: any, action: 'create' | 'update') 
       }
     });
   });
-}
+};
 
-export function addFunction(cwd: string, settings: any) {
-  return _coreFunction(cwd, settings, 'create');
-}
+export const addFunction = (
+  cwd: string,
+  settings: any,
+  runtime: FunctionRuntimes,
+  functionConfigCallback: FunctionCallback = undefined,
+) => {
+  return coreFunction(cwd, settings, 'create', runtime, functionConfigCallback);
+};
 
-export function updateFunction(cwd: string, settings: any) {
-  return _coreFunction(cwd, settings, 'update');
-}
+export const updateFunction = (cwd: string, settings: any, runtime: FunctionRuntimes) => {
+  return coreFunction(cwd, settings, 'update', runtime, undefined);
+};
 
-function addCrud(chain: ExecutionContext, cwd: string, settings: any) {
-  return chain.sendCarriageReturn();
-}
+export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings: any) => {
+  chain = singleSelect(
+    chain.wait('What event source do you want to associate with Lambda trigger'),
+    settings.triggerType === 'Kinesis' ? 'Amazon Kinesis Stream' : 'Amazon DynamoDB Stream',
+    ['Amazon DynamoDB Stream', 'Amazon Kinesis Stream'],
+  );
 
-function addLambdaTrigger(chain: ExecutionContext, cwd: string, settings: any) {
   const res = chain
-    .wait('What event source do you want to associate with Lambda trigger')
-    // Amazon DynamoDB Stream
-    .sendLine(settings.triggerType === 'Kinesis' ? KEY_DOWN_ARROW : '')
     .wait(`Choose a ${settings.triggerType} event source option`)
     /**
      * Use API category graphql @model backed DynamoDB table(s) in the current Amplify project
@@ -146,9 +177,9 @@ function addLambdaTrigger(chain: ExecutionContext, cwd: string, settings: any) {
     default:
       return res;
   }
-}
+};
 
-export function functionBuild(cwd: string, settings: any) {
+export const functionBuild = (cwd: string, settings: any) => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue building the resources?')
@@ -162,4 +193,42 @@ export function functionBuild(cwd: string, settings: any) {
         }
       });
   });
-}
+};
+
+const getTemplateChoices = (runtime: FunctionRuntimes) => {
+  switch (runtime) {
+    case 'netCore21':
+      return dotNetCore21TemplateChoices;
+    case 'netCore31':
+      return dotNetCore31TemplateChoices;
+    case 'go':
+      return goTemplateChoices;
+    case 'java':
+      return javaTemplateChoices;
+    case 'nodejs':
+      return nodeJSTemplateChoices;
+    case 'python':
+      return pythonTemplateChoices;
+    default:
+      throw new Error(`Invalid runtime value: ${runtime}`);
+  }
+};
+
+const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
+  switch (runtime) {
+    case 'netCore21':
+      return '.NET Core 2.1';
+    case 'netCore31':
+      return '.NET Core 3.1';
+    case 'go':
+      return 'Go';
+    case 'java':
+      return 'Java';
+    case 'nodejs':
+      return 'NodeJS';
+    case 'python':
+      return 'Python';
+    default:
+      throw new Error(`Invalid runtime value: ${runtime}`);
+  }
+};
