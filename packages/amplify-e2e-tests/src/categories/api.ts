@@ -126,6 +126,8 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
     spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
+      .wait('Select from the options below')
+      .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
@@ -174,6 +176,8 @@ export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait('Select from the options below')
       .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
