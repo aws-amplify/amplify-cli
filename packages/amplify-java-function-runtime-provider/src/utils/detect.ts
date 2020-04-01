@@ -37,7 +37,7 @@ export async function checkGradle() : Promise<CheckDependenciesResult>{
     let gradleVersion = data.match(regex);
     if(gradleVersion != null){
       if (!semver.satisfies(gradleVersion[0], constants.mingradleVersion)) {
-        result.hasRequiredDependencies = true;
+        result.hasRequiredDependencies = false;
         result.errorMessage = `Update Gradle to ${constants.mingradleVersion}. Update link: https://bit.ly/3aGYDj6`;
       }
     }
