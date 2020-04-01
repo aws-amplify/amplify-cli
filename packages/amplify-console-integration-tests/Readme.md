@@ -12,10 +12,18 @@ The `.env` file does not get commited as its in the `.gitignore` file.
 
 ## Running individual tests
 
-Amplify Console E2E tests use Jest. So all the standard Jest commands work.
-You can run a single test while adding a new test by running
+Amplify Console integration tests use Jest. So all the standard Jest commands work.
+
+You must first setup the test profile before you can run individual tests
 
 ```bash
-cd <amplif-cli-root>/packages/amplify-console-integration/
-npm run <test-file-name>
+cd <amplif-cli-root>/packages/amplify-console-integration-tests/
+npm run setup-profile
+```
+
+You can run a single test by running
+
+```bash
+cd <amplif-cli-root>/packages/amplify-console-integration-tests/
+jest <test-name>
 ```
