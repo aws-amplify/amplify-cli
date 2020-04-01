@@ -36,6 +36,11 @@ packages/amplify-storage-simulator/lib
 packages/*-template-provider/lib
 packages/*-runtime-provider/lib
 packages/amplify-function-plugin-interface/lib
+packages/amplify-java-function-runtime-provider/resources/localinvoke/.gradle/
+packages/amplify-java-function-runtime-provider/resources/localinvoke/lib/
+packages/amplify-java-function-runtime-provider/resources/localinvoke/build/
+packages/amplify-java-function-runtime-provider/resources/localinvoke/.classpath
+packages/amplify-java-function-runtime-provider/resources/localinvoke/.project
 packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
