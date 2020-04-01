@@ -4,7 +4,6 @@
     "outDir": "./lib",
     "rootDir": "./src",
     "composite": true,
-    "strict": true,
   },
   "references": [
     {"path": "../amplify-function-plugin-interface"}
