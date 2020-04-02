@@ -46,8 +46,19 @@ jobs:
             tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
             sudo mv jdk-11* /usr/local/
             export JAVA_HOME=/usr/local/jdk-11.0.2
-            export PATH=$PATH:$JAVA_HOME/bin
+            export PATH=$PATH:/usr/local/jdk-11.0.2/bin
             java -version
+            which java
+            which javac
+      - run:
+          name: Install Gradle
+          command: |
+            wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
+            sudo unzip -d /opt/gradle /tmp/gradle-*.zip
+            export GRADLE_HOME=/opt/gradle/gradle-6.3
+            export PATH=$PATH:$/opt/gradle/gradle-6.3/bin
+            gradle --version
+            which gradle
       - run:
           name: Install Go
           command: |
