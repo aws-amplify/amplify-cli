@@ -1,6 +1,6 @@
 import { FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
 import { supportedServices } from '../supported-services';
-import { serviceName, provider } from './utils/constants';
+import { serviceName, provider, categoryName } from './utils/constants';
 import { createParametersFile, copyFunctionResources } from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
@@ -115,6 +115,10 @@ export async function updateResource(context, category, service, parameters, res
   }
 
   if (!parameters || (parameters && !parameters.skipEdit)) {
+    const breadcrumb = context.amplify.readBreadcrumbs(context, categoryName, answers.resourceName);
+    answers.functionTemplate = {
+      defaultEditorFile: breadcrumb.defaultEditorFile,
+    };
     await openEditor(context, category, answers);
   }
 
@@ -129,12 +133,19 @@ async function openEditor(context, category, options: FunctionParameters | Funct
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   if (await context.amplify.confirmPrompt.run(`Do you want to edit the ${displayName} lambda function now?`)) {
     let targetFile = '';
-    if (options.functionTemplate.defaultEditorFile) {
-      targetFile = options.functionTemplate.defaultEditorFile;
-    } else if (options.functionTemplate.sourceFiles.length > 0) {
-      let srcFile = options.functionTemplate.sourceFiles[0];
-      targetFile = _.get(options.functionTemplate, ['destMap', srcFile], srcFile);
+
+    // try to load the default editor file from the function template
+    if (options.functionTemplate) {
+      const template = options.functionTemplate;
+      if (template.defaultEditorFile) {
+        targetFile = template.defaultEditorFile;
+      } else if (template.sourceFiles && template.sourceFiles.length > 0) {
+        let srcFile = options.functionTemplate.sourceFiles[0];
+        targetFile = _.get(options.functionTemplate, ['destMap', srcFile], srcFile);
+      }
     }
+
+    // if above loading didn't work, just open the folder directory
     const target = path.join(targetDir, category, options.resourceName, targetFile);
     await context.amplify.openEditor(context, target);
   }
