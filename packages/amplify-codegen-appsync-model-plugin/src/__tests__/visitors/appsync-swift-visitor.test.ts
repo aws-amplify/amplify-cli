@@ -450,6 +450,172 @@ describe('AppSyncSwiftVisitor', () => {
         `);
       });
     });
+
+    describe('connection with key directive', () => {
+      it('should support throw error when connection has keyName', () => {
+        const schema = /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            title: String!
+            editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+          }
+
+          # Create a join model and disable queries as you don't need them
+          # and can query through Post.editors and User.posts
+          type PostEditor
+            @model(queries: null)
+            @key(name: "byPost", fields: ["postID", "editorID"])
+            @key(name: "byEditor", fields: ["editorID", "postID"]) {
+            id: ID!
+            postID: ID!
+            editorID: ID!
+            post: Post! @connection(fields: ["postID"])
+            editor: User! @connection(fields: ["editorID"])
+          }
+
+          type User @model {
+            id: ID!
+            username: String!
+            posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
+          }
+        `;
+        const postVisitor = getVisitor(schema, 'Post');
+        expect(() => postVisitor.generate()).toThrowError('connection directive with keyName');
+      });
+
+      it('should support connection directive with fields', () => {
+        const schema = /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            title: String!
+            editors: [PostEditor] @connection(fields: ["id"])
+          }
+
+          # Create a join model and disable queries as you don't need them
+          # and can query through Post.editors and User.posts
+          type PostEditor
+            @model(queries: null)
+            @key(name: "byPost", fields: ["postID", "editorID"])
+            @key(name: "byEditor", fields: ["editorID", "postID"]) {
+            id: ID!
+            postID: ID!
+            editorID: ID!
+            post: Post! @connection(fields: ["postID"])
+            editor: User! @connection(fields: ["editorID"])
+          }
+
+          type User @model {
+            id: ID!
+            username: String!
+            posts: [PostEditor] @connection(fields: ["id"])
+          }
+        `;
+
+        const postVisitor = getVisitor(schema, 'Post');
+        expect(postVisitor.generate()).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          public struct Post: Model {
+            public let id: String
+            public var title: String
+            public var editors: List<PostEditor>?
+            
+            public init(id: String = UUID().uuidString,
+                title: String,
+                editors: List<PostEditor>? = []) {
+                self.id = id
+                self.title = title
+                self.editors = editors
+            }
+          }"
+        `);
+
+        const postSchemaVisitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        expect(postSchemaVisitor.generate()).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case editors
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .hasMany(post.editors, is: .optional, ofType: PostEditor.self, associatedWith: PostEditor.keys.id)
+              )
+              }
+          }"
+        `);
+
+        const postEditorVisitor = getVisitor(schema, 'Post');
+        expect(postEditorVisitor.generate()).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          public struct Post: Model {
+            public let id: String
+            public var title: String
+            public var editors: List<PostEditor>?
+            
+            public init(id: String = UUID().uuidString,
+                title: String,
+                editors: List<PostEditor>? = []) {
+                self.id = id
+                self.title = title
+                self.editors = editors
+            }
+          }"
+        `);
+
+        const postEditorSchemaVisitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        expect(postEditorSchemaVisitor.generate()).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case editors
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .hasMany(post.editors, is: .optional, ofType: PostEditor.self, associatedWith: PostEditor.keys.id)
+              )
+              }
+          }"
+        `);
+      });
+    });
   });
 
   it('should not convert non model type to List<type>', () => {
