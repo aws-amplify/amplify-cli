@@ -50,55 +50,7 @@ jobs:
             source $BASH_ENV
             java -version
       - run:
-          name: Install Gradle
-          command: |
-            wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
-            sudo unzip -d /opt/gradle /tmp/gradle-*.zip
-            echo "export GRADLE_HOME=/opt/gradle/gradle-6.3" >> $BASH_ENV
-            echo "export PATH=$PATH:/opt/gradle/gradle-6.3/bin" >> $BASH_ENV
-            source $BASH_ENV
-            gradle --version
-      - run:
-          name: Install Go
-          command: |
-            curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
-            sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
-            rm go1.14.1.linux-amd64.tar.gz
-            echo "export PATH=$PATH:/usr/local/go/bin" >> $BASH_ENV
-            source $BASH_ENV
-            go version
-      - run:
-          name: Install Python
-          command: |
-            sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl
-            curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
-            sudo tar -C /usr/local -xf Python-3.8.2.tar.xz
-            cd /usr/local/Python-3.8.2
-            sudo ./configure
-            sudo make -j 4
-            sudo make install
-            sudo apt install python3-pip
-            pip3 install --user pipenv
-            python3 --version
-            pipenv --version
-      - run:
-          name: Install .NET
-          command: |
-            sudo apt-get install apt-transport-https ca-certificates
-            wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
-            sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
-            wget https://packages.microsoft.com/config/debian/9/prod.list
-            sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
-            sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
-            sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
-
-            sudo apt-get update
-            sudo apt-get install apt-transport-https
-            sudo apt-get update
-            sudo apt-get install dotnet-sdk-3.1
-            dotnet --version
-      - run:
-          name: lint
+          name: Lint
           command: yarn lint
       - run:
           name: Run tests
@@ -171,6 +123,67 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Install Java
+          command: |
+            curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+            tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
+            sudo mv jdk-11* /usr/local/
+            echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
+            echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
+            source $BASH_ENV
+            java -version
+      - run:
+          name: Install Gradle
+          command: |
+            wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
+            sudo unzip -d /opt/gradle /tmp/gradle-*.zip
+            echo "export GRADLE_HOME=/opt/gradle/gradle-6.3" >> $BASH_ENV
+            echo "export PATH=$PATH:/opt/gradle/gradle-6.3/bin" >> $BASH_ENV
+            source $BASH_ENV
+            gradle --version
+      - run:
+          name: Install Go
+          command: |
+            curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
+            rm go1.14.1.linux-amd64.tar.gz
+            echo "export PATH=$PATH:/usr/local/go/bin" >> $BASH_ENV
+            source $BASH_ENV
+            go version
+      - run:
+          name: Install Python
+          command: |
+            sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl
+            curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
+            sudo tar -C /usr/local -xf Python-3.8.2.tar.xz
+            cd /usr/local/Python-3.8.2
+            sudo ./configure
+            sudo make -j 4
+            sudo make install
+            sudo apt install python3-pip
+            pip3 install --user pipenv
+            python3 --version
+            pipenv --version
+      - run:
+          name: Install .NET
+          command: |
+            sudo apt-get install apt-transport-https ca-certificates
+            wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
+            sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+            wget https://packages.microsoft.com/config/debian/9/prod.list
+            sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+            sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+            sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+
+            sudo apt-get update
+            sudo apt-get install apt-transport-https
+            sudo apt-get update
+            sudo apt-get install dotnet-sdk-3.1
+            dotnet --version
       - run:
           name: Start verdaccio and Install Amplify CLI
           command: |
