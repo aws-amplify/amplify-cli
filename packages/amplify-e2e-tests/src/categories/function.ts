@@ -1,5 +1,6 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
+import { getCLIPath, getProjectMeta, invokeFunction } from '../utils';
+import { Lambda } from 'aws-sdk';
 
 type FunctionActions = 'create' | 'update';
 
@@ -304,6 +305,31 @@ const addCron = (chain: ExecutionContext, settings: any) => {
   }
 
   return chain;
+}
+
+export const functionMockAssert = (cwd: string, settings: { funcName: string; successString: string; eventFile: string }) => {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['mock', 'function', settings.funcName, '--event', settings.eventFile], { cwd, stripColors: true })
+      .wait('Result:')
+      .wait(settings.successString)
+      .wait('Finished execution.')
+      .run(err => (err ? reject(err) : resolve()));
+  });
+};
+
+export const functionCloudInvoke = async (
+  cwd: string,
+  settings: { funcName: string; payload: string },
+): Promise<Lambda.InvocationResponse> => {
+  const meta = getProjectMeta(cwd);
+  const { Name: functionName, Region: region } = meta.function[settings.funcName].output;
+  expect(functionName).toBeDefined();
+  expect(region).toBeDefined();
+  const result = await invokeFunction(functionName, settings.payload, region);
+  if (!result.$response.data) {
+    fail('No data in lambda response');
+  }
+  return result.$response.data as Lambda.InvocationResponse;
 };
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
