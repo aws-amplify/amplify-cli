@@ -3,17 +3,15 @@ import { getCLIPath } from '../utils';
 
 type FunctionActions = 'create' | 'update';
 
-type FunctionRuntimes = 'netCore21' | 'netCore31' | 'go' | 'java' | 'nodejs' | 'python';
+type FunctionRuntimes = 'dotnetCore31' | 'go' | 'java' | 'nodejs' | 'python';
 
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
 // runtimeChoices are shared between tests
-export const runtimeChoices = [/*'.NET Core 2.1', '.NET Core 3.1',*/ 'Go' /*, 'Java'*/, 'NodeJS', 'Python'];
+export const runtimeChoices = ['.NET Core 3.1', 'Go', 'Java', 'NodeJS', 'Python'];
 
 // templateChoices is per runtime
-const dotNetCore21TemplateChoices = ['Hello World'];
-
-const dotNetCore31TemplateChoices = ['Hello World'];
+const dotNetCore31TemplateChoices = ['Hello World', 'Serverless', 'Trigger (DynamoDb, Kinesis)'];
 
 const goTemplateChoices = ['Hello World'];
 
@@ -115,27 +113,27 @@ const coreFunction = (
           chain,
         );
       } else {
-        chain = chain.sendLine('n');
+        chain.sendLine('n');
       }
 
       //scheduling questions
       if (action == 'create') {
-        chain = chain.wait('Do you want to invoke this function on a recurring schedule?');
+        chain.wait('Do you want to invoke this function on a recurring schedule?');
       } else {
-        if (settings.schedulePermissions.noScheduleAdd === 'true') {
-          chain = chain.wait('Do you want to invoke this function on a recurring schedule?');
+        if (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true') {
+          chain.wait('Do you want to invoke this function on a recurring schedule?');
         } else {
-          chain = chain.wait(`Do you want to update or remove the function's schedule?`);
+          chain.wait(`Do you want to update or remove the function's schedule?`);
         }
       }
 
       if (settings.schedulePermissions === undefined) {
-        chain = chain.sendLine('n');
+        chain.sendLine('n');
       } else {
-        chain = chain.sendLine('y');
-        chain = cronWalkthrough(chain, settings, action);
+        chain.sendLine('y');
+        cronWalkthrough(chain, settings, action);
       }
-      // scheduling questions
+
       chain = chain
         .wait('Do you want to edit the local lambda function now?')
         .sendLine('n')
@@ -211,97 +209,106 @@ export const functionBuild = (cwd: string, settings: any) => {
         }
       });
   });
-}
+};
 
-function cronWalkthrough(chain: ExecutionContext, settings: any, action: string) {
+const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string) => {
   if (action === 'create') {
-    chain = addCron(chain, settings);
+    addCron(chain, settings);
   } else {
-    chain = chain.wait('Select from the following options:');
+    chain.wait('Select from the following options:');
+
     switch (settings.schedulePermissions.action) {
       case 'Update the schedule':
-        chain = chain.sendCarriageReturn();
-        chain = addCron(chain, settings);
+        chain.sendCarriageReturn();
+        addCron(chain, settings);
         break;
       case 'Remove the schedule':
-        chain = moveDown(chain, 1).sendCarriageReturn();
+        moveDown(chain, 1).sendCarriageReturn();
         break;
       default:
-        chain = chain.sendCarriageReturn();
+        chain.sendCarriageReturn();
         break;
     }
   }
-  return chain;
-}
 
-function addminutes(chain: ExecutionContext) {
-  chain = chain
+  return chain;
+};
+
+const addminutes = (chain: ExecutionContext) => {
+  chain
     .wait('Enter rate for mintues(1-59)?')
-    .sendLine('5\r')
+    .sendLine('5')
     .sendCarriageReturn();
-  return chain;
-}
 
-function addhourly(chain: ExecutionContext) {
-  chain = chain
+  return chain;
+};
+
+const addhourly = (chain: ExecutionContext) => {
+  chain
     .wait('Enter rate for hours(1-23)?')
-    .sendLine('5\r')
+    .sendLine('5')
     .sendCarriageReturn();
-  return chain;
-}
 
-function addWeekly(chain: ExecutionContext) {
-  chain = chain.wait('Please select the  day to start Job').sendCarriageReturn();
   return chain;
-}
+};
 
-function addMonthly(chain: ExecutionContext) {
-  chain = chain.wait('Select date to start cron').sendCarriageReturn();
+const addWeekly = (chain: ExecutionContext) => {
+  chain.wait('Please select the  day to start Job').sendCarriageReturn();
+
   return chain;
-}
+};
 
-function addYearly(chain: ExecutionContext) {
-  chain = chain.wait('Select date to start cron').sendCarriageReturn();
+const addMonthly = (chain: ExecutionContext) => {
+  chain.wait('Select date to start cron').sendCarriageReturn();
+
   return chain;
-}
+};
 
-function addCron(chain: ExecutionContext, settings: any) {
-  chain = chain.wait('At which interval should the function be invoked:');
+const addYearly = (chain: ExecutionContext) => {
+  chain.wait('Select date to start cron').sendCarriageReturn();
+
+  return chain;
+};
+
+const addCron = (chain: ExecutionContext, settings: any) => {
+  chain.wait('At which interval should the function be invoked:');
+
   switch (settings.schedulePermissions.interval) {
     case 'Minutes':
-      chain = addminutes(chain);
+      addminutes(chain);
       break;
     case 'Hourly':
-      chain = addhourly(moveDown(chain, 1).sendCarriageReturn());
+      addhourly(moveDown(chain, 1).sendCarriageReturn());
       break;
     case 'Daily':
-      chain = moveDown(chain, 2).sendCarriageReturn();
-      chain = chain.wait('Select the start time (use arrow keys):').sendCarriageReturn();
+      moveDown(chain, 2)
+        .sendCarriageReturn()
+        .wait('Select the start time (use arrow keys):')
+        .sendCarriageReturn();
       break;
     case 'Weekly':
-      chain = addWeekly(moveDown(chain, 3).sendCarriageReturn());
+      addWeekly(moveDown(chain, 3).sendCarriageReturn());
       break;
     case 'Monthly':
-      chain = addMonthly(moveDown(chain, 4).sendCarriageReturn());
+      addMonthly(moveDown(chain, 4).sendCarriageReturn());
       break;
     case 'Yearly':
-      chain = addYearly(moveDown(chain, 5).sendCarriageReturn());
+      addYearly(moveDown(chain, 5).sendCarriageReturn());
       break;
     case 'Custom AWS cron expression':
-      chain = moveDown(chain, 6).sendCarriageReturn();
+      moveDown(chain, 6).sendCarriageReturn();
       break;
     default:
-      chain = chain.sendCarriageReturn();
+      chain.sendCarriageReturn();
       break;
   }
+
   return chain;
-}
+};
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'netCore21':
-      return dotNetCore21TemplateChoices;
-    case 'netCore31':
+    case 'dotnetCore31':
       return dotNetCore31TemplateChoices;
     case 'go':
       return goTemplateChoices;
@@ -318,9 +325,7 @@ const getTemplateChoices = (runtime: FunctionRuntimes) => {
 
 const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'netCore21':
-      return '.NET Core 2.1';
-    case 'netCore31':
+    case 'dotnetCore31':
       return '.NET Core 3.1';
     case 'go':
       return 'Go';

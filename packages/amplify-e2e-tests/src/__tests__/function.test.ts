@@ -466,12 +466,16 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
 
   it('add a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, {
-      functionTemplate: 'helloWorld',
-      schedulePermissions: {
-        interval: 'Daily',
+    await addFunction(
+      projRoot,
+      {
+        functionTemplate: 'helloWorld',
+        schedulePermissions: {
+          interval: 'Daily',
+        },
       },
-    });
+      'nodejs',
+    );
     await functionBuild(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -489,20 +493,28 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
   });
   it('update a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, {
-      functionTemplate: 'helloWorld',
-      schedulePermissions: {
-        interval: 'Daily',
+    await addFunction(
+      projRoot,
+      {
+        functionTemplate: 'helloWorld',
+        schedulePermissions: {
+          interval: 'Daily',
+        },
       },
-    });
+      'nodejs',
+    );
     await functionBuild(projRoot, {});
-    await updateFunction(projRoot, {
-      functionTemplate: 'helloWorld',
-      schedulePermissions: {
-        interval: 'Daily',
-        action: 'Update the schedule',
+    await updateFunction(
+      projRoot,
+      {
+        functionTemplate: 'helloWorld',
+        schedulePermissions: {
+          interval: 'Daily',
+          action: 'Update the schedule',
+        },
       },
-    });
+      'nodejs',
+    );
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
@@ -521,20 +533,28 @@ describe.only('amplify add/update/remove function based on schedule rule', () =>
 
   it('remove a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, {
-      functionTemplate: 'helloWorld',
-      schedulePermissions: {
-        interval: 'Daily',
+    await addFunction(
+      projRoot,
+      {
+        functionTemplate: 'helloWorld',
+        schedulePermissions: {
+          interval: 'Daily',
+        },
       },
-    });
+      'nodejs',
+    );
     await functionBuild(projRoot, {});
-    await updateFunction(projRoot, {
-      functionTemplate: 'helloWorld',
-      schedulePermissions: {
-        interval: 'Daily',
-        action: 'Remove the schedule',
+    await updateFunction(
+      projRoot,
+      {
+        functionTemplate: 'helloWorld',
+        schedulePermissions: {
+          interval: 'Daily',
+          action: 'Remove the schedule',
+        },
       },
-    });
+      'nodejs',
+    );
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
