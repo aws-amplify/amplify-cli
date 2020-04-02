@@ -535,7 +535,7 @@ workflows:
   nightly_console_integration_tests:
     triggers:
       - schedule:
-          cron: '0 0 * * *'
+          cron: '0 14 * * *'
           filters:
             branches:
               only:
