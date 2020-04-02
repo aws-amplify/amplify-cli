@@ -16,18 +16,18 @@ jobs:
       - checkout
       - run: yarn config set workspaces-experimental true
       - run: yarn cache clean --force
-      # - run: yarn run production-build
-      # - save_cache:
-      #     key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      #     paths:
-      #       - ~/.cache
-      # - save_cache:
-      #     key: amplify-cli-ssh-deps-{{ .Branch }}
-      #     paths:
-      #       - ~/.ssh
-      # - persist_to_workspace:
-      #     root: .
-      #     paths: .
+      - run: yarn run production-build
+      - save_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache
+      - save_cache:
+          key: amplify-cli-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
+      - persist_to_workspace:
+          root: .
+          paths: .
 
   test:
     <<: *defaults

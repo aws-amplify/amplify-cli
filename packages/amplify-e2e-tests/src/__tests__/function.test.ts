@@ -379,10 +379,25 @@ describe('nodejs', () => {
 });
 
 describe('go function tests', () => {
+  const helloWorldSuccessOutput = 'Hello Amplify!';
   let projRoot: string;
+  let funcName: string;
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('go-functions');
+    await initJSProjectWithProfile(projRoot, {});
+
+    const random = Math.floor(Math.random() * 10000);
+    funcName = `gotestfn${random}`;
+
+    await addFunction(
+      projRoot,
+      {
+        name: funcName,
+        functionTemplate: 'Hello World',
+      },
+      'go',
+    );
   });
 
   afterEach(async () => {
@@ -390,36 +405,19 @@ describe('go function tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add go hello world function', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-
-    const random = Math.floor(Math.random() * 10000);
-    const fnName = `gotestfn${random}`;
-
-    await addFunction(
-      projRoot,
-      {
-        name: fnName,
-        functionTemplate: 'Hello World',
-      },
-      'go',
-    );
+  it('add go hello world function and mock locally', async () => {
+    await functionMockAssert(projRoot, {
+      funcName,
+      successString: helloWorldSuccessOutput,
+      eventFile: 'src/event.json',
+    }); // will throw if successString is not in output
   });
 
-  it('add node hello world function', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-
-    const random = Math.floor(Math.random() * 10000);
-    const fnName = `gotestfn${random}`;
-
-    await addFunction(
-      projRoot,
-      {
-        name: fnName,
-        functionTemplate: 'Hello World',
-      },
-      'nodejs',
-    );
+  it('add go hello world function and invoke in the cloud', async () => {
+    const payload = '{"name":"Amplify"}';
+    await amplifyPushAuth(projRoot);
+    const response = await functionCloudInvoke(projRoot, { funcName, payload });
+    expect(response.Payload.toString()).toEqual(helloWorldSuccessOutput);
   });
 });
 
@@ -450,18 +448,6 @@ describe('python function tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add python hello world function', async () => {
-    await functionBuild(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
-    expect(functionArn).toBeDefined();
-    expect(functionName).toBeDefined();
-    expect(region).toBeDefined();
-    const cloudFunction = await getFunction(functionName, region);
-    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
-  });
-
   it('add python hello world and mock locally', async () => {
     await functionMockAssert(projRoot, {
       funcName,
@@ -478,7 +464,92 @@ describe('python function tests', () => {
   });
 });
 
-describe.only('amplify add/update/remove function based on schedule rule', () => {
+describe('dotnet function tests', () => {
+  const helloWorldSuccessOutput = '{"key1":"VALUE1","key2":"VALUE2","key3":"VALUE3"}';
+  let projRoot: string;
+  let funcName: string;
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('dotnet-functions');
+    await initJSProjectWithProfile(projRoot, {});
+
+    const random = Math.floor(Math.random() * 10000);
+    funcName = `dotnettestfn${random}`;
+
+    await addFunction(
+      projRoot,
+      {
+        name: funcName,
+        functionTemplate: 'Hello World',
+      },
+      'dotnetCore31',
+    );
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('add dotnet hello world function and mock locally', async () => {
+    await functionMockAssert(projRoot, {
+      funcName,
+      successString: helloWorldSuccessOutput,
+      eventFile: 'src/event.json',
+    }); // will throw if successString is not in output
+  });
+
+  it('add dotnet hello world function and invoke in the cloud', async () => {
+    const payload = '{"key1":"value1","key2":"value2","key3":"value3"}';
+    await amplifyPushAuth(projRoot);
+    const response = await functionCloudInvoke(projRoot, { funcName, payload });
+    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
+  });
+});
+
+describe('java function tests', () => {
+  const helloWorldSuccessOutput = '{"greetings": "Hello John, Doe."}';
+  let projRoot: string;
+  let funcName: string;
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('dotnet-functions');
+    await initJSProjectWithProfile(projRoot, {});
+
+    const random = Math.floor(Math.random() * 10000);
+    funcName = `javatestfn${random}`;
+
+    await addFunction(
+      projRoot,
+      {
+        name: funcName,
+        functionTemplate: 'Hello World',
+      },
+      'java',
+    );
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+  it('add java hello world function and mock locally', async () => {
+    await functionMockAssert(projRoot, {
+      funcName,
+      successString: helloWorldSuccessOutput,
+      eventFile: 'src/event.json',
+    }); // will throw if successString is not in output
+  });
+
+  it('add java hello world function and invoke in the cloud', async () => {
+    const payload = '{"firstName":"John","lastName" : "Doe"}';
+    await amplifyPushAuth(projRoot);
+    const response = await functionCloudInvoke(projRoot, { funcName, payload });
+    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
+  });
+});
+
+describe('amplify add/update/remove function based on schedule rule', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('schedule');
