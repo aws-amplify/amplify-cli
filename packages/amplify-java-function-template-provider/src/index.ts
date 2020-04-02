@@ -7,7 +7,7 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
     contribute: request => {
       const selection = request.selection;
       switch (selection) {
-        case 'helloworld': {
+        case 'hello-world': {
           return provideHelloWorld(request);
         }
         default: {
