@@ -107,11 +107,13 @@ function createBreadcrumbs(params: FunctionParameters | FunctionTriggerParameter
       pluginId: 'amplify-nodejs-function-runtime-provider',
       functionRuntime: 'nodejs',
       useLegacyBuild: true,
+      defaultEditorFile: 'src/index.js',
     };
   }
   return {
     pluginId: params.runtimePluginId,
     functionRuntime: params.runtime.value,
-    useLegacyBuild: true, // unconditionally setting to true for now until new node build is implemented
+    useLegacyBuild: params.runtime.value === 'nodejs' ? true : false, // so we can update node builds in the future
+    defaultEditorFile: params.functionTemplate.defaultEditorFile,
   };
 }

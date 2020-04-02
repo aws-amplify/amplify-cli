@@ -12,6 +12,7 @@ function readBreadcrumbs(context, category, resourceName) {
     breadcrumbs = {
       pluginId: 'amplify-nodejs-function-runtime-provider',
       functionRuntime: 'nodejs',
+      defaultEditorFile: 'src/index.js',
       useLegacyBuild: true,
     };
     context.amplify.leaveBreadcrumbs(context, category, resourceName, breadcrumbs);

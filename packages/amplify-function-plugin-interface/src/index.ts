@@ -191,6 +191,7 @@ export interface FunctionBreadcrumbs {
   pluginId: string;
   functionRuntime: string;
   useLegacyBuild: boolean;
+  defaultEditorFile: string;
   scripts?: Record<'build' & 'package', FunctionScript>;
 }
 
