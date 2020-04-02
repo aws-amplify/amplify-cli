@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
@@ -47,7 +47,7 @@ jobs:
             sudo mv jdk-11* /usr/local/
             echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
             echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
-            source $BASN_ENV
+            source $BASH_ENV
             java -version
             which java
             which javac
@@ -218,7 +218,7 @@ jobs:
             npm install -g @aws-amplify/cli
       - run:
           command: |
-            export PATH=~/.npm-global/bin:$PATH
+            echo "export PATH=~/.npm-global/bin:$PATH" >> $BASH_ENV
             amplify -v
             cd packages/amplify-console-integration-tests
             yarn run console-integration --maxWorkers=3
