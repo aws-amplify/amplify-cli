@@ -16,18 +16,18 @@ jobs:
       - checkout
       - run: yarn config set workspaces-experimental true
       - run: yarn cache clean --force
-      - run: yarn run production-build
-      - save_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache
-      - save_cache:
-          key: amplify-cli-ssh-deps-{{ .Branch }}
-          paths:
-            - ~/.ssh
-      - persist_to_workspace:
-          root: .
-          paths: .
+      # - run: yarn run production-build
+      # - save_cache:
+      #     key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      #     paths:
+      #       - ~/.cache
+      # - save_cache:
+      #     key: amplify-cli-ssh-deps-{{ .Branch }}
+      #     paths:
+      #       - ~/.ssh
+      # - persist_to_workspace:
+      #     root: .
+      #     paths: .
 
   test:
     <<: *defaults
@@ -41,7 +41,13 @@ jobs:
           command: sudo apt-get update
       - run:
           name: Install Java
-          command: sudo apt-get install default-jdk
+          command: |
+            curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+            tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
+            sudo mv jdk-11* /usr/local/
+            export JAVA_HOME=/usr/local/jdk-11.0.2
+            export PATH=$PATH:$JAVA_HOME/bin
+            java -version
       - run:
           name: Install Go
           command: |
@@ -64,6 +70,22 @@ jobs:
             pip3 install --user pipenv
             python3 --version
             pipenv --version
+      - run:
+          name: Install .NET
+          command: |
+            sudo apt-get install apt-transport-https ca-certificates
+            wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
+            sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+            wget https://packages.microsoft.com/config/debian/9/prod.list
+            sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+            sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+            sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+
+            sudo apt-get update
+            sudo apt-get install apt-transport-https
+            sudo apt-get update
+            sudo apt-get install dotnet-sdk-3.1
+            dotnet --version
       - run:
           name: lint
           command: yarn lint
