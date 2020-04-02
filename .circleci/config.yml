@@ -248,6 +248,7 @@ jobs:
       - image: cypress/base:10.18.0
         environment:
           TERM: dumb
+    resource_class: large
     steps:
       - checkout
       - run: apt-get update
