@@ -55,6 +55,8 @@
     "amplify-dotnet-function-template-provider": "1.0.0",
     "amplify-go-function-runtime-provider": "1.0.0",
     "amplify-go-function-template-provider": "1.0.0",
+    "amplify-java-function-runtime-provider": "1.0.0",
+    "amplify-java-function-template-provider": "1.0.0",
     "amplify-nodejs-function-runtime-provider": "1.0.0",
     "amplify-nodejs-function-template-provider": "1.0.0",
     "amplify-python-function-runtime-provider": "1.0.0",
