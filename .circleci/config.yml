@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
@@ -41,14 +41,31 @@ jobs:
           command: sudo apt-get update
       - run:
           name: Install Java
-          command: sudo apt-get install default-jdk
+          command: |
+            curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+            tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
+            sudo mv jdk-11* /usr/local/
+            echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
+            echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
+            source $BASH_ENV
+            java -version
+      - run:
+          name: Install Gradle
+          command: |
+            wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
+            sudo unzip -d /opt/gradle /tmp/gradle-*.zip
+            echo "export GRADLE_HOME=/opt/gradle/gradle-6.3" >> $BASH_ENV
+            echo "export PATH=$PATH:/opt/gradle/gradle-6.3/bin" >> $BASH_ENV
+            source $BASH_ENV
+            gradle --version
       - run:
           name: Install Go
           command: |
             curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
             sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
             rm go1.14.1.linux-amd64.tar.gz
-            export PATH=$PATH:/usr/local/go/bin
+            echo "export PATH=$PATH:/usr/local/go/bin" >> $BASH_ENV
+            source $BASH_ENV
             go version
       - run:
           name: Install Python
@@ -64,6 +81,22 @@ jobs:
             pip3 install --user pipenv
             python3 --version
             pipenv --version
+      - run:
+          name: Install .NET
+          command: |
+            sudo apt-get install apt-transport-https ca-certificates
+            wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
+            sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+            wget https://packages.microsoft.com/config/debian/9/prod.list
+            sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+            sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+            sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+
+            sudo apt-get update
+            sudo apt-get install apt-transport-https
+            sudo apt-get update
+            sudo apt-get install dotnet-sdk-3.1
+            dotnet --version
       - run:
           name: lint
           command: yarn lint
@@ -183,7 +216,8 @@ jobs:
             npm install -g @aws-amplify/cli
       - run:
           command: |
-            export PATH=~/.npm-global/bin:$PATH
+            echo "export PATH=~/.npm-global/bin:$PATH" >> $BASH_ENV
+            source $BASH_ENV
             amplify -v
             cd packages/amplify-console-integration-tests
             yarn run console-integration --maxWorkers=3

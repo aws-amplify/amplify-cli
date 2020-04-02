@@ -1,10 +1,9 @@
-import path from 'path';
-import { InvocationRequest} from 'amplify-function-plugin-interface';
-import {constants} from './constants'
-import childProcess from 'child_process';
-import {buildResource} from './build'
-export async function invokeResource(request: InvocationRequest , context : any){
+import * as execa from 'execa';
+import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { shimBinPath } from './constants';
+import { buildResource } from './build';
 
+export const invokeResource = async (request: InvocationRequest, context: any) => {
   await buildResource({
     env: request.env,
     runtime: request.runtime,
@@ -12,14 +11,13 @@ export async function invokeResource(request: InvocationRequest , context : any)
     lastBuildTimestamp: request.lastBuildTimestamp,
   });
 
-  const cp = childProcess.spawnSync('java', [ '-jar', 'localinvoke-all.jar' ,request.handler , request.event], { cwd: constants.shimBinPath , stdio : 'pipe' , encoding: 'utf-8' });
+  const result = execa.sync('java', ['-jar', 'localinvoke-all.jar', request.handler, request.event], {
+    cwd: shimBinPath,
+  });
 
-  let result  = JSON.stringify(cp.stdout);
-  try {
-    result = JSON.parse(result);
-  } catch (err) {
-    context.print.warning('Could not parse function output as JSON. Using raw output.');
+  if (result.exitCode !== 0) {
+    throw new Error(`java failed, exit code was ${result.exitCode}`);
   }
-  return Promise.resolve(result);
-};
 
+  return result.stdout;
+};
