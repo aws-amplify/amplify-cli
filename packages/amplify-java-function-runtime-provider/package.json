@@ -10,14 +10,20 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "java"
+  ],
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "semver": "^7.1.3",
     "amplify-function-plugin-interface": "1.2.0",
-    "execa": "^4.0.0"
+    "execa": "^4.0.0",
+    "semver": "^7.1.3"
   },
   "devDependencies": {
     "@types/semver": "^7.1.0"
