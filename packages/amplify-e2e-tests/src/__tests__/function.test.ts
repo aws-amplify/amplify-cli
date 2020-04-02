@@ -417,7 +417,7 @@ describe('go function tests', () => {
     const payload = '{"name":"Amplify"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(response.Payload.toString()).toEqual(helloWorldSuccessOutput);
+    expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessOutput);
   });
 });
 
