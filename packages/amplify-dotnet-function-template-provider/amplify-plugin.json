@@ -7,7 +7,7 @@
     "conditions": {
       "provider": "awscloudformation",
       "service": "Lambda",
-      "runtime": ["dotnetcore31"]
+      "runtime": ["dotnetcore3.1"]
     },
     "templates": [
       {
