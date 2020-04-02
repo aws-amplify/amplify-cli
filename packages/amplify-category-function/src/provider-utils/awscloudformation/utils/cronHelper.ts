@@ -82,6 +82,7 @@ export async function weekHelper(exp: CronBuilder) {
   };
   const weekAnswer = await inquirer.prompt([WeekQuestion]);
   exp.set('dayOfTheWeek', Array(weekAnswer.week));
+  exp.set('dayOfTheMonth', Array('?'));
   return exp;
 }
 
