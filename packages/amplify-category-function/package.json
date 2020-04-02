@@ -13,7 +13,8 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib",
+    "test": "jest  src/__tests__/**/*.test.ts"
   },
   "keywords": [
     "amplify",
@@ -25,6 +26,8 @@
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.16.1",
     "inquirer": "^7.0.3",
+    "inquirer-datepicker": "^1.1.0",
+    "jstreemap": "^1.28.2",
     "lodash": "^4.17.15",
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1",

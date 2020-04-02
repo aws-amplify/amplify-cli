@@ -6,9 +6,10 @@ import { FunctionParameters } from 'amplify-function-plugin-interface';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
-import { serviceName, categoryName, functionParametersFileName } from '../utils/constants';
+import { serviceName, categoryName, functionParametersFileName, parametersFileName } from '../utils/constants';
 import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformationHelpers';
 import { askExecRolePermissionsQuestions } from './execPermissionsWalkthrough';
+import { scheduleWalkthrough } from './scheduleWalkthrough';
 import { merge } from '../utils/funcParamsUtils';
 
 /**
@@ -41,6 +42,9 @@ export async function createWalkthrough(
     templateParameters.parametersFileObj = legacyParameters;
   }
   templateParameters.topLevelComment = topLevelComment;
+
+  // ask scheduling Lambda questions and merge in results
+  templateParameters = merge(templateParameters, await scheduleWalkthrough(context, templateParameters));
   return templateParameters;
 }
 
@@ -176,6 +180,20 @@ export async function updateWalkthrough(context, lambdaToUpdate) {
       dependsOn = [];
     }
   }
+  // ask scheduling Lambda questions and merge in results
+  const scheduleParametersFilePath = path.join(resourceDirPath, parametersFileName);
+  let params;
+  try {
+    params = context.amplify.readJsonFile(scheduleParametersFilePath);
+  } catch (e) {
+    params = {};
+  }
+  let scheduleParameters: Partial<FunctionParameters> = params;
+  scheduleParameters.cloudwatchRule = params.CloudWatchRule;
+  scheduleParameters.resourceName = answers.resourceName;
+  let scheduleParams = await scheduleWalkthrough(context, scheduleParameters);
+  answers.parameters = newParams;
+  answers.parameters.CloudWatchRule = scheduleParams.cloudwatchRule;
   return { answers, dependsOn };
 }
 

@@ -165,3 +165,42 @@ export function constructCFModelTableNameComponent(appsyncResourceName, resource
     },
   };
 }
+
+export function constructCloudWatchEventComponent(cfnFilePath : string,cfnContent){
+  cfnContent.Resources.CloudWatchEvent = {
+    Type: 'AWS::Events::Rule',
+    Properties: {
+      Description: 'Schedule rule for Lambda',
+      ScheduleExpression: {
+        Ref: 'CloudWatchRule',
+      },
+      State: 'ENABLED',
+      Targets: [
+        {
+          Arn: { 'Fn::GetAtt': ['LambdaFunction', 'Arn'] },
+          Id: {
+            Ref: 'LambdaFunction',
+          },
+        },
+      ],
+    },
+  };
+  // append permissions to invoke lambda via cloiudwatch to CFN file
+  cfnContent.Resources.PermissionForEventsToInvokeLambda = {
+    Type: 'AWS::Lambda::Permission',
+    Properties: {
+      FunctionName: {
+        Ref: 'LambdaFunction',
+      },
+      Action: 'lambda:InvokeFunction',
+      Principal: 'events.amazonaws.com',
+      SourceArn: { 'Fn::GetAtt': ['CloudWatchEvent', 'Arn'] },
+    },
+  };
+  // append the outputs section of cloudwatchRULE
+  cfnContent.Outputs.CloudWatchEventRule = {
+    Value: {
+      Ref: 'CloudWatchEvent',
+    },
+  };
+}

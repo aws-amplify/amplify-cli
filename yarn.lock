@@ -10426,6 +10426,16 @@ inquirer-autocomplete-prompt@^1.0.1:
     figures "^2.0.0"
     run-async "^2.3.0"
 
+inquirer-datepicker@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/inquirer-datepicker/-/inquirer-datepicker-1.1.0.tgz#8f6258cb30556d1ebace5eb292a883d63b65e70d"
+  integrity sha512-aWGM8vCBX953s+T5fO4ZUm2rLtK668lJnVKKKC4v/HebV4X6ztSy/xB6KAEE9wKh7I/nDvZvMrZptGbsVXst/g==
+  dependencies:
+    chalk "^3.0.0"
+    cli-cursor "^3.1.0"
+    lodash "^4.17.15"
+    moment "^2.24.0"
+
 inquirer@6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-6.2.0.tgz#51adcd776f661369dc1e894859c2560a224abdd8"
@@ -12260,6 +12270,11 @@ jstransformer@0.0.2:
   dependencies:
     is-promise "^2.0.0"
     promise "^6.0.1"
+
+jstreemap@^1.28.2:
+  version "1.28.2"
+  resolved "https://registry.yarnpkg.com/jstreemap/-/jstreemap-1.28.2.tgz#fe884994039e5ee23a157cf7ddd6c01c3a6d134d"
+  integrity sha512-JYVDYwLat+OVXLpIXgUPy06wPSEkQafGOeotpGFodkM5+K8x3IrVPGaTw+Fd9MmZy092cLG/N+3q90oSBHZoQQ==
 
 jsx-ast-utils@^2.2.1:
   version "2.2.3"

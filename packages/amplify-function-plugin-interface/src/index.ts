@@ -109,6 +109,7 @@ export type FunctionParameters = {
   triggerEventSourceMappings?: any; // Used for dynamo / kinesis function triggers. May want to refactor
   topLevelComment?: string; // LEGACY Used to write available environment variables at top of template files
   runtimePluginId: string;
+  cloudwatchRule?: string;
 };
 
 /**

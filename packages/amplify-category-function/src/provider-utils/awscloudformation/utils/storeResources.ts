@@ -25,6 +25,13 @@ export function copyFunctionResources(context: any, parameters: FunctionParamete
     createParametersFile(context, params, parameters.resourceName, 'parameters.json');
   }
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
+
+  if ('cloudwatchRule' in parameters) {
+    const params = {
+      CloudWatchRule: parameters.cloudwatchRule,
+    };
+    createParametersFile(context, params, parameters.resourceName, 'parameters.json');
+  }
 }
 
 export function copyTemplateFiles(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {

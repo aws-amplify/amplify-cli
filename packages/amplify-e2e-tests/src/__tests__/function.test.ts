@@ -6,7 +6,7 @@ import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, sle
 import { addApiWithSchema } from '../categories/api';
 
 import { appsyncGraphQLRequest } from '../utils/appsync';
-import { getCloudWatchLogs, putKinesisRecords, invokeFunction } from '../utils/sdk-calls';
+import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule } from '../utils/sdk-calls';
 
 describe('nodejs', () => {
   describe('amplify add function', () => {
@@ -448,6 +448,103 @@ describe('python function tests', () => {
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
+    const cloudFunction = await getFunction(functionName, region);
+    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
+  });
+});
+
+describe.only('amplify add/update/remove function based on schedule rule', () => {
+  let projRoot: string;
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('schedule');
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('add a schedule rule for daily ', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, {
+      functionTemplate: 'helloWorld',
+      schedulePermissions: {
+        interval: 'Daily',
+      },
+    });
+    await functionBuild(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
+      key => meta.function[key],
+    )[0].output;
+    expect(functionArn).toBeDefined();
+    expect(functionName).toBeDefined();
+    expect(region).toBeDefined();
+    expect(ruleName).toBeDefined();
+    const cloudFunction = await getFunction(functionName, region);
+    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
+    const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
+    expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
+  });
+  it('update a schedule rule for daily ', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, {
+      functionTemplate: 'helloWorld',
+      schedulePermissions: {
+        interval: 'Daily',
+      },
+    });
+    await functionBuild(projRoot, {});
+    await updateFunction(projRoot, {
+      functionTemplate: 'helloWorld',
+      schedulePermissions: {
+        interval: 'Daily',
+        action: 'Update the schedule',
+      },
+    });
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
+      key => meta.function[key],
+    )[0].output;
+    expect(functionArn).toBeDefined();
+    expect(functionName).toBeDefined();
+    expect(region).toBeDefined();
+    expect(ruleName).toBeDefined();
+
+    const cloudFunction = await getFunction(functionName, region);
+    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
+    const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
+    expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
+  });
+
+  it('remove a schedule rule for daily ', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, {
+      functionTemplate: 'helloWorld',
+      schedulePermissions: {
+        interval: 'Daily',
+      },
+    });
+    await functionBuild(projRoot, {});
+    await updateFunction(projRoot, {
+      functionTemplate: 'helloWorld',
+      schedulePermissions: {
+        interval: 'Daily',
+        action: 'Remove the schedule',
+      },
+    });
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
+      key => meta.function[key],
+    )[0].output;
+    expect(functionArn).toBeDefined();
+    expect(functionName).toBeDefined();
+    expect(region).toBeDefined();
+    expect(ruleName).toBeUndefined();
+
     const cloudFunction = await getFunction(functionName, region);
     expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
   });

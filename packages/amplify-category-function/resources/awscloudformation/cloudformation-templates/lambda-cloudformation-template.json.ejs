@@ -2,6 +2,11 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
+        "CloudWatchRule": {
+            "Type": "String",
+            "Default" : "NONE",
+            "Description" : " Schedule Expression"
+        },
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
@@ -214,6 +219,35 @@
         }
         <% } %>
         <% } %>
+        <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %> 
+        ,"CloudWatchEvent": {
+            "Type" : "AWS::Events::Rule",
+            "Properties":{
+                "Description" : "Schedule rule for Lambda",
+                "ScheduleExpression" : {
+                    "Ref" : "CloudWatchRule"
+                },
+                "State": "ENABLED",
+                "Targets": [{
+                    "Arn": { "Fn::GetAtt": ["LambdaFunction", "Arn"] },
+                    "Id":{ 
+                        "Ref" : "LambdaFunction"
+                    }
+                }]
+            } 
+        }
+        ,"PermissionForEventsToInvokeLambda": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": {
+                    "Ref": "LambdaFunction" 
+                    },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "events.amazonaws.com",
+                "SourceArn": { "Fn::GetAtt": ["CloudWatchEvent", "Arn"] }
+            }               
+        }
+        <% } %>                 
     },
     "Outputs": {
         "Name": {
@@ -234,5 +268,12 @@
                 "Ref": "LambdaExecutionRole"
             }
         }
+        <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %> 
+        ,"CloudWatchEventRule": {
+            "Value" :{
+                "Ref" : "CloudWatchEvent"
+            }
+        }
+        <% } %>  
     }
 }
