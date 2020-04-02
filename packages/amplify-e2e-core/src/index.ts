@@ -20,7 +20,7 @@ export function getCLIPath() {
 }
 
 export function isCI(): boolean {
-  return process.env.CI ? true : false;
+  return process.env.CI && process.env.CIRCLECI ? true : false;
 }
 
 export function npmInstall(cwd: string) {
