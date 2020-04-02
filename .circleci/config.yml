@@ -47,6 +47,7 @@ jobs:
             sudo mv jdk-11* /usr/local/
             echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
             echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
+            source $BASN_ENV
             java -version
             which java
             which javac
@@ -57,6 +58,7 @@ jobs:
             sudo unzip -d /opt/gradle /tmp/gradle-*.zip
             echo "export GRADLE_HOME=/opt/gradle/gradle-6.3" >> $BASH_ENV
             echo "export PATH=$PATH:/opt/gradle/gradle-6.3/bin" >> $BASH_ENV
+            source $BASN_ENV
             gradle --version
             which gradle
       - run:
