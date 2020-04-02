@@ -45,8 +45,8 @@ jobs:
             curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
             tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
             sudo mv jdk-11* /usr/local/
-            export JAVA_HOME=/usr/local/jdk-11.0.2
-            export PATH=$PATH:/usr/local/jdk-11.0.2/bin
+            echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
+            echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
             java -version
             which java
             which javac
@@ -55,8 +55,8 @@ jobs:
           command: |
             wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
             sudo unzip -d /opt/gradle /tmp/gradle-*.zip
-            export GRADLE_HOME=/opt/gradle/gradle-6.3
-            export PATH=$PATH:/opt/gradle/gradle-6.3/bin
+            echo "export GRADLE_HOME=/opt/gradle/gradle-6.3" >> $BASH_ENV
+            echo "export PATH=$PATH:/opt/gradle/gradle-6.3/bin" >> $BASH_ENV
             gradle --version
             which gradle
       - run:
@@ -65,7 +65,7 @@ jobs:
             curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
             sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
             rm go1.14.1.linux-amd64.tar.gz
-            export PATH=$PATH:/usr/local/go/bin
+            echo "export PATH=$PATH:/usr/local/go/bin" >> $BASH_ENV
             go version
       - run:
           name: Install Python
