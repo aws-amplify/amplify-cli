@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.17.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.16.2...amplify-e2e-tests@2.17.0-beta.0) (2020-04-02)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed issue with updating urls in auth ([#3791](https://github.com/aws-amplify/amplify-cli/issues/3791)) ([236cd7a](https://github.com/aws-amplify/amplify-cli/commit/236cd7aecbdc2cbbb0dc9c565aae4e79ff40ebae))
+* **amplify-e2e-tests:** fix failing api e2e tests ([#3827](https://github.com/aws-amplify/amplify-cli/issues/3827)) ([f676b8d](https://github.com/aws-amplify/amplify-cli/commit/f676b8d433ab5d5ecec664af27a07ecee83fa9f6))
+* **amplify-provider-awscloudformation:** fixed deletion for large bucket ([#3656](https://github.com/aws-amplify/amplify-cli/issues/3656)) ([32038da](https://github.com/aws-amplify/amplify-cli/commit/32038dad6f1bd0b9cf55e055d6a4545a222a1149)), closes [#3447](https://github.com/aws-amplify/amplify-cli/issues/3447) [#3451](https://github.com/aws-amplify/amplify-cli/issues/3451)
+* e2e fixes and circle ci install change ([#3838](https://github.com/aws-amplify/amplify-cli/issues/3838)) ([b646f53](https://github.com/aws-amplify/amplify-cli/commit/b646f539c90184be44dbd557c176a8c96d092db9))
+* update function e2e tests with new template orderings ([#3817](https://github.com/aws-amplify/amplify-cli/issues/3817)) ([dfb910d](https://github.com/aws-amplify/amplify-cli/commit/dfb910ddccbd15df48801efce94d1fbf5822fb9e))
+
+
+### Features
+
+* golang function support for CLI ([#3789](https://github.com/aws-amplify/amplify-cli/issues/3789)) ([3dbc234](https://github.com/aws-amplify/amplify-cli/commit/3dbc23497d0d1c238c6868adcf3a6d00ad909edd))
+* install python3 and pipenv in circleci ([#3825](https://github.com/aws-amplify/amplify-cli/issues/3825)) ([fa17a15](https://github.com/aws-amplify/amplify-cli/commit/fa17a15a02f4a8485af74e16e34ffa12e1eb8f0c))
+* **amplify-category-function:** Support Lambda Scheduling  ([#3714](https://github.com/aws-amplify/amplify-cli/issues/3714)) ([4a488ed](https://github.com/aws-amplify/amplify-cli/commit/4a488edef14d9161600cf6ce6887baa3c04ebef5))
+
+
+
+
+
 ## [2.16.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.16.1...amplify-e2e-tests@2.16.2) (2020-03-22)
 
 
