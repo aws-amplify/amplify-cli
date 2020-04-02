@@ -56,7 +56,7 @@ jobs:
             wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
             sudo unzip -d /opt/gradle /tmp/gradle-*.zip
             export GRADLE_HOME=/opt/gradle/gradle-6.3
-            export PATH=$PATH:$/opt/gradle/gradle-6.3/bin
+            export PATH=$PATH:/opt/gradle/gradle-6.3/bin
             gradle --version
             which gradle
       - run:
