@@ -121,7 +121,10 @@ const coreFunction = (
       if (action == 'create') {
         chain.wait('Do you want to invoke this function on a recurring schedule?');
       } else {
-        if (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true') {
+        if (
+          settings.schedulePermissions === undefined ||
+          (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true')
+        ) {
           chain.wait('Do you want to invoke this function on a recurring schedule?');
         } else {
           chain.wait(`Do you want to update or remove the function's schedule?`);
