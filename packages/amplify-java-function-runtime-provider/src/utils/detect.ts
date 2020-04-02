@@ -1,71 +1,111 @@
-import childProcess from 'child_process';
+import * as which from 'which';
+import * as execa from 'execa';
 import * as semver from 'semver';
-import { constants } from './constants';
+import { minJavaVersion, minGradleVersion } from './constants';
 import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
 
+export const checkJava = async (): Promise<CheckDependenciesResult> => {
+  const executablePath = which.sync('java', {
+    nothrow: true,
+  });
 
-export async function checkJava() : Promise<CheckDependenciesResult>{
-  var result: CheckDependenciesResult = {
-    hasRequiredDependencies: true,
-  };
-  const javaSpawn = childProcess.spawnSync('java', ['-version'], {stdio : 'pipe' , encoding: 'utf-8' })
-  const regex = /(\d+\.)(\d+\.)(\d)/g;
-  if (javaSpawn.stderr !== null) {
-    let data : string = javaSpawn.output.toString().split(/\r?\n/)[0];
-    let javaVersion = data.match(regex);
-    if(javaVersion != null){
-      if (!semver.satisfies(javaVersion[0], constants.minJavaVersion)) {
-        result.hasRequiredDependencies = false;
-        result.errorMessage = `Update JDK to ${constants.minJavaVersion}. Download link: https://amzn.to/2UUljp9`;
-      }
-    }
-  } else {
-    result.hasRequiredDependencies = false;
-    result.errorMessage = `Install JDK ${constants.minJavaVersion}. Download link: https://amzn.to/2UUljp9`;
+  if (executablePath === null) {
+    return {
+      hasRequiredDependencies: false,
+      errorMessage: `Unable to find Java version ${minJavaVersion} on the path. Download link: https://amzn.to/2UUljp9`,
+    };
   }
-  return result;
-}
 
-export async function checkGradle() : Promise<CheckDependenciesResult>{
-  var result: CheckDependenciesResult = {
-    hasRequiredDependencies: true,
-  };
-  const gradleSpawn = childProcess.spawnSync('gradle', ['-v'], {stdio : 'pipe' , encoding: 'utf-8' })
-  const regex = /(\d+\.)(\d+\.)(\d)/g;
-  if (gradleSpawn.stderr !== null) {
-    let data : string = gradleSpawn.output.toString().split(/\r?\n/)[2];
-    let gradleVersion = data.match(regex);
-    if(gradleVersion != null){
-      if (!semver.satisfies(gradleVersion[0], constants.mingradleVersion)) {
-        result.hasRequiredDependencies = false;
-        result.errorMessage = `Update Gradle to ${constants.mingradleVersion}. Update link: https://bit.ly/3aGYDj6`;
-      }
-    }
-  } else {
-    result.hasRequiredDependencies = false;
-    result.errorMessage = `Install Gradle ${constants.mingradleVersion}. Download link: https://bit.ly/3aGYDj6`;
-  }
-  return result;
-}
+  const result = execa.sync('java', ['-version']);
 
-export async function checkJavaCompiler() {
-  var result: CheckDependenciesResult = {
-    hasRequiredDependencies: true,
-  };
-  const javaSpawn = childProcess.spawnSync('javac', ['-version'], {stdio : 'pipe' , encoding: 'utf-8' })
-  const regex = /(\d+\.)(\d+\.)(\d)/g;
-  if (javaSpawn.stderr !== null) {
-    let data : string = javaSpawn.output.toString().split(/\r?\n/)[0];
-    let javaVersion = data.match(regex);
-    if(javaVersion != null){
-      if (!semver.satisfies(javaVersion[0], constants.minJavaVersion)) {
-        result.hasRequiredDependencies = false;
-        result.errorMessage = `Update JDK to ${constants.minJavaVersion}. Update link: https://amzn.to/2UUljp9`;
-      }
-    }
-  } else {
-    result.hasRequiredDependencies = false;
-    result.errorMessage = `Install JDK ${constants.minJavaVersion}. Download link: https://amzn.to/2UUljp9`;
+  if (result.exitCode !== 0) {
+    throw new Error(`java failed, exit code was ${result.exitCode}`);
   }
-  return result;
-}
+
+  const regex = /(\d+\.)(\d+\.)(\d)/g;
+  // Java prints version to stderr
+  const versionString: string = result.stderr ? result.stderr.split(/\r?\n/)[0] : '';
+  const version = versionString.match(regex);
+
+  if (version !== null && semver.satisfies(version[0], minJavaVersion)) {
+    return {
+      hasRequiredDependencies: true,
+    };
+  }
+
+  return {
+    hasRequiredDependencies: false,
+    errorMessage: `Update JDK to ${minJavaVersion}. Download link: https://amzn.to/2UUljp9`,
+  };
+};
+
+export const checkGradle = async (): Promise<CheckDependenciesResult> => {
+  const executablePath = which.sync('gradle', {
+    nothrow: true,
+  });
+
+  if (executablePath === null) {
+    return {
+      hasRequiredDependencies: false,
+      errorMessage: `Unable to find Gradle version ${minGradleVersion} on the path. Download link: https://bit.ly/3aGYDj6`,
+    };
+  }
+
+  const result = execa.sync('gradle', ['-v']);
+
+  if (result.exitCode !== 0) {
+    throw new Error(`gradle failed, exit code was ${result.exitCode}`);
+  }
+
+  const regex = /(\d+\.)(\d+)/g;
+  const versionLines = result.stdout ? result.stdout.split(/\r?\n/) : [];
+  const versionString: string = versionLines.length >= 3 ? versionLines[2] : '';
+  const version = versionString.match(regex);
+
+  // SemVer requires 3 elements for matching
+  if (version !== null && semver.satisfies(version[0] + '.0', minGradleVersion)) {
+    return {
+      hasRequiredDependencies: true,
+    };
+  }
+
+  return {
+    hasRequiredDependencies: false,
+    errorMessage: `Update Gradle to ${minGradleVersion}. Download link: https://bit.ly/3aGYDj6`,
+  };
+};
+
+export const checkJavaCompiler = async () => {
+  const executablePath = which.sync('javac', {
+    nothrow: true,
+  });
+
+  if (executablePath === null) {
+    return {
+      hasRequiredDependencies: false,
+      errorMessage: `Unable to find Java compiler version ${minJavaVersion} on the path. Download link: https://amzn.to/2UUljp9`,
+    };
+  }
+
+  const result = execa.sync('javac', ['-version']);
+
+  if (result.exitCode !== 0) {
+    throw new Error(`java failed, exit code was ${result.exitCode}`);
+  }
+
+  const regex = /(\d+\.)(\d+\.)(\d)/g;
+  // Java compiler prints version to stdout
+  const versionString: string = result.stdout ? result.stdout.split(/\r?\n/)[0] : '';
+  const version = versionString.match(regex);
+
+  if (version !== null && semver.satisfies(version[0], minJavaVersion)) {
+    return {
+      hasRequiredDependencies: true,
+    };
+  }
+
+  return {
+    hasRequiredDependencies: false,
+    errorMessage: `Update JDK to ${minJavaVersion}. Download link: https://amzn.to/2UUljp9`,
+  };
+};
