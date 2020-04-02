@@ -1,6 +1,5 @@
 import fs from 'fs-extra';
 import path from 'path';
-import _ from 'lodash'
 import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface/src';
 
 export async function packageResource(request: PackageRequest, context: any): Promise<PackageResult> {
@@ -16,8 +15,8 @@ export async function packageResource(request: PackageRequest, context: any): Pr
         reject(new Error(`Failed to copy zip with error: [${err}]`));
       });
       // buld through gradle build
-      let zipFile : string = "latest_build.zip";
-      fs.createReadStream(path.join(request.srcRoot, 'build','distributions',zipFile)).pipe(output);
+      let zipFile: string = 'latest_build.zip';
+      fs.createReadStream(path.join(request.srcRoot, 'build', 'distributions', zipFile)).pipe(output);
     });
   }
   return Promise.resolve({});

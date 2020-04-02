@@ -508,12 +508,12 @@ describe('dotnet function tests', () => {
 });
 
 describe('java function tests', () => {
-  const helloWorldSuccessOutput = '{"greetings": "Hello John, Doe."}';
+  const helloWorldSuccessOutput = '{"greetings":"Hello John, Doe."}';
   let projRoot: string;
   let funcName: string;
 
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('dotnet-functions');
+    projRoot = await createNewProjectDir('java-functions');
     await initJSProjectWithProfile(projRoot, {});
 
     const random = Math.floor(Math.random() * 10000);
@@ -565,7 +565,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'helloWorld',
+        functionTemplate: 'Hello World',
         schedulePermissions: {
           interval: 'Daily',
         },
@@ -592,7 +592,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'helloWorld',
+        functionTemplate: 'Hello World',
         schedulePermissions: {
           interval: 'Daily',
         },
@@ -603,7 +603,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await updateFunction(
       projRoot,
       {
-        functionTemplate: 'helloWorld',
+        functionTemplate: 'Hello World',
         schedulePermissions: {
           interval: 'Daily',
           action: 'Update the schedule',
@@ -632,7 +632,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await addFunction(
       projRoot,
       {
-        functionTemplate: 'helloWorld',
+        functionTemplate: 'Hello World',
         schedulePermissions: {
           interval: 'Daily',
         },
@@ -643,7 +643,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await updateFunction(
       projRoot,
       {
-        functionTemplate: 'helloWorld',
+        functionTemplate: 'hello-world',
         schedulePermissions: {
           interval: 'Daily',
           action: 'Remove the schedule',

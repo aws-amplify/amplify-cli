@@ -67,10 +67,10 @@ const coreFunction = (
         .sendLine(settings.name || '')
         .wait('Choose the function runtime that you want to use');
 
-      chain = singleSelect(chain.wait('Choose the function runtime that you want to use'), runtimeName, runtimeChoices);
+      singleSelect(chain.wait('Choose the function runtime that you want to use'), runtimeName, runtimeChoices);
 
       if (templateChoices.length > 1) {
-        chain = singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
+        singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
       }
     } else {
       chain.wait('Please select the Lambda Function you would want to update').sendCarriageReturn();
@@ -81,21 +81,21 @@ const coreFunction = (
     }
 
     if (!settings.expectFailure) {
-      chain = chain.wait(
+      chain.wait(
         action == 'create'
           ? 'Do you want to access other resources created in this project from your Lambda function?'
           : 'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
       );
 
       if (settings.additionalPermissions) {
-        chain = multiSelect(
+        multiSelect(
           chain.sendLine('y').wait('Select the category'),
           settings.additionalPermissions.permissions,
           settings.additionalPermissions.choices,
         );
         // when single resource, it gets autoselected
         if (settings.additionalPermissions.resources.length > 1) {
-          chain = multiSelect(
+          multiSelect(
             chain.wait('Select the one you would like your'),
             settings.additionalPermissions.resources,
             settings.additionalPermissions.resourceChoices,
@@ -103,7 +103,7 @@ const coreFunction = (
         }
 
         // n-resources repeated questions
-        chain = settings.additionalPermissions.resources.reduce(
+        settings.additionalPermissions.resources.reduce(
           (chain, elem) =>
             multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
               'create',
@@ -135,7 +135,7 @@ const coreFunction = (
         cronWalkthrough(chain, settings, action);
       }
 
-      chain = chain
+      chain
         .wait('Do you want to edit the local lambda function now?')
         .sendLine('n')
         .sendEof();
@@ -305,7 +305,7 @@ const addCron = (chain: ExecutionContext, settings: any) => {
   }
 
   return chain;
-}
+};
 
 export const functionMockAssert = (cwd: string, settings: { funcName: string; successString: string; eventFile: string }) => {
   return new Promise((resolve, reject) => {
@@ -313,6 +313,7 @@ export const functionMockAssert = (cwd: string, settings: { funcName: string; su
       .wait('Result:')
       .wait(settings.successString)
       .wait('Finished execution.')
+      .sendEof()
       .run(err => (err ? reject(err) : resolve()));
   });
 };
