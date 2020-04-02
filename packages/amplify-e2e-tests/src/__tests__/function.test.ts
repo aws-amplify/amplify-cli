@@ -533,6 +533,7 @@ describe('java function tests', () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
+  
   it('add java hello world function and mock locally', async () => {
     await functionMockAssert(projRoot, {
       funcName,
@@ -551,6 +552,7 @@ describe('java function tests', () => {
 
 describe('amplify add/update/remove function based on schedule rule', () => {
   let projRoot: string;
+  
   beforeEach(async () => {
     projRoot = await createNewProjectDir('schedule');
   });
@@ -587,6 +589,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
     expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
   });
+  
   it('update a schedule rule for daily ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(
@@ -643,7 +646,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     await updateFunction(
       projRoot,
       {
-        functionTemplate: 'hello-world',
+        functionTemplate: 'Hello World',
         schedulePermissions: {
           interval: 'Daily',
           action: 'Remove the schedule',
