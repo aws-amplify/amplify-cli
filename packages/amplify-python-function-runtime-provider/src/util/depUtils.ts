@@ -4,7 +4,7 @@ import { coerce, lt } from 'semver';
 
 const minPyVersion = coerce('3.8')!;
 const pythonErrMsg =
-  'You must have python >= 3.8 installed and available on your PATH as "python3". It can be installed at https://www.python.org/downloads';
+  'You must have python >= 3.8 installed and available on your PATH as "python3". It can be installed from https://www.python.org/downloads';
 const pipenvErrMsg =
   'You must have pipenv installed and available on your PATH as "pipenv". It can be installed by running "pip3 install --user pipenv".';
 

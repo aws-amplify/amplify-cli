@@ -125,7 +125,7 @@ export const checkDependencies = async (_runtimeValue: string): Promise<CheckDep
   if (executablePath === null) {
     return {
       hasRequiredDependencies: false,
-      errorMessage: `${executableName} executable was not found in PATH, make sure it's available`,
+      errorMessage: `${executableName} executable was not found in PATH, make sure it's available. It can be installed from https://golang.org/doc/install`,
     };
   }
 

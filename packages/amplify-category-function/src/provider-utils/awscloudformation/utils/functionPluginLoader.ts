@@ -124,7 +124,7 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     let singleOptionMsg = `Only one selection option found for ${selectionOptions.listOptionsField}. Using ${selections[0].name} by default`;
     if (selectionOptions.listOptionsField === 'templates') {
       singleOptionMsg = `Only one template found - using ${selections[0].name} by default.`;
-    } else if (selectionOptions.listOptionsField === 'functions') {
+    } else if (selectionOptions.listOptionsField === 'runtimes') {
       singleOptionMsg = `Only one runtime detected: ${selections[0].name}. Learn more about additional runtimes at https://docs.amplify.aws/cli/function`;
     }
     context.print.info(singleOptionMsg);
@@ -137,6 +137,7 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
+        default: selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : undefined,
       },
     ]);
     selection = answer.selection;

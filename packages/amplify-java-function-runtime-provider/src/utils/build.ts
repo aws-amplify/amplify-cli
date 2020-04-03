@@ -2,7 +2,7 @@ import path from 'path';
 import * as execa from 'execa';
 import fs from 'fs-extra';
 import glob from 'glob';
-import { shimSrcPath, shimBinaryName } from './constants';
+import { shimPath, shimJarPath } from './constants';
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
@@ -21,14 +21,9 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
 const installDependencies = (resourceDir: string) => {
   runPackageManager(resourceDir, 'build');
 
-  //to build invocation jar file
-  //copy the jar file to lib folder for gradle build
-  const jarPathDir = path.join(shimSrcPath, 'lib');
-
-  fs.ensureDirSync(jarPathDir);
-  fs.copySync(path.join(resourceDir, 'build', 'libs', shimBinaryName), path.join(jarPathDir, shimBinaryName));
-
-  runPackageManager(shimSrcPath, 'fatJar');
+  if (!fs.existsSync(shimJarPath)) {
+    runPackageManager(shimPath, 'jar');
+  }
 };
 
 const runPackageManager = (cwd: string, buildArgs: string) => {

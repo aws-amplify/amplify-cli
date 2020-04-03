@@ -453,7 +453,7 @@ describe('python function tests', () => {
     await functionMockAssert(projRoot, {
       funcName,
       successString: helloWorldSuccessOutput,
-      eventFile: 'tst/testEvent.json',
+      eventFile: 'src/event.json',
     }); // will throw if successString is not in output
   });
 
@@ -509,7 +509,7 @@ describe('dotnet function tests', () => {
 });
 
 describe('java function tests', () => {
-  const helloWorldSuccessOutput = '{"greetings":"Hello John, Doe."}';
+  const helloWorldSuccessOutput = '{"greetings":"Hello John Doe!"}';
   let projRoot: string;
   let funcName: string;
 

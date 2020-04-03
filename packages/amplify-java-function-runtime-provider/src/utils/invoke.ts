@@ -1,6 +1,7 @@
-import * as execa from 'execa';
+import execa from 'execa';
+import path from 'path';
 import { InvocationRequest } from 'amplify-function-plugin-interface';
-import { shimBinPath } from './constants';
+import { shimJarPath } from './constants';
 import { buildResource } from './build';
 
 export const invokeResource = async (request: InvocationRequest, context: any) => {
@@ -11,13 +12,26 @@ export const invokeResource = async (request: InvocationRequest, context: any) =
     lastBuildTimestamp: request.lastBuildTimestamp,
   });
 
-  const result = execa.sync('java', ['-jar', 'localinvoke-all.jar', request.handler, request.event], {
-    cwd: shimBinPath,
-  });
+  const [handlerClassName, handlerMethodName] = request.handler.split('::');
 
-  if (result.exitCode !== 0) {
-    throw new Error(`java failed, exit code was ${result.exitCode}`);
+  const childProcess = execa('java',
+    ['-jar', shimJarPath, path.join(request.srcRoot, 'build', 'libs', 'latest_build.jar'), handlerClassName, handlerMethodName],
+    {
+      input: request.event,
+    });
+  childProcess.stdout.pipe(process.stdout);
+
+  const { stdout, exitCode } = await childProcess;
+  if (exitCode !== 0) {
+    throw new Error(`java failed, exit code was ${exitCode}`);
   }
-
-  return result.stdout;
+  const lines = stdout.split('\n');
+  const lastLine = lines[lines.length - 1];
+  let result = lastLine;
+  try {
+    result = JSON.parse(lastLine);
+  } catch (err) {
+    context.print.warning('Could not parse function output as JSON. Using raw output.');
+  }
+  return result;
 };

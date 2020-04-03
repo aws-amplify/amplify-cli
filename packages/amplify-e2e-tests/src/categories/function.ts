@@ -30,6 +30,9 @@ const pythonTemplateChoices = ['Hello World'];
 export const moveDown = (chain: ExecutionContext, nMoves: number) =>
   Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send(KEY_DOWN_ARROW), chain);
 
+export const moveUp = (chain: ExecutionContext, nMoves: number) =>
+  Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send('k'), chain);
+
 export const singleSelect = <T>(chain: ExecutionContext, item: T, allChoices: T[]) => multiSelect(chain, [item], allChoices);
 
 export const multiSelect = <T>(chain: ExecutionContext, items: T[], allChoices: T[]) =>
@@ -56,19 +59,16 @@ const coreFunction = (
       stripColors: true,
     });
 
-    const runtimeName = getRuntimeDisplayName(runtime);
-    const templateChoices = getTemplateChoices(runtime);
-
     if (action === 'create') {
       chain
         .wait('Provide a friendly name for your resource to be used as a label')
         .sendLine(settings.name || '')
         .wait('Provide the AWS Lambda function name:')
-        .sendLine(settings.name || '')
-        .wait('Choose the function runtime that you want to use');
+        .sendLine(settings.name || '');
 
-      singleSelect(chain.wait('Choose the function runtime that you want to use'), runtimeName, runtimeChoices);
+      selectRuntime(chain, runtime);
 
+      const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
         singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
       }
@@ -213,6 +213,16 @@ export const functionBuild = (cwd: string, settings: any) => {
         }
       });
   });
+};
+
+export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
+  const runtimeName = getRuntimeDisplayName(runtime);
+  chain.wait('Choose the function runtime that you want to use');
+
+  // reset cursor to top of list because node is default but it throws off offset calculations
+  moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));
+
+  singleSelect(chain, runtimeName, runtimeChoices);
 };
 
 const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string) => {
