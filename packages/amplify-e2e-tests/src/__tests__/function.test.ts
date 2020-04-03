@@ -509,7 +509,7 @@ describe('dotnet function tests', () => {
 });
 
 describe('java function tests', () => {
-  const helloWorldSuccessOutput = '{"greetings":"Hello John, Doe."}';
+  const helloWorldSuccessOutput = '{"greetings":"Hello John Doe!"}';
   let projRoot: string;
   let funcName: string;
 
