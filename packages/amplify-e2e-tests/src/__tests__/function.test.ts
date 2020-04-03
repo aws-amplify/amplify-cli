@@ -453,7 +453,7 @@ describe('python function tests', () => {
     await functionMockAssert(projRoot, {
       funcName,
       successString: helloWorldSuccessOutput,
-      eventFile: 'tst/testEvent.json',
+      eventFile: 'src/event.json',
     }); // will throw if successString is not in output
   });
 
