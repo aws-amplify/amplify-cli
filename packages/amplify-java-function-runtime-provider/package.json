@@ -1,6 +1,6 @@
 {
   "name": "amplify-java-function-runtime-provider",
-  "version": "1.1.0-beta.1",
+  "version": "1.1.0-beta.2",
   "description": "Provides functionality related to functions in JAVA on AWS",
   "repository": {
     "type": "git",

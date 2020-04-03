@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.17.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.0-beta.1...amplify-e2e-tests@2.17.0-beta.2) (2020-04-03)
+
+
+### Bug Fixes
+
+* fix java local invoker and api e2e tests ([#3855](https://github.com/aws-amplify/amplify-cli/issues/3855)) ([02375bc](https://github.com/aws-amplify/amplify-cli/commit/02375bc910aa12fb2d17151867735d600a4ab966))
+
+
+
+
+
 # [2.17.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.0-beta.0...amplify-e2e-tests@2.17.0-beta.1) (2020-04-03)
 
 
