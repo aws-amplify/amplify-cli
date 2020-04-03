@@ -46,32 +46,31 @@ describe('environment commands', () => {
     await validate(meta);
   });
 
-  // it('init two projects, get and import environment from one to the other', async () => {
-  //   await initJSProjectWithProfile(projRoot, { envName: 'env' });
-  //   await addAuthWithDefault(projRoot, {});
-  //   const providerConfig: string = await getEnvironment(projRoot, { envName: 'env' });
-  //   expect(providerConfig === JSON.stringify(JSON.parse(providerConfig))).toBeTruthy();
-  //   await amplifyPushUpdate(projRoot);
-  //   let projRoot2: string;
-  //   try {
-  //     projRoot2 = await createNewProjectDir('env-test2');
-  //     await initJSProjectWithProfile(projRoot2, {});
-  //     await importEnvironment(projRoot2, { providerConfig, envName: 'env' });
-  //     const meta2 = getProjectMeta(projRoot2);
-  //     await validate(meta2);
+  it('init two projects, get and import environment from one to the other', async () => {
+    await initJSProjectWithProfile(projRoot, { envName: 'env' });
+    await addAuthWithDefault(projRoot, {});
+    const providerConfig: string = await getEnvironment(projRoot, { envName: 'env' });
+    expect(providerConfig === JSON.stringify(JSON.parse(providerConfig))).toBeTruthy();
+    await amplifyPushUpdate(projRoot);
+    let projRoot2: string;
+    try {
+      projRoot2 = await createNewProjectDir('env-test2');
+      await initJSProjectWithProfile(projRoot2, {});
+      await importEnvironment(projRoot2, { providerConfig, envName: 'env' });
+      const meta2 = getProjectMeta(projRoot2);
+      await validate(meta2);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      await deleteProject(projRoot2);
+      deleteProjectDir(projRoot2);
+    }
+    // await pullEnvironment(projRoot, {});
+    // await amplifyPull(projRoot, {});
 
-  //   } catch(e) {
-  //     console.error(e);
-  //   } finally {
-  //     await deleteProject(projRoot2);
-  //     deleteProjectDir(projRoot2);
-  //   }
-  //   await pullEnvironment(projRoot, {});
-  //   await amplifyPull(projRoot, {});
-
-  //   const meta1 = getProjectMeta(projRoot);
-  //   await validate(meta1);
-  // });
+    const meta1 = getProjectMeta(projRoot);
+    await validate(meta1);
+  });
 
   it('init a project, pull, add auth, pull to override auth change', async () => {
     await initJSProjectWithProfile(projRoot, {});
