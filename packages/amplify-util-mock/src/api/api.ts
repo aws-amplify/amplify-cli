@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as chokidar from 'chokidar';
 
 import { getAmplifyMeta, addCleanupTask, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
+import { checkJavaVersion } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
@@ -14,8 +15,7 @@ import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils
 import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
-
-const MIN_JAVA_VERSION = '>=1.8 <= 2.0 ||  >=8.0';
+import { isContext } from 'vm';
 
 export class APITest {
   private apiName: string;
@@ -38,7 +38,7 @@ export class APITest {
       this.projectRoot = context.amplify.getEnvInfo().projectPath;
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
       // check java version
-      await this.checkJavaversion();
+      await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
@@ -81,21 +81,6 @@ export class APITest {
 
     await this.appSyncSimulator.stop();
     this.resolverOverrideManager.stop();
-  }
-
-  async checkJavaversion() {
-    var javaSpawn = spawnSync('java', ['-version'], {
-      shell: true,
-    });
-    const regex = /(\d+\.)(\d+\.)(\d)/g;
-    if (javaSpawn.stderr !== null) {
-      let data = javaSpawn.stderr.toString().split('\n')[0];
-      if (!semver.satisfies(semver.coerce(data.match(regex)[0]), MIN_JAVA_VERSION)) {
-        throw new Error('Update java to 1.8+');
-      }
-    } else {
-      throw new Error('Java not found');
-    }
   }
 
   private async runTransformer(context, parameters = {}) {
