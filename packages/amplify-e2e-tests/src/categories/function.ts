@@ -30,6 +30,9 @@ const pythonTemplateChoices = ['Hello World'];
 export const moveDown = (chain: ExecutionContext, nMoves: number) =>
   Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send(KEY_DOWN_ARROW), chain);
 
+export const moveUp = (chain: ExecutionContext, nMoves: number) =>
+  Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send('k'), chain);
+
 export const singleSelect = <T>(chain: ExecutionContext, item: T, allChoices: T[]) => multiSelect(chain, [item], allChoices);
 
 export const multiSelect = <T>(chain: ExecutionContext, items: T[], allChoices: T[]) =>
@@ -67,7 +70,10 @@ const coreFunction = (
         .sendLine(settings.name || '')
         .wait('Choose the function runtime that you want to use');
 
-      singleSelect(chain.wait('Choose the function runtime that you want to use'), runtimeName, runtimeChoices);
+      // reset cursor to top of list because node is default but it throws off offset calculations
+      moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));
+
+      singleSelect(chain, runtimeName, runtimeChoices);
 
       if (templateChoices.length > 1) {
         singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
