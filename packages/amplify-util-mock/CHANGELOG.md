@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.18.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.18.0-beta.0...amplify-util-mock@3.18.0-beta.1) (2020-04-03)
+
+
+### Bug Fixes
+
+* move py test event to src/event.json ([#3851](https://github.com/aws-amplify/amplify-cli/issues/3851)) ([ab1c33f](https://github.com/aws-amplify/amplify-cli/commit/ab1c33f30a275e026772e23fc39dbc36b88fcc4a))
+
+
+
+
+
 # [3.18.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.17.1...amplify-util-mock@3.18.0-beta.0) (2020-04-02)
 
 
