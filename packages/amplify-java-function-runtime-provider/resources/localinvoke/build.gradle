@@ -1,4 +1,6 @@
-apply plugin: 'java'
+plugins {
+    id 'java-library'
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -7,33 +9,27 @@ java {
 
 repositories {
     mavenCentral()
-    flatDir { dirs 'lib' }
 }
 
 dependencies {
-    compile (
+    implementation (
         'com.google.code.gson:gson:2.8.6',
         'com.googlecode.json-simple:json-simple:1.1.1',
-         'com.amazonaws:aws-lambda-java-core:1.2.0',
-         'com.amazonaws:aws-lambda-java-events:2.2.7',
+        'com.amazonaws:aws-lambda-java-core:1.2.0',
+        'com.amazonaws:aws-lambda-java-events:2.2.7',
     )
-    compile fileTree(dir: 'lib', include: '*.jar')
 }
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes 'Main-Class': 'InvocationShim.Program'
+        attributes 'Main-Class': 'shim.Invoker'
+    }
+    from {
+        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it)}
     }
 }
-task fatJar(type: Jar) {
-    manifest.from jar.manifest
-    classifier = 'all'
-    from {
-        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-    }
-    with jar
+
+tasks.withType(Jar) {
+    destinationDirectory = file("$rootDir/lib")
 }

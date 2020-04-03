@@ -1,4 +1,4 @@
-package InvocationShim;
+package shim;
 import com.amazonaws.services.lambda.runtime.*;
 import java.util.Arrays;
 

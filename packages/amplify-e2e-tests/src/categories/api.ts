@@ -1,7 +1,7 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../utils';
-import { singleSelect, runtimeChoices, addFunction, nodeJSTemplateChoices } from './function';
+import { singleSelect, runtimeChoices, addFunction, nodeJSTemplateChoices, selectRuntime } from './function';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../schemas/${schemaName}`;
@@ -237,7 +237,7 @@ export function addRestApi(cwd: string, settings: any) {
           .wait('Provide the AWS Lambda function name')
           .sendCarriageReturn();
 
-        singleSelect(chain.wait('Choose the function runtime that you want to use'), 'NodeJS', runtimeChoices);
+        selectRuntime(chain, 'nodejs');
 
         const templateName = settings.isCrud
           ? 'CRUD function for DynamoDB (Integration with API Gateway)'
