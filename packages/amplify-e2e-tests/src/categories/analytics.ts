@@ -9,7 +9,6 @@ export function addPinpoint(cwd: string, settings: any) {
       .wait('Provide your pinpoint resource name:')
       .sendLine(settings.wrongName)
       .wait('Resource name should be alphanumeric')
-      .sendCarriageReturn()
       .send('\b')
       .sendLine(settings.rightName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
