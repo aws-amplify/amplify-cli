@@ -66,7 +66,7 @@ describe('nodejs', () => {
       // NOTE: the next graphQL request will not get logged unless we wait a bit
       // trigger is not directly available right after cloudformation deploys???
       // I am not sure whether this is an issue on CF side or not
-      await sleep(30 * 1000);
+      await sleep(120 * 1000);
 
       const appsyncResource = Object.keys(meta.api).map(key => meta.api[key])[0];
       let resp = (await appsyncGraphQLRequest(appsyncResource, createGraphQLPayload(Math.round(Math.random() * 1000), 'amplify'))) as {
@@ -76,7 +76,7 @@ describe('nodejs', () => {
       expect(resp.data.createTodo.id).toBeDefined();
 
       // sleep a bit to make sure lambda logs appear in cloudwatch
-      await sleep(100 * 1000);
+      await sleep(120 * 1000);
 
       const logs = await getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`);
       // NOTE: this expects default Lambda DynamoDB trigger template to log dynamoDB json records
@@ -106,7 +106,7 @@ describe('nodejs', () => {
       // NOTE: the next graphQL request will not get logged unless we wait a bit
       // trigger is not directly available right after cloudformation deploys???
       // I am not sure whether this is an issue on CF side or not
-      await sleep(30 * 1000);
+      await sleep(120 * 1000); // 2 minutes
 
       const kinesisResource = Object.keys(meta.analytics).map(key => meta.analytics[key])[0];
       const resp = await putKinesisRecords(
@@ -119,7 +119,7 @@ describe('nodejs', () => {
       expect(resp.Records.length).toBeGreaterThan(0);
 
       // sleep a bit to make sure lambda logs appear in cloudwatch
-      await sleep(50 * 1000);
+      await sleep(120 * 1000); // 2 minutes
 
       let eventId = `${resp.Records[0].ShardId}:${resp.Records[0].SequenceNumber}`;
       const logs = await getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`);
