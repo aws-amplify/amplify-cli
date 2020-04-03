@@ -15,7 +15,6 @@ import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils
 import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
-import { isContext } from 'vm';
 
 export class APITest {
   private apiName: string;
