@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "4.18.0-beta.1",
+  "version": "4.18.0-beta.2",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -37,9 +37,9 @@
     "@types/fs-extra": "^8.0.1",
     "@types/global-prefix": "^3.0.0",
     "amplify-category-analytics": "2.16.3-beta.0",
-    "amplify-category-api": "2.18.0-beta.1",
+    "amplify-category-api": "2.18.0-beta.2",
     "amplify-category-auth": "2.15.4-beta.0",
-    "amplify-category-function": "2.19.0-beta.1",
+    "amplify-category-function": "2.19.0-beta.2",
     "amplify-category-hosting": "2.3.1",
     "amplify-category-interactions": "2.3.4-beta.0",
     "amplify-category-notifications": "2.15.4-beta.0",
@@ -62,7 +62,7 @@
     "amplify-provider-awscloudformation": "4.18.0-beta.0",
     "amplify-python-function-runtime-provider": "1.1.0-beta.1",
     "amplify-python-function-template-provider": "1.1.0-beta.1",
-    "amplify-util-mock": "3.18.0-beta.1",
+    "amplify-util-mock": "3.18.0-beta.2",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
     "cli-table3": "^0.5.1",

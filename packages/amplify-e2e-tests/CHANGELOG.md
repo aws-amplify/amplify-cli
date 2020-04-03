@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.17.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.0-beta.0...amplify-e2e-tests@2.17.0-beta.1) (2020-04-03)
+
+
+### Features
+
+* select node runtime by default ([#3852](https://github.com/aws-amplify/amplify-cli/issues/3852)) ([8935eac](https://github.com/aws-amplify/amplify-cli/commit/8935eac5c3e05cd76b714343c380c8e1e976da28))
+
+
+
+
+
 # [2.17.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.16.2...amplify-e2e-tests@2.17.0-beta.0) (2020-04-02)
 
 
