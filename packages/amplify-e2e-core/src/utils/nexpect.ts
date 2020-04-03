@@ -20,7 +20,7 @@ import strip = require('strip-ansi');
 import { EOL } from 'os';
 import retimer = require('retimer');
 
-const DEFAULT_NO_OUTPUT_TIMEOUT = 2 * 60 * 1000; //  Minutes
+const DEFAULT_NO_OUTPUT_TIMEOUT = 5 * 60 * 1000; //  Minutes
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
 
