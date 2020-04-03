@@ -9,7 +9,7 @@ using Amazon.Lambda.KinesisEvents;
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
 // If you rename this namespace, you will need to update the invocation shim
-// to match if you intend to test the function with 'amplify function invoke'
+// to match if you intend to test the function with 'amplify mock function'
 namespace <%= props.resourceName %>
 {
     // If you rename this class, you will need to update the invocation shim
