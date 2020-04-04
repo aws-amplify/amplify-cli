@@ -612,12 +612,9 @@ export class AppSyncModelJavaVisitor<
       ...this.getNonConnectedField(model).map((field, index) => {
         const fieldName = this.getFieldName(field);
         const fieldGetterName = this.getFieldGetterName(field);
-        if (index == 0) {
+
           return '.append("' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
-        } else {
-          return '.append(" , ' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
-        }
-      }),
+      }).join(',\n'),
       '.append("}")',
       '.toString();',
     ].join('\n');
