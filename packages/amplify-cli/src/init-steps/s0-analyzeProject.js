@@ -95,12 +95,7 @@ async function getEnvName(context) {
   let envName;
 
   const isEnvNameValid = inputEnvName => {
-    let valid = true;
-
-    if (inputEnvName.length > 10 || inputEnvName.length < 2 || /[^a-z]/g.test(inputEnvName)) {
-      valid = false;
-    }
-    return valid;
+    return /[a-z]{2,10}/.test(inputEnvName) && !/(aws|amazon|cognito)/.test(inputEnvName);
   };
 
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.envName) {
@@ -108,7 +103,9 @@ async function getEnvName(context) {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    context.print.error('Environment name should be between 2 and 10 characters (only lowercase alphabets).');
+    context.print.error(
+      'Environment name must be between 2 and 10 characters, and lowercase only. It can not contain "amazon", "aws", or "cognito".',
+    );
     process.exit(1);
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.error('Environment name missing');
@@ -121,7 +118,9 @@ async function getEnvName(context) {
       name: 'envName',
       message: 'Enter a name for the environment',
       validate: input =>
-        !isEnvNameValid(input) ? 'Environment name should be between 2 and 10 characters (only lowercase alphabets).' : true,
+        !isEnvNameValid(input)
+          ? 'Environment name must be between 2 and 10 characters, and lowercase only. It can not contain "amazon", "aws", or "cognito".'
+          : true,
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));
