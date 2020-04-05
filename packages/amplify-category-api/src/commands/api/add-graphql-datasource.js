@@ -218,13 +218,13 @@ function readSchema(projectDirectory, rdsSchema) {
   const rdsSchemaDoc = mergeTypes([{}, rdsSchema], { all: true });
 
   let schema;
-  if (schemaFileExists) {
-    schema = fs.readFileSync(schemaFilePath).toString();
-    const rdsSchemaFilePath = path.join(projectDirectory, 'rds.graphql');
-    fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
-  } else if (schemaDirectoryExists) {
+  if (schemaDirectoryExists) {
     schema = readSchemaDocuments(schemaDirectoryPath).join('\n');
     const rdsSchemaFilePath = path.join(schemaDirectoryPath, 'rds.graphql');
+    fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
+  } else if (schemaFileExists) {
+    schema = fs.readFileSync(schemaFilePath).toString();
+    const rdsSchemaFilePath = path.join(projectDirectory, 'rds.graphql');
     fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
   } else {
     const rdsSchemaFilePath = path.join(projectDirectory, 'rds.graphql');
