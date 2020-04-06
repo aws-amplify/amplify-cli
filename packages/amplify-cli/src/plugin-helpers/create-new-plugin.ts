@@ -181,6 +181,12 @@ executionof the amplify push command.`);
   context.print.red(AmplifyEvent.PostPush);
   context.print.green(`${indentationStr}${AmplifyEvent.PostPush} handler is invoked on the \
 complete execution of the amplify push command.`);
+  context.print.red(AmplifyEvent.PrePull);
+  context.print.green(`${indentationStr}${AmplifyEvent.PrePull} handler is invoked prior to the \
+executionof the amplify pull command.`);
+  context.print.red(AmplifyEvent.PostPull);
+  context.print.green(`${indentationStr}${AmplifyEvent.PostPull} handler is invoked on the \
+complete execution of the amplify pull command.`);
   context.print.warning('This feature is currently under actively development, \
 events might be added or removed in future releases');
 }
