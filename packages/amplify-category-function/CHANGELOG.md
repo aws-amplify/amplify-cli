@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.18.0...amplify-category-function@2.19.0) (2020-04-06)
+
+
+### Bug Fixes
+
+* move py test event to src/event.json ([#3851](https://github.com/aws-amplify/amplify-cli/issues/3851)) ([1c4a0cb](https://github.com/aws-amplify/amplify-cli/commit/1c4a0cb5022869fc6aa3c358e9a4c8935fec2b54))
+* save default editor on add and load on update ([#3841](https://github.com/aws-amplify/amplify-cli/issues/3841)) ([edb94cf](https://github.com/aws-amplify/amplify-cli/commit/edb94cfa2f1a66af0d45afb74f46a3488def9ddd))
+
+
+### Features
+
+* **amplify-category-function:** Refactor invoke to call runtime plugins ([#3768](https://github.com/aws-amplify/amplify-cli/issues/3768)) ([92293fa](https://github.com/aws-amplify/amplify-cli/commit/92293fa83190bd18aacdc2f46a22938f94b89609))
+* minor tweaks to multi-runtime platform ([#3804](https://github.com/aws-amplify/amplify-cli/issues/3804)) ([60d68d7](https://github.com/aws-amplify/amplify-cli/commit/60d68d7e1a6e8c00cd629a38e9aefb2396a59737))
+* **amplify-category-function:** Support Lambda Scheduling  ([#3714](https://github.com/aws-amplify/amplify-cli/issues/3714)) ([4a488ed](https://github.com/aws-amplify/amplify-cli/commit/4a488edef14d9161600cf6ce6887baa3c04ebef5))
+* **amplify-python-runtime-provider:** implement python runtime provider ([#3787](https://github.com/aws-amplify/amplify-cli/issues/3787)) ([8996cb1](https://github.com/aws-amplify/amplify-cli/commit/8996cb11015873f1236340680694188fd17c0f2e))
+* select node runtime by default ([#3852](https://github.com/aws-amplify/amplify-cli/issues/3852)) ([aa712bd](https://github.com/aws-amplify/amplify-cli/commit/aa712bd26f7e02477d95d04e639c7234feba9715))
+
+
+
+
+
 # [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.17.0...amplify-category-function@2.18.0) (2020-03-26)
 
 
