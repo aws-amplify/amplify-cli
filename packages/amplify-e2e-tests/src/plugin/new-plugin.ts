@@ -1,4 +1,4 @@
-import { nspawn as spawn, KEY_UP_ARROW } from 'amplify-e2e-core';
+import { nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
 
 export async function newPlugin(cwd: string): Promise<string> {
