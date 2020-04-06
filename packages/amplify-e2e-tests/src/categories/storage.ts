@@ -107,7 +107,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
-      .sendLine(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Specify the resource that you would want to update')
       .sendCarriageReturn()
@@ -148,7 +148,7 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
-      .sendLine(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Please provide a friendly name for your resource')
       .sendCarriageReturn()
@@ -216,7 +216,6 @@ export function addS3(cwd: string, settings: any) {
       });
   });
 }
-
 
 // Adds auth and S3 to test case where user adds storage without adding auth first
 export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any) {
