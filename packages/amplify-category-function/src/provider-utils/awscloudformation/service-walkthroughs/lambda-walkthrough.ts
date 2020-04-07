@@ -11,6 +11,7 @@ import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformat
 import { askExecRolePermissionsQuestions } from './execPermissionsWalkthrough';
 import { scheduleWalkthrough } from './scheduleWalkthrough';
 import { merge } from '../utils/funcParamsUtils';
+import { topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -155,7 +156,9 @@ export async function updateWalkthrough(context, lambdaToUpdate) {
     // Update top level comment in app.js or index.js file
 
     const updateTopLevelComment = filePath => {
-      const commentRegex = /\/\* Amplify Params - DO NOT EDIT[a-zA-Z0-9\-\s._=]+Amplify Params - DO NOT EDIT \*\//;
+      const commentRegex = new RegExp(
+        `${_.escapeRegExp(topLevelCommentPrefix)}[a-zA-Z0-9\\-\\s._=]+${_.escapeRegExp(topLevelCommentSuffix)}`,
+      );
       let fileContents = fs.readFileSync(filePath).toString();
       const commentMatches = fileContents.match(commentRegex);
       if (!commentMatches || commentMatches.length === 0) {
