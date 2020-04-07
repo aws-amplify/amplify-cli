@@ -22,7 +22,7 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "amplify-e2e-core": "1.0.1",
+    "amplify-e2e-core": "1.1.0",
     "aws-sdk": "^2.608.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
