@@ -78,7 +78,7 @@ async function getProjectName(context) {
 }
 
 function isProjectNameValid(projectName) {
-  return projectName && projectName.length >= 3 && projectName.length <= 20 && /[a-zA-Z0-9]/g.test(projectName);
+  return projectName && projectName.length >= 3 && projectName.length <= 20 && /^[a-zA-Z0-9]*$/g.test(projectName);
 }
 
 function normalizeProjectName(projectName) {
@@ -86,7 +86,7 @@ function normalizeProjectName(projectName) {
     projectName = `amplify${makeId(5)}`;
   }
   if (!isProjectNameValid(projectName)) {
-    projectName = projectName.replace(/[^a-zA-Z0-9]/g, '');
+    projectName = projectName.replace(/^[a-zA-Z0-9]*$/g, '');
     if (projectName.length < 3) {
       projectName += makeId(5);
     } else if (projectName.length > 20) {
