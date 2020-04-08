@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const { normalizeEditor, editorSelection } = require('../extensions/amplify-helpers/editor-selection');
-const { makeId } = require('../extensions/amplify-helpers/make-id');
+const { isProjectNameValid, normalizeProjectName } = require('../extensions/amplify-helpers/project-name-validation');
 const { getEnvInfo } = require('../extensions/amplify-helpers/get-env-info');
 const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
 
@@ -46,25 +46,6 @@ async function configureProjectName(context) {
   }
 
   Object.assign(context.exeInfo.projectConfig, { projectName });
-}
-
-function isProjectNameValid(projectName) {
-  return projectName && projectName.length >= 3 && projectName.length <= 20 && /^[a-zA-Z0-9]*$/g.test(projectName);
-}
-
-function normalizeProjectName(projectName) {
-  if (!projectName) {
-    projectName = `amplify${makeId(5)}`;
-  }
-  if (!isProjectNameValid(projectName)) {
-    projectName = projectName.replace(/^[a-zA-Z0-9]*$/g, '');
-    if (projectName.length < 3) {
-      projectName += +makeId(5);
-    } else if (projectName.length > 20) {
-      projectName = projectName.substring(0, 20);
-    }
-  }
-  return projectName;
 }
 /* End confighureProjectName */
 
