@@ -1,6 +1,6 @@
 const { makeId } = require('./make-id');
 
-const validAlphanumericRegex = /^[a-zA-Z0-9]+$/g;
+const validAlphanumericRegex = /^[a-zA-Z0-9]+$/;
 const invalidAlphanumericRegex = /[^a-zA-Z0-9]/g;
 
 function isProjectNameValid(projectName) {
