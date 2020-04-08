@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.14.0...amplify-codegen-appsync-model-plugin@1.15.0) (2020-04-06)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** support [@connection](https://github.com/connection) with fields in modelgen ([#3680](https://github.com/aws-amplify/amplify-cli/issues/3680)) ([088d46f](https://github.com/aws-amplify/amplify-cli/commit/088d46f2d67dcbb7e3bd213f8d869f2c87b2df5d)), closes [#3225](https://github.com/aws-amplify/amplify-cli/issues/3225)
+
+
+
+
+
 # [1.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.5...amplify-codegen-appsync-model-plugin@1.14.0) (2020-03-26)
 
 

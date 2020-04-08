@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.17.1...amplify-provider-awscloudformation@4.18.0) (2020-04-06)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix a bug in headless pull ([#3309](https://github.com/aws-amplify/amplify-cli/issues/3309)) ([af90f56](https://github.com/aws-amplify/amplify-cli/commit/af90f564ee73f9ba821cfadc469049d41c2fc3c1)), closes [#3292](https://github.com/aws-amplify/amplify-cli/issues/3292)
+* **amplify-provider-awscloudformation:** fixed deletion for large bucket ([#3656](https://github.com/aws-amplify/amplify-cli/issues/3656)) ([32038da](https://github.com/aws-amplify/amplify-cli/commit/32038dad6f1bd0b9cf55e055d6a4545a222a1149)), closes [#3447](https://github.com/aws-amplify/amplify-cli/issues/3447) [#3451](https://github.com/aws-amplify/amplify-cli/issues/3451)
+* **amplify-provider-awscloudformation:** push failing from mock ([#3805](https://github.com/aws-amplify/amplify-cli/issues/3805)) ([c6ea964](https://github.com/aws-amplify/amplify-cli/commit/c6ea964712d1fc127466822638a076c7492260ab)), closes [#3793](https://github.com/aws-amplify/amplify-cli/issues/3793)
+
+
+### Features
+
+* **amplify-category-function:** Refactor invoke to call runtime plugins ([#3768](https://github.com/aws-amplify/amplify-cli/issues/3768)) ([92293fa](https://github.com/aws-amplify/amplify-cli/commit/92293fa83190bd18aacdc2f46a22938f94b89609))
+* **amplify-python-runtime-provider:** implement python runtime provider ([#3787](https://github.com/aws-amplify/amplify-cli/issues/3787)) ([8996cb1](https://github.com/aws-amplify/amplify-cli/commit/8996cb11015873f1236340680694188fd17c0f2e))
+
+
+
+
+
 ## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.17.0...amplify-provider-awscloudformation@4.17.1) (2020-03-26)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

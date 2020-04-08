@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.17.1...amplify-category-api@2.18.0) (2020-04-06)
+
+
+### Features
+
+* uplevel enabling of datastore and update of auth configs to top ([#3495](https://github.com/aws-amplify/amplify-cli/issues/3495)) ([f406bb2](https://github.com/aws-amplify/amplify-cli/commit/f406bb29957c98caf427a3cb46e2126f6dcf212f))
+
+
+
+
+
 ## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.17.0...amplify-category-api@2.17.1) (2020-03-26)
 
 **Note:** Version bump only for package amplify-category-api

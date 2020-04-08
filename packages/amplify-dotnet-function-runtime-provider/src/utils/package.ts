@@ -10,6 +10,7 @@ export const packageAssemblies = async (request: PackageRequest, context: any): 
     fs.removeSync(request.dstFilename);
   }
 
+  const zipFile = path.basename(request.dstFilename);
   const packageHash = (await context.amplify.hashDir(distPath, [])) as string;
   const output = fs.createWriteStream(request.dstFilename);
 
@@ -25,7 +26,10 @@ export const packageAssemblies = async (request: PackageRequest, context: any): 
     const zip = archiver.create('zip', {});
 
     zip.pipe(output);
-    zip.directory(distPath, false);
+    zip.glob('**', {
+      cwd: distPath,
+      ignore: [zipFile],
+    });
     zip.finalize();
   });
 };

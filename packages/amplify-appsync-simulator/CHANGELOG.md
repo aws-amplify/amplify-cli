@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.18.0...amplify-appsync-simulator@1.19.0) (2020-04-06)
+
+
+### Features
+
+* **amplify-category-function:** Refactor invoke to call runtime plugins ([#3768](https://github.com/aws-amplify/amplify-cli/issues/3768)) ([92293fa](https://github.com/aws-amplify/amplify-cli/commit/92293fa83190bd18aacdc2f46a22938f94b89609))
+
+
+
+
+
 # [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.17.0...amplify-appsync-simulator@1.18.0) (2020-03-22)
 
 

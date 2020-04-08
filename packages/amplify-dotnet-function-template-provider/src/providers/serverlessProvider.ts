@@ -11,7 +11,7 @@ export function provideServerless(request: ContributionRequest): Promise<Functio
     'Serverless/FunctionHandler.cs.ejs',
     'Serverless/event.json.ejs',
   ];
-  const handlerSource = path.join('src', request.contributionContext.functionName, `${request.contributionContext.functionName}.cs`);
+  const handlerSource = path.join('src', `${request.contributionContext.functionName}.cs`);
   return Promise.resolve({
     functionTemplate: {
       sourceRoot: pathToTemplateFiles,
