@@ -1,8 +1,4 @@
-import {
-  validAlphanumericRegex,
-  isProjectNameValid,
-  normalizeProjectName,
-} from '../../../extensions/amplify-helpers/project-name-validation';
+import { isProjectNameValid, normalizeProjectName } from '../../../extensions/amplify-helpers/project-name-validation';
 
 // valid
 const lowercaseProjectName = 'project';
