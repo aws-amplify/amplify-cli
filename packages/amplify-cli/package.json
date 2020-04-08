@@ -53,6 +53,7 @@
     "amplify-frontend-android": "2.13.2",
     "amplify-frontend-ios": "2.13.2",
     "amplify-frontend-javascript": "2.15.1",
+    "amplify-function-plugin-interface": "1.3.0",
     "amplify-go-function-runtime-provider": "1.1.0",
     "amplify-go-function-template-provider": "1.1.0",
     "amplify-java-function-runtime-provider": "1.1.0",
