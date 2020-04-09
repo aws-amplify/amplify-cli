@@ -1,4 +1,3 @@
-import { IncomingMessage } from 'http';
 import { parse } from 'url';
 export function decodeHeaderFromQueryParam(rawUrl: string, paramName: string = 'header'): Record<string, any> {
   const url = parse(rawUrl);
