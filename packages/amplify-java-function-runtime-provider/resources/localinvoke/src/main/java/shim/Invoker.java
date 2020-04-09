@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.Scanner;
 import java.net.URLClassLoader;
 import java.net.URL;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.lang.IllegalStateException;
@@ -36,7 +37,8 @@ public class Invoker {
                 .filter(method -> method.getName().equals(handlerMethodName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Could not find handler method named " + handlerMethodName + " in class " + handlerClassName));
-        handlerInstance = classToLoad.newInstance();
+        Constructor<Class<?>> cons = classToLoad.getConstructor();
+        handlerInstance = cons.newInstance();
     }
 
     // read event from stdin, invoke handler and return result on stdout
