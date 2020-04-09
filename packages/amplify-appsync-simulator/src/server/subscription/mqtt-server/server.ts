@@ -1,5 +1,5 @@
 import Connection from 'mqtt-connection';
-import ws from 'websocket-stream';
+import ws from 'ws';
 import steed from 'steed';
 import pino from 'pino';
 import extend from 'extend';
@@ -7,6 +7,7 @@ import nanoid from 'nanoid';
 import { TrieListener } from './trie-listener';
 import { Client } from './client';
 import { EventEmitter } from 'events';
+import { Server } from 'http';
 
 export type MQTTServerOptions = {
   id?: string;
@@ -261,7 +262,7 @@ export class MQTTServer extends EventEmitter {
           this.emit('closed');
           callback();
         });
-      }
+      },
     );
   }
 
@@ -270,14 +271,15 @@ export class MQTTServer extends EventEmitter {
       callback(null, packet);
     }
   }
-  attachHttpServer(server, path) {
+  attachHttpServer(server: Server, path?: string) {
     const opt: { server: any; path?: string } = { server: server };
     if (path) {
       opt.path = path;
     }
 
-    const wss = ws.createServer(opt);
-    wss.on('stream', stream => {
+    const wss = new ws.Server(opt);
+    wss.on('connection', socket => {
+      const stream = ws.createWebSocketStream(socket, {});
       const conn = new Connection(stream);
       new Client(conn, this);
     });
