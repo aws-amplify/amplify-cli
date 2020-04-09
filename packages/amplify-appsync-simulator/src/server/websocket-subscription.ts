@@ -1,11 +1,10 @@
-import { DocumentNode, GraphQLSchema } from 'graphql';
+import { DocumentNode } from 'graphql';
 import { IncomingMessage, Server } from 'http';
-import { AmplifyAppSyncAPIConfig } from '../type-definition';
+import { AmplifyAppSyncSimulator } from '..';
 import { extractHeader, extractJwtToken, getAuthorizationMode } from '../utils/auth-helpers';
 import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
 import { runSubscription, SubscriptionResult } from '../utils/graphql-runner/subscriptions';
 import { ConnectionContext, WebsocketSubscriptionServer } from './subscription/websocket-server/server';
-import { AmplifyAppSyncSimulator } from '..';
 
 export class AppSyncSimulatorSubscriptionServer {
   private realtimeServer: WebsocketSubscriptionServer;

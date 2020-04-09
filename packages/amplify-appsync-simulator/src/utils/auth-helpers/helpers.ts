@@ -1,11 +1,10 @@
 import jwtDecode from 'jwt-decode';
 import {
+  AmplifyAppSyncAPIConfig,
+  AmplifyAppSyncAuthenticationProviderConfig,
   AmplifyAppSyncAuthenticationProviderOIDCConfig,
   AmplifyAppSyncSimulatorAuthenticationType,
-  AmplifyAppSyncAuthenticationProviderConfig,
-  AmplifyAppSyncAPIConfig,
 } from '../../type-definition';
-import { isArray } from 'util';
 
 export type JWTToken = {
   iss: string;

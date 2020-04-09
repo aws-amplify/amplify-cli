@@ -47,7 +47,7 @@ export class AppSyncSimulatorServer {
   stop() {
     this.operationServer.stop();
     this.subscriptionServer.stop();
-    this.realTimeSubscriptionServer;
+    this.realTimeSubscriptionServer.stop();
     this.httpServer.close();
   }
   get url() {

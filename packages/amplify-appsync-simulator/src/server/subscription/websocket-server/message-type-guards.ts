@@ -1,5 +1,4 @@
 import { MESSAGE_TYPES } from './message-types';
-import { isRegExp } from 'util';
 export class GQLMessageExtractionError extends Error {}
 export type GQLMessageGeneric = {
   type: MESSAGE_TYPES;

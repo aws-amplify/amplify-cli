@@ -2,18 +2,15 @@ import chalk from 'chalk';
 import crypto from 'crypto';
 import e2p from 'event-to-promise';
 import { DocumentNode, ExecutableDefinitionNode, ExecutionResult, FieldNode } from 'graphql';
-import { createServer as createHTTPServer, IncomingMessage, Server } from 'http';
+import { createServer as createHTTPServer, Server } from 'http';
 import { address as getLocalIpAddress } from 'ip';
 import { AddressInfo } from 'net';
 import portfinder from 'portfinder';
 import { inspect } from 'util';
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorServerConfig } from '../type-definition';
-import { extractHeader, extractJwtToken, getAuthorizationMode } from '../utils/auth-helpers';
-import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
-import { runSubscription, SubscriptionResult } from '../utils/graphql-runner/subscriptions';
 import { Server as MQTTServer } from './subscription/mqtt-server';
-import { ConnectionContext, WebsocketSubscriptionServer } from './subscription/websocket-server/server';
+import { WebsocketSubscriptionServer } from './subscription/websocket-server/server';
 
 const MINUTE = 1000 * 60;
 const CONNECTION_TIME_OUT = 2 * MINUTE; // 2 mins

@@ -1,10 +1,10 @@
-import { extractJwtToken, getAllowedAuthTypes, isValidOIDCToken, JWTToken, extractHeader } from '../../../utils/auth-helpers/helpers';
 import jwtDecode from 'jwt-decode';
 import {
+  AmplifyAppSyncAPIConfig,
   AmplifyAppSyncAuthenticationProviderConfig,
   AmplifyAppSyncSimulatorAuthenticationType,
-  AmplifyAppSyncAPIConfig,
 } from '../../../type-definition';
+import { extractHeader, getAllowedAuthTypes, isValidOIDCToken, JWTToken } from '../../../utils/auth-helpers/helpers';
 
 jest.mock('jwt-decode');
 

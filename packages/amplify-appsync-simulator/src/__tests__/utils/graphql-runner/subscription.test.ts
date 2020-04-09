@@ -1,10 +1,9 @@
-import { GraphQLSchema, parse, subscribe } from 'graphql';
-
-import { runSubscription, SubscriptionResult } from '../../../utils/graphql-runner/subscriptions';
-import { runQueryOrMutation } from '../../../utils/graphql-runner/query-and-mutation';
+import { GraphQLSchema, parse } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
-import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
+import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
+import { runQueryOrMutation } from '../../../utils/graphql-runner/query-and-mutation';
+import { runSubscription, SubscriptionResult } from '../../../utils/graphql-runner/subscriptions';
 
 jest.mock('../../../utils/graphql-runner/query-and-mutation');
 const mockRunQuery = runQueryOrMutation as jest.Mock;
