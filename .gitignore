@@ -41,6 +41,8 @@ packages/amplify-java-function-runtime-provider/resources/localinvoke/lib/
 packages/amplify-java-function-runtime-provider/resources/localinvoke/build/
 packages/amplify-java-function-runtime-provider/resources/localinvoke/.classpath
 packages/amplify-java-function-runtime-provider/resources/localinvoke/.project
+packages/amplify-java-function-runtime-provider/resources/localinvoke/.settings/
+packages/amplify-java-function-runtime-provider/resources/localinvoke/bin/
 packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
