@@ -37,8 +37,8 @@ public class Invoker {
                 .filter(method -> method.getName().equals(handlerMethodName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Could not find handler method named " + handlerMethodName + " in class " + handlerClassName));
-        Constructor<Class<?>> cons = classToLoad.getConstructor();
-        handlerInstance = cons.newInstance();
+        Constructor<Class<?>> constructor = classToLoad.getConstructor();
+        handlerInstance = constructor.newInstance();
     }
 
     // read event from stdin, invoke handler and return result on stdout
