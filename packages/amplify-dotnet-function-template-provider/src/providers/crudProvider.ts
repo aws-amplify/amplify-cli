@@ -1,0 +1,50 @@
+import { FunctionTemplateParameters, ContributionRequest } from 'amplify-function-plugin-interface';
+import { templateRoot } from '../utils/constants';
+import path from 'path';
+import fs from 'fs-extra';
+import { askDynamoDBQuestions, getTableParameters } from '../utils/dynamoDBWalkthrough';
+import _ from 'lodash';
+
+const pathToTemplateFiles = path.join(templateRoot, 'lambda');
+
+// copied from legacy lambda-walkthrough with slight modifications for typescript and refactored FunctionParameters object
+export async function provideCrud(request: ContributionRequest, context: any): Promise<FunctionTemplateParameters> {
+  const dynamoResource = await askDynamoDBQuestions(context);
+
+  const tableParameters = await getTableParameters(context, dynamoResource);
+  Object.assign(dynamoResource, { category: 'storage' }, { tableDefinition: { ...tableParameters } });
+  const files = [
+    'Crud/aws-lambda-tools-defaults.json.ejs',
+    'Crud/Function.csproj.ejs',
+    'Crud/FunctionHandler.cs.ejs',
+    'Crud/event.json.ejs',
+  ];
+  const handlerSource = path.join('src', `${request.contributionContext.functionName}.cs`);
+
+  return {
+    functionTemplate: {
+      sourceRoot: pathToTemplateFiles,
+      sourceFiles: files,
+      parameters: {
+        path: '/items', // this is the default. If a different value is already specified, this will not overwrite it
+        expressPath: '/items',
+        database: dynamoResource,
+      },
+      defaultEditorFile: handlerSource,
+      destMap: {
+        'Crud/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
+        'Crud/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
+        'Crud/FunctionHandler.cs.ejs': handlerSource,
+        'Crud/event.json.ejs': path.join('src', 'event.json'),
+      },
+    },
+    dependsOn: [
+      {
+        category: 'storage',
+        resourceName: dynamoResource.resourceName,
+        attributes: ['Name', 'Arn'],
+        attributeEnvMap: { Name: 'TABLE_NAME', Arn: 'TABLE_ARN' },
+      },
+    ],
+  };
+}
