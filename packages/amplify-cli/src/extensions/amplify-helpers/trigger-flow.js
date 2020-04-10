@@ -59,7 +59,7 @@ const addTrigger = async triggerOptions => {
       sourceRoot: join(triggerDir, 'function-template-dir'),
       sourceFiles: ['trigger-index.js', 'package.json.ejs', 'event.json'],
       destMap: {
-        'trigger-index.js': 'index.js',
+        'trigger-index.js': join('src', 'index.js'),
       },
     },
     modules: values,
