@@ -14,6 +14,7 @@ function normalizeProjectName(projectName) {
   if (!isProjectNameValid(projectName)) {
     projectName = projectName.replace(invalidAlphanumericRegex, '');
     if (projectName.length < 3) {
+      // add a random id to project name if too short
       projectName += makeId(5);
     } else if (projectName.length > 20) {
       projectName = projectName.substring(0, 20);
