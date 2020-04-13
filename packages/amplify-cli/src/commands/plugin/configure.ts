@@ -141,7 +141,7 @@ async function addPluginDirectory(pluginPlatform: PluginPlatform) {
       name: 'newScanDirectory',
       message: `Enter the full path of the plugin scan directory you want to add${os.EOL}`,
       validate: (input: string) => {
-        const inputDirectory = path.resolve(input.trim());
+        const inputDirectory = fs.realpathSync(input.trim());
         if (!fs.existsSync(inputDirectory) || !fs.statSync(inputDirectory).isDirectory()) {
           return 'Must enter a valid full path of a directory';
         }
@@ -151,7 +151,7 @@ async function addPluginDirectory(pluginPlatform: PluginPlatform) {
         return true;
       },
     });
-    pluginPlatform.pluginDirectories.push(path.resolve(addNewAnswer.newScanDirectory.trim()));
+    pluginPlatform.pluginDirectories.push(fs.realpathSync(addNewAnswer.newScanDirectory.trim()));
   }
 }
 

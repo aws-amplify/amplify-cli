@@ -1,7 +1,6 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
 import { readPluginsJsonFile, writePluginsJsonFile } from './pluginPlatformHelper';
-import { write } from 'fs-extra';
 
 export async function addPlugDirectory(cwd: string, pluginScanDir: string): Promise<void> {
   return new Promise((resolve, reject) => {

@@ -146,7 +146,7 @@ async function promptForPluginPath(pluginPlatform: PluginPlatform): Promise<stri
     message: `Enter the absolute path for the root of the plugin directory: ${os.EOL}`,
     transformer: (pluginDirPath: string) => pluginDirPath.trim(),
     validate: (input: string) => {
-      const inputDirectory = path.resolve(input.trim());
+      const inputDirectory = fs.realpathSync(input.trim());
       if (!fs.existsSync(inputDirectory) || !fs.statSync(inputDirectory).isDirectory()) {
         return 'The plugin package directory path you entered does NOT exist';
       }
@@ -156,7 +156,7 @@ async function promptForPluginPath(pluginPlatform: PluginPlatform): Promise<stri
       return true;
     },
   });
-  return path.resolve(answer.pluginDirPath.trim());
+  return fs.realpathSync(answer.pluginDirPath.trim());
 }
 
 async function addNewPluginPackage(context: Context, pluginDirPath: string) {
