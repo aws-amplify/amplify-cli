@@ -44,8 +44,8 @@ namespace <%= props.resourceName %>
                 case "GET":
                     context.Logger.LogLine($"Get Request: {request.Path}\n");
                     response.StatusCode = (int)HttpStatusCode.OK;
-                    response.Body = "Hello AWS Serverless";
-                    response.Headers["Content-Type"] = "text/plain";
+                    response.Body = "{ \"message\": \"Hello AWS Serverless\" }";
+                    response.Headers["Content-Type"] = "application/json";
                     break;
                 case "POST":
                     context.Logger.LogLine($"Post Request: {request.Path}\n");
