@@ -133,8 +133,8 @@ export async function scan(pluginPlatform?: PluginPlatform): Promise<PluginPlatf
     print.info('Plugin scan successful');
     return result;
   } catch (e) {
-    print.error('Plugin scan failed.');
-    throw new Error('Plugin scan failed.');
+    print.error(`Plugin scan failed: ${e.message}`);
+    throw e;
   }
 }
 

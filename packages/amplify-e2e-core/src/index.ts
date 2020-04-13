@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import { spawnSync, execSync } from 'child_process';
 
 export * from './utils/nexpect';
+export * from './utils/readJsonFile';
 
 declare global {
   namespace NodeJS {

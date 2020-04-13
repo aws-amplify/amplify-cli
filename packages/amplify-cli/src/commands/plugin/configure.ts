@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import path from 'path';
 import os from 'os';
 import { Context } from '../../domain/context';
 import { PluginPlatform } from '../../domain/plugin-platform';
@@ -45,9 +46,6 @@ export async function run(context: Context): Promise<PluginPlatform> {
         break;
       case maxScanIntervalInSeconds:
         await configureScanInterval(context, pluginPlatform);
-        break;
-      default:
-        configurePluginDirectories(context, pluginPlatform);
         break;
     }
   } while (answer.selection !== exit);
@@ -143,13 +141,17 @@ async function addPluginDirectory(pluginPlatform: PluginPlatform) {
       name: 'newScanDirectory',
       message: `Enter the full path of the plugin scan directory you want to add${os.EOL}`,
       validate: (input: string) => {
-        if (!fs.existsSync(input) || !fs.statSync(input).isDirectory()) {
+        const inputDirectory = path.resolve(input.trim());
+        if (!fs.existsSync(inputDirectory) || !fs.statSync(inputDirectory).isDirectory()) {
           return 'Must enter a valid full path of a directory';
+        }
+        if (pluginPlatform.pluginDirectories.includes(inputDirectory)) {
+          return `${inputDirectory} is already included in the plugin scan directories`;
         }
         return true;
       },
     });
-    pluginPlatform.pluginDirectories.push(addNewAnswer.newScanDirectory.trim());
+    pluginPlatform.pluginDirectories.push(path.resolve(addNewAnswer.newScanDirectory.trim()));
   }
 }
 
@@ -186,7 +188,7 @@ async function configurePrefixes(context: Context, pluginPlatform: PluginPlatfor
       context.print.warning('You have removed all prefixes for plugin dir name matching!');
       context.print.info(
         'All the packages inside the plugin directories will be checked \
-during a plugin scan, this can significantly increase the scan time.'
+during a plugin scan, this can significantly increase the scan time.',
       );
     }
   } else if (actionAnswer.action === LEARNMORE) {
@@ -203,7 +205,7 @@ function displayPluginPrefixesLearnMore(context: Context) {
 plugin name matching in plugin scans.');
   context.print.green(
     'Only packages with matching name are considered plugin candidates, \
-they are verified and then added to the Amplify CLI.'
+they are verified and then added to the Amplify CLI.',
   );
   context.print.green('If this list is empty, all packages inside the scanned directories \
 are checked in plugin scans.');
@@ -251,6 +253,9 @@ async function addPrefix(pluginPlatform: PluginPlatform) {
         if (!/^[a-zA-Z][a-zA-Z0-9-]+$/.test(input)) {
           return 'Prefix must start with letter, and contain only alphanumerics and dashes(-)';
         }
+        if (pluginPlatform.pluginPrefixes.includes(input)) {
+          return `Prefix ${input} is already included.`;
+        }
         return true;
       },
     });
@@ -271,7 +276,7 @@ async function removePrefixes(pluginPlatform: PluginPlatform) {
 async function configureScanInterval(context: Context, pluginPlatform: PluginPlatform) {
   context.print.green(
     'The Amplify CLI plugin platform regularly scans the local \
-system to update its internal metadata on the locally installed plugins.'
+system to update its internal metadata on the locally installed plugins.',
   );
   context.print.green('This automatic scan will happen if the last scan \
 time has passed for longer than max-scan-interval-in-seconds.');

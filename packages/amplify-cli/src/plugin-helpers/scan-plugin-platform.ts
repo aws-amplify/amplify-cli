@@ -30,13 +30,17 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     });
 
     const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(pluginDirPath => async () =>
-      await verifyAndAdd(pluginPlatform!, pluginDirPath)
+      await verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }
 
   if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
-    const scanDirTasks = pluginPlatform!.pluginDirectories.map(directory => async () => {
+    const normalizedDirectories = pluginPlatform!.pluginDirectories.map(directory => normalizePluginDirectory(directory));
+    const directoriesSet = new Set(normalizedDirectories); //this removes duplicates, e.g. parent directory can be the same as the global node_modules
+    const directoriesToScan = Array.from(directoriesSet);
+
+    const scanDirTasks = directoriesToScan.map(directory => async () => {
       directory = normalizePluginDirectory(directory);
       const exists = await fs.pathExists(directory);
       if (exists) {
@@ -93,11 +97,17 @@ async function addCore(pluginPlatform: PluginPlatform) {
 export function normalizePluginDirectory(directory: string): string {
   let result = directory;
   if (directory === constants.LocalNodeModules) {
-    result = path.normalize(path.join(__dirname, '../../node_modules'));
+    result = path.resolve(__dirname, '../../node_modules');
   } else if (directory === constants.ParentDirectory) {
-    result = path.normalize(path.join(__dirname, '../../../'));
+    //for the development time setup, amplify-dev
+    result = path.resolve(__dirname, '../../..');
+    const directoryName = path.basename(result);
+    //for npm or yarn instllated setup
+    if (directoryName === '@aws-amplify') {
+      result = path.resolve(__dirname, '../../../..');
+    }
   } else if (directory === constants.GlobalNodeModules) {
-    result = getGlobalNodeModuleDirPath();
+    result = path.resolve(getGlobalNodeModuleDirPath());
   }
   return result;
 }

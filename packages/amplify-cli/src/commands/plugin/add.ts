@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { Context } from '../../domain/context';
 import { PluginInfo } from '../../domain/plugin-info';
+import { PluginPlatform } from '../../domain/plugin-platform';
 import { constants } from '../../domain/constants';
 import { addUserPluginPackage, addExcludedPluginPackage as addFromExcluded, confirmAndScan } from '../../plugin-manager';
 import inquirer, { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
@@ -55,16 +56,16 @@ async function resolvePluginPackagePath(context: Context, inputPath: string): Pr
   searchDirPaths = searchDirPaths.filter(dirPath => !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
   searchDirPaths = searchDirPaths.concat(pluginPlatform.pluginDirectories);
 
-  const candicatePluginDirPaths = searchDirPaths
+  const candidatePluginDirPaths = searchDirPaths
     .map(dirPath => path.normalize(path.join(normalizePluginDirectory(dirPath), inputPath)))
     .filter(pluginDirPath => fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory());
 
-  if (candicatePluginDirPaths.length === 0) {
+  if (candidatePluginDirPaths.length === 0) {
     context.print.error('Can not locate the plugin package.');
-    result = await promptForPluginPath();
-  } else if (candicatePluginDirPaths.length === 1) {
+    result = await promptForPluginPath(pluginPlatform);
+  } else if (candidatePluginDirPaths.length === 1) {
     context.print.green('Plugin package found.');
-    context.print.blue(candicatePluginDirPaths[0]);
+    context.print.blue(candidatePluginDirPaths[0]);
     const { confirmed } = await inquirer.prompt({
       type: 'confirm',
       name: 'confirmed',
@@ -72,12 +73,12 @@ async function resolvePluginPackagePath(context: Context, inputPath: string): Pr
       default: true,
     });
     if (confirmed) {
-      result = candicatePluginDirPaths[0];
+      result = candidatePluginDirPaths[0];
     }
-  } else if (candicatePluginDirPaths.length > 1) {
+  } else if (candidatePluginDirPaths.length > 1) {
     context.print.warning('Multiple plugins with the package name are found.');
 
-    const options = candicatePluginDirPaths.concat([CANCEL]);
+    const options = candidatePluginDirPaths.concat([CANCEL]);
     const answer = await inquirer.prompt({
       type: 'list',
       name: 'selection',
@@ -94,7 +95,8 @@ async function resolvePluginPackagePath(context: Context, inputPath: string): Pr
 
 async function promptAndAdd(context: Context) {
   const options = new Array<InquirerOption>();
-  const { excluded } = context.pluginPlatform;
+  const { pluginPlatform } = context;
+  const { excluded } = pluginPlatform;
   if (excluded && Object.keys(excluded).length > 0) {
     Object.keys(excluded).forEach(key => {
       if (excluded[key].length > 0) {
@@ -126,32 +128,35 @@ async function promptAndAdd(context: Context) {
       choices: options,
     });
     if (answer.selection === NEW_PLUGIN_PACKAGE) {
-      const pluginDirPath = await promptForPluginPath();
+      const pluginDirPath = await promptForPluginPath(pluginPlatform);
       await addNewPluginPackage(context, pluginDirPath);
     } else {
       await addExcludedPluginPackage(context, answer.selection);
     }
   } else {
-    const pluginDirPath = await promptForPluginPath();
+    const pluginDirPath = await promptForPluginPath(pluginPlatform);
     await addNewPluginPackage(context, pluginDirPath);
   }
 }
 
-async function promptForPluginPath(): Promise<string> {
+async function promptForPluginPath(pluginPlatform: PluginPlatform): Promise<string> {
   const answer = await inquirer.prompt({
     type: 'input',
     name: 'pluginDirPath',
     message: `Enter the absolute path for the root of the plugin directory: ${os.EOL}`,
     transformer: (pluginDirPath: string) => pluginDirPath.trim(),
-    validate: (pluginDirPath: string) => {
-      pluginDirPath = pluginDirPath.trim();
-      if (fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory()) {
-        return true;
+    validate: (input: string) => {
+      const inputDirectory = path.resolve(input.trim());
+      if (!fs.existsSync(inputDirectory) || !fs.statSync(inputDirectory).isDirectory()) {
+        return 'The plugin package directory path you entered does NOT exist';
       }
-      return 'The plugin package directory path you entered does NOT exist';
+      if (pluginPlatform.userAddedLocations.includes(inputDirectory)) {
+        return `${inputDirectory} is already included in the plugin platform`;
+      }
+      return true;
     },
   });
-  return answer.pluginDirPath;
+  return path.resolve(answer.pluginDirPath.trim());
 }
 
 async function addNewPluginPackage(context: Context, pluginDirPath: string) {

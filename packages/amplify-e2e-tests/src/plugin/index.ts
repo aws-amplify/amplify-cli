@@ -1,34 +1,31 @@
-export * from './new-plugin';
+export * from './newPlugin';
 export * from './verifyPluginStructure';
+export * from './pluginConfigure';
 
 import { nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
 
 export function help(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['plugin', 'help'], { cwd, stripColors: true })
-      .wait(/.*/)
-      .run(function(err: Error) {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    spawn(getCLIPath(), ['plugin', 'help'], { cwd, stripColors: true }).run(function(err: Error) {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
 export function scan(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['plugin', 'scan'], { cwd, stripColors: true })
-      .wait(/.*/)
-      .run(function(err: Error) {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    spawn(getCLIPath(), ['plugin', 'scan'], { cwd, stripColors: true }).run(function(err: Error) {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
