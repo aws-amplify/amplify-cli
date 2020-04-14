@@ -72,7 +72,7 @@ function invokeFunction(options: InvokeOptions) {
 
     const { event } = options;
     try {
-      const result = await lambdaHandler(event, context, callback);
+      const result = await lambdaHandler(JSON.parse(event), context, callback);
       if (result !== undefined) {
         context.done(null, result);
       } else {
