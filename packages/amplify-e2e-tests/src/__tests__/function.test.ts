@@ -381,7 +381,7 @@ describe('nodejs', () => {
       await initJSProjectWithProfile(projRoot, {});
       const random = Math.floor(Math.random() * 10000);
       const funcName = `nodetestfn${random}`;
-      const ddbName = `nodetestddb`;
+      const ddbName = `nodetestddb${random}`;
 
       await addFunction(
         projRoot,
