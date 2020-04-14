@@ -2,6 +2,8 @@ import { constructCFModelTableNameComponent, constructCFModelTableArnComponent }
 import inquirer from 'inquirer';
 import path from 'path';
 import * as TransformPackage from 'graphql-transformer-core';
+import _ from 'lodash';
+import { topLevelCommentPrefix, topLevelCommentSuffix, envVarPrintoutPrefix } from '../../../constants';
 
 export async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults?) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
@@ -91,8 +93,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
 
       for (let resourceName of selectedResources) {
         const pluginInfo = context.amplify.getCategoryPluginInfo(context, category, resourceName);
-
-        const { getPermissionPolicies } = require(pluginInfo.packageLocation);
+        const { getPermissionPolicies } = await import(pluginInfo.packageLocation);
 
         if (!getPermissionPolicies) {
           context.print.warning(`Policies cannot be added for ${category}/${resourceName}`);
@@ -185,7 +186,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
   allDefaultValues.categoryPolicies = categoryPolicies;
   const resourceProperties = [];
   const resourcePropertiesJSON = {};
-  const categoryMapping = {};
+  const envVars = new Set<string>();
   resources.forEach(resource => {
     const { category, resourceName, attributes } = resource;
     /**
@@ -206,25 +207,18 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
       resourcePropertiesJSON[`${modelEnvPrefix}_NAME`] = resource._cfJoinComponentTableName;
       resourcePropertiesJSON[`${modelEnvPrefix}_ARN`] = modelArnResourcePropValue;
 
-      const categoryMappingPrefix = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(resource._modelName)}`;
-      if (!categoryMapping[category]) {
-        categoryMapping[category] = [];
-      }
-      categoryMapping[category].push({ envName: `${modelEnvPrefix}_NAME`, varName: `${categoryMappingPrefix}Name` });
-      categoryMapping[category].push({ envName: `${modelEnvPrefix}_ARN`, varName: `${categoryMappingPrefix}Arn` });
+      envVars.add(`${modelEnvPrefix}_NAME`);
+      envVars.add(`${modelEnvPrefix}_ARN`);
     }
 
     attributes.forEach(attribute => {
       const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
-      const varName = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(attribute)}`;
       const refName = `${category}${resourceName}${attribute}`;
 
       resourceProperties.push(`"${envName}": {"Ref": "${refName}"}`);
       resourcePropertiesJSON[`${envName}`] = { Ref: `${category}${resourceName}${attribute}` };
-      if (!categoryMapping[category]) {
-        categoryMapping[category] = [];
-      }
-      categoryMapping[category].push({ envName, varName });
+
+      envVars.add(envName);
     });
 
     if (!allDefaultValues.dependsOn) {
@@ -250,22 +244,14 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
   allDefaultValues.resourceProperties = resourceProperties.join(',\n');
   allDefaultValues.resourcePropertiesJSON = resourcePropertiesJSON;
 
-  context.print.info('');
-  let topLevelComment = '/* Amplify Params - DO NOT EDIT\n';
-  let terminalOutput = 'You can access the following resource attributes as environment variables from your Lambda function\n';
-  terminalOutput += 'var environment = process.env.ENV\n';
-  terminalOutput += 'var region = process.env.REGION\n';
+  envVars.add('ENV');
+  envVars.add('REGION');
 
-  Object.keys(categoryMapping).forEach(category => {
-    if (categoryMapping[category].length > 0) {
-      categoryMapping[category].forEach(args => {
-        terminalOutput += `var ${args.varName} = process.env.${args.envName}\n`;
-      });
-    }
-  });
+  const envVarStringList = Array.from(envVars)
+    .sort()
+    .join('\n\t');
 
-  context.print.info(terminalOutput);
-  topLevelComment += `${terminalOutput}\nAmplify Params - DO NOT EDIT */`;
+  context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
 
-  return { topLevelComment };
+  return { topLevelComment: `${topLevelCommentPrefix}${envVarStringList}${topLevelCommentSuffix}` };
 }
