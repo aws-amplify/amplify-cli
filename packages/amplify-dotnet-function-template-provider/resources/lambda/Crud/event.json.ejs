@@ -1,9 +1,9 @@
 {
-  "body": "eyJ0ZXN0IjoiYm9keSJ9",
-  "resource": "/items/{proxy+}",
-  "path": "<%= props.functionTemplate.parameters.path %>",
-  "httpMethod": "POST",
-  "isBase64Encoded": true,
+  "body": null,
+  "resource": "<%= props.functionTemplate.parameters.path %>/{proxy+}",
+  "path": "<%= props.functionTemplate.parameters.path %>/",
+  "httpMethod": "GET",
+  "isBase64Encoded": false,
   "queryStringParameters": {
     "foo": "bar"
   },
@@ -11,7 +11,7 @@
     "foo": ["bar"]
   },
   "pathParameters": {
-    "proxy": "<%= props.functionTemplate.parameters.path %>"
+    "proxy": ""
   },
   "stageVariables": {
     "baz": "qux"
@@ -76,8 +76,8 @@
       "userAgent": "Custom User Agent String",
       "user": null
     },
-    "path": "<%= props.functionTemplate.parameters.path %>",
-    "resourcePath": "/items/{proxy+}",
+    "path": "/<%= props.functionTemplate.parameters.path %>/",
+    "resourcePath": "/<%= props.functionTemplate.parameters.path %>/{proxy+}",
     "httpMethod": "GET",
     "apiId": "1234567890",
     "protocol": "HTTP/1.1"

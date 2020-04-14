@@ -139,7 +139,7 @@
                         }<% if (props.functionTemplate.parameters && props.functionTemplate.parameters.database && props.functionTemplate.parameters.database.resourceName) { %>,
                         {
                             "Effect": "Allow", 
-                            "Action": ["dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
+                            "Action": ["dynamodb:DescribeTable","dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
                             "Resource": [
                             <% if (props.functionTemplate.parameters && props.functionTemplate.parameters.database && props.functionTemplate.parameters.database.Arn) { %>
                                 "<%= props.functionTemplate.parameters.database.Arn %>",

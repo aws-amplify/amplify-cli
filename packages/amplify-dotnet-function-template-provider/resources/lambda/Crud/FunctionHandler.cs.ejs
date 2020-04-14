@@ -1,0 +1,320 @@
+/*
+Copyright 2017 - 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
+    http://aws.amazon.com/apache2.0/
+or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the License.
+*/
+
+<%= props.topLevelComment %>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Amazon.Lambda.Core;
+using Amazon.Lambda.APIGatewayEvents;
+using Amazon;
+using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2;
+using System.Text.Json;
+
+// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
+[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
+
+// If you rename this namespace, you will need to update the invocation shim
+// to match if you intend to test the function with 'amplify mock function'
+namespace <%= props.resourceName %>
+{
+    // If you rename this class, you will need to update the invocation shim
+    // to match if you intend to test the function with 'amplify mock function'
+    public class <%= props.functionName %>
+    {
+        const bool userIdPresent = false; // TODO: update in case is required to use that definition
+
+        const string partitionKeyName = "<%= props.functionTemplate.parameters.database.tableDefinition.partitionKeyName %>";
+        const string partitionKeyType = "<%= props.functionTemplate.parameters.database.tableDefinition.partitionKeyType %>";
+        const string sortKeyName = "<%= props.functionTemplate.parameters.database.tableDefinition.sortKeyName %>";
+        const string sortKeyType = "<%= props.functionTemplate.parameters.database.tableDefinition.sortKeyType %>";
+        const string UNAUTH = "UNAUTH";
+        readonly bool DEBUG;
+
+        readonly string environment;
+        readonly string region;
+        readonly string tableName;
+        readonly bool hasSortKey;
+
+        readonly IAmazonDynamoDB client;
+        readonly Table table;
+        readonly Regex pathParametersRegex;
+
+        public <%= props.functionName %>() {
+            DEBUG = Environment.GetEnvironmentVariable("DEBUG") != null;
+
+            environment = Environment.GetEnvironmentVariable("ENV");
+            region = Environment.GetEnvironmentVariable("REGION");
+            tableName = "<%= props.functionTemplate.parameters.database.tableDefinition.tableName %>";
+            if(!String.IsNullOrEmpty(environment) && environment != "NONE") {
+                tableName = tableName + "-" + environment;
+            }
+            hasSortKey = !String.IsNullOrEmpty(sortKeyName);
+            var parametersRegexPattern = $"^<%= props.functionTemplate.parameters.path %>/(?<{partitionKeyName}>[^/]+)";
+            if (hasSortKey) {
+                parametersRegexPattern += $"(?:/(?<{sortKeyName}>[^/]+))?";
+            }
+            pathParametersRegex = new Regex(parametersRegexPattern, RegexOptions.Compiled);
+
+            client = new AmazonDynamoDBClient(RegionEndpoint.GetBySystemName(region));
+            table = Table.LoadTable(client, new TableConfig(tableName) {
+                Conversion = DynamoDBEntryConversion.V2
+            });
+        }
+
+        /// <summary>
+        /// A Lambda function to expose CRUD methods on a DynamoDB table
+        /// through a Serverless API
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>An HTTP response</returns>
+        /// <remarks>
+        /// If you rename this function, you will need to update the invocation shim
+        /// to match if you intend to test the function with 'amplify mock function'
+        /// </remarks>
+#pragma warning disable CS1998
+        public async Task<APIGatewayProxyResponse> LambdaHandler(APIGatewayProxyRequest request, ILambdaContext context)
+        {
+            if (DEBUG) {
+                LogDebug(context, $"{JsonSerializer.Serialize(request, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })}");
+            }
+            var pathParameters = GetPathParameters(request.Path);
+
+            var response = new APIGatewayProxyResponse {
+                Headers = new Dictionary<string, string> {
+                    { "Access-Control-Allow-Origin", "*" },
+                    { "Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept" }
+                }
+            };
+
+            response.Headers["Content-Type"] = System.Net.Mime.MediaTypeNames.Application.Json;
+
+            string contentType = null;
+            request.Headers?.TryGetValue("Content-Type", out contentType);
+            LogDebug(context, $"{request.HttpMethod} Request: {request.Path}\n");
+            if (!String.IsNullOrEmpty(contentType)) {
+                LogDebug(context, $"Content type: {contentType}");
+            }
+            LogDebug(context, $"Body: {request.Body}");
+
+            try {
+                switch (request.HttpMethod) {
+                    case "GET":
+                        await HandleGet(context, pathParameters, request, response);
+                        break;
+                    case "POST":
+                    case "PUT":
+                        await HandlePut(context, pathParameters, request, response);
+                        break;
+                    case "DELETE":
+                        await HandleDelete(context, pathParameters, request, response);
+                        break;
+                    default:
+                        context.Logger.LogLine($"Unrecognized verb {request.HttpMethod}\n");
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        break;
+                }
+            }
+            catch (Exception e) {
+                if (DEBUG) {
+                    LogDebug(context, $"ERROR: {e}");
+                }
+                response = SetErrorResponse(response, HttpStatusCode.InternalServerError, "Unexpected error.");
+            }
+
+            return response;
+        }
+
+        private IDictionary<string, string> GetPathParameters(string path) {
+            var match = pathParametersRegex.Match(path);
+            var output = new Dictionary<string, string>();
+
+            if (match.Success) {
+                foreach (Group group in match.Groups)
+                {
+                    if (group.Name == "0") continue;
+                    output.Add(group.Name, group.Value);
+                }
+            }
+
+            if (!output.ContainsKey(partitionKeyName)) {
+                output.Add(partitionKeyName, null);
+            }
+            if (hasSortKey && !output.ContainsKey(sortKeyName))
+            {
+                output.Add(sortKeyName, null);
+            }
+
+            return output;
+        }
+
+        private APIGatewayProxyResponse SetErrorResponse(APIGatewayProxyResponse response, HttpStatusCode statusCode, string errorMessage) {
+            response.StatusCode = (int)statusCode;
+            response.Body = JsonSerializer.Serialize(
+                new {
+                    ErrorMessage = errorMessage
+                },
+                new JsonSerializerOptions {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                }
+            );
+            return response;
+        }
+
+        private async Task<APIGatewayProxyResponse> HandleGet(ILambdaContext context, IDictionary<string, string> pathParameters, APIGatewayProxyRequest request, APIGatewayProxyResponse response)
+        {
+            if (pathParameters[partitionKeyName] != null && 
+                (!hasSortKey || (hasSortKey && !String.IsNullOrEmpty(pathParameters[sortKeyName]))))
+            {
+                // Get single item
+                Primitive partitionKeyValue, sortKeyValue = null;
+                if (userIdPresent)
+                {
+                    partitionKeyValue = request.RequestContext.Identity.CognitoIdentityId ?? UNAUTH;
+                }
+                else
+                {
+                    if (String.IsNullOrEmpty(pathParameters[partitionKeyName])) {
+                        return SetErrorResponse(response, HttpStatusCode.BadRequest, "You must provide a partition key.");
+                    }
+                    partitionKeyValue = convertUrlType(pathParameters[partitionKeyName], partitionKeyType);
+                }
+                if (hasSortKey)
+                {
+                    if (String.IsNullOrEmpty(pathParameters[sortKeyName])) {
+                        return SetErrorResponse(response, HttpStatusCode.BadRequest, "You must provide a sort key.");
+                    }
+                    sortKeyValue = convertUrlType(pathParameters[sortKeyName], sortKeyType);
+                }
+
+                response.StatusCode = (int)HttpStatusCode.OK;
+                Document item;
+                if (null == sortKeyValue)
+                {
+                    item = await table.GetItemAsync(partitionKeyValue);
+                }
+                else
+                {
+                    item = await table.GetItemAsync(partitionKeyValue, sortKeyValue);
+                }
+
+                response.Body = item.ToJson();
+            }
+            else
+            {
+                QueryFilter queryFilter;
+                // Get all for a given key
+                if (userIdPresent)
+                {
+                    queryFilter = new QueryFilter(
+                        partitionKeyName,
+                        QueryOperator.Equal,
+                        request.RequestContext.Identity.CognitoIdentityId ?? UNAUTH);
+                }
+                else
+                {
+                    if (String.IsNullOrEmpty(pathParameters[partitionKeyName])) {
+                        return SetErrorResponse(response, HttpStatusCode.BadRequest, "You must provide a partition key.");
+                    }
+
+                    queryFilter = new QueryFilter(
+                        partitionKeyName,
+                        QueryOperator.Equal,
+                        convertUrlType(pathParameters[partitionKeyName], partitionKeyType));
+                }
+                response.StatusCode = (int)HttpStatusCode.OK;
+                // Limit the response to the first 20 matches
+                var items = await table.Query(new QueryOperationConfig {
+                    Limit = 20,
+                    Filter = queryFilter
+                }).GetRemainingAsync();
+                response.Body = SerializeDocuments(items);
+            }
+            return response;
+        }
+
+        private async Task<APIGatewayProxyResponse> HandlePut(ILambdaContext context, IDictionary<string, string> pathParameters, APIGatewayProxyRequest request, APIGatewayProxyResponse response)
+        {
+            var itemToAdd = Document.FromJson(request.Body);
+            if (userIdPresent)
+            {
+                itemToAdd["userId"] = request.RequestContext.Identity.CognitoIdentityId ?? UNAUTH;
+            }
+
+            await table.PutItemAsync(itemToAdd);
+            response.Body = itemToAdd.ToJson();
+            response.StatusCode = (int)HttpStatusCode.OK;
+            return response;
+        }
+
+        private async Task<APIGatewayProxyResponse> HandleDelete(ILambdaContext context, IDictionary<string, string> pathParameters, APIGatewayProxyRequest request, APIGatewayProxyResponse response)
+        {
+            Primitive partitionKeyValue, sortKeyValue = null;
+            if (userIdPresent)
+            {
+                partitionKeyValue = request.RequestContext.Identity.CognitoIdentityId ?? UNAUTH;
+            }
+            else
+            {
+                if (String.IsNullOrEmpty(pathParameters[partitionKeyName])) {
+                    return SetErrorResponse(response, HttpStatusCode.BadRequest, "You must provide a partition key.");
+                }
+                partitionKeyValue = convertUrlType(pathParameters[partitionKeyName], partitionKeyType);
+            }
+            if (hasSortKey)
+            {
+                if (String.IsNullOrEmpty(pathParameters[sortKeyName])) {
+                    return SetErrorResponse(response, HttpStatusCode.BadRequest, "You must provide a sort key.");
+                }
+                sortKeyValue = convertUrlType(pathParameters[sortKeyName], sortKeyType);
+            }
+
+            response.StatusCode = (int)HttpStatusCode.OK;
+            if (null == sortKeyValue)
+            {
+                await table.DeleteItemAsync(partitionKeyValue);
+            }
+            else
+            {
+                await table.DeleteItemAsync(partitionKeyValue, sortKeyValue);
+            }
+            return response;
+        }
+
+        private void LogDebug(ILambdaContext context, string message) {
+            if (DEBUG) {
+                context.Logger.LogLine(message);
+            }
+        }
+
+        private Primitive convertUrlType(string param, string type) {
+            switch(type) {
+                case "N":
+                    return Convert.ToDouble(param);
+                default:
+                    return param;
+            }
+        }
+
+        private string SerializeDocuments(List<Document> documents) {
+            var buffer = new System.Text.StringBuilder();
+            var writer = new ThirdParty.Json.LitJson.JsonWriter(buffer);
+            writer.WriteArrayStart();
+            if (documents != null)
+            {
+                documents.ForEach(document => writer.WriteRaw(document.ToJson()));
+            }
+            writer.WriteArrayEnd();
+            return buffer.ToString();
+        }
+    }
+}
