@@ -4,8 +4,8 @@ exports[`nodejs amplify add function with additional permissions environment var
 "/* Amplify Params - DO NOT EDIT
 	ENV
 	REGION
-	STORAGE_NODETESTDDB9138_ARN
-	STORAGE_NODETESTDDB9138_NAME
+	STORAGE_NODETESTDDB_ARN
+	STORAGE_NODETESTDDB_NAME
 Amplify Params - DO NOT EDIT */
 
 exports.handler = async (event) => {
