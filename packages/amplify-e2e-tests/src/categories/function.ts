@@ -12,7 +12,12 @@ type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 export const runtimeChoices = ['.NET Core 3.1', 'Go', 'Java', 'NodeJS', 'Python'];
 
 // templateChoices is per runtime
-const dotNetCore31TemplateChoices = ['Hello World', 'Serverless', 'Trigger (DynamoDb, Kinesis)'];
+const dotNetCore31TemplateChoices = [
+  'CRUD function for DynamoDB (Integration with API Gateway)',
+  'Hello World',
+  'Serverless',
+  'Trigger (DynamoDb, Kinesis)',
+];
 
 const goTemplateChoices = ['Hello World'];
 
