@@ -73,11 +73,11 @@ public final class SimpleModel implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("SimpleModel {")
-      .append("id=" + String.valueOf(getId()))
-      .append(" , name=" + String.valueOf(getName()))
-      .append(" , bar=" + String.valueOf(getBar()))
-      .append("}")
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
       .toString();
   }
   
@@ -267,11 +267,11 @@ public final class SimpleModel implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("SimpleModel {")
-      .append("id=" + String.valueOf(getId()))
-      .append(" , name=" + String.valueOf(getName()))
-      .append(" , bar=" + String.valueOf(getBar()))
-      .append("}")
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
       .toString();
   }
   
@@ -461,11 +461,11 @@ public final class SimpleModel implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("SimpleModel {")
-      .append("id=" + String.valueOf(getId()))
-      .append(" , name=" + String.valueOf(getName()))
-      .append(" , bar=" + String.valueOf(getBar()))
-      .append("}")
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
       .toString();
   }
   
@@ -683,14 +683,14 @@ public final class task implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("task {")
-      .append("id=" + String.valueOf(getId()))
-      .append(" , title=" + String.valueOf(getTitle()))
-      .append(" , done=" + String.valueOf(getDone()))
-      .append(" , todo=" + String.valueOf(getTodo()))
-      .append(" , time=" + String.valueOf(getTime()))
-      .append(" , createdOn=" + String.valueOf(getCreatedOn()))
-      .append("}")
+      .append(\\"task {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"title=\\" + String.valueOf(getTitle()))
+      .append(\\"done=\\" + String.valueOf(getDone()))
+      .append(\\"todo=\\" + String.valueOf(getTodo()))
+      .append(\\"time=\\" + String.valueOf(getTime()))
+      .append(\\"createdOn=\\" + String.valueOf(getCreatedOn()))
+      .append(\\"}\\")
       .toString();
   }
   
@@ -983,15 +983,15 @@ public final class Todo implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("Todo {")
-      .append("id=" + String.valueOf(getId()))
-      .append(" , title=" + String.valueOf(getTitle()))
-      .append(" , done=" + String.valueOf(getDone()))
-      .append(" , description=" + String.valueOf(getDescription()))
-      .append(" , due_date=" + String.valueOf(getDueDate()))
-      .append(" , version=" + String.valueOf(getVersion()))
-      .append(" , value=" + String.valueOf(getValue()))
-      .append("}")
+      .append(\\"Todo {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"title=\\" + String.valueOf(getTitle()))
+      .append(\\"done=\\" + String.valueOf(getDone()))
+      .append(\\"description=\\" + String.valueOf(getDescription()))
+      .append(\\"due_date=\\" + String.valueOf(getDueDate()))
+      .append(\\"version=\\" + String.valueOf(getVersion()))
+      .append(\\"value=\\" + String.valueOf(getValue()))
+      .append(\\"}\\")
       .toString();
   }
   
@@ -1295,13 +1295,13 @@ public final class authorBook implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("authorBook {")
-      .append("id=" + String.valueOf(getId()))
-      .append(" , author_id=" + String.valueOf(getAuthorId()))
-      .append(" , book_id=" + String.valueOf(getBookId()))
-      .append(" , author=" + String.valueOf(getAuthor()))
-      .append(" , book=" + String.valueOf(getBook()))
-      .append("}")
+      .append(\\"authorBook {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"author_id=\\" + String.valueOf(getAuthorId()))
+      .append(\\"book_id=\\" + String.valueOf(getBookId()))
+      .append(\\"author=\\" + String.valueOf(getAuthor()))
+      .append(\\"book=\\" + String.valueOf(getBook()))
+      .append(\\"}\\")
       .toString();
   }
   
@@ -1526,10 +1526,10 @@ public final class snake_case implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("snake_case {")
-      .append("id=" + String.valueOf(getId()))
-      .append(" , name=" + String.valueOf(getName()))
-      .append("}")
+      .append(\\"snake_case {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"}\\")
       .toString();
   }
   
@@ -1693,10 +1693,10 @@ public final class SnakeCaseField implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("SnakeCaseField {")
-      .append("id=" + String.valueOf(getId()))
-      .append(" , first_name=" + String.valueOf(getFirstName()))
-      .append("}")
+      .append(\\"SnakeCaseField {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"first_name=\\" + String.valueOf(getFirstName()))
+      .append(\\"}\\")
       .toString();
   }
   

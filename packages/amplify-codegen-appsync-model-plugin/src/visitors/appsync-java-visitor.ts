@@ -609,16 +609,18 @@ export class AppSyncModelJavaVisitor<
     const body = [
       'return new StringBuilder()',
       `.append("${this.getModelName(model)} {")`,
-      ...this.getNonConnectedField(model).map((field, index) => {
-        const fieldName = this.getFieldName(field);
-        const fieldGetterName = this.getFieldGetterName(field);
+      this.getNonConnectedField(model)
+        .map(field => {
+          const fieldName = this.getFieldName(field);
+          const fieldGetterName = this.getFieldGetterName(field);
 
           return '.append("' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
-      }).join(',\n'),
+        })
+        .join('\n'),
       '.append("}")',
       '.toString();',
-    ].join('\n');
-    declarationBlock.addClassMethod('toString', 'String', indentMultiline(body).trimLeft(), [], [], 'public', {}, ['Override']);
+    ];
+    declarationBlock.addClassMethod('toString', 'String', indentMultiline(body.join('\n')).trimLeft(), [], [], 'public', {}, ['Override']);
   }
 
   /**
