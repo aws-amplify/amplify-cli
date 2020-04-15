@@ -159,6 +159,19 @@ describe('AppSyncModelVisitor', () => {
     expect(generatedCode).toMatchSnapshot();
   });
 
+  it('should generate class for non model types', () => {
+    const schema = /* GraphQL */ `
+      type Location {
+        lat: String!
+        lang: String!
+      }
+    `;
+    const visitor = getVisitor(schema, 'Location');
+    const generatedCode = visitor.generate();
+    expect(() => validateJava(generatedCode)).not.toThrow();
+    expect(generatedCode).toMatchSnapshot();
+  });
+
   describe('connection', () => {
     describe('One to Many connection', () => {
       const schema = /* GraphQL */ `

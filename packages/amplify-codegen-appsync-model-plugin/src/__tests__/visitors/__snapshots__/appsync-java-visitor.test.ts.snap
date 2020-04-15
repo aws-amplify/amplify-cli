@@ -1140,6 +1140,122 @@ public enum Status {
 "
 `;
 
+exports[`AppSyncModelVisitor should generate class for non model types 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import androidx.core.util.ObjectsCompat;
+
+/** This is an auto generated class representing the Location type in your schema. */
+public final class Location {
+  private final String lat;
+  private final String lang;
+  public String getLat() {
+      return lat;
+  }
+  
+  public String getLang() {
+      return lang;
+  }
+  
+  private Location(String lat, String lang) {
+    this.lat = lat;
+    this.lang = lang;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      Location location = (Location) obj;
+      return ObjectsCompat.equals(getLat(), location.getLat()) &&
+              ObjectsCompat.equals(getLang(), location.getLang());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getLat())
+      .append(getLang())
+      .toString()
+      .hashCode();
+  }
+  
+  public static LatStep builder() {
+      return new Builder();
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(lat,
+      lang);
+  }
+  public interface LatStep {
+    LangStep lat(String lat);
+  }
+  
+
+  public interface LangStep {
+    BuildStep lang(String lang);
+  }
+  
+
+  public interface BuildStep {
+    Location build();
+  }
+  
+
+  public static class Builder implements LatStep, LangStep, BuildStep {
+    private String lat;
+    private String lang;
+    @Override
+     public Location build() {
+        
+        return new Location(
+          lat,
+          lang);
+    }
+    
+    @Override
+     public LangStep lat(String lat) {
+        Objects.requireNonNull(lat);
+        this.lat = lat;
+        return this;
+    }
+    
+    @Override
+     public BuildStep lang(String lang) {
+        Objects.requireNonNull(lang);
+        this.lang = lang;
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String lat, String lang) {
+      super.lat(lat)
+        .lang(lang);
+    }
+    
+    @Override
+     public CopyOfBuilder lat(String lat) {
+      return (CopyOfBuilder) super.lat(lat);
+    }
+    
+    @Override
+     public CopyOfBuilder lang(String lang) {
+      return (CopyOfBuilder) super.lang(lang);
+    }
+  }
+  
+}
+"
+`;
+
 exports[`AppSyncModelVisitor should generate model with key directive 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
