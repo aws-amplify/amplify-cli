@@ -20,10 +20,10 @@
     "link-win": "node ./scripts/link-bin.js packages/amplify-cli/bin/amplify",
     "setup-dev-win": "yarn dev-build && yarn link-win && yarn link-caa",
     "publish:master": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --yes",
-    "publish:beta": "lerna publish prerelease --exact --dist-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]' --yes",
+    "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --yes",
     "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]'",
     "postpublish:release": "git fetch . release:master && git push origin master",
-    "publish-to-verdaccio": "lerna publish prerelease --yes --force-publish=* --no-git-tag-version --no-commit-hooks --no-push --exact --dist-tag=latest",
+    "publish-to-verdaccio": "lerna publish --yes --force-publish --no-git-tag-version --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --conventional-prerelease --preid=verdaccio",
     "commit": "git-cz",
     "coverage": "codecov || exit 0"
   },

@@ -4,6 +4,7 @@ const { messages } = require('../../provider-utils/awscloudformation/assets/stri
 
 jest.mock('fs', () => ({
   readFileSync: () => '{ "Cognito": { "provider": "aws"}}',
+  existsSync: () => true,
 }));
 
 describe('auth update: ', () => {

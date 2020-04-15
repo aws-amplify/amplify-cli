@@ -8,6 +8,6 @@
   "references": [
     {"path": "../graphql-mapping-template"},
     {"path": "../graphql-transformer-common"},
-    {"path": "../graphql-transformer-core"}
+    {"path": "../graphql-transformer-core"},
   ]
 }

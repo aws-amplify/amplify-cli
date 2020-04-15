@@ -1,5 +1,6 @@
-import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath } from '../utils';
+
 type AmplifyConfiguration = {
   accessKeyId: string;
   secretAccessKey: string;
@@ -13,7 +14,7 @@ const defaultSettings = {
 };
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey'];
-export default function amplifyConfigure(settings: AmplifyConfiguration, verbose: boolean = !isCI()) {
+export default function amplifyConfigure(settings: AmplifyConfiguration) {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {
@@ -21,7 +22,7 @@ export default function amplifyConfigure(settings: AmplifyConfiguration, verbose
   }
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['configure'], { stripColors: true, verbose })
+    spawn(getCLIPath(), ['configure'], { stripColors: true })
       .wait('Sign in to your AWS administrator account:')
       .wait('Press Enter to continue')
       .sendCarriageReturn()

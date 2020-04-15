@@ -1,16 +1,15 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
-import { updateSchema } from '../utils';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
-
-import { getCLIPath, isCI } from '../utils';
+import { getCLIPath, updateSchema } from '../utils';
+import { singleSelect, runtimeChoices, addFunction, nodeJSTemplateChoices, selectRuntime } from './function';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../schemas/${schemaName}`;
 }
 
-export function addApiWithoutSchema(cwd: string, verbose: boolean = !isCI()) {
+export function addApiWithoutSchema(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -44,10 +43,10 @@ export function addApiWithoutSchema(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string, verbose: boolean = !isCI()) {
+export function addApiWithSchema(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -77,10 +76,10 @@ export function addApiWithSchema(cwd: string, schemaFile: string, verbose: boole
   });
 }
 
-export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string, verbose: boolean = !isCI()) {
+export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -122,10 +121,12 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
   updateSchema(cwd, projectName, schemaText);
 }
 
-export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateApiWithMultiAuth(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait('Select from the options below')
       .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
@@ -171,10 +172,12 @@ export function updateApiWithMultiAuth(cwd: string, settings: any, verbose: bool
   });
 }
 
-export function updateAPIWithResolutionStrategy(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait('Select from the options below')
       .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
@@ -201,5 +204,76 @@ export function updateAPIWithResolutionStrategy(cwd: string, settings: any, verb
           reject(err);
         }
       });
+  });
+}
+
+// Either settings.existingLambda or settings.isCrud is required
+export function addRestApi(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    if (!('existingLambda' in settings) && !('isCrud' in settings)) {
+      reject('Missing property in settings object in addRestApi()');
+    } else {
+      let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+        .wait('Please select from one of the below mentioned services')
+        .send(KEY_DOWN_ARROW)
+        .sendCarriageReturn() // REST
+        .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
+        .sendCarriageReturn()
+        .wait('Provide a path')
+        .sendCarriageReturn()
+        .wait('Choose a lambda source');
+
+      if (settings.existingLambda) {
+        chain
+          .send(KEY_DOWN_ARROW)
+          .sendCarriageReturn() // Existing lambda
+          .wait('Choose the Lambda function to invoke by this path')
+          .sendCarriageReturn(); // Pick first one
+      } else {
+        chain
+          .sendCarriageReturn() // Create new Lambda function
+          .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
+          .sendCarriageReturn()
+          .wait('Provide the AWS Lambda function name')
+          .sendCarriageReturn();
+
+        selectRuntime(chain, 'nodejs');
+
+        const templateName = settings.isCrud
+          ? 'CRUD function for DynamoDB (Integration with API Gateway)'
+          : 'Serverless ExpressJS function (Integration with API Gateway)';
+        singleSelect(chain.wait('Choose the function template that you want to use'), templateName, nodeJSTemplateChoices);
+
+        if (settings.isCrud) {
+          chain
+            .wait('Choose a DynamoDB data source option')
+            .sendCarriageReturn() // Use DDB table configured in current project
+            .wait('Choose from one of the already configured DynamoDB tables')
+            .sendCarriageReturn(); // Use first one in the list
+        }
+
+        chain
+          .wait('Do you want to access other resources created in this project from your Lambda function')
+          .sendLine('n')
+          .wait('Do you want to invoke this function on a recurring schedule?')
+          .sendLine('n')
+          .wait('Do you want to edit the local lambda function now')
+          .sendLine('n');
+      }
+
+      chain
+        .wait('Restrict API access')
+        .sendLine('n')
+        .wait('Do you want to add another path')
+        .sendLine('n')
+        .sendEof()
+        .run((err: Error) => {
+          if (!err) {
+            resolve();
+          } else {
+            reject(err);
+          }
+        });
+    }
   });
 }

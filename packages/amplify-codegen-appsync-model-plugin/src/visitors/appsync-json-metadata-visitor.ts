@@ -1,14 +1,27 @@
 import { DEFAULT_SCALARS, NormalizedScalarsMap } from '@graphql-codegen/visitor-plugin-common';
 import { GraphQLSchema } from 'graphql';
 import { CodeGenConnectionType } from '../utils/process-connections';
-import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
+import {
+  AppSyncModelVisitor,
+  CodeGenField,
+  CodeGenModel,
+  ParsedAppSyncModelConfig,
+  RawAppSyncModelConfig,
+  CodeGenEnum,
+} from './appsync-visitor';
 import { METADATA_SCALAR_MAP } from '../scalars';
-type JSONSchema = {
+export type JSONSchema = {
   models: JSONSchemaModels;
   enums: JSONSchemaEnums;
+  nonModels: JSONSchemaTypes;
   version: string;
 };
-type JSONSchemaModels = Record<string, JSONSchemaModel>;
+export type JSONSchemaModels = Record<string, JSONSchemaModel>;
+export type JSONSchemaTypes = Record<string, JSONSchemaNonModel>;
+export type JSONSchemaNonModel = {
+  name: string;
+  fields: JSONModelFields;
+};
 type JSONSchemaModel = {
   name: string;
   attributes?: JSONModelAttributes;
@@ -29,7 +42,7 @@ type AssociationBaseType = {
   connectionType: CodeGenConnectionType;
 };
 
-type AssociationHasMany = AssociationBaseType & {
+export type AssociationHasMany = AssociationBaseType & {
   connectionType: CodeGenConnectionType.HAS_MANY;
   associatedWith: string;
 };
@@ -43,7 +56,7 @@ type AssociationBelongsTo = AssociationBaseType & {
 
 type AssociationType = AssociationHasMany | AssociationHasOne | AssociationBelongsTo;
 
-type JSONModelFieldType = keyof typeof METADATA_SCALAR_MAP | { model: string } | { enum: string };
+type JSONModelFieldType = keyof typeof METADATA_SCALAR_MAP | { model: string } | { enum: string } | { nonModel: string };
 type JSONModelField = {
   name: string;
   type: JSONModelFieldType;
@@ -87,7 +100,7 @@ export class AppSyncJSONVisitor<
     schema: GraphQLSchema,
     rawConfig: TRawConfig,
     additionalConfig: Partial<TPluginConfig>,
-    defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS
+    defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS,
   ) {
     super(schema, rawConfig, additionalConfig, defaultScalars);
     this._parsedConfig.metadataTarget = rawConfig.metadataTarget || 'javascript';
@@ -95,78 +108,59 @@ export class AppSyncJSONVisitor<
   generate(): string {
     this.processDirectives();
     if (this._parsedConfig.metadataTarget === 'typescript') {
-      return this.generateTypeScriptMetaData();
+      return this.generateTypeScriptMetadata();
     } else if (this._parsedConfig.metadataTarget === 'javascript') {
-      return this.generateJavaScriptMetaData();
+      return this.generateJavaScriptMetadata();
     } else if (this._parsedConfig.metadataTarget === 'typeDeclaration') {
       return this.generateTypeDeclaration();
     }
     throw new Error(`Unsupported metadataTarget ${this._parsedConfig.metadataTarget}. Supported targets are javascript and typescript`);
   }
 
-  protected generateTypeScriptMetaData(): string {
-    const metadataObj = this.generateMetaData();
-    const metaData: string[] = [`import { Schema } from "@aws-amplify/datastore";`, ''];
-    metaData.push(`export const schema: Schema = ${JSON.stringify(metadataObj, null, 4)};`);
-    return metaData.join('\n');
+  protected generateTypeScriptMetadata(): string {
+    const metadataObj = this.generateMetadata();
+    const metadata: string[] = [`import { Schema } from "@aws-amplify/datastore";`, ''];
+    metadata.push(`export const schema: Schema = ${JSON.stringify(metadataObj, null, 4)};`);
+    return metadata.join('\n');
   }
 
-  protected generateJavaScriptMetaData(): string {
-    const metadataObj = this.generateMetaData();
-    const metaData: string[] = [];
-    metaData.push(`export const schema = ${JSON.stringify(metadataObj, null, 4)};`);
-    return metaData.join('\n');
+  protected generateJavaScriptMetadata(): string {
+    const metadataObj = this.generateMetadata();
+    const metadata: string[] = [];
+    metadata.push(`export const schema = ${JSON.stringify(metadataObj, null, 4)};`);
+    return metadata.join('\n');
   }
 
   protected generateTypeDeclaration() {
     return ["import { Schema } from '@aws-amplify/datastore';", '', 'export declare const schema: Schema;'].join('\n');
   }
 
-  protected generateJSONMetaData(): string {
-    const metaData = this.generateMetaData();
-    return JSON.stringify(metaData, null, 4);
+  protected generateJSONMetadata(): string {
+    const metadata = this.generateMetadata();
+    return JSON.stringify(metadata, null, 4);
   }
 
-  protected generateMetaData(): JSONSchema {
+  protected generateMetadata(): JSONSchema {
     const result: JSONSchema = {
       models: {},
       enums: {},
+      nonModels: {},
       version: this.computeVersion(),
     };
 
-    Object.entries(this.getSelectedModels()).forEach(([name, obj]) => {
-      const model = {
-        syncable: true,
-        name: this.getModelName(obj),
-        pluralName: this.pluralizeModelName(obj),
-        attributes: this.generateModelAttributes(obj),
-        fields: obj.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
-          const fieldMeta: JSONModelField = {
-            name: this.getFieldName(field),
-            isArray: field.isList,
-            type: this.getType(field.type),
-            isRequired: !field.isNullable,
-            attributes: [],
-          };
-          const association: AssociationType | void = this.getFieldAssociation(field);
-          if (association) {
-            fieldMeta.association = association;
-          }
-          acc[this.getFieldName(field)] = fieldMeta;
-          return acc;
-        }, {}),
-      };
-      result.models[obj.name] = model;
-    });
+    const models = Object.values(this.getSelectedModels()).reduce((acc, model: CodeGenModel) => {
+      return { ...acc, [model.name]: this.generateModelMetadata(model) };
+    }, {});
 
-    Object.entries(this.enumMap).forEach(([name, enumObj]) => {
-      const enumV = {
-        name,
-        values: Object.values(enumObj.values),
-      };
-      result.enums[this.getEnumName(enumObj)] = enumV;
-    });
-    return result;
+    const nonModels = Object.values(this.getSelectedNonModels()).reduce((acc, nonModel: CodeGenModel) => {
+      return { ...acc, [nonModel.name]: this.generateNonModelMetadata(nonModel) };
+    }, {});
+
+    const enums = Object.values(this.enumMap).reduce((acc, enumObj) => {
+      const enumV = this.generateEnumMetadata(enumObj);
+      return { ...acc, [this.getEnumName(enumObj)]: enumV };
+    }, {});
+    return { ...result, models, nonModels: nonModels, enums };
   }
 
   private getFieldAssociation(field: CodeGenField): AssociationType | void {
@@ -188,6 +182,41 @@ export class AppSyncJSONVisitor<
       properties: d.arguments,
     }));
   }
+  private generateModelMetadata(model: CodeGenModel): JSONSchemaModel {
+    return {
+      ...this.generateNonModelMetadata(model),
+      syncable: true,
+      pluralName: this.pluralizeModelName(model),
+      attributes: this.generateModelAttributes(model),
+    };
+  }
+
+  private generateNonModelMetadata(nonModel: CodeGenModel): JSONSchemaNonModel {
+    return {
+      name: this.getModelName(nonModel),
+      fields: nonModel.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
+        const fieldMeta: JSONModelField = {
+          name: this.getFieldName(field),
+          isArray: field.isList,
+          type: this.getType(field.type),
+          isRequired: !field.isNullable,
+          attributes: [],
+        };
+        const association: AssociationType | void = this.getFieldAssociation(field);
+        if (association) {
+          fieldMeta.association = association;
+        }
+        acc[fieldMeta.name] = fieldMeta;
+        return acc;
+      }, {}),
+    };
+  }
+  private generateEnumMetadata(enumObj: CodeGenEnum): JSONSchemaEnum {
+    return {
+      name: enumObj.name,
+      values: Object.values(enumObj.values),
+    };
+  }
 
   private getType(gqlType: string): JSONModelFieldType {
     // Todo: Handle unlisted scalars
@@ -197,6 +226,12 @@ export class AppSyncJSONVisitor<
     if (gqlType in this.enumMap) {
       return { enum: this.enumMap[gqlType].name };
     }
-    return { model: gqlType };
+    if (gqlType in this.nonModelMap) {
+      return { nonModel: gqlType };
+    }
+    if (gqlType in this.modelMap) {
+      return { model: gqlType };
+    }
+    throw new Error(`Unknown type ${gqlType}`);
   }
 }

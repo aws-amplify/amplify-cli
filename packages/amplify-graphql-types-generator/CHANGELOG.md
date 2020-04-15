@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.3.1...amplify-graphql-types-generator@2.3.2) (2020-03-22)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** use isList utility function ([#3694](https://github.com/aws-amplify/amplify-cli/issues/3694)) ([34869c3](https://github.com/aws-amplify/amplify-cli/commit/34869c334b184860d6db9f2c6cace5913dcca108)), closes [#3632](https://github.com/aws-amplify/amplify-cli/issues/3632)
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.1.11...amplify-graphql-types-generator@2.3.1) (2020-03-07)
 
 **Note:** Version bump only for package amplify-graphql-types-generator

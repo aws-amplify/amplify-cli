@@ -24,8 +24,11 @@ const optionalBuildDirectoryName = 'build';
 async function run(context, resourceDefinition) {
   try {
     const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = resourceDefinition;
+    const {
+      parameters: { options },
+    } = context;
     let resources;
-    if (context.exeInfo.forcePush) {
+    if (context.exeInfo && context.exeInfo.forcePush) {
       resources = allResources;
     } else {
       resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
@@ -38,6 +41,7 @@ async function run(context, resourceDefinition) {
 
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
+      minify: options['minify'],
     });
 
     await uploadAppSyncFiles(context, resources, allResources);
@@ -453,7 +457,10 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   });
 
   if (authResourceName) {
-    updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+    const authParameters = loadResourceParameters(context, 'auth', authResourceName);
+    if (authParameters.identityPoolName) {
+      updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+    }
   }
   return nestedStack;
 }

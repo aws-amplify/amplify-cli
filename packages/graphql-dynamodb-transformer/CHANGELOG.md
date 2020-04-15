@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.15.1...graphql-dynamodb-transformer@6.16.0) (2020-03-22)
+
+
+### Features
+
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+
+
+
+
+
 ## [6.15.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.13.4...graphql-dynamodb-transformer@6.15.1) (2020-03-07)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

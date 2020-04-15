@@ -1,15 +1,14 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
+import { getCLIPath } from '../utils';
 
-export function addPinpoint(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addPinpoint(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
       .sendLine(settings.wrongName)
       .wait('Resource name should be alphanumeric')
-      .sendCarriageReturn()
       .send('\b')
       .sendLine(settings.rightName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
@@ -26,9 +25,9 @@ export function addPinpoint(cwd: string, settings: any, verbose: boolean = !isCI
   });
 }
 
-export function addKinesis(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addKinesis(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -54,9 +53,9 @@ export function addKinesis(cwd: string, settings: any, verbose: boolean = !isCI(
   });
 }
 
-export function removeAnalytics(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function removeAnalytics(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .send('j')
       .sendCarriageReturn()

@@ -22,7 +22,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, o
   while (!checkIfAuthExists(context)) {
     if (
       await context.amplify.confirmPrompt.run(
-        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
       try {
@@ -125,7 +125,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
             type: 'list',
             choices: inputs[i].options,
           },
-          question
+          question,
         );
       } else if (inputs[i].type && inputs[i].type === 'multiselect') {
         question = Object.assign(
@@ -133,14 +133,14 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
             type: 'checkbox',
             choices: inputs[i].options,
           },
-          question
+          question,
         );
       } else {
         question = Object.assign(
           {
             type: 'input',
           },
-          question
+          question,
         );
       }
       questions.push(question);
@@ -168,7 +168,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       if (permissionSelected === 'Learn more') {
         context.print.info('');
         context.print.info(
-          'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+          'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
         );
         context.print.info('');
       }
@@ -325,7 +325,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         selectedUserPoolGroupList,
         groupPolicyMap,
         resourceName,
-        authResourceName
+        authResourceName,
       );
     }
   }
@@ -361,7 +361,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
               parameters.resourceName,
               parameters.triggerFunction,
               parameters.adminTriggerFunction,
-              options
+              options,
             );
             continueWithTriggerOperationQuestion = false;
           } catch (e) {
@@ -544,6 +544,28 @@ async function updateCfnTemplateWithGroups(context, oldGroupList, newGroupList, 
       },
     };
   });
+  // added a new policy for the user group to make action on buckets
+  newGroupList.forEach(group => {
+    if (newGroupPolicyMap[group].includes('s3:ListBucket') === true) {
+      storageCFNFile.Resources[`${group}GroupPolicy`].Properties.PolicyDocument.Statement.push({
+        Effect: 'Allow',
+        Action: 's3:ListBucket',
+        Resource: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:aws:s3:::',
+                {
+                  Ref: 'S3Bucket',
+                },
+              ],
+            ],
+          },
+        ],
+      });
+    }
+  });
 
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, s3ResourceName, 'dependsOn', s3DependsOnResources);
 
@@ -637,7 +659,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
     }
     if (lambdaResources.length === 0) {
       throw new Error(
-        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project."
+        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project.",
       );
     }
 
@@ -772,7 +794,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
       lambdaConf = lambdaConf.concat(
         getTriggersForLambdaConfiguration('private', functionName),
         getTriggersForLambdaConfiguration('protected', functionName),
-        getTriggersForLambdaConfiguration('public', functionName)
+        getTriggersForLambdaConfiguration('public', functionName),
       );
       // eslint-disable-next-line max-len
       storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConf;

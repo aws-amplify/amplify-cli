@@ -1,6 +1,6 @@
 import { PluginFunction, Types } from '@graphql-codegen/plugin-helpers';
 import { GraphQLSchema, parse, visit } from 'graphql';
-import { printSchemaWithDirectives } from 'graphql-toolkit';
+import { printSchemaWithDirectives } from '@graphql-toolkit/common';
 import { AppSyncSwiftVisitor } from './visitors/appsync-swift-visitor';
 import { RawAppSyncModelConfig } from './visitors/appsync-visitor';
 import { AppSyncJSONVisitor } from './visitors/appsync-json-metadata-visitor';
@@ -10,7 +10,7 @@ import { AppSyncModelJavascriptVisitor } from './visitors/appsync-javascript-vis
 export const plugin: PluginFunction<RawAppSyncModelConfig> = (
   schema: GraphQLSchema,
   rawDocuments: Types.DocumentFile[],
-  config: RawAppSyncModelConfig
+  config: RawAppSyncModelConfig,
 ) => {
   let visitor;
   switch (config.target) {

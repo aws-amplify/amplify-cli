@@ -1,9 +1,9 @@
-import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath } from '../utils';
 
-export function addHosting(cwd: string, verbose: boolean = !isCI()) {
+export function addHosting(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
       .sendLine('j')
       .sendCarriageReturn()
@@ -25,9 +25,9 @@ export function addHosting(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function amplifyPush(cwd: string, verbose: boolean = !isCI()) {
+export function amplifyPush(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendCarriageReturn()
       .run((err: Error) => {
@@ -40,9 +40,9 @@ export function amplifyPush(cwd: string, verbose: boolean = !isCI()) {
   });
 }
 
-export function removeHosting(cwd: string, verbose: boolean = !isCI()) {
+export function removeHosting(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true, verbose })
+    spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')

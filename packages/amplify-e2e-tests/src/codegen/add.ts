@@ -1,9 +1,9 @@
-import { nspawn as spawn } from '../utils/nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath } from '../utils';
 
-export function addCodegen(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addCodegen(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    const run = spawn(getCLIPath(), ['codegen', 'add'], { cwd, stripColors: true, verbose });
+    const run = spawn(getCLIPath(), ['codegen', 'add'], { cwd, stripColors: true });
     if (!(settings.ios || settings.android)) {
       run.wait('Choose the code generation language target').sendCarriageReturn();
     }

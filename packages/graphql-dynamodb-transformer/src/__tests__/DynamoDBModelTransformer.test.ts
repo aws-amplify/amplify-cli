@@ -461,6 +461,44 @@ test('Test non model objects contain id as a type for fields', () => {
   verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
 });
 
+test('Test schema includes attribute enum when only queries specified', () => {
+  const validSchema = `
+    type Entity @model(mutations: null, subscriptions: null) {
+      id: ID!
+      str: String
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+    transformConfig: {
+      Version: 5,
+    },
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+});
+
+test('Test only get does not generate superfluous input and filter types', () => {
+  const validSchema = `
+  type Entity @model(mutations: null, subscriptions: null, queries: {get: "getEntity"}) {
+    id: ID!
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+    transformConfig: {
+      Version: 5,
+    },
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+});
+
 test(`V${TRANSFORM_BASE_VERSION} transformer snapshot test`, () => {
   const schema = transformerVersionSnapshot(TRANSFORM_BASE_VERSION);
   expect(schema).toMatchSnapshot();

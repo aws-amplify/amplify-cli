@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.17.1...amplify-util-mock@3.18.0) (2020-04-06)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** pass env vars to lambda when invoked with mock ([#3790](https://github.com/aws-amplify/amplify-cli/issues/3790)) ([cc9c8a9](https://github.com/aws-amplify/amplify-cli/commit/cc9c8a92a37d8e47c1acaadb5d6caab79e5f0e9e)), closes [#2453](https://github.com/aws-amplify/amplify-cli/issues/2453) [#2690](https://github.com/aws-amplify/amplify-cli/issues/2690)
+* move py test event to src/event.json ([#3851](https://github.com/aws-amplify/amplify-cli/issues/3851)) ([1c4a0cb](https://github.com/aws-amplify/amplify-cli/commit/1c4a0cb5022869fc6aa3c358e9a4c8935fec2b54))
+
+
+### Features
+
+* **amplify-category-function:** Refactor invoke to call runtime plugins ([#3768](https://github.com/aws-amplify/amplify-cli/issues/3768)) ([92293fa](https://github.com/aws-amplify/amplify-cli/commit/92293fa83190bd18aacdc2f46a22938f94b89609))
+* minor tweaks to multi-runtime platform ([#3804](https://github.com/aws-amplify/amplify-cli/issues/3804)) ([60d68d7](https://github.com/aws-amplify/amplify-cli/commit/60d68d7e1a6e8c00cd629a38e9aefb2396a59737))
+
+
+
+
+
+## [3.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.17.0...amplify-util-mock@3.17.1) (2020-03-26)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [3.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.16.2...amplify-util-mock@3.17.0) (2020-03-22)
+
+
+### Features
+
+* **amplify-util-mock:** add mock config for JAVA_OPTS ([#3503](https://github.com/aws-amplify/amplify-cli/issues/3503)) ([24d8085](https://github.com/aws-amplify/amplify-cli/commit/24d8085325d435284b9c49a43592e61891fd72bc))
+
+
+
+
+
+## [3.16.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.16.1...amplify-util-mock@3.16.2) (2020-03-10)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [3.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.14.1...amplify-util-mock@3.16.1) (2020-03-07)
 
 

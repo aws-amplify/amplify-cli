@@ -82,7 +82,7 @@ public final class SimpleModel implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static SimpleModel justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -145,7 +145,7 @@ public final class SimpleModel implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -265,7 +265,7 @@ public final class SimpleModel implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static SimpleModel justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -328,7 +328,7 @@ public final class SimpleModel implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -448,7 +448,7 @@ public final class SimpleModel implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static SimpleModel justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -511,7 +511,7 @@ public final class SimpleModel implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -659,7 +659,7 @@ public final class task implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static task justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -765,7 +765,7 @@ public final class task implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -945,7 +945,7 @@ public final class Todo implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static Todo justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -1067,7 +1067,7 @@ public final class Todo implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -1242,7 +1242,7 @@ public final class authorBook implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static authorBook justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -1337,7 +1337,7 @@ public final class authorBook implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -1460,7 +1460,7 @@ public final class snake_case implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static snake_case justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -1512,7 +1512,7 @@ public final class snake_case implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -1617,7 +1617,7 @@ public final class SnakeCaseField implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static SnakeCaseField justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -1669,7 +1669,7 @@ public final class SnakeCaseField implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
