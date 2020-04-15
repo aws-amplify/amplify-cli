@@ -19,6 +19,7 @@ import { amplifyPush } from '../categories/hosting';
 import { addAuthWithDefault } from '../categories/auth';
 import * as fs from 'fs-extra';
 import * as pinpointHelper from '../utils/pinpoint';
+import _ from 'lodash';
 
 describe('amplify delete', () => {
   let projRoot: string;
@@ -98,6 +99,17 @@ describe('amplify delete', () => {
     const bucketName = getS3StorageBucketName(projRoot);
     await putFiles(bucketName);
     expect(await bucketExists(bucketName)).toBeTruthy();
+    await deleteProject(projRoot);
+    expect(await bucketNotExists(bucketName)).toBeTruthy();
+  });
+  it('should try deleting unavailable bucket but not fail', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    const amplifyMeta = getProjectMeta(projRoot);
+    const meta = amplifyMeta.providers.awscloudformation;
+    const bucketName = meta.DeploymentBucketName;
+    expect(await bucketExists(bucketName)).toBeTruthy();
+    await deleteBucket(bucketName);
+    expect(await bucketNotExists(bucketName)).toBeTruthy();
     await deleteProject(projRoot);
     expect(await bucketNotExists(bucketName)).toBeTruthy();
   });
@@ -204,4 +216,43 @@ async function bucketNotExists(bucket: string) {
     }
     throw error;
   }
+}
+
+async function deleteBucket(bucket: string) {
+  const s3 = new S3();
+  let continuationToken = null;
+  const objectKey = [];
+  let truncated = false;
+  do {
+    const results = await s3
+      .listObjectsV2({
+        Bucket: bucket,
+        ContinuationToken: continuationToken,
+      })
+      .promise();
+    results.Contents.forEach(r => {
+      objectKey.push({ Key: r.Key });
+    });
+
+    continuationToken = results.NextContinuationToken;
+    truncated = results.IsTruncated;
+  } while (truncated);
+  const chunkedResult = _.chunk(objectKey, 1000);
+  const deleteReq = chunkedResult
+    .map(r => {
+      return {
+        Bucket: bucket,
+        Delete: {
+          Objects: r,
+          Quiet: true,
+        },
+      };
+    })
+    .map(delParams => s3.deleteObjects(delParams).promise());
+  await Promise.all(deleteReq);
+  await s3
+    .deleteBucket({
+      Bucket: bucket,
+    })
+    .promise();
 }
