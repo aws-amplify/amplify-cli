@@ -1,29 +1,55 @@
 import { initJSProjectWithProfile, deleteProject } from '../init';
-import { addHosting, removeHosting, amplifyPush } from '../categories/hosting';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import {
+  addHosting,
+  removeHosting,
+  amplifyPushWithUpdate,
+  amplifyPublishWithoutUpdate,
+  createReactTestProject,
+  resetBuildCommand,
+} from '../categories/hosting';
+import { deleteProjectDir, getProjectMeta } from '../utils';
 
 describe('amplify add hosting', () => {
   let projRoot: string;
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('hosting');
+
+  beforeAll(async () => {
+    projRoot = await createReactTestProject();
+    await initJSProjectWithProfile(projRoot, {});
+    await addHosting(projRoot);
+    await amplifyPushWithUpdate(projRoot);
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await removeHosting(projRoot);
-    await amplifyPush(projRoot);
+    await amplifyPushWithUpdate(projRoot);
     await deleteProject(projRoot, true);
     deleteProjectDir(projRoot);
   });
 
-  it('add hosting', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addHosting(projRoot);
-    await amplifyPush(projRoot);
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
-    const projectMeta = getProjectMeta(projRoot);
-    expect(projectMeta.hosting).toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
+  beforeEach(async () => {});
+
+  afterEach(async () => {});
+
+  it('publish', async () => {
+    let error;
+    try {
+      await amplifyPublishWithoutUpdate(projRoot);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).not.toBeDefined();
+  });
+
+  it('publish throws error if build command is missing', async () => {
+    const currentBuildCommand = resetBuildCommand(projRoot, '');
+    let error;
+    try {
+      await amplifyPublishWithoutUpdate(projRoot);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeDefined();
+    expect(error.message).toEqual('Process exited with non zero exit code 1');
+    resetBuildCommand(projRoot, currentBuildCommand);
   });
 });

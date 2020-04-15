@@ -15,7 +15,7 @@ import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../envir
 import { addApiWithoutSchema } from '../categories/api';
 import { addCodegen } from '../codegen/add';
 import { addS3 } from '../categories/storage';
-import { amplifyPush } from '../categories/hosting';
+import { amplifyPushWithUpdate } from '../categories/hosting';
 import { addAuthWithDefault } from '../categories/auth';
 import * as fs from 'fs-extra';
 import * as pinpointHelper from '../utils/pinpoint';
@@ -95,7 +95,7 @@ describe('amplify delete', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3(projRoot, {});
-    await amplifyPush(projRoot);
+    await amplifyPushWithUpdate(projRoot);
     const bucketName = getS3StorageBucketName(projRoot);
     await putFiles(bucketName);
     expect(await bucketExists(bucketName)).toBeTruthy();

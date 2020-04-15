@@ -6,6 +6,11 @@ function run(context) {
   return new Promise((resolve, reject) => {
     const { projectConfig } = context.exeInfo;
     const startCommand = projectConfig[constants.Label].config.StartCommand;
+
+    if (!startCommand) {
+      throw new Error('Missing start command');
+    }
+
     let args = startCommand.split(/\s+/);
     const command = args[0];
     args = args.slice(1);
