@@ -14,7 +14,8 @@ import { addApiWithSchema } from '../categories/api';
 
 import { appsyncGraphQLRequest } from '../utils/appsync';
 import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule } from '../utils/sdk-calls';
-import { Lambda } from 'aws-sdk';
+import fs from 'fs-extra';
+import path from 'path';
 
 describe('nodejs', () => {
   describe('amplify add function', () => {
@@ -374,6 +375,40 @@ describe('nodejs', () => {
       expect(lambdaSource.includes('TODOTABLE_NAME')).toBeTruthy();
       expect(lambdaSource.includes('TODOTABLE_ARN')).toBeTruthy();
       expect(lambdaSource.includes('GRAPHQLAPIIDOUTPUT')).toBeTruthy();
+    });
+
+    it('environment vars comment should update on permission update', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const funcName = `nodetestfn${random}`;
+      const ddbName = `nodetestddb`;
+
+      await addFunction(
+        projRoot,
+        {
+          name: funcName,
+          functionTemplate: 'Hello World',
+        },
+        'nodejs',
+      );
+      await addSimpleDDB(projRoot, { name: ddbName });
+      await updateFunction(
+        projRoot,
+        {
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['function', 'storage'],
+            operations: ['read'],
+            resources: [ddbName],
+          },
+        },
+        'nodejs',
+      );
+      const lambdaHandlerContents = fs.readFileSync(
+        path.join(projRoot, 'amplify', 'backend', 'function', funcName, 'src', 'index.js'),
+        'utf8',
+      );
+      expect(lambdaHandlerContents).toMatchSnapshot();
     });
   });
 });

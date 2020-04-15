@@ -21,6 +21,10 @@
       {
         "name": "Trigger (DynamoDb, Kinesis)",
         "value": "trigger"
+      },
+      {
+        "name": "CRUD function for DynamoDB (Integration with API Gateway)",
+        "value": "crud"
       }
     ]
   }
