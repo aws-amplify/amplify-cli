@@ -82,7 +82,7 @@ function interfaceDeclarationForOperation(generator: CodeGenerator, { operationN
 }
 
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
-  if (operation.fields.length && operation.fields[0].fields) {
+  if (operation.fields.length) {
     return operation.fields[0];
   }
 }
