@@ -70,6 +70,17 @@ public final class SimpleModel implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static BuildStep builder() {
       return new Builder();
   }
@@ -253,6 +264,17 @@ public final class SimpleModel implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static BuildStep builder() {
       return new Builder();
   }
@@ -434,6 +456,17 @@ public final class SimpleModel implements Model {
       .append(getBar())
       .toString()
       .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
   }
   
   public static BuildStep builder() {
@@ -645,6 +678,20 @@ public final class task implements Model {
       .append(getCreatedOn())
       .toString()
       .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"task {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"title=\\" + String.valueOf(getTitle()))
+      .append(\\"done=\\" + String.valueOf(getDone()))
+      .append(\\"todo=\\" + String.valueOf(getTodo()))
+      .append(\\"time=\\" + String.valueOf(getTime()))
+      .append(\\"createdOn=\\" + String.valueOf(getCreatedOn()))
+      .append(\\"}\\")
+      .toString();
   }
   
   public static TitleStep builder() {
@@ -931,6 +978,21 @@ public final class Todo implements Model {
       .append(getValue())
       .toString()
       .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"Todo {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"title=\\" + String.valueOf(getTitle()))
+      .append(\\"done=\\" + String.valueOf(getDone()))
+      .append(\\"description=\\" + String.valueOf(getDescription()))
+      .append(\\"due_date=\\" + String.valueOf(getDueDate()))
+      .append(\\"version=\\" + String.valueOf(getVersion()))
+      .append(\\"value=\\" + String.valueOf(getValue()))
+      .append(\\"}\\")
+      .toString();
   }
   
   public static TitleStep builder() {
@@ -1230,6 +1292,19 @@ public final class authorBook implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"authorBook {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"author_id=\\" + String.valueOf(getAuthorId()))
+      .append(\\"book_id=\\" + String.valueOf(getBookId()))
+      .append(\\"author=\\" + String.valueOf(getAuthor()))
+      .append(\\"book=\\" + String.valueOf(getBook()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static AuthorIdStep builder() {
       return new Builder();
   }
@@ -1448,6 +1523,16 @@ public final class snake_case implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"snake_case {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static BuildStep builder() {
       return new Builder();
   }
@@ -1603,6 +1688,16 @@ public final class SnakeCaseField implements Model {
       .append(getFirstName())
       .toString()
       .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"SnakeCaseField {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"first_name=\\" + String.valueOf(getFirstName()))
+      .append(\\"}\\")
+      .toString();
   }
   
   public static BuildStep builder() {
