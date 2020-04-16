@@ -18,32 +18,25 @@ const MAX_BODY_SIZE = '10mb';
 const STATIC_ROOT = join(__dirname, '..', '..', 'public');
 export class OperationServer {
   private _app: express.Application;
-  private server: Server;
-  private connection;
-  private port: number;
-  private subscriptionHandler: AppSyncSimulatorSubscriptionServer;
-  url: string;
 
   constructor(
     private config: AppSyncSimulatorServerConfig,
     private simulatorContext: AmplifyAppSyncSimulator,
     private subscriptionServer: SubscriptionServer,
   ) {
-    this.port = config.port;
     this._app = express();
     this._app.use(express.json({ limit: MAX_BODY_SIZE }));
     this._app.use(cors());
-    this._app.post('/graphql', (request, response) => this.handleRequest(request, response));
-    this._app.get('/api-config', (request, response) => this.handleAPIInfoRequest(request, response));
+    this._app.post('/graphql', this.handleRequest);
+    this._app.get('/api-config', this.handleAPIInfoRequest);
     this._app.use('/', express.static(STATIC_ROOT));
-    this.server = null;
   }
 
-  private handleAPIInfoRequest(request: express.Request, response: express.Response) {
+  private handleAPIInfoRequest = (request: express.Request, response: express.Response) => {
     return response.send(this.simulatorContext.appSyncConfig);
-  }
+  };
 
-  private async handleRequest(request: express.Request, response: express.Response) {
+  private handleRequest = async (request: express.Request, response: express.Response) => {
     try {
       const { headers } = request;
       let requestAuthorizationMode;
@@ -111,7 +104,7 @@ export class OperationServer {
         errorMessage: e.message,
       });
     }
-  }
+  };
   get app() {
     return this._app;
   }

@@ -13,7 +13,7 @@ import { MQTTServer } from './subscription/mqtt-server';
 import { WebsocketSubscriptionServer } from './subscription/websocket-server/server';
 
 const MINUTE = 1000 * 60;
-const CONNECTION_TIME_OUT = 2 * MINUTE; // 2 mins
+const CONNECTION_TIMEOUT = 2 * MINUTE; // 2 mins
 const TOPIC_EXPIRATION_TIMEOUT = 60 * MINUTE; // 60 mins
 const BASE_PORT = 8900;
 const MAX_PORT = 9999;
@@ -223,7 +223,7 @@ export class SubscriptionServer {
         setTimeout(() => {
           (asyncIterator as AsyncIterator<ExecutionResult>).return();
           this.mqttIteratorTimeout.delete(clientId);
-        }, CONNECTION_TIME_OUT),
+        }, CONNECTION_TIMEOUT),
       );
     } else {
       // reusing existing subscription. Client unsubscribed to the topic earlier but

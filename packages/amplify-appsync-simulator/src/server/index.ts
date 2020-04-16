@@ -12,24 +12,24 @@ const BASE_PORT = 8900;
 const MAX_PORT = 9999;
 
 export class AppSyncSimulatorServer {
-  private operationServer: OperationServer;
-  private subscriptionServer: SubscriptionServer;
-  private httpServer: Server;
-  private realTimeSubscriptionServer: AppSyncSimulatorSubscriptionServer;
-
+  private _operationServer: OperationServer;
+  private _subscriptionServer: SubscriptionServer;
+  private _httpServer: Server;
+  private _realTimeSubscriptionServer: AppSyncSimulatorSubscriptionServer;
   private _url: string;
+
   constructor(private config: AppSyncSimulatorServerConfig, private simulatorContext: AmplifyAppSyncSimulator) {
-    this.subscriptionServer = new SubscriptionServer(config, simulatorContext);
-    this.operationServer = new OperationServer(config, simulatorContext, this.subscriptionServer);
-    this.httpServer = createServer(this.operationServer.app);
-    this.realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(simulatorContext, this.httpServer, '/graphql');
+    this._subscriptionServer = new SubscriptionServer(config, simulatorContext);
+    this._operationServer = new OperationServer(config, simulatorContext, this._subscriptionServer);
+    this._httpServer = createServer(this._operationServer.app);
+    this._realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(simulatorContext, this._httpServer, '/graphql');
   }
 
   async start(): Promise<void> {
     let port = this.config.port;
 
-    await this.subscriptionServer.start();
-    await this.realTimeSubscriptionServer.start();
+    await this._subscriptionServer.start();
+    await this._realTimeSubscriptionServer.start();
 
     if (!port) {
       port = await portFinder.getPortPromise({
@@ -49,16 +49,16 @@ export class AppSyncSimulatorServer {
       }
     }
 
-    this.httpServer.listen(port);
-    await e2p(this.httpServer, 'listening').then(() => {
+    this._httpServer.listen(port);
+    await e2p(this._httpServer, 'listening').then(() => {
       this._url = `http://${getLocalIpAddress()}:${port}`;
     });
   }
 
   stop() {
-    this.subscriptionServer.stop();
-    this.realTimeSubscriptionServer.stop();
-    this.httpServer.close();
+    this._subscriptionServer.stop();
+    this._realTimeSubscriptionServer.stop();
+    this._httpServer.close();
   }
   get url() {
     return {
