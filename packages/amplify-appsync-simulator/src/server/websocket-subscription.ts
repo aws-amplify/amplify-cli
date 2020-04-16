@@ -29,13 +29,13 @@ export class AppSyncSimulatorSubscriptionServer {
     this.realtimeServer.stop();
   }
 
-  async onSubscribe(
+  onSubscribe = async (
     doc: DocumentNode,
     variable: Record<string, any>,
     headers: Record<string, any>,
     request: IncomingMessage,
     operationName?: string,
-  ) {
+  ) => {
     const ipAddress = request.socket.remoteAddress;
     const authorization = extractHeader(headers, 'Authorization');
     const jwt = extractJwtToken(authorization);
@@ -52,13 +52,13 @@ export class AppSyncSimulatorSubscriptionServer {
       return (subscriptionResult as SubscriptionResult).asyncIterator;
     }
     return subscriptionResult;
-  }
+  };
 
-  onConnect(message: ConnectionContext, headers: Record<string, any>) {
+  onConnect = (message: ConnectionContext, headers: Record<string, any>) => {
     this.authorizeRequest(headers);
-  }
+  };
 
-  authorizeRequest(headers: Record<string, string>) {
+  authorizeRequest = (headers: Record<string, string>) => {
     return getAuthorizationMode(headers, this.simulatorContext.appSyncConfig);
-  }
+  };
 }

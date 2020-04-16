@@ -61,7 +61,6 @@ export class WebsocketSubscriptionServer {
   constructor(options: WebsocketSubscriptionServerOptions, server?: ServerOptions) {
     this.connections = new Set();
     this.options = { ...DEFAULT_OPTIONS, ...options };
-    this.onSocketConnection = this.onSocketConnection.bind(this);
     if (server) {
       this.attachWebServer(server);
     }
@@ -88,7 +87,7 @@ export class WebsocketSubscriptionServer {
     }
   }
 
-  private onClose(connectionContext: ConnectionContext): void {
+  private onClose = (connectionContext: ConnectionContext): void => {
     connectionContext.subscriptions.forEach(subscriptionId => {
       this.stopAsyncIterator(connectionContext, subscriptionId.id);
     });
@@ -97,15 +96,15 @@ export class WebsocketSubscriptionServer {
       connectionContext.pingIntervalHandle = null;
     }
     this.connections.delete(connectionContext);
-  }
+  };
 
-  private onUnsubscribe(connectionContext: ConnectionContext, messageOrSubscriptionId: GQLMessageSubscriptionStop): void {
+  private onUnsubscribe = (connectionContext: ConnectionContext, messageOrSubscriptionId: GQLMessageSubscriptionStop): void => {
     const { id } = messageOrSubscriptionId;
     this.stopAsyncIterator(connectionContext, id);
     this.sendMessage(connectionContext, id, MESSAGE_TYPES.GQL_COMPLETE, {});
-  }
+  };
 
-  private stopAsyncIterator(connectionContext: ConnectionContext, id: string): void {
+  private stopAsyncIterator = (connectionContext: ConnectionContext, id: string): void => {
     if (connectionContext.subscriptions && connectionContext.subscriptions.has(id)) {
       const subscription = connectionContext.subscriptions.get(id);
       if (subscription.asyncIterator) {
@@ -114,9 +113,9 @@ export class WebsocketSubscriptionServer {
 
       connectionContext.subscriptions.delete(id);
     }
-  }
+  };
 
-  private async onSocketConnection(socket: WebSocket, request: IncomingMessage): Promise<void> {
+  private onSocketConnection = async (socket: WebSocket, request: IncomingMessage): Promise<void> => {
     (socket as any).upgradeReq = request;
     try {
       if (typeof socket.protocol === 'undefined' || socket.protocol !== PROTOCOL) {
@@ -153,9 +152,9 @@ export class WebsocketSubscriptionServer {
       socket.close(1002); // protocol error
       return;
     }
-  }
+  };
 
-  private onSocketDisconnection(connectionContext: ConnectionContext, error?: Error | string): void {
+  private onSocketDisconnection = (connectionContext: ConnectionContext, error?: Error | string): void => {
     this.onClose(connectionContext);
     if (error) {
       this.sendError(connectionContext, '', { message: error instanceof Error ? error.message : error });
@@ -164,9 +163,9 @@ export class WebsocketSubscriptionServer {
         connectionContext.socket.close(1011);
       }, 10);
     }
-  }
+  };
 
-  private onMessage(connectionContext: ConnectionContext, rawMessage: string) {
+  private onMessage = (connectionContext: ConnectionContext, rawMessage: string) => {
     const message = JSON.parse(rawMessage);
     try {
       switch (message.type) {
@@ -189,9 +188,9 @@ export class WebsocketSubscriptionServer {
     } catch (e) {
       this.sendError(connectionContext, '', { errors: [{ message: e.message }] });
     }
-  }
+  };
 
-  private sendMessage(connectionContext: ConnectionContext, subscriptionId: string, type: MESSAGE_TYPES, data: any): void {
+  private sendMessage = (connectionContext: ConnectionContext, subscriptionId: string, type: MESSAGE_TYPES, data: any): void => {
     const message = {
       type,
       id: subscriptionId,
@@ -200,25 +199,25 @@ export class WebsocketSubscriptionServer {
     if (connectionContext.socket.readyState === WebSocket.OPEN) {
       connectionContext.socket.send(JSON.stringify(message));
     }
-  }
-  private sendError(
+  };
+  private sendError = (
     connectionContext: ConnectionContext,
     subscriptionId: string,
     errorPayload: any,
     type: MESSAGE_TYPES.GQL_ERROR | MESSAGE_TYPES.GQL_CONNECTION_ERROR = MESSAGE_TYPES.GQL_ERROR,
-  ) {
+  ) => {
     if ([MESSAGE_TYPES.GQL_CONNECTION_ERROR, MESSAGE_TYPES.GQL_ERROR].indexOf(type) === -1) {
       throw new Error(`Message type should for error should be one of ${MESSAGE_TYPES.GQL_ERROR} or ${MESSAGE_TYPES.GQL_CONNECTION_ERROR}`);
     }
     this.sendMessage(connectionContext, subscriptionId, type, errorPayload);
-  }
-  private setupPing(connectionContext: ConnectionContext): void {
+  };
+  private setupPing = (connectionContext: ConnectionContext): void => {
     connectionContext.pingIntervalHandle = setInterval(() => {
       this.sendMessage(connectionContext, undefined, MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE, undefined);
     }, this.options.keepAlive);
-  }
+  };
 
-  private onConnectionInit(connectionContext: ConnectionContext, message: GQLMessageConnectionInit): void {
+  private onConnectionInit = (connectionContext: ConnectionContext, message: GQLMessageConnectionInit): void => {
     connectionContext.isConnectionInitialized = true;
     const response: GQLMessageConnectionAck = {
       type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
@@ -231,9 +230,9 @@ export class WebsocketSubscriptionServer {
 
     // Regular keep alive messages if keepAlive is set
     this.setupPing(connectionContext);
-  }
+  };
 
-  private async onSubscriptionStart(connectionContext: ConnectionContext, message: GQLMessageSubscriptionStart): Promise<void> {
+  private onSubscriptionStart = async (connectionContext: ConnectionContext, message: GQLMessageSubscriptionStart): Promise<void> => {
     const id = message.id;
     const data = JSON.parse(message.payload.data);
     const query = parse(data.query);
@@ -260,9 +259,9 @@ export class WebsocketSubscriptionServer {
       this.sendMessage(connectionContext, id, MESSAGE_TYPES.GQL_START_ACK, {});
       this.attachAsyncIterator(connectionContext, subscription);
     }
-  }
+  };
 
-  private async attachAsyncIterator(connectionContext: ConnectionContext, sub: WebsocketSubscription): Promise<void> {
+  private attachAsyncIterator = async (connectionContext: ConnectionContext, sub: WebsocketSubscription): Promise<void> => {
     const { asyncIterator, id } = sub;
     while (true) {
       const { value, done } = await asyncIterator.next();
@@ -271,5 +270,5 @@ export class WebsocketSubscriptionServer {
       }
       this.sendMessage(connectionContext, id, MESSAGE_TYPES.GQL_DATA, value);
     }
-  }
+  };
 }

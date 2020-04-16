@@ -1,1 +1,1 @@
-export { MQTTServer as Server } from './server';
+export { MQTTServer } from './server';

@@ -9,7 +9,7 @@ import portfinder from 'portfinder';
 import { inspect } from 'util';
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorServerConfig } from '../type-definition';
-import { Server as MQTTServer } from './subscription/mqtt-server';
+import { MQTTServer } from './subscription/mqtt-server';
 import { WebsocketSubscriptionServer } from './subscription/websocket-server/server';
 
 const MINUTE = 1000 * 60;
@@ -68,6 +68,16 @@ export class SubscriptionServer {
         startPort: BASE_PORT,
         stopPort: MAX_PORT,
       });
+    } else {
+      try {
+        await portfinder.getPortPromise({
+          startPort: this.port,
+          stopPort: this.port,
+          port: this.port,
+        });
+      } catch (e) {
+        throw new Error(`Port ${this.port} is already in use. Please kill the program using this port and restart Mock`);
+      }
     }
     const server = this.mqttWebSocketServer.listen(this.port);
 

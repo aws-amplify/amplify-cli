@@ -33,15 +33,11 @@ export class OperationServer {
     this._app = express();
     this._app.use(express.json({ limit: MAX_BODY_SIZE }));
     this._app.use(cors());
-    this._app.post('/graphql', this.handleRequest.bind(this));
-    this._app.get('/api-config', this.handleAPIInfoRequest.bind(this));
+    this._app.post('/graphql', (request, response) => this.handleRequest(request, response));
+    this._app.get('/api-config', (request, response) => this.handleAPIInfoRequest(request, response));
     this._app.use('/', express.static(STATIC_ROOT));
     this.server = null;
   }
-
-  async start() {}
-
-  stop() {}
 
   private handleAPIInfoRequest(request: express.Request, response: express.Response) {
     return response.send(this.simulatorContext.appSyncConfig);

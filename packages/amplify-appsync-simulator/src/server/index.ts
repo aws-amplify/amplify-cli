@@ -26,16 +26,27 @@ export class AppSyncSimulatorServer {
   }
 
   async start(): Promise<void> {
+    let port = this.config.port;
+
     await this.subscriptionServer.start();
-    await this.operationServer.start();
     await this.realTimeSubscriptionServer.start();
 
-    let port = this.config.port;
     if (!port) {
       port = await portFinder.getPortPromise({
         startPort: BASE_PORT,
         stopPort: MAX_PORT,
+        port: BASE_PORT,
       });
+    } else {
+      try {
+        await portFinder.getPortPromise({
+          startPort: port,
+          stopPort: port,
+          port: port,
+        });
+      } catch (e) {
+        throw new Error(`Port ${port} is already in use. Please kill the program using this port and restart Mock`);
+      }
     }
 
     this.httpServer.listen(port);
@@ -45,7 +56,6 @@ export class AppSyncSimulatorServer {
   }
 
   stop() {
-    this.operationServer.stop();
     this.subscriptionServer.stop();
     this.realTimeSubscriptionServer.stop();
     this.httpServer.close();
