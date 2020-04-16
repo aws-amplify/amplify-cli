@@ -732,9 +732,12 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateModelFieldAnnotation(field: CodeGenField): string {
-    const annotationArgs: string[] = [`targetType="${field.type}"`, !field.isNullable ? 'isRequired = true' : ''].filter(arg => arg);
+    const annotationArgs: string[] = [
+      this.isNonModelType(field) ? '' : `targetType="${field.type}"`,
+      !field.isNullable ? 'isRequired = true' : '',
+    ].filter(arg => arg);
 
-    return `ModelField(${annotationArgs.join(', ')})`;
+    return `ModelField${annotationArgs.length ? `(${annotationArgs.join(', ')})` : ''}`;
   }
   protected generateConnectionAnnotation(field: CodeGenField): string {
     if (!field.connectionInfo) return '';

@@ -158,18 +158,32 @@ describe('AppSyncModelVisitor', () => {
     expect(() => validateJava(generatedCode)).not.toThrow();
     expect(generatedCode).toMatchSnapshot();
   });
-
-  it('should generate class for non model types', () => {
+  describe('Non model type', () => {
     const schema = /* GraphQL */ `
+      type Landmark @model {
+        id: ID!
+        name: String!
+        rating: Int!
+        location: Location!
+        parking: Location
+      }
       type Location {
         lat: String!
         lang: String!
       }
     `;
-    const visitor = getVisitor(schema, 'Location');
-    const generatedCode = visitor.generate();
-    expect(() => validateJava(generatedCode)).not.toThrow();
-    expect(generatedCode).toMatchSnapshot();
+    it('should generate class for non model types', () => {
+      const visitor = getVisitor(schema, 'Location');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+    it('should generate class for model types with non model fields', () => {
+      const visitor = getVisitor(schema, 'Landmark');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
   });
 
   describe('connection', () => {
