@@ -26,7 +26,7 @@ export const MODEL_CLASS_IMPORT_PACKAGES = [
 // packages to be imported in generated Enums
 export const ENUM_IMPORT_PACKAGES = ['com.amplifyframework.core.model.ModelEnum;', ''];
 // packages to be imported for Non model Classes
-export const NON_MODEL_CLASS_IMPORT_PACKAGES = ['androidx.core.util.ObjectsCompat', ''];
+export const NON_MODEL_CLASS_IMPORT_PACKAGES = ['androidx.core.util.ObjectsCompat', '', 'java.util.Objects', 'java.util.List', ''];
 
 // packages to be imported in loader class
 export const LOADER_IMPORT_PACKAGES = [

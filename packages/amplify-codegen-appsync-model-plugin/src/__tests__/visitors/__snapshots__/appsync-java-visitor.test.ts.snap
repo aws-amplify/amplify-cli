@@ -30,8 +30,8 @@ public final class Landmark implements Model {
   private final @ModelField(targetType=\\"ID\\", isRequired = true) ID id;
   private final @ModelField(targetType=\\"String\\", isRequired = true) String name;
   private final @ModelField(targetType=\\"Int\\", isRequired = true) Int rating;
-  private final @ModelField(isRequired = true) Location location;
-  private final @ModelField Location parking;
+  private final @ModelField(targetType=\\"Location\\", isRequired = true) Location location;
+  private final @ModelField(targetType=\\"Location\\") Location parking;
   public ID getId() {
       return id;
   }
@@ -255,6 +255,9 @@ exports[`AppSyncModelVisitor Non model type should generate class for non model 
 
 
 import androidx.core.util.ObjectsCompat;
+
+import java.util.Objects;
+import java.util.List;
 
 /** This is an auto generated class representing the Location type in your schema. */
 public final class Location {
