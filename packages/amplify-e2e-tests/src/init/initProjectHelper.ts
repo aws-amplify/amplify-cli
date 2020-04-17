@@ -144,7 +144,7 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
       .sendLine(s.secretAccessKey)
       .resumeRecording()
       .wait('region')
-      .sendLine('us-east-1')
+      .sendLine('us-east-2')
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
@@ -171,7 +171,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .wait('secretAccessKey')
       .sendLine(s.secretAccessKey)
       .wait('region')
-      .sendLine('us-east-1')
+      .sendLine('us-east-2')
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
