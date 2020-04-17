@@ -1,9 +1,10 @@
 import { DynamoDB } from 'aws-sdk';
 
+const MILLI_SECONDS = 1000;
 export async function waitTillTableStateIsActive(
   dynamoDBClient: DynamoDB,
   tableName: string,
-  maximumWait: number = 15 * 1000,
+  maximumWait: number = 15 * MILLI_SECONDS,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     let intervalHandle;
