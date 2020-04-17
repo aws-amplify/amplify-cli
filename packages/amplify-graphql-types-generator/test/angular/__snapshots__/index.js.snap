@@ -418,6 +418,36 @@ export class APIService {
 "
 `;
 
+exports[`Angular code generation #generateSource() should generate simple query operation with scalar field and scalar return type 1`] = `
+"/* tslint:disable */
+/* eslint-disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async Echo(msg?: string): Promise<string | null> {
+    const statement = \`query Echo($msg: String) {
+        echo(msg: $msg)
+      }\`;
+    const gqlAPIServiceArguments: any = {};
+    if (msg) {
+      gqlAPIServiceArguments.msg = msg;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <string | null>response.data.echo;
+  }
+}
+"
+`;
+
 exports[`Angular code generation #generateSource() should generate simple query operations 1`] = `
 "/* tslint:disable */
 /* eslint-disable */
