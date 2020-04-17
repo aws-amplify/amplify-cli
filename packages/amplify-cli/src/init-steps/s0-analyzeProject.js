@@ -97,7 +97,7 @@ async function getEnvName(context) {
   const isEnvNameValid = inputEnvName => {
     return /^[a-z]{2,10}$/.test(inputEnvName);
   };
-  
+
   const INVALID_ENV_NAME_MSG = 'Environment name must be between 2 and 10 characters, and lowercase only.';
 
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.envName) {
