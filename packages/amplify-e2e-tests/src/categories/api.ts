@@ -1,7 +1,8 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../utils';
-import { singleSelect, runtimeChoices, addFunction, nodeJSTemplateChoices, selectRuntime } from './function';
+import { nodeJSTemplateChoices, selectRuntime } from './function';
+import { singleSelect } from '../utils/selectors';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../schemas/${schemaName}`;
