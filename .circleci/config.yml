@@ -580,27 +580,30 @@ jobs:
 
 workflows:
   version: 2
-  nightly_console_integration_tests:
-    triggers:
-      - schedule:
-          cron: '0 14 * * *'
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - build
-      - publish_to_local_registry:
-          requires:
-            - build
-      - amplify_console_integration_tests:
-          requires:
-            - build
-            - publish_to_local_registry
+  # nightly_console_integration_tests:
+  #   triggers:
+  #     - schedule:
+  #         cron: '0 14 * * *'
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #   jobs:
+  #     - build
+  #     - publish_to_local_registry:
+  #         requires:
+  #           - build
+  #     - amplify_console_integration_tests:
+  #         requires:
+  #           - build
+  #           - publish_to_local_registry
   build_test_deploy:
     jobs:
       - build
       - test:
+          requires:
+            - build
+      - mock_e2e_tests:
           requires:
             - build
       - graphql_e2e_tests:
@@ -612,50 +615,47 @@ workflows:
           requires:
             - build
             - mock_e2e_tests
-      - mock_e2e_tests:
-          requires:
-            - build
-      - integration_test:
-          filters:
-            branches:
-              only:
-                - master
-                - beta
-          requires:
-            - build
-            - mock_e2e_tests
-      - publish_to_local_registry:
-          filters:
-            branches:
-              only:
-                - master
-                - beta
-          requires:
-            - build
-      - amplify_e2e_tests:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - publish_to_local_registry
-      - amplify_console_integration_tests:
-          filters:
-            branches:
-              only:
-                - beta
-          requires:
-            - build
-            - publish_to_local_registry
+      # - integration_test:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - beta
+      #     requires:
+      #       - build
+      #       - mock_e2e_tests
+      # - publish_to_local_registry:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - beta
+      #     requires:
+      #       - build
+      # - amplify_e2e_tests:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - publish_to_local_registry
+      # - amplify_console_integration_tests:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - beta
+      #     requires:
+      #       - build
+      #       - publish_to_local_registry
       - deploy:
           requires:
             - build
             - test
-            - integration_test
-            - graphql_e2e_tests
-            - amplify_e2e_tests
-            - amplify_console_integration_tests
             - mock_e2e_tests
+            - graphql_e2e_tests
+            # - integration_test
+            # - amplify_e2e_tests
+            # - amplify_console_integration_tests
           filters:
             branches:
               only:
