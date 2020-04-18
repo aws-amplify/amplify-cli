@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath } from '../../src';
 
 type AmplifyConfiguration = {
   accessKeyId: string;
