@@ -1,5 +1,6 @@
 import { FunctionTemplateParameters, ContributionRequest } from 'amplify-function-plugin-interface';
-import { templateRoot } from '../utils/constants';
+import { commonFiles, templateRoot } from '../utils/constants';
+import { getDstMap } from '../utils/destFileMapper';
 import path from 'path';
 import { askEventSourceQuestions } from '../utils/eventSourceWalkthrough';
 
@@ -21,7 +22,7 @@ export async function provideTrigger(request: ContributionRequest, context: any)
     default:
       throw new Error(`Unknown template type ${eventSourceAnswers.triggerEventSourceMappings[0].functionTemplateType}`);
   }
-  const files = ['.gitignore', templateFile, 'Trigger/aws-lambda-tools-defaults.json.ejs', 'Trigger/Function.csproj.ejs', eventFile];
+  const files = [...commonFiles, templateFile, 'Trigger/aws-lambda-tools-defaults.json.ejs', 'Trigger/Function.csproj.ejs', eventFile];
   return {
     triggerEventSourceMappings: eventSourceAnswers.triggerEventSourceMappings,
     dependsOn: eventSourceAnswers.dependsOn,
@@ -29,7 +30,7 @@ export async function provideTrigger(request: ContributionRequest, context: any)
       sourceRoot: pathToTemplateFiles,
       sourceFiles: files,
       destMap: {
-        '.gitignore': path.join('src', '.gitignore'),
+        ...getDstMap(commonFiles),
         [templateFile]: handlerSource,
         'Trigger/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
         'Trigger/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),

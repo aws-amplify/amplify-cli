@@ -15,21 +15,22 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
     };
   }
 
-  const result = execa.sync(executableName, ['--version']);
-  const versionString = result.stdout;
+  const result = execa.sync(executableName, ['--list-sdks']);
+  const installedSdks = result.stdout;
 
   if (result.exitCode !== 0) {
     throw new Error(`${executableName} failed, exit code was ${result.exitCode}`);
   }
 
-  if (versionString && versionString.startsWith('3.1')) {
+  // Verify that a dotnet 3.1 SDK is installed locally
+  if (installedSdks && installedSdks.match(/^3\.1/)) {
     return {
       hasRequiredDependencies: true,
     };
   } else {
     return {
       hasRequiredDependencies: false,
-      errorMessage: `Expected ${executableName} minimum version ${currentSupportedVersion}, but found: ${versionString}`,
+      errorMessage: `Expected ${executableName} minimum version ${currentSupportedVersion}, but found: ${installedSdks}`,
     };
   }
 };
