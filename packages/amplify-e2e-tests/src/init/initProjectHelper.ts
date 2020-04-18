@@ -1,8 +1,6 @@
 import { nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../utils';
 
-const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
-
 const defaultSettings = {
   name: '\r',
   envName: 'integtest',
@@ -20,9 +18,8 @@ const defaultSettings = {
 
 export function initJSProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
-  const amplifySpawn = s.local ? amplify : getCLIPath();
   return new Promise((resolve, reject) => {
-    spawn(amplifySpawn, ['init'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')

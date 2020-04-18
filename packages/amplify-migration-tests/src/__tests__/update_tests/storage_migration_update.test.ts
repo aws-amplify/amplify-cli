@@ -1,6 +1,6 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../../../../amplify-e2e-tests/src/init';
 import { addSimpleDDB, addDDBWithTrigger, updateDDBWithTrigger } from '../../../../amplify-e2e-tests/src/categories/storage';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable } from '../../utils';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable } from 'amplify-e2e-core';
 
 describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
@@ -15,13 +15,13 @@ describe('amplify add/update storage(DDB)', () => {
 
   it('init a project and add/update ddb table with & without trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfile(projRoot, { local: true });
-    await addSimpleDDB(projRoot, { local: true });
-    await addDDBWithTrigger(projRoot, { local: true });
-    await amplifyPushAuth(projRoot, true);
-    // update and push with codebase
-    await updateDDBWithTrigger(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
+    await addSimpleDDB(projRoot, {});
+    await addDDBWithTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
+    // update and push with codebase
+    await updateDDBWithTrigger(projRoot, { testingWithLatestCodebase: true });
+    await amplifyPushAuth(projRoot, true);
 
     const meta = getProjectMeta(projRoot);
     const { Name: table1Name, Arn: table1Arn, Region: table1Region, StreamArn: table1StreamArn } = Object.keys(meta.storage).map(

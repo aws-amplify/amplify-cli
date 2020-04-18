@@ -1,8 +1,6 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import { getCLIPath, getEnvVars } from '../utils';
 
-const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
-
 export function addAuthWithDefault(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -106,9 +104,8 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any) {
 }
 
 export function addAuthWithCustomTrigger(cwd: string, settings: any) {
-  const amplifySpawn = settings.local ? amplify : getCLIPath();
   return new Promise((resolve, reject) => {
-    spawn(amplifySpawn, ['add', 'auth'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)

@@ -1,6 +1,6 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../../../../amplify-e2e-tests/src/init';
 import { addFunction, updateFunction } from '../../../../amplify-e2e-tests/src/categories/function';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc } from '../../utils';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc } from 'amplify-e2e-core';
 import { addApiWithSchema } from '../../../../amplify-e2e-tests/src/categories/api';
 
 import { invokeFunction } from '../../../../amplify-e2e-tests/src/utils/sdk-calls';
@@ -17,15 +17,18 @@ describe('amplify add function', () => {
   });
 
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
-    await initJSProjectWithProfile(projRoot, { local: true });
+    await initJSProjectWithProfile(projRoot, {});
 
     const random = Math.floor(Math.random() * 10000);
     const fnName = `integtestfn${random}`;
-    await addFunction(projRoot, {
-      name: fnName,
-      functionTemplate: 'helloWorld',
-      local: true,
-    });
+    await addFunction(
+      projRoot,
+      {
+        name: fnName,
+        functionTemplate: 'Hello World',
+      },
+      'nodejs',
+    );
 
     overrideFunctionSrc(
       projRoot,
@@ -40,7 +43,7 @@ describe('amplify add function', () => {
     `,
     );
 
-    await amplifyPushAuth(projRoot, true);
+    await amplifyPushAuth(projRoot);
     let meta = getProjectMeta(projRoot);
     const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
@@ -48,17 +51,22 @@ describe('amplify add function', () => {
     expect(region).toBeDefined();
 
     await addApiWithSchema(projRoot, 'simple_model.graphql');
-    await updateFunction(projRoot, {
-      name: fnName,
-      additionalPermissions: {
-        permissions: ['storage'],
-        choices: ['function', 'api', 'storage'],
-        resources: ['Todo:@model(appsync)'],
-        resourceChoices: ['Todo:@model(appsync)'],
-        operations: ['read'],
+    await updateFunction(
+      projRoot,
+      {
+        name: fnName,
+        additionalPermissions: {
+          permissions: ['storage'],
+          choices: ['function', 'api', 'storage'],
+          resources: ['Todo:@model(appsync)'],
+          resourceChoices: ['Todo:@model(appsync)'],
+          operations: ['read'],
+          testingWithLatestCodebase: true,
+        },
       },
-    });
-    await amplifyPush(projRoot);
+      'nodejs',
+    );
+    await amplifyPush(projRoot, true);
 
     meta = getProjectMeta(projRoot);
     const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
