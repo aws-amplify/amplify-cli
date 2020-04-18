@@ -1,11 +1,9 @@
-import configure from './configure';
-import { isCI } from './utils';
-import { spawnSync } from 'child_process';
-const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+import { configure, isCI, installAmplifyCLI } from 'amplify-e2e-core';
 
 async function setupAmplify(version: string = 'latest') {
-  // install cli to be used for migration test initialization
-  spawnSync(npm, ['install', '-g', `@aws-amplify/cli@${version}`]);
+  // install CLI to be used for migration test initial project
+  await installAmplifyCLI(version);
+
   if (isCI()) {
     const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
     const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;

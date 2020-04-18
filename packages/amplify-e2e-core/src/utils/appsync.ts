@@ -1,5 +1,5 @@
 import * as url from 'url';
-import { post } from '../utils/request';
+import { post } from './request';
 
 export async function appsyncGraphQLRequest(resource: { [id: string]: any }, op: { query: string; variables: string | null }) {
   const postData = JSON.stringify(op);

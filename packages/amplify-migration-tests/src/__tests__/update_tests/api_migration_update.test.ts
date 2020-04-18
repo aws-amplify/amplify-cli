@@ -8,7 +8,7 @@ import {
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategy,
 } from '../../../../amplify-e2e-tests/src/categories/api';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getTransformConfig, getAppSyncApi } from '../../utils';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getTransformConfig, getAppSyncApi } from 'amplify-e2e-core';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 
 describe('api migration update test', () => {
@@ -30,12 +30,12 @@ describe('api migration update test', () => {
     const initialSchema = 'initial_key_blog.graphql';
     const nextSchema = 'next_key_blog.graphql';
     // init the project and add api with installed cli
-    await initJSProjectWithProfile(projRoot, { name: projectName, local: true });
-    await addApiWithSchema(projRoot, initialSchema, true);
-    await amplifyPush(projRoot, true);
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
     // update api and push with the CLI to be released (the codebase)
     updateApiSchema(projRoot, projectName, nextSchema);
-    await amplifyPushUpdate(projRoot);
+    await amplifyPushUpdate(projRoot, undefined, true);
     const { output } = getProjectMeta(projRoot).api[projectName];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
     expect(GraphQLAPIIdOutput).toBeDefined();
@@ -45,11 +45,11 @@ describe('api migration update test', () => {
 
   it('api update migration with multiauth', async () => {
     // init and add api with installed CLI
-    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth', local: true });
-    await addApiWithSchema(projRoot, 'simple_model.graphql', true);
+    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
     // update and push with codebase
-    await updateApiWithMultiAuth(projRoot, {});
-    await amplifyPush(projRoot);
+    await updateApiWithMultiAuth(projRoot, { testingWithLatestCodebase: true });
+    await amplifyPush(projRoot, true);
 
     const meta = getProjectMeta(projRoot);
     const { output } = meta.api.simplemodelmultiauth;
@@ -90,8 +90,8 @@ describe('api migration update test', () => {
   it('init a sync enabled project and update conflict resolution strategy', async () => {
     const name = `syncenabled`;
     // init and add api with locally installed cli
-    await initJSProjectWithProfile(projRoot, { name, local: true });
-    await addApiWithSchemaAndConflictDetection(projRoot, 'simple_model.graphql', true);
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApiWithSchemaAndConflictDetection(projRoot, 'simple_model.graphql');
 
     let transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
@@ -101,7 +101,7 @@ describe('api migration update test', () => {
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
 
     //update and push with codebase
-    await updateAPIWithResolutionStrategy(projRoot, {});
+    await updateAPIWithResolutionStrategy(projRoot, { testingWithLatestCodebase: true });
 
     transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
@@ -112,7 +112,7 @@ describe('api migration update test', () => {
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('OPTIMISTIC_CONCURRENCY');
 
-    await amplifyPush(projRoot);
+    await amplifyPush(projRoot, true);
     const meta = getProjectMeta(projRoot);
     const { output } = meta.api[name];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;

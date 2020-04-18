@@ -22,6 +22,14 @@ function getProjectMeta(projectRoot: string) {
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 }
 
+function getS3StorageBucketName(projectRoot: string) {
+  const meta = getProjectMeta(projectRoot);
+  const storage = meta['storage'];
+  const s3 = Object.keys(storage).filter(r => storage[r].service === 'S3');
+  const fStorageName = s3[0];
+  return storage[fStorageName].output.BucketName;
+}
+
 function getAwsAndroidConfig(projectRoot: string) {
   const configPath = getAWSConfigAndroidPath(projectRoot);
   return JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -40,4 +48,5 @@ export {
   getAmplifyConfigAndroidPath,
   getAmplifyConfigIOSPath,
   getAWSConfigIOSPath,
+  getS3StorageBucketName,
 };
