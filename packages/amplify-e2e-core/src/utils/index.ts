@@ -9,8 +9,6 @@ export * from './sdk-calls';
 export * from './api';
 export * from './nexpect';
 
-export { getCLIPath, isCI, createNewProjectDir } from 'amplify-e2e-core';
-
 // run dotenv config to update env variable
 config();
 
