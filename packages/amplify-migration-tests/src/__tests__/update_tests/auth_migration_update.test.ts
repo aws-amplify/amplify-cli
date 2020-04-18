@@ -1,14 +1,20 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPushUpdate } from '../../../../amplify-e2e-tests/src/init';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../../../../amplify-e2e-tests/src/init';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { getUserPool, getUserPoolClients, getLambdaFunction } from '../../../../amplify-e2e-tests/src/utils';
 import { addAuthWithCustomTrigger, updateAuthWithoutCustomTrigger } from '../../../../amplify-e2e-tests/src/categories/auth';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../../utils';
+import {
+  getUserPool,
+  getUserPoolClients,
+  getLambdaFunction,
+  createNewProjectDir,
+  deleteProjectDir,
+  getProjectMeta,
+} from 'amplify-e2e-core';
 
 describe('amplify add auth migration', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir('auth migration');
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('auth migration');
   });
 
   afterEach(async () => {
@@ -20,9 +26,9 @@ describe('amplify add auth migration', () => {
   });
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
-    await initJSProjectWithProfile(projRoot, { name: 'authMigrationTest', local: true });
-    await addAuthWithCustomTrigger(projRoot, { local: true });
-    await amplifyPushAuth(projRoot, true);
+    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await addAuthWithCustomTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
 
     const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
@@ -42,8 +48,8 @@ describe('amplify add auth migration', () => {
     expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist,custom');
 
     // update and push with codebase
-    await updateAuthWithoutCustomTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await updateAuthWithoutCustomTrigger(projRoot, { testingWithLatestCodebase: true });
+    await amplifyPushAuth(projRoot, true);
     const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
     expect(updatedDirContents.includes('custom.js')).toBeFalsy();
