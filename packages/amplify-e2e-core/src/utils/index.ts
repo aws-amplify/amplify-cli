@@ -7,6 +7,7 @@ export * from './transformConfig';
 export * from './awsExports';
 export * from './sdk-calls';
 export * from './api';
+export * from './read-json-file';
 export * from './nexpect';
 
 // run dotenv config to update env variable
