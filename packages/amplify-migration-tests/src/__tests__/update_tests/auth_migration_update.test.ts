@@ -1,7 +1,7 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../../../../amplify-e2e-tests/src/init';
-import * as path from 'path';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import { join } from 'path';
 import * as fs from 'fs-extra';
-import { addAuthWithCustomTrigger, updateAuthWithoutCustomTrigger } from '../../../../amplify-e2e-tests/src/categories/auth';
+import { addAuthWithCustomTrigger, updateAuthWithoutCustomTrigger } from 'amplify-e2e-core';
 import {
   getUserPool,
   getUserPoolClients,
@@ -18,7 +18,7 @@ describe('amplify add auth migration', () => {
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (fs.existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }

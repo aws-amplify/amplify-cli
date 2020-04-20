@@ -1,5 +1,5 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../../../amplify-e2e-tests/src/init';
-import * as path from 'path';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from 'amplify-e2e-core';
+import { join } from 'path';
 import { existsSync } from 'fs';
 import {
   addApiWithSchema,
@@ -7,7 +7,7 @@ import {
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategy,
-} from '../../../../amplify-e2e-tests/src/categories/api';
+} from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getTransformConfig, getAppSyncApi } from 'amplify-e2e-core';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 
@@ -18,7 +18,7 @@ describe('api migration update test', () => {
   });
 
   afterEach(async () => {
-    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
