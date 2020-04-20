@@ -2,6 +2,7 @@ import * as which from 'which';
 import * as execa from 'execa';
 import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
 import { executableName, currentSupportedVersion } from '../constants';
+import inquirer from 'inquirer';
 
 export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
   const executablePath = which.sync(executableName, {
@@ -15,15 +16,41 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
     };
   }
 
-  const result = execa.sync(executableName, ['--list-sdks']);
-  const installedSdks = result.stdout;
+  const sdkResult = execa.sync(executableName, ['--list-sdks']);
+  const installedSdks = sdkResult.stdout;
 
-  if (result.exitCode !== 0) {
-    throw new Error(`${executableName} failed, exit code was ${result.exitCode}`);
+  if (sdkResult.exitCode !== 0) {
+    throw new Error(`${executableName} failed SDK detection, exit code was ${sdkResult.exitCode}`);
+  }
+  const sdkInstalled = installedSdks && installedSdks.match(/^3\.1/);
+
+  const toolResult = execa.sync(executableName, ['tool', 'list', '--global']);
+  const installedToolList = toolResult.stdout;
+
+  if (toolResult.exitCode !== 0) {
+    throw new Error(`${executableName} failed tool detection, exit code was ${toolResult.exitCode}`);
   }
 
-  // Verify that a dotnet 3.1 SDK is installed locally
-  if (installedSdks && installedSdks.match(/^3\.1/)) {
+  let toolInstalled = false;
+  let testToolInstalled = false;
+  if (installedToolList) {
+    if (installedToolList.match(/^amazon\.lambda\.tools/m)) {
+      toolInstalled = true;
+    }
+    if (installedToolList.match(/^amazon\.lambda\.testtool-3\.1/m)) {
+      testToolInstalled = true;
+    }
+  }
+
+  if (!toolInstalled) {
+    await installGlobalTool('Amazon.Lambda.Tools');
+  }
+  if (!testToolInstalled) {
+    await installGlobalTool('Amazon.Lambda.TestTool-3.1');
+  }
+
+  // Verify that a dotnet 3.1 SDK and the dotnet Lambda tools is installed locally
+  if (sdkInstalled && toolInstalled) {
     return {
       hasRequiredDependencies: true,
     };
@@ -34,3 +61,18 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
     };
   }
 };
+
+async function installGlobalTool(toolName: string) {
+  let response = await inquirer.prompt({
+    type: 'confirm',
+    name: 'installToolkit',
+    message: `The ${toolName} global tool is required but was not detected.\nWould you like to install this tool?`,
+    default: 'Y',
+  });
+  if (response.installToolkit) {
+    let toolInstallationResult = execa.sync(executableName, ['tool', 'install', '-g', 'Amazon.Lambda.Tools']);
+    if (toolInstallationResult.exitCode !== 0) {
+      throw new Error(`${executableName} failed tool installation, exit code was ${toolInstallationResult.exitCode}`);
+    }
+  }
+}
