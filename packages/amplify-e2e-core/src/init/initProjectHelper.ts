@@ -1,5 +1,4 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../../src';
+import { nspawn as spawn, getCLIPath } from '../../src';
 
 const defaultSettings = {
   name: '\r',
