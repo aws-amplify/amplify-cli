@@ -61,7 +61,7 @@
       [
         "amplify-e2e-core/reporter",
         {
-          "publicPath": "./amplify-e2e-reports",
+          "publicPath": "./amplify-migration-reports",
           "filename": "index.html",
           "expand": true
         }

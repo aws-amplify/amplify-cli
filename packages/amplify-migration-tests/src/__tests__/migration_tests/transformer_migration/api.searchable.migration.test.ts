@@ -1,5 +1,5 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../../../../amplify-e2e-tests/src/init';
-import { addApiWithSchema, updateApiSchema } from '../../../../../amplify-e2e-tests/src/categories/api';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from 'amplify-e2e-core';
+import { addApiWithSchema, updateApiSchema } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 
 describe('amplify searchable migration', () => {
