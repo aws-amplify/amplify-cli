@@ -2,7 +2,7 @@ import Output from 'cloudform-types/types/output';
 import AppSync from 'cloudform-types/types/appSync';
 import IAM from 'cloudform-types/types/iam';
 import Template from 'cloudform-types/types/template';
-import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform-types';
+import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs, UpdatePolicy } from 'cloudform-types';
 import {
   ElasticsearchMappingTemplate,
   print,
@@ -53,14 +53,19 @@ export class ResourceFactory {
         Default: 1,
         AllowedValues: [0, 1],
       }),
+      [ResourceConstants.PARAMETERS.ElasticsearchVersion]: new NumberParameter({
+        Description: 'Elasticsearch version number -> Support for t2.micro',
+        Default: 2.3,
+      }),
       [ResourceConstants.PARAMETERS.ElasticsearchInstanceCount]: new NumberParameter({
         Description: 'The number of instances to launch into the Elasticsearch domain.',
         Default: 1,
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchInstanceType]: new StringParameter({
         Description: 'The type of instance to launch into the Elasticsearch domain.',
-        Default: 't2.small.elasticsearch',
+        Default: 't2.micro.elasticsearch',
         AllowedValues: [
+          't2.micro.elasticsearch',
           't2.small.elasticsearch',
           't2.medium.elasticsearch',
           'c4.large.elasticsearch',
@@ -118,6 +123,7 @@ export class ResourceFactory {
         [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
         [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(),
       },
+      Conditions: { [ResourceConstants.CONDITIONS.CheckInstanceForUpgrade]: this.checkInstanceForUpgrade() },
       Mappings: this.getLayerMapping(),
       Outputs: {
         [ResourceConstants.OUTPUTS.ElasticsearchDomainArn]: this.makeDomainArnOutput(),
@@ -410,7 +416,7 @@ export class ResourceFactory {
   public makeElasticsearchDomain() {
     return new Elasticsearch.Domain({
       DomainName: this.domainName(),
-      ElasticsearchVersion: '6.2',
+      ElasticsearchVersion: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchVersion),
       ElasticsearchClusterConfig: {
         ZoneAwarenessEnabled: false,
         InstanceCount: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchInstanceCount),
@@ -421,7 +427,11 @@ export class ResourceFactory {
         VolumeType: 'gp2',
         VolumeSize: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchEBSVolumeGB),
       },
-    });
+    }).updatePolicy({ EnableVersionUpgrade: Fn.If(ResourceConstants.CONDITIONS.CheckInstanceForUpgrade, false, true) } as UpdatePolicy);
+  }
+
+  private checkInstanceForUpgrade() {
+    return Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchInstanceType), 't2.micro.elasticsearch');
   }
 
   /**
@@ -468,11 +478,7 @@ export class ResourceFactory {
                 match_all: obj({}),
               }),
             ),
-            sort: list([
-              raw(
-                '{$sortField0: { "order" : $util.toJson($sortDirection) }}',
-              ),
-            ]),
+            sort: list([raw('{$sortField0: { "order" : $util.toJson($sortDirection) }}')]),
           }),
         ]),
       ),

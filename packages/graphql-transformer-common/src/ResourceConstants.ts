@@ -55,6 +55,7 @@ export class ResourceConstants {
     ElasticsearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
     ElasticsearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
     ElasticsearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
+    ElasticsearchVersion: 'ElasticSearchVersion',
 
     // Auth
     AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
@@ -72,6 +73,9 @@ export class ResourceConstants {
     // Auth
     ShouldCreateAPIKey: 'ShouldCreateAPIKey',
     APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
+
+    //Elasticsearch
+    CheckInstanceForUpgrade: 'CheckInstanceForUpgrade',
   };
   public static OUTPUTS = {
     // AppSync

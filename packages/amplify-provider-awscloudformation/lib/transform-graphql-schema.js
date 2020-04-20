@@ -443,6 +443,19 @@ async function transformGraphQLSchema(context, options) {
 
   if (directiveMap.directives.includes('searchable')) {
     searchableTransformerFlag = true;
+    if (context.input.command === 'add') {
+      parameters.ElasticSearchInstanceType = 't2.micro.elasticsearch';
+      parameters.ElasticSearchVersion = '2.3';
+    } else {
+      // for users with existing resources
+      if (parameters.ElasticSearchInstanceType === undefined) {
+        parameters.ElasticSearchInstanceType = 't2.small.elasticsearch';
+        parameters.ElasticSearchVersion = '6.2';
+      }
+    }
+    // adding to parameters file for update check
+    const jsonString = JSON.stringify(parameters, null, 4);
+    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
   }
 
   const buildConfig = {

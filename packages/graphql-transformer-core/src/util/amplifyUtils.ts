@@ -62,6 +62,7 @@ async function _buildProject(opts: ProjectOptions) {
   if (userProjectConfig.config && userProjectConfig.config.Migration) {
     transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
   }
+
   const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
   return merged;
 }
