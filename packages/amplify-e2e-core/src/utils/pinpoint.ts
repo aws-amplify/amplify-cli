@@ -1,5 +1,5 @@
 import { Pinpoint } from 'aws-sdk';
-import { nspawn as spawn, getCLIPath } from '../../src';
+import { getCLIPath, nspawn as spawn } from '../../src';
 
 const settings = {
   name: '\r',
