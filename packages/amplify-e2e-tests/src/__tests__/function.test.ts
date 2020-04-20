@@ -1,19 +1,20 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../init';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
+import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
+import { addSimpleDDB } from 'amplify-e2e-core';
+import { addKinesis } from 'amplify-e2e-core';
 import {
-  addFunction,
-  updateFunction,
-  functionBuild,
-  addLambdaTrigger,
-  functionMockAssert,
-  functionCloudInvoke,
-} from '../categories/function';
-import { addSimpleDDB } from '../categories/storage';
-import { addKinesis } from '../categories/analytics';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, sleep, overrideFunctionSrc, getFunctionSrc } from '../utils';
-import { addApiWithSchema } from '../categories/api';
+  createNewProjectDir,
+  deleteProjectDir,
+  getProjectMeta,
+  getFunction,
+  sleep,
+  overrideFunctionSrc,
+  getFunctionSrc,
+} from 'amplify-e2e-core';
+import { addApiWithSchema } from 'amplify-e2e-core';
 
-import { appsyncGraphQLRequest } from '../utils/appsync';
-import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule } from '../utils/sdk-calls';
+import { appsyncGraphQLRequest } from 'amplify-e2e-core';
+import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
 

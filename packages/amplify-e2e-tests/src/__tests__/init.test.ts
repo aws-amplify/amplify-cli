@@ -1,5 +1,11 @@
-import { initJSProjectWithProfile, deleteProject, initProjectWithAccessKey, initNewEnvWithAccessKey, initNewEnvWithProfile } from '../init';
-import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from '../utils';
+import {
+  initJSProjectWithProfile,
+  deleteProject,
+  initProjectWithAccessKey,
+  initNewEnvWithAccessKey,
+  initNewEnvWithProfile,
+} from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from 'amplify-e2e-core';
 
 describe('amplify init', () => {
   let projRoot: string;
