@@ -603,6 +603,9 @@ workflows:
       - test:
           requires:
             - build
+      - mock_e2e_tests:
+          requires:
+            - build
       - graphql_e2e_tests:
           filters:
             branches:
@@ -612,9 +615,6 @@ workflows:
           requires:
             - build
             - mock_e2e_tests
-      - mock_e2e_tests:
-          requires:
-            - build
       - integration_test:
           filters:
             branches:
@@ -651,11 +651,11 @@ workflows:
           requires:
             - build
             - test
-            - integration_test
+            - mock_e2e_tests
             - graphql_e2e_tests
+            - integration_test
             - amplify_e2e_tests
             - amplify_console_integration_tests
-            - mock_e2e_tests
           filters:
             branches:
               only:

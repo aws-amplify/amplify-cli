@@ -6,6 +6,7 @@ const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 
 export async function provideHelloWorld(request: ContributionRequest): Promise<FunctionTemplateParameters> {
   const files = [
+    '.gitignore',
     'HelloWorld/aws-lambda-tools-defaults.json.ejs',
     'HelloWorld/Function.csproj.ejs',
     'HelloWorld/FunctionHandler.cs.ejs',
@@ -18,6 +19,7 @@ export async function provideHelloWorld(request: ContributionRequest): Promise<F
       sourceFiles: files,
       defaultEditorFile: handlerSource,
       destMap: {
+        '.gitignore': path.join('src', '.gitignore'),
         'HelloWorld/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
         'HelloWorld/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
         'HelloWorld/FunctionHandler.cs.ejs': handlerSource,
