@@ -213,6 +213,24 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
 
+  amplify_migration_test_latest:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run migration test with latest version
+          command: |
+            cd packages/amplify-migration-tests
+            yarn run migration --maxWorkers=3
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+
   amplify_console_integration_tests:
     <<: *defaults
     steps:
@@ -600,30 +618,37 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - test:
-          requires:
-            - build
-      - mock_e2e_tests:
-          requires:
-            - build
-      - graphql_e2e_tests:
-          filters:
-            branches:
-              only:
-                - master
-                - graphql_e2e_testing
-          requires:
-            - build
-            - mock_e2e_tests
-      - integration_test:
-          filters:
-            branches:
-              only:
-                - master
-                - beta
-          requires:
-            - build
-            - mock_e2e_tests
+      - amplify-migration-tests:
+        filters:
+          branches:
+            only:
+              - master
+        requires:
+          - build
+      # - test:
+      #     requires:
+      #       - build
+      # - mock_e2e_tests:
+      #     requires:
+      #       - build
+      # - graphql_e2e_tests:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - graphql_e2e_testing
+      #     requires:
+      #       - build
+      #       - mock_e2e_tests
+      # - integration_test:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - beta
+      #     requires:
+      #       - build
+      #       - mock_e2e_tests
       - publish_to_local_registry:
           filters:
             branches:
@@ -639,29 +664,29 @@ workflows:
                 - master
           requires:
             - publish_to_local_registry
-      - amplify_console_integration_tests:
-          filters:
-            branches:
-              only:
-                - beta
-          requires:
-            - build
-            - publish_to_local_registry
-      - deploy:
-          requires:
-            - build
-            - test
-            - mock_e2e_tests
-            - graphql_e2e_tests
-            - integration_test
-            - amplify_e2e_tests
-            - amplify_console_integration_tests
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - beta
+      # - amplify_console_integration_tests:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - beta
+      #     requires:
+      #       - build
+      #       - publish_to_local_registry
+      # - deploy:
+      #     requires:
+      #       - build
+      #       - test
+      #       - mock_e2e_tests
+      #       - graphql_e2e_tests
+      #       - integration_test
+      #       - amplify_e2e_tests
+      #       - amplify_console_integration_tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - beta
       # - integration_test_js:
       #     filters:
       #       branches:
