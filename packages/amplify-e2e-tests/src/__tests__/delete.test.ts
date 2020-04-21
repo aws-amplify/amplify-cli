@@ -11,7 +11,6 @@ import {
   deleteProjectDir,
   getProjectMeta,
   getS3StorageBucketName,
-  getAWSExportsPath,
   getAWSConfigIOSPath,
   getAmplifyConfigIOSPath,
   getAWSConfigAndroidPath,
@@ -25,6 +24,7 @@ import { amplifyPushWithoutCodegen } from 'amplify-e2e-core';
 import { addAuthWithDefault } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as pinpointHelper from 'amplify-e2e-core';
+import { getAWSExportsPath } from '../aws-exports/awsExports';
 import _ from 'lodash';
 
 describe('amplify delete', () => {
