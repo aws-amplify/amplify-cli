@@ -310,10 +310,12 @@ export class ResourceFactory {
     connectionAttributes: string[],
     keySchema: KeySchema[],
     indexName: string,
+    limit?: number,
   ) {
     const defaultPageLimit = 10;
+    const pageLimit = limit || defaultPageLimit;
     const setup: Expression[] = [
-      set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+      set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${pageLimit})`)),
       set(ref('query'), this.makeExpression(keySchema, connectionAttributes)),
     ];
 

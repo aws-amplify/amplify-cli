@@ -575,6 +575,54 @@ test('Test ModelConnectionTransformer uses the default limit', () => {
   expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 10) )');
 });
 
+test('Test ModelConnectionTransformer with keyField overrides the default limit', () => {
+  const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(limit: 50, fields: ["id"])
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
+
+  // Post.comments field
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
+});
+
+test('Test ModelConnectionTransformer with keyField uses the default limit', () => {
+  const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(fields: ["id"])
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
+
+  // Post.comments field
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 10) )');
+});
+
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
   for (const fieldName of fields) {
     const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName);

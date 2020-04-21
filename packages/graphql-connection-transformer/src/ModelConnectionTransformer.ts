@@ -41,6 +41,7 @@ const CONNECTION_STACK_NAME = 'ConnectionStack';
 interface RelationArguments {
   keyName?: string;
   fields: string[];
+  limit?: number;
 }
 
 function makeConnectionAttributeName(type: string, field?: string) {
@@ -610,6 +611,7 @@ export class ModelConnectionTransformer extends Transformer {
         args.fields,
         keySchema,
         index ? String(index.IndexName) : undefined,
+        args.limit,
       );
 
       ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver);
