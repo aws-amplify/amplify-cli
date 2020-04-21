@@ -23,7 +23,7 @@ import { addS3 } from 'amplify-e2e-core';
 import { amplifyPushWithoutCodegen } from 'amplify-e2e-core';
 import { addAuthWithDefault } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
-import * as pinpointHelper from 'amplify-e2e-core';
+import { initProject, addPinpointAnalytics, pushToCloud, pinpointAppExist, amplifyDelete } from 'amplify-e2e-core';
 import { getAWSExportsPath } from '../aws-exports/awsExports';
 import _ from 'lodash';
 
@@ -72,15 +72,15 @@ describe('amplify delete', () => {
   //   await deleteAmplifyApp(AmplifyAppId, Region);
   // });
   it('should delete pinpoint project', async () => {
-    await pinpointHelper.initProject(projRoot);
-    const pinpointResourceName = await pinpointHelper.addPinpointAnalytics(projRoot);
-    await pinpointHelper.pushToCloud(projRoot);
+    await initProject(projRoot);
+    const pinpointResourceName = await addPinpointAnalytics(projRoot);
+    await pushToCloud(projRoot);
     const amplifyMeta = getProjectMeta(projRoot);
     const pintpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
-    let pinpointAppExists = await pinpointHelper.pinpointAppExist(pintpointAppId);
+    let pinpointAppExists = await pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeTruthy();
-    await pinpointHelper.amplifyDelete(projRoot);
-    pinpointAppExists = await pinpointHelper.pinpointAppExist(pintpointAppId);
+    await amplifyDelete(projRoot);
+    pinpointAppExists = await pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeFalsy();
   });
 

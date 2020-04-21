@@ -1,5 +1,11 @@
 import { configure, isCI, installAmplifyCLI } from 'amplify-e2e-core';
 
+/*
+ *  Migration tests must be run without publishing to local registry
+ *  so that the CLI used initally is the installed version and the
+ *  tested CLI is the codebase (bin/amplify)
+ */
+
 async function setupAmplify(version: string = 'latest') {
   // install CLI to be used for migration test initial project
   await installAmplifyCLI(version);
