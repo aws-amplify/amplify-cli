@@ -1,4 +1,4 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from '../../src';
+import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
 import { nodeJSTemplateChoices, selectRuntime } from './function';
