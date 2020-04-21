@@ -1,4 +1,4 @@
-import { configure, isCI, installAmplifyCLI } from 'amplify-e2e-core';
+import { amplifyConfigure as configure, isCI, installAmplifyCLI } from 'amplify-e2e-core';
 
 /*
  *  Migration tests must be run without publishing to local registry
