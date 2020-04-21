@@ -263,6 +263,44 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+    working_directory: ~/repo
+
+  amplify_migration_tests_v4.0.0:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run tests migrating from v4.0.0
+          command: |
+            cd packages/amplify-migration-tests
+            yarn run migration_v4.0.0 --maxWorkers=3
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+
+  amplify_migration_tests_latest:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run tests migrating from latest version
+          command: |
+            cd packages/amplify-migration-tests
+            yarn run migration --maxWorkers=3
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+
   amplify_console_integration_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -862,6 +900,20 @@ workflows:
           requires:
             - build
             - mock_e2e_tests
+      - amplify_migration_tests_v4.0.0:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build
+      - amplify_migration_tests_latest:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build
       - publish_to_local_registry:
           filters:
             branches:
