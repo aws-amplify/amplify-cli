@@ -619,12 +619,13 @@ workflows:
     jobs:
       - build
       - amplify-migration-tests:
-        filters:
-          branches:
-            only:
-              - master
-        requires:
-          - build
+          filters:
+            branches:
+              only:
+                - master
+                - migrationTestingCI
+          requires:
+            - build
       # - test:
       #     requires:
       #       - build
@@ -655,6 +656,7 @@ workflows:
               only:
                 - master
                 - beta
+                - migrationTestingCI
           requires:
             - build
       - amplify_e2e_tests:
@@ -662,6 +664,7 @@ workflows:
             branches:
               only:
                 - master
+                - migrationTestingCI
           requires:
             - publish_to_local_registry
       # - amplify_console_integration_tests:
