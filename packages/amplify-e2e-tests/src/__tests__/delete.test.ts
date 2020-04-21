@@ -205,7 +205,7 @@ async function bucketNotExists(bucket: string) {
   const s3 = new S3();
   const params = {
     Bucket: bucket,
-    $waiter: { maxAttempts: 10 },
+    $waiter: { maxAttempts: 10, delay: 30 },
   };
   try {
     await s3.waitFor('bucketNotExists', params).promise();
