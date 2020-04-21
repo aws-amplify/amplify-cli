@@ -1,7 +1,5 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '../../src';
 
-const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
-
 export function addSimpleDDB(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
