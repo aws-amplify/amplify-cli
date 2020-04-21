@@ -213,7 +213,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
 
-  amplify_migration_test_latest:
+  amplify_migration_tests_latest:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -618,7 +618,7 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - amplify-migration-tests:
+      - amplify_migration_tests_latest:
           filters:
             branches:
               only:
