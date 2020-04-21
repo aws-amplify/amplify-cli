@@ -17,6 +17,7 @@
   ],
   "private": true,
   "scripts": {
+    "migration_v4.0.0": "npm run setup-profile 4.0.0 && jest --verbose",
     "migration": "npm run setup-profile latest && jest --verbose",
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },

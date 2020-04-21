@@ -39,7 +39,7 @@ export async function installAmplifyCLI(version: string = 'latest') {
 
     amplifyCLIInstall.on('exit', code => {
       if (code === 0) {
-        console.log(`Successfully installed Amplify CLI.`);
+        console.log(`Successfully installed Amplify CLI version ${version}.`);
         resolve();
       } else {
         console.log(`Failed to install Amplify CLI. Please ensure a valid version was passed`);
