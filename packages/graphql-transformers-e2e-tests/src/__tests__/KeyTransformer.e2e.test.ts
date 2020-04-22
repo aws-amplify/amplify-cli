@@ -139,6 +139,46 @@ afterAll(async () => {
 /**
  * Test queries below
  */
+test('Test next token with key', async () => {
+  const status = 'PENDING';
+  const createdAt = '2019-06-06T00:01:01.000Z';
+  // createItems
+  await createItem('order1', status, 'item1', '2019-01-06T00:01:01.000Z');
+  await createItem('order2', status, 'item2', '2019-02-06T00:01:01.000Z');
+  await createItem('order3', status, 'item3', '2019-03-06T00:01:01.000Z');
+  await createItem('order4', status, 'item4', '2019-06-06T00:01:01.000Z');
+  // query itemsByCreatedAt with limit of 2
+  // const items = await itemsByCreatedAt(createdAt, { beginsWith: status }, 2);
+  const items = await itemsByStatus(status, { beginsWith: '2019' }, 2);
+  expect(items.data).toBeDefined();
+  const itemsNextToken = items.data.itemsByStatus.nextToken;
+  expect(itemsNextToken).toBeDefined();
+  // get first two values
+  expect(items.data.itemsByStatus.items).toHaveLength(2);
+  expect(items.data.itemsByStatus.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ orderId: 'order1', name: 'item1' }),
+      expect.objectContaining({ orderId: 'order2', name: 'item2' }),
+    ]),
+  );
+  // use next token to get other values
+  const items2 = await itemsByStatus(status, { beginsWith: '2019' }, 2, itemsNextToken);
+  expect(items2.data).toBeDefined();
+  // get last two values
+  expect(items2.data.itemsByStatus.items).toHaveLength(2);
+  expect(items2.data.itemsByStatus.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ orderId: 'order3', name: 'item3' }),
+      expect.objectContaining({ orderId: 'order4', name: 'item4' }),
+    ]),
+  );
+  // deleteItems
+  await deleteItem('order1', status, createdAt);
+  await deleteItem('order2', status, createdAt);
+  await deleteItem('order3', status, createdAt);
+  await deleteItem('order4', status, createdAt);
+});
+
 test('Test getX with a two part primary key.', async () => {
   const order1 = await createOrder('test@gmail.com', '1');
   const getOrder1 = await getOrder('test@gmail.com', order1.data.createOrder.createdAt);

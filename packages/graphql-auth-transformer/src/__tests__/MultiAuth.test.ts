@@ -329,12 +329,12 @@ describe('Type directive transformation tests', () => {
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expect(expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
-    expect(expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']);
+    expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']);
 
-    expect(expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
   });
 
   test(`'public' with IAM provider adds policy for Unauth role`, () => {
@@ -355,15 +355,15 @@ describe('Type directive transformation tests', () => {
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expect(expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
-    expect(expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']);
+    expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']);
 
-    expect(expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
 
     const postType = getObjectType(schemaDoc, 'Post');
-    expect(expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']);
 
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Determine request authentication mode';
@@ -380,15 +380,15 @@ describe('Type directive transformation tests', () => {
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expect(expectOne(getField(queryType, 'getPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(queryType, 'listPosts'), 'aws_cognito_user_pools'));
+    expectOne(getField(queryType, 'getPost'), 'aws_cognito_user_pools');
+    expectOne(getField(queryType, 'listPosts'), 'aws_cognito_user_pools');
 
-    expect(expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
 
     const postType = getObjectType(schemaDoc, 'Post');
-    expect(expectOne(getField(postType, 'protected'), 'aws_cognito_user_pools'));
+    expectOne(getField(postType, 'protected'), 'aws_cognito_user_pools');
 
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Determine request authentication mode';
@@ -405,15 +405,15 @@ describe('Type directive transformation tests', () => {
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expect(expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
-    expect(expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']);
+    expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']);
 
-    expect(expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
 
     const postType = getObjectType(schemaDoc, 'Post');
-    expect(expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']);
 
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Determine request authentication mode';

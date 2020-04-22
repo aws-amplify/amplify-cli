@@ -437,11 +437,12 @@ export class ModelAuthTransformer extends Transformer {
       );
     }
     const modelDirective = parent.directives.find(dir => dir.name.value === 'model');
-    if (
+    const isParentTypeBuiltinType =
       parent.name.value === ctx.getQueryTypeName() ||
       parent.name.value === ctx.getMutationTypeName() ||
-      parent.name.value === ctx.getSubscriptionTypeName()
-    ) {
+      parent.name.value === ctx.getSubscriptionTypeName();
+
+    if (isParentTypeBuiltinType) {
       console.warn(
         `Be careful when using @auth directives on a field in a root type. @auth directives on field definitions use the source \
 object to perform authorization logic and the source will be an empty object for fields on root types. \
@@ -453,7 +454,7 @@ Static group authorization should perform as expected.`,
     const rules = this.getAuthRulesFromDirective(directive);
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
-    this.validateFieldRules(rules);
+    this.validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined);
     // Check the rules if we've to generate IAM policies for Unauth role or not
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
@@ -465,7 +466,8 @@ Static group authorization should perform as expected.`,
     // or
     // - The type has @auth rules for the default provider
     const includeDefault = this.isTypeNeedsDefaultProviderAccess(parent);
-    const typeDirectives = this.getDirectivesForRules(rules, includeDefault);
+    // Should not propagate auth directives onto Query/Mutation/Subscription types
+    const typeDirectives = isParentTypeBuiltinType ? [] : this.getDirectivesForRules(rules, includeDefault);
 
     if (typeDirectives.length > 0) {
       this.extendTypeWithDirectives(ctx, parent.name.value, typeDirectives);
@@ -507,6 +509,12 @@ Static group authorization should perform as expected.`,
       const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule));
       this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration);
     } else {
+      const directives = this.getDirectivesForRules(rules, false);
+
+      if (directives.length > 0) {
+        this.addDirectivesToField(ctx, parent.name.value, definition.name.value, directives);
+      }
+
       // if @auth is used without @model only generate static group rules
       const staticGroupRules = rules.filter((rule: AuthRule) => rule.groups);
       this.protectField(ctx, parent, definition, staticGroupRules);
@@ -552,30 +560,37 @@ Static group authorization should perform as expected.`,
     field: FieldDefinitionNode,
     staticGroupRules: AuthRule[],
   ) {
-    const typeName = parent.name.value;
-    const fieldName = field.name.value;
-    const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
-    let fieldResolverResource = ctx.getResource(resolverResourceId);
-    // add logic here to only use static group rules
-    const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
-    const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
-    const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized(field);
-    const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
-    const templateParts = [print(compoundExpression(authCheckExpressions))];
-    // if the field resolver does not exist create it
-    if (!fieldResolverResource) {
-      fieldResolverResource = this.resources.blankResolver(typeName, fieldName);
-      ctx.setResource(resolverResourceId, fieldResolverResource);
-      // add none ds if that does not exist
-      const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource);
-      if (!noneDS) {
-        ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource());
+      const typeName = parent.name.value;
+      const fieldName = field.name.value;
+      const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+      let fieldResolverResource = ctx.getResource(resolverResourceId);
+
+      const templateParts = [];
+
+      if (staticGroupRules && staticGroupRules.length) {
+        // add logic here to only use static group rules
+        const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
+        const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
+        const throwIfUnauthorizedExpression = this.resources.throwIfStaticGroupUnauthorized(field);
+        const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
+
+        templateParts.push(print(compoundExpression(authCheckExpressions)));
       }
-    } else {
-      templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
-    }
-    fieldResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n');
-    ctx.setResource(resolverResourceId, fieldResolverResource);
+
+      // if the field resolver does not exist create it
+      if (!fieldResolverResource) {
+        fieldResolverResource = this.resources.blankResolver(typeName, fieldName);
+        ctx.setResource(resolverResourceId, fieldResolverResource);
+        // add none ds if that does not exist
+        const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource);
+        if (!noneDS) {
+          ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource());
+        }
+      } else {
+        templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
+      }
+      fieldResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n');
+      ctx.setResource(resolverResourceId, fieldResolverResource);
   }
 
   private protectReadForField(
@@ -941,7 +956,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     }
   }
 
-  private validateFieldRules(rules: AuthRule[]) {
+  private validateFieldRules(rules: AuthRule[], isParentTypeBuiltinType: boolean, parentHasModelDirective: boolean) {
     for (const rule of rules) {
       this.validateRuleAuthStrategy(rule);
 
@@ -952,6 +967,21 @@ Either make the field optional, set auth on the object and not the field, or dis
 All @auth directives used on field definitions are performed when the field is resolved and can be thought of as 'read' operations.`,
         );
       }
+
+      if (isParentTypeBuiltinType && rule.operations && rule.operations.length > 0) {
+        throw new InvalidDirectiveError(
+          `@auth rules on fields within Query, Mutation, Subscription cannot specify 'operations' argument as these rules \
+are already on an operation already.`
+        );
+      }
+
+      if (!parentHasModelDirective && rule.operations && rule.operations.length > 0) {
+        throw new InvalidDirectiveError(
+          `@auth rules on fields within types that does not have @model directive cannot specify 'operations' argument as there are \
+operations will be generated by the CLI.`
+        );
+      }
+
       this.commonRuleValidation(rule);
     }
   }
@@ -1988,7 +2018,7 @@ All @auth directives used on field definitions are performed when the field is r
     // @auth(rules: [{allow: owner},{allow: public, operations: [read]}])
     //
     // Then we need to add @aws_api_key on the create mutation together with the
-    // @aws_cognito_useR_pools, but we cannot add @was_api_key to other operations
+    // @aws_cognito_user_pools, but we cannot add @aws_api_key to other operations
     // since that is not allowed by the rule.
     //
 

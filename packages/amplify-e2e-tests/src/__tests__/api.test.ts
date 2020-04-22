@@ -1,20 +1,32 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../init';
+import { amplifyPush, amplifyPushUpdate, deleteProject, initJSProjectWithProfile } from 'amplify-e2e-core';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import {
   addApiWithSchema,
+  addApiWithSchemaAndConflictDetection,
+  addRestApi,
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategy,
-  addApiWithSchemaAndConflictDetection,
-} from '../categories/api';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getTransformConfig, getAppSyncApi } from '../utils';
+} from 'amplify-e2e-core';
+import { addFunction } from 'amplify-e2e-core';
+import { addSimpleDDB } from 'amplify-e2e-core';
+import {
+  checkIfBucketExists,
+  createNewProjectDir,
+  deleteProjectDir,
+  getAppSyncApi,
+  getDDBTable,
+  getLambdaFunction,
+  getProjectMeta,
+  getTransformConfig,
+} from 'amplify-e2e-core';
 import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 
-describe('amplify add api', () => {
+describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('graphql-api');
   });
 
   afterEach(async () => {
@@ -249,4 +261,83 @@ describe('amplify add api', () => {
   //     expect(del.TableDescription).toBeDefined()
   //   }
   // });
+});
+
+describe('amplify add api (REST)', () => {
+  let projRoot: string;
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('rest-api');
+  });
+
+  afterEach(async () => {
+    const meta = getProjectMeta(projRoot);
+    expect(meta.providers.awscloudformation).toBeDefined();
+    const {
+      AuthRoleArn: authRoleArn,
+      UnauthRoleArn: unauthRoleArn,
+      DeploymentBucketName: bucketName,
+      Region: region,
+      StackId: stackId,
+    } = meta.providers.awscloudformation;
+    expect(authRoleArn).toBeDefined();
+    expect(unauthRoleArn).toBeDefined();
+    expect(region).toBeDefined();
+    expect(stackId).toBeDefined();
+    const bucketExists = await checkIfBucketExists(bucketName, region);
+    expect(bucketExists).toMatchObject({});
+
+    expect(meta.function).toBeDefined();
+    let seenAtLeastOneFunc = false;
+    for (let key of Object.keys(meta.function)) {
+      const {
+        service,
+        build,
+        lastBuildTimeStamp,
+        lastPackageTimeStamp,
+        distZipFilename,
+        lastPushTimeStamp,
+        lastPushDirHash,
+      } = meta.function[key];
+      expect(service).toBe('Lambda');
+      expect(build).toBeTruthy();
+      expect(lastBuildTimeStamp).toBeDefined();
+      expect(lastPackageTimeStamp).toBeDefined();
+      expect(distZipFilename).toBeDefined();
+      expect(lastPushTimeStamp).toBeDefined();
+      expect(lastPushDirHash).toBeDefined();
+      seenAtLeastOneFunc = true;
+    }
+    expect(seenAtLeastOneFunc).toBeTruthy();
+
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('init a project, add a DDB, then add a crud rest api', async () => {
+    const DDB_NAME = 'ddb';
+    await initJSProjectWithProfile(projRoot, {});
+    await addSimpleDDB(projRoot, { name: DDB_NAME });
+    await addRestApi(projRoot, { isCrud: true });
+    await amplifyPushUpdate(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    expect(meta.storage[DDB_NAME]).toBeDefined();
+    const { service, lastPushTimeStamp, lastPushDirHash } = meta.storage[DDB_NAME];
+    expect(service).toBe('DynamoDB');
+    expect(lastPushTimeStamp).toBeDefined();
+    expect(lastPushDirHash).toBeDefined();
+  });
+
+  it('init a project, then add a serverless rest api', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addRestApi(projRoot, { isCrud: false });
+    await amplifyPushUpdate(projRoot);
+  });
+
+  it('init a project, create lambda and attach it to an api', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addRestApi(projRoot, { existingLambda: true });
+    await amplifyPushUpdate(projRoot);
+  });
 });

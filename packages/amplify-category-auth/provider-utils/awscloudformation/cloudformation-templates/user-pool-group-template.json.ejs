@@ -5,10 +5,12 @@
             "Type": "String",
             "Default": "auth<%= props.cognitoResourceName %>UserPoolId"
         },
+        <% if (props.identityPoolName) { %>
         "auth<%= props.cognitoResourceName %>IdentityPoolId": {
             "Type": "String",
             "Default": "auth<%= props.cognitoResourceName %>IdentityPoolId"
         },
+        <% } %>
         "auth<%= props.cognitoResourceName %>AppClientID": {
             "Type": "String",
             "Default": "auth<%= props.cognitoResourceName %>AppClientID"
@@ -44,17 +46,20 @@
           "Properties" : {
               "GroupName" : "<%= props.groups[i].groupName %>",
               "Precedence" : <%= props.groups[i].precedence %>,
+              <% if (props.identityPoolName) { %>
               "RoleArn" : {
                 "Fn::GetAtt": [
                     "<%= props.groups[i].groupName %>GroupRole",
                     "Arn"
                 ]
               },
+              <% } %>
               "UserPoolId" : {
                 "Ref": "auth<%= props.cognitoResourceName %>UserPoolId"
               } 
             }
         },
+        <% if (props.identityPoolName) { %>
         "<%= props.groups[i].groupName %>GroupRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -78,7 +83,11 @@
                             "Principal": {
                                 "Federated": "cognito-identity.amazonaws.com"
                             },
-                            "Action": "sts:AssumeRoleWithWebIdentity"
+                            "Action": "sts:AssumeRoleWithWebIdentity",
+                            "Condition": {
+                              "StringEquals": {"cognito-identity.amazonaws.com:aud": {"Ref":"auth<%= props.cognitoResourceName %>IdentityPoolId"}},
+                              "ForAnyValue:StringLike": {"cognito-identity.amazonaws.com:amr": "authenticated"}
+                            }
                         }
                     ]
                 }<% if(props.groups[i].customPolicies && props.groups[i].customPolicies.length > 0) { %>,
@@ -86,7 +95,9 @@
                 <% } %>
             }
         },
+     <% } %>
     <% } %>
+    <% if (props.identityPoolName) { %>
         "LambdaExecutionRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -281,7 +292,9 @@
             },
             "DependsOn": ["RoleMapFunction"]
         }
+   <% } %>
     },
+    <% if (props.identityPoolName) { %>
     "Outputs": {
       <% for(var i=0; i < props.groups.length; i++) { %>
         "<%= props.groups[i].groupName %>GroupRole": {
@@ -298,4 +311,5 @@
         <% } %>
       <% } %>
     }
+    <% } %>
 }

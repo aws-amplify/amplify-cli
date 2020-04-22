@@ -44,11 +44,8 @@ export class StorageServer extends EventEmitter {
     super();
     this.localDirectoryPath = config.localDirS3;
     this.app = express();
-    this.app.use(express.json());
     this.app.use(cors(corsOptions));
     this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
-    this.app.use(bodyParser.json({ limit: '50mb', type: '*/*' }));
-    this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: false, type: '*/*' }));
     this.app.use(serveStatic(this.localDirectoryPath), this.handleRequestAll.bind(this));
 
     this.server = null;
@@ -261,7 +258,6 @@ export class StorageServer extends EventEmitter {
       );
       let buf = Buffer.concat(arr);
       writeFileSync(directoryPath, buf);
-
       // event trigger for multipart post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);

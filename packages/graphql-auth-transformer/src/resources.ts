@@ -763,6 +763,15 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     return block('Throw if unauthorized', [ifUnauthThrow]);
   }
 
+  public throwIfStaticGroupUnauthorized(field?: FieldDefinitionNode): Expression {
+    const staticGroupAuthorizedVariable = this.getStaticAuthorizationVariable(field);
+    const ifUnauthThrow = iff(
+      equals(ref(staticGroupAuthorizedVariable), raw('false')),
+      raw('$util.unauthorized()')
+    );
+    return block('Throw if unauthorized', [ifUnauthThrow]);
+  }
+
   // A = IsStaticallyAuthed
   // B = AuthConditionIsNotNull
   // ! (A OR B) == (!A AND !B)

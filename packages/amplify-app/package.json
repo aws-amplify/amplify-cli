@@ -1,6 +1,6 @@
 {
   "name": "amplify-app",
-  "version": "2.13.4",
+  "version": "2.16.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
   },
   "engines": {
     "node": ">=10.0.0",
-    "@aws-amplify/cli": ">=4.13.2"
+    "@aws-amplify/cli": ">=4.18.0"
   },
   "dependencies": {
     "amplify-frontend-android": "2.13.2",

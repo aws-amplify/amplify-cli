@@ -34,7 +34,7 @@ export class AppSyncModelJavaVisitor<
     const result: string[] = [this.generatePackageName(), '', this.generateImportStatements(LOADER_IMPORT_PACKAGES)];
     result.push(
       transformComment(dedent` Contains the set of model classes that implement {@link Model}
-    interface.`)
+    interface.`),
     );
 
     const loaderClassDeclaration = new JavaDeclarationBlock()
@@ -75,7 +75,7 @@ export class AppSyncModelJavaVisitor<
 
     @return a set of the model classes.`;
 
-    const classList = Object.values(this.typeMap)
+    const classList = Object.values(this.modelMap)
       .map(model => `${this.getModelName(model)}.class`)
       .join(', ');
     const modelsMethodImplementation = `final Set<Class<? extends Model>> modifiableSet = new HashSet<>(
@@ -94,7 +94,7 @@ export class AppSyncModelJavaVisitor<
       {},
       ['Override'],
       undefined,
-      modelsMethodDocString
+      modelsMethodDocString,
     );
 
     // version method
@@ -113,7 +113,7 @@ export class AppSyncModelJavaVisitor<
       {},
       ['Override'],
       undefined,
-      versionMethodDocString
+      versionMethodDocString,
     );
 
     result.push(loaderClassDeclaration.string);
@@ -185,8 +185,12 @@ export class AppSyncModelJavaVisitor<
 
     // equals
     this.generateEqualsMethod(model, classDeclarationBlock);
+
     // hash code
     this.generateHashCodeMethod(model, classDeclarationBlock);
+
+    // toString
+    this.generateToStringMethod(model, classDeclarationBlock);
 
     // builder
     this.generateBuilderMethod(model, classDeclarationBlock);
@@ -328,7 +332,7 @@ export class AppSyncModelJavaVisitor<
       [],
       'public',
       {},
-      ['Override']
+      ['Override'],
     );
 
     // non-nullable fields
@@ -348,7 +352,7 @@ export class AppSyncModelJavaVisitor<
         [],
         'public',
         {},
-        ['Override']
+        ['Override'],
       );
     });
 
@@ -368,7 +372,7 @@ export class AppSyncModelJavaVisitor<
         [],
         'public',
         {},
-        ['Override']
+        ['Override'],
       );
     });
 
@@ -400,7 +404,7 @@ export class AppSyncModelJavaVisitor<
       {},
       [],
       ['IllegalArgumentException'],
-      idComment
+      idComment,
     );
     classDeclaration.nestedClass(builderClassDeclaration);
   }
@@ -458,7 +462,7 @@ export class AppSyncModelJavaVisitor<
         [],
         'public',
         {},
-        ['Override']
+        ['Override'],
       );
     });
     classDeclaration.nestedClass(copyOfBuilderClassDeclaration);
@@ -471,7 +475,7 @@ export class AppSyncModelJavaVisitor<
     const args = indentMultiline(
       this.getNonConnectedField(model)
         .map(field => this.getFieldName(field))
-        .join(',\n')
+        .join(',\n'),
     ).trim();
     const methodBody = `return new CopyOfBuilder(${args});`;
     classDeclaration.addClassMethod('copyOfBuilder', 'CopyOfBuilder', methodBody, [], [], 'public');
@@ -573,7 +577,7 @@ export class AppSyncModelJavaVisitor<
           return `ObjectsCompat.equals(${getterName}(), ${instanceName}.${getterName}())`;
         })
         .join(' &&\n'),
-      4
+      4,
     ).trim();
 
     body.push(`return ${propCheck};`);
@@ -587,7 +591,7 @@ export class AppSyncModelJavaVisitor<
       [],
       'public',
       {},
-      ['Override']
+      ['Override'],
     );
   }
 
@@ -601,6 +605,24 @@ export class AppSyncModelJavaVisitor<
     declarationBlock.addClassMethod('hashCode', 'int', indentMultiline(body).trimLeft(), [], [], 'public', {}, ['Override']);
   }
 
+  protected generateToStringMethod(model: CodeGenModel, declarationBlock: JavaDeclarationBlock): void {
+    const body = [
+      'return new StringBuilder()',
+      `.append("${this.getModelName(model)} {")`,
+      this.getNonConnectedField(model)
+        .map(field => {
+          const fieldName = this.getFieldName(field);
+          const fieldGetterName = this.getFieldGetterName(field);
+
+          return '.append("' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
+        })
+        .join('\n'),
+      '.append("}")',
+      '.toString();',
+    ];
+    declarationBlock.addClassMethod('toString', 'String', indentMultiline(body.join('\n')).trimLeft(), [], [], 'public', {}, ['Override']);
+  }
+
   /**
    * Generate the builder method to get an instance of Builder class
    * @param model
@@ -608,7 +630,7 @@ export class AppSyncModelJavaVisitor<
    */
   protected generateBuilderMethod(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
     const requiredFields = this.getNonConnectedField(model).filter(
-      field => !field.isNullable && !this.READ_ONLY_FIELDS.includes(field.name)
+      field => !field.isNullable && !this.READ_ONLY_FIELDS.includes(field.name),
     );
     const returnType = requiredFields.length ? this.getStepInterfaceName(requiredFields[0].name) : this.getStepInterfaceName('Build');
     classDeclaration.addClassMethod(
@@ -619,7 +641,7 @@ export class AppSyncModelJavaVisitor<
       [],
       'public',
       { static: true },
-      []
+      [],
     );
   }
 
@@ -722,7 +744,7 @@ export class AppSyncModelJavaVisitor<
       { static: true },
       [],
       [],
-      comment
+      comment,
     );
   }
   /**

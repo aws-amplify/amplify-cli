@@ -89,7 +89,7 @@ export class DynamoDBModelTransformer extends Transformer {
           public
           on
         }
-      `
+      `,
     );
     this.opts = this.getOpts(opts);
     this.resources = new ResourceFactory();
@@ -139,7 +139,7 @@ export class DynamoDBModelTransformer extends Transformer {
     ctx.mapResourceToStack(stackName, iamRoleLogicalID);
     ctx.setResource(
       dataSourceRoleLogicalID,
-      this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName, isSyncEnabled)
+      this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName, isSyncEnabled),
     );
     ctx.mapResourceToStack(stackName, dataSourceRoleLogicalID);
 
@@ -147,7 +147,7 @@ export class DynamoDBModelTransformer extends Transformer {
     ctx.setOutput(
       // "GetAtt" is a backward compatibility addition to prevent breaking current deploys.
       streamArnOutputId,
-      this.resources.makeTableStreamArnOutput(tableLogicalID)
+      this.resources.makeTableStreamArnOutput(tableLogicalID),
     );
     ctx.mapResourceToStack(stackName, streamArnOutputId);
 
@@ -183,7 +183,7 @@ export class DynamoDBModelTransformer extends Transformer {
     def: ObjectTypeDefinitionNode,
     directive: DirectiveNode,
     ctx: TransformerContext,
-    nonModelArray: ObjectTypeDefinitionNode[]
+    nonModelArray: ObjectTypeDefinitionNode[],
   ) => {
     const typeName = def.name.value;
     const isSyncEnabled = this.opts.SyncConfig ? true : false;
@@ -349,8 +349,8 @@ export class DynamoDBModelTransformer extends Transformer {
             makeInputValueDefinition('nextToken', makeNamedType('String')),
             makeInputValueDefinition('lastSync', makeNamedType('AWSTimestamp')),
           ],
-          makeNamedType(ModelResourceIDs.ModelConnectionTypeName(def.name.value))
-        )
+          makeNamedType(ModelResourceIDs.ModelConnectionTypeName(def.name.value)),
+        ),
       );
     }
 
@@ -365,8 +365,8 @@ export class DynamoDBModelTransformer extends Transformer {
         makeField(
           getResolver.Properties.FieldName.toString(),
           [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))],
-          makeNamedType(def.name.value)
-        )
+          makeNamedType(def.name.value),
+        ),
       );
     }
 
@@ -380,8 +380,8 @@ export class DynamoDBModelTransformer extends Transformer {
       ctx.mapResourceToStack(typeName, resourceId);
 
       queryFields.push(makeConnectionField(listResolver.Properties.FieldName.toString(), def.name.value));
+      this.generateFilterInputs(ctx, def);
     }
-    this.generateFilterInputs(ctx, def);
 
     ctx.addQueryFields(queryFields);
   };
@@ -518,6 +518,13 @@ export class DynamoDBModelTransformer extends Transformer {
     const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx, this.supportsConditions(ctx));
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
+    }
+
+    if (this.supportsConditions(ctx)) {
+      const attributeTypeEnum = makeAttributeTypeEnum();
+      if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
+        ctx.addType(attributeTypeEnum);
+      }
     }
   }
 

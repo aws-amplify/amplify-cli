@@ -31,18 +31,21 @@ async function initializeEnv(context, currentAmplifyMeta) {
     }
 
     const categoryInitializationTasks = [];
+
     const initializedCategories = Object.keys(context.amplify.getProjectMeta());
-    const categoryPlugins = context.amplify.getCategoryPlugins(context);
-    const availableCategory = Object.keys(categoryPlugins).filter(key => initializedCategories.includes(key));
+    const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
+    const availableCategory = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
     availableCategory.forEach(category => {
-      try {
-        const { initEnv } = require(categoryPlugins[category]);
-        if (initEnv) {
-          categoryInitializationTasks.push(() => initEnv(context));
+      categoryPluginInfoList[category].forEach(pluginInfo => {
+        try {
+          const { initEnv } = require(pluginInfo.packageLocation);
+          if (initEnv) {
+            categoryInitializationTasks.push(() => initEnv(context));
+          }
+        } catch (e) {
+          context.print.warning(`Could not run initEnv for ${category}`);
         }
-      } catch (e) {
-        context.print.warning(`Could not run initEnv for ${category}`);
-      }
+      });
     });
 
     const providerPlugins = getProviderPlugins(context);

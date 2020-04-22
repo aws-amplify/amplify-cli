@@ -1,0 +1,11 @@
+export const HOSTING = 'hosting';
+export const RESOURCE = 'amplifyhosting';
+export const CATEGORIES = 'categories';
+export const TYPE = 'type';
+export const TYPE_CICD = 'cicd';
+export const TYPE_MANUAL = 'manual';
+export const APPID = 'AmplifyAppId';
+export const TYPE_UNKNOWN = 'unknown';
+export const ORIGINAL_ENV = 'integtest';
+export const NEW_ENV = 'test';
+export const PROVIDER = 'awscloudformation';

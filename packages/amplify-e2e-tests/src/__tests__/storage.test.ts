@@ -1,19 +1,22 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../init';
-import { addAuthWithDefault } from '../categories/auth';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
 import {
   addSimpleDDB,
   addDDBWithTrigger,
   updateDDBWithTrigger,
-  addS3WithTrigger,
   addSimpleDDBwithGSI,
   updateSimpleDDBwithGSI,
-} from '../categories/storage';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from '../utils';
+  addS3AndAuthWithAuthOnlyAccess,
+  addS3WithGuestAccess,
+  addS3WithGroupAccess,
+  addS3WithTrigger,
+} from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
 
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('s3-test');
   });
 
   afterEach(async () => {
@@ -21,12 +24,7 @@ describe('amplify add/update storage(S3)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add S3 bucket with trigger', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addS3WithTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
-
+  async function validate(projRoot) {
     const meta = getProjectMeta(projRoot);
     const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
 
@@ -35,13 +33,44 @@ describe('amplify add/update storage(S3)', () => {
 
     const bucketExists = await checkIfBucketExists(bucketName, region);
     expect(bucketExists).toMatchObject({});
+  }
+
+  it('init a project and add S3 bucket with Auth user access only', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
+  });
+
+  it('init a project and add S3 bucket with guest access', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot, {});
+    await addS3WithGuestAccess(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
+  });
+
+  it('init a project and add S3 bucket with user pool groups and Admin API', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithGroupsAndAdminAPI(projRoot, {});
+    await addS3WithGroupAccess(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
+  });
+
+  it('init a project and add S3 bucket with trigger', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot, {});
+    await addS3WithTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
   });
 });
 
 describe('amplify add/update storage(DDB) with GSI', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('ddb-gsi');
   });
 
   afterEach(async () => {
@@ -60,8 +89,8 @@ describe('amplify add/update storage(DDB) with GSI', () => {
 
 describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('ddb-add-update');
   });
 
   afterEach(async () => {
@@ -79,7 +108,7 @@ describe('amplify add/update storage(DDB)', () => {
 
     const meta = getProjectMeta(projRoot);
     const { Name: table1Name, Arn: table1Arn, Region: table1Region, StreamArn: table1StreamArn } = Object.keys(meta.storage).map(
-      key => meta.storage[key]
+      key => meta.storage[key],
     )[0].output;
 
     expect(table1Name).toBeDefined();
@@ -91,7 +120,7 @@ describe('amplify add/update storage(DDB)', () => {
     expect(table1Configs.Table.TableArn).toEqual(table1Arn);
 
     const { Name: table2Name, Arn: table2Arn, Region: table2Region, StreamArn: table2StreamArn } = Object.keys(meta.storage).map(
-      key => meta.storage[key]
+      key => meta.storage[key],
     )[1].output;
 
     expect(table2Name).toBeDefined();

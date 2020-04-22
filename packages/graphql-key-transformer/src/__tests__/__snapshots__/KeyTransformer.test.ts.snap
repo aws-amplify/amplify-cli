@@ -1,0 +1,572 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Check KeyTransformer Resolver Code 1`] = `
+Object {
+  "Mutation.createItem.req.vtl": "
+
+## [Start] Set the primary @key. **
+#set( $modelObjectKey = {
+  \\"orderId\\": $util.dynamodb.toDynamoDB($ctx.args.input.orderId),
+  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\")
+} )
+## [End] Set the primary @key. **
+#if( $util.isNull($dynamodbNameOverrideMap) )
+  #set( $dynamodbNameOverrideMap = {
+  \\"status#createdAt\\": \\"statusCreatedAt\\"
+} )
+#else
+  $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
+#end
+$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+## [Start] Prepare DynamoDB PutItem Request. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
+#set( $condition = {
+  \\"expression\\": \\"attribute_not_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+#if( $context.args.condition )
+  #set( $condition.expressionValues = {} )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+} #end,
+  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
+  \\"condition\\": $util.toJson($condition)
+}
+## [End] Prepare DynamoDB PutItem Request. **",
+  "Mutation.createItem.res.vtl": "$util.toJson($ctx.result)",
+  "Mutation.deleteItem.req.vtl": "
+
+## [Start] Set the primary @key. **
+#set( $modelObjectKey = {
+  \\"orderId\\": $util.dynamodb.toDynamoDB($ctx.args.input.orderId),
+  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\")
+} )
+## [End] Set the primary @key. **
+#if( $authCondition )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+  #end
+#end
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  #set( $expressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($expressionValues.putAll($versionedCondition.expressionValues))
+  #set( $condition.expressionValues = $expressionValues )
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  #set( $conditionExpressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($conditionExpressionValues.putAll($conditionFilterExpressions.expressionValues))
+  #set( $condition.expressionValues = $conditionExpressionValues )
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"DeleteItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+} #end,
+  \\"condition\\": $util.toJson($condition)
+}",
+  "Mutation.deleteItem.res.vtl": "$util.toJson($ctx.result)",
+  "Mutation.updateItem.req.vtl": "
+
+
+
+## [Start] Set the primary @key. **
+#set( $modelObjectKey = {
+  \\"orderId\\": $util.dynamodb.toDynamoDB($ctx.args.input.orderId),
+  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\")
+} )
+## [End] Set the primary @key. **
+#if( $util.isNull($dynamodbNameOverrideMap) )
+  #set( $dynamodbNameOverrideMap = {
+  \\"status#createdAt\\": \\"statusCreatedAt\\"
+} )
+#else
+  $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
+#end
+$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#if( $authCondition && $authCondition.expression != \\"\\" )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  },
+  \\"expressionValues\\": {}
+} )
+  #end
+#end
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
+## Update condition if type is @versioned **
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+#end
+#if( $context.args.condition )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": {
+      \\"S\\": $util.toJson($context.args.input.id)
+  }
+} #end,
+  \\"update\\": $util.toJson($update),
+  \\"condition\\": $util.toJson($condition)
+}",
+  "Mutation.updateItem.res.vtl": "$util.toJson($ctx.result)",
+  "Query.getItem.req.vtl": "## [Start] Set the primary @key. **
+#set( $modelObjectKey = {
+  \\"orderId\\": $util.dynamodb.toDynamoDB($ctx.args.orderId),
+  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${ctx.args.status}#\${ctx.args.createdAt}\\")
+} )
+## [End] Set the primary @key. **
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"GetItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.id)
+} #end
+}",
+  "Query.getItem.res.vtl": "$util.toJson($ctx.result)",
+  "Query.itemsByCreatedAt.req.vtl": "## [Start] Set query expression for @key **
+#set( $modelQueryExpression = {} )
+## [Start] Validate key arguments. **
+#if( !$util.isNull($ctx.args.status) && $util.isNull($ctx.args.createdAt) )
+  $util.error(\\"When providing argument 'status' you must also provide arguments createdAt\\", \\"InvalidArgumentsError\\")
+#end
+## [End] Validate key arguments. **
+#if( !$util.isNull($ctx.args.createdAt) )
+  #set( $modelQueryExpression.expression = \\"#createdAt = :createdAt\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#createdAt\\": \\"createdAt\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":createdAt\\": {
+      \\"S\\": \\"$ctx.args.createdAt\\"
+  }
+} )
+#end
+## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.beginsWith) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.status.beginsWith\\" }))
+#end
+#if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.between) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$ctx.args.status.between[0]\\" }))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$ctx.args.status.between[1]\\" }))
+#end
+#if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.eq) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.status.eq\\" }))
+#end
+#if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.lt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.status.lt\\" }))
+#end
+#if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.le) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.status.le\\" }))
+#end
+#if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.gt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.status.gt\\" }))
+#end
+#if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.ge) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.status.ge\\" }))
+#end
+## [End] Applying Key Condition **
+## [End] Set query expression for @key **
+#set( $limit = $util.defaultIfNull($context.args.limit, 10) )
+#set( $QueryRequest = {
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"Query\\",
+  \\"limit\\": $limit,
+  \\"query\\": $modelQueryExpression,
+  \\"index\\": \\"ByCreatedAt\\"
+} )
+#if( !$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == \\"DESC\\" )
+  #set( $QueryRequest.scanIndexForward = false )
+#else
+  #set( $QueryRequest.scanIndexForward = true )
+#end
+#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
+#if( $context.args.filter ) #set( $QueryRequest.filter = $util.parseJson(\\"$util.transform.toDynamoDBFilterExpression($ctx.args.filter)\\") ) #end
+$util.toJson($QueryRequest)",
+  "Query.itemsByCreatedAt.res.vtl": "$util.toJson($ctx.result)",
+  "Query.itemsByStatus.req.vtl": "## [Start] Set query expression for @key **
+#set( $modelQueryExpression = {} )
+## [Start] Validate key arguments. **
+#if( !$util.isNull($ctx.args.createdAt) && $util.isNull($ctx.args.status) )
+  $util.error(\\"When providing argument 'createdAt' you must also provide arguments status\\", \\"InvalidArgumentsError\\")
+#end
+## [End] Validate key arguments. **
+#if( !$util.isNull($ctx.args.status) )
+  #set( $modelQueryExpression.expression = \\"#status = :status\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#status\\": \\"status\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":status\\": {
+      \\"S\\": \\"$ctx.args.status\\"
+  }
+} )
+#end
+## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.beginsWith) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.createdAt.beginsWith\\" }))
+#end
+#if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.between) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$ctx.args.createdAt.between[0]\\" }))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$ctx.args.createdAt.between[1]\\" }))
+#end
+#if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.eq) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.createdAt.eq\\" }))
+#end
+#if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.lt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.createdAt.lt\\" }))
+#end
+#if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.le) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.createdAt.le\\" }))
+#end
+#if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.gt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.createdAt.gt\\" }))
+#end
+#if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.ge) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.createdAt.ge\\" }))
+#end
+## [End] Applying Key Condition **
+## [End] Set query expression for @key **
+#set( $limit = $util.defaultIfNull($context.args.limit, 10) )
+#set( $QueryRequest = {
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"Query\\",
+  \\"limit\\": $limit,
+  \\"query\\": $modelQueryExpression,
+  \\"index\\": \\"ByStatus\\"
+} )
+#if( !$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == \\"DESC\\" )
+  #set( $QueryRequest.scanIndexForward = false )
+#else
+  #set( $QueryRequest.scanIndexForward = true )
+#end
+#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
+#if( $context.args.filter ) #set( $QueryRequest.filter = $util.parseJson(\\"$util.transform.toDynamoDBFilterExpression($ctx.args.filter)\\") ) #end
+$util.toJson($QueryRequest)",
+  "Query.itemsByStatus.res.vtl": "$util.toJson($ctx.result)",
+  "Query.listItems.req.vtl": "## [Start] Set query expression for @key **
+#set( $modelQueryExpression = {} )
+## [Start] Validate key arguments. **
+#if( !$util.isNull($ctx.args.statusCreatedAt) && $util.isNullOrBlank($ctx.args.orderId) )
+  $util.error(\\"When providing argument 'statusCreatedAt' you must also provide 'orderId'.\\", \\"InvalidArgumentsError\\")
+#end
+#if( !$util.isNull($ctx.args.statusCreatedAt) )
+  #set( $sortKeyArgumentOperations = $ctx.args.statusCreatedAt.keySet() )
+  #if( $sortKeyArgumentOperations.size() > 1 )
+    $util.error(\\"Argument statusCreatedAt must specify at most one key condition operation.\\", \\"InvalidArgumentsError\\")
+  #end
+  #foreach( $operation in $sortKeyArgumentOperations )
+    #if( $operation == \\"between\\" )
+      #if( $ctx.args.statusCreatedAt.between.size() != 2 )
+        $util.error(\\"Argument 'statusCreatedAt.between' expects exactly two elements.\\", \\"InvalidArgumentsError\\")
+      #end
+      #if( !$util.isNullOrBlank($ctx.args.statusCreatedAt.between[0].createdAt) && $util.isNullOrBlank($ctx.args.statusCreatedAt.between[0].status) )
+        $util.error(\\"When providing argument 'statusCreatedAt.between[0].createdAt' you must also provide 'statusCreatedAt.between[0].status'.\\", \\"InvalidArgumentsError\\")
+      #end
+      #if( !$util.isNullOrBlank($ctx.args.statusCreatedAt.between[1].createdAt) && $util.isNullOrBlank($ctx.args.statusCreatedAt.between[1].status) )
+        $util.error(\\"When providing argument 'statusCreatedAt.between[1].createdAt' you must also provide 'statusCreatedAt.between[1].status'.\\", \\"InvalidArgumentsError\\")
+      #end
+    #else
+      #if( !$util.isNullOrBlank($ctx.args.statusCreatedAt.get(\\"$operation\\").createdAt) && $util.isNullOrBlank($ctx.args.statusCreatedAt.get(\\"$operation\\").status) )
+        $util.error(\\"When providing argument 'statusCreatedAt.$operation.createdAt' you must also provide 'statusCreatedAt.$operation.status'.\\", \\"InvalidArgumentsError\\")
+      #end
+    #end
+  #end
+#end
+## [End] Validate key arguments. **
+#if( !$util.isNull($ctx.args.orderId) )
+  #set( $modelQueryExpression.expression = \\"#orderId = :orderId\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#orderId\\": \\"orderId\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":orderId\\": {
+      \\"S\\": \\"$ctx.args.orderId\\"
+  }
+} )
+#end
+## [Start] Applying Key Condition **
+#set( $sortKeyValue = \\"\\" )
+#set( $sortKeyValue2 = \\"\\" )
+#if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.beginsWith) )
+#if( !$util.isNull($ctx.args.statusCreatedAt.beginsWith.status) ) #set( $sortKeyValue = \\"$ctx.args.statusCreatedAt.beginsWith.status\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.beginsWith.createdAt) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.statusCreatedAt.beginsWith.createdAt\\" ) #end
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status#createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#end
+#if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.between) )
+  #if( $ctx.args.statusCreatedAt.between.size() != 2 )
+    $util.error(\\"Argument statusCreatedAt.between expects exactly 2 elements.\\")
+  #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.between[0].status) ) #set( $sortKeyValue = \\"$ctx.args.statusCreatedAt.between[0].status\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.between[0].createdAt) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.statusCreatedAt.between[0].createdAt\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.between[1].status) ) #set( $sortKeyValue2 = \\"$ctx.args.statusCreatedAt.between[1].status\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.between[1].createdAt) ) #set( $sortKeyValue2 = \\"$sortKeyValue2#$ctx.args.statusCreatedAt.between[1].createdAt\\" ) #end
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status#createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$sortKeyValue\\" }))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$sortKeyValue2\\" }))
+#end
+#if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.eq) )
+#if( !$util.isNull($ctx.args.statusCreatedAt.eq.status) ) #set( $sortKeyValue = \\"$ctx.args.statusCreatedAt.eq.status\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.eq.createdAt) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.statusCreatedAt.eq.createdAt\\" ) #end
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status#createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#end
+#if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.lt) )
+#if( !$util.isNull($ctx.args.statusCreatedAt.lt.status) ) #set( $sortKeyValue = \\"$ctx.args.statusCreatedAt.lt.status\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.lt.createdAt) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.statusCreatedAt.lt.createdAt\\" ) #end
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status#createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#end
+#if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.le) )
+#if( !$util.isNull($ctx.args.statusCreatedAt.le.status) ) #set( $sortKeyValue = \\"$ctx.args.statusCreatedAt.le.status\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.le.createdAt) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.statusCreatedAt.le.createdAt\\" ) #end
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status#createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#end
+#if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.gt) )
+#if( !$util.isNull($ctx.args.statusCreatedAt.gt.status) ) #set( $sortKeyValue = \\"$ctx.args.statusCreatedAt.gt.status\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.gt.createdAt) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.statusCreatedAt.gt.createdAt\\" ) #end
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status#createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#end
+#if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.ge) )
+#if( !$util.isNull($ctx.args.statusCreatedAt.ge.status) ) #set( $sortKeyValue = \\"$ctx.args.statusCreatedAt.ge.status\\" ) #end
+#if( !$util.isNull($ctx.args.statusCreatedAt.ge.createdAt) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.statusCreatedAt.ge.createdAt\\" ) #end
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status#createdAt\\"))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#end
+
+
+## [End] Applying Key Condition **
+## [End] Set query expression for @key **
+#set( $limit = $util.defaultIfNull($context.args.limit, 10) )
+#set( $ListRequest = {
+  \\"version\\": \\"2017-02-28\\",
+  \\"limit\\": $limit
+} )
+#if( $context.args.nextToken )
+  #set( $ListRequest.nextToken = $context.args.nextToken )
+#end
+#if( $context.args.filter )
+  #set( $ListRequest.filter = $util.parseJson(\\"$util.transform.toDynamoDBFilterExpression($ctx.args.filter)\\") )
+#end
+#if( !$util.isNull($modelQueryExpression)
+                        && !$util.isNullOrEmpty($modelQueryExpression.expression) )
+  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
+  $util.qr($ListRequest.put(\\"query\\", $modelQueryExpression))
+  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $ListRequest.scanIndexForward = false )
+  #else
+    #set( $ListRequest.scanIndexForward = true )
+  #end
+#else
+  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+#end
+$util.toJson($ListRequest)",
+  "Query.listItems.res.vtl": "$util.toJson($ctx.result)",
+}
+`;

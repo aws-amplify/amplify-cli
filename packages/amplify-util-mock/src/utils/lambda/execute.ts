@@ -1,5 +1,5 @@
-import { fstat, existsSync } from 'fs-extra';
-
+import { existsSync } from 'fs-extra';
+import _ = require('lodash');
 const path = require('path');
 
 function loadFunction(fileName) {
@@ -35,7 +35,7 @@ function invokeFunction(options: InvokeOptions) {
       },
       fail(error) {
         returned = true;
-        reject(error);
+        reject(_.assign({}, error));
       },
       awsRequestId: 'LAMBDA_INVOKE',
       logStreamName: 'LAMBDA_INVOKE',
@@ -72,7 +72,7 @@ function invokeFunction(options: InvokeOptions) {
     try {
       if (!lambda[options.handler]) {
         context.fail(
-          `handler ${options.handler} does not exist in the lambda function ${path.join(options.packageFolder, options.fileName)}`
+          `handler ${options.handler} does not exist in the lambda function ${path.join(options.packageFolder, options.fileName)}`,
         );
         return;
       }
@@ -94,6 +94,6 @@ process.on('message', async options => {
     process.send(JSON.stringify({ result, error: null }));
   } catch (error) {
     process.send(JSON.stringify({ result: null, error }));
-    process.exit(1);
   }
+  process.exit(1);
 });

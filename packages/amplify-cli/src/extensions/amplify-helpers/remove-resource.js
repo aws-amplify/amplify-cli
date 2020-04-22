@@ -28,40 +28,43 @@ async function forceRemoveResource(context, category, name, dir) {
   return response;
 }
 
-function removeResource(context, category) {
+async function removeResource(context, category, resourceName) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');
     process.exit(1);
-    return;
   }
 
-  const resources = Object.keys(amplifyMeta[category]);
+  const enabledCategoryResources = Object.keys(amplifyMeta[category]);
 
-  const question = [
-    {
-      name: 'resource',
-      message: 'Choose the resource you would want to remove',
-      type: 'list',
-      choices: resources,
-    },
-  ];
+  if (resourceName) {
+    if (!enabledCategoryResources.includes(resourceName)) {
+      context.print.error(`Resource ${resourceName} has not been added to ${category}`);
+      process.exit(1);
+    }
+  } else {
+    const question = [
+      {
+        name: 'resource',
+        message: 'Choose the resource you would want to remove',
+        type: 'list',
+        choices: enabledCategoryResources,
+      },
+    ];
+    const answer = await inquirer.prompt(question);
+    resourceName = answer.resource;
+  }
 
-  return inquirer
-    .prompt(question)
-    .then(answer => {
-      const resourceName = answer.resource;
-      const resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
-      return context.amplify.confirmPrompt
-        .run(
-          'Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.'
-        )
-        .then(async confirm => {
-          if (confirm) {
-            return deleteResourceFiles(context, category, resourceName, resourceDir);
-          }
-        });
+  console.log('');
+  const resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
+
+  return context.amplify.confirmPrompt
+    .run('Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.')
+    .then(async confirm => {
+      if (confirm) {
+        return deleteResourceFiles(context, category, resourceName, resourceDir);
+      }
     })
     .catch(err => {
       context.print.info(err.stack);

@@ -18,7 +18,7 @@ from boto3.dynamodb.types import TypeDeserializer
 # The following parameters are required to configure the ES cluster
 ES_ENDPOINT = os.environ['ES_ENDPOINT']
 ES_REGION = os.environ['ES_REGION']
-DEBUG = True if os.environ.get('DEBUG') == 1 else False
+DEBUG = True if os.environ['DEBUG'] == "1" else False
 
 # ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
 DOC_TYPE = 'doc'
@@ -123,11 +123,14 @@ def get_table_name_from_arn(arn):
 
 
 # Compute a compound doc index from the key(s) of the object in lexicographic order: "k1=key_val1|k2=key_val2"
-def compute_doc_index(keys_raw, deserializer):
+def compute_doc_index(keys_raw, deserializer, formatIndex=False):
     index = []
     for key in sorted(keys_raw):
-        index.append('{}={}'.format(
-            key, deserializer.deserialize(keys_raw[key])))
+        if formatIndex:
+            index.append('{}={}'.format(
+                key, deserializer.deserialize(keys_raw[key])))
+        else:
+            index.append(deserializer.deserialize(keys_raw[key]))
     return '|'.join(index)
 
 
@@ -193,10 +196,12 @@ def _lambda_handler(event, context):
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
 
-        logger.debug('Deserialized doc_fields: ', doc_fields)
+        logger.debug('Deserialized doc_fields: %s', doc_fields)
 
-        doc_id = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
-            ddb['Keys'], ddb_deserializer)
+        if ('Keys' in ddb):
+            doc_id = compute_doc_index(ddb['Keys'], ddb_deserializer)
+        else:
+            logger.error('Cannot find keys in ddb record')
 
         # Generate JSON payload
         doc_json = json.dumps(doc_fields, cls=DDBTypesEncoder)
@@ -210,7 +215,11 @@ def _lambda_handler(event, context):
             es_actions.append(json.dumps(action))
             # Payload line
             es_actions.append(doc_json)
-
+            # migration step remove old key if it exists
+            if ('id' in doc_fields) and (event_name == 'MODIFY') :
+                action = {'delete': {'_index': doc_es_index_name, '_type': doc_type,
+                    '_id': compute_doc_index(ddb['Keys'], ddb_deserializer, True)}}
+                es_actions.append(json.dumps(action))
         # If DynamoDB REMOVE, send 'delete' to ES
         elif is_ddb_delete:
             action = {'delete': {'_index': doc_es_index_name,

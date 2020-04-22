@@ -1,18 +1,18 @@
-import { initJSProjectWithProfile, deleteProject } from '../init';
-import { addHosting, removeHosting, amplifyPush } from '../categories/hosting';
-import { createNewProjectDir, deleteProjectDir } from '../utils';
+import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
+import { addHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
 describe('amplify add hosting', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('hosting');
   });
 
   afterEach(async () => {
     await removeHosting(projRoot);
-    await amplifyPush(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
     await deleteProject(projRoot, true);
     deleteProjectDir(projRoot);
   });
@@ -20,7 +20,10 @@ describe('amplify add hosting', () => {
   it('add hosting', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addHosting(projRoot);
-    await amplifyPush(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
+    const projectMeta = getProjectMeta(projRoot);
+    expect(projectMeta.hosting).toBeDefined();
+    expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
   });
 });

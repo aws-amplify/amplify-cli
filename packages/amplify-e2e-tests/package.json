@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "2.13.3",
+  "version": "2.17.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -17,27 +17,26 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest",
+    "e2e": "npm run setup-profile && jest --verbose",
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
+    "amplify-e2e-core": "1.1.0",
     "aws-sdk": "^2.608.0",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "6.13.3"
+    "graphql-transformer-core": "6.16.1",
+    "rimraf": "^3.0.0"
   },
   "devDependencies": {
-    "@types/node": "^10.17.13",
-    "dotenv": "^8.2.0",
-    "nexpect": "file:./src/utils/nexpect-modified",
-    "rimraf": "^3.0.0",
     "ts-node": "^8.6.2"
   },
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
-    "testRunner": "jest-circus/runner",
-    "testEnvironment": "node",
+    "testRunner": "amplify-e2e-core/runner",
+    "testEnvironment": "amplify-e2e-core/environment",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -56,7 +55,15 @@
     ],
     "reporters": [
       "default",
-      "jest-junit"
+      "jest-junit",
+      [
+        "amplify-e2e-core/reporter",
+        {
+          "publicPath": "./amplify-e2e-reports",
+          "filename": "index.html",
+          "expand": true
+        }
+      ]
     ],
     "moduleFileExtensions": [
       "ts",
@@ -70,10 +77,7 @@
       "<rootDir>/src/setup-tests.ts"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "diagnostics": false
-      }
+      "window": {}
     }
   },
   "jest-junit": {

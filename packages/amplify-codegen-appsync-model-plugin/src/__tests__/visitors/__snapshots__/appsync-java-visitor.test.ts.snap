@@ -70,6 +70,17 @@ public final class SimpleModel implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static BuildStep builder() {
       return new Builder();
   }
@@ -82,7 +93,7 @@ public final class SimpleModel implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static SimpleModel justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -145,7 +156,7 @@ public final class SimpleModel implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -253,6 +264,17 @@ public final class SimpleModel implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static BuildStep builder() {
       return new Builder();
   }
@@ -265,7 +287,7 @@ public final class SimpleModel implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static SimpleModel justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -328,7 +350,7 @@ public final class SimpleModel implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -436,6 +458,17 @@ public final class SimpleModel implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"SimpleModel {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static BuildStep builder() {
       return new Builder();
   }
@@ -448,7 +481,7 @@ public final class SimpleModel implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static SimpleModel justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -511,7 +544,7 @@ public final class SimpleModel implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -647,6 +680,20 @@ public final class task implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"task {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"title=\\" + String.valueOf(getTitle()))
+      .append(\\"done=\\" + String.valueOf(getDone()))
+      .append(\\"todo=\\" + String.valueOf(getTodo()))
+      .append(\\"time=\\" + String.valueOf(getTime()))
+      .append(\\"createdOn=\\" + String.valueOf(getCreatedOn()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static TitleStep builder() {
       return new Builder();
   }
@@ -659,7 +706,7 @@ public final class task implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static task justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -765,7 +812,7 @@ public final class task implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -933,6 +980,21 @@ public final class Todo implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"Todo {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"title=\\" + String.valueOf(getTitle()))
+      .append(\\"done=\\" + String.valueOf(getDone()))
+      .append(\\"description=\\" + String.valueOf(getDescription()))
+      .append(\\"due_date=\\" + String.valueOf(getDueDate()))
+      .append(\\"version=\\" + String.valueOf(getVersion()))
+      .append(\\"value=\\" + String.valueOf(getValue()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static TitleStep builder() {
       return new Builder();
   }
@@ -945,7 +1007,7 @@ public final class Todo implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static Todo justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -1067,7 +1129,7 @@ public final class Todo implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -1230,6 +1292,19 @@ public final class authorBook implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"authorBook {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"author_id=\\" + String.valueOf(getAuthorId()))
+      .append(\\"book_id=\\" + String.valueOf(getBookId()))
+      .append(\\"author=\\" + String.valueOf(getAuthor()))
+      .append(\\"book=\\" + String.valueOf(getBook()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static AuthorIdStep builder() {
       return new Builder();
   }
@@ -1242,7 +1317,7 @@ public final class authorBook implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static authorBook justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -1337,7 +1412,7 @@ public final class authorBook implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -1448,6 +1523,16 @@ public final class snake_case implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"snake_case {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static BuildStep builder() {
       return new Builder();
   }
@@ -1460,7 +1545,7 @@ public final class snake_case implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static snake_case justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -1512,7 +1597,7 @@ public final class snake_case implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         
@@ -1605,6 +1690,16 @@ public final class SnakeCaseField implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"SnakeCaseField {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"first_name=\\" + String.valueOf(getFirstName()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static BuildStep builder() {
       return new Builder();
   }
@@ -1617,7 +1712,7 @@ public final class SnakeCaseField implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    * @throws IllegalArgumentException Checks that ID is in the proper format
-   **/
+   */
   public static SnakeCaseField justId(String id) {
     try {
       UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -1669,7 +1764,7 @@ public final class SnakeCaseField implements Model {
      * @param id id
      * @return Current Builder instance, for fluent method chaining
      * @throws IllegalArgumentException Checks that ID is in the proper format
-     **/
+     */
     public BuildStep id(String id) throws IllegalArgumentException {
         this.id = id;
         

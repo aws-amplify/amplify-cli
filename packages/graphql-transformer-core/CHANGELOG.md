@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.16.0...graphql-transformer-core@6.16.1) (2020-03-22)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** fix duplicate records in es lambda ([#3712](https://github.com/aws-amplify/amplify-cli/issues/3712)) ([dd9f7e0](https://github.com/aws-amplify/amplify-cli/commit/dd9f7e0031a0dc68a9027de02f60bbe69d315c3d)), closes [#3602](https://github.com/aws-amplify/amplify-cli/issues/3602) [#3705](https://github.com/aws-amplify/amplify-cli/issues/3705)
+
+
+
+
+
+# [6.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.13.3...graphql-transformer-core@6.16.0) (2020-03-07)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** add list support for ownerField in subs ([#3166](https://github.com/aws-amplify/amplify-cli/issues/3166)) ([8d68277](https://github.com/aws-amplify/amplify-cli/commit/8d6827752ebd076424d3c76122b136eca65b02a8))
+
+
+### Features
+
+* **graphql-transformer-core:** allow user overrides for functions ([#3367](https://github.com/aws-amplify/amplify-cli/issues/3367)) ([787128f](https://github.com/aws-amplify/amplify-cli/commit/787128f2fe2b66150cfae0712bdf86745949f85e)), closes [#3359](https://github.com/aws-amplify/amplify-cli/issues/3359)
+
+
+### Reverts
+
+* Revert "fix(graphql-auth-transformer): add list support for ownerField in subs (#3166)" (#3572) ([d693e6b](https://github.com/aws-amplify/amplify-cli/commit/d693e6b2819a5d20188fa9f68d94ef955e474bd3)), closes [#3166](https://github.com/aws-amplify/amplify-cli/issues/3166) [#3572](https://github.com/aws-amplify/amplify-cli/issues/3572)
+
+
+
+
+
+## [6.14.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.13.5-beta.0...graphql-transformer-core@6.14.1) (2020-03-05)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
 ## [6.13.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.13.2...graphql-transformer-core@6.13.3) (2020-02-13)
 
 **Note:** Version bump only for package graphql-transformer-core

@@ -847,7 +847,7 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
           set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
           set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
         ),
-        iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('util.toJson($context.args.nextToken)')), true),
+        iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
         iff(
           ref('context.args.filter'),
           set(ref(`${requestVariable}.filter`), ref('util.parseJson("$util.transform.toDynamoDBFilterExpression($ctx.args.filter)")')),
