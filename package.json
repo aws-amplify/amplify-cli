@@ -19,6 +19,7 @@
     "setup-dev": "yarn dev-build && yarn rm-dev-link && yarn link-dev && yarn link-caa",
     "link-win": "node ./scripts/link-bin.js packages/amplify-cli/bin/amplify",
     "setup-dev-win": "yarn dev-build && yarn link-win && yarn link-caa",
+    "split-e2e-tests":"ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "publish:master": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --yes",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --yes",
     "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]'",
@@ -41,7 +42,7 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-push": "npm run lint && npm run test-changed",
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "yarn run split-e2e-tests && pretty-quick --staged"
     }
   },
   "author": "Amazon Web Services",
@@ -59,6 +60,7 @@
     "@types/jest": "^25.1.1",
     "@typescript-eslint/eslint-plugin": "^2.16.0",
     "@typescript-eslint/parser": "^2.16.0",
+    "@types/js-yaml":"^3.12.3",
     "cmd-shim": "^3.0.3",
     "codecov": "^3.6.1",
     "commitizen": "^3.1.2",
@@ -72,15 +74,18 @@
     "eslint-plugin-jest": "^23.6.0",
     "eslint-plugin-json": "^2.0.1",
     "eslint-plugin-prettier": "^3.1.2",
+    "glob": "^7.1.6",
     "husky": "^3.0.3",
-    "jest": "^25.1.0",
-    "jest-circus": "^25.1.0",
+    "jest": "^25.4.0",
+    "jest-circus": "^25.4.0",
     "jest-junit": "10.0.0",
+    "js-yaml": "3.13.1",
     "lnk": "1.1.0",
     "prettier": "^1.19.1",
     "prettier-eslint": "^9.0.1",
     "pretty-quick": "^2.0.1",
     "rimraf": "^3.0.2",
+    "ts-node": "^8.9.0",
     "ts-jest": "^25.2.0",
     "typescript": "~3.6.4"
   },
