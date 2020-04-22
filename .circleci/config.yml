@@ -275,6 +275,8 @@ jobs:
       - run:
           name: Run tests migrating from v4.0.0
           command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
             cd packages/amplify-migration-tests
             yarn run migration_v4.0.0 --maxWorkers=3
           no_output_timeout: 90m
@@ -293,6 +295,8 @@ jobs:
       - run:
           name: Run tests migrating from latest version
           command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
             cd packages/amplify-migration-tests
             yarn run migration --maxWorkers=3
           no_output_timeout: 90m
