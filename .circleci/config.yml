@@ -636,35 +636,36 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - test:
-          requires:
-            - build
-      - mock_e2e_tests:
-          requires:
-            - build
-      - graphql_e2e_tests:
-          filters:
-            branches:
-              only:
-                - master
-                - graphql_e2e_testing
-          requires:
-            - build
-            - mock_e2e_tests
-      - integration_test:
-          filters:
-            branches:
-              only:
-                - master
-                - beta
-          requires:
-            - build
-            - mock_e2e_tests
+#       - test:
+#           requires:
+#             - build
+#       - mock_e2e_tests:
+#           requires:
+#             - build
+#       - graphql_e2e_tests:
+#           filters:
+#             branches:
+#               only:
+#                 - master
+#                 - graphql_e2e_testing
+#           requires:
+#             - build
+#             - mock_e2e_tests
+#       - integration_test:
+#           filters:
+#             branches:
+#               only:
+#                 - master
+#                 - beta
+#           requires:
+#             - build
+#             - mock_e2e_tests
       - amplify_migration_tests_v4:
           filters:
             branches:
               only:
                 - master
+                - e2e2
           requires:
             - build
       - amplify_migration_tests_latest:
@@ -672,6 +673,7 @@ workflows:
             branches:
               only:
                 - master
+                - e2e2
           requires:
             - build
       - publish_to_local_registry:
@@ -680,6 +682,8 @@ workflows:
               only:
                 - master
                 - beta
+                - e2e-from-verdaccio
+                - e2e2
           requires:
             - build
       - amplify_e2e_tests:
@@ -687,31 +691,24 @@ workflows:
             branches:
               only:
                 - master
+                - e2e-from-verdaccio
+                - e2e2
           requires:
             - publish_to_local_registry
-      - amplify_console_integration_tests:
-          filters:
-            branches:
-              only:
-                - beta
-          requires:
-            - build
-            - publish_to_local_registry
-      - deploy:
-          requires:
-            - build
-            - test
-            - mock_e2e_tests
-            - graphql_e2e_tests
-            - integration_test
-            - amplify_e2e_tests
-            - amplify_console_integration_tests
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - beta
+      # - deploy:
+      #     requires:
+      #       - build
+      #       - test
+      #       - integration_test
+      #       - graphql_e2e_tests
+      #       - amplify_e2e_tests
+      #       - mock_e2e_tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - beta
       # - integration_test_js:
       #     filters:
       #       branches:
