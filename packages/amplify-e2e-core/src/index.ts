@@ -31,21 +31,10 @@ export function npmInstall(cwd: string) {
 }
 
 export async function installAmplifyCLI(version: string = 'latest') {
-  return new Promise((resolve, reject) => {
-    const amplifyCLIInstall = spawn('npm', ['install', '-g', `@aws-amplify/cli@${version}`], {
-      cwd: process.cwd(),
-      env: process.env,
-    });
-
-    amplifyCLIInstall.on('exit', code => {
-      if (code === 0) {
-        console.log(`Successfully installed Amplify CLI version ${version}.`);
-        resolve();
-      } else {
-        console.log(`Failed to install Amplify CLI. Please ensure a valid version was passed`);
-        reject();
-      }
-    });
+  spawnSync('npm', ['install', '-g', `@aws-amplify/cli@${version}`], {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: 'inherit',
   });
 }
 
