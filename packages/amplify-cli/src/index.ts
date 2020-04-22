@@ -8,6 +8,8 @@ import { executeCommand } from './execution-manager';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
 import { checkProjectConfigVersion } from './project-config-version-check';
+import { default as updateNotifier } from 'update-notifier';
+const pkg = require('../package.json');
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
 // https://github.com/SBoudrias/Inquirer.js/issues/887
@@ -18,6 +20,13 @@ EventEmitter.defaultMaxListeners = 1000;
 // entry from commandline
 export async function run(): Promise<number> {
   try {
+    // Checks for available update on each use
+    const notifier = updateNotifier({
+      pkg,
+      updateCheckInterval: 0,
+    });
+    notifier.notify({ defer: false, isGlobal: true });
+
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
     let verificationResult = verifyInput(pluginPlatform, input);
