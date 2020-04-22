@@ -1,6 +1,6 @@
 import { join } from 'path';
 import * as fs from 'fs-extra';
-import { spawn, spawnSync, execSync } from 'child_process';
+import { spawnSync, execSync } from 'child_process';
 
 export * from './configure/';
 export * from './init/';

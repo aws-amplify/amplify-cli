@@ -41,7 +41,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testRegex": "(src/__tests__/(amplify-app)).test.(ts|tsx|js)$",
     "testPathIgnorePatterns": [
       "/node_modules/",
       "lib"
