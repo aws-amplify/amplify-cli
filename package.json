@@ -11,7 +11,7 @@
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "clean": "lerna run clean && lerna exec yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "build": "lerna run build",
-    "production-build": "yarn --frozen-lockfile && lerna run build",
+    "production-build": "yarn --frozen-lockfile && lerna run build --concurrency 3 --stream",
     "dev-build": "yarn && lerna run build",
     "link-caa": "cd packages/amplify-app && npm link",
     "link-dev": "cd packages/amplify-cli && ln -s $(pwd)/bin/amplify $(yarn global bin)/amplify-dev && cd -",
