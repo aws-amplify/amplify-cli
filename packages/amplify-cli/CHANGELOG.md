@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.18.0...@aws-amplify/cli@4.18.1-beta.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* add function plugin interface to cli deps ([#3905](https://github.com/aws-amplify/amplify-cli/issues/3905)) ([001adfb](https://github.com/aws-amplify/amplify-cli/commit/001adfb137929e71acdc393e03916ad621bf2c8f))
+* prevent hyphenated project names ([#3893](https://github.com/aws-amplify/amplify-cli/issues/3893)) ([236137d](https://github.com/aws-amplify/amplify-cli/commit/236137d84b3ff3c1e0a84ff7c7bd22bf4a8a52dd))
+* **cli:** fix amplify console welcome message format ([#3936](https://github.com/aws-amplify/amplify-cli/issues/3936)) ([ee601a5](https://github.com/aws-amplify/amplify-cli/commit/ee601a501ad516db50c9ac83dc57bb730134e998))
+
+
+### Reverts
+
+* Revert "fix: add function plugin interface to cli deps (#3905)" (#3906) ([f534324](https://github.com/aws-amplify/amplify-cli/commit/f534324f4e315ea4e1e3f95afa840962ef8fc17a)), closes [#3905](https://github.com/aws-amplify/amplify-cli/issues/3905) [#3906](https://github.com/aws-amplify/amplify-cli/issues/3906)
+
+
+
+
+
 # [4.18.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.2...@aws-amplify/cli@4.18.0) (2020-04-06)
 
 

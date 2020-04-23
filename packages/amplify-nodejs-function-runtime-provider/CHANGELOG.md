@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.0.1...amplify-nodejs-function-runtime-provider@1.0.2-beta.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* pass deserialized obj to node lambda when mocking ([#3895](https://github.com/aws-amplify/amplify-cli/issues/3895)) ([c5a1891](https://github.com/aws-amplify/amplify-cli/commit/c5a1891f218e23434fec3516d845958fddf416d8))
+
+
+
+
+
 ## 1.0.1 (2020-04-06)
 
 
