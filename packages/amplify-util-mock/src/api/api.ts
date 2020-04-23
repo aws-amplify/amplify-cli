@@ -10,7 +10,7 @@ import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
+import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
@@ -164,7 +164,7 @@ export class APITest {
   }
   private async ensureDDBTables(config) {
     const tables = config.tables.map(t => t.Properties);
-    await ensureDynamoDBTables(this.ddbClient, config);
+    await createAndUpdateTable(this.ddbClient, config);
   }
 
   private async configureLambdaDataSource(context, config) {

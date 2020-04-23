@@ -85,11 +85,8 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.15",
     "@types/node": "^10.17.13",
-    "@types/parse-json": "^4.0.0",
-    "jest": "^24.8.0",
-    "ts-jest": "^24.0.2"
+    "@types/parse-json": "^4.0.0"
   },
   "jest": {
     "transform": {
