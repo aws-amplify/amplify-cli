@@ -31,12 +31,12 @@ function getTestFiles(dir: string, pattern = '**/*.test.ts'): string[] {
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
-  return `${baseName}-${testSuitePath
+  return `${testSuitePath
     .replace('src/', '')
     .replace('__tests__/', '')
-    .replace(/\.ts$/, '')
+    .replace(/test\.ts$/, '')
     .replace(/\//g, '-')
-    .replace(/\./g, '-')}`;
+    .replace(/\./g, '-')}${baseName}`;
 }
 
 /**
