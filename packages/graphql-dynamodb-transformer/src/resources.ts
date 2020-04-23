@@ -253,13 +253,13 @@ export class ResourceFactory {
       RoleName: Fn.If(
         ResourceConstants.CONDITIONS.HasEnvironmentParameter,
         Fn.Join('-', [
-          md5(typeName).slice(0, 21), // max of 64. 64-10-26-4-3 = 21
+          typeName.slice(0, 14) + md5(typeName).slice(15, 21), // max of 64. 64-10-26-4-3 = 21
           'role', // 4
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
           Fn.Ref(ResourceConstants.PARAMETERS.Env), // 10
         ]),
         Fn.Join('-', [
-          md5(typeName).slice(0, 31), // max of 64. 64-26-4-3 = 31
+          typeName.slice(0, 24) + md5(typeName).slice(25, 31), // max of 64. 64-26-4-3 = 31
           'role',
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
         ]),
