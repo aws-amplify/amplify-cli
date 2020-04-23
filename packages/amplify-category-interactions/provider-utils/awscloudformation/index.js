@@ -46,18 +46,18 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 }
 
 function getTemplateMappings(context) {
-  const Mappings = {
+  const mappings = {
     RegionMapping: {},
   };
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins['awscloudformation']);
-  const regionMapping = provider.getPinpointRegionMapping();
+  const regionMapping = provider.getLexRegionMapping();
   Object.keys(regionMapping).forEach(region => {
-    Mappings.RegionMapping[region] = {
+    mappings.RegionMapping[region] = {
       lexRegion: regionMapping[region],
     };
   });
-  return Mappings;
+  return mappings;
 }
 
 async function addResource(context, category, service, options) {
