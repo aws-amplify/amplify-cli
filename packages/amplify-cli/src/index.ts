@@ -20,13 +20,6 @@ EventEmitter.defaultMaxListeners = 1000;
 // entry from commandline
 export async function run(): Promise<number> {
   try {
-    // Checks for available update on each use
-    const notifier = updateNotifier({
-      pkg,
-      updateCheckInterval: 0,
-    });
-    notifier.notify({ defer: false, isGlobal: true });
-
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
     let verificationResult = verifyInput(pluginPlatform, input);
@@ -110,4 +103,10 @@ export async function executeAmplifyCommand(context: Context) {
   const commandPath = path.normalize(path.join(__dirname, 'commands', context.input.command!));
   const commandModule = require(commandPath);
   await commandModule.run(context);
+  // Checks for available update on each use
+  const notifier = updateNotifier({
+    pkg,
+    updateCheckInterval: 0,
+  });
+  notifier.notify({ defer: false, isGlobal: true });
 }
