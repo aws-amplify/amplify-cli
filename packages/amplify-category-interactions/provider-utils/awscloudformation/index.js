@@ -17,7 +17,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   const { getAllDefaults } = require(defaultValuesSrc);
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
-
+  const mappings = getTemplateMappings(context);
   const copyJobs = [
     {
       dir: pluginDir,
@@ -40,9 +40,24 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       target: `${targetDir}/${category}/${options.resourceName}/src/cfn-response.js`,
     },
   ];
-  Object.assign(defaultValues, options);
+  Object.assign(defaultValues, options, { mappings });
   // copy over the files
   return context.amplify.copyBatch(context, copyJobs, defaultValues, true, false);
+}
+
+function getTemplateMappings(context) {
+  const Mappings = {
+    RegionMapping: {},
+  };
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = require(providerPlugins['awscloudformation']);
+  const regionMapping = provider.getPinpointRegionMapping();
+  Object.keys(regionMapping).forEach(region => {
+    Mappings.RegionMapping[region] = {
+      lexRegion: regionMapping[region],
+    };
+  });
+  return Mappings;
 }
 
 async function addResource(context, category, service, options) {
