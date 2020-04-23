@@ -1,35 +1,31 @@
-import archiver from 'archiver';
 import fs from 'fs-extra';
 import path from 'path';
+import * as execa from 'execa';
 import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface/src';
+import { executableName } from '../constants';
 
 export const packageAssemblies = async (request: PackageRequest, context: any): Promise<PackageResult> => {
   const distPath = path.join(request.srcRoot, 'dist');
+  const sourcePath = path.join(request.srcRoot, 'src');
 
   if (fs.existsSync(request.dstFilename)) {
     fs.removeSync(request.dstFilename);
   }
 
-  const zipFile = path.basename(request.dstFilename);
   const packageHash = (await context.amplify.hashDir(distPath, [])) as string;
-  const output = fs.createWriteStream(request.dstFilename);
+  const result = execa.sync(
+    executableName,
+    ['lambda', 'package', '--framework', 'netcoreapp3.1', '--configuration', 'Release', '--output-package', request.dstFilename],
+    {
+      cwd: sourcePath,
+    },
+  );
 
-  return new Promise((resolve, reject) => {
-    output.on('close', () => {
-      resolve({ packageHash });
-    });
+  if (result.exitCode !== 0) {
+    throw new Error(`Packaging failed. Exit code was ${result.exitCode}`);
+  }
 
-    output.on('error', err => {
-      reject(new Error(`Failed to zip with error: [${err}]`));
-    });
-
-    const zip = archiver.create('zip', {});
-
-    zip.pipe(output);
-    zip.glob('**', {
-      cwd: distPath,
-      ignore: [zipFile],
-    });
-    zip.finalize();
-  });
+  return {
+    packageHash: packageHash,
+  };
 };
