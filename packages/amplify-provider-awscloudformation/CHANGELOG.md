@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.18.0...amplify-provider-awscloudformation@4.19.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* check for unavailable bucket ([#3972](https://github.com/aws-amplify/amplify-cli/issues/3972)) ([de9c4c4](https://github.com/aws-amplify/amplify-cli/commit/de9c4c461351352694d81d9e7b2f9044b1a9a2c4))
+* select us-east-2 in integ tests ([#3992](https://github.com/aws-amplify/amplify-cli/issues/3992)) ([ed48cf5](https://github.com/aws-amplify/amplify-cli/commit/ed48cf59a2e60cc25a78f83641ca8f3bc63bc68f))
+* **amplify-category-interactions:** make category region aware ([#4047](https://github.com/aws-amplify/amplify-cli/issues/4047)) ([a40a772](https://github.com/aws-amplify/amplify-cli/commit/a40a77299d66c3791f65cf5389dac9f2db41696b))
+* **amplify-provider-awscloudformation:** check before fetching backend ([#3848](https://github.com/aws-amplify/amplify-cli/issues/3848)) ([39be355](https://github.com/aws-amplify/amplify-cli/commit/39be3552f7f408dad02c2701a01f170be9badbb7))
+* **amplify-provider-awscloudformation:** hide IAM secrets on entry ([#3970](https://github.com/aws-amplify/amplify-cli/issues/3970)) ([60559c5](https://github.com/aws-amplify/amplify-cli/commit/60559c58b3c24d433a9b13efeb886918e8bcad47))
+* **amplify-provider-awscloudformation:** response type fix on grant ([#3955](https://github.com/aws-amplify/amplify-cli/issues/3955)) ([503b675](https://github.com/aws-amplify/amplify-cli/commit/503b6756ab6a06e8c10b21aafac987473639147c)), closes [#3428](https://github.com/aws-amplify/amplify-cli/issues/3428)
+
+
+### Features
+
+* **amplify-category-api:** allow minified CF stack templates ([#3520](https://github.com/aws-amplify/amplify-cli/issues/3520)) ([6da2a63](https://github.com/aws-amplify/amplify-cli/commit/6da2a634548fdf48deb4b1144c67d1e1515abb80)), closes [#2914](https://github.com/aws-amplify/amplify-cli/issues/2914)
+
+
+### Reverts
+
+* Revert "fix(amplify-provider-awscloudformation): check before fetching backend (#3848)" (#3968) ([4abd582](https://github.com/aws-amplify/amplify-cli/commit/4abd5828bb5138944b116476d8b9491597aecc88)), closes [#3848](https://github.com/aws-amplify/amplify-cli/issues/3848) [#3968](https://github.com/aws-amplify/amplify-cli/issues/3968)
+
+
+
+
+
 # [4.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.17.1...amplify-provider-awscloudformation@4.18.0) (2020-04-06)
 
 
