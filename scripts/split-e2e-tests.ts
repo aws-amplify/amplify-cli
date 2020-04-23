@@ -36,7 +36,7 @@ function generateJobName(baseName: string, testSuitePath: string): string {
     .replace('__tests__/', '')
     .replace(/test\.ts$/, '')
     .replace(/\//g, '-')
-    .replace(/\./g, '-')}-${baseName}`;
+    .replace(/\./g, '-')}${baseName}`;
 }
 
 /**
