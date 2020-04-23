@@ -312,7 +312,7 @@
     "Outputs": {
         "Region": {
             "Value": {
-                "Ref": "AWS::Region"
+                "Fn::FindInMap": ["RegionMapping", { "Ref": "AWS::Region" }, "lexRegion"]
             }
         },
         "BotName":  {
