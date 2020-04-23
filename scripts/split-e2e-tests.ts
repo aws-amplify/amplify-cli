@@ -2,6 +2,9 @@ import * as yaml from 'js-yaml';
 import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
+
+const CONCURRENCY = 3;
+
 export type WorkflowJob =
   | {
       [name: string]: {
@@ -50,7 +53,7 @@ function splitTests(
   jobName: string,
   workflowName: string,
   jobRootDir: string,
-  concurrency: number = 3,
+  concurrency: number = CONCURRENCY,
 ): CircleCIConfig {
   const output: CircleCIConfig = { ...config };
   const jobs = { ...config.jobs };
