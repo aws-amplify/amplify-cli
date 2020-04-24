@@ -24,7 +24,7 @@
   "dependencies": {
     "@types/jest": "^25.2.1",
     "@types/node": "^13.13.0",
-    "amplify-e2e-core": "1.1.0",
+    "amplify-e2e-core": "1.1.1",
     "aws-sdk": "^2.608.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
