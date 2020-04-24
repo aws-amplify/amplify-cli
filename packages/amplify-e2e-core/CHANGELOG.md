@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.0...amplify-e2e-core@1.1.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* implement retries and CFN polls in e2e tests ([#4028](https://github.com/aws-amplify/amplify-cli/issues/4028)) ([b71391f](https://github.com/aws-amplify/amplify-cli/commit/b71391facdd0d4f301522f10fb7d722aad406ed6))
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.0.1...amplify-e2e-core@1.1.0) (2020-04-06)
 
 

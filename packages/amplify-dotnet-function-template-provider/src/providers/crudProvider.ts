@@ -1,5 +1,6 @@
 import { FunctionTemplateParameters, ContributionRequest } from 'amplify-function-plugin-interface';
-import { templateRoot } from '../utils/constants';
+import { commonFiles, templateRoot } from '../utils/constants';
+import { getDstMap } from '../utils/destFileMapper';
 import path from 'path';
 import { askDynamoDBQuestions, getTableParameters } from '../utils/dynamoDBWalkthrough';
 
@@ -12,7 +13,7 @@ export async function provideCrud(request: ContributionRequest, context: any): P
   const tableParameters = await getTableParameters(context, dynamoResource);
   Object.assign(dynamoResource, { category: 'storage' }, { tableDefinition: { ...tableParameters } });
   const files = [
-    '.gitignore',
+    ...commonFiles,
     'Crud/aws-lambda-tools-defaults.json.ejs',
     'Crud/Function.csproj.ejs',
     'Crud/FunctionHandler.cs.ejs',
@@ -31,7 +32,7 @@ export async function provideCrud(request: ContributionRequest, context: any): P
       },
       defaultEditorFile: handlerSource,
       destMap: {
-        '.gitignore': path.join('src', '.gitignore'),
+        ...getDstMap(commonFiles),
         'Crud/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
         'Crud/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
         'Crud/FunctionHandler.cs.ejs': handlerSource,
