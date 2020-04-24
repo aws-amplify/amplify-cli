@@ -36,6 +36,7 @@
   "dependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/global-prefix": "^3.0.0",
+    "@types/update-notifier": "^4.1.0",
     "amplify-category-analytics": "2.16.3",
     "amplify-category-api": "2.19.0",
     "amplify-category-auth": "2.15.4",
@@ -82,6 +83,7 @@
     "parse-json": "^5.0.0",
     "promise-sequential": "^1.1.1",
     "semver": "^7.1.1",
+    "update-notifier": "^4.1.0",
     "which": "^2.0.2"
   },
   "devDependencies": {
