@@ -719,7 +719,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
 async function getLambdaFunctions(context) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaResources = allResources.filter(resource => resource.service === 'Function').map(resource => resource.resourceName);
+  const lambdaResources = allResources.filter(resource => resource.service === 'LambdaFunction').map(resource => resource.resourceName);
 
   return lambdaResources;
 }
