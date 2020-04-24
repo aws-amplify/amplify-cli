@@ -1,7 +1,7 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { categoryName, provider, serviceName } from './constants';
+import { categoryName, provider, serviceNames } from './constants';
 import _ from 'lodash';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
@@ -93,7 +93,7 @@ function translateFuncParamsToResourceOpts(params: FunctionParameters | Function
   let result: any = {
     build: true,
     providerPlugin: provider,
-    service: serviceName,
+    service: serviceNames.LambdaFunction,
   };
   if (!('trigger' in params)) {
     result.dependsOn = params.dependsOn;

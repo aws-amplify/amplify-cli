@@ -57,6 +57,12 @@ export async function runtimeWalkthrough(
     pluginType: 'functionRuntime',
     listOptionsField: 'runtimes',
     predicate: condition => {
+      console.log(
+        'condition, params.providerContext, equal?',
+        condition,
+        params.providerContext,
+        condition.provider === params.providerContext.provider && condition.service === params.providerContext.service,
+      );
       return condition.provider === params.providerContext.provider && condition.service === params.providerContext.service;
     },
     selectionPrompt: 'Choose the function runtime that you want to use:',
@@ -87,6 +93,8 @@ export async function runtimeWalkthrough(
  * Parses plugin metadat to present plugin selections to the user and return the selection.
  */
 async function getSelectionFromContributors<T>(context: any, selectionOptions: PluginSelectionOptions<T>): Promise<PluginSelection> {
+  console.log('getSelectionFromContributors<T>()');
+  console.log('selectionOptions', selectionOptions);
   const notFoundSuffix = 'You can download and install additional plugins then rerun this command';
   // get providers from context
   const templateProviders = context.pluginPlatform.plugins[selectionOptions.pluginType];
@@ -99,7 +107,14 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
   // load the selections contributed from each provider, constructing a map of selection to provider as we go
   const selectionMap: Map<string, { path: string; pluginId: string }> = new Map();
   const selections = templateProviders
-    .filter(meta => selectionOptions.predicate(meta.manifest[selectionOptions.pluginType].conditions))
+    .filter(meta => {
+      console.log('meta 1:', meta);
+      meta.manifest[selectionOptions.pluginType].conditions.service =
+        meta.manifest[selectionOptions.pluginType].conditions.service === 'Lambda'
+          ? 'LambdaFunction'
+          : meta.manifest[selectionOptions.pluginType].conditions.service;
+      selectionOptions.predicate(meta.manifest[selectionOptions.pluginType].conditions);
+    })
     .map(meta => {
       const packageLoc = meta.packageLocation;
       const pluginId = meta.manifest[selectionOptions.pluginType].pluginId;
@@ -113,6 +128,7 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     .reduce((acc, it) => acc.concat(it), [])
     .sort((a, b) => a.name.localeCompare(b.name)); // sort by display name so that selections order is deterministic
 
+  console.log('selectionMap, selections:', selectionMap, selections);
   // sanity checks
   let selection;
   if (selections.length === 0) {
@@ -142,6 +158,12 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     ]);
     selection = answer.selection;
   }
+
+  console.log('return value:', {
+    value: selection,
+    pluginPath: selectionMap.get(selection).path,
+    pluginId: selectionMap.get(selection).pluginId,
+  });
 
   return {
     value: selection,

@@ -21,11 +21,13 @@ function filterServicesByEnabledProviders(context, enabledProviders, supportedSe
   return filteredServices;
 }
 
-function serviceQuestionWalkthrough(context, supportedServices, category, customQuestion = null) {
-
+function serviceQuestionWalkthrough(context, supportedServices, category, customQuestion = null, customChoices = null) {
   const options = [];
-  for (let i = 0; i < supportedServices.length; i += 1) {
-    const optionName = supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
+  for (let i = 0; i < supportedServices.length; ++i) {
+    const optionName =
+      customChoices && customChoices[i]
+        ? customChoices[i]
+        : supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
     options.push({
       name: optionName,
       value: {
@@ -60,10 +62,10 @@ function serviceQuestionWalkthrough(context, supportedServices, category, custom
   return inquirer.prompt(question).then(answer => answer.service);
 }
 
-function serviceSelectionPrompt(context, category, supportedServices, customQuestion = null) {
+function serviceSelectionPrompt(context, category, supportedServices, customQuestion = null, customChoices = null) {
   const { providers } = getProjectConfig();
   supportedServices = filterServicesByEnabledProviders(context, providers, supportedServices);
-  return serviceQuestionWalkthrough(context, supportedServices, category, customQuestion);
+  return serviceQuestionWalkthrough(context, supportedServices, category, customQuestion, customChoices);
 }
 
 module.exports = {

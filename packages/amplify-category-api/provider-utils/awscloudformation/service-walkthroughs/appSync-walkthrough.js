@@ -338,7 +338,7 @@ async function createSyncFunction(context) {
   await context.amplify.copyBatch(context, copyJobs, functionProps, true);
 
   const backendConfigs = {
-    service: 'Lambda',
+    service: 'LambdaFunction',
     providerPlugin: 'awscloudformation',
     build: true,
   };

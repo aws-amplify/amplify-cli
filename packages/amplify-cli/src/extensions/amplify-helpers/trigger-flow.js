@@ -52,7 +52,7 @@ const addTrigger = async triggerOptions => {
     throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
   }
 
-  await add(context, 'awscloudformation', 'Lambda', {
+  await add(context, 'awscloudformation', 'LambdaFunction', {
     trigger: true,
     cloudResourceTemplatePath: join(triggerDir, 'cloudformation-templates', triggerTemplate),
     functionTemplate: {
@@ -135,7 +135,7 @@ const updateTrigger = async triggerOptions => {
     await update(
       context,
       'awscloudformation',
-      'Lambda',
+      'LambdaFunction',
       {
         trigger: true,
         modules: values,

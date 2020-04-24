@@ -7,7 +7,7 @@
     "pluginId": "amplify-dotnet-function-runtime-provider",
     "conditions": {
       "provider": "awscloudformation",
-      "service": "Lambda"
+      "service": "LambdaFunction"
     },
     "runtimes": [
       {

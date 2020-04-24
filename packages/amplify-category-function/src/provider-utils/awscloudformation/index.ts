@@ -1,6 +1,7 @@
 import { FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
 import { supportedServices } from '../supported-services';
-import { serviceName, provider, categoryName } from './utils/constants';
+import { FunctionWalkthroughProvider } from '../supportedServicesType';
+import { serviceNames, provider, categoryName } from './utils/constants';
 import { createParametersFile, copyFunctionResources } from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
@@ -36,7 +37,7 @@ export async function addResource(
     let funcParams: Partial<FunctionParameters> = {
       providerContext: {
         provider: provider,
-        service: serviceName,
+        service: serviceNames.LambdaFunction,
         projectName: context.amplify.getProjectDetails().projectConfig.projectName,
       },
     };
@@ -155,23 +156,23 @@ async function openEditor(context, category, options: FunctionParameters | Funct
 export function migrateResource(context, projectPath, service, resourceName) {
   const serviceConfig: ServiceConfig = supportedServices[service];
 
-  if (!serviceConfig.walkthroughs.migrate) {
+  if (!(serviceConfig.walkthroughs as FunctionWalkthroughProvider).migrate) {
     context.print.info(`No migration required for ${resourceName}`);
     return;
   }
 
-  return serviceConfig.walkthroughs.migrate(context, projectPath, resourceName);
+  return (serviceConfig.walkthroughs as FunctionWalkthroughProvider).migrate(context, projectPath, resourceName);
 }
 
 export function getPermissionPolicies(context, service, resourceName, crudOptions) {
   const serviceConfig: ServiceConfig = supportedServices[service];
 
-  if (!serviceConfig.walkthroughs.getIAMPolicies) {
+  if (!(serviceConfig.walkthroughs as FunctionWalkthroughProvider).getIAMPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
     return;
   }
 
-  return serviceConfig.walkthroughs.getIAMPolicies(resourceName, crudOptions);
+  return (serviceConfig.walkthroughs as FunctionWalkthroughProvider).getIAMPolicies(resourceName, crudOptions);
 }
 
 function isInHeadlessMode(context) {
@@ -186,7 +187,7 @@ function getHeadlessParams(context, service) {
 }
 
 export async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData: ServiceConfig = supportedServices.Lambda; // FIXME this shouldn't be hardcoded to lambda!
+  const srvcMetaData: ServiceConfig = supportedServices[service];
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
   const functionParametersPath = `${context.amplify.pathManager.getBackendDirPath()}/function/${service}/function-parameters.json`;
   let resourceParams: any = {};
