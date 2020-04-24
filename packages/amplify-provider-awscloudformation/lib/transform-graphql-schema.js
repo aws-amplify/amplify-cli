@@ -444,8 +444,33 @@ async function transformGraphQLSchema(context, options) {
   if (directiveMap.directives.includes('searchable')) {
     searchableTransformerFlag = true;
     if (context.input.command === 'add') {
-      parameters.ElasticSearchInstanceType = 't2.micro.elasticsearch';
-      parameters.ElasticSearchVersion = '2.3';
+      const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+      switch (region) {
+        case 'ap-east-1':
+          parameters.ElasticSearchInstanceType = 'm5.large.elasticsearch';
+          parameters.ElasticSearchVersion = '6.2';
+          break;
+        case 'eu-west-3':
+          parameters.ElasticSearchInstanceType = 't2.small.elasticsearch';
+          parameters.ElasticSearchVersion = '6.2';
+          break;
+        case 'eu-north-1':
+          parameters.ElasticSearchInstanceType = 'm5.large.elasticsearch';
+          parameters.ElasticSearchVersion = '6.2';
+          break;
+        case 'af-south-1':
+          parameters.ElasticSearchInstanceType = 'm5.large.elasticsearch';
+          parameters.ElasticSearchVersion = '6.2';
+          break;
+        case 'me-south-1':
+          parameters.ElasticSearchInstanceType = 'm5.large.elasticsearch';
+          parameters.ElasticSearchVersion = '6.2';
+          break;
+        default:
+          parameters.ElasticSearchInstanceType = 't2.micro.elasticsearch';
+          parameters.ElasticSearchVersion = '2.3';
+          break;
+      }
     } else {
       // for users with existing resources
       if (parameters.ElasticSearchInstanceType === undefined) {
@@ -453,7 +478,7 @@ async function transformGraphQLSchema(context, options) {
         parameters.ElasticSearchVersion = '6.2';
       }
     }
-    // adding to parameters file for update check
+    // adding to parameters file
     const jsonString = JSON.stringify(parameters, null, 4);
     fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
   }
