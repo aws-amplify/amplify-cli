@@ -753,6 +753,13 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/delete.test.ts
+  env-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/env.test.ts
   function-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -781,6 +788,13 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/interactions.test.ts
+  layers-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/layers.test.ts
   migration-api-connection-migration-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -893,10 +907,12 @@ workflows:
             - auth-amplify_e2e_tests
             - datastore-modegen-amplify_e2e_tests
             - delete-amplify_e2e_tests
+            - env-amplify_e2e_tests
             - function-amplify_e2e_tests
             - hosting-amplify_e2e_tests
             - init-amplify_e2e_tests
             - interactions-amplify_e2e_tests
+            - layers-amplify_e2e_tests
             - migration-api-connection-migration-amplify_e2e_tests
             - migration-api-key-migration-amplify_e2e_tests
             - plugin-amplify_e2e_tests
@@ -938,46 +954,56 @@ workflows:
           requires:
             - publish_to_local_registry
             - analytics-amplify_e2e_tests
-      - function-amplify_e2e_tests:
+      - env-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
             - api-amplify_e2e_tests
-      - hosting-amplify_e2e_tests:
+      - function-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
             - auth-amplify_e2e_tests
-      - init-amplify_e2e_tests:
+      - hosting-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
             - datastore-modegen-amplify_e2e_tests
-      - interactions-amplify_e2e_tests:
+      - init-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
             - delete-amplify_e2e_tests
-      - migration-api-connection-migration-amplify_e2e_tests:
+      - interactions-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - env-amplify_e2e_tests
+      - layers-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
             - function-amplify_e2e_tests
-      - migration-api-key-migration-amplify_e2e_tests:
+      - migration-api-connection-migration-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
             - hosting-amplify_e2e_tests
-      - plugin-amplify_e2e_tests:
+      - migration-api-key-migration-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
             - init-amplify_e2e_tests
-      - predictions-amplify_e2e_tests:
+      - plugin-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
             - interactions-amplify_e2e_tests
+      - predictions-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - layers-amplify_e2e_tests
       - storage-amplify_e2e_tests:
           filters: *ref_2
           requires:
