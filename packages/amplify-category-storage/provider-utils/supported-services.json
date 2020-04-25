@@ -53,6 +53,12 @@
         "required": true
       },
       {
+        "key": "billingMode",
+        "type": "list",
+        "question": "Please provide the billing mode for this table (for more information, see https://aws.amazon.com/dynamodb/pricing/):",
+        "required": true
+      },
+      {
         "key": "attribute",
         "type": "input",
         "question": "What would you like to name this column:",
