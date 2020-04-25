@@ -287,8 +287,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     sortKeyType = answers.AttributeDefinitions[sortKeyAttrTypeIndex].AttributeType;
   }
 
-  answers.KeySchema = answers.KeySchema;
-
   print.info('');
   print.info(
     'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.',
