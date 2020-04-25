@@ -54,6 +54,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
+  const billingModes = {
+    'On demand': { cloudformation: 'PAY_PER_REQUEST' },
+    Provisioned: { cloudformation: 'PROVISIONED' },
+  };
+
   const attributeTypes = {
     string: { code: 'S', indexable: true },
     number: { code: 'N', indexable: true },
@@ -127,6 +132,16 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     answers = await inquirer.prompt(resourceQuestions);
   }
 
+  const billingModeQuestion = {
+    type: inputs[2].type,
+    name: inputs[2].key,
+    message: inputs[2].question,
+    choices: Object.keys(billingModes),
+  };
+
+  const billingModeAnswer = await inquirer.prompt([billingModeQuestion]);
+  answers.BillingMode = billingModes[billingModeAnswer[inputs[2].key]].cloudformation;
+
   print.info('');
   print.info('You can now add columns to the table.');
   print.info('');
@@ -134,15 +149,15 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // Ask attribute questions
 
   const attributeQuestion = {
-    type: inputs[2].type,
-    name: inputs[2].key,
-    message: inputs[2].question,
-    validate: amplify.inputValidation(inputs[2]),
-  };
-  const attributeTypeQuestion = {
     type: inputs[3].type,
     name: inputs[3].key,
     message: inputs[3].question,
+    validate: amplify.inputValidation(inputs[3]),
+  };
+  const attributeTypeQuestion = {
+    type: inputs[4].type,
+    name: inputs[4].key,
+    message: inputs[4].question,
     choices: Object.keys(attributeTypes),
   };
 
@@ -157,7 +172,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       {
         AttributeName: defaultValues.sortKeyName,
         AttributeType: defaultValues.sortKeyType,
-      }
+      },
     );
     continueAttributeQuestion = await amplify.confirmPrompt.run('Would you like to add another column?');
   }
@@ -166,20 +181,20 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   while (continueAttributeQuestion) {
     const attributeAnswer = await inquirer.prompt([attributeQuestion, attributeTypeQuestion]);
 
-    if (attributeAnswers.findIndex(attribute => attribute.AttributeName === attributeAnswer[inputs[2].key]) !== -1) {
+    if (attributeAnswers.findIndex(attribute => attribute.AttributeName === attributeAnswer[inputs[3].key]) !== -1) {
       continueAttributeQuestion = await amplify.confirmPrompt.run(
-        'This attribute was already added. Do you want to add another attribute?'
+        'This attribute was already added. Do you want to add another attribute?',
       );
       continue;
     }
 
     attributeAnswers.push({
-      AttributeName: attributeAnswer[inputs[2].key],
-      AttributeType: attributeTypes[attributeAnswer[inputs[3].key]].code,
+      AttributeName: attributeAnswer[inputs[3].key],
+      AttributeType: attributeTypes[attributeAnswer[inputs[4].key]].code,
     });
 
-    if (attributeTypes[attributeAnswer[inputs[3].key]].indexable) {
-      indexableAttributeList.push(attributeAnswer[inputs[2].key]);
+    if (attributeTypes[attributeAnswer[inputs[4].key]].indexable) {
+      indexableAttributeList.push(attributeAnswer[inputs[3].key]);
     }
     continueAttributeQuestion = await amplify.confirmPrompt.run('Would you like to add another column?');
   }
@@ -187,12 +202,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   print.info('');
   print.info(
-    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.'
+    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.',
   );
   print.info('');
   print.info('To learn more about primary keys, see:');
   print.info(
-    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey'
+    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
   );
   print.info('');
   // Ask for primary key
@@ -206,15 +221,15 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     ({ partitionKeyType } = defaultValues);
   } else {
     const primaryKeyQuestion = {
-      type: inputs[4].type,
-      name: inputs[4].key,
-      message: inputs[4].question,
-      validate: amplify.inputValidation(inputs[3]),
+      type: inputs[5].type,
+      name: inputs[5].key,
+      message: inputs[5].question,
+      validate: amplify.inputValidation(inputs[4]),
       choices: indexableAttributeList,
     };
 
     const partitionKeyAnswer = await inquirer.prompt([primaryKeyQuestion]);
-    partitionKeyName = partitionKeyAnswer[inputs[4].key];
+    partitionKeyName = partitionKeyAnswer[inputs[5].key];
   }
 
   answers.KeySchema.push({
@@ -250,13 +265,13 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     // Ask for sort key
     if (answers.AttributeDefinitions.length > 1) {
       const sortKeyQuestion = {
-        type: inputs[5].type,
-        name: inputs[5].key,
-        message: inputs[5].question,
+        type: inputs[6].type,
+        name: inputs[6].key,
+        message: inputs[6].question,
         choices: indexableAttributeList,
       };
       const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
-      sortKeyName = sortKeyAnswer[inputs[5].key];
+      sortKeyName = sortKeyAnswer[inputs[6].key];
       answers.KeySchema.push({
         AttributeName: sortKeyName,
         KeyType: 'RANGE',
@@ -276,11 +291,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   print.info('');
   print.info(
-    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.'
+    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.',
   );
   print.info('To learn more about indexes, see:');
   print.info(
-    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes'
+    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
   );
   print.info('');
 
@@ -294,15 +309,15 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     while (continuewithGSIQuestions) {
       if (availableAttributes.length > 0) {
         const gsiAttributeQuestion = {
-          type: inputs[6].type,
-          name: inputs[6].key,
-          message: inputs[6].question,
-        };
-        const gsiPrimaryKeyQuestion = {
           type: inputs[7].type,
           name: inputs[7].key,
           message: inputs[7].question,
-          validate: amplify.inputValidation(inputs[3]),
+        };
+        const gsiPrimaryKeyQuestion = {
+          type: inputs[8].type,
+          name: inputs[8].key,
+          message: inputs[8].question,
+          validate: amplify.inputValidation(inputs[4]),
           choices: availableAttributes,
         };
         /*eslint-disable*/
@@ -316,35 +331,35 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           Projection: {
             ProjectionType: 'ALL',
           },
-          IndexName: gsiPrimaryAnswer[inputs[6].key],
+          IndexName: gsiPrimaryAnswer[inputs[7].key],
           KeySchema: [
             {
-              AttributeName: gsiPrimaryAnswer[inputs[7].key],
+              AttributeName: gsiPrimaryAnswer[inputs[8].key],
               KeyType: 'HASH',
             },
           ],
         };
 
-        usedAttributeDefinitions.add(gsiPrimaryAnswer[inputs[7].key]);
+        usedAttributeDefinitions.add(gsiPrimaryAnswer[inputs[8].key]);
 
-        const gsiPrimaryAttrIndex = indexableAttributeList.indexOf(gsiPrimaryAnswer[inputs[7].key]);
+        const gsiPrimaryAttrIndex = indexableAttributeList.indexOf(gsiPrimaryAnswer[inputs[8].key]);
         if (gsiPrimaryAttrIndex > -1) {
           availableAttributes.splice(gsiPrimaryAttrIndex, 1);
         }
         if (availableAttributes.length > 0) {
           if (await amplify.confirmPrompt.run('Do you want to add a sort key to your global secondary index?')) {
             const sortKeyQuestion = {
-              type: inputs[8].type,
-              name: inputs[8].key,
-              message: inputs[8].question,
+              type: inputs[9].type,
+              name: inputs[9].key,
+              message: inputs[9].question,
               choices: availableAttributes,
             };
             const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
             gsiItem.KeySchema.push({
-              AttributeName: sortKeyAnswer[inputs[8].key],
+              AttributeName: sortKeyAnswer[inputs[9].key],
               KeyType: 'RANGE',
             });
-            usedAttributeDefinitions.add(sortKeyAnswer[inputs[8].key]);
+            usedAttributeDefinitions.add(sortKeyAnswer[inputs[9].key]);
           }
         }
         gsiList.push(gsiItem);
@@ -386,7 +401,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   /* Filter out only attribute
    * definitions which have been used - cfn errors out otherwise */
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(
-    attributeDefinition => usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1
+    attributeDefinition => usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1,
   );
 
   Object.assign(defaultValues, answers);
@@ -490,7 +505,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
   jsonString = JSON.stringify(storageParams, null, 4);
   fs.writeFileSync(storageParamsFilePath, jsonString, 'utf8');
-
   await copyCfnTemplate(context, category, resource, defaultValues);
   return resource;
 }
@@ -547,7 +561,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
     if (lambdaResources.length === 0) {
       throw new Error(
-        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project."
+        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project.",
       );
     }
 

@@ -45,6 +45,7 @@
                   } <%if (i != props.AttributeDefinitions.length - 1) { %> , <% } %>
                   <% } %>
                 ],
+                "BillingMode": "<%= props.BillingMode %>",
                 "KeySchema": [
                   <% for(var i=0; i < props.KeySchema.length; i++) { %>
                   {
@@ -52,11 +53,11 @@
                     "KeyType": "<%= props.KeySchema[i].KeyType %>"
                   } <%if (i != props.KeySchema.length - 1) { %> , <% } %>
                   <% } %>
-                ],
+                ], <%if (props.BillingMode == "PROVISIONED") { %>
                 "ProvisionedThroughput": {
                     "ReadCapacityUnits": "5",
                     "WriteCapacityUnits": "5"
-                },
+                },<% } %>
                 "StreamSpecification": {
                     "StreamViewType": "NEW_IMAGE"
                 },
@@ -65,7 +66,7 @@
                         "ShouldNotCreateEnvResources",
                         {
                            "Ref": "tableName"
-                        }, 
+                        },
                         {
 
                             "Fn::Join": [
@@ -95,13 +96,13 @@
                                 "KeyType": "<%= props.GlobalSecondaryIndexes[i].KeySchema[j].KeyType %>"
                             } <%if (j != props.GlobalSecondaryIndexes[i].KeySchema.length - 1) { %> , <% } %>
                             <% } %>
-                        ],
-                        "Projection": {
-                            "ProjectionType": "ALL"
-                        },
+                        ],<%if (props.BillingMode == "PROVISIONED") { %>
                         "ProvisionedThroughput": {
                             "ReadCapacityUnits": "5",
                             "WriteCapacityUnits": "5"
+                        },<% } %>
+                        "Projection": {
+                            "ProjectionType": "ALL"
                         }
                     } <%if (i != props.GlobalSecondaryIndexes.length - 1) { %> , <% } %>
                   <% } %>
