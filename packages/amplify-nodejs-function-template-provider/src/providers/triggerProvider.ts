@@ -20,7 +20,7 @@ export async function provideTrigger(context: any): Promise<FunctionTemplatePara
         'package.json.ejs': path.join('src', 'package.json'),
         'event.json': path.join('src', 'event.json'),
       },
-      defaultEditorFile: path.join('src', templateFile),
+      defaultEditorFile: path.join('src', 'index.js'),
     },
   };
 }

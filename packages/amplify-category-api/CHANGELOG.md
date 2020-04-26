@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.18.0...amplify-category-api@2.19.0) (2020-04-23)
+
+
+### Features
+
+* **amplify-category-api:** allow minified CF stack templates ([#3520](https://github.com/aws-amplify/amplify-cli/issues/3520)) ([6da2a63](https://github.com/aws-amplify/amplify-cli/commit/6da2a634548fdf48deb4b1144c67d1e1515abb80)), closes [#2914](https://github.com/aws-amplify/amplify-cli/issues/2914)
+
+
+
+
+
 # [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.17.1...amplify-category-api@2.18.0) (2020-04-06)
 
 
