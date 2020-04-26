@@ -42,39 +42,25 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
     }
   }
 
-  if (!toolInstalled) {
-    toolInstalled = await installGlobalTool('Amazon.Lambda.Tools');
-  }
-  if (!testToolInstalled) {
-    testToolInstalled = await installGlobalTool('Amazon.Lambda.TestTool-3.1');
-  }
-
   // Verify that a dotnet 3.1 SDK and the dotnet Lambda tools is installed locally
   if (sdkInstalled && toolInstalled && testToolInstalled) {
     return {
       hasRequiredDependencies: true,
     };
   } else {
-    return {
+    const result = {
       hasRequiredDependencies: false,
-      errorMessage: `Expected ${executableName} minimum version ${currentSupportedVersion}, but found: ${installedSdks}`,
+      errorMessage: 'Unable to detect required dependencies:\n',
     };
+    if (!sdkInstalled) {
+      result.errorMessage += '- The .NET Core 3.1 SDK must be installed.\n';
+    }
+    if (!toolInstalled) {
+      result.errorMessage += '- The Amazon.Lambda.Tools global tool must be installed.\n';
+    }
+    if (!testToolInstalled) {
+      result.errorMessage += '- The Amazon.Lambda.TestTool-3.1 global tool must be installed.\n';
+    }
+    return result;
   }
 };
-
-async function installGlobalTool(toolName: string): Promise<boolean> {
-  let response = await inquirer.prompt({
-    type: 'confirm',
-    name: 'installToolkit',
-    message: `The ${toolName} global tool is required but was not detected.\nWould you like to install this tool?`,
-    default: 'Y',
-  });
-  if (response.installToolkit) {
-    let toolInstallationResult = execa.sync(executableName, ['tool', 'install', '-g', toolName]);
-    if (toolInstallationResult.exitCode !== 0) {
-      throw new Error(`${executableName} failed tool installation, exit code was ${toolInstallationResult.exitCode}`);
-    }
-    return true;
-  }
-  return false;
-}
