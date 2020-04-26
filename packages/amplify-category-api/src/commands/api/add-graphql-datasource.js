@@ -212,7 +212,6 @@ async function getAwsClient(context, action) {
 function readSchema(projectDirectory, rdsSchema) {
   const schemaFilePath = path.join(projectDirectory, 'schema.graphql');
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
-  const schemaFileExists = fs.existsSync(schemaFilePath);
   const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
   // convert the object schema to dump as file
   const rdsSchemaDoc = mergeTypes([{}, rdsSchema], { all: true });
@@ -222,13 +221,8 @@ function readSchema(projectDirectory, rdsSchema) {
     schema = readSchemaDocuments(schemaDirectoryPath).join('\n');
     const rdsSchemaFilePath = path.join(schemaDirectoryPath, 'rds.graphql');
     fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
-  } else if (schemaFileExists) {
-    schema = fs.readFileSync(schemaFilePath).toString();
-    const rdsSchemaFilePath = path.join(projectDirectory, 'rds.graphql');
-    fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
   } else {
-    const rdsSchemaFilePath = path.join(projectDirectory, 'rds.graphql');
-    fs.writeFileSync(rdsSchemaFilePath, rdsSchemaDoc, 'utf8');
+    schema = fs.readFileSync(schemaFilePath).toString();
   }
   return schema;
 }
