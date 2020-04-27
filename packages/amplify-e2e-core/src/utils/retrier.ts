@@ -26,7 +26,6 @@ export const retry = async <T>(func: () => Promise<T>, pred: (res?: T) => boolea
     try {
       result = await func();
       if (pred(result)) {
-        console.info(`Retryable function execution succeeded.`);
         return result;
       } else {
         console.warn(`Retryable function execution did not match predicate. Result was [${JSON.stringify(result)}]. Retrying...`);
