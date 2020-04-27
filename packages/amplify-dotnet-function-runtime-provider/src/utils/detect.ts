@@ -53,13 +53,15 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
       errorMessage: 'Unable to detect required dependencies:\n',
     };
     if (!sdkInstalled) {
-      result.errorMessage += '- The .NET Core 3.1 SDK must be installed.\n';
+      result.errorMessage += '- The .NET Core 3.1 SDK must be installed. It can be installed from https://dotnet.microsoft.com/download\n';
     }
     if (!toolInstalled) {
-      result.errorMessage += '- The Amazon.Lambda.Tools global tool must be installed.\n';
+      result.errorMessage +=
+        '- The Amazon.Lambda.Tools global tool must be installed. Please install by running "dotnet tool install -g Amazon.Lambda.Tools".\n';
     }
     if (!testToolInstalled) {
-      result.errorMessage += '- The Amazon.Lambda.TestTool-3.1 global tool must be installed.\n';
+      result.errorMessage +=
+        '- The Amazon.Lambda.TestTool-3.1 global tool must be installed. Please install by running "dotnet tool install -g Amazon.Lambda.TestTool-3.1".\n';
     }
     return result;
   }
