@@ -88,6 +88,19 @@ public final class Landmark implements Model {
       .hashCode();
   }
   
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"Landmark {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"rating=\\" + String.valueOf(getRating()))
+      .append(\\"location=\\" + String.valueOf(getLocation()))
+      .append(\\"parking=\\" + String.valueOf(getParking()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
   public static NameStep builder() {
       return new Builder();
   }
