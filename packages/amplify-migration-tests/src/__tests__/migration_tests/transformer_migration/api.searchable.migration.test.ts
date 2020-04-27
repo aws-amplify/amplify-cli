@@ -23,6 +23,6 @@ describe('amplify searchable migration', () => {
     await amplifyPush(projRoot);
     // update and push with codebase cli
     updateApiSchema(projRoot, projectName, nextSchema);
-    await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/, true);
+    await amplifyPushUpdate(projRoot, undefined, true);
   });
 });
