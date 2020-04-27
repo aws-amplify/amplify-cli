@@ -684,6 +684,7 @@ workflows:
                 - master
                 - beta
                 - split-test
+                - migrationTesting
           requires:
             - build
       - amplify_e2e_tests:

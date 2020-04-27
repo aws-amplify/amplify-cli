@@ -5,7 +5,7 @@ import { nodeJSTemplateChoices, selectRuntime } from './function';
 import { singleSelect } from '../utils/selectors';
 
 function getSchemaPath(schemaName: string): string {
-  return `${__dirname}/../../schemas/${schemaName}`;
+  return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
 }
 
 export function addApiWithoutSchema(cwd: string) {
