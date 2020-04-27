@@ -1,7 +1,12 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
+import { nspawn as spawn, retry } from 'amplify-e2e-core';
+import { getCLIPath, describeCloudFormationStack, getProjectMeta } from '../utils';
 
-export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true) {
+export const deleteProject = async (cwd: string, deleteDeploymentBucket: Boolean = true) => {
+  const { StackName: stackName, Region: region } = getProjectMeta(cwd).providers.awscloudformation;
+  await retry(
+    () => describeCloudFormationStack(stackName, region),
+    stack => stack.StackStatus.endsWith('_COMPLETE'),
+  );
   return new Promise((resolve, reject) => {
     const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
@@ -17,4 +22,4 @@ export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = tru
         }
       });
   });
-}
+};

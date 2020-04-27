@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.16.1...graphql-transformer-core@6.17.0) (2020-04-23)
+
+
+### Features
+
+* **amplify-category-api:** allow minified CF stack templates ([#3520](https://github.com/aws-amplify/amplify-cli/issues/3520)) ([6da2a63](https://github.com/aws-amplify/amplify-cli/commit/6da2a634548fdf48deb4b1144c67d1e1515abb80)), closes [#2914](https://github.com/aws-amplify/amplify-cli/issues/2914)
+
+
+
+
+
 ## [6.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.16.0...graphql-transformer-core@6.16.1) (2020-03-22)
 
 
