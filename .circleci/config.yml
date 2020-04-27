@@ -236,6 +236,8 @@ jobs:
             sudo apt-get install dotnet-sdk-3.1
 
             dotnet --version
+            dotnet tool install -g amazon.lambda.tools
+            dotnet tool install -g amazon.lambda.testtool-3.1
       - run:
           name: Start verdaccio and Install Amplify CLI
           command: |
