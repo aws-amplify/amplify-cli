@@ -8,6 +8,7 @@ export * from './sdk-calls';
 export * from './api';
 export * from './read-json-file';
 export * from './pinpoint';
+export * from './selectors';
 export * from './nexpect';
 
 // run dotenv config to update env variable

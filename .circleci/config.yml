@@ -927,6 +927,7 @@ workflows:
                 - master
                 - beta
                 - split-test
+                - migrationTesting
           requires:
             - build
       - amplify_migration_tests_latest:
@@ -935,6 +936,7 @@ workflows:
               only:
                 - master
                 - split-test
+                - migrationTesting
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -943,6 +945,7 @@ workflows:
               only:
                 - master
                 - split-test
+                - migrationTesting
           requires:
             - build
       - amplify_console_integration_tests:
@@ -988,6 +991,7 @@ workflows:
               only:
                 - master
                 - split-test
+                - migrationTesting
           requires:
             - publish_to_local_registry
       - analytics-amplify_e2e_tests:
