@@ -11,7 +11,7 @@ import {
   getProjectMeta,
 } from 'amplify-e2e-core';
 
-describe('amplify add auth migration', () => {
+describe('amplify auth migration', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('auth migration');
