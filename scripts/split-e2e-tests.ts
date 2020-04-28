@@ -5,6 +5,40 @@ import * as fs from 'fs-extra';
 
 const CONCURRENCY = 3;
 
+// This array needs to be update periodically when new tests suites get added
+// or when a test suite changes drastically
+
+const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
+  'src/__tests__/plugin.test.ts',
+  'src/__tests__/datastore-modegen.test.ts',
+  'src/__tests__/interactions.test.ts',
+  'src/__tests__/hosting.test.ts',
+  'src/__tests__/init.test.ts',
+  'src/__tests__/amplify-app.test.ts',
+  'src/__tests__/analytics.test.ts',
+  'src/__tests__/predictions.test.ts',
+  'src/__tests__/delete.test.ts',
+  'src/__tests__/storage.test.ts',
+  'src/__tests__/migration/api.key.migration.test.ts',
+  'src/__tests__/migration/api.connection.migration.test.ts',
+  'src/__tests__/api.test.ts',
+  'src/__tests__/auth.test.ts',
+  'src/__tests__/function.test.ts',
+];
+
+/**
+ * Sorts the test suite in ascending order. If the test is not included in known
+ * tests it would be inserted at the begining o the array
+ * @param tesSuites an array of test suites
+ */
+function sortTestsBasedOnTime(tesSuites: string[]): string[] {
+  return tesSuites.sort((a, b) => {
+    const aIndx = KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME.indexOf(a);
+    const bIndx = KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME.indexOf(b);
+    return aIndx - bIndx;
+  });
+}
+
 export type WorkflowJob =
   | {
       [name: string]: {
@@ -27,7 +61,7 @@ export type CircleCIConfig = {
 };
 
 function getTestFiles(dir: string, pattern = '**/*.test.ts'): string[] {
-  return glob.sync(pattern, { cwd: dir });
+  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir }));
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
