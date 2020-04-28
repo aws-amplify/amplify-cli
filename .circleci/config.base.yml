@@ -708,7 +708,6 @@ workflows:
               only:
                 - master
                 - split-test
-                - migrationTesting
           requires:
             - build
       - amplify_console_integration_tests:
