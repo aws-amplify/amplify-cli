@@ -28,7 +28,7 @@ const regionOptions = [
 ];
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
-export default function amplifyConfigure(settings: AmplifyConfiguration) {
+export function amplifyConfigure(settings: AmplifyConfiguration) {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {
