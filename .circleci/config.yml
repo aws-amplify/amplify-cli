@@ -240,6 +240,12 @@ jobs:
             dotnet tool install -g amazon.lambda.tools
 
             dotnet tool install -g amazon.lambda.testtool-3.1
+
+            echo "export PATH=$PATH:$HOME/.dotnet/tools" >> $BASH_ENV
+
+            source $BASH_ENV
+
+            dotnet tool list -g
       - run:
           name: Start verdaccio and Install Amplify CLI
           command: |
