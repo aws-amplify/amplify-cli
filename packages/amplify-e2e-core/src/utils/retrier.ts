@@ -4,7 +4,7 @@ import { sleep } from './sleep';
 const defaultSettings: RetrySettings = {
   times: Infinity,
   delayMS: 1000 * 10, // 10 seconds
-  timeoutMS: 1000 * 60 * 5, // 5 minutes
+  timeoutMS: 1000 * 60 * 15, // 15 minutes
   stopOnError: true, // terminate the retries if a func calls throws an exception
 };
 
