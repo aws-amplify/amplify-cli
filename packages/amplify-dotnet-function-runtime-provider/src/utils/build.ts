@@ -6,15 +6,23 @@ import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 import { executableName } from '../constants';
 
 export const build = async (request: BuildRequest): Promise<BuildResult> => {
+  return buildCore(request, 'Release');
+};
+
+export const buildCore = async (request: BuildRequest, configuration: 'Release' | 'Debug'): Promise<BuildResult> => {
   const distPath = path.join(request.srcRoot, 'dist');
   const sourceFolder = path.join(request.srcRoot, 'src');
-
-  if (!request.lastBuildTimestamp || !fs.existsSync(distPath) || isBuildStale(sourceFolder, request.lastBuildTimestamp)) {
+  if (
+    configuration === 'Debug' || // Always refresh for mock builds
+    !request.lastBuildTimestamp ||
+    !fs.existsSync(distPath) ||
+    isBuildStale(sourceFolder, request.lastBuildTimestamp)
+  ) {
     if (!fs.existsSync(distPath)) {
       fs.mkdirSync(distPath);
     }
 
-    const result = execa.sync(executableName, ['publish', '-c', 'Release', '-o', distPath], {
+    const result = execa.sync(executableName, ['publish', '-c', configuration, '-o', distPath], {
       cwd: sourceFolder,
     });
 
