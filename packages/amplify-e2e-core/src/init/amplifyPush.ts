@@ -1,6 +1,6 @@
 import { nspawn as spawn, getCLIPath } from '../../src';
 
-const pushTimeoutMS = 1000 * 60 * 10; // 10 minutes;
+const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
 export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = false) {
   return new Promise((resolve, reject) => {

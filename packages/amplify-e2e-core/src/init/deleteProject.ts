@@ -8,7 +8,7 @@ export const deleteProject = async (cwd: string, deleteDeploymentBucket: Boolean
     stack => stack.StackStatus.endsWith('_COMPLETE'),
   );
   return new Promise((resolve, reject) => {
-    const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
+    const noOutputTimeout = 1000 * 60 * 20; // 20 minutes;
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
       .wait('Are you sure you want to continue?')
       .sendLine('y')
