@@ -1,24 +1,30 @@
 import { S3, Amplify } from 'aws-sdk';
-import { initJSProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject, pullProject } from '../init';
+import {
+  initJSProjectWithProfile,
+  initIosProjectWithProfile,
+  initAndroidProjectWithProfile,
+  deleteProject,
+  pullProject,
+} from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
   getS3StorageBucketName,
-  getAWSExportsPath,
   getAWSConfigIOSPath,
   getAmplifyConfigIOSPath,
   getAWSConfigAndroidPath,
   getAmplifyConfigAndroidPath,
-} from '../utils';
+} from 'amplify-e2e-core';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/add-env';
-import { addApiWithoutSchema } from '../categories/api';
+import { addApiWithoutSchema } from 'amplify-e2e-core';
 import { addCodegen } from '../codegen/add';
-import { addS3 } from '../categories/storage';
-import { amplifyPush } from '../categories/hosting';
-import { addAuthWithDefault } from '../categories/auth';
+import { addS3 } from 'amplify-e2e-core';
+import { amplifyPushWithoutCodegen } from 'amplify-e2e-core';
+import { addAuthWithDefault } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
-import * as pinpointHelper from '../utils/pinpoint';
+import { initProject, addPinpointAnalytics, pushToCloud, pinpointAppExist, amplifyDelete } from 'amplify-e2e-core';
+import { getAWSExportsPath } from '../aws-exports/awsExports';
 import _ from 'lodash';
 
 describe('amplify delete', () => {
@@ -66,15 +72,15 @@ describe('amplify delete', () => {
   //   await deleteAmplifyApp(AmplifyAppId, Region);
   // });
   it('should delete pinpoint project', async () => {
-    await pinpointHelper.initProject(projRoot);
-    const pinpointResourceName = await pinpointHelper.addPinpointAnalytics(projRoot);
-    await pinpointHelper.pushToCloud(projRoot);
+    await initProject(projRoot);
+    const pinpointResourceName = await addPinpointAnalytics(projRoot);
+    await pushToCloud(projRoot);
     const amplifyMeta = getProjectMeta(projRoot);
     const pintpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
-    let pinpointAppExists = await pinpointHelper.pinpointAppExist(pintpointAppId);
+    let pinpointAppExists = await pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeTruthy();
-    await pinpointHelper.amplifyDelete(projRoot);
-    pinpointAppExists = await pinpointHelper.pinpointAppExist(pintpointAppId);
+    await amplifyDelete(projRoot);
+    pinpointAppExists = await pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeFalsy();
   });
 
@@ -95,7 +101,7 @@ describe('amplify delete', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3(projRoot, {});
-    await amplifyPush(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
     const bucketName = getS3StorageBucketName(projRoot);
     await putFiles(bucketName);
     expect(await bucketExists(bucketName)).toBeTruthy();

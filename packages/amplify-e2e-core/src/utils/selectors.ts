@@ -1,4 +1,4 @@
-import { ExecutionContext } from 'amplify-e2e-core';
+import { ExecutionContext } from '../../src';
 
 export const moveDown = (chain: ExecutionContext, nMoves: number) =>
   Array.from(Array(nMoves).keys()).reduce((chain, _idx) => chain.send('j'), chain);

@@ -4,11 +4,12 @@ import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 export * from './projectMeta';
 export * from './transformConfig';
-export * from './awsExports';
 export * from './sdk-calls';
 export * from './api';
-
-export { getCLIPath, isCI, createNewProjectDir } from 'amplify-e2e-core';
+export * from './read-json-file';
+export * from './pinpoint';
+export * from './selectors';
+export * from './nexpect';
 
 // run dotenv config to update env variable
 config();

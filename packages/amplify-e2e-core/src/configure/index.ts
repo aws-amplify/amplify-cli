@@ -1,6 +1,4 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
-import { singleSelect } from '../utils/selectors';
+import { nspawn as spawn, getCLIPath, singleSelect } from '../../src';
 
 type AmplifyConfiguration = {
   accessKeyId: string;
@@ -30,7 +28,7 @@ const regionOptions = [
 ];
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
-export default function amplifyConfigure(settings: AmplifyConfiguration) {
+export function amplifyConfigure(settings: AmplifyConfiguration) {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {

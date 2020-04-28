@@ -1,5 +1,4 @@
-import { getCLIPath } from '../utils';
-import { nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath, nspawn as spawn } from '../../src';
 
 export function generateModels(cwd: string) {
   return new Promise((resolve, reject) => {

@@ -1,4 +1,4 @@
-import { amplifyPush, amplifyPushUpdate, deleteProject, initJSProjectWithProfile } from '../init';
+import { amplifyPush, amplifyPushUpdate, deleteProject, initJSProjectWithProfile } from 'amplify-e2e-core';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import {
@@ -8,9 +8,9 @@ import {
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategy,
-} from '../categories/api';
-import { addFunction } from '../categories/function';
-import { addSimpleDDB } from '../categories/storage';
+} from 'amplify-e2e-core';
+import { addFunction } from 'amplify-e2e-core';
+import { addSimpleDDB } from 'amplify-e2e-core';
 import {
   checkIfBucketExists,
   createNewProjectDir,
@@ -20,7 +20,7 @@ import {
   getLambdaFunction,
   getProjectMeta,
   getTransformConfig,
-} from '../utils';
+} from 'amplify-e2e-core';
 import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 
 describe('amplify add api (GraphQL)', () => {

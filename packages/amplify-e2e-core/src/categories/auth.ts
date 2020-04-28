@@ -1,5 +1,4 @@
-import { nspawn as spawn, KEY_DOWN_ARROW } from 'amplify-e2e-core';
-import { getCLIPath, getEnvVars } from '../utils';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getEnvVars } from '../../src';
 
 export function addAuthWithDefault(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
