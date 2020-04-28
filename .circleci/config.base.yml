@@ -684,7 +684,6 @@ workflows:
                 - master
                 - beta
                 - split-test
-                - migrationTesting
           requires:
             - build
       - amplify_e2e_tests:
@@ -693,7 +692,6 @@ workflows:
               only:
                 - master
                 - split-test
-                - migrationTesting
           requires:
             - publish_to_local_registry
       - amplify_migration_tests_latest:
@@ -702,7 +700,6 @@ workflows:
               only:
                 - master
                 - split-test
-                - migrationTesting
           requires:
             - build
       - amplify_migration_tests_v4:
