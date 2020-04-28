@@ -5,7 +5,7 @@ import { addApiWithSchema } from 'amplify-e2e-core';
 
 import { invokeFunction } from 'amplify-e2e-core';
 
-describe('amplify add function', () => {
+describe('amplify function migration', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
