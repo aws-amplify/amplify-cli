@@ -8,7 +8,7 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
 } from 'graphql';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
@@ -573,6 +573,31 @@ test('Test ModelConnectionTransformer uses the default limit', () => {
 
   // Post.comments field
   expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 10) )');
+});
+
+test('Connection on models with no codegen includes AttributeTypeEnum', () => {
+  const validSchema = `
+    type Post @model(queries: null, mutations: null, subscriptions: null) {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection
+    }
+    type Comment @model(queries: null, mutations: null, subscriptions: null) {
+        id: ID!
+        content: String
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.schema).toMatchSnapshot();
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {

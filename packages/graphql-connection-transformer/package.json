@@ -39,7 +39,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost/",
-    "testRegex": "(src/__tests__/.*.test.*)$",
+    "testRegex": "(src/__tests__/.*.test.(t|j)s)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
