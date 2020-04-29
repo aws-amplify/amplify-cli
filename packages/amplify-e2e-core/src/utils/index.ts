@@ -2,14 +2,19 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
-export * from './projectMeta';
-export * from './transformConfig';
-export * from './sdk-calls';
+
 export * from './api';
-export * from './read-json-file';
-export * from './pinpoint';
-export * from './selectors';
+export * from './appsync';
 export * from './nexpect';
+export * from './pinpoint';
+export * from './projectMeta';
+export * from './read-json-file';
+export * from './request';
+export * from './retrier';
+export * from './sdk-calls';
+export * from './selectors';
+export * from './sleep';
+export * from './transformConfig';
 
 // run dotenv config to update env variable
 config();
