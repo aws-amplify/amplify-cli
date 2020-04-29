@@ -66,6 +66,7 @@ async function buildResource(context, resource) {
       runtime: breadcrumbs.functionRuntime,
       lastPackageTimestamp: resource.lastPackageTimestamp ? new Date(resource.lastPackageTimestamp) : undefined,
       lastBuildTimestamp: rebuilt ? new Date() : new Date(resource.lastBuildTimeStamp),
+      isLayer: resource.service === 'LambdaLayer',
     };
     packagePromise = runtimePlugin.package(packageRequest);
   }

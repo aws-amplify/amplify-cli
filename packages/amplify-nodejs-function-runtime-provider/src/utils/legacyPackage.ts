@@ -17,7 +17,7 @@ export async function packageResource(request: PackageRequest, context: any): Pr
       });
       const zip = archiver.create('zip', {});
       zip.pipe(output);
-      zip.directory(path.join(request.srcRoot, 'src'), false);
+      zip.directory(path.join(request.srcRoot, 'src'), request.isLayer ? 'nodejs' : false);
       zip.finalize();
     });
   }

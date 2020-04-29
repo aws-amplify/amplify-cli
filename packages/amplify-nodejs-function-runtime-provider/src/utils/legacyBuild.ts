@@ -50,6 +50,9 @@ function runPackageManager(cwd: string, scriptName?: string) {
     stdio: 'pipe',
     encoding: 'utf-8',
   });
+  if (childProcessResult.error) {
+    throw childProcessResult.error;
+  }
   if (childProcessResult.status !== 0) {
     throw new Error(childProcessResult.output.join());
   }

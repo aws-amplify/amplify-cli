@@ -73,6 +73,7 @@ export type PackageRequest = {
   runtime: string;
   lastBuildTimestamp: Date;
   lastPackageTimestamp?: Date;
+  isLayer: boolean;
 };
 
 // Result of building a function

@@ -1,3 +1,4 @@
+const assert = require('assert');
 const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
@@ -250,19 +251,39 @@ function packageResources(context, resources) {
 
         const cfnFile = cfnFiles[0];
         const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-          cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-            Bucket: s3Bucket,
-            Key: s3Key,
-          };
-        } else {
-          cfnMeta.Resources.LambdaFunction.Properties.Code = {
-            S3Bucket: s3Bucket,
-            S3Key: s3Key,
-          };
+        if (!cfnMeta.Resources.LambdaFunction) {
+          throw new Error('A buildable package resource must contain the target CloudFormation resource named "LambdaFunction"');
+        }
+
+        switch (cfnMeta.Resources.LambdaFunction.Type) {
+          case 'AWS::Serverless::Function':
+            assert(resource.service === 'Lambda');
+
+            cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+              Bucket: s3Bucket,
+              Key: s3Key,
+            };
+            break;
+          case 'AWS::Lambda::Function':
+            assert(resource.service === 'Lambda');
+
+            cfnMeta.Resources.LambdaFunction.Properties.Code = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+            break;
+          case 'AWS::Lambda::LayerVersion':
+            assert(resource.service === 'LambdaLayer');
+
+            cfnMeta.Resources.LambdaFunction.Properties.Content = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+            break;
+          default:
+            throw new Error(`Unsupported LambdaFunction.Type: ${cfnMeta.Resources.LambdaFunction.Type}`);
         }
 
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
