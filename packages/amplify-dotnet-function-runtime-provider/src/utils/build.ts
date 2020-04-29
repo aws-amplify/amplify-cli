@@ -22,7 +22,21 @@ export const buildCore = async (request: BuildRequest, configuration: 'Release' 
       fs.mkdirSync(distPath);
     }
 
-    const result = execa.sync(executableName, ['publish', '-c', configuration, '-o', distPath], {
+    const buildArguments = [];
+    switch (configuration) {
+      case 'Release':
+        buildArguments.push('publish', '-c', configuration, '-o', distPath);
+        break;
+      case 'Debug':
+        // Debug config, copy all required assemblies for mocking.
+        // The CopyLocalLockFileAssemblies really shouldn't be necessary, but
+        // we encountered CircleCI e2e test issues without it.
+        buildArguments.push('build', '-c', configuration, '-p:CopyLocalLockFileAssemblies=true');
+        break;
+      default:
+        throw new Error(`Unexpected configuration '${configuration}'`);
+    }
+    const result = execa.sync(executableName, buildArguments, {
       cwd: sourceFolder,
     });
 
