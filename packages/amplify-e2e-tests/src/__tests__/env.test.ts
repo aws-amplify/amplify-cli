@@ -1,6 +1,14 @@
-import { amplifyPushUpdate, amplifyPull, deleteProject, initJSProjectWithProfile } from '../init';
-import { checkIfBucketExists, createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
-import { addAuthWithDefault } from '../categories/auth';
+import {
+  addAuthWithDefault,
+  amplifyPull,
+  amplifyPushUpdate,
+  checkIfBucketExists,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getProjectMeta,
+  initJSProjectWithProfile,
+} from 'amplify-e2e-core';
 import {
   addEnvironment,
   checkoutEnvironment,
