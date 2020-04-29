@@ -596,7 +596,7 @@ export class ResourceFactory {
       RequestMappingTemplate: print(
         DynamoDBMappingTemplate.syncItem({
           filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
-          limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_DATASYNC_PAGE_LIMIT})`),
+          limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
           lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
           nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
         }),
