@@ -9,7 +9,7 @@ import {
   InputValueDefinitionNode,
 } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
-import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
+import { ResolverResourceIDs, ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
 
@@ -572,7 +572,9 @@ test('Test ModelConnectionTransformer uses the default limit', () => {
   expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
 
   // Post.comments field
-  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 10) )');
+  expect(out.resolvers['Post.comments.req.vtl']).toContain(
+    `#set( $limit = $util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT}) )`,
+  );
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
