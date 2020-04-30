@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-docs-generator",
-  "version": "2.1.11",
+  "version": "2.1.13",
   "description": "amplify graphql docs generator plugin",
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
   "dependencies": {
     "change-case": "^4.1.1",
     "graphql": "^14.5.8",
-    "handlebars": "4.5.0",
+    "handlebars": "4.5.3",
     "prettier": "^1.19.1",
     "yargs": "^15.1.0"
   },

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.5.2...graphql-elasticsearch-transformer@4.5.3) (2020-04-23)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.5.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.5.1...graphql-elasticsearch-transformer@4.5.2) (2020-03-22)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** fix duplicate records in es lambda ([#3712](https://github.com/aws-amplify/amplify-cli/issues/3712)) ([dd9f7e0](https://github.com/aws-amplify/amplify-cli/commit/dd9f7e0031a0dc68a9027de02f60bbe69d315c3d)), closes [#3602](https://github.com/aws-amplify/amplify-cli/issues/3602) [#3705](https://github.com/aws-amplify/amplify-cli/issues/3705)
+
+
+
+
+
 ## [4.5.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.4...graphql-elasticsearch-transformer@4.5.1) (2020-03-07)
 
 

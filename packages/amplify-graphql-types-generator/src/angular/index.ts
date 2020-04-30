@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLType, isScalarType, isListType } from 'graphql';
+import { GraphQLNonNull, GraphQLType, isScalarType } from 'graphql';
 import * as prettier from 'prettier';
 import { LegacyCompilerContext, LegacyOperation, LegacyInlineFragment, LegacyField } from '../compiler/legacyIR';
 
@@ -13,6 +13,7 @@ import {
 } from '../typescript/codeGeneration';
 import { typeNameFromGraphQLType } from '../typescript/types';
 import { Property, interfaceDeclaration } from '../typescript/language';
+import { isList } from '../utilities/graphql';
 
 export function generateSource(context: LegacyCompilerContext) {
   const generator = new CodeGenerator<LegacyCompilerContext>(context);
@@ -75,13 +76,13 @@ function interfaceDeclarationForOperation(generator: CodeGenerator, { operationN
       },
       () => {
         propertyDeclarations(generator, properties);
-      }
+      },
     );
   }
 }
 
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
-  if (operation.fields.length && operation.fields[0].fields) {
+  if (operation.fields.length) {
     return operation.fields[0];
   }
 }
@@ -93,7 +94,7 @@ function getReturnTypeName(generator: CodeGenerator, op: LegacyOperation): Strin
     return typeNameFromGraphQLType(generator.context, type);
   } else {
     let returnType = interfaceNameFromOperation({ operationName, operationType });
-    if (isListType(type)) {
+    if (isList(type)) {
       returnType = `Array<${returnType}>`;
     }
     return returnType;
@@ -127,7 +128,7 @@ function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOpera
   generator.printNewline();
   const subscriptionName = `${operationName}Listener`;
   generator.print(
-    `${subscriptionName}: Observable<${returnType}> = API.graphql(graphqlOperation(\n\`${statement}\`)) as Observable<${returnType}>`
+    `${subscriptionName}: Observable<${returnType}> = API.graphql(graphqlOperation(\n\`${statement}\`)) as Observable<${returnType}>`,
   );
   generator.printNewline();
 }
@@ -167,7 +168,7 @@ export function variablesFromField(
     fragmentSpreads?: any;
     inlineFragments?: LegacyInlineFragment[];
     fieldName?: string;
-  }[]
+  }[],
 ) {
   return fields.map(field => propertyFromVar(context, field));
 }
@@ -183,7 +184,7 @@ export function propertyFromVar(
     fragmentSpreads?: any;
     inlineFragments?: LegacyInlineFragment[];
     fieldName?: string;
-  }
+  },
 ): Property {
   let { name: fieldName, type: fieldType } = field;
   fieldName = fieldName || field.responseName;
@@ -242,7 +243,7 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
           });
       },
       '{',
-      '}'
+      '}',
     );
     // null able arguments
     vars
@@ -254,7 +255,7 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
             generator.printOnNewline(`gqlAPIServiceArguments.${v.fieldName} = ${v.fieldName}`);
           },
           '{',
-          '}'
+          '}',
         );
       });
   }

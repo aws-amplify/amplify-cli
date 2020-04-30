@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.18.0...@aws-amplify/cli@4.18.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* add function plugin interface to cli deps ([#3905](https://github.com/aws-amplify/amplify-cli/issues/3905)) ([001adfb](https://github.com/aws-amplify/amplify-cli/commit/001adfb137929e71acdc393e03916ad621bf2c8f))
+* prevent hyphenated project names ([#3893](https://github.com/aws-amplify/amplify-cli/issues/3893)) ([236137d](https://github.com/aws-amplify/amplify-cli/commit/236137d84b3ff3c1e0a84ff7c7bd22bf4a8a52dd))
+* **cli:** fix amplify console welcome message format ([#3936](https://github.com/aws-amplify/amplify-cli/issues/3936)) ([ee601a5](https://github.com/aws-amplify/amplify-cli/commit/ee601a501ad516db50c9ac83dc57bb730134e998))
+
+
+### Reverts
+
+* Revert "fix: add function plugin interface to cli deps (#3905)" (#3906) ([f534324](https://github.com/aws-amplify/amplify-cli/commit/f534324f4e315ea4e1e3f95afa840962ef8fc17a)), closes [#3905](https://github.com/aws-amplify/amplify-cli/issues/3905) [#3906](https://github.com/aws-amplify/amplify-cli/issues/3906)
+
+
+
+
+
+# [4.18.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.2...@aws-amplify/cli@4.18.0) (2020-04-06)
+
+
+### Bug Fixes
+
+* add default editor if not present ([#3844](https://github.com/aws-amplify/amplify-cli/issues/3844)) ([549e1ad](https://github.com/aws-amplify/amplify-cli/commit/549e1ade795da3f7d3d9e9fbeb5a380bacab6dd2))
+* dotnet fucntion provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
+* rename node pluign packages ([#3788](https://github.com/aws-amplify/amplify-cli/issues/3788)) ([7b1f0f2](https://github.com/aws-amplify/amplify-cli/commit/7b1f0f2c7bb67a9d154e8462643fb0fe35e88399))
+
+
+### Features
+
+* **amplify-category-function:** Refactor invoke to call runtime plugins ([#3768](https://github.com/aws-amplify/amplify-cli/issues/3768)) ([92293fa](https://github.com/aws-amplify/amplify-cli/commit/92293fa83190bd18aacdc2f46a22938f94b89609))
+* golang function support for CLI ([#3789](https://github.com/aws-amplify/amplify-cli/issues/3789)) ([3dbc234](https://github.com/aws-amplify/amplify-cli/commit/3dbc23497d0d1c238c6868adcf3a6d00ad909edd))
+* minor tweaks to multi-runtime platform ([#3804](https://github.com/aws-amplify/amplify-cli/issues/3804)) ([60d68d7](https://github.com/aws-amplify/amplify-cli/commit/60d68d7e1a6e8c00cd629a38e9aefb2396a59737))
+
+
+
+
+
+## [4.17.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.1...@aws-amplify/cli@4.17.2) (2020-03-26)
+
+
+### Bug Fixes
+
+* **cli:** added logic for use of dir separator in generate() ([#3739](https://github.com/aws-amplify/amplify-cli/issues/3739)) ([da17add](https://github.com/aws-amplify/amplify-cli/commit/da17adda27addc9fd37834f8968093c123988fce)), closes [#3761](https://github.com/aws-amplify/amplify-cli/issues/3761)
+
+
+
+
+
+## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.0...@aws-amplify/cli@4.17.1) (2020-03-22)
+
+
+### Bug Fixes
+
+* add function runtime and template provider dependencies to core ([0936ec7](https://github.com/aws-amplify/amplify-cli/commit/0936ec795b2401257450e2a6d7e2d897712b546c))
+
+
+
+
+
+# [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.16.1...@aws-amplify/cli@4.17.0) (2020-03-22)
+
+
+### Bug Fixes
+
+* **cli:** deleting the amplify app on delete ([#3568](https://github.com/aws-amplify/amplify-cli/issues/3568)) ([f39bbcb](https://github.com/aws-amplify/amplify-cli/commit/f39bbcb715875eeeb612bcbc40b275b33f85eaf6)), closes [#3239](https://github.com/aws-amplify/amplify-cli/issues/3239)
+
+
+### Features
+
+* **amplify-category-function:** refactor to support build and package interface of runtime plugins ([8c4ec55](https://github.com/aws-amplify/amplify-cli/commit/8c4ec55e46ed8a153eee306c23f9665d58d3c5f4))
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+
+
+
+
+
 ## [4.16.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.16.0...@aws-amplify/cli@4.16.1) (2020-03-10)
 
 **Note:** Version bump only for package @aws-amplify/cli

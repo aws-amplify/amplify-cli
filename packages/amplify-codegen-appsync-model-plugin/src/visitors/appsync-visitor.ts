@@ -148,14 +148,15 @@ export class AppSyncModelVisitor<
 > extends BaseVisitor<TRawConfig, TPluginConfig> {
   protected READ_ONLY_FIELDS = ['id'];
   protected SCALAR_TYPE_MAP: Record<string, string> = {};
-  protected typeMap: CodeGenModelMap = {};
+  protected modelMap: CodeGenModelMap = {};
+  protected nonModelMap: CodeGenModelMap = {};
   protected enumMap: CodeGenEnumMap = {};
   protected typesToSkip: string[] = [];
   constructor(
     protected _schema: GraphQLSchema,
     rawConfig: TRawConfig,
     additionalConfig: Partial<TPluginConfig>,
-    defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS
+    defaultScalars: NormalizedScalarsMap = DEFAULT_SCALARS,
   ) {
     super(rawConfig, {
       ...additionalConfig,
@@ -184,8 +185,8 @@ export class AppSyncModelVisitor<
       return;
     }
     const directives = this.getDirectives(node.directives);
+    const fields = (node.fields as unknown) as CodeGenField[];
     if (directives.find(directive => directive.name === 'model')) {
-      const fields = (node.fields as unknown) as CodeGenField[];
       // Todo: Add validation for each directives
       // @model would add the id: ID! if missing or throw error if there is an id of different type
       // @key check if fields listed in directives are present in the Object
@@ -198,7 +199,15 @@ export class AppSyncModelVisitor<
       };
       this.ensureIdField(model);
       this.sortFields(model);
-      this.typeMap[node.name.value] = model;
+      this.modelMap[node.name.value] = model;
+    } else {
+      const nonModel: CodeGenModel = {
+        name: node.name.value,
+        type: 'model',
+        directives,
+        fields,
+      };
+      this.nonModelMap[node.name.value] = nonModel;
     }
   }
   FieldDefinition(node: FieldDefinitionNode): CodeGenField {
@@ -264,10 +273,18 @@ export class AppSyncModelVisitor<
    */
   protected getSelectedModels(): CodeGenModelMap {
     if (this._parsedConfig.selectedType) {
-      const selectedModel = this.typeMap[this._parsedConfig.selectedType];
+      const selectedModel = this.modelMap[this._parsedConfig.selectedType];
       return selectedModel ? { [this._parsedConfig.selectedType]: selectedModel } : {};
     }
-    return this.typeMap;
+    return this.modelMap;
+  }
+
+  protected getSelectedNonModels(): CodeGenModelMap {
+    if (this._parsedConfig.selectedType) {
+      const selectedModel = this.nonModelMap[this._parsedConfig.selectedType];
+      return selectedModel ? { [this._parsedConfig.selectedType]: selectedModel } : {};
+    }
+    return this.nonModelMap;
   }
 
   protected getSelectedEnums(): CodeGenEnumMap {
@@ -286,6 +303,15 @@ export class AppSyncModelVisitor<
     return false;
   }
 
+  protected selectedTypeIsNonModel() {
+    if (this._parsedConfig && this._parsedConfig.selectedType) {
+      if (this._parsedConfig.selectedType in this.nonModelMap) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * returns the Java type or class name
    * @param field
@@ -296,9 +322,11 @@ export class AppSyncModelVisitor<
     if (typeName in this.scalars) {
       typeNameStr = this.scalars[typeName];
     } else if (this.isModelType(field)) {
-      typeNameStr = this.getModelName(this.typeMap[typeName]);
+      typeNameStr = this.getModelName(this.modelMap[typeName]);
     } else if (this.isEnumType(field)) {
       typeNameStr = this.getEnumName(this.enumMap[typeName]);
+    } else if (this.isNonModelType(field)) {
+      typeNameStr = this.getNonModelName(this.nonModelMap[typeName]);
     } else {
       throw new Error(`Unknown type ${typeName} for field ${field.name}. Did you forget to add the @model directive`);
     }
@@ -325,6 +353,10 @@ export class AppSyncModelVisitor<
     return model.name;
   }
 
+  protected getNonModelName(model: CodeGenModel) {
+    return model.name;
+  }
+
   protected getEnumValue(value: string): string {
     return constantCase(value);
   }
@@ -336,13 +368,18 @@ export class AppSyncModelVisitor<
 
   protected isModelType(field: CodeGenField): boolean {
     const typeName = field.type;
-    return typeName in this.typeMap;
+    return typeName in this.modelMap;
+  }
+
+  protected isNonModelType(field: CodeGenField): boolean {
+    const typeName = field.type;
+    return typeName in this.nonModelMap;
   }
 
   protected computeVersion(): string {
     // Sort types
     const typeArr: any[] = [];
-    Object.values(this.typeMap).forEach((obj: CodeGenModel) => {
+    Object.values({ ...this.modelMap, ...this.nonModelMap }).forEach((obj: CodeGenModel) => {
       // include only key directive as we don't care about others for versioning
       const directives = obj.directives.filter(dir => dir.name === 'key');
       const fields = obj.fields
@@ -406,14 +443,14 @@ export class AppSyncModelVisitor<
   }
 
   protected processConnectionDirective(): void {
-    Object.values(this.typeMap).forEach(model => {
+    Object.values(this.modelMap).forEach(model => {
       model.fields.forEach(field => {
-        const connectionInfo = processConnections(field, model, this.typeMap);
+        const connectionInfo = processConnections(field, model, this.modelMap);
         if (connectionInfo) {
           if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY || connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
             // Need to update the other side of the connection even if there is no connection directive
             addFieldToModel(connectionInfo.connectedModel, connectionInfo.associatedWith);
-          } else {
+          } else if (connectionInfo.targetName !== 'id') {
             // Need to remove the field that is targetName
             removeFieldFromModel(model, connectionInfo.targetName);
           }
@@ -422,13 +459,13 @@ export class AppSyncModelVisitor<
       });
 
       // Should remove the fields that are of Model type and are not connected to ensure there are no phantom input fields
-      const modelTypes = Object.values(this.typeMap).map(model => model.name);
+      const modelTypes = Object.values(this.modelMap).map(model => model.name);
       model.fields = model.fields.filter(field => {
         const fieldType = field.type;
         const connectionInfo = field.connectionInfo;
         if (modelTypes.includes(fieldType) && connectionInfo === undefined) {
           printWarning(
-            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Add a @connection directive if want to connect them.`
+            `Model ${model.name} has field ${field.name} of type ${field.type} but its not connected. Add a @connection directive if want to connect them.`,
           );
           return false;
         }
@@ -438,7 +475,7 @@ export class AppSyncModelVisitor<
   }
 
   protected processAuthDirectives(): void {
-    Object.values(this.typeMap).forEach(model => {
+    Object.values(this.modelMap).forEach(model => {
       const filteredDirectives = model.directives.filter(d => d.name !== 'auth');
       const authDirectives = processAuthDirective(model.directives);
       model.directives = [...filteredDirectives, ...authDirectives];
@@ -449,11 +486,14 @@ export class AppSyncModelVisitor<
     return plural(model.name);
   }
 
-  get types() {
-    return this.typeMap;
+  get models() {
+    return this.modelMap;
   }
 
   get enums() {
     return this.enumMap;
+  }
+  get nonModels() {
+    return this.nonModelMap;
   }
 }

@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const { normalizeEditor, editorSelection } = require('../extensions/amplify-helpers/editor-selection');
-const { makeId } = require('../extensions/amplify-helpers/make-id');
+const { isProjectNameValid, normalizeProjectName } = require('../extensions/amplify-helpers/project-name-validation');
 const { PROJECT_CONFIG_VERSION } = require('../extensions/amplify-helpers/constants');
 const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
 
@@ -76,25 +76,6 @@ async function getProjectName(context) {
 
   return projectName;
 }
-
-function isProjectNameValid(projectName) {
-  return projectName && projectName.length >= 3 && projectName.length <= 20 && /[a-zA-Z0-9]/g.test(projectName);
-}
-
-function normalizeProjectName(projectName) {
-  if (!projectName) {
-    projectName = `amplify${makeId(5)}`;
-  }
-  if (!isProjectNameValid(projectName)) {
-    projectName = projectName.replace(/[^a-zA-Z0-9]/g, '');
-    if (projectName.length < 3) {
-      projectName += makeId(5);
-    } else if (projectName.length > 20) {
-      projectName = projectName.substring(0, 20);
-    }
-  }
-  return projectName;
-}
 /* End getProjectName */
 
 /* Begin getEditor */
@@ -114,20 +95,17 @@ async function getEnvName(context) {
   let envName;
 
   const isEnvNameValid = inputEnvName => {
-    let valid = true;
-
-    if (inputEnvName.length > 10 || inputEnvName.length < 2 || /[^a-z]/g.test(inputEnvName)) {
-      valid = false;
-    }
-    return valid;
+    return /^[a-z]{2,10}$/.test(inputEnvName);
   };
+
+  const INVALID_ENV_NAME_MSG = 'Environment name must be between 2 and 10 characters, and lowercase only.';
 
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.envName) {
     if (isEnvNameValid(context.exeInfo.inputParams.amplify.envName)) {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    context.print.error('Environment name should be between 2 and 10 characters (only lowercase alphabets).');
+    context.print.error(INVALID_ENV_NAME_MSG);
     process.exit(1);
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.error('Environment name missing');
@@ -139,8 +117,7 @@ async function getEnvName(context) {
       type: 'input',
       name: 'envName',
       message: 'Enter a name for the environment',
-      validate: input =>
-        !isEnvNameValid(input) ? 'Environment name should be between 2 and 10 characters (only lowercase alphabets).' : true,
+      validate: input => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));

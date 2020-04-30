@@ -6,8 +6,8 @@ export const GENERATED_PACKAGE_NAME = 'com.amplifyframework.datastore.generated.
 // Name of the Class Loader package
 export const LOADER_CLASS_NAME = 'AmplifyModelProvider';
 
-// packages to be imported in Generated Class
-export const CLASS_IMPORT_PACKAGES = [
+// packages to be imported for  model Classes
+export const MODEL_CLASS_IMPORT_PACKAGES = [
   'java.util.List',
   'java.util.UUID',
   'java.util.Objects',
@@ -25,10 +25,12 @@ export const CLASS_IMPORT_PACKAGES = [
 ];
 // packages to be imported in generated Enums
 export const ENUM_IMPORT_PACKAGES = ['com.amplifyframework.core.model.ModelEnum;', ''];
+// packages to be imported for Non model Classes
+export const NON_MODEL_CLASS_IMPORT_PACKAGES = ['androidx.core.util.ObjectsCompat', '', 'java.util.Objects', 'java.util.List', ''];
 
 // packages to be imported in loader class
 export const LOADER_IMPORT_PACKAGES = [
-  'com.amplifyframework.core.Immutable',
+  'com.amplifyframework.util.Immutable',
   'com.amplifyframework.core.model.Model',
   'com.amplifyframework.core.model.ModelProvider',
   '',

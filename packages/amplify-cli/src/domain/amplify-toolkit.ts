@@ -69,6 +69,11 @@ export class AmplifyToolkit {
   private _getTriggerEnvInputs: any;
   private _getUserPoolGroupList: any;
   private _forceRemoveResource: any;
+  private _writeObjectAsJson: any;
+  private _hashDir: any;
+  private _leaveBreadcrumbs: any;
+  private _readBreadcrumbs: any;
+  private _loadRuntimePlugin: any;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -392,5 +397,33 @@ export class AmplifyToolkit {
     this._forceRemoveResource =
       this._forceRemoveResource || require(path.join(this._amplifyHelpersDirPath, 'remove-resource')).forceRemoveResource;
     return this._forceRemoveResource;
+  }
+
+  get writeObjectAsJson(): any {
+    this._writeObjectAsJson =
+      this._writeObjectAsJson || require(path.join(this._amplifyHelpersDirPath, 'write-object-as-json')).writeObjectAsJson;
+    return this._writeObjectAsJson;
+  }
+
+  get hashDir(): any {
+    this._hashDir = this._hashDir || require(path.join(this._amplifyHelpersDirPath, 'hash-dir')).hashDir;
+    return this._hashDir;
+  }
+
+  get leaveBreadcrumbs(): any {
+    this._leaveBreadcrumbs =
+      this._leaveBreadcrumbs || require(path.join(this._amplifyHelpersDirPath, 'leave-breadcrumbs')).leaveBreadcrumbs;
+    return this._leaveBreadcrumbs;
+  }
+
+  get readBreadcrumbs(): any {
+    this._readBreadcrumbs = this._readBreadcrumbs || require(path.join(this._amplifyHelpersDirPath, 'read-breadcrumbs')).readBreadcrumbs;
+    return this._readBreadcrumbs;
+  }
+
+  get loadRuntimePlugin(): any {
+    this._loadRuntimePlugin =
+      this._loadRuntimePlugin || require(path.join(this._amplifyHelpersDirPath, 'load-runtime-plugin')).loadRuntimePlugin;
+    return this._loadRuntimePlugin;
   }
 }

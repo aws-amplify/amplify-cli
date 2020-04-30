@@ -3,7 +3,7 @@ const Cognito = require('../src/aws-utils/aws-cognito');
 const Lambda = require('../src/aws-utils/aws-lambda');
 const DynamoDB = require('../src/aws-utils/aws-dynamodb');
 const AppSync = require('../src/aws-utils/aws-appsync');
-const Lex = require('../src/aws-utils/aws-lex');
+const { Lex } = require('../src/aws-utils/aws-lex');
 const Polly = require('../src/aws-utils/aws-polly');
 const SageMaker = require('../src/aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
@@ -56,7 +56,7 @@ module.exports = {
               userPools = userPools.filter(userPool => userPool.Id.startsWith(options.region));
             }
             return userPools;
-          })
+          }),
       )
       .catch(err => {
         context.print.error('Failed to fetch user pools');
@@ -113,7 +113,7 @@ module.exports = {
               .describeTable({
                 TableName: dynamodbTables[i],
               })
-              .promise()
+              .promise(),
           );
         }
       } while (nextToken);

@@ -21,6 +21,7 @@ export interface ProjectOptions {
   disableFunctionOverrides?: boolean;
   disableResolverOverrides?: boolean;
   buildParameters?: Object;
+  minify?: boolean;
 }
 
 export async function buildProject(opts: ProjectOptions) {
@@ -29,7 +30,13 @@ export async function buildProject(opts: ProjectOptions) {
   const builtProject = await _buildProject(opts);
 
   if (opts.projectDirectory && !opts.dryRun) {
-    await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName, opts.buildParameters);
+    await writeDeploymentToDisk(
+      builtProject,
+      path.join(opts.projectDirectory, 'build'),
+      opts.rootStackFileName,
+      opts.buildParameters,
+      opts.minify,
+    );
     if (opts.currentCloudBackendDirectory) {
       const lastBuildPath = path.join(opts.currentCloudBackendDirectory, 'build');
       const thisBuildPath = path.join(opts.projectDirectory, 'build');
@@ -297,8 +304,10 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
 
 export interface UploadOptions {
   directory: string;
+
   upload(blob: { Key: string; Body: Buffer | string }): Promise<string>;
 }
+
 /**
  * Reads deployment assets from disk and uploads to the cloud via an uploader.
  * @param opts Deployment options.
@@ -327,6 +336,7 @@ async function writeDeploymentToDisk(
   directory: string,
   rootStackFileName: string = 'rootStack.json',
   buildParameters: Object,
+  minify = false,
 ) {
   // Delete the last deployments resources.
   await emptyDirectory(directory);
@@ -368,7 +378,11 @@ async function writeDeploymentToDisk(
     const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
     let stackString: any = deployment.stacks[stackFileName];
     stackString =
-      typeof stackString === 'string' ? deployment.stacks[stackFileName] : JSON.stringify(deployment.stacks[stackFileName], null, 4);
+      typeof stackString === 'string'
+        ? deployment.stacks[stackFileName]
+        : minify
+        ? JSON.stringify(deployment.stacks[stackFileName])
+        : JSON.stringify(deployment.stacks[stackFileName], null, 4);
     fs.writeFileSync(fullStackPath, stackString);
   }
 
@@ -385,7 +399,8 @@ async function writeDeploymentToDisk(
   }
   const rootStack = deployment.rootStack;
   const rootStackPath = path.normalize(directory + `/${rootStackFileName}`);
-  fs.writeFileSync(rootStackPath, JSON.stringify(rootStack, null, 4));
+  const rootStackString = minify ? JSON.stringify(rootStack) : JSON.stringify(rootStack, null, 4);
+  fs.writeFileSync(rootStackPath, rootStackString);
 
   // Write params to disk
   const jsonString = JSON.stringify(buildParameters, null, 4);
@@ -397,6 +412,7 @@ interface MigrationOptions {
   projectDirectory: string;
   cloudBackendDirectory?: string;
 }
+
 /**
  * Using the current cloudbackend as the source of truth of the current env,
  * move the deployment forward to the intermediate stage before allowing the
@@ -426,6 +442,7 @@ export async function migrateAPIProject(opts: MigrationOptions) {
     cloudBackend: copyOfCloudBackend,
   };
 }
+
 export async function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
   await fs.remove(directory);
   await writeToPath(directory, oldProject);
@@ -436,6 +453,7 @@ interface AmplifyApiV1Project {
   parameters: any;
   template: Template;
 }
+
 /**
  * Read the configuration for the old version of amplify CLI.
  */

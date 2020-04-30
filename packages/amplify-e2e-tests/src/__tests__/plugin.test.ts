@@ -1,9 +1,8 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from '../utils';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 
-import { newPlugin, verifyPlugin, help, scan, listActive, listExcluded, listGeneralInfo } from '../plugin';
+import { newPlugin, verifyPlugin } from '../plugin';
 
 describe('amplify plugin', () => {
   let testDirPath: string;

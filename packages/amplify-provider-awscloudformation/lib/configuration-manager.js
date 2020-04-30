@@ -305,7 +305,8 @@ async function promptForProjectConfigConfirmation(context) {
 
   const configurationSettings = [
     {
-      type: 'input',
+      type: 'password',
+      mask: '*',
       name: 'accessKeyId',
       message: 'accessKeyId: ',
       default: awsConfigInfo.config.accessKeyId
@@ -314,7 +315,8 @@ async function promptForProjectConfigConfirmation(context) {
       transformer: obfuscateUtil.transform,
     },
     {
-      type: 'input',
+      type: 'password',
+      mask: '*',
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
       default: awsConfigInfo.config.secretAccessKey

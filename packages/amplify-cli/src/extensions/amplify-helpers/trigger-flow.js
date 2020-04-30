@@ -54,9 +54,20 @@ const addTrigger = async triggerOptions => {
 
   await add(context, 'awscloudformation', 'Lambda', {
     trigger: true,
+    cloudResourceTemplatePath: join(triggerDir, 'cloudformation-templates', triggerTemplate),
+    functionTemplate: {
+      sourceRoot: join(triggerDir, 'function-template-dir'),
+      sourceFiles: ['trigger-index.js', 'package.json.ejs', 'event.json'],
+      destMap: {
+        'trigger-index.js': join('src', 'index.js'),
+        'package.json.ejs': join('src', 'package.json'),
+        'event.json': join('src', 'event.json'),
+      },
+    },
     modules: values,
     parentResource,
     functionName,
+    resourceName: functionName,
     parentStack,
     triggerEnvs: JSON.stringify(triggerEnvs[key]),
     triggerIndexPath,

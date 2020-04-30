@@ -185,8 +185,7 @@ export class ResourceFactory {
     sortKeyInfo?: { fieldName: string; attributeType: 'S' | 'B' | 'N' },
     limit?: number,
   ) {
-    const defaultPageLimit = 10;
-    const pageLimit = limit || defaultPageLimit;
+    const pageLimit = limit || ResourceConstants.DEFAULT_PAGE_LIMIT;
     const setup: Expression[] = [
       set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${pageLimit})`)),
       set(
@@ -311,9 +310,8 @@ export class ResourceFactory {
     keySchema: KeySchema[],
     indexName: string,
   ) {
-    const defaultPageLimit = 10;
     const setup: Expression[] = [
-      set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+      set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
       set(ref('query'), this.makeExpression(keySchema, connectionAttributes)),
     ];
 

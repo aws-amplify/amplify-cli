@@ -6,18 +6,21 @@ import {
   deleteProject,
   amplifyPushAuth,
   amplifyPush,
-} from '../init';
+} from 'amplify-e2e-core';
 import {
   addAuthWithDefault,
   addAuthWithDefaultSocial,
   addAuthWithGroupTrigger,
   addAuthWithRecaptchaTrigger,
   addAuthWithCustomTrigger,
+  addAuthWithSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
   updateAuthRemoveRecaptchaTrigger,
+  updateAuthSignInSignOutUrl,
   addAuthViaAPIWithTrigger,
   addAuthWithMaxOptions,
-} from '../categories/auth';
+  addAuthUserPoolOnly,
+} from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
@@ -27,7 +30,7 @@ import {
   getUserPool,
   getUserPoolClients,
   getLambdaFunction,
-} from '../utils';
+} from 'amplify-e2e-core';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -142,6 +145,17 @@ describe('amplify add auth...', () => {
     expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual('dummykey');
   });
 
+  it('...should init a project with only user pool and no identity pool', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthUserPoolOnly(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[1].output.UserPoolId;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+
+    expect(userPool.UserPool).toBeDefined();
+  });
+
   it('...should init a project where all possible options are selected', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithMaxOptions(projRoot, {});
@@ -179,6 +193,18 @@ describe('amplify updating auth...', () => {
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
+  });
+
+  it('...should edit signin url on update', async () => {
+    const settings = {
+      signinUrl: 'http://localhost:3001/',
+      signoutUrl: 'http://localhost:3002/',
+      updatesigninUrl: 'http://localhost:3003/',
+      updatesignoutUrl: 'http://localhost:3004/',
+    };
+    await initAndroidProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithSignInSignOutUrl(projRoot, settings);
+    await updateAuthSignInSignOutUrl(projRoot, settings);
   });
 
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {

@@ -91,6 +91,10 @@ export interface TransformConfig {
    */
   Version?: number;
   /**
+   * A flag added to keep a track of a change noted in elasticsearch
+   */
+  ElasticsearchWarning?: boolean;
+  /**
    * Object which states info about a resolver's configuration
    * Such as sync configuration for appsync local support
    */

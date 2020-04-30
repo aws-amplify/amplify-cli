@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen-appsync-model-plugin",
-  "version": "1.13.4",
+  "version": "1.16.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
@@ -34,6 +34,7 @@
     "ts-dedent": "^1.1.0"
   },
   "devDependencies": {
+    "@graphql-codegen/testing": "^1.13.1",
     "graphql": "^14.5.8",
     "java-ast": "^0.1.0"
   },

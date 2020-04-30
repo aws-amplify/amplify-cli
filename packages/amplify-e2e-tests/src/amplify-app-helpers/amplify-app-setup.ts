@@ -1,7 +1,6 @@
+import { nspawn as spawn, KEY_DOWN_ARROW, isCI } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { isCI } from '../utils';
-import { KEY_DOWN_ARROW, nspawn as spawn } from '../utils/nexpect';
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');

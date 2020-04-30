@@ -97,6 +97,19 @@ input ModelPostFilterInput {
   not: ModelPostFilterInput
 }
 
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
@@ -129,6 +142,123 @@ input ModelPostConditionInput {
   not: ModelPostConditionInput
 }
 
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+"
+`;
+
+exports[`Test only get does not generate superfluous input and filter types 1`] = `
+"type Entity {
+  id: ID!
+  str: String
+}
+
+type Query {
+  getEntity(id: ID!): Entity
+}
+"
+`;
+
+exports[`Test schema includes attribute enum when only queries specified 1`] = `
+"type Entity {
+  id: ID!
+  str: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelEntityConnection {
+  items: [Entity]
+  nextToken: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelEntityFilterInput {
+  id: ModelIDInput
+  str: ModelStringInput
+  and: [ModelEntityFilterInput]
+  or: [ModelEntityFilterInput]
+  not: ModelEntityFilterInput
+}
+
 enum ModelAttributeTypes {
   binary
   binarySet
@@ -142,10 +272,9 @@ enum ModelAttributeTypes {
   _null
 }
 
-type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+type Query {
+  getEntity(id: ID!): Entity
+  listEntitys(filter: ModelEntityFilterInput, limit: Int, nextToken: String): ModelEntityConnection
 }
 "
 `;
@@ -355,6 +484,19 @@ input ModelPostFilterInput {
   not: ModelPostFilterInput
 }
 
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
@@ -385,19 +527,6 @@ input ModelPostConditionInput {
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
-}
-
-enum ModelAttributeTypes {
-  binary
-  binarySet
-  bool
-  list
-  map
-  number
-  numberSet
-  string
-  stringSet
-  _null
 }
 
 type Subscription {

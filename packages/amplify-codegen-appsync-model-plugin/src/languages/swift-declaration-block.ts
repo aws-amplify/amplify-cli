@@ -1,7 +1,6 @@
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { NameNode, StringValueNode } from 'graphql';
 
-const primitiveTypes = ['String', 'Int', 'Double', 'Bool', 'Date'];
 function isStringValueNode(node: any): node is StringValueNode {
   return node && typeof node === 'object' && node.kind === 'StringValue';
 }
@@ -112,9 +111,14 @@ function transformComment(comment: string | StringValueNode, indentLevel = 0): s
     .join('\n');
 }
 
+export enum ListType {
+  ARRAY = 'ARRAY',
+  LIST = 'LIST',
+}
 export type Access = 'private' | 'public' | 'DEFAULT';
 export type VariableFlags = {
   isList?: boolean;
+  listType?: ListType;
   variable?: boolean;
   isEnum?: boolean;
 };
@@ -346,7 +350,7 @@ export class SwiftDeclarationBlock {
     const propertyTypeName = prop.flags.isList ? this.getListType(prop) : prop.type;
     const propertyType = propertyTypeName ? `: ${propertyTypeName}${prop.flags.optional ? '?' : ''}` : '';
     let resultArr: string[] = [
-      prop.access,
+      prop.access === 'DEFAULT' ? '' : prop.access,
       prop.flags.static ? 'static' : '',
       prop.flags.variable ? 'var' : 'let',
       `${escapeKeywords(prop.name)}${propertyType}`,
@@ -385,9 +389,9 @@ export class SwiftDeclarationBlock {
   }
 
   private getListType(typeDeclaration: VariableDeclaration): string {
-    if (primitiveTypes.includes(typeDeclaration.type) || typeDeclaration.flags.isEnum) {
-      return `[${escapeKeywords(typeDeclaration.type)}]`;
+    if (typeDeclaration.flags.listType === ListType.LIST) {
+      return `List<${escapeKeywords(typeDeclaration.type)}>`;
     }
-    return `List<${escapeKeywords(typeDeclaration.type)}>`;
+    return `[${escapeKeywords(typeDeclaration.type)}]`;
   }
 }

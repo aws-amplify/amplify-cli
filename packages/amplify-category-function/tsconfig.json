@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "strict": false // because some files were converted from js
+  },
+  "references": [
+    {"path": "../amplify-function-plugin-interface"}
+  ]
+}

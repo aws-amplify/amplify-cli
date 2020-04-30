@@ -30,8 +30,8 @@ describe('AppSyncModelVisitor', () => {
     const builtSchema = buildSchemaWithDirectives(schema);
     const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
     visit(ast, { leave: visitor });
-    expect(visitor.types.Post).toBeDefined();
-    const postFields = visitor.types.Post.fields;
+    expect(visitor.models.Post).toBeDefined();
+    const postFields = visitor.models.Post.fields;
     // ID
     expect(postFields[0].name).toEqual('id');
     expect(postFields[0].type).toEqual('ID');
@@ -78,9 +78,9 @@ describe('AppSyncModelVisitor', () => {
     const builtSchema = buildSchemaWithDirectives(schema);
     const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
     visit(ast, { leave: visitor });
-    expect(visitor.types.Post).toBeDefined();
+    expect(visitor.models.Post).toBeDefined();
 
-    const postFields = visitor.types.Post.fields;
+    const postFields = visitor.models.Post.fields;
     expect(postFields[0].name).toEqual('id');
     expect(postFields[0].type).toEqual('ID');
     expect(postFields[0].isNullable).toEqual(false);
@@ -112,7 +112,7 @@ describe('AppSyncModelVisitor', () => {
     const builtSchema = buildSchemaWithDirectives(schema);
     const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
     visit(ast, { leave: visitor });
-    const postFields = visitor.types.Post.fields;
+    const postFields = visitor.models.Post.fields;
     expect(postFields[0].name).toEqual('id');
     expect(postFields[0].type).toEqual('ID');
     expect(postFields[0].isNullable).toEqual(false);
@@ -120,47 +120,96 @@ describe('AppSyncModelVisitor', () => {
   });
 
   describe(' 2 Way Connection', () => {
-    const schema = /* GraphQL */ `
-      type Post @model {
-        title: String!
-        content: String
-        comments: [Comment] @connection(name: "PostComment")
-      }
+    describe('with connection name', () => {
+      const schema = /* GraphQL */ `
+        type Post @model {
+          title: String!
+          content: String
+          comments: [Comment] @connection(name: "PostComment")
+        }
 
-      type Comment @model {
-        comment: String!
-        post: Post @connection(name: "PostComment")
-      }
-    `;
-    it('one to many connection', () => {
-      const ast = parse(schema);
-      const builtSchema = buildSchemaWithDirectives(schema);
-      const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
-      visit(ast, { leave: visitor });
-      visitor.generate();
-      const commentsField = visitor.types.Post.fields.find(f => f.name === 'comments');
-      const postField = visitor.types.Comment.fields.find(f => f.name === 'post');
-      expect(commentsField).toBeDefined();
-      expect(commentsField!.connectionInfo).toBeDefined();
-      const connectionInfo = (commentsField!.connectionInfo as any) as CodeGenFieldConnectionHasMany;
-      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
-      expect(connectionInfo.associatedWith).toEqual(postField);
-      expect(connectionInfo.connectedModel).toEqual(visitor.types.Comment);
+        type Comment @model {
+          comment: String!
+          post: Post @connection(name: "PostComment")
+        }
+      `;
+      it('one to many connection', () => {
+        const ast = parse(schema);
+        const builtSchema = buildSchemaWithDirectives(schema);
+        const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+        visit(ast, { leave: visitor });
+        visitor.generate();
+        const commentsField = visitor.models.Post.fields.find(f => f.name === 'comments');
+        const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
+        expect(commentsField).toBeDefined();
+        expect(commentsField!.connectionInfo).toBeDefined();
+        const connectionInfo = (commentsField!.connectionInfo as any) as CodeGenFieldConnectionHasMany;
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
+        expect(connectionInfo.associatedWith).toEqual(postField);
+        expect(connectionInfo.connectedModel).toEqual(visitor.models.Comment);
+      });
+
+      it('many to one connection', () => {
+        const ast = parse(schema);
+        const builtSchema = buildSchemaWithDirectives(schema);
+        const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+        visit(ast, { leave: visitor });
+        visitor.generate();
+        const commentsField = visitor.models.Post.fields.find(f => f.name === 'comments');
+        const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
+        expect(postField).toBeDefined();
+        expect(postField!.connectionInfo).toBeDefined();
+        const connectionInfo = (postField!.connectionInfo as any) as CodeGenFieldConnectionBelongsTo;
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+        expect(connectionInfo.connectedModel).toEqual(visitor.models.Post);
+      });
     });
+    describe('connection with fields argument', () => {
+      const schema = /* GraphQL */ `
+        type Post @model {
+          title: String!
+          content: String
+          comments: [Comment] @connection(fields: ["id"])
+        }
 
-    it('many to one connection', () => {
-      const ast = parse(schema);
-      const builtSchema = buildSchemaWithDirectives(schema);
-      const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
-      visit(ast, { leave: visitor });
-      visitor.generate();
-      const commentsField = visitor.types.Post.fields.find(f => f.name === 'comments');
-      const postField = visitor.types.Comment.fields.find(f => f.name === 'post');
-      expect(postField).toBeDefined();
-      expect(postField!.connectionInfo).toBeDefined();
-      const connectionInfo = (postField!.connectionInfo as any) as CodeGenFieldConnectionBelongsTo;
-      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
-      expect(connectionInfo.connectedModel).toEqual(visitor.types.Post);
+        type Comment @model {
+          comment: String!
+          postId: ID!
+          post: Post @connection(fields: ["postId"])
+        }
+      `;
+
+      it('one to many connection', () => {
+        const ast = parse(schema);
+        const builtSchema = buildSchemaWithDirectives(schema);
+        const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+        visit(ast, { leave: visitor });
+        visitor.generate();
+        const commentsField = visitor.models.Post.fields.find(f => f.name === 'comments');
+        const commentIdField = visitor.models.Post.fields.find(f => f.name === 'id');
+        const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
+        expect(commentsField).toBeDefined();
+        expect(commentsField!.connectionInfo).toBeDefined();
+        const connectionInfo = (commentsField!.connectionInfo as any) as CodeGenFieldConnectionHasMany;
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
+        expect(connectionInfo.associatedWith).toEqual(commentIdField);
+        expect(connectionInfo.connectedModel).toEqual(visitor.models.Comment);
+      });
+
+      it('many to one connection', () => {
+        const ast = parse(schema);
+        const builtSchema = buildSchemaWithDirectives(schema);
+        const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+        visit(ast, { leave: visitor });
+        visitor.generate();
+
+        const postField = visitor.models.Comment.fields.find(f => f.name === 'post');
+        expect(postField).toBeDefined();
+        expect(postField!.connectionInfo).toBeDefined();
+        const connectionInfo = (postField!.connectionInfo as any) as CodeGenFieldConnectionBelongsTo;
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+        expect(connectionInfo.connectedModel).toEqual(visitor.models.Post);
+      });
     });
   });
 
@@ -183,7 +232,7 @@ describe('AppSyncModelVisitor', () => {
       const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
       visit(ast, { leave: visitor });
       visitor.generate();
-      const postFields = visitor.types.Post.fields.map(field => field.name);
+      const postFields = visitor.models.Post.fields.map(field => field.name);
       expect(postFields).not.toContain('comments');
     });
 
@@ -205,7 +254,7 @@ describe('AppSyncModelVisitor', () => {
       const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
       visit(ast, { leave: visitor });
       visitor.generate();
-      const commentsField = visitor.types.Comment.fields.map(field => field.name);
+      const commentsField = visitor.models.Comment.fields.map(field => field.name);
       expect(commentsField).not.toContain('post');
       expect(commentsField).toContain('postCommentsId'); // because of connection from Post.comments
     });
@@ -223,7 +272,7 @@ describe('AppSyncModelVisitor', () => {
       const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
       visit(ast, { leave: visitor });
       visitor.generate();
-      const postModel = visitor.types.Post;
+      const postModel = visitor.models.Post;
       const authDirective = postModel.directives.find(d => d.name === 'auth');
       expect(authDirective).toBeDefined();
       const authRules = authDirective!.arguments.rules;
@@ -250,7 +299,7 @@ describe('AppSyncModelVisitor', () => {
       const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
       visit(ast, { leave: visitor });
       visitor.generate();
-      const postModel = visitor.types.Post;
+      const postModel = visitor.models.Post;
       const authDirective = postModel.directives.find(d => d.name === 'auth');
       expect(authDirective).toBeDefined();
       const authRules = authDirective!.arguments.rules;
@@ -261,6 +310,45 @@ describe('AppSyncModelVisitor', () => {
       expect(groupRule.provider).toEqual('userPools');
       expect(groupRule.groupClaim).toEqual('cognito:groups');
       expect(groupRule.operations).toEqual(['create', 'update', 'delete']);
+    });
+  });
+  describe('model less type', () => {
+    let visitor;
+    beforeEach(() => {
+      const schema = /* GraphQL */ `
+        type Metadata {
+          authorName: String!
+          tags: [String]
+          rating: Int!
+        }
+      `;
+      const ast = parse(schema);
+      const builtSchema = buildSchemaWithDirectives(schema);
+      visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+      visit(ast, { leave: visitor });
+      visitor.generate();
+    });
+
+    it('should support types without model', () => {
+      const metadataType = visitor.nonModels.Metadata;
+
+      expect(metadataType).toBeDefined();
+      const metadataFields = metadataType.fields;
+
+      expect(metadataFields[0].name).toEqual('authorName');
+      expect(metadataFields[0].type).toEqual('String');
+      expect(metadataFields[0].isNullable).toEqual(false);
+      expect(metadataFields[0].isList).toEqual(false);
+
+      expect(metadataFields[1].name).toEqual('tags');
+      expect(metadataFields[1].type).toEqual('String');
+      expect(metadataFields[1].isNullable).toEqual(true);
+      expect(metadataFields[1].isList).toEqual(true);
+
+      expect(metadataFields[2].name).toEqual('rating');
+      expect(metadataFields[2].type).toEqual('Int');
+      expect(metadataFields[2].isNullable).toEqual(false);
+      expect(metadataFields[2].isList).toEqual(false);
     });
   });
 });

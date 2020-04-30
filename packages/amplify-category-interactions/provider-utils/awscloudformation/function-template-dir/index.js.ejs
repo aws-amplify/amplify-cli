@@ -1,9 +1,9 @@
 const response = require('./cfn-response');
 const aws = require('aws-sdk');
-const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19' });
 const iam = new aws.IAM();
 const lambdaClient = new aws.Lambda({ apiVersion: '2017-04-19' });
 exports.handler = function(event, context) {
+    const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19', region: event.ResourceProperties.lexRegion });
     if (event.RequestType == 'Delete') {
         response.send(event, context, response.SUCCESS);
         return;
@@ -148,12 +148,12 @@ exports.handler = function(event, context) {
     };
     
     checkAndCreateLexServiceRole()
-    .then(()=>{ return getSlotTypes(newSlotTypeParams);})
-    .then(()=>{ return putSlotTypes(newSlotTypeParams);})
-    .then(()=>{ return getIntents(intentParams);})
-    .then(()=>{ return putIntents(intentParams);})
-    .then(()=>{ return getBot(botParams);})
-    .then(()=>{ return putBot(botParams);})
+    .then(()=>{ return getSlotTypes(newSlotTypeParams, lex);})
+    .then(()=>{ return putSlotTypes(newSlotTypeParams, lex);})
+    .then(()=>{ return getIntents(intentParams, lex);})
+    .then(()=>{ return putIntents(intentParams, lex);})
+    .then(()=>{ return getBot(botParams, lex);})
+    .then(()=>{ return putBot(botParams, lex);})
     .then((res) => {
         response.send(event, context, response.SUCCESS, res.ApplicationResponse);
     })
@@ -204,7 +204,7 @@ function checkIfLexServiceRoleExists() {
     });
 }
 
-function getSlotTypes(newSlotTypeParams){
+function getSlotTypes(newSlotTypeParams, lex){
     const tasks = []; 
     newSlotTypeParams.forEach( slotType => {
         const params = {
@@ -223,7 +223,7 @@ function getSlotTypes(newSlotTypeParams){
     return Promise.all(tasks);
 }
 
-function putSlotTypes(newSlotTypeParams){
+function putSlotTypes(newSlotTypeParams, lex){
     const tasks = []; 
     newSlotTypeParams.forEach( slotType => {
         tasks.push(
@@ -240,7 +240,7 @@ function putSlotTypes(newSlotTypeParams){
     return Promise.all(tasks);
 }
 
-function getIntents(intentParams){
+function getIntents(intentParams, lex){
     const tasks = []; 
     intentParams.forEach( intent => {
         const params = {
@@ -259,7 +259,7 @@ function getIntents(intentParams){
     return Promise.all(tasks);
 }
 
-function putIntents(intentParams){
+function putIntents(intentParams, lex){
     const tasks = []; 
     intentParams.forEach( intent => {
         tasks.push(
@@ -311,7 +311,7 @@ function ensureLambdaFunctionAccess(intent){
     }
 }
 
-function getBot(botParams){
+function getBot(botParams, lex){
     params = {
         'name': botParams.name,
         'versionOrAlias': '$LATEST'
@@ -324,7 +324,7 @@ function getBot(botParams){
             });
 }
 
-function putBot(botParams){
+function putBot(botParams, lex){
     return lex.putBot(botParams).promise()
             .then((data)=>{
                 console.log(data);
