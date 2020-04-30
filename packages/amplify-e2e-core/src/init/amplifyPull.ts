@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath, nspawn as spawn } from '../../src';
 
 export function amplifyPull(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
