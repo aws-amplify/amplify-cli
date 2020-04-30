@@ -1,5 +1,5 @@
 import { DeletionPolicy } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 import {
   blankObject,
   makeConnectionField,
@@ -10,6 +10,7 @@ import {
   makeNonNullType,
   ModelResourceIDs,
   ResolverResourceIDs,
+  getBaseType,
 } from 'graphql-transformer-common';
 import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig } from 'graphql-transformer-core';
 import {
@@ -27,7 +28,7 @@ import {
   makeModelXConditionInputObject,
   makeAttributeTypeEnum,
 } from './definitions';
-import { ModelDirectiveArgs } from './ModelDirectiveArgs';
+import { ModelDirectiveArgs, getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
 import { ResourceFactory } from './resources';
 
 export interface DynamoDBModelTransformerOptions {
@@ -66,7 +67,12 @@ export class DynamoDBModelTransformer extends Transformer {
     super(
       'DynamoDBModelTransformer',
       gql`
-        directive @model(queries: ModelQueryMap, mutations: ModelMutationMap, subscriptions: ModelSubscriptionMap) on OBJECT
+        directive @model(
+          queries: ModelQueryMap
+          mutations: ModelMutationMap
+          subscriptions: ModelSubscriptionMap
+          timestamps: TimestampMap
+        ) on OBJECT
         input ModelMutationMap {
           create: String
           update: String
@@ -86,6 +92,10 @@ export class DynamoDBModelTransformer extends Transformer {
           off
           public
           on
+        }
+        input TimestampMap {
+          create: String
+          update: String
         }
       `,
     );
@@ -181,7 +191,38 @@ export class DynamoDBModelTransformer extends Transformer {
 
       ctx.updateObject(newObj);
     }
+    this.addTimestampFields(def, directive, ctx);
   };
+
+  private addTimestampFields(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+    const createdAtField = getCreatedAtFieldName(directive);
+    const updatedAtField = getUpdatedAtFieldName(directive);
+    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+    // Todo: Consolidate how warnings are shown. Instead of printing them here, the invoker of transformer should get
+    // all the warnings together and decide how to render those warning
+    if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField)) {
+      console.log(
+        `${def.name.value}.${existingCreatedAtField.name.value} is of type ${getBaseType(
+          existingCreatedAtField.type,
+        )}. To support auto population change the type to AWSDateTime`,
+      );
+    }
+    if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingUpdatedAtField)) {
+      console.log(
+        `${def.name.value}.${existingUpdatedAtField.name.value} is of type ${getBaseType(
+          existingUpdatedAtField.type,
+        )}. To support auto population change the type to AWSDateTime`,
+      );
+    }
+    const obj = ctx.getObject(def.name.value);
+    const newObj = makeObjectDefinition(obj.name.value, [
+      ...obj.fields,
+      ...(createdAtField && !existingCreatedAtField ? [makeField(createdAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // createdAt field
+      ...(updatedAtField && !existingUpdatedAtField ? [makeField(updatedAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // updated field
+    ]);
+    ctx.updateObject(newObj);
+  }
 
   private createMutations = (
     def: ObjectTypeDefinitionNode,
@@ -204,6 +245,19 @@ export class DynamoDBModelTransformer extends Transformer {
     let createFieldNameOverride = undefined;
     let updateFieldNameOverride = undefined;
     let deleteFieldNameOverride = undefined;
+
+    // timestamp fields
+    const createdAtField = getCreatedAtFieldName(directive);
+    const updatedAtField = getUpdatedAtFieldName(directive);
+
+    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+
+    // auto populate the timestamp field only if they are of AWSDateTime type
+    const timeStampFields = {
+      createdAtField: DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField) ? createdAtField : undefined,
+      updatedAtField: DynamoDBModelTransformer.isTimestampCompatibleField(existingUpdatedAtField) ? updatedAtField : undefined,
+    };
 
     // Figure out which mutations to make and if they have name overrides
     if (directiveArguments.mutations === null) {
@@ -240,6 +294,7 @@ export class DynamoDBModelTransformer extends Transformer {
         type: def.name.value,
         nameOverride: createFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
+        timestamps: timeStampFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
       ctx.setResource(resourceId, createResolver);
@@ -260,6 +315,7 @@ export class DynamoDBModelTransformer extends Transformer {
         type: def.name.value,
         nameOverride: updateFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
+        timestamps: timeStampFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
       ctx.setResource(resourceId, updateResolver);
@@ -626,5 +682,12 @@ export class DynamoDBModelTransformer extends Transformer {
 
   private supportsConditions(context: TransformerContext) {
     return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
+  }
+
+  private static isTimestampCompatibleField(field?: FieldDefinitionNode): boolean {
+    if (field && getBaseType(field.type) !== 'AWSDateTime') {
+      return false;
+    }
+    return true;
   }
 }
