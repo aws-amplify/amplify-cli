@@ -30,10 +30,12 @@
     "graphql-mapping-template": "4.13.3",
     "graphql-transformer-common": "4.14.0",
     "graphql-transformer-core": "6.17.0",
+    "md5": "^2.2.1",
     "pluralize": "^8.0.0"
   },
   "devDependencies": {
-    "@types/node": "^10.17.13"
+    "@types/node": "^10.17.13",
+    "@types/md5": "^2.1.33"
   },
   "jest": {
     "transform": {
