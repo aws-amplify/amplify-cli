@@ -20,6 +20,8 @@ import {
   ifElse,
   int,
   Expression,
+  bool,
+  methodCall,
 } from 'graphql-mapping-template';
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
 import { MappingParameters } from 'graphql-transformer-core/src/TransformerContext';
@@ -433,6 +435,7 @@ export class ResourceFactory {
     primaryKey: string,
     queryTypeName: string,
     nameOverride?: string,
+    includeVersion: boolean = false,
   ) {
     const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)));
     return new AppSync.Resolver({
@@ -461,6 +464,7 @@ export class ResourceFactory {
             path: str('$indexPath'),
             size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
             search_after: list([ref('util.toJson($context.args.nextToken)')]),
+            version: bool(includeVersion),
             query: ifElse(
               ref('context.args.filter'),
               ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
@@ -477,7 +481,7 @@ export class ResourceFactory {
           set(ref('es_items'), list([])),
           forEach(ref('entry'), ref('context.result.hits.hits'), [
             iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('entry.sort.get(0)'))),
-            qref('$es_items.add($entry.get("_source"))'),
+            ...this.getSourceMapper(includeVersion),
           ]),
           toJson(
             obj({
@@ -490,6 +494,17 @@ export class ResourceFactory {
       ),
     }).dependsOn([ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]);
   }
+
+  private getSourceMapper = (includeVersion: boolean) => {
+    if (includeVersion) {
+      return [
+        set(ref('row'), methodCall(ref('entry.get'), str('_source'))),
+        qref('$row.put("_version", $entry.get("_version"))'),
+        qref('$es_items.add($row)'),
+      ];
+    }
+    return [qref('$es_items.add($entry.get("_source"))')];
+  };
 
   /**
    * OUTPUTS

@@ -1,4 +1,11 @@
-import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
+import {
+  Transformer,
+  TransformerContext,
+  getDirectiveArguments,
+  gql,
+  InvalidDirectiveError,
+  ResolverConfig,
+} from 'graphql-transformer-core';
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ResourceFactory } from './resources';
 import {
@@ -46,7 +53,7 @@ export class SearchableModelTransformer extends Transformer {
         input SearchableQueryMap {
           search: String
         }
-      `
+      `,
     );
     this.resources = new ResourceFactory();
   }
@@ -59,7 +66,7 @@ export class SearchableModelTransformer extends Transformer {
     ctx.mergeMappings(template.Mappings);
     ctx.metadata.set(
       ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID,
-      path.resolve(`${__dirname}/../lib/streaming-lambda.zip`)
+      this.getStreamingFunctionPath(this.isProjectUsingDataStore(ctx.getResolverConfig())),
     );
     for (const resourceId of Object.keys(template.Resources)) {
       ctx.mapResourceToStack(STACK_NAME, resourceId);
@@ -98,7 +105,7 @@ export class SearchableModelTransformer extends Transformer {
     const typeName = def.name.value;
     ctx.setResource(
       SearchableResourceIDs.SearchableEventSourceMappingID(typeName),
-      this.resources.makeDynamoDBStreamEventSourceMapping(typeName)
+      this.resources.makeDynamoDBStreamEventSourceMapping(typeName),
     );
     ctx.mapResourceToStack(STACK_NAME, SearchableResourceIDs.SearchableEventSourceMappingID(typeName));
 
@@ -124,7 +131,8 @@ export class SearchableModelTransformer extends Transformer {
         nonKeywordFields,
         primaryKey,
         ctx.getQueryTypeName(),
-        searchFieldNameOverride
+        searchFieldNameOverride,
+        this.isProjectUsingDataStore(ctx.getResolverConfig()),
       );
       ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver);
       ctx.mapResourceToStack(STACK_NAME, ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value));
@@ -137,8 +145,8 @@ export class SearchableModelTransformer extends Transformer {
             makeInputValueDefinition('limit', makeNamedType('Int')),
             makeInputValueDefinition('nextToken', makeNamedType('String')),
           ],
-          makeNamedType(`Searchable${def.name.value}Connection`)
-        )
+          makeNamedType(`Searchable${def.name.value}Connection`),
+        ),
       );
     }
 
@@ -225,4 +233,18 @@ export class SearchableModelTransformer extends Transformer {
     const primaryKeySchemaElement = tableResource.Properties.KeySchema.find((keyElement: any) => keyElement.KeyType === 'HASH');
     return primaryKeySchemaElement.AttributeName;
   }
+
+  private getStreamingFunctionPath = (isProjectUsingDataStore: boolean) => {
+    const streamingFuncZipName = isProjectUsingDataStore ? 'streaming-lambda-external-version.zip' : 'streaming-lambda.zip';
+    return path.resolve(path.join(__dirname, '..', 'lib', streamingFuncZipName));
+  };
+
+  private isProjectUsingDataStore = (resolverConfig?: ResolverConfig) => {
+    return (
+      resolverConfig &&
+      resolverConfig.project &&
+      resolverConfig.project.ConflictDetection === 'VERSION' &&
+      resolverConfig.project.ConflictHandler === 'AUTOMERGE'
+    );
+  };
 }
