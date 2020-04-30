@@ -1,7 +1,14 @@
-import { amplifyPushUpdate, deleteProject, initJSProjectWithProfile } from '../init';
+import {
+  amplifyPushUpdate,
+  checkIfBucketExists,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getProjectMeta,
+  initJSProjectWithProfile,
+} from 'amplify-e2e-core';
 import * as path from 'path';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { checkIfBucketExists, createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
 import { checkoutEnvironment } from '../environment/add-env';
 
 describe('custom cloudformation stacks', () => {
