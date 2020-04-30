@@ -166,7 +166,7 @@ export function constructCFModelTableNameComponent(appsyncResourceName, resource
   };
 }
 
-export function constructCloudWatchEventComponent(cfnFilePath : string,cfnContent){
+export function constructCloudWatchEventComponent(cfnFilePath: string, cfnContent) {
   cfnContent.Resources.CloudWatchEvent = {
     Type: 'AWS::Events::Rule',
     Properties: {
@@ -203,4 +203,13 @@ export function constructCloudWatchEventComponent(cfnFilePath : string,cfnConten
       Ref: 'CloudWatchEvent',
     },
   };
+
+  // apend the cloudwatch parameters if not present
+  if (cfnContent.Parameters.CloudWatchRule === undefined) {
+    cfnContent.Parameters.CloudWatchRule = {
+      Type: 'String',
+      Default: 'NONE',
+      Description: ' Schedule Expression',
+    };
+  }
 }
