@@ -1,11 +1,11 @@
-import * as aws from 'aws-sdk';
-import * as moment from 'moment';
+import { Amplify } from 'aws-sdk';
+import moment from 'moment';
 
 import { getConfigFromProfile } from '../profile-helper';
 
 export function getConfiguredAmplifyClient() {
   const config = getConfigFromProfile();
-  return new aws.Amplify(config);
+  return new Amplify(config);
 }
 
 //delete all existing amplify console projects
