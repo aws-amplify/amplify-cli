@@ -236,7 +236,7 @@ const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string)
 
 const addminutes = (chain: ExecutionContext) => {
   chain
-    .wait('Enter rate for mintues(1-59)?')
+    .wait('Enter rate for minutes(1-59)?')
     .sendLine('5')
     .sendCarriageReturn();
 
