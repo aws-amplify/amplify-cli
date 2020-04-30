@@ -4,6 +4,8 @@ exports[`Current version transformer snapshot test 1`] = `
 "type Post {
   id: ID!
   content: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 enum ModelSortDirection {
@@ -154,6 +156,8 @@ exports[`Test only get does not generate superfluous input and filter types 1`] 
 "type Entity {
   id: ID!
   str: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type Query {
@@ -166,6 +170,8 @@ exports[`Test schema includes attribute enum when only queries specified 1`] = `
 "type Entity {
   id: ID!
   str: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 enum ModelSortDirection {
@@ -283,6 +289,8 @@ exports[`V4 transformer snapshot test 1`] = `
 "type Post {
   id: ID!
   content: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 enum ModelSortDirection {
@@ -391,6 +399,8 @@ exports[`V5 transformer snapshot test 1`] = `
 "type Post {
   id: ID!
   content: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 enum ModelSortDirection {
