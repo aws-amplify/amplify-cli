@@ -216,11 +216,14 @@ export class DynamoDBModelTransformer extends Transformer {
       );
     }
     const obj = ctx.getObject(def.name.value);
-    const newObj = makeObjectDefinition(obj.name.value, [
-      ...obj.fields,
-      ...(createdAtField && !existingCreatedAtField ? [makeField(createdAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // createdAt field
-      ...(updatedAtField && !existingUpdatedAtField ? [makeField(updatedAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // updated field
-    ]);
+    const newObj: ObjectTypeDefinitionNode = {
+      ...obj,
+      fields: [
+        ...obj.fields,
+        ...(createdAtField && !existingCreatedAtField ? [makeField(createdAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // createdAt field
+        ...(updatedAtField && !existingUpdatedAtField ? [makeField(updatedAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // updated field
+      ],
+    };
     ctx.updateObject(newObj);
   }
 
