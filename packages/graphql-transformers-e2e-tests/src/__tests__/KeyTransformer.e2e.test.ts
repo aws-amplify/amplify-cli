@@ -37,7 +37,7 @@ beforeAll(async () => {
   const validSchema = `
     type Order @model @key(fields: ["customerEmail", "createdAt"]) {
         customerEmail: String!
-        createdAt: String!
+        createdAt: AWSDateTime!
         orderId: ID!
     }
     type Customer @model @key(fields: ["email"]) {
@@ -517,7 +517,7 @@ async function deleteOrder(customerEmail: string, createdAt: string) {
 
 async function getOrder(customerEmail: string, createdAt: string) {
   const result = await GRAPHQL_CLIENT.query(
-    `query GetOrder($customerEmail: String!, $createdAt: String!) {
+    `query GetOrder($customerEmail: String!, $createdAt: AWSDateTime!) {
         getOrder(customerEmail: $customerEmail, createdAt: $createdAt) {
             customerEmail
             orderId

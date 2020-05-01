@@ -205,14 +205,14 @@ export class DynamoDBModelTransformer extends Transformer {
       console.log(
         `${def.name.value}.${existingCreatedAtField.name.value} is of type ${getBaseType(
           existingCreatedAtField.type,
-        )}. To support auto population change the type to AWSDateTime`,
+        )}. To support auto population change the type to AWSDateTime or String`,
       );
     }
     if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingUpdatedAtField)) {
       console.log(
         `${def.name.value}.${existingUpdatedAtField.name.value} is of type ${getBaseType(
           existingUpdatedAtField.type,
-        )}. To support auto population change the type to AWSDateTime`,
+        )}. To support auto population change the type to AWSDateTime or String`,
       );
     }
     const obj = ctx.getObject(def.name.value);
@@ -286,7 +286,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
     // Create the mutations.
     if (shouldMakeCreate) {
-      const createInput = makeCreateInputObject(def, nonModelArray, ctx, isSyncEnabled);
+      const createInput = makeCreateInputObject(def, directive, nonModelArray, ctx, isSyncEnabled);
       if (!ctx.getType(createInput.name.value)) {
         ctx.addInput(createInput);
       }
@@ -685,7 +685,7 @@ export class DynamoDBModelTransformer extends Transformer {
   }
 
   private static isTimestampCompatibleField(field?: FieldDefinitionNode): boolean {
-    if (field && getBaseType(field.type) !== 'AWSDateTime') {
+    if (field && !(getBaseType(field.type) === 'AWSDateTime' || getBaseType(field.type) === 'String')) {
       return false;
     }
     return true;

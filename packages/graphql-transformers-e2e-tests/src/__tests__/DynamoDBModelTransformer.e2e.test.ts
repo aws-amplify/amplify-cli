@@ -37,39 +37,45 @@ function outputValueSelector(key: string) {
 }
 
 beforeAll(async () => {
-  const validSchema = `
+  const validSchema = /* GraphQL */ `
     type Post @model {
-        id: ID!
-        title: String!
-        createdAt: AWSDateTime
-        updatedAt: AWSDateTime
-        metadata: PostMetadata
-        entityMetadata: EntityMetadata
-        appearsIn: [Episode!]
-        episode: Episode
+      id: ID!
+      title: String!
+      createdAt: AWSDateTime
+      updatedAt: AWSDateTime
+      metadata: PostMetadata
+      entityMetadata: EntityMetadata
+      appearsIn: [Episode!]
+      episode: Episode
     }
     type Author @model {
-        id: ID!
-        name: String!
-        postMetadata: PostMetadata
-        entityMetadata: EntityMetadata
+      id: ID!
+      name: String!
+      postMetadata: PostMetadata
+      entityMetadata: EntityMetadata
     }
     type EntityMetadata {
-        isActive: Boolean
+      isActive: Boolean
     }
     type PostMetadata {
-        tags: Tag
+      tags: Tag
     }
     type Tag {
-        published: Boolean
-        metadata: PostMetadata
+      published: Boolean
+      metadata: PostMetadata
     }
     enum Episode {
-        NEWHOPE
-        EMPIRE
-        JEDI
+      NEWHOPE
+      EMPIRE
+      JEDI
     }
-    `;
+    type Comment @model(timestamps: { create: "createdOn", update: "updatedOn" }) {
+      id: ID!
+      title: String!
+      content: String
+      updatedOn: Int # No automatic generation of timestamp if its not AWSDateTime
+    }
+  `;
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
@@ -190,6 +196,8 @@ test('Test createAuthor mutation', async () => {
                 entityMetadata {
                     isActive
                 }
+                createdAt
+                updatedAt
             }
         }`,
       {
@@ -203,6 +211,8 @@ test('Test createAuthor mutation', async () => {
     );
     expect(response.data.createAuthor.id).toBeDefined();
     expect(response.data.createAuthor.name).toEqual('Jeff B');
+    expect(response.data.createAuthor.createdAt).toBeDefined();
+    expect(response.data.createAuthor.updatedAt).toBeDefined();
     expect(response.data.createAuthor.entityMetadata).toBeDefined();
     expect(response.data.createAuthor.entityMetadata.isActive).toEqual(true);
   } catch (e) {
@@ -844,4 +854,26 @@ test('Test updatePost mutation with non-model types', async () => {
     // fail
     expect(e).toBeUndefined();
   }
+});
+
+describe('Timestamp configuration', () => {
+  test('Test createdAt is present in the schema', async () => {
+    const response = await GRAPHQL_CLIENT.query(
+      /* GraphQL */ `
+        mutation CreateComment {
+          createComment(input: { title: "GraphQL transformer rocks" }) {
+            id
+            title
+            createdOn
+            updatedOn
+          }
+        }
+      `,
+      {},
+    );
+    expect(response.data.createComment.id).toBeDefined();
+    expect(response.data.createComment.title).toEqual('GraphQL transformer rocks');
+    expect(response.data.createComment.updatedOn).toBeNull();
+    expect(response.data.createComment.createdOn).toBeDefined();
+  });
 });

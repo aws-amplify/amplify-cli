@@ -12,7 +12,6 @@ import {
   NamedTypeNode,
 } from 'graphql';
 import { GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
 
 test('Test DynamoDBModelTransformer validation happy case', () => {
@@ -497,6 +496,86 @@ test('Test only get does not generate superfluous input and filter types', () =>
   expect(result).toBeDefined();
   expect(result.schema).toBeDefined();
   expect(result.schema).toMatchSnapshot();
+});
+
+test('Test timestamp parameters when generating resolvers and output schema', () => {
+  const validSchema = `
+  type Post @model(timestamps: { create: "createdOn", update: "updatedOn"}) {
+    id: ID!
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+  expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+});
+
+test('Test resolver template not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime', () => {
+  const validSchema = `
+  type Post @model {
+    id: ID!
+    str: String
+    createdAt: AWSTimestamp
+    updatedAt: AWSTimestamp
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+  expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+});
+
+test('Test create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable', () => {
+  const validSchema = `
+  type Post @model {
+    id: ID!
+    str: String
+    createdAt: AWSDateTime!
+    updatedAt: AWSDateTime!
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+  expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+});
+
+test('Test not to include createdAt and updatedAt field when timestamps is set to null', () => {
+  const validSchema = `
+  type Post @model(timestamps: null) {
+    id: ID!
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+  expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
 });
 
 test(`V${TRANSFORM_BASE_VERSION} transformer snapshot test`, () => {
