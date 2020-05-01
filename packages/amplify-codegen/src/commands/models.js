@@ -106,8 +106,8 @@ function getModelOutputPath(context) {
       return 'src';
     case 'android':
       return projectConfig.android && projectConfig.android.config && projectConfig.android.config.ResDir
-        ? path.join(projectConfig.android.config.ResDir, '..', 'java')
-        : 'app/src/main/java/';
+        ? path.normalize(path.join(projectConfig.android.config.ResDir, '..', 'java'))
+        : path.join('app', 'src', 'main', 'java');
     case 'ios':
       return 'amplify/generated/models';
     default:
