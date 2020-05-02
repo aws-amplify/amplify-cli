@@ -4,6 +4,8 @@ exports[`Check KeyTransformer Resolver Code 1`] = `
 Object {
   "Mutation.createItem.req.vtl": "
 
+
+
 ## [Start] Set the primary @key. **
 #set( $modelObjectKey = {
   \\"orderId\\": $util.dynamodb.toDynamoDB($ctx.args.input.orderId),
