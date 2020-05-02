@@ -13,8 +13,9 @@ const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
 const REMOVE_ERROR_MESSAGE = 'There was an error removing the auth resource';
 const HOSTING_NOT_ENABLED = 'Amplify Console hosting is not enabled.';
-const HOSTING_ALREADY_ENABLED =
-  'Amplify Console hosting has already been enabled';
+const HOSTING_ONLY_ENABLED_ONLINE =
+  'You have enabled hosting in the Amplify Console and not through the CLI. To remove hosting with Amplify Console, please visit the console and disconnect your frontend branches.';
+const HOSTING_ALREADY_ENABLED = 'Amplify Console hosting has already been enabled';
 const FRONTEND_EXISTED_WARNING =
   'You have already connected branches to your Amplify Console app. Please visit the Amplify Console to manage your branches.';
 
@@ -76,9 +77,7 @@ async function initEnv(context) {
       return;
     }
 
-    const { type } = backendConfig[constants.CATEGORY][
-      constants.CONSOLE_RESOURCE_NAME
-    ];
+    const { type } = backendConfig[constants.CATEGORY][constants.CONSOLE_RESOURCE_NAME];
     const initEnvMod = require(`./${type}/index`);
     await initEnvMod.initEnv(context);
   }
@@ -86,8 +85,12 @@ async function initEnv(context) {
 
 async function remove(context) {
   if (!isHostingEnabled(context)) {
+    if (await isFrontendCreatedOnline(context)) {
+      throw new ValidationError(HOSTING_ONLY_ENABLED_ONLINE);
+    }
     throw new ValidationError(HOSTING_NOT_ENABLED);
   }
+
   const category = constants.CATEGORY;
   const resource = constants.CONSOLE_RESOURCE_NAME;
   const { amplify } = context;
@@ -98,7 +101,7 @@ async function remove(context) {
     await configUtils.deleteConsoleConfigFromCurrMeta(context);
   }
 
-  return amplify.removeResource(context, category, resource).catch((err) => {
+  return amplify.removeResource(context, category, resource).catch(err => {
     context.print.info(err.stack);
     context.print.error(REMOVE_ERROR_MESSAGE);
   });
@@ -138,8 +141,7 @@ function loadDeployType(context) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath(context);
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
-  return amplifyMeta[constants.CATEGORY][constants.CONSOLE_RESOURCE_NAME]
-    .type;
+  return amplifyMeta[constants.CATEGORY][constants.CONSOLE_RESOURCE_NAME].type;
 }
 
 async function validateHosting(context) {
@@ -150,12 +152,7 @@ async function validateHosting(context) {
       spinner.stop();
       throw new ValidationError(HOSTING_ALREADY_ENABLED);
     }
-    const appId = utils.getAppIdForCurrEnv(context);
-    const amplifyClient = await clientFactory.getAmplifyClient(context);
-    const result = await amplifyClient
-      .listBranches({ appId })
-      .promise();
-    if (result.branches.length > 0) {
+    if (await isFrontendCreatedOnline(context)) {
       throw new ValidationError(FRONTEND_EXISTED_WARNING);
     }
     spinner.stop();
@@ -167,6 +164,17 @@ async function validateHosting(context) {
 
 function isHostingEnabled(context) {
   return fs.existsSync(pathManager.getAmplifyHostingDirPath(context));
+}
+
+async function isFrontendCreatedOnline(context) {
+  const appId = utils.getAppIdForCurrEnv(context);
+  const amplifyClient = await clientFactory.getAmplifyClient(context);
+  const result = await amplifyClient.listBranches({ appId }).promise();
+  if (result.branches.length > 0) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 module.exports = {

@@ -9,3 +9,6 @@ export const TYPE_UNKNOWN = 'unknown';
 export const ORIGINAL_ENV = 'integtest';
 export const NEW_ENV = 'test';
 export const PROVIDER = 'awscloudformation';
+export const HOSTING_ONLY_ENABLED_ONLINE =
+  'You have enabled hosting in the Amplify Console and not through the CLI. To remove hosting with Amplify Console, please visit the console and disconnect your frontend branches.';
+export const HOSTING_NOT_ENABLED = 'Amplify Console hosting is not enabled.';
