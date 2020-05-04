@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const importGlobal = require('import-global');
+const importFrom = require('import-from');
 const { DynamoDBModelTransformer } = require('graphql-dynamodb-transformer');
 const { ModelAuthTransformer } = require('graphql-auth-transformer');
 const { ModelConnectionTransformer } = require('graphql-connection-transformer');
@@ -76,6 +78,7 @@ function getTransformerFactory(context, resourceDir, authConfig) {
         // The loading of transformer can happen multiple ways in the following order:
         // - modulePath is an absolute path to an NPM package
         // - modulePath is a package name, then it will be loaded from the project's root's node_modules with createRequireFromPath.
+        // - modulePath is a name of a globally installed package
         let importedModule;
         const tempModulePath = modulePath.toString();
 
@@ -84,11 +87,19 @@ function getTransformerFactory(context, resourceDir, authConfig) {
             // Load it by absolute path
             importedModule = require(modulePath);
           } else {
-            // 'require' from project path
             const projectRootPath = context.amplify.pathManager.searchProjectRootPath();
-            const { createRequireFromPath } = require('module');
-            const projectRequire = createRequireFromPath(path.join(projectRootPath, 'noop.js')); // createRequireFromPath doesn't support directory well. we need to add noop file. See https://github.com/nodejs/node/issues/23710 for detail
-            importedModule = projectRequire(tempModulePath);
+            const projectNodeModules = path.join(projectRootPath, 'node_modules');
+
+            try {
+              importedModule = importFrom(projectNodeModules, modulePath);
+            } catch (_) {
+              // Intentionally left blank to try global
+            }
+
+            // Try global package install
+            if (!importedModule) {
+              importedModule = importGlobal(modulePath);
+            }
           }
 
           // At this point we've to have an imported module, otherwise module loader, threw an error.
