@@ -1,5 +1,4 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
+import { nspawn as spawn, getCLIPath } from '../../src';
 
 const defaultSettings = {
   name: '\r',
@@ -13,6 +12,7 @@ const defaultSettings = {
   startCmd: '\r',
   useProfile: '\r',
   profileName: '\r',
+  local: false,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings: Object) {

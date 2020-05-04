@@ -1,5 +1,4 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
+import { nspawn as spawn, getCLIPath } from '../../src';
 
 export function addSampleInteraction(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {

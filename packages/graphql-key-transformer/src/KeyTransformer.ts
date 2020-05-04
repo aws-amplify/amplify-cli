@@ -820,7 +820,6 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
   const index = directiveArgs.name;
   const fieldName = directiveArgs.queryField;
   const queryTypeName = ctx.getQueryTypeName();
-  const defaultPageLimit = 10;
   const requestVariable = 'QueryRequest';
   return new AppSync.Resolver({
     ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -830,7 +829,7 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
     RequestMappingTemplate: print(
       compoundExpression([
         setQuerySnippet(definition, directive, ctx),
-        set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+        set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
         set(
           ref(requestVariable),
           obj({

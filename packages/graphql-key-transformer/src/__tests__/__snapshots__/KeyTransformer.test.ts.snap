@@ -347,7 +347,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 ## [End] Applying Key Condition **
 ## [End] Set query expression for @key **
-#set( $limit = $util.defaultIfNull($context.args.limit, 10) )
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $QueryRequest = {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"Query\\",
@@ -422,7 +422,7 @@ $util.toJson($QueryRequest)",
 #end
 ## [End] Applying Key Condition **
 ## [End] Set query expression for @key **
-#set( $limit = $util.defaultIfNull($context.args.limit, 10) )
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $QueryRequest = {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"Query\\",
@@ -543,7 +543,7 @@ $util.toJson($QueryRequest)",
 
 ## [End] Applying Key Condition **
 ## [End] Set query expression for @key **
-#set( $limit = $util.defaultIfNull($context.args.limit, 10) )
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
   \\"version\\": \\"2017-02-28\\",
   \\"limit\\": $limit

@@ -1,5 +1,4 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW } from 'amplify-e2e-core';
-import { getCLIPath, getProjectMeta, invokeFunction } from '../utils';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, invokeFunction } from '../../src';
 import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 
@@ -41,7 +40,7 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), [action == 'update' ? 'update' : 'add', 'function'], {
+    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action == 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
@@ -237,7 +236,7 @@ const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string)
 
 const addminutes = (chain: ExecutionContext) => {
   chain
-    .wait('Enter rate for mintues(1-59)?')
+    .wait('Enter rate for minutes(1-59)?')
     .sendLine('5')
     .sendCarriageReturn();
 

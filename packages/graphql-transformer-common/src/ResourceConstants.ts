@@ -1,6 +1,10 @@
 export class ResourceConstants {
   public static NONE = 'NONE';
 
+  public static DEFAULT_PAGE_LIMIT = 100;
+  public static DEFAULT_SYNC_QUERY_PAGE_LIMIT = 100;
+  public static DEFAULT_SEARCHABLE_PAGE_LIMIT = 100;
+
   public static readonly RESOURCES = {
     // AppSync
     GraphQLAPILogicalID: 'GraphQLAPI',
