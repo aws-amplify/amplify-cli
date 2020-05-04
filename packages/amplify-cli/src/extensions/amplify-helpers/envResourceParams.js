@@ -1,7 +1,8 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const pathManager = require('./path-manager');
 const { getEnvInfo } = require('./get-env-info');
 const { readJsonFile } = require('./read-json-file');
+const _ = require('lodash');
 
 const CATEGORIES = 'categories';
 
@@ -69,7 +70,7 @@ function saveEnvResourceParameters(context, category, resource, parameters) {
   const allParams = loadAllResourceParameters(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category]);
-  resources[resource] = parameters;
+  resources[resource] = _.assign(resources[resource], parameters);
   saveAllResourceParams(context, allParams);
 }
 
