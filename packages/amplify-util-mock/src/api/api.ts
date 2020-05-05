@@ -206,7 +206,7 @@ export class APITest {
             };
           } else {
             throw new Error(
-              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function',
+              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://docs.amplify.aws/cli/graphql-transformer/directives#function',
             );
           }
         }),

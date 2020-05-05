@@ -62,7 +62,7 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify delete                                                         | Deletes resources tied to the project.                                                                                                                                                                               |
 | amplify help \| amplify `<category>` help                              | Displays help for the core CLI.                                                                                                                                                                                      |
 | amplify codegen add \| generate                                        | Performs generation of strongly typed objects using a GraphQL schema.                                                                                                                                                |
-| amplify env add \| list \| remove \| get \| pull \| import \| checkout | See the [multienv docs](https://aws-amplify.github.io/docs/cli/multienv).                                                                                                                                            |
+| amplify env add \| list \| remove \| get \| pull \| import \| checkout | See the [multienv docs](https://docs.amplify.aws/cli/teams/overview).                                                                                                                                                |
 
 ### Category specific commands:
 
@@ -78,9 +78,9 @@ The Amplify CLI supports the commands shown in the following table.
 
 ## Tutorials
 
-- [React & React Native tutorial](https://aws-amplify.github.io/docs/js/react)
-- [GraphQL transform tutorial](https://aws-amplify.github.io/docs/js/graphql)
-- [Native development with Amplify CLI and AWS AppSync](https://aws-amplify.github.io/docs/cli/codegen)
+- [Getting Started guide](https://docs.amplify.aws/start)
+- [GraphQL transform tutorial](https://docs.amplify.aws/cli/graphql-transformer/overview)
+- [Native development with Amplify CLI and AWS AppSync](https://docs.amplify.aws/cli/graphql-transformer/codegen)
 
 ## Developing
 
