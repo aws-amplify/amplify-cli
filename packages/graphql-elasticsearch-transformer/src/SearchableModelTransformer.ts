@@ -1,11 +1,4 @@
-import {
-  Transformer,
-  TransformerContext,
-  getDirectiveArguments,
-  gql,
-  InvalidDirectiveError,
-  ResolverConfig,
-} from 'graphql-transformer-core';
+import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ResourceFactory } from './resources';
 import {
@@ -59,14 +52,14 @@ export class SearchableModelTransformer extends Transformer {
   }
 
   public before = (ctx: TransformerContext): void => {
-    const template = this.resources.initTemplate();
+    const template = this.resources.initTemplate(ctx.isProjectUsingDataStore());
     ctx.mergeResources(template.Resources);
     ctx.mergeParameters(template.Parameters);
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeMappings(template.Mappings);
     ctx.metadata.set(
       ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID,
-      this.getStreamingFunctionPath(this.isProjectUsingDataStore(ctx.getResolverConfig())),
+      path.resolve(`${__dirname}/../lib/streaming-lambda.zip`),
     );
     for (const resourceId of Object.keys(template.Resources)) {
       ctx.mapResourceToStack(STACK_NAME, resourceId);
@@ -132,7 +125,7 @@ export class SearchableModelTransformer extends Transformer {
         primaryKey,
         ctx.getQueryTypeName(),
         searchFieldNameOverride,
-        this.isProjectUsingDataStore(ctx.getResolverConfig()),
+        ctx.isProjectUsingDataStore(),
       );
       ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver);
       ctx.mapResourceToStack(STACK_NAME, ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value));
@@ -233,18 +226,4 @@ export class SearchableModelTransformer extends Transformer {
     const primaryKeySchemaElement = tableResource.Properties.KeySchema.find((keyElement: any) => keyElement.KeyType === 'HASH');
     return primaryKeySchemaElement.AttributeName;
   }
-
-  private getStreamingFunctionPath = (isProjectUsingDataStore: boolean) => {
-    const streamingFuncZipName = isProjectUsingDataStore ? 'streaming-lambda-external-version.zip' : 'streaming-lambda.zip';
-    return path.resolve(path.join(__dirname, '..', 'lib', streamingFuncZipName));
-  };
-
-  private isProjectUsingDataStore = (resolverConfig?: ResolverConfig) => {
-    return (
-      resolverConfig &&
-      resolverConfig.project &&
-      resolverConfig.project.ConflictDetection === 'VERSION' &&
-      resolverConfig.project.ConflictHandler === 'AUTOMERGE'
-    );
-  };
 }

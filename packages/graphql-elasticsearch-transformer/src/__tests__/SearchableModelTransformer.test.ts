@@ -16,6 +16,8 @@ test('Test SearchableModelTransformer validation happy case', () => {
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
+  expect(out.schema).toBeDefined();
+  expect(out.schema).toMatchSnapshot();
 });
 
 test('Test SearchableModelTransformer with query overrides', () => {
@@ -125,7 +127,4 @@ test('SearchableModelTransformer with external versioning', () => {
   expect(out.resolvers[expectedSearchRequestResolver]).toMatchSnapshot();
   expect(out.resolvers[expectedSearchResponseResolver]).toBeDefined();
   expect(out.resolvers[expectedSearchResponseResolver]).toMatchSnapshot();
-
-  expect(out.functions).toBeDefined();
-  expect(out.functions['ElasticSearchStreamingLambdaFunction.zip'].endsWith('streaming-lambda-external-version.zip')).toBeTruthy();
 });

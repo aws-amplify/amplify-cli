@@ -19,6 +19,7 @@ from boto3.dynamodb.types import TypeDeserializer
 ES_ENDPOINT = os.environ['ES_ENDPOINT']
 ES_REGION = os.environ['ES_REGION']
 DEBUG = True if os.environ['DEBUG'] == "1" else False
+ES_USE_EXTERNAL_VERSIONING = True if os.environ['ES_USE_EXTERNAL_VERSIONING'] == "true" else False
 
 # ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
 DOC_TYPE = 'doc'
@@ -133,7 +134,6 @@ def compute_doc_index(keys_raw, deserializer, formatIndex=False):
             index.append(deserializer.deserialize(keys_raw[key]))
     return '|'.join(index)
 
-
 def _lambda_handler(event, context):
     logger.debug('Event: %s', event)
     records = event['Records']
@@ -203,18 +203,23 @@ def _lambda_handler(event, context):
         else:
             logger.error('Cannot find keys in ddb record')
 
-        # Generate JSON payload
-        doc_json = json.dumps(doc_fields, cls=DDBTypesEncoder)
-
         # If DynamoDB INSERT or MODIFY, send 'index' to ES
         if is_ddb_insert_or_update:
             # Generate ES payload for item
             action = {'index': {'_index': doc_es_index_name,
-                                '_type': doc_type, '_id': doc_id}}
-            # Action line with 'index' directive
+                                '_type': doc_type,
+                                '_id': doc_id}}
+            # Add external versioning if necessary
+            if ES_USE_EXTERNAL_VERSIONING:
+                action['index'].update([
+                    ('version_type', 'external'),
+                    ('_version', doc_fields['_version'])
+                ])
+                del doc_fields['_version']
+            # Append ES Action line with 'index' directive
             es_actions.append(json.dumps(action))
-            # Payload line
-            es_actions.append(doc_json)
+            # Append JSON payload
+            es_actions.append(json.dumps(doc_fields, cls=DDBTypesEncoder))
             # migration step remove old key if it exists
             if ('id' in doc_fields) and (event_name == 'MODIFY') :
                 action = {'delete': {'_index': doc_es_index_name, '_type': doc_type,
@@ -224,7 +229,12 @@ def _lambda_handler(event, context):
         elif is_ddb_delete:
             action = {'delete': {'_index': doc_es_index_name,
                                 '_type': doc_type, '_id': doc_id}}
-            # Action line with 'index' directive
+            if ES_USE_EXTERNAL_VERSIONING:
+                action['delete'].update([
+                    ('version_type', 'external'),
+                    ('_version', doc_fields['_version'])
+                ])
+            # Action line with 'delete' directive
             es_actions.append(json.dumps(action))
 
     # Prepare bulk payload

@@ -17,9 +17,7 @@
     "aws"
   ],
   "scripts": {
-    "build": "tsc && npm run zip-streaming-func && npm run zip-streaming-func-ext-ver",
-    "zip-streaming-func": "cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
-    "zip-streaming-func-ext-ver": "cd streaming-lambda/es-external-version && bestzip --force node ../../lib/streaming-lambda-external-version.zip python_streaming_function.py",
+    "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "test": "jest"
@@ -41,7 +39,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*.test.(t|j)s)$",
+    "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",

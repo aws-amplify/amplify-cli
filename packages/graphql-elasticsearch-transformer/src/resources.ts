@@ -110,7 +110,7 @@ export class ResourceFactory {
   /**
    * Creates the barebones template for an application.
    */
-  public initTemplate(): Template {
+  public initTemplate(isProjectUsingDataStore: boolean = false): Template {
     return {
       Parameters: this.makeParams(),
       Resources: {
@@ -118,7 +118,9 @@ export class ResourceFactory {
         [ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]: this.makeElasticsearchDataSource(),
         [ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID]: this.makeElasticsearchDomain(),
         [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
-        [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(),
+        [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(
+          isProjectUsingDataStore,
+        ),
       },
       Mappings: this.getLayerMapping(),
       Outputs: {
@@ -225,7 +227,7 @@ export class ResourceFactory {
    * Deploy a lambda function that will stream data from our DynamoDB table
    * to our elasticsearch index.
    */
-  public makeDynamoDBStreamingFunction() {
+  public makeDynamoDBStreamingFunction(isProjectUsingDataStore: boolean = false) {
     return new Lambda.Function({
       Code: {
         S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
@@ -248,6 +250,7 @@ export class ResourceFactory {
           ES_ENDPOINT: Fn.Join('', ['https://', Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainEndpoint')]),
           ES_REGION: Fn.Select(3, Fn.Split(':', Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainArn'))),
           DEBUG: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchDebugStreamingLambda),
+          ES_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
         },
       },
     }).dependsOn([
