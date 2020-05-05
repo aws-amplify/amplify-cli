@@ -1,4 +1,3 @@
-
 # Amplify CLI Migration tests
 
 This packages contains migration tests that are run in CircleCI to ensure that changes do not break an existing amplify project created with an older version of the cli
