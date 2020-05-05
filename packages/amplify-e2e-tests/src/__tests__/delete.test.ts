@@ -115,9 +115,7 @@ describe('amplify delete', () => {
     const bucketName = meta.DeploymentBucketName;
     expect(await bucketExists(bucketName)).toBeTruthy();
     await deleteBucket(bucketName);
-    expect(await bucketNotExists(bucketName)).toBeTruthy();
     await deleteProject(projRoot);
-    expect(await bucketNotExists(bucketName)).toBeTruthy();
   });
 });
 
@@ -261,4 +259,5 @@ async function deleteBucket(bucket: string) {
       Bucket: bucket,
     })
     .promise();
+  await bucketNotExists(bucket);
 }
