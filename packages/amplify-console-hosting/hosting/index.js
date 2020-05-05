@@ -13,7 +13,7 @@ const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
 const REMOVE_ERROR_MESSAGE = 'There was an error removing the auth resource';
 const HOSTING_NOT_ENABLED = 'Amplify Console hosting is not enabled.';
-const HOSTING_ONLY_ENABLED_ONLINE =
+const HOSTING_ENABLED_IN_CONSOLE =
   'You have enabled hosting in the Amplify Console and not through the CLI. To remove hosting with Amplify Console, please visit the console and disconnect your frontend branches.';
 const HOSTING_ALREADY_ENABLED = 'Amplify Console hosting has already been enabled';
 const FRONTEND_EXISTED_WARNING =
@@ -86,7 +86,7 @@ async function initEnv(context) {
 async function remove(context) {
   if (!isHostingEnabled(context)) {
     if (await isFrontendCreatedOnline(context)) {
-      throw new ValidationError(HOSTING_ONLY_ENABLED_ONLINE);
+      throw new ValidationError(HOSTING_ENABLED_IN_CONSOLE);
     }
     throw new ValidationError(HOSTING_NOT_ENABLED);
   }

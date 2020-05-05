@@ -4,7 +4,7 @@ import {
   amplifyPush,
   removeHosting,
   removeNonExistingHosting,
-  removeOnlyOnlineHosting,
+  removeHostingEnabledInConsole,
   addCICDHostingWithoutFrontend,
   amplifyStatus,
   checkoutEnv,
@@ -87,7 +87,7 @@ describe('amplify console add hosting', () => {
     await addManualHosting(projRoot);
     await amplifyPush(projRoot);
     cleanHostingLocally(projRoot, ORIGINAL_ENV);
-    await removeOnlyOnlineHosting(projRoot);
+    await removeHostingEnabledInConsole(projRoot);
   });
 
   // CICD tests

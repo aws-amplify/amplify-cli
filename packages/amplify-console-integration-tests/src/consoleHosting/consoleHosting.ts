@@ -1,6 +1,6 @@
 import { nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../util';
-import { HOSTING_NOT_ENABLED, HOSTING_ONLY_ENABLED_ONLINE, ORIGINAL_ENV } from './constants';
+import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE, ORIGINAL_ENV } from './constants';
 
 const defaultSettings = {
   name: '\r',
@@ -232,12 +232,12 @@ export function removeNonExistingHosting(cwd: string) {
   });
 }
 
-export function removeOnlyOnlineHosting(cwd: string) {
+export function removeHostingEnabledInConsole(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
       .sendCarriageReturn()
-      .wait(HOSTING_ONLY_ENABLED_ONLINE)
+      .wait(HOSTING_ENABLED_IN_CONSOLE)
       .run((err: Error) => {
         if (!err) {
           resolve();
