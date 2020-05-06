@@ -16,7 +16,7 @@ export async function run(context: Context) {
 async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string): Promise<boolean> {
   let isPluggedIn = false;
 
-  const addPluginResult = addUserPluginPackage(context.pluginPlatform, pluginDirPath);
+  const addPluginResult = await addUserPluginPackage(context.pluginPlatform, pluginDirPath);
   if (addPluginResult.isAdded) {
     isPluggedIn = true;
   } else {
