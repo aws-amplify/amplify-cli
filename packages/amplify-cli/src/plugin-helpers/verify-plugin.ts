@@ -49,7 +49,6 @@ async function verifyNodePackage(pluginDirPath: string): Promise<PluginVerificat
     const context: VerificationContext = {
       pluginDirPath,
     };
-    // const pluginModule = require(pluginDirPath);
     const result = await verifyAmplifyManifest(context);
     result.packageJson = packageJson;
     return result;
