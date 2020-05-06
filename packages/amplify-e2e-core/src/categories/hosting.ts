@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFileSync } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '../../src';
 import { spawnSync } from 'child_process';
 
 export function addHosting(cwd: string) {
@@ -84,7 +84,7 @@ export async function createReactTestProject(): Promise<string> {
 
 export function resetBuildCommand(projectDir: string, newBuildCommand: string): string {
   const projectConfigFilePath = path.join(projectDir, 'amplify', '.config', 'project-config.json');
-  const projectConfig = readJsonFileSync(projectConfigFilePath);
+  const projectConfig = readJsonFile(projectConfigFilePath);
   const currentBuildCommand = projectConfig.javascript.config.BuildCommand;
   projectConfig.javascript.config.BuildCommand = newBuildCommand;
   fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
