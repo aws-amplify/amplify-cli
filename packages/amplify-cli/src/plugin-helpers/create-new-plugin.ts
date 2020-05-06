@@ -6,7 +6,7 @@ import { constants } from '../domain/constants';
 import { AmplifyEvent } from '../domain/amplify-event';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
 import { readJsonFileSync } from '../utils/readJsonFile';
-import { validPluginNameSync } from './verify-plugin';
+import { validPluginName } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';
 
 const INDENTATIONSPACE = 4;
@@ -33,8 +33,8 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
       name: 'pluginName',
       message: 'What should be the name of the plugin:',
       default: pluginName,
-      validate: (input: string) => {
-        const pluginNameValidationResult = validPluginNameSync(input);
+      validate: async (input: string) => {
+        const pluginNameValidationResult = await validPluginName(input);
         if (!pluginNameValidationResult.isValid) {
           return pluginNameValidationResult.message || 'Invalid plugin name';
         }
