@@ -1,4 +1,4 @@
-import { parse } from 'url';
+import { parse, URLSearchParams } from 'url';
 export function decodeHeaderFromQueryParam(rawUrl: string, paramName: string = 'header'): Record<string, any> {
   const url = parse(rawUrl);
   const params = new URLSearchParams(url.query);

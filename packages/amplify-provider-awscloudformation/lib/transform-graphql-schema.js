@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const importGlobal = require('import-global');
+const importFrom = require('import-from');
 const { DynamoDBModelTransformer } = require('graphql-dynamodb-transformer');
 const { ModelAuthTransformer } = require('graphql-auth-transformer');
 const { ModelConnectionTransformer } = require('graphql-connection-transformer');
@@ -86,26 +88,17 @@ function getTransformerFactory(context, resourceDir, authConfig) {
             importedModule = require(modulePath);
           } else {
             const projectRootPath = context.amplify.pathManager.searchProjectRootPath();
-            const { createRequireFromPath } = require('module');
-            const projectRequire = createRequireFromPath(projectRootPath);
+            const projectNodeModules = path.join(projectRootPath, 'node_modules');
 
-            if (tempModulePath.startsWith('./')) {
-              // Lookup 'locally' within project's node_modules with require mechanism
-              importedModule = projectRequire(tempModulePath);
-            } else {
-              const prefixedModuleName = `./${tempModulePath}`;
+            try {
+              importedModule = importFrom(projectNodeModules, modulePath);
+            } catch (_) {
+              // Intentionally left blank to try global
+            }
 
-              try {
-                // Lookup 'locally' within project's node_modules with require mechanism
-                importedModule = projectRequire(prefixedModuleName);
-              } catch (_) {
-                // Intentionally left blank to try global
-              }
-
-              if (!importedModule) {
-                // Lookup in global with require
-                importedModule = require(tempModulePath);
-              }
+            // Try global package install
+            if (!importedModule) {
+              importedModule = importGlobal(modulePath);
             }
           }
 

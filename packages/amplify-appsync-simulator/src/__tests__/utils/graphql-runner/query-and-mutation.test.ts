@@ -82,6 +82,7 @@ describe('runQueryAndMutation', () => {
   });
 
   it('should run subscription resolver to ensure auth checks', async () => {
+    const name = 'John Doe';
     const doc = parse(/* GraphQL */ `
       subscription onSetName {
         onSetName
