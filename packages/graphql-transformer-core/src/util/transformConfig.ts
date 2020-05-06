@@ -15,7 +15,7 @@ export interface TransformMigrationConfig {
 }
 
 // Sync Config
-export enum ConflictHandlerType {
+export const enum ConflictHandlerType {
   OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',
   AUTOMERGE = 'AUTOMERGE',
   LAMBDA = 'LAMBDA',

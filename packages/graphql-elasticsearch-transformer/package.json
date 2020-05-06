@@ -19,7 +19,8 @@
   "scripts": {
     "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib",
+    "test": "jest"
   },
   "dependencies": {
     "cloudform-types": "^4.2.0",
@@ -38,7 +39,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*.test.*)$",
+    "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
