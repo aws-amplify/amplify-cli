@@ -9,7 +9,7 @@ import { appsyncGraphQLRequest } from 'amplify-e2e-core';
 import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule, getEventSourceMappings } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
-import { retry } from 'amplify-e2e-core';
+import { retry, readJsonFile } from 'amplify-e2e-core';
 
 describe('nodejs', () => {
   describe('amplify add function', () => {
@@ -421,6 +421,37 @@ describe('nodejs', () => {
         'utf8',
       );
       expect(lambdaHandlerContents).toMatchSnapshot();
+    });
+
+    it('adding api and storage permissions should not add duplicates to CFN', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addApiWithSchema(projRoot, 'two-model-schema.graphql');
+
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      const ddbName = `ddbTable${random}`;
+
+      await addSimpleDDB(projRoot, { name: ddbName });
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['api', 'storage'],
+            resources: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            resourceChoices: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            operations: ['read'],
+          },
+        },
+        'nodejs',
+      );
+
+      const lambdaCFN = readJsonFile(
+        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
+      );
+      expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
     });
   });
 });
