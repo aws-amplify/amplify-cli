@@ -18,11 +18,11 @@ console.log(chalk.green('Successfully installed the Amplify CLI'));
 console.log(chalk.green('----------------------------------------'));
 console.log('\n');
 
-console.log(chalk.green('JavaScript Getting Started - https://aws-amplify.github.io/docs/js/start'));
+console.log(chalk.green('JavaScript Getting Started - https://docs.amplify.aws/start'));
 console.log('\n');
-console.log(chalk.green('Android Getting Started - https://aws-amplify.github.io/docs/android/start'));
+console.log(chalk.green('Android Getting Started - https://docs.amplify.aws/start/q/integration/android'));
 console.log('\n');
-console.log(chalk.green('iOS Getting Started - https://aws-amplify.github.io/docs/ios/start'));
+console.log(chalk.green('iOS Getting Started - https://docs.amplify.aws/start/q/integration/ios'));
 console.log('\n');
 
 if (fs.existsSync('../lib/plugin-manager.js')) {

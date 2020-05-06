@@ -111,7 +111,7 @@ async function promptForConfirmation(context: Context, filesToUpdate: string[]):
   context.print.info('In response to the Lambda Runtime support deprecation schedule');
   context.print.green('https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html');
   context.print.warning(
-    `Nodejs runtime need to be updated from ${prevLambdaRuntimeVersions}  to ${lambdaRuntimeVersion} in the following template files:`
+    `Nodejs runtime need to be updated from ${prevLambdaRuntimeVersions}  to ${lambdaRuntimeVersion} in the following template files:`,
   );
   filesToUpdate.forEach(filePath => {
     context.print.info(filePath);
@@ -119,7 +119,7 @@ async function promptForConfirmation(context: Context, filesToUpdate: string[]):
   context.print.info('');
 
   context.print.warning(
-    `Please test the changes in a test environment before pushing these changes to production. There might be a need to update your Lambda function source code due to the NodeJS runtime update. Please take a look at https://aws-amplify.github.io/docs/cli/lambda-node-version-update for more information`
+    `Please test the changes in a test environment before pushing these changes to production. There might be a need to update your Lambda function source code due to the NodeJS runtime update. Please take a look at https://docs.amplify.aws/cli/migration/lambda-node-version-update for more information`,
   );
 
   context.print.info('');

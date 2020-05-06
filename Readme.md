@@ -59,10 +59,10 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify publish                                                        | Runs `amplify push`, publishes a static assets to Amazon S3 and Amazon CloudFront (\*hosting category is required).                                                                                                  |
 | amplify status                                                         | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete).                                                                                                                  |
 | amplify serve                                                          | Runs `amplify push`, and then executes the project's start command to test run the client-side application.                                                                                                          |
-| amplify delete                                                         | Deletes resources tied to the project.                                                                                                                                             |
+| amplify delete                                                         | Deletes resources tied to the project.                                                                                                                                                                               |
 | amplify help \| amplify `<category>` help                              | Displays help for the core CLI.                                                                                                                                                                                      |
 | amplify codegen add \| generate                                        | Performs generation of strongly typed objects using a GraphQL schema.                                                                                                                                                |
-| amplify env add \| list \| remove \| get \| pull \| import \| checkout | See the [multienv docs](https://aws-amplify.github.io/docs/cli/multienv).                                                                                                                                            |
+| amplify env add \| list \| remove \| get \| pull \| import \| checkout | See the [multienv docs](https://docs.amplify.aws/cli/teams/overview).                                                                                                                                                |
 
 ### Category specific commands:
 
@@ -78,9 +78,9 @@ The Amplify CLI supports the commands shown in the following table.
 
 ## Tutorials
 
-- [React & React Native tutorial](https://aws-amplify.github.io/docs/js/react)
-- [GraphQL transform tutorial](https://aws-amplify.github.io/docs/js/graphql)
-- [Native development with Amplify CLI and AWS AppSync](https://aws-amplify.github.io/docs/cli/codegen)
+- [Getting Started guide](https://docs.amplify.aws/start)
+- [GraphQL transform tutorial](https://docs.amplify.aws/cli/graphql-transformer/overview)
+- [Native development with Amplify CLI and AWS AppSync](https://docs.amplify.aws/cli/graphql-transformer/codegen)
 
 ## Developing
 
