@@ -32,6 +32,13 @@ describe('amplify add hosting', () => {
 
   afterEach(async () => {});
 
+  it('add hosting and push creates correct amplify artifacts', async () => {
+    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
+    const projectMeta = getProjectMeta(projRoot);
+    expect(projectMeta.hosting).toBeDefined();
+    expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
+  });
+
   it('publish', async () => {
     let error;
     try {
@@ -55,13 +62,4 @@ describe('amplify add hosting', () => {
     resetBuildCommand(projRoot, currentBuildCommand);
   });
 
-  it('add hosting', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addHosting(projRoot);
-    await amplifyPushWithoutCodegen(projRoot);
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
-    const projectMeta = getProjectMeta(projRoot);
-    expect(projectMeta.hosting).toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
-  });
 })
