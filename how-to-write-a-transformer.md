@@ -1,4 +1,4 @@
-<meta http-equiv="refresh" content="0; URL='https://docs.amplify.aws/lib/graphqlapi/getting-started/q/platform/js'" />
+<meta http-equiv="refresh" content="0; URL='https://docs.amplify.aws/cli/usage/plugin#custom-graphql-transformers'" />
 
 This doc has moved:
 https://docs.amplify.aws/cli/usage/plugin#custom-graphql-transformers
