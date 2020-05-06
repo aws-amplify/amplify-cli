@@ -220,6 +220,7 @@ module.exports = {
     '/packages/amplify-cli/lib',
     '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
+    '/packages/amplify-migration-tests/lib',
     '/packages/amplify-graphql-docs-generator/lib',
     '/packages/amplify-graphql-types-generator/lib',
     '/packages/amplify-storage-simulator/lib',

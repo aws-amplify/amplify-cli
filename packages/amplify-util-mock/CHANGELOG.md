@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.18.0...amplify-util-mock@3.19.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** mock to add/update DDB index ([#3960](https://github.com/aws-amplify/amplify-cli/issues/3960)) ([132ca06](https://github.com/aws-amplify/amplify-cli/commit/132ca06829e54677dde62798dade117aecdd9315)), closes [#2210](https://github.com/aws-amplify/amplify-cli/issues/2210)
+
+
+### Features
+
+* **amplify-appsync-simulator:** add support for websocket subscriptions ([#3912](https://github.com/aws-amplify/amplify-cli/issues/3912)) ([f6dac5b](https://github.com/aws-amplify/amplify-cli/commit/f6dac5b6d55867e35b28b1c3eec9a6eeb4e4fbe3)), closes [#3008](https://github.com/aws-amplify/amplify-cli/issues/3008)
+
+
+
+
+
 # [3.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.17.1...amplify-util-mock@3.18.0) (2020-04-06)
 
 

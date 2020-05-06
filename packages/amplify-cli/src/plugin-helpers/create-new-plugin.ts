@@ -131,7 +131,7 @@ generation of all the configuration files required by the frontend framework.`);
   context.print.green(`${AmplifyPluginType.util} plugins are general purpose utility plugins, \
 they provide utility functions for other plugins.`);
   context.print.green('For more information please read - \
-https://aws-amplify.github.io/docs/cli-toolchain/plugins');
+  https://docs.amplify.aws/cli/usage/plugin');
 }
 
 async function promptForEventSubscription(context: Context): Promise<string[]> {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.19.0...amplify-appsync-simulator@1.20.0) (2020-04-23)
+
+
+### Features
+
+* **amplify-appsync-simulator:** add support for websocket subscriptions ([#3912](https://github.com/aws-amplify/amplify-cli/issues/3912)) ([f6dac5b](https://github.com/aws-amplify/amplify-cli/commit/f6dac5b6d55867e35b28b1c3eec9a6eeb4e4fbe3)), closes [#3008](https://github.com/aws-amplify/amplify-cli/issues/3008)
+
+
+
+
+
 # [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.18.0...amplify-appsync-simulator@1.19.0) (2020-04-06)
 
 

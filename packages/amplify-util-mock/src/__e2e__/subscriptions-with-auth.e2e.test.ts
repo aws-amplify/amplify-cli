@@ -23,7 +23,7 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 // delays
 const SUBSCRIPTION_DELAY = 2000;
 const PROPAGATAION_DELAY = 5000;
-const JEST_TIMEOUT = 2000000;
+const JEST_TIMEOUT = 20000;
 
 jest.setTimeout(JEST_TIMEOUT);
 

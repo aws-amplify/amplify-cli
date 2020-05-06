@@ -1,5 +1,4 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
+import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
 
 export async function newPlugin(cwd: string): Promise<string> {
   const pluginPackageDirName = 'newpluginpackage';

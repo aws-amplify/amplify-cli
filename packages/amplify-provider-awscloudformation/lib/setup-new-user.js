@@ -57,14 +57,16 @@ function run(context) {
       context.print.info('Enter the access key of the newly created user:');
       return inquirer.prompt([
         {
-          type: 'input',
+          type: 'password',
+          mask: '*',
           name: 'accessKeyId',
           message: 'accessKeyId: ',
           default: awsConfig.accessKeyId,
           transformer: obfuscationUtil.transform,
         },
         {
-          type: 'input',
+          type: 'password',
+          mask: '*',
           name: 'secretAccessKey',
           message: 'secretAccessKey: ',
           default: awsConfig.secretAccessKey,

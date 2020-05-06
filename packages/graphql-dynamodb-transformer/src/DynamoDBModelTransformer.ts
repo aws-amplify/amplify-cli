@@ -5,13 +5,11 @@ import {
   makeConnectionField,
   makeField,
   makeInputValueDefinition,
-  makeObjectDefinition,
   wrapNonNull,
   makeNamedType,
   makeNonNullType,
   ModelResourceIDs,
   ResolverResourceIDs,
-  getDirectiveArgument,
 } from 'graphql-transformer-common';
 import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig } from 'graphql-transformer-core';
 import {
@@ -169,12 +167,18 @@ export class DynamoDBModelTransformer extends Transformer {
     // change type to include sync related fields if sync is enabled
     if (isSyncEnabled) {
       const obj = ctx.getObject(def.name.value);
-      const newObj = makeObjectDefinition(obj.name.value, [
+      const newFields = [
         ...obj.fields,
         makeField('_version', [], wrapNonNull(makeNamedType('Int'))),
         makeField('_deleted', [], makeNamedType('Boolean')),
         makeField('_lastChangedAt', [], wrapNonNull(makeNamedType('AWSTimestamp'))),
-      ]);
+      ];
+
+      const newObj = {
+        ...obj,
+        fields: newFields,
+      };
+
       ctx.updateObject(newObj);
     }
   };

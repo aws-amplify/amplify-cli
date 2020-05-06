@@ -459,7 +459,7 @@ export class ResourceFactory {
           ),
           ElasticsearchMappingTemplate.searchItem({
             path: str('$indexPath'),
-            size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(10), true),
+            size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
             search_after: list([ref('util.toJson($context.args.nextToken)')]),
             query: ifElse(
               ref('context.args.filter'),
@@ -468,11 +468,7 @@ export class ResourceFactory {
                 match_all: obj({}),
               }),
             ),
-            sort: list([
-              raw(
-                '{$sortField0: { "order" : $util.toJson($sortDirection) }}',
-              ),
-            ]),
+            sort: list([raw('{$sortField0: { "order" : $util.toJson($sortDirection) }}')]),
           }),
         ]),
       ),

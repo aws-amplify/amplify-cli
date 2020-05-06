@@ -7,7 +7,7 @@ export async function minuteHelper(context: any) {
   const minuteQuestion = {
     type: 'input',
     name: 'minutes',
-    message: 'Enter the rate in mintues:',
+    message: 'Enter the rate in minutes:',
     validate: context.amplify.inputValidation({
       operator: 'regex',
       value: '^[1-9][0-9]*$', // change to /d after checking

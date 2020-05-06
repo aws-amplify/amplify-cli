@@ -24,6 +24,7 @@ import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs, S
 import { plural } from 'pluralize';
 import { SyncConfig, SyncUtils } from 'graphql-transformer-core';
 import Template from 'cloudform-types/types/template';
+import md5 from 'md5';
 
 type MutationResolverInput = {
   type: string;
@@ -252,13 +253,13 @@ export class ResourceFactory {
       RoleName: Fn.If(
         ResourceConstants.CONDITIONS.HasEnvironmentParameter,
         Fn.Join('-', [
-          typeName.slice(0, 21), // max of 64. 64-10-26-4-3 = 21
+          typeName.slice(0, 14) + md5(typeName).slice(15, 21), // max of 64. 64-10-26-4-3 = 21
           'role', // 4
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
           Fn.Ref(ResourceConstants.PARAMETERS.Env), // 10
         ]),
         Fn.Join('-', [
-          typeName.slice(0, 31), // max of 64. 64-26-4-3 = 31
+          typeName.slice(0, 24) + md5(typeName).slice(25, 31), // max of 64. 64-26-4-3 = 31
           'role',
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
         ]),
@@ -596,7 +597,7 @@ export class ResourceFactory {
       RequestMappingTemplate: print(
         DynamoDBMappingTemplate.syncItem({
           filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
-          limit: ref('util.defaultIfNull($ctx.args.limit, 100)'),
+          limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
           lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
           nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
         }),
@@ -610,7 +611,6 @@ export class ResourceFactory {
    */
   public makeQueryResolver(type: string, nameOverride?: string, isSyncEnabled: boolean = false, queryTypeName: string = 'Query') {
     const fieldName = nameOverride ? nameOverride : graphqlName(`query${toUpper(type)}`);
-    const defaultPageLimit = 10;
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -618,7 +618,7 @@ export class ResourceFactory {
       TypeName: queryTypeName,
       RequestMappingTemplate: print(
         compoundExpression([
-          set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+          set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
           DynamoDBMappingTemplate.query({
             query: obj({
               expression: str('#typename = :typename'),
@@ -660,7 +660,6 @@ export class ResourceFactory {
    */
   public makeListResolver(type: string, nameOverride?: string, isSyncEnabled: boolean = false, queryTypeName: string = 'Query') {
     const fieldName = nameOverride ? nameOverride : graphqlName('list' + plurality(toUpper(type)));
-    const defaultPageLimit = 10;
     const requestVariable = 'ListRequest';
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -669,7 +668,7 @@ export class ResourceFactory {
       TypeName: queryTypeName,
       RequestMappingTemplate: print(
         compoundExpression([
-          set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+          set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
           set(
             ref(requestVariable),
             obj({

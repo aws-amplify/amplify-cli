@@ -1,9 +1,7 @@
 export * from './new-plugin';
 export * from './verifyPluginStructure';
 
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
-
+import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
 export function help(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['plugin', 'help'], { cwd, stripColors: true })

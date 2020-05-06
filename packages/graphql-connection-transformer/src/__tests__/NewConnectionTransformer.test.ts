@@ -8,7 +8,7 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
 } from 'graphql';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, ConflictHandlerType, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
@@ -547,6 +547,92 @@ test('Test ModelConnectionTransformer for One-to-One getItem with composite sort
   expectFields(testObjType, ['otherHalf']);
   const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
   expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+});
+
+test('Many-to-many without conflict resolution generates correct schema', () => {
+  const validSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+    }
+
+    # Create a join model and disable queries as you don't need them
+    # and can query through Post.editors and User.posts
+    type PostEditor
+      @model(queries: null)
+      @key(name: "byPost", fields: ["postID", "editorID"])
+      @key(name: "byEditor", fields: ["editorID", "postID"]) {
+      id: ID!
+      postID: ID!
+      editorID: ID!
+      post: Post! @connection(fields: ["postID"])
+      editor: User! @connection(fields: ["editorID"])
+    }
+
+    type User @model {
+      id: ID!
+      username: String!
+      posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.schema).toMatchSnapshot();
+});
+
+test('Many-to-many with conflict resolution generates correct schema', () => {
+  const validSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+    }
+
+    # Create a join model and disable queries as you don't need them
+    # and can query through Post.editors and User.posts
+    type PostEditor
+      @model(queries: null)
+      @key(name: "byPost", fields: ["postID", "editorID"])
+      @key(name: "byEditor", fields: ["editorID", "postID"]) {
+      id: ID!
+      postID: ID!
+      editorID: ID!
+      post: Post! @connection(fields: ["postID"])
+      editor: User! @connection(fields: ["editorID"])
+    }
+
+    type User @model {
+      id: ID!
+      username: String!
+      posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+      ResolverConfig: {
+        project: {
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+          ConflictDetection: 'VERSION',
+        },
+      },
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.schema).toMatchSnapshot();
 });
 
 function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitionNode | undefined {
