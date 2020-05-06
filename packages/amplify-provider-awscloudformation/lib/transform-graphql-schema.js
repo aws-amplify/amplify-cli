@@ -39,7 +39,7 @@ function warnOnAuth(context, map) {
   if (unAuthModelTypes.length) {
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
-    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/directives#auth \n');
+    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/directives#auth\n');
   }
 }
 
