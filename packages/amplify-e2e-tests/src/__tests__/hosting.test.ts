@@ -1,5 +1,4 @@
 import {
-  amplifyPushWithUpdate,
   amplifyPublishWithoutUpdate,
   createReactTestProject,
   resetBuildCommand,
@@ -18,7 +17,7 @@ describe('amplify add hosting', () => {
     projRoot = await createReactTestProject();
     await initJSProjectWithProfile(projRoot, {});
     await addHosting(projRoot);
-    await amplifyPushWithUpdate(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
   });
 
   afterAll(async () => {
