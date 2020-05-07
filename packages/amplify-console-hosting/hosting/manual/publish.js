@@ -30,6 +30,7 @@ async function publish(context, doSkipBuild, doSkipPush) {
     spinner.start(ZIPPING_MESSAGE);
     artifactsPath = await zipArtifacts(context).catch((err) => {
       spinner.fail(ZIPPING_FAILURE_MESSAGE);
+      console.log(err);
       throw err;
     });
     spinner.succeed(ZIPPING_SUCCESS_MESSAGE);
