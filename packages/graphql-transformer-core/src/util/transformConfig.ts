@@ -138,6 +138,9 @@ interface ProjectConfiguration {
   functions: {
     [k: string]: string;
   };
+  pipelineFunctions: {
+    [k: string]: string;
+  };
   resolvers: {
     [k: string]: string;
   };
@@ -163,6 +166,23 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
         }
         const functionFilePath = path.join(functionDirectory, functionFile);
         functions[functionFile] = functionFilePath;
+      }
+    }
+  }
+
+  // load pipeline functions
+  const pipelineFunctions = {};
+  if (!(opts && opts.disablePipelineFunctionOverrides === true)) {
+    const pipelineFunctionDirectory = path.join(projectDirectory, 'pipelineFunctions');
+    const pipelineFunctionDirectoryExists = await fs.exists(pipelineFunctionDirectory);
+    if (pipelineFunctionDirectoryExists) {
+      const pipelineFunctionFiles = await fs.readdir(pipelineFunctionDirectory);
+      for (const pipelineFunctionFile of pipelineFunctionFiles) {
+        if (pipelineFunctionFile.indexOf('.') === 0) {
+          continue;
+        }
+        const pipelineFunctionPath = path.join(pipelineFunctionDirectory, pipelineFunctionFile);
+        pipelineFunctions[pipelineFunctionFile] = await fs.readFile(pipelineFunctionPath);
       }
     }
   }
@@ -209,6 +229,7 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
   const config = await loadConfig(projectDirectory);
   return {
     functions,
+    pipelineFunctions,
     stacks,
     resolvers,
     schema,
