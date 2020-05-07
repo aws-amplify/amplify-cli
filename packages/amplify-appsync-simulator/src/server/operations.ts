@@ -72,7 +72,7 @@ export class OperationServer {
         headers: request.headers,
         appsyncErrors: [],
       };
-      switch (getOperationType(doc)) {
+      switch (getOperationType(doc, operationName)) {
         case 'query':
         case 'mutation':
           const gqlResult = await runQueryOrMutation(this.simulatorContext.schema, doc, variables, operationName, context);
