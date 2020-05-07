@@ -77,7 +77,10 @@
       "<rootDir>/src/setup-tests.ts"
     ],
     "globals": {
-      "window": {}
+      "window": {},
+      "ts-jest": {
+        "diagnostics": false
+      }
     }
   },
   "jest-junit": {
