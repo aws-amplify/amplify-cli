@@ -30,9 +30,6 @@
     "graphql-transformer-core": "6.17.0",
     "rimraf": "^3.0.0"
   },
-  "devDependencies": {
-    "ts-node": "^8.6.2"
-  },
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
