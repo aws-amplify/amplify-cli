@@ -170,16 +170,27 @@ export type AppSyncResolverProcessedResource = CloudFormationProcessedResourceRe
   functions: string[];
   typeName: string;
   fieldName: string;
-  requestMappingTemplateLocation: string;
-  responseMappingTemplateLocation: string;
+  requestMappingTemplateLocation?: string;
+  responseMappingTemplateLocation?: string;
+  requestMappingTemplate?: string;
+  responseMappingTemplate?: string;
   ResolverArn: string;
   kind: 'UNIT' | 'PIPELINE';
 };
 
 export function appSyncResolverHandler(resourceName, resource, cfnContext: CloudFormationParseContext): AppSyncResolverProcessedResource {
   const { Properties: properties } = resource;
-  const requestMappingTemplate = parseValue(properties.RequestMappingTemplateS3Location, cfnContext);
-  const responseMappingTemplate = parseValue(properties.ResponseMappingTemplateS3Location, cfnContext);
+  const requestMappingTemplateLocation = properties.RequestMappingTemplateS3Location
+    ? parseValue(properties.RequestMappingTemplateS3Location, cfnContext)
+    : undefined;
+  const responseMappingTemplateLocation = properties.ResponseMappingTemplateS3Location
+    ? parseValue(properties.ResponseMappingTemplateS3Location, cfnContext)
+    : undefined;
+  const requestMappingTemplate = properties.RequestMappingTemplate ? parseValue(properties.RequestMappingTemplate, cfnContext) : undefined;
+  const responseMappingTemplate = properties.ResponseMappingTemplate
+    ? parseValue(properties.ResponseMappingTemplate, cfnContext)
+    : undefined;
+
   let dataSourceName;
   let functions;
 
@@ -198,8 +209,10 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
     typeName: properties.TypeName,
     functions,
     fieldName: properties.FieldName,
-    requestMappingTemplateLocation: requestMappingTemplate,
-    responseMappingTemplateLocation: responseMappingTemplate,
+    requestMappingTemplateLocation: requestMappingTemplateLocation,
+    responseMappingTemplateLocation: responseMappingTemplateLocation,
+    requestMappingTemplate,
+    responseMappingTemplate,
     kind: properties.Kind || 'UNIT',
     ResolverArn: `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/types/${properties.TypeName}/resolvers/${properties.FieldName}`,
   };
@@ -209,14 +222,24 @@ export type AppSyncFunctionProcessedResource = CloudFormationProcessedResourceRe
   dataSourceName: string;
   ref: string;
   name: string;
-  requestMappingTemplateLocation: string;
-  responseMappingTemplateLocation: string;
+  requestMappingTemplateLocation?: string;
+  responseMappingTemplateLocation?: string;
+  requestMappingTemplate?: string;
+  responseMappingTemplate?: string;
 };
 
 export function appSyncFunctionHandler(resourceName, resource, cfnContext: CloudFormationParseContext): AppSyncFunctionProcessedResource {
   const { Properties: properties } = resource;
-  const requestMappingTemplate = parseValue(properties.RequestMappingTemplateS3Location, cfnContext);
-  const responseMappingTemplate = parseValue(properties.ResponseMappingTemplateS3Location, cfnContext);
+  const requestMappingTemplateLocation = properties.RequestMappingTemplateS3Location
+    ? parseValue(properties.RequestMappingTemplateS3Location, cfnContext)
+    : undefined;
+  const responseMappingTemplateLocation = properties.ResponseMappingTemplateS3Location
+    ? parseValue(properties.ResponseMappingTemplateS3Location, cfnContext)
+    : undefined;
+  const requestMappingTemplate = properties.RequestMappingTemplate ? parseValue(properties.RequestMappingTemplate, cfnContext) : undefined;
+  const responseMappingTemplate = properties.ResponseMappingTemplate
+    ? parseValue(properties.ResponseMappingTemplate, cfnContext)
+    : undefined;
 
   const dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   return {
@@ -224,7 +247,9 @@ export function appSyncFunctionHandler(resourceName, resource, cfnContext: Cloud
     cfnExposedAttributes: { DataSourceName: 'dataSourceName', FunctionArn: 'Ref', FunctionId: 'name', Name: 'name' },
     name: resource.Properties.Name,
     dataSourceName,
-    requestMappingTemplateLocation: requestMappingTemplate,
-    responseMappingTemplateLocation: responseMappingTemplate,
+    requestMappingTemplateLocation: requestMappingTemplateLocation,
+    responseMappingTemplateLocation: responseMappingTemplateLocation,
+    requestMappingTemplate,
+    responseMappingTemplate,
   };
 }

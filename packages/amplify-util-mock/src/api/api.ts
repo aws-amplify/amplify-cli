@@ -111,6 +111,7 @@ export class APITest {
   private async reload(context, filePath, action) {
     const apiDir = await this.getAPIBackendDirectory(context);
     const inputSchemaPath = path.join(apiDir, 'schema');
+    const customStackPath = path.join(apiDir, 'stacks');
     const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
@@ -143,6 +144,11 @@ export class APITest {
       } else if (filePath.includes(parameterFilePath)) {
         context.print.info('API Parameter change detected. Reloading...');
         this.apiParameters = await this.loadAPIParameters(context);
+        const config = await this.runTransformer(context, this.apiParameters);
+        await this.appSyncSimulator.reload(config);
+        await this.generateCode(context);
+      } else if (filePath.includes(customStackPath)) {
+        context.print.info('Custom stack change detected. Reloading...');
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);

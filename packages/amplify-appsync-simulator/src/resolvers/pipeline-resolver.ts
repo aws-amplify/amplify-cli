@@ -1,26 +1,25 @@
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorPipelineResolverConfig } from '../type-definition';
+import { AppSyncBaseResolver } from './base-resolver';
 
-export class AppSyncPipelineResolver {
-  private config: AppSyncSimulatorPipelineResolverConfig;
-  constructor(config: AppSyncSimulatorPipelineResolverConfig, private simulatorContext: AmplifyAppSyncSimulator) {
+export class AppSyncPipelineResolver extends AppSyncBaseResolver {
+  constructor(protected config: AppSyncSimulatorPipelineResolverConfig, simulatorContext: AmplifyAppSyncSimulator) {
+    super(config, simulatorContext);
     try {
-      simulatorContext.getMappingTemplate(config.requestMappingTemplateLocation);
-      simulatorContext.getMappingTemplate(config.responseMappingTemplateLocation);
       config.functions.map(fn => simulatorContext.getFunction(fn));
     } catch (e) {
       throw new Error(`Invalid config for PIPELINE_RESOLVER ${JSON.stringify(config)}`);
     }
     const { fieldName, typeName } = config;
     if (!fieldName || !typeName) {
-      throw new Error(`Invalid config for PIPELINE_RESOLVER ${JSON.stringify(config)}`);
+      throw new Error(`Invalid config for PIPELINE_RESOLVER.FieldName or typeName is missing.\n ${JSON.stringify(config)}`);
     }
     this.config = config;
   }
 
   async resolve(source, args, context, info) {
-    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);
-    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
+    const requestMappingTemplate = this.getRequestMappingTemplate();
+    const responseMappingTemplate = this.getResponseMappingTemplate();
 
     let result = {};
     let stash = {};
@@ -41,23 +40,15 @@ export class AppSyncPipelineResolver {
       return result;
     }
 
-    // Pipeline functions
-    await this.config.functions
-      .reduce((chain, fn) => {
-        const fnResolver = this.simulatorContext.getFunction(fn);
-        const p = chain.then(async ({ prevResult, stash }) => {
-          ({ result: prevResult, stash } = await fnResolver.resolve(source, args, stash, prevResult, context, info));
-          return Promise.resolve({ prevResult, stash });
-        });
-        return p;
-      }, Promise.resolve({ prevResult: result, stash }))
-      .then(({ prevResult: lastResult }) => {
-        result = lastResult;
-      });
+    let prevResult;
+    for (let fnName of this.config.functions) {
+      const fnResolver = this.simulatorContext.getFunction(fnName);
+      ({ result: prevResult, stash } = await fnResolver.resolve(source, args, stash, prevResult, context, info));
+    }
 
     // pipeline response mapping template
     ({ result, errors: templateErrors } = responseMappingTemplate.render(
-      { source, arguments: args, result, prevResult: result },
+      { source, arguments: args, result, prevResult, stash },
       context,
       info,
     ));
