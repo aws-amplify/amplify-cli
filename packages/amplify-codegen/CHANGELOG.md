@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.6...amplify-codegen@2.15.7) (2020-05-08)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** use ResDir directory to compute modelgen output ([#4145](https://github.com/aws-amplify/amplify-cli/issues/4145)) ([06a7ec5](https://github.com/aws-amplify/amplify-cli/commit/06a7ec5ede3b311e2ac0d2f86ee393bc04ef3eb5)), closes [#3993](https://github.com/aws-amplify/amplify-cli/issues/3993)
+
+
+
+
+
 ## [2.15.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.5...amplify-codegen@2.15.6) (2020-04-23)
 
 **Note:** Version bump only for package amplify-codegen

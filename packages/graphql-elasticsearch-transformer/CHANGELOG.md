@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.5.3...graphql-elasticsearch-transformer@4.6.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+
+
+### Features
+
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+
+
+
+
+
 ## [4.5.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.5.2...graphql-elasticsearch-transformer@4.5.3) (2020-04-23)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

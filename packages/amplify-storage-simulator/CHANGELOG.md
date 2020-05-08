@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.3.1...amplify-storage-simulator@1.4.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fixed deletion for large bucket ([#3656](https://github.com/aws-amplify/amplify-cli/issues/3656)) ([32038da](https://github.com/aws-amplify/amplify-cli/commit/32038dad6f1bd0b9cf55e055d6a4545a222a1149)), closes [#3447](https://github.com/aws-amplify/amplify-cli/issues/3447) [#3451](https://github.com/aws-amplify/amplify-cli/issues/3451)
+* **amplify-provider-awscloudformation:** fixed deletion for large buckets ([#3512](https://github.com/aws-amplify/amplify-cli/issues/3512)) ([21951c1](https://github.com/aws-amplify/amplify-cli/commit/21951c135dc0228fe58191dda2cabd0e5d296aa1)), closes [#3447](https://github.com/aws-amplify/amplify-cli/issues/3447) [#3451](https://github.com/aws-amplify/amplify-cli/issues/3451)
+
+
+### Features
+
+* golang function support for CLI ([#3789](https://github.com/aws-amplify/amplify-cli/issues/3789)) ([3dbc234](https://github.com/aws-amplify/amplify-cli/commit/3dbc23497d0d1c238c6868adcf3a6d00ad909edd))
+
+
+### Reverts
+
+* Revert "fix(amplify-provider-awscloudformation): fixed deletion for large buckets (#3512)" (#3649) ([4694834](https://github.com/aws-amplify/amplify-cli/commit/469483482f182d24ffe22af12a9f40e5cc484b2e)), closes [#3512](https://github.com/aws-amplify/amplify-cli/issues/3512) [#3649](https://github.com/aws-amplify/amplify-cli/issues/3649)
+
+
+
+
+
 ## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.1.10...amplify-storage-simulator@1.3.1) (2020-03-07)
 
 

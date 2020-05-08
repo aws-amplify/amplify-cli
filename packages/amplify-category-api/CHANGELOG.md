@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.19.0...amplify-category-api@2.19.1) (2020-05-08)
+
+
+### Bug Fixes
+
+* incorrect type on graphql boilerplate schema ([#4070](https://github.com/aws-amplify/amplify-cli/issues/4070)) ([d96171a](https://github.com/aws-amplify/amplify-cli/commit/d96171a7461ecbb610c3cbcbcb05cdf5492dc8e5))
+
+
+
+
+
 # [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.18.0...amplify-category-api@2.19.0) (2020-04-23)
 
 

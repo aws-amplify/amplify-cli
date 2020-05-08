@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.15.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.15.3...graphql-transformers-e2e-tests@6.15.4) (2020-05-08)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix dynamic group auth permission check ([#4084](https://github.com/aws-amplify/amplify-cli/issues/4084)) ([688e831](https://github.com/aws-amplify/amplify-cli/commit/688e83148f554eb5f0803d0a603ae569609757ab))
+
+
+
+
+
 ## [6.15.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.15.2...graphql-transformers-e2e-tests@6.15.3) (2020-04-23)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.1.0...amplify-go-function-runtime-provider@1.1.1) (2020-05-08)
+
+
+### Bug Fixes
+
+* **amplify-go-function-runtime-provider:** fix issue [#3892](https://github.com/aws-amplify/amplify-cli/issues/3892) ([#3987](https://github.com/aws-amplify/amplify-cli/issues/3987)) ([2e266d5](https://github.com/aws-amplify/amplify-cli/commit/2e266d5863036e219b45853364899fed126c36d0))
+
+
+
+
+
 # 1.1.0 (2020-04-06)
 
 

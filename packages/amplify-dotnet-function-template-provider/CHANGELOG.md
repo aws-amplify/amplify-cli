@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.1.0...amplify-dotnet-function-template-provider@1.2.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* **amplify-dotnet-function-template-provider:** ddb/kinesis templates ([#4044](https://github.com/aws-amplify/amplify-cli/issues/4044)) ([9301cb5](https://github.com/aws-amplify/amplify-cli/commit/9301cb573218ff091e8a7b347bb3c3f0e4ff6471))
+
+
+### Features
+
+* changes to use .NET global tools ([#4079](https://github.com/aws-amplify/amplify-cli/issues/4079)) ([7c8802e](https://github.com/aws-amplify/amplify-cli/commit/7c8802eea55fcd86bad1f2e3f347193c62b68c40))
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.0.1...amplify-dotnet-function-template-provider@1.1.0) (2020-04-23)
 
 
