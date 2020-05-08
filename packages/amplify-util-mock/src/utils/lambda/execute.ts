@@ -76,11 +76,14 @@ function invokeFunction(options: InvokeOptions) {
         );
         return;
       }
-      const result = await lambda[options.handler](event, context, callback);
-      if (result !== undefined) {
-        context.done(null, result);
-      } else {
-        context.done(null, null);
+      const response = lambda[options.handler](event, context, callback);
+      if (typeof response === 'object' && typeof response.then === 'function') {
+        const result = await response;
+        if (result !== undefined) {
+          context.done(null, result);
+        } else {
+          context.done(null, null);
+        }
       }
     } catch (e) {
       context.done(e, null);
