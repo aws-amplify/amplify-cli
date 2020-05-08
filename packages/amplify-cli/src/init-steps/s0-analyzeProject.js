@@ -113,10 +113,16 @@ async function getEnvName(context) {
   }
 
   const newEnvQuestion = async () => {
+    let defaultEnvName;
+    if (isNewProject(context) || !context.amplify.getAllEnvs().includes('dev')) {
+      defaultEnvName = 'dev';
+    }
+
     const envNameQuestion = {
       type: 'input',
       name: 'envName',
       message: 'Enter a name for the environment',
+      default: defaultEnvName,
       validate: input => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
     };
 
