@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.17.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.17.0...graphql-transformer-core@6.17.1-beta.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* [#3438](https://github.com/aws-amplify/amplify-cli/issues/3438), many-to-many with conflict resolution generated wrong schema ([#4171](https://github.com/aws-amplify/amplify-cli/issues/4171)) ([9e8606c](https://github.com/aws-amplify/amplify-cli/commit/9e8606c4a300b5690839ec0869f7384aff189b1f))
+* use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+
+
+
+
+
 # [6.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.16.1...graphql-transformer-core@6.17.0) (2020-04-23)
 
 

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.17.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.16.1...graphql-dynamodb-transformer@6.17.0-beta.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** fixes long IAM roleNames ([#4010](https://github.com/aws-amplify/amplify-cli/issues/4010)) ([041e97a](https://github.com/aws-amplify/amplify-cli/commit/041e97a182a13711d74c27fd5229c7b4d6fb237f))
+* [#3438](https://github.com/aws-amplify/amplify-cli/issues/3438), many-to-many with conflict resolution generated wrong schema ([#4171](https://github.com/aws-amplify/amplify-cli/issues/4171)) ([9e8606c](https://github.com/aws-amplify/amplify-cli/commit/9e8606c4a300b5690839ec0869f7384aff189b1f))
+* github partial rename for sync query constant ([#4125](https://github.com/aws-amplify/amplify-cli/issues/4125)) ([506c48a](https://github.com/aws-amplify/amplify-cli/commit/506c48aabdc2825935f006b025cea59583c21572))
+
+
+### Features
+
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+
+
+
+
+
 ## [6.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.16.0...graphql-dynamodb-transformer@6.16.1) (2020-04-23)
 
 

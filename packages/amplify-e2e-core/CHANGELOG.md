@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.1...amplify-e2e-core@1.1.2-beta.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* remove duplicate permissions from resources in same category ([#4091](https://github.com/aws-amplify/amplify-cli/issues/4091)) ([3f6036b](https://github.com/aws-amplify/amplify-cli/commit/3f6036b6b614a5e7a5f89e3ede289ffafba9fbb3))
+
+
+
+
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.0...amplify-e2e-core@1.1.1) (2020-04-23)
 
 

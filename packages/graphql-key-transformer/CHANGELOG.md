@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.16.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.15.3...graphql-key-transformer@2.16.0-beta.0) (2020-05-08)
+
+
+### Features
+
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+
+
+
+
+
 ## [2.15.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.15.2...graphql-key-transformer@2.15.3) (2020-04-23)
 
 **Note:** Version bump only for package graphql-key-transformer

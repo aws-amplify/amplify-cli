@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.17.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.16.0...amplify-codegen-appsync-model-plugin@1.17.0-beta.0) (2020-05-08)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** add non-model support - Java ([#3976](https://github.com/aws-amplify/amplify-cli/issues/3976)) ([0016135](https://github.com/aws-amplify/amplify-cli/commit/001613516f8a8f5425ddd6e918d1ea613d67d97f)), closes [#3586](https://github.com/aws-amplify/amplify-cli/issues/3586)
+
+
+
+
+
 # [1.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.15.0...amplify-codegen-appsync-model-plugin@1.16.0) (2020-04-23)
 
 
