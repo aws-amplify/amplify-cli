@@ -85,17 +85,7 @@ export class AmplifyAppSyncSimulator {
 
       this.functions = (config.functions || []).reduce((map, fn) => {
         const { dataSourceName, requestMappingTemplateLocation, responseMappingTemplateLocation } = fn;
-        map.set(
-          fn.name,
-          new AmplifySimulatorFunction(
-            {
-              dataSourceName,
-              requestMappingTemplateLocation: requestMappingTemplateLocation,
-              responseMappingTemplateLocation: responseMappingTemplateLocation,
-            },
-            this,
-          ),
-        );
+        map.set(fn.name, new AmplifySimulatorFunction(fn, this));
         return map;
       }, new Map());
 
