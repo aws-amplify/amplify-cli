@@ -1,10 +1,13 @@
-import { nspawn as spawn, getCLIPath } from '../../src';
+import fs from 'fs-extra';
+import path from 'path';
+import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '../../src';
+import { spawnSync } from 'child_process';
 
 export function addHosting(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
-      .sendLine('j')
+      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Select the environment setup:')
       .sendCarriageReturn()
@@ -24,6 +27,33 @@ export function addHosting(cwd: string) {
   });
 }
 
+export function amplifyPushWithUpdate(cwd: string) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+      .wait('Are you sure you want to continue?')
+      .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function amplifyPublishWithoutUpdate(cwd: string) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true }).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
 export function removeHosting(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
@@ -40,4 +70,23 @@ export function removeHosting(cwd: string) {
         }
       });
   });
+}
+
+export async function createReactTestProject(): Promise<string> {
+  const projRoot = await createNewProjectDir('hosting');
+  const projectName = path.basename(projRoot);
+  const projectDir = path.dirname(projRoot);
+
+  spawnSync('npx', ['create-react-app', projectName], { cwd: projectDir });
+
+  return projRoot;
+}
+
+export function resetBuildCommand(projectDir: string, newBuildCommand: string): string {
+  const projectConfigFilePath = path.join(projectDir, 'amplify', '.config', 'project-config.json');
+  const projectConfig = readJsonFile(projectConfigFilePath);
+  const currentBuildCommand = projectConfig.javascript.config.BuildCommand;
+  projectConfig.javascript.config.BuildCommand = newBuildCommand;
+  fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
+  return currentBuildCommand;
 }

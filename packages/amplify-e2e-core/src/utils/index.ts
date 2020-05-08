@@ -8,7 +8,7 @@ export * from './appsync';
 export * from './nexpect';
 export * from './pinpoint';
 export * from './projectMeta';
-export * from './read-json-file';
+export * from './readJsonFile';
 export * from './request';
 export * from './retrier';
 export * from './sdk-calls';

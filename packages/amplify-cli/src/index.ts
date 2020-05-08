@@ -19,7 +19,7 @@ import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
-export async function run(): Promise<number> {
+export async function run() {
   try {
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
@@ -68,12 +68,12 @@ export async function run(): Promise<number> {
     if (e.stack) {
       print.info(e.stack);
     }
-    return 1;
+    process.exit(1);
   }
 }
 
 // entry from library call
-export async function execute(input: Input) {
+export async function execute(input: Input): Promise<number> {
   try {
     let pluginPlatform = await getPluginPlatform();
     let verificationResult = verifyInput(pluginPlatform, input);
