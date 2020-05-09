@@ -84,6 +84,8 @@ function invokeFunction(options: InvokeOptions) {
         } else {
           context.done(null, null);
         }
+      } else if (response !== undefined) {
+        context.done(null, null);
       }
     } catch (e) {
       context.done(e, null);
