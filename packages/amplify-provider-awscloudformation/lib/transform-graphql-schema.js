@@ -439,13 +439,13 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const buildConfig = {
+    ...options,
     buildParameters,
     projectDirectory: options.dryrun ? false : resourceDir,
     transformersFactory: transformerListFactory,
     transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
-    disableResolverOverrides: options.disableResolverOverrides,
     minify: options.minify,
   };
   const transformerOutput = await TransformPackage.buildAPIProject(buildConfig);
