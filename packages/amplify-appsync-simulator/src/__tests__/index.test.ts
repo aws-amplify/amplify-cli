@@ -9,6 +9,7 @@ import {
   AppSyncMockFile,
   AppSyncSimulatorBaseResolverConfig,
   RESOLVER_KIND,
+  AppSyncSimulatorUnitResolverConfig,
 } from '../type-definition';
 
 jest.mock('../schema');
@@ -48,9 +49,10 @@ describe('AmplifyAppSyncSimulator', () => {
   });
 
   it('should retain the original configuration when config has error', () => {
-    const resolver: AppSyncSimulatorBaseResolverConfig = {
+    const resolver: AppSyncSimulatorUnitResolverConfig = {
       fieldName: 'echo',
       typeName: 'Query',
+      dataSourceName: 'echoFn',
       kind: RESOLVER_KIND.UNIT,
       requestMappingTemplateLocation: 'missing/Resolver.req.vtl',
       responseMappingTemplateLocation: 'missing/Resolver.resp.vtl',

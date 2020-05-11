@@ -33,26 +33,22 @@ export class AppSyncPipelineResolver extends AppSyncBaseResolver {
       info,
     ));
 
-    context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
+    context.appsyncErrors = [...context.appsyncErrors, ...(templateErrors || [])];
 
     if (isReturn) {
       //Request mapping template called #return, don't process further
       return result;
     }
 
-    let prevResult;
+    let prevResult = result;
     for (let fnName of this.config.functions) {
       const fnResolver = this.simulatorContext.getFunction(fnName);
       ({ result: prevResult, stash } = await fnResolver.resolve(source, args, stash, prevResult, context, info));
     }
 
     // pipeline response mapping template
-    ({ result, errors: templateErrors } = responseMappingTemplate.render(
-      { source, arguments: args, result, prevResult, stash },
-      context,
-      info,
-    ));
-    context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
+    ({ result, errors: templateErrors } = responseMappingTemplate.render({ source, arguments: args, prevResult, stash }, context, info));
+    context.appsyncErrors = [...context.appsyncErrors, ...(templateErrors || [])];
     return result;
   }
 }
