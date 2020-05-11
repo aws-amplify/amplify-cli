@@ -1,4 +1,9 @@
+const constants = require('./constants');
+const fs = require('fs');
+const path = require('path');
+
 function generateConfig(context, amplifyConfig) {
+  const awsConfig = getCurrentAWSConfig(context);
   const metadata = context.amplify.getProjectMeta();
   amplifyConfig = amplifyConfig || {
     UserAgent: 'aws-amplify-cli/2.0',
@@ -6,10 +11,21 @@ function generateConfig(context, amplifyConfig) {
   };
   constructAnalytics(metadata, amplifyConfig);
   constructApi(metadata, amplifyConfig);
+  constructAuth(metadata, amplifyConfig, awsConfig);
   constructPredictions(metadata, amplifyConfig);
   constructStorage(metadata, amplifyConfig);
 
   return amplifyConfig;
+}
+
+function constructAuth(metadata, amplifyConfig, awsConfig) {
+  const categoryName = 'auth';
+  const pluginName = 'awsCognitoAuthPlugin';
+  if (metadata[categoryName]) {
+    amplifyConfig[categoryName] = {};
+    amplifyConfig[categoryName].plugins = {};
+    amplifyConfig[categoryName].plugins[pluginName] = awsConfig;
+  }
 }
 
 function constructAnalytics(metadata, amplifyConfig) {
@@ -168,6 +184,23 @@ function constructStorage(metadata, amplifyConfig) {
   }
 }
 
+function getCurrentAWSConfig(context) {
+  const { amplify } = context;
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const frontendConfig = projectConfig.config;
+  const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
+
+  const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
+  let awsConfig = {};
+
+  if (fs.existsSync(targetFilePath)) {
+    awsConfig = amplify.readJsonFile(targetFilePath);
+  }
+  return awsConfig;
+}
+
 module.exports = {
   generateConfig,
+  getCurrentAWSConfig,
 };

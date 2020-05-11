@@ -77,7 +77,7 @@ function createAmplifyConfig(context) {
 function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
   const newAWSConfig = getAWSConfigObject(amplifyResources);
   const cloudAWSConfig = getAWSConfigObject(cloudAmplifyResources);
-  const currentAWSConfig = getCurrentAWSConfig(context);
+  const currentAWSConfig = amplifyConfigHelper.getCurrentAWSConfig(context);
 
   const customConfigs = getCustomConfigs(cloudAWSConfig, currentAWSConfig);
 
@@ -128,22 +128,6 @@ function getAWSConfigObject(amplifyResources) {
   });
 
   return configOutput;
-}
-
-function getCurrentAWSConfig(context) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
-
-  const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
-  let awsConfig = {};
-
-  if (fs.existsSync(targetFilePath)) {
-    awsConfig = amplify.readJsonFile(targetFilePath);
-  }
-  return awsConfig;
 }
 
 function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {

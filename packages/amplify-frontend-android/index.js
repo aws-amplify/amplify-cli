@@ -23,8 +23,9 @@ function onInitSuccessful(context) {
 function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
   const newOutputsForFrontend = amplifyResources.outputsForFrontend;
   const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
+  const awsConfig = createAWSConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
   createAmplifyConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
-  return createAWSConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
+  return awsConfig;
 }
 
 function configure(context) {
