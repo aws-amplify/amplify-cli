@@ -1,7 +1,4 @@
-const semver = require('semver');
-if (semver.compare(process.version, 'v12.0.0') < 0) {
-  require = require('esm')(module, { cache: false });
-}
+require = require('esm')(module, { cache: false });
 const chalk = require('chalk');
 const fs = require('fs-extra');
 const path = require('path');
