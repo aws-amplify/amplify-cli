@@ -22,16 +22,16 @@ export interface SubscriptionNameMap {
   level?: ModelSubscriptionLevel;
 }
 
-export interface ModelDirectiveTimestampMap {
-  create?: string;
-  update?: string;
+export interface ModelDirectiveTimestampConfiguration {
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ModelDirectiveArgs {
   queries?: QueryNameMap;
   mutations?: MutationNameMap;
   subscriptions?: SubscriptionNameMap;
-  timestamps?: ModelDirectiveTimestampMap;
+  timestamps?: ModelDirectiveTimestampConfiguration;
 }
 
 export function getCreatedAtFieldName(directive: DirectiveNode): string | undefined {
@@ -39,7 +39,7 @@ export function getCreatedAtFieldName(directive: DirectiveNode): string | undefi
   const timestamp = directiveArguments.timestamps;
   if (timestamp === null) return null;
   if (timestamp) {
-    return timestamp.create;
+    return timestamp.createdAt;
   }
 
   return 'createdAt';
@@ -50,7 +50,7 @@ export function getUpdatedAtFieldName(directive: DirectiveNode): string | undefi
   const timestamp = directiveArguments.timestamps;
   if (timestamp === null) return null;
   if (timestamp) {
-    return timestamp.update;
+    return timestamp.updatedAt;
   }
   return 'updatedAt';
 }

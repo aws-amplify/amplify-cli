@@ -59,46 +59,45 @@ export const CONDITIONS_MINIMUM_VERSION = 5;
  * }
  */
 
+export const directiveDefinition = gql`
+  directive @model(
+    queries: ModelQueryMap
+    mutations: ModelMutationMap
+    subscriptions: ModelSubscriptionMap
+    timestamps: TimestampConfiguration
+  ) on OBJECT
+  input ModelMutationMap {
+    create: String
+    update: String
+    delete: String
+  }
+  input ModelQueryMap {
+    get: String
+    list: String
+  }
+  input ModelSubscriptionMap {
+    onCreate: [String]
+    onUpdate: [String]
+    onDelete: [String]
+    level: ModelSubscriptionLevel
+  }
+  enum ModelSubscriptionLevel {
+    off
+    public
+    on
+  }
+  input TimestampConfiguration {
+    createdAt: String
+    updatedAt: String
+  }
+`;
+
 export class DynamoDBModelTransformer extends Transformer {
   resources: ResourceFactory;
   opts: DynamoDBModelTransformerOptions;
 
   constructor(opts: DynamoDBModelTransformerOptions = {}) {
-    super(
-      'DynamoDBModelTransformer',
-      gql`
-        directive @model(
-          queries: ModelQueryMap
-          mutations: ModelMutationMap
-          subscriptions: ModelSubscriptionMap
-          timestamps: TimestampMap
-        ) on OBJECT
-        input ModelMutationMap {
-          create: String
-          update: String
-          delete: String
-        }
-        input ModelQueryMap {
-          get: String
-          list: String
-        }
-        input ModelSubscriptionMap {
-          onCreate: [String]
-          onUpdate: [String]
-          onDelete: [String]
-          level: ModelSubscriptionLevel
-        }
-        enum ModelSubscriptionLevel {
-          off
-          public
-          on
-        }
-        input TimestampMap {
-          create: String
-          update: String
-        }
-      `,
-    );
+    super('DynamoDBModelTransformer', directiveDefinition);
     this.opts = this.getOpts(opts);
     this.resources = new ResourceFactory();
   }

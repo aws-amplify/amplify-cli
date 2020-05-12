@@ -500,7 +500,7 @@ test('Test only get does not generate superfluous input and filter types', () =>
 
 test('Test timestamp parameters when generating resolvers and output schema', () => {
   const validSchema = `
-  type Post @model(timestamps: { create: "createdOn", update: "updatedOn"}) {
+  type Post @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn"}) {
     id: ID!
     str: String
   }

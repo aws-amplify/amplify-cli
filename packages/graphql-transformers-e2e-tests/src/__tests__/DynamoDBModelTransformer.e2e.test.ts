@@ -69,7 +69,7 @@ beforeAll(async () => {
       EMPIRE
       JEDI
     }
-    type Comment @model(timestamps: { create: "createdOn", update: "updatedOn" }) {
+    type Comment @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) {
       id: ID!
       title: String!
       content: String
