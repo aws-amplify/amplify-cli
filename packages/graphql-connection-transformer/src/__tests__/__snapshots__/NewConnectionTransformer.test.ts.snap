@@ -8,6 +8,8 @@ exports[`Many-to-many with conflict resolution generates correct schema 1`] = `
   _version: Int!
   _deleted: Boolean
   _lastChangedAt: AWSTimestamp!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type PostEditor {
@@ -19,6 +21,8 @@ type PostEditor {
   _version: Int!
   _deleted: Boolean
   _lastChangedAt: AWSTimestamp!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type User {
@@ -28,6 +32,8 @@ type User {
   _version: Int!
   _deleted: Boolean
   _lastChangedAt: AWSTimestamp!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 enum ModelSortDirection {
@@ -290,6 +296,8 @@ exports[`Many-to-many without conflict resolution generates correct schema 1`] =
   id: ID!
   title: String!
   editors(editorID: ModelIDKeyConditionInput, filter: ModelPostEditorFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelPostEditorConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type PostEditor {
@@ -298,12 +306,16 @@ type PostEditor {
   editorID: ID!
   post: Post!
   editor: User!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type User {
   id: ID!
   username: String!
   posts(postID: ModelIDKeyConditionInput, filter: ModelPostEditorFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelPostEditorConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 enum ModelSortDirection {
