@@ -8,6 +8,8 @@ exemptLabels:
   - enhancement
   - to-be-reproduced
   - bug
+  - critical-bug
+  - RFC
 staleLabel: pending-close-response-required
 markComment: >
   This issue has been automatically marked as stale because it has not had
@@ -15,4 +17,4 @@ markComment: >
   for your contributions.
 closeComment: >
   This issue has been automatically closed because of inactivity.
-  Please open a new issue if are still encountering problems.
+  Please open a new issue if you are still encountering problems.
