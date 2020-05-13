@@ -452,7 +452,7 @@ describe('AppSyncSwiftVisitor', () => {
     });
 
     describe('connection with key directive', () => {
-      it('should support throw error when connection has keyName', () => {
+      it('should not throw error when connection has keyName', () => {
         const schema = /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -480,7 +480,7 @@ describe('AppSyncSwiftVisitor', () => {
           }
         `;
         const postVisitor = getVisitor(schema, 'Post');
-        expect(() => postVisitor.generate()).toThrowError('connection directive with keyName');
+        expect(() => postVisitor.generate()).not.toThrowError();
       });
 
       it('should support connection directive with fields', () => {

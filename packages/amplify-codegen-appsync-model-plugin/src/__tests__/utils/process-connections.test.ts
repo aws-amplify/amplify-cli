@@ -278,11 +278,9 @@ describe('process connection', () => {
       };
     });
 
-    it('should throw error if connection directive has keyName', () => {
+    it('should not throw error if connection directive has keyName', () => {
       const commentsField = modelMap.Post.fields[0];
-      expect(() => processConnections(commentsField, modelMap.Post, modelMap)).toThrowError(
-        'DataStore does not support connection directive with keyName',
-      );
+      expect(() => processConnections(commentsField, modelMap.Post, modelMap)).not.toThrowError();
     });
 
     it('should support connection with @key on BELONGS_TO side', () => {
