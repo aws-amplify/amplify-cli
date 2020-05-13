@@ -35,22 +35,25 @@ export interface ModelDirectiveArgs {
 }
 
 export function getCreatedAtFieldName(directive: DirectiveNode): string | undefined {
-  const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive);
-  const timestamp = directiveArguments.timestamps;
-  if (timestamp === null) return null;
-  if (timestamp) {
-    return timestamp.createdAt;
-  }
-
-  return 'createdAt';
+  return getTimestampFieldName(directive, 'createdAt', 'createdAt');
 }
 
 export function getUpdatedAtFieldName(directive: DirectiveNode): string | undefined {
+  return getTimestampFieldName(directive, 'updatedAt', 'updatedAt');
+}
+
+export function getTimestampFieldName(directive: DirectiveNode, fieldName: string, defaultFiledValue: string): string | undefined {
   const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive);
   const timestamp = directiveArguments.timestamps;
+
+  /* When explicitly set to null, note that the check here is strict equality to null and not undefined
+   * type Post @model(timestamps:null) {
+        id: ID!
+   }
+   */
   if (timestamp === null) return null;
-  if (timestamp) {
-    return timestamp.updatedAt;
+  if (timestamp && timestamp[fieldName] !== undefined) {
+    return timestamp[fieldName];
   }
-  return 'updatedAt';
+  return defaultFiledValue;
 }

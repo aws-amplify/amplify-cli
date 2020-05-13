@@ -256,7 +256,7 @@ export class DynamoDBModelTransformer extends Transformer {
     const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
 
     // auto populate the timestamp field only if they are of AWSDateTime type
-    const timeStampFields = {
+    const timestampFields = {
       createdAtField: DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField) ? createdAtField : undefined,
       updatedAtField: DynamoDBModelTransformer.isTimestampCompatibleField(existingUpdatedAtField) ? updatedAtField : undefined,
     };
@@ -296,7 +296,7 @@ export class DynamoDBModelTransformer extends Transformer {
         type: def.name.value,
         nameOverride: createFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
-        timestamps: timeStampFields,
+        timestamps: timestampFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
       ctx.setResource(resourceId, createResolver);
@@ -317,7 +317,7 @@ export class DynamoDBModelTransformer extends Transformer {
         type: def.name.value,
         nameOverride: updateFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
-        timestamps: timeStampFields,
+        timestamps: timestampFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
       ctx.setResource(resourceId, updateResolver);

@@ -55,6 +55,18 @@ describe('getCreatedAtField', () => {
     expect(modelDirective).toBeDefined();
     expect(getCreatedAtFieldName(modelDirective)).toEqual('createdOn');
   });
+
+  it('should return createdAt when createdAt is not set in timestamps', () => {
+    const doc = /* GraphQL */ `
+      type Post @model(timestamps: { updatedAt: "updatedOn" }) {
+        id: ID!
+        title: String
+      }
+    `;
+    const modelDirective = getDirective(doc, 'Post');
+    expect(modelDirective).toBeDefined();
+    expect(getCreatedAtFieldName(modelDirective)).toEqual('createdAt');
+  });
 });
 
 describe('getUpdatedAtField', () => {
@@ -104,5 +116,17 @@ describe('getUpdatedAtField', () => {
     const modelDirective = getDirective(doc, 'Post');
     expect(modelDirective).toBeDefined();
     expect(getUpdatedAtFieldName(modelDirective)).toEqual('updatedOn');
+  });
+
+  it('should return updatedAt when updatedAt is not set in timestamps', () => {
+    const doc = /* GraphQL */ `
+      type Post @model(timestamps: { createdAt: "createdOnOn" }) {
+        id: ID!
+        title: String
+      }
+    `;
+    const modelDirective = getDirective(doc, 'Post');
+    expect(modelDirective).toBeDefined();
+    expect(getUpdatedAtFieldName(modelDirective)).toEqual('updatedAt');
   });
 });

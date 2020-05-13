@@ -42,10 +42,11 @@ exports[`Test "create", "update", "delete" auth operations 3`] = `
 ## [End] Check authMode and execute owner/group checks **
 
 ## [Start] Prepare DynamoDB PutItem Request. **
+#set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -671,10 +672,11 @@ exports[`Test that operation overwrites queries in auth operations 3`] = `
 ## [End] Check authMode and execute owner/group checks **
 
 ## [Start] Prepare DynamoDB PutItem Request. **
+#set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",

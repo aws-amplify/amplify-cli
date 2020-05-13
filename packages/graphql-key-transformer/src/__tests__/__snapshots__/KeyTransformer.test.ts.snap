@@ -19,10 +19,11 @@ Object {
 #end
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
 ## [Start] Prepare DynamoDB PutItem Request. **
+#set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",

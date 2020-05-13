@@ -383,11 +383,14 @@ export class ResourceFactory {
       TypeName: mutationTypeName,
       RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
         compoundExpression([
+          ...(timestamps && (timestamps.createdAtField || timestamps.updatedAtField)
+            ? [set(ref('createdAt'), ref('util.time.nowISO8601()'))]
+            : []),
           ...(timestamps && timestamps.createdAtField
             ? [
                 comment(`Automatically set the createdAt timestamp.`),
                 qref(
-                  `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $util.time.nowISO8601()))`,
+                  `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $createdAt))`,
                 ),
               ]
             : []),
@@ -395,7 +398,7 @@ export class ResourceFactory {
             ? [
                 comment(`Automatically set the updatedAt timestamp.`),
                 qref(
-                  `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $util.time.nowISO8601()))`,
+                  `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $createdAt))`,
                 ),
               ]
             : []),

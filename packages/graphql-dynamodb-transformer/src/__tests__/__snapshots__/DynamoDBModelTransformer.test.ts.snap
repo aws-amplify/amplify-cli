@@ -270,10 +270,11 @@ type Subscription {
 
 exports[`Test create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable 2`] = `
 "## [Start] Prepare DynamoDB PutItem Request. **
+#set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -1244,10 +1245,11 @@ type Subscription {
 
 exports[`Test timestamp parameters when generating resolvers and output schema 2`] = `
 "## [Start] Prepare DynamoDB PutItem Request. **
+#set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdOn\\", $util.defaultIfNull($ctx.args.input.createdOn, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"createdOn\\", $util.defaultIfNull($ctx.args.input.createdOn, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedOn\\", $util.defaultIfNull($ctx.args.input.updatedOn, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedOn\\", $util.defaultIfNull($ctx.args.input.updatedOn, $createdAt)))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
