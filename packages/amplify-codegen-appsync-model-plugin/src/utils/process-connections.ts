@@ -51,16 +51,14 @@ export function getConnectedField(field: CodeGenField, model: CodeGenModel, conn
   if (connectionFields) {
     let keyDirective;
     if (keyName) {
-      throw new Error('DataStore does not support connection directive with keyName');
-      // When the library starts supporting remove the exception
-      // keyDirective = connectedModel.directives.find(dir => {
-      //   return dir.name === 'key' && dir.arguments.name === keyName;
-      // });
-      // if (!keyDirective) {
-      //   throw new Error(
-      //     `Error processing @connection directive on ${model.name}.${field.name}, @key directive with name ${keyName} was not found in connected model ${connectedModel.name}`,
-      //   );
-      // }
+      keyDirective = connectedModel.directives.find(dir => {
+        return dir.name === 'key' && dir.arguments.name === keyName;
+      });
+      if (!keyDirective) {
+        throw new Error(
+          `Error processing @connection directive on ${model.name}.${field.name}, @key directive with name ${keyName} was not found in connected model ${connectedModel.name}`,
+        );
+      }
     } else {
       keyDirective = connectedModel.directives.find(dir => {
         return dir.name === 'key' && typeof dir.arguments.name === 'undefined';
