@@ -22,7 +22,7 @@ export const detectDotNetCore = async (): Promise<CheckDependenciesResult> => {
   if (sdkResult.exitCode !== 0) {
     throw new Error(`${executableName} failed SDK detection, exit code was ${sdkResult.exitCode}`);
   }
-  const sdkInstalled = installedSdks && installedSdks.match(/^3\.1/);
+  const sdkInstalled = installedSdks && installedSdks.match(/^3\.1/m);
 
   const toolResult = execa.sync(executableName, ['tool', 'list', '--global']);
   const installedToolList = toolResult.stdout;
