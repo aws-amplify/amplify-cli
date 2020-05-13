@@ -3,8 +3,8 @@
 </a>
 
 <p>
-  <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
-    <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />
+  <a href="https://discord.gg/jWVbPfC" target="_blank">
+    <img src="https://img.shields.io/discord/308323056592486420?logo=discord"" alt="Discord Chat" />  
   </a>
   <a href="https://www.npmjs.com/package/@aws-amplify/cli">
     <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
