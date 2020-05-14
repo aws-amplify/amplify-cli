@@ -444,10 +444,10 @@ async function updateWalkthrough(context) {
     await checkForCognitoUserPools(context, parameters, authConfig);
   }
 
-  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
-
   if (authConfig) {
+    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+
     if (amplifyMeta[category][resourceName].output.securityType) {
       delete amplifyMeta[category][resourceName].output.securityType;
     }
@@ -466,9 +466,6 @@ async function updateWalkthrough(context) {
     backendConfig[category][resourceName].output.authConfig = authConfig;
     jsonString = JSON.stringify(backendConfig, null, 4);
     fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
-  } else {
-    // use existing authConfig
-    authConfig = amplifyMeta[category][resourceName].output.authConfig;
   }
 
   if (resolverConfig) {
