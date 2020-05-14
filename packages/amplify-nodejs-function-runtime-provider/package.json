@@ -19,7 +19,8 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest",
+    "test-ci": "jest"
   },
   "dependencies": {
     "amplify-function-plugin-interface": "1.4.1",
