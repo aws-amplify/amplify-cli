@@ -142,11 +142,14 @@ export class APITest {
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
       } else if (filePath.includes(parameterFilePath)) {
-        context.print.info('API Parameter change detected. Reloading...');
-        this.apiParameters = await this.loadAPIParameters(context);
-        const config = await this.runTransformer(context, this.apiParameters);
-        await this.appSyncSimulator.reload(config);
-        await this.generateCode(context);
+        const apiParameters = await this.loadAPIParameters(context);
+        if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
+          context.print.info('API Parameter change detected. Reloading...');
+          this.apiParameters = apiParameters;
+          const config = await this.runTransformer(context, this.apiParameters);
+          await this.appSyncSimulator.reload(config);
+          await this.generateCode(context);
+        }
       } else if (filePath.includes(customStackPath)) {
         context.print.info('Custom stack change detected. Reloading...');
         const config = await this.runTransformer(context, this.apiParameters);
