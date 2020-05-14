@@ -295,7 +295,15 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
 });
 
 test('Test update mutation validation with three part secondary key.', async () => {
-  await createShippingUpdate('order1', 'item1', 'PENDING', 'name1');
+  const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: '1sttry', itemId: 'item1', name: '42' });
+  expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
+  expect(createResponseMissingLastSortKey.errors).toHaveLength(1);
+
+  const createResponseMissingFirstSortKey = await createShippingUpdate({ orderId: '2ndtry', status: 'PENDING', name: '43?' });
+  expect(createResponseMissingFirstSortKey.data.createShippingUpdate).toBeNull();
+  expect(createResponseMissingFirstSortKey.errors).toHaveLength(1);
+
+  await createShippingUpdate({ orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1' });
   const items = await getShippingUpdates('order1');
   expect(items.data.shippingUpdates.items).toHaveLength(1);
   const item = items.data.shippingUpdates.items[0];
@@ -627,8 +635,15 @@ async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionIn
   return result;
 }
 
-async function createShippingUpdate(orderId: string, itemId: string, status: string, name?: string) {
-  const input = { status, orderId, itemId, name };
+interface CreateShippingInput {
+  id?: string;
+  orderId?: string;
+  status?: string;
+  itemId?: string;
+  name?: string;
+}
+
+async function createShippingUpdate(input: CreateShippingInput) {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateShippingUpdate($input: CreateShippingUpdateInput!) {
         createShippingUpdate(input: $input) {
@@ -656,7 +671,6 @@ interface UpdateShippingInput {
   name?: string;
 }
 async function updateShippingUpdate(input: UpdateShippingInput) {
-  // const input = { id, status, orderId, itemId, name };
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateShippingUpdate($input: UpdateShippingUpdateInput!) {
         updateShippingUpdate(input: $input) {

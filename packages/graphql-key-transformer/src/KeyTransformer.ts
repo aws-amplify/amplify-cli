@@ -166,13 +166,14 @@ export class KeyTransformer extends Transformer {
       // and validate update operations to protect the integrity of composite sort keys.
       if (createResolver) {
         createResolver.Properties.RequestMappingTemplate = joinSnippets([
+          this.validateKeyArgumentSnippet(directive, 'create'),
           ensureCompositeKeySnippet(directive),
           createResolver.Properties.RequestMappingTemplate,
         ]);
       }
       if (updateResolver) {
         updateResolver.Properties.RequestMappingTemplate = joinSnippets([
-          this.validateKeyUpdateArgumentsSnippet(directive),
+          this.validateKeyArgumentSnippet(directive, 'update'),
           ensureCompositeKeySnippet(directive),
           updateResolver.Properties.RequestMappingTemplate,
         ]);
@@ -369,14 +370,14 @@ export class KeyTransformer extends Transformer {
     return printBlock(`Set the primary @key`)(compoundExpression(cmds));
   };
 
-  // When issuing an update mutation that changes one part of a composite sort key,
+  // When issuing an create/update mutation that creates/changes one part of a composite sort key,
   // you must supply the entire key so that the underlying composite key can be resaved
-  // in the update operation. We only need to update for composite sort keys on secondary indexes.
-  private validateKeyUpdateArgumentsSnippet = (directive: DirectiveNode): string => {
+  // in a create/update operation. We only need to update for composite sort keys on secondary indexes.
+  private validateKeyArgumentSnippet = (directive: DirectiveNode, keyOperation: 'create' | 'update'): string => {
     const directiveArgs: KeyArguments = getDirectiveArguments(directive);
     if (!this.isPrimaryKey(directive) && directiveArgs.fields.length > 2) {
       const sortKeyFields = directiveArgs.fields.slice(1);
-      return printBlock(`Validate update mutation for @key '${directiveArgs.name}'`)(
+      return printBlock(`Validate ${keyOperation} mutation for @key '${directiveArgs.name}'`)(
         compoundExpression([
           set(ref('hasSeenSomeKeyArg'), bool(false)),
           set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
@@ -387,8 +388,9 @@ export class KeyTransformer extends Transformer {
             iff(
               raw(`$hasSeenSomeKeyArg && !$ctx.args.input.containsKey("$keyFieldName")`),
               raw(
-                `$util.error("When updating any part of the composite sort key for @key '${directiveArgs.name}',` +
-                  ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`,
+                `$util.error("When ${keyOperation.replace(/.$/, 'ing')} any part of the composite sort key for @key '${
+                  directiveArgs.name
+                }',` + ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`,
               ),
             ),
           ]),
