@@ -5,11 +5,15 @@ exports[`Connection on models with no codegen includes AttributeTypeEnum 1`] = `
   id: ID!
   title: String!
   comments(filter: ModelCommentFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelCommentConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type Comment {
   id: ID!
   content: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type ModelCommentConnection {

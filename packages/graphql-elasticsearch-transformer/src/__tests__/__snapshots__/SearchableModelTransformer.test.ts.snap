@@ -272,6 +272,8 @@ exports[`Test SearchableModelTransformer with multiple model searchable directiv
 type User {
   id: ID!
   name: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 enum ModelSortDirection {

@@ -31,6 +31,10 @@ type MutationResolverInput = {
   syncConfig: SyncConfig;
   nameOverride?: string;
   mutationTypeName?: string;
+  timestamps?: {
+    createdAtField?: string;
+    updatedAtField?: string;
+  };
 };
 
 export class ResourceFactory {
@@ -370,7 +374,7 @@ export class ResourceFactory {
    * Create a resolver that creates an item in DynamoDB.
    * @param type
    */
-  public makeCreateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
+  public makeCreateResolver({ type, nameOverride, syncConfig, timestamps, mutationTypeName = 'Mutation' }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type));
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -379,8 +383,25 @@ export class ResourceFactory {
       TypeName: mutationTypeName,
       RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
         compoundExpression([
-          qref('$context.args.input.put("createdAt", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601()))'),
-          qref('$context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601()))'),
+          ...(timestamps && (timestamps.createdAtField || timestamps.updatedAtField)
+            ? [set(ref('createdAt'), ref('util.time.nowISO8601()'))]
+            : []),
+          ...(timestamps && timestamps.createdAtField
+            ? [
+                comment(`Automatically set the createdAt timestamp.`),
+                qref(
+                  `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $createdAt))`,
+                ),
+              ]
+            : []),
+          ...(timestamps && timestamps.updatedAtField
+            ? [
+                comment(`Automatically set the updatedAt timestamp.`),
+                qref(
+                  `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $createdAt))`,
+                ),
+              ]
+            : []),
           qref(`$context.args.input.put("__typename", "${type}")`),
           set(
             ref('condition'),
@@ -437,7 +458,7 @@ export class ResourceFactory {
     });
   }
 
-  public makeUpdateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
+  public makeUpdateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation', timestamps }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type));
     const isSyncEnabled = syncConfig ? true : false;
     return new AppSync.Resolver({
@@ -496,8 +517,14 @@ export class ResourceFactory {
               ),
             ),
           ),
-          comment('Automatically set the updatedAt timestamp.'),
-          qref('$context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601()))'),
+          ...(timestamps && timestamps.updatedAtField
+            ? [
+                comment(`Automatically set the updatedAt timestamp.`),
+                qref(
+                  `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $util.time.nowISO8601()))`,
+                ),
+              ]
+            : []),
           qref(`$context.args.input.put("__typename", "${type}")`),
           comment('Update condition if type is @versioned'),
           iff(

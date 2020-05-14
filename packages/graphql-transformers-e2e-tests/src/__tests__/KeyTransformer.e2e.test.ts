@@ -37,7 +37,7 @@ beforeAll(async () => {
   const validSchema = `
     type Order @model @key(fields: ["customerEmail", "createdAt"]) {
         customerEmail: String!
-        createdAt: String!
+        createdAt: AWSDateTime!
         orderId: ID!
     }
     type Customer @model @key(fields: ["email"]) {
@@ -386,14 +386,14 @@ test('Test Customer Mutation with list member', async () => {
 });
 
 test('Test @key directive with customer sortDirection', async () => {
-  await createOrder('testorder1@email.com', '1', '2016-03-10');
-  await createOrder('testorder1@email.com', '2', '2018-05-22');
-  await createOrder('testorder1@email.com', '3', '2019-06-27');
+  await createOrder('testorder1@email.com', '1', '2016-03-10T00:45:08+00:00');
+  await createOrder('testorder1@email.com', '2', '2018-05-22T21:45:08+00:00');
+  await createOrder('testorder1@email.com', '3', '2019-06-27T12:00:08+00:00');
   const newOrders = await listOrders('testorder1@email.com', { beginsWith: '201' }, 'DESC');
   const oldOrders = await listOrders('testorder1@email.com', { beginsWith: '201' }, 'ASC');
-  expect(newOrders.data.listOrders.items[0].createdAt).toEqual('2019-06-27');
+  expect(newOrders.data.listOrders.items[0].createdAt).toEqual('2019-06-27T12:00:08+00:00');
   expect(newOrders.data.listOrders.items[0].orderId).toEqual('3');
-  expect(oldOrders.data.listOrders.items[0].createdAt).toEqual('2016-03-10');
+  expect(oldOrders.data.listOrders.items[0].createdAt).toEqual('2016-03-10T00:45:08+00:00');
   expect(oldOrders.data.listOrders.items[0].orderId).toEqual('1');
 });
 
@@ -517,7 +517,7 @@ async function deleteOrder(customerEmail: string, createdAt: string) {
 
 async function getOrder(customerEmail: string, createdAt: string) {
   const result = await GRAPHQL_CLIENT.query(
-    `query GetOrder($customerEmail: String!, $createdAt: String!) {
+    `query GetOrder($customerEmail: String!, $createdAt: AWSDateTime!) {
         getOrder(customerEmail: $customerEmail, createdAt: $createdAt) {
             customerEmail
             orderId
