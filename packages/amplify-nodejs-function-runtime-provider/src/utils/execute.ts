@@ -16,7 +16,7 @@ async function loadHandler(root: string, handler: string): Promise<Function> {
   }
 }
 
-function invokeFunction(options: InvokeOptions) {
+export function invokeFunction(options: InvokeOptions) {
   return new Promise(async (resolve, reject) => {
     let returned = false;
 
@@ -69,13 +69,17 @@ function invokeFunction(options: InvokeOptions) {
     };
 
     const lambdaHandler = await loadHandler(options.packageFolder, options.handler);
-
     const { event } = options;
     try {
-      const result = await lambdaHandler(JSON.parse(event), context, callback);
-      if (result !== undefined) {
-        context.done(null, result);
-      } else {
+      const response = lambdaHandler(JSON.parse(event), context, callback);
+      if (typeof response === 'object' && typeof response.then === 'function') {
+        const result = await response;
+        if (result !== undefined) {
+          context.done(null, result);
+        } else {
+          context.done(null, null);
+        }
+      } else if (response !== undefined) {
         context.done(null, null);
       }
     } catch (e) {
