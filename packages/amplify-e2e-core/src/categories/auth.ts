@@ -20,6 +20,24 @@ export function addAuthWithDefault(cwd: string, settings: any) {
   });
 }
 
+export function removeAuthWithDefault(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
+      .wait('Choose the resource you would want to remove')
+      .sendCarriageReturn()
+      .wait('Are you sure you want to delete the resource? This')
+      .sendLine('y')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addAuthWithGroupTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })

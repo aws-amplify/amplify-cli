@@ -13,6 +13,7 @@ const roles = {
 };
 
 const generalDefaults = projectName => ({
+  sharedId,
   resourceName: `${projectName}${sharedId}`,
   resourceNameTruncated: `${projectName.substring(0, 6)}${sharedId}`,
   authSelections: 'identityPoolAndUserPool',
