@@ -53,7 +53,6 @@ function getGroupByName(project, name) {
   const groups = Object.entries(project.hash.project.objects.PBXGroup);
   for (let i = 0; i < groups.length; i++) {
     const [key, value] = groups[i];
-    // console.log(value);
     if (typeof value !== 'string') {
       // only the root pbx group can have no name, path or description
       const isRoot = name === undefined && value.name === undefined && value.path === undefined;
@@ -107,10 +106,20 @@ function groupHasFile(group, name) {
 }
 
 /**
+ * Adds amplify files to the Xcode project grouped by categories:
+ *
+ * - `AmplifyConfig`
+ *   - `amplifytools.xcconfig`
+ *   - `amplifyconfiguration.json`
+ *   - `awsconfiguration.json`
+ *   - `schema.graphql`
+ * - `AmplifyModels`
+ *   - *all generated models*
+ *
  * @public
  * @return {Promise<void>}
  */
-async function addDataStoreFiles() {
+async function addAmplifyFiles() {
   const projectDir = getXcodeProjectDir();
   const rootDir = path.resolve(projectDir, '..', '..');
   const project = xcode.project(projectDir);
@@ -178,5 +187,5 @@ async function addDataStoreFiles() {
 }
 
 module.exports = {
-  addDataStoreFiles,
+  addAmplifyFiles,
 };

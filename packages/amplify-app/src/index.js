@@ -6,7 +6,7 @@ const emoji = require('node-emoji');
 const { spawnSync, spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
-const { addDataStoreFiles } = require('./xcodeHelpers');
+const { addAmplifyFiles } = require('./xcodeHelpers');
 const ini = require('ini');
 const semver = require('semver');
 const stripAnsi = require('strip-ansi');
@@ -400,9 +400,8 @@ async function createIosHelperFiles() {
     fs.writeFileSync(amplifyConfigFile, configJsonStr);
   }
 
-  // add models and schema
   if (fs.existsSync(amplifyDir)) {
-    await addDataStoreFiles();
+    await addAmplifyFiles();
   }
 }
 
