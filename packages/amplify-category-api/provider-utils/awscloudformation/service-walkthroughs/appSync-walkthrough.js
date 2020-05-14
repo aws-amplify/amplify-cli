@@ -401,25 +401,28 @@ async function updateWalkthrough(context) {
       }
     });
   }
+  const updateChoices = [
+    {
+      name: 'Walkthrough all configurations',
+      value: 'all',
+    },
+    {
+      name: 'Update auth settings',
+      value: 'authUpdate',
+    },
+  ];
+  // check if DataStore is enabled for the entire API
+  if (project.config && project.config.ResolverConfig) {
+    updateChoices.push({ name: 'Disable DataStore for entire API', value: 'disableDatastore' });
+  } else {
+    updateChoices.push({ name: 'Enable DataStore for entire API', value: 'enableDatastore' });
+  }
 
   const updateOptionQuestion = {
     type: 'list',
     name: 'updateOption',
     message: 'Select from the options below',
-    choices: [
-      {
-        name: 'Walkthrough all configurations',
-        value: 'all',
-      },
-      {
-        name: 'Update auth settings',
-        value: 'authUpdate',
-      },
-      {
-        name: 'Enable DataStore for entire API',
-        value: 'enableDatastore',
-      },
-    ],
+    choices: updateChoices,
   };
 
   let { updateOption } = await inquirer.prompt([updateOptionQuestion]);
@@ -428,6 +431,9 @@ async function updateWalkthrough(context) {
     resolverConfig = {
       project: { ConflictHandler: 'AUTOMERGE', ConflictDetection: 'VERSION' },
     };
+  } else if (updateOption === 'disableDatastore') {
+    delete project.config.ResolverConfig;
+    await writeTransformerConfiguration(resourceDir, project.config);
   } else if (updateOption === 'authUpdate') {
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
@@ -438,10 +444,10 @@ async function updateWalkthrough(context) {
     await checkForCognitoUserPools(context, parameters, authConfig);
   }
 
-  if (authConfig) {
-    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
+  if (authConfig) {
     if (amplifyMeta[category][resourceName].output.securityType) {
       delete amplifyMeta[category][resourceName].output.securityType;
     }
@@ -460,6 +466,9 @@ async function updateWalkthrough(context) {
     backendConfig[category][resourceName].output.authConfig = authConfig;
     jsonString = JSON.stringify(backendConfig, null, 4);
     fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+  } else {
+    // use existing authConfig
+    authConfig = amplifyMeta[category][resourceName].output.authConfig;
   }
 
   if (resolverConfig) {
