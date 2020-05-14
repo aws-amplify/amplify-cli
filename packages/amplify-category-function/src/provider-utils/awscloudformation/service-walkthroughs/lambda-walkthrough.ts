@@ -6,7 +6,7 @@ import { FunctionParameters } from 'amplify-function-plugin-interface';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
-import { serviceName, categoryName, functionParametersFileName, parametersFileName } from '../utils/constants';
+import { ServiceNames, categoryName, functionParametersFileName, parametersFileName } from '../utils/constants';
 import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformationHelpers';
 import { askExecRolePermissionsQuestions } from './execPermissionsWalkthrough';
 import { scheduleWalkthrough } from './scheduleWalkthrough';
@@ -29,7 +29,8 @@ export async function createWalkthrough(
 
   // ask runtime selection questions and merge in results
   if (!templateParameters.runtime) {
-    templateParameters = merge(templateParameters, await runtimeWalkthrough(context, templateParameters));
+    let res = await runtimeWalkthrough(context, templateParameters);
+    templateParameters = merge(templateParameters, res[0]);
   }
 
   // ask template selection questions and merge in results
@@ -51,7 +52,9 @@ export async function createWalkthrough(
 
 export async function updateWalkthrough(context, lambdaToUpdate) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const resources = allResources.filter(resource => resource.service === serviceName).map(resource => resource.resourceName);
+  const resources = allResources
+    .filter(resource => resource.service === ServiceNames.LambdaFunction)
+    .map(resource => resource.resourceName);
 
   if (resources.length === 0) {
     context.print.error('No Lambda Functions resource to update. Please use "amplify add function" command to create a new Function');

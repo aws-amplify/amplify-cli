@@ -124,7 +124,7 @@ describe('hydrateAllEnvVars', () => {
         {
           Arn: 'arn-from-api',
           name: 'TodoTable',
-          type: 'Lambda',
+          type: 'LambdaFunction',
         },
       ],
     };

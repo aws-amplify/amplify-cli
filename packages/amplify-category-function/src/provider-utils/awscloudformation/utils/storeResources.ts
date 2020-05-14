@@ -1,7 +1,8 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { categoryName, provider, serviceName } from './constants';
+import { categoryName, provider, ServiceNames } from './constants';
+import generateLayerCfnObj from './lambda-layer-cloudformation-template';
 import _ from 'lodash';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
@@ -73,6 +74,44 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
   context.amplify.copyBatch(context, [cloudTemplateJob], parameters, false);
 }
 
+export function createLayerFolders(context, parameters) {
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const layerDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
+  const layerDirSrcPath = path.join(layerDirPath, 'src');
+  fs.mkdirSync(layerDirSrcPath, { recursive: true });
+  fs.mkdirSync(path.join(layerDirPath, 'bin'));
+  fs.mkdirSync(path.join(layerDirPath, 'opt'));
+
+  // Temporary hack
+  const runtimePaths = {
+    nodejs: path.join(layerDirSrcPath, 'nodejs', 'node_modules'),
+    python: path.join(layerDirSrcPath, 'python'),
+    java: path.join(layerDirSrcPath, 'java', 'lib'),
+    dotnet: path.join(layerDirSrcPath, 'dotnet', 'dist'),
+  };
+  let moduleDirPath;
+  for (let runtime of parameters.runtimes) {
+    moduleDirPath = path.join(runtimePaths[runtime.value], parameters.layerName);
+    fs.mkdirSync(moduleDirPath, { recursive: true });
+    fs.writeFileSync(path.join(moduleDirPath, 'README.txt'), 'Replace this file with your layer files');
+  }
+  return layerDirPath;
+}
+
+export function createLayerCfnFile(context, parameters, layerDirPath) {
+  fs.ensureDirSync(layerDirPath);
+  fs.writeFileSync(
+    path.join(layerDirPath, 'layer-awscloudformation.json'),
+    JSON.stringify(generateLayerCfnObj(parameters), null, 4),
+    'utf8',
+  );
+  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, {
+    providerPlugin: parameters.providerContext.provider,
+    service: parameters.providerContext.service,
+    runtimes: parameters.runtimes,
+  });
+}
+
 export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
@@ -94,7 +133,7 @@ function translateFuncParamsToResourceOpts(params: FunctionParameters | Function
   let result: any = {
     build: true,
     providerPlugin: provider,
-    service: serviceName,
+    service: ServiceNames.LambdaFunction,
   };
   if (!('trigger' in params)) {
     result.dependsOn = params.dependsOn;

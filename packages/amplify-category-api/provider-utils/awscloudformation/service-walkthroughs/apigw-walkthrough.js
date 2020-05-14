@@ -588,7 +588,7 @@ function functionsExist(context) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === 'Lambda') {
+    if (functionResources[resourceName].service === 'LambdaFunction') {
       lambdaFunctions.push(resourceName);
     }
   });
@@ -634,7 +634,7 @@ function newLambdaFunction(context, path) {
       },
     },
   };
-  return add(context, 'awscloudformation', 'Lambda', params).then(resourceName => {
+  return add(context, 'awscloudformation', 'LambdaFunction', params).then(resourceName => {
     context.print.success('Succesfully added the Lambda function locally');
     return { lambdaFunction: resourceName };
   });
@@ -650,7 +650,7 @@ async function askLambdaFromProject(context, currentPath) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === 'Lambda') {
+    if (functionResources[resourceName].service === 'LambdaFunction') {
       lambdaFunctions.push(resourceName);
     }
   });

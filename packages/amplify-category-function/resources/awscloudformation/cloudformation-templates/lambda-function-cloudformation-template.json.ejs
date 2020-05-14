@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Lambda resource stack creation using Amplify CLI",
+    "Description": "Lambda Function resource stack creation using Amplify CLI",
     "Parameters": {
         "CloudWatchRule": {
             "Type": "String",
@@ -49,7 +49,7 @@
             "FunctionName": {
                 "Fn::If": [
                     "ShouldNotCreateEnvResources",
-                    "<%= props.functionName %>", 
+                    "<%= props.functionName %>",
                     {
 
                         "Fn::Join": [
@@ -62,7 +62,7 @@
                                 }
                             ]
                         ]
-                    }      
+                    }
                 ]
             },
             "Environment": {
@@ -70,7 +70,7 @@
                     "ENV": {
                         "Ref": "env"
                     },
-                    "REGION": { 
+                    "REGION": {
                         "Ref": "AWS::Region"
                     }
                     <% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>
@@ -87,7 +87,7 @@
                 "RoleName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
-                        "<%=props.roleName %>", 
+                        "<%=props.roleName %>",
                         {
 
                             "Fn::Join": [
@@ -100,7 +100,7 @@
                                     }
                                 ]
                             ]
-                        } 
+                        }
                     ]
                 },
                 "AssumeRolePolicyDocument": {
@@ -138,7 +138,7 @@
                             "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
                         }<% if (props.functionTemplate.parameters && props.functionTemplate.parameters.database && props.functionTemplate.parameters.database.resourceName) { %>,
                         {
-                            "Effect": "Allow", 
+                            "Effect": "Allow",
                             "Action": ["dynamodb:DescribeTable","dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
                             "Resource": [
                             <% if (props.functionTemplate.parameters && props.functionTemplate.parameters.database && props.functionTemplate.parameters.database.Arn) { %>
@@ -151,7 +151,7 @@
                                             "index/*"
                                         ]
                                     ]
-                                }      
+                                }
                             <% } else { %>
                                 { "Ref": "storage<%= props.functionTemplate.parameters.database.resourceName %>Arn" },
                                 {
@@ -162,7 +162,7 @@
                                             "index/*"
                                         ]
                                     ]
-                                }      
+                                }
                             <% } %>
                             ]
                         }
@@ -219,7 +219,7 @@
         }
         <% } %>
         <% } %>
-        <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %> 
+        <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %>
         ,"CloudWatchEvent": {
             "Type" : "AWS::Events::Rule",
             "Properties":{
@@ -230,24 +230,24 @@
                 "State": "ENABLED",
                 "Targets": [{
                     "Arn": { "Fn::GetAtt": ["LambdaFunction", "Arn"] },
-                    "Id":{ 
+                    "Id":{
                         "Ref" : "LambdaFunction"
                     }
                 }]
-            } 
+            }
         }
         ,"PermissionForEventsToInvokeLambda": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": {
-                    "Ref": "LambdaFunction" 
+                    "Ref": "LambdaFunction"
                     },
                 "Action": "lambda:InvokeFunction",
                 "Principal": "events.amazonaws.com",
                 "SourceArn": { "Fn::GetAtt": ["CloudWatchEvent", "Arn"] }
-            }               
+            }
         }
-        <% } %>                 
+        <% } %>
     },
     "Outputs": {
         "Name": {
@@ -268,12 +268,12 @@
                 "Ref": "LambdaExecutionRole"
             }
         }
-        <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %> 
+        <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %>
         ,"CloudWatchEventRule": {
             "Value" :{
                 "Ref" : "CloudWatchEvent"
             }
         }
-        <% } %>  
+        <% } %>
     }
 }

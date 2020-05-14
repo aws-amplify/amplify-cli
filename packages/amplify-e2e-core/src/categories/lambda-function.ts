@@ -40,13 +40,15 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action == 'update' ? 'update' : 'add', 'function'], {
+    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
 
     if (action === 'create') {
       chain
+        .wait('Select which capability you want to add:')
+        .sendCarriageReturn() // function
         .wait('Provide a friendly name for your resource to be used as a label')
         .sendLine(settings.name || '')
         .wait('Provide the AWS Lambda function name:')
@@ -68,7 +70,7 @@ const coreFunction = (
 
     if (!settings.expectFailure) {
       chain.wait(
-        action == 'create'
+        action === 'create'
           ? 'Do you want to access other resources created in this project from your Lambda function?'
           : 'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
       );
@@ -104,7 +106,7 @@ const coreFunction = (
       }
 
       //scheduling questions
-      if (action == 'create') {
+      if (action === 'create') {
         chain.wait('Do you want to invoke this function on a recurring schedule?');
       } else {
         if (

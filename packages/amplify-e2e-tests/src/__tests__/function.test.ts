@@ -24,7 +24,7 @@ describe('nodejs', () => {
       deleteProjectDir(projRoot);
     });
 
-    it('init a project and add  simple function', async () => {
+    it('init a project and add simple function', async () => {
       await initJSProjectWithProfile(projRoot, {});
       await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
       await functionBuild(projRoot, {});

@@ -1,7 +1,7 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
-import { nodeJSTemplateChoices, selectRuntime } from './function';
+import { nodeJSTemplateChoices, selectRuntime } from './lambda-function';
 import { singleSelect } from '../utils/selectors';
 
 function getSchemaPath(schemaName: string): string {

@@ -9,8 +9,9 @@ import {
   FunctionRuntimeLifecycleManager,
   ContributionRequest,
 } from 'amplify-function-plugin-interface';
+import { ServiceNames } from './constants';
 import _ from 'lodash';
-
+import { LayerParameters } from './layerParams';
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
@@ -32,8 +33,10 @@ export async function templateWalkthrough(context: any, params: Partial<Function
     },
     selectionPrompt: 'Choose the function template that you want to use:',
     notFoundMessage: `No ${params.runtime.name} ${params.providerContext.service} templates found`,
+    service: params.providerContext.service,
   };
-  const selection = await getSelectionFromContributors<FunctionTemplateCondition>(context, selectionOptions);
+  let res = await getSelectionFromContributors<FunctionTemplateCondition>(context, selectionOptions);
+  const selection = res[0];
   const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionTemplateContributorFactory', context);
   const contributionRequest: ContributionRequest = {
     selection: selection.value,
@@ -51,23 +54,43 @@ export async function templateWalkthrough(context: any, params: Partial<Function
  */
 export async function runtimeWalkthrough(
   context: any,
-  params: Partial<FunctionParameters>,
-): Promise<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters> {
+  params: Partial<FunctionParameters> | Partial<LayerParameters>,
+): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
+  const { service } = params.providerContext;
   const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
     pluginType: 'functionRuntime',
     listOptionsField: 'runtimes',
     predicate: condition => {
-      return condition.provider === params.providerContext.provider && condition.service === params.providerContext.service;
+      return condition.provider === params.providerContext.provider && condition.service === service;
     },
     selectionPrompt: 'Choose the function runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
+    service: service,
   };
-  const selection = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
-  const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
-  const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
-  if (!depCheck.hasRequiredDependencies) {
-    context.print.warning(depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed');
+  const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
+  const plugins = [];
+  for (let selection of selections) {
+    const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
+    const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
+    if (!depCheck.hasRequiredDependencies) {
+      context.print.warning(
+        depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed',
+      );
+    }
+    plugins.push(plugin);
   }
+  if (service === ServiceNames.LambdaFunction) {
+    return _functionRuntimeWalkthroughHelper(params, plugins[0], selections[0]);
+  } else if (service === ServiceNames.LambdaLayer) {
+    return _layerRuntimeWalkthroughHelper(params, plugins, selections);
+  }
+}
+
+async function _functionRuntimeWalkthroughHelper(
+  params: Partial<FunctionParameters>,
+  plugin,
+  selection,
+): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
   const contributionRequest: ContributionRequest = {
     selection: selection.value,
     contributionContext: {
@@ -77,16 +100,42 @@ export async function runtimeWalkthrough(
     },
   };
   const contribution = await plugin.contribute(contributionRequest);
-  return {
-    ...contribution,
-    runtimePluginId: selection.pluginId,
-  };
+  return [
+    {
+      ...contribution,
+      runtimePluginId: selection.pluginId,
+    },
+  ];
+}
+
+async function _layerRuntimeWalkthroughHelper(
+  params: Partial<LayerParameters>,
+  plugin,
+  selections,
+): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
+  const retVal = [];
+  for (let selection of selections) {
+    const contributionRequest: ContributionRequest = {
+      selection: selection.value,
+      contributionContext: {
+        runtime: params.runtimes[0],
+        functionName: params.layerName,
+        resourceName: params.layerName,
+      },
+    };
+    const contribution = await plugin.contribute(contributionRequest);
+    retVal.push({
+      ...contribution,
+      runtimePluginId: selections.pluginId,
+    });
+  }
+  return retVal;
 }
 
 /**
- * Parses plugin metadat to present plugin selections to the user and return the selection.
+ * Parses plugin metadata to present plugin selections to the user and return the selection.
  */
-async function getSelectionFromContributors<T>(context: any, selectionOptions: PluginSelectionOptions<T>): Promise<PluginSelection> {
+async function getSelectionFromContributors<T>(context: any, selectionOptions: PluginSelectionOptions<T>): Promise<Array<PluginSelection>> {
   const notFoundSuffix = 'You can download and install additional plugins then rerun this command';
   // get providers from context
   const templateProviders = context.pluginPlatform.plugins[selectionOptions.pluginType];
@@ -133,7 +182,7 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     // ask which template to use
     let answer = await inquirer.prompt([
       {
-        type: 'list',
+        type: selectionOptions.service === ServiceNames.LambdaLayer ? 'checkbox' : 'list',
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
@@ -143,11 +192,23 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     selection = answer.selection;
   }
 
-  return {
-    value: selection,
-    pluginPath: selectionMap.get(selection).path,
-    pluginId: selectionMap.get(selection).pluginId,
-  };
+  if (Array.isArray(selection)) {
+    return selection.map(s => {
+      return {
+        value: s,
+        pluginPath: selectionMap.get(s).path,
+        pluginId: selectionMap.get(s).pluginId,
+      };
+    });
+  }
+
+  return [
+    {
+      value: selection,
+      pluginPath: selectionMap.get(selection).path,
+      pluginId: selectionMap.get(selection).pluginId,
+    },
+  ];
 }
 
 export async function loadPluginFromFactory(pluginPath, expectedFactoryFunction, context): Promise<any> {
@@ -171,7 +232,9 @@ interface PluginSelectionOptions<T extends FunctionRuntimeCondition | FunctionTe
   listOptionsField: string;
   notFoundMessage: string;
   selectionPrompt: string;
+  service: string;
 }
+
 interface PluginSelection {
   pluginPath: string;
   value: string;
