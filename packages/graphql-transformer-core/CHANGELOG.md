@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.18.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.17.1...graphql-transformer-core@6.18.0-beta.0) (2020-05-15)
+
+
+### Features
+
+* support for overriding pipeline function templates in transformer ([#4196](https://github.com/aws-amplify/amplify-cli/issues/4196)) ([e1830ae](https://github.com/aws-amplify/amplify-cli/commit/e1830aeb31fef8f035cb0a992a150d37f78e07bb)), closes [#4192](https://github.com/aws-amplify/amplify-cli/issues/4192)
+
+
+
+
+
 ## [6.17.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.17.0...graphql-transformer-core@6.17.1) (2020-05-08)
 
 

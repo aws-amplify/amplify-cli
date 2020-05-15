@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.3.1...amplify-console-hosting@1.3.2-beta.0) (2020-05-15)
+
+
+### Bug Fixes
+
+* **amplify-console-hosting:** printout more informative message ([#4148](https://github.com/aws-amplify/amplify-cli/issues/4148)) ([627a935](https://github.com/aws-amplify/amplify-cli/commit/627a93580587d7d132b8bfa8a58e88c9e90f0a16)), closes [#4086](https://github.com/aws-amplify/amplify-cli/issues/4086)
+* **cli:** fixes issues for missing build or start command ([#3918](https://github.com/aws-amplify/amplify-cli/issues/3918)) ([25c53ce](https://github.com/aws-amplify/amplify-cli/commit/25c53ce81a74c3f706f60b0519eda0a4338edbf7)), closes [#3728](https://github.com/aws-amplify/amplify-cli/issues/3728) [#3806](https://github.com/aws-amplify/amplify-cli/issues/3806)
+
+
+
+
+
 ## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.3.0...amplify-console-hosting@1.3.1) (2020-03-22)
 
 

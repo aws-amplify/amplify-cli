@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.17.0...amplify-codegen-appsync-model-plugin@1.18.0-beta.0) (2020-05-15)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** add support for keyName ([#4258](https://github.com/aws-amplify/amplify-cli/issues/4258)) ([024b825](https://github.com/aws-amplify/amplify-cli/commit/024b82517a313a203f5ca851137e723f22f32649))
+
+
+
+
+
 # [1.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.16.0...amplify-codegen-appsync-model-plugin@1.17.0) (2020-05-08)
 
 

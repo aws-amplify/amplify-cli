@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.16.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.15.4...graphql-auth-transformer@6.16.0-beta.0) (2020-05-15)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+
+
+
+
+
 ## [6.15.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.15.3...graphql-auth-transformer@6.15.4) (2020-05-08)
 
 

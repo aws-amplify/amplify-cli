@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.1...amplify-appsync-simulator@1.20.2-beta.0) (2020-05-15)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** support inline resolver templates ([56fdd00](https://github.com/aws-amplify/amplify-cli/commit/56fdd0057a6ecfbd320f2a3f8b0858959bbe750e)), closes [#3834](https://github.com/aws-amplify/amplify-cli/issues/3834)
+* **amplify-appsync-simulator:** support more than 1 operation in query ([#4189](https://github.com/aws-amplify/amplify-cli/issues/4189)) ([4794c8f](https://github.com/aws-amplify/amplify-cli/commit/4794c8fef04b15deaff13f4a77be774ca91bbecb)), closes [#4181](https://github.com/aws-amplify/amplify-cli/issues/4181)
+
+
+
+
+
 ## [1.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.0...amplify-appsync-simulator@1.20.1) (2020-05-08)
 
 

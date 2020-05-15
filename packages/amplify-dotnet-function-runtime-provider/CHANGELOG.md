@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.1.0...amplify-dotnet-function-runtime-provider@1.1.1-beta.0) (2020-05-15)
+
+
+### Bug Fixes
+
+* match dotnet version per line ([#4251](https://github.com/aws-amplify/amplify-cli/issues/4251)) ([b38deb5](https://github.com/aws-amplify/amplify-cli/commit/b38deb59223417c67d41838c7af21fe4184babd0))
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.0.2...amplify-dotnet-function-runtime-provider@1.1.0) (2020-05-08)
 
 
