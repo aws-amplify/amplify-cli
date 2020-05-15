@@ -5,7 +5,7 @@ const uuid = require('uuid');
 const path = require('path');
 const open = require('open');
 const TransformPackage = require('graphql-transformer-core');
-
+const { generateExample } = require('./example-generator');
 const category = 'api';
 const serviceName = 'AppSync';
 const parametersFileName = 'parameters.json';
@@ -14,7 +14,6 @@ const providerName = 'awscloudformation';
 const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
 const defaultStackName = 'CustomResources.json';
-
 const {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
@@ -223,7 +222,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   let templateSchemaChoices = inputs[4].options;
 
   if (cognitoNotEnabled) {
-    templateSchemaChoices = templateSchemaChoices.filter(schema => schema.value !== 'single-object-auth-schema.graphql');
+    templateSchemaChoices = templateSchemaChoices.filter(schema => schema.value !== 'todoauth');
   }
 
   const templateQuestions = [
@@ -247,10 +246,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   ];
 
   const { templateSelection, editSchemaChoice } = await inquirer.prompt(templateQuestions);
-  const schemaFilePath = `${__dirname}/../appsync-schemas/${templateSelection}`;
-  const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
-
-  fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
+  const schemaFilePath = `${__dirname}/../appsync-schemas/`;
+  const targetSchemaFilePath = path.join(resourceDir, schemaFileName);
+  await generateExample(authTypes, schemaFilePath, targetSchemaFilePath, templateSelection);
 
   if (editSchemaChoice) {
     return context.amplify.openEditor(context, targetSchemaFilePath).then(async () => {

@@ -1,10 +1,10 @@
-type Blog @model {
+type Blog @model<%=authDirective.blog%> {
   id: ID!
   name: String!
   posts: [Post] @connection(keyName: "byBlog", fields: ["id"])
 }
 
-type Post @model @key(name: "byBlog", fields: ["blogID"]) {
+type Post @model @key(name: "byBlog", fields: ["blogID"]) <%=authDirective.post%>{
   id: ID!
   title: String!
   blogID: ID!
@@ -12,7 +12,7 @@ type Post @model @key(name: "byBlog", fields: ["blogID"]) {
   comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
 }
 
-type Comment @model @key(name: "byPost", fields: ["postID", "content"]) {
+type Comment @model @key(name: "byPost", fields: ["postID", "content"]) <%=authDirective.comment%>{
   id: ID!
   postID: ID!
   post: Post @connection(fields: ["postID"])

@@ -1,4 +1,4 @@
-type Todo @model {
+type Todo @model <%=authDirective%> {
   id: ID!
   name: String!
   description: String
