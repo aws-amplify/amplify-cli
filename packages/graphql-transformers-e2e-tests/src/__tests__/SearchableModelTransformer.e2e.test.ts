@@ -854,7 +854,7 @@ test('test searches with datastore enabled types', async () => {
   expect(searchTodoResponse.data.searchTodos.items[0]._version).toEqual(todoVersion);
   todoName = 'get soy milk';
 
-  const updateTodoResponse = await updateTodo({ id: '001', name: todoVersion, _version: todoVersion });
+  const updateTodoResponse = await updateTodo({ id: '001', name: todoName, _version: todoVersion });
   expect(updateTodoResponse).toBeDefined();
   todoVersion += 1;
   expect(updateTodoResponse.data.updateTodo.name).toEqual(todoName);
