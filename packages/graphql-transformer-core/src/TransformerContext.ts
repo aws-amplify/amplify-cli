@@ -722,11 +722,6 @@ export class TransformerContext {
   }
 
   public isProjectUsingDataStore(): boolean {
-    return (
-      this.resolverConfig &&
-      this.resolverConfig.project &&
-      this.resolverConfig.project.ConflictDetection === 'VERSION' &&
-      this.resolverConfig.project.ConflictHandler === 'AUTOMERGE'
-    );
+    return this.resolverConfig && (typeof this.resolverConfig.project !== undefined || typeof this.resolverConfig.models !== undefined);
   }
 }

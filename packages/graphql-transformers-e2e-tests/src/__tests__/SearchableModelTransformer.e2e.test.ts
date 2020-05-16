@@ -1,5 +1,5 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, ConflictHandlerType } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
@@ -114,6 +114,15 @@ beforeAll(async () => {
       name: String!
       genre: String!
     }
+
+    type Todo
+    @model
+    @searchable {
+      id: ID
+      name: String!
+      createdAt: AWSDateTime
+      description: String
+    }
     `;
   const transformer = new GraphQLTransform({
     transformers: [
@@ -129,6 +138,17 @@ beforeAll(async () => {
       }),
       new SearchableModelTransformer(),
     ],
+    // only enable datastore features on todo
+    transformConfig: {
+      ResolverConfig: {
+        models: {
+          Todo: {
+            ConflictHandler: ConflictHandlerType.AUTOMERGE,
+            ConflictDetection: 'VERSION',
+          },
+        },
+      },
+    },
   });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -817,6 +837,87 @@ test('query for books by Agatha Christie with model using @key', async () => {
     expect(expectedBookNames).toContain(item.name);
   });
 });
+
+test('test searches with datastore enabled types', async () => {
+  const createTodoResponse = await createTodo({ id: '001', name: 'get milk' });
+  expect(createTodoResponse).toBeDefined();
+  let todoName = createTodoResponse.data.createTodo.name;
+  let todoVersion = createTodoResponse.data.createTodo._version;
+
+  // Wait for the Todo to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
+
+  let searchTodoResponse = await searchTodos();
+  expect(searchTodoResponse).toBeDefined();
+  expect(searchTodoResponse.data.searchTodos.items.length).toEqual(1);
+  expect(searchTodoResponse.data.searchTodos.items[0].name).toEqual(todoName);
+  expect(searchTodoResponse.data.searchTodos.items[0]._version).toEqual(todoVersion);
+  todoName = 'get soy milk';
+
+  const updateTodoResponse = await updateTodo({ id: '001', name: todoVersion, _version: todoVersion });
+  expect(updateTodoResponse).toBeDefined();
+  todoVersion += 1;
+  expect(updateTodoResponse.data.updateTodo.name).toEqual(todoName);
+  expect(updateTodoResponse.data.updateTodo._version).toEqual(todoVersion);
+
+  // Wait for the Todo to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
+
+  searchTodoResponse = await searchTodos();
+  expect(searchTodoResponse.data.items.length).toEqual(1);
+  expect(searchTodoResponse.data.searchTodos.items[0].name).toEqual(todoName);
+  expect(searchTodoResponse.data.searchTodo.items[0]._version).toEqual(todoVersion);
+});
+
+type TodoInput = {
+  id?: string;
+  name: string;
+  createdAt?: string;
+  description?: string;
+  _version?: number;
+};
+
+async function createTodo(input: TodoInput) {
+  const createTodoMutation = `
+  mutation (
+    $input: CreateTodoInput!
+  ) {
+    createTodo(input: $input) {
+      id
+      name
+      _version
+    }
+  }`;
+  return await GRAPHQL_CLIENT.query(createTodoMutation, { input });
+}
+
+async function updateTodo(input: TodoInput) {
+  const updateTodoMutation = `
+    mutation (
+      $input: UpdateTodoInput!
+    ){
+      updateTodo(input: $input) {
+        id
+        name
+        _version
+      }
+    }`;
+  return await GRAPHQL_CLIENT.query(updateTodoMutation, { input });
+}
+
+async function searchTodos() {
+  const searchTodosQuery = `
+  query SearchTodos {
+    searchTodos {
+      items {
+        id
+        name
+        _version
+      }
+    }
+  }`;
+  return await GRAPHQL_CLIENT.query(searchTodosQuery, {});
+}
 
 function getCreatePostsMutation(
   author: string,
