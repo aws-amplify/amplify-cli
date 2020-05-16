@@ -215,12 +215,13 @@ def _lambda_handler(event, context):
                                 '_type': doc_type,
                                 '_id': doc_id}}
             # Add external versioning if necessary
-            if ES_USE_EXTERNAL_VERSIONING:
+            if ES_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['index'].update([
                     ('version_type', 'external'),
                     ('_version', doc_fields['_version'])
                 ])
-                del doc_fields['_version']
+                doc_fields.pop('_ttl', None)
+                doc_fields.pop('_version', None)
             # Append ES Action line with 'index' directive
             es_actions.append(json.dumps(action))
             # Append JSON payload
@@ -234,7 +235,7 @@ def _lambda_handler(event, context):
         elif is_ddb_delete:
             action = {'delete': {'_index': doc_es_index_name,
                                 '_type': doc_type, '_id': doc_id}}
-            if ES_USE_EXTERNAL_VERSIONING:
+            if ES_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['delete'].update([
                     ('version_type', 'external'),
                     ('_version', doc_fields['_version'])
