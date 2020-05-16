@@ -214,629 +214,629 @@ afterAll(async () => {
   }
 });
 
-// test('Test searchPosts with sort field on a string field', async () => {
-//   const firstQuery = await runQuery(
-//     `query {
-//         searchPosts(sort: {
-//             field: id
-//             direction: desc
-//         }){
-//             items{
-//               ...FullPost
-//             }
-//             nextToken
-//           }
-//     }`,
-//     'Test searchPosts with filter ',
-//   );
-//   expect(firstQuery).toBeDefined();
-//   expect(firstQuery.data.searchPosts).toBeDefined();
-//   const fourthItemOfFirstQuery = firstQuery.data.searchPosts.items[3];
-//   const secondQuery = await runQuery(
-//     `query {
-//         searchPosts(limit: 3, sort: {
-//             field: id
-//             direction: desc
-//         }){
-//             items{
-//               ...FullPost
-//             }
-//             nextToken
-//           }
-//     }`,
-//     'Test searchPosts with limit ',
-//   );
-//   expect(secondQuery).toBeDefined();
-//   expect(secondQuery.data.searchPosts).toBeDefined();
-//   const nextToken = secondQuery.data.searchPosts.nextToken;
-//   expect(nextToken).toBeDefined();
-//   const thirdQuery = await runQuery(
-//     `query {
-//         searchPosts(nextToken: "${nextToken}", limit: 3, sort: {
-//             field: id
-//             direction: desc
-//         }){
-//             items{
-//               ...FullPost
-//             }
-//             nextToken
-//           }
-//     }`,
-//     'Test searchPosts with sort limit and nextToken  ',
-//   );
-//   expect(thirdQuery).toBeDefined();
-//   expect(thirdQuery.data.searchPosts).toBeDefined();
-//   const firstItemOfThirdQuery = thirdQuery.data.searchPosts.items[0];
-//   expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery);
-// });
+test('Test searchPosts with sort field on a string field', async () => {
+  const firstQuery = await runQuery(
+    `query {
+        searchPosts(sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`,
+    'Test searchPosts with filter ',
+  );
+  expect(firstQuery).toBeDefined();
+  expect(firstQuery.data.searchPosts).toBeDefined();
+  const fourthItemOfFirstQuery = firstQuery.data.searchPosts.items[3];
+  const secondQuery = await runQuery(
+    `query {
+        searchPosts(limit: 3, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`,
+    'Test searchPosts with limit ',
+  );
+  expect(secondQuery).toBeDefined();
+  expect(secondQuery.data.searchPosts).toBeDefined();
+  const nextToken = secondQuery.data.searchPosts.nextToken;
+  expect(nextToken).toBeDefined();
+  const thirdQuery = await runQuery(
+    `query {
+        searchPosts(nextToken: "${nextToken}", limit: 3, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`,
+    'Test searchPosts with sort limit and nextToken  ',
+  );
+  expect(thirdQuery).toBeDefined();
+  expect(thirdQuery.data.searchPosts).toBeDefined();
+  const firstItemOfThirdQuery = thirdQuery.data.searchPosts.items[0];
+  expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery);
+});
 
-// test('Test searchPosts with sort on date type', async () => {
-//   const query = await runQuery(
-//     `query {
-//         searchPosts(
-//             sort: {
-//                 field: createdAt
-//                 direction: desc
-//             }) {
-//             items {
-//                 ...FullPost
-//             }
-//         }
-//     }`,
-//     'Test search posts with date type response: ',
-//   );
-//   expect(query).toBeDefined();
-//   expect(query.data.searchPosts).toBeDefined();
-//   const recentItem = new Date(query.data.searchPosts.items[0].createdAt);
-//   const oldestItem = new Date(query.data.searchPosts.items[query.data.searchPosts.items.length - 1].createdAt);
-//   expect(recentItem > oldestItem);
-// });
+test('Test searchPosts with sort on date type', async () => {
+  const query = await runQuery(
+    `query {
+        searchPosts(
+            sort: {
+                field: createdAt
+                direction: desc
+            }) {
+            items {
+                ...FullPost
+            }
+        }
+    }`,
+    'Test search posts with date type response: ',
+  );
+  expect(query).toBeDefined();
+  expect(query.data.searchPosts).toBeDefined();
+  const recentItem = new Date(query.data.searchPosts.items[0].createdAt);
+  const oldestItem = new Date(query.data.searchPosts.items[query.data.searchPosts.items.length - 1].createdAt);
+  expect(recentItem > oldestItem);
+});
 
-// test('Test searchPosts query without filter', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts response without filter response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toBeGreaterThan(0);
-// });
+test('Test searchPosts query without filter', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts response without filter response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toBeGreaterThan(0);
+});
 
-// test('Test searchPosts query with basic filter', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             author: { eq: "snvishna" }
-//         }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts response with basic filter response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toEqual(7);
-// });
+test('Test searchPosts query with basic filter', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts(filter: {
+            author: { eq: "snvishna" }
+        }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts response with basic filter response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toEqual(7);
+});
 
-// test('Test searchPosts query with non-recursive filter', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             title: { eq: "test title" }
-//             ups: { gte: 100 }
-//             percentageUp: { ne: 77.7 }
-//             downs: { range: [29, 31] }
-//             author: { wildcard: "s*a" }
-//             isPublished: { eq: true }
-//         }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts response with non-recursive filter response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toEqual(1);
-//   expect(items[0].id).toBeDefined();
-//   expect(items[0].author).toEqual('snvishna');
-//   expect(items[0].title).toEqual('test title');
-//   expect(items[0].ups).toEqual(170);
-//   expect(items[0].downs).toEqual(30);
-//   expect(items[0].percentageUp).toEqual(88.8);
-//   expect(items[0].isPublished).toEqual(true);
-// });
+test('Test searchPosts query with non-recursive filter', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts(filter: {
+            title: { eq: "test title" }
+            ups: { gte: 100 }
+            percentageUp: { ne: 77.7 }
+            downs: { range: [29, 31] }
+            author: { wildcard: "s*a" }
+            isPublished: { eq: true }
+        }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts response with non-recursive filter response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toEqual(1);
+  expect(items[0].id).toBeDefined();
+  expect(items[0].author).toEqual('snvishna');
+  expect(items[0].title).toEqual('test title');
+  expect(items[0].ups).toEqual(170);
+  expect(items[0].downs).toEqual(30);
+  expect(items[0].percentageUp).toEqual(88.8);
+  expect(items[0].isPublished).toEqual(true);
+});
 
-// test('Test searchPosts query with recursive filter 1', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             downs: { eq: 10 }
-//             or: [
-//                 {
-//                     author: { wildcard: "s*a" },
-//                     downs: { eq: 30 }
-//                 },
-//                 {
-//                     isPublished: { eq: true }
-//                 }
-//             ]
-//         }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts response with recursive filter 1 response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toEqual(1);
-//   expect(items[0].id).toBeDefined();
-//   expect(items[0].author).toEqual('snvishna');
-//   expect(items[0].title).toEqual('test');
-//   expect(items[0].ups).toEqual(157);
-//   expect(items[0].downs).toEqual(10);
-//   expect(items[0].percentageUp).toEqual(97.4);
-//   expect(items[0].isPublished).toEqual(true);
-// });
+test('Test searchPosts query with recursive filter 1', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts(filter: {
+            downs: { eq: 10 }
+            or: [
+                {
+                    author: { wildcard: "s*a" },
+                    downs: { eq: 30 }
+                },
+                {
+                    isPublished: { eq: true }
+                }
+            ]
+        }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts response with recursive filter 1 response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toEqual(1);
+  expect(items[0].id).toBeDefined();
+  expect(items[0].author).toEqual('snvishna');
+  expect(items[0].title).toEqual('test');
+  expect(items[0].ups).toEqual(157);
+  expect(items[0].downs).toEqual(10);
+  expect(items[0].percentageUp).toEqual(97.4);
+  expect(items[0].isPublished).toEqual(true);
+});
 
-// test('Test searchPosts query with recursive filter 2', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             downs: { eq: 30 }
-//             or: [
-//                 {
-//                     author: { wildcard: "s*a" },
-//                     downs: { eq: 30 }
-//                 },
-//                 {
-//                     isPublished: { eq: true }
-//                 }
-//             ]
-//         }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts response with recursive filter 2 response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toEqual(5);
-// });
+test('Test searchPosts query with recursive filter 2', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts(filter: {
+            downs: { eq: 30 }
+            or: [
+                {
+                    author: { wildcard: "s*a" },
+                    downs: { eq: 30 }
+                },
+                {
+                    isPublished: { eq: true }
+                }
+            ]
+        }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts response with recursive filter 2 response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toEqual(5);
+});
 
-// test('Test searchPosts query with recursive filter 3', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             ups:{  gt:199  }
-//             and:[
-//               {
-//                 or:[
-//                   {
-//                     author:{  wildcard:"s*a"  }
-//                   },
-//                   {
-//                     downs:{  ne:30  }
-//                   }
-//                 ]
-//               },
-//               {
-//                 isPublished:{  eq:false  }
-//               }
-//             ]
-//           }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts query with recursive filter 3 response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toEqual(1);
-//   expect(items[0].id).toBeDefined();
-//   expect(items[0].author).toEqual('snvishna');
-//   expect(items[0].title).toEqual('test title');
-//   expect(items[0].ups).toEqual(200);
-//   expect(items[0].downs).toEqual(50);
-//   expect(items[0].percentageUp).toEqual(11.9);
-//   expect(items[0].isPublished).toEqual(false);
-// });
+test('Test searchPosts query with recursive filter 3', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts(filter: {
+            ups:{  gt:199  }
+            and:[
+              {
+                or:[
+                  {
+                    author:{  wildcard:"s*a"  }
+                  },
+                  {
+                    downs:{  ne:30  }
+                  }
+                ]
+              },
+              {
+                isPublished:{  eq:false  }
+              }
+            ]
+          }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts query with recursive filter 3 response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toEqual(1);
+  expect(items[0].id).toBeDefined();
+  expect(items[0].author).toEqual('snvishna');
+  expect(items[0].title).toEqual('test title');
+  expect(items[0].ups).toEqual(200);
+  expect(items[0].downs).toEqual(50);
+  expect(items[0].percentageUp).toEqual(11.9);
+  expect(items[0].isPublished).toEqual(false);
+});
 
-// test('Test searchPosts query with recursive filter 4', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             ups:{  gt:100  }
-//             and:[
-//               {
-//                 or:[
-//                   {
-//                     author:{  wildcard:"s*a"  }
-//                   },
-//                   {
-//                     downs:{  ne:30  }
-//                   }
-//                 ]
-//               },
-//               {
-//                 isPublished:{  eq:false  }
-//               }
-//             ],
-//             not: {
-//               percentageUp: { lt: 20 }
-//             }
-//           }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts query with recursive filter 4 response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toEqual(1);
-//   expect(items[0].id).toBeDefined();
-//   expect(items[0].author).toEqual('snvishna');
-//   expect(items[0].title).toEqual('test title');
-//   expect(items[0].ups).toEqual(160);
-//   expect(items[0].downs).toEqual(30);
-//   expect(items[0].percentageUp).toEqual(97.6);
-//   expect(items[0].isPublished).toEqual(false);
-// });
+test('Test searchPosts query with recursive filter 4', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts(filter: {
+            ups:{  gt:100  }
+            and:[
+              {
+                or:[
+                  {
+                    author:{  wildcard:"s*a"  }
+                  },
+                  {
+                    downs:{  ne:30  }
+                  }
+                ]
+              },
+              {
+                isPublished:{  eq:false  }
+              }
+            ],
+            not: {
+              percentageUp: { lt: 20 }
+            }
+          }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts query with recursive filter 4 response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toEqual(1);
+  expect(items[0].id).toBeDefined();
+  expect(items[0].author).toEqual('snvishna');
+  expect(items[0].title).toEqual('test title');
+  expect(items[0].ups).toEqual(160);
+  expect(items[0].downs).toEqual(30);
+  expect(items[0].percentageUp).toEqual(97.6);
+  expect(items[0].isPublished).toEqual(false);
+});
 
-// test('Test searchPosts query with recursive filter 5', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             downs:{  ne:30  }
-//             or:[
-//               {
-//                 and:[
-//                   {
-//                     author:{  wildcard:"s*a"  },
-//                     not: {
-//                       isPublished: { eq: true }
-//                     }
-//                   }
-//                 ]
-//               },
-//               {
-//                 percentageUp:{  range: [90.0, 100.0]  }
-//               }
-//             ]
-//             and: {
-//               title:{ matchPhrasePrefix: "test t" }
-//             }
-//           }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts query with recursive filter 5 response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toEqual(1);
-//   expect(items[0].id).toBeDefined();
-//   expect(items[0].author).toEqual('snvishna');
-//   expect(items[0].title).toEqual('test title');
-//   expect(items[0].ups).toEqual(200);
-//   expect(items[0].downs).toEqual(50);
-//   expect(items[0].percentageUp).toEqual(11.9);
-//   expect(items[0].isPublished).toEqual(false);
-// });
+test('Test searchPosts query with recursive filter 5', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts(filter: {
+            downs:{  ne:30  }
+            or:[
+              {
+                and:[
+                  {
+                    author:{  wildcard:"s*a"  },
+                    not: {
+                      isPublished: { eq: true }
+                    }
+                  }
+                ]
+              },
+              {
+                percentageUp:{  range: [90.0, 100.0]  }
+              }
+            ]
+            and: {
+              title:{ matchPhrasePrefix: "test t" }
+            }
+          }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts query with recursive filter 5 response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toEqual(1);
+  expect(items[0].id).toBeDefined();
+  expect(items[0].author).toEqual('snvishna');
+  expect(items[0].title).toEqual('test title');
+  expect(items[0].ups).toEqual(200);
+  expect(items[0].downs).toEqual(50);
+  expect(items[0].percentageUp).toEqual(11.9);
+  expect(items[0].isPublished).toEqual(false);
+});
 
-// test('Test searchPosts query with recursive filter 6', async () => {
-//   const response = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             not: {
-//               title:{ wildcard: "*test*" }
-//             }
-//             or:[
-//               {
-//                 and:[
-//                   {
-//                     author:{  wildcard:"s*a"  },
-//                     not: {
-//                       isPublished: { eq: true }
-//                     }
-//                   }
-//                 ]
-//               },
-//               {
-//                 percentageUp:{  range: [90.0, 100.0]  }
-//               }
-//             ]
-//           }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test searchPosts query with recursive filter 6 response: ',
-//   );
-//   expect(response).toBeDefined();
-//   expect(response.data.searchPosts.items).toBeDefined();
-//   const items = response.data.searchPosts.items;
-//   expect(items.length).toEqual(0);
-// });
+test('Test searchPosts query with recursive filter 6', async () => {
+  const response = await runQuery(
+    `query {
+        searchPosts(filter: {
+            not: {
+              title:{ wildcard: "*test*" }
+            }
+            or:[
+              {
+                and:[
+                  {
+                    author:{  wildcard:"s*a"  },
+                    not: {
+                      isPublished: { eq: true }
+                    }
+                  }
+                ]
+              },
+              {
+                percentageUp:{  range: [90.0, 100.0]  }
+              }
+            ]
+          }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test searchPosts query with recursive filter 6 response: ',
+  );
+  expect(response).toBeDefined();
+  expect(response.data.searchPosts.items).toBeDefined();
+  const items = response.data.searchPosts.items;
+  expect(items.length).toEqual(0);
+});
 
-// test('Test deletePosts syncing with Elasticsearch', async () => {
-//   // Create Post
-//   const title = 'to be deleted';
-//   const postToBeDeletedResponse = await runQuery(
-//     getCreatePostsMutation('test author new', title, 1157, 1000, 22.2, true),
-//     'createPost (to be deleted) response: ',
-//   );
-//   expect(postToBeDeletedResponse).toBeDefined();
-//   expect(postToBeDeletedResponse.data.createPost).toBeDefined();
-//   expect(postToBeDeletedResponse.data.createPost.id).toBeDefined();
+test('Test deletePosts syncing with Elasticsearch', async () => {
+  // Create Post
+  const title = 'to be deleted';
+  const postToBeDeletedResponse = await runQuery(
+    getCreatePostsMutation('test author new', title, 1157, 1000, 22.2, true),
+    'createPost (to be deleted) response: ',
+  );
+  expect(postToBeDeletedResponse).toBeDefined();
+  expect(postToBeDeletedResponse.data.createPost).toBeDefined();
+  expect(postToBeDeletedResponse.data.createPost.id).toBeDefined();
 
-//   // Wait for the Post to sync to Elasticsearch
-//   await cf.wait(10, () => Promise.resolve());
+  // Wait for the Post to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
 
-//   const searchResponse1 = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             title: { eq: "${title}" }
-//         }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test deletePosts syncing with Elasticsearch Search_Before response: ',
-//   );
-//   expect(searchResponse1).toBeDefined();
-//   expect(searchResponse1.data.searchPosts.items).toBeDefined();
-//   const items1 = searchResponse1.data.searchPosts.items;
-//   expect(items1.length).toEqual(1);
-//   expect(items1[0].id).toEqual(postToBeDeletedResponse.data.createPost.id);
-//   expect(items1[0].author).toEqual('test author new');
-//   expect(items1[0].title).toEqual(title);
-//   expect(items1[0].ups).toEqual(1157);
-//   expect(items1[0].downs).toEqual(1000);
-//   expect(items1[0].percentageUp).toEqual(22.2);
-//   expect(items1[0].isPublished).toEqual(true);
+  const searchResponse1 = await runQuery(
+    `query {
+        searchPosts(filter: {
+            title: { eq: "${title}" }
+        }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test deletePosts syncing with Elasticsearch Search_Before response: ',
+  );
+  expect(searchResponse1).toBeDefined();
+  expect(searchResponse1.data.searchPosts.items).toBeDefined();
+  const items1 = searchResponse1.data.searchPosts.items;
+  expect(items1.length).toEqual(1);
+  expect(items1[0].id).toEqual(postToBeDeletedResponse.data.createPost.id);
+  expect(items1[0].author).toEqual('test author new');
+  expect(items1[0].title).toEqual(title);
+  expect(items1[0].ups).toEqual(1157);
+  expect(items1[0].downs).toEqual(1000);
+  expect(items1[0].percentageUp).toEqual(22.2);
+  expect(items1[0].isPublished).toEqual(true);
 
-//   const deleteResponse = await runQuery(
-//     `mutation {
-//         deletePost(input: {
-//             id: "${postToBeDeletedResponse.data.createPost.id}"
-//         }) {
-//             ...FullPost
-//         }
-//     }`,
-//     'Test deletePosts syncing with Elasticsearch Perform_Delete response: ',
-//   );
-//   expect(deleteResponse).toBeDefined();
-//   expect(deleteResponse.data.deletePost).toBeDefined();
-//   expect(deleteResponse.data.deletePost.id).toEqual(postToBeDeletedResponse.data.createPost.id);
+  const deleteResponse = await runQuery(
+    `mutation {
+        deletePost(input: {
+            id: "${postToBeDeletedResponse.data.createPost.id}"
+        }) {
+            ...FullPost
+        }
+    }`,
+    'Test deletePosts syncing with Elasticsearch Perform_Delete response: ',
+  );
+  expect(deleteResponse).toBeDefined();
+  expect(deleteResponse.data.deletePost).toBeDefined();
+  expect(deleteResponse.data.deletePost.id).toEqual(postToBeDeletedResponse.data.createPost.id);
 
-//   // Wait for the Deleted Post to sync to Elasticsearch
-//   await cf.wait(10, () => Promise.resolve());
+  // Wait for the Deleted Post to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
 
-//   const searchResponse2 = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             title: { eq: "${title}" }
-//         }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test deletePosts syncing with Elasticsearch Search_After response: ',
-//   );
-//   expect(searchResponse2).toBeDefined();
-//   expect(searchResponse2.data.searchPosts.items).toBeDefined();
-//   const items2 = searchResponse2.data.searchPosts.items;
-//   expect(items2.length).toEqual(0);
-// });
+  const searchResponse2 = await runQuery(
+    `query {
+        searchPosts(filter: {
+            title: { eq: "${title}" }
+        }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test deletePosts syncing with Elasticsearch Search_After response: ',
+  );
+  expect(searchResponse2).toBeDefined();
+  expect(searchResponse2.data.searchPosts.items).toBeDefined();
+  const items2 = searchResponse2.data.searchPosts.items;
+  expect(items2.length).toEqual(0);
+});
 
-// test('Test updatePost syncing with Elasticsearch', async () => {
-//   // Create Post
-//   const author = 'test author update new';
-//   const title = 'to be updated new';
-//   const ups = 2157;
-//   const downs = 2000;
-//   const percentageUp = 22.2;
-//   const isPublished = true;
+test('Test updatePost syncing with Elasticsearch', async () => {
+  // Create Post
+  const author = 'test author update new';
+  const title = 'to be updated new';
+  const ups = 2157;
+  const downs = 2000;
+  const percentageUp = 22.2;
+  const isPublished = true;
 
-//   const postToBeUpdatedResponse = await runQuery(
-//     getCreatePostsMutation(author, title, ups, downs, percentageUp, isPublished),
-//     'createPost (to be updated) response: ',
-//   );
-//   expect(postToBeUpdatedResponse).toBeDefined();
-//   expect(postToBeUpdatedResponse.data.createPost).toBeDefined();
+  const postToBeUpdatedResponse = await runQuery(
+    getCreatePostsMutation(author, title, ups, downs, percentageUp, isPublished),
+    'createPost (to be updated) response: ',
+  );
+  expect(postToBeUpdatedResponse).toBeDefined();
+  expect(postToBeUpdatedResponse.data.createPost).toBeDefined();
 
-//   const id = postToBeUpdatedResponse.data.createPost.id;
-//   expect(id).toBeDefined();
+  const id = postToBeUpdatedResponse.data.createPost.id;
+  expect(id).toBeDefined();
 
-//   // Wait for the Post to sync to Elasticsearch
-//   await cf.wait(10, () => Promise.resolve());
+  // Wait for the Post to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
 
-//   const searchResponse1 = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             id: { eq: "${id}" }
-//         }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test updatePost syncing with Elasticsearch Search_Before response: ',
-//   );
-//   expect(searchResponse1).toBeDefined();
-//   expect(searchResponse1.data.searchPosts.items).toBeDefined();
-//   const items1 = searchResponse1.data.searchPosts.items;
-//   expect(items1.length).toEqual(1);
-//   expect(items1[0].id).toEqual(id);
-//   expect(items1[0].author).toEqual(author);
-//   expect(items1[0].title).toEqual(title);
-//   expect(items1[0].ups).toEqual(ups);
-//   expect(items1[0].downs).toEqual(downs);
-//   expect(items1[0].percentageUp).toEqual(percentageUp);
-//   expect(items1[0].isPublished).toEqual(isPublished);
+  const searchResponse1 = await runQuery(
+    `query {
+        searchPosts(filter: {
+            id: { eq: "${id}" }
+        }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test updatePost syncing with Elasticsearch Search_Before response: ',
+  );
+  expect(searchResponse1).toBeDefined();
+  expect(searchResponse1.data.searchPosts.items).toBeDefined();
+  const items1 = searchResponse1.data.searchPosts.items;
+  expect(items1.length).toEqual(1);
+  expect(items1[0].id).toEqual(id);
+  expect(items1[0].author).toEqual(author);
+  expect(items1[0].title).toEqual(title);
+  expect(items1[0].ups).toEqual(ups);
+  expect(items1[0].downs).toEqual(downs);
+  expect(items1[0].percentageUp).toEqual(percentageUp);
+  expect(items1[0].isPublished).toEqual(isPublished);
 
-//   const newTitle = title.concat('_updated');
-//   const updateResponse = await runQuery(
-//     `mutation {
-//         updatePost(input: {
-//             id: "${id}"
-//             author: "${author}"
-//             title: "${newTitle}"
-//             ups: ${ups}
-//             downs: ${downs}
-//             percentageUp: ${percentageUp}
-//             isPublished: ${isPublished}
-//         }) {
-//             ...FullPost
-//         }
-//     }`,
-//     'Test updatePost syncing with Elasticsearch Perform_Update response: ',
-//   );
-//   expect(updateResponse).toBeDefined();
-//   expect(updateResponse.data.updatePost).toBeDefined();
-//   expect(updateResponse.data.updatePost.id).toEqual(id);
-//   expect(updateResponse.data.updatePost.title).toEqual(newTitle);
+  const newTitle = title.concat('_updated');
+  const updateResponse = await runQuery(
+    `mutation {
+        updatePost(input: {
+            id: "${id}"
+            author: "${author}"
+            title: "${newTitle}"
+            ups: ${ups}
+            downs: ${downs}
+            percentageUp: ${percentageUp}
+            isPublished: ${isPublished}
+        }) {
+            ...FullPost
+        }
+    }`,
+    'Test updatePost syncing with Elasticsearch Perform_Update response: ',
+  );
+  expect(updateResponse).toBeDefined();
+  expect(updateResponse.data.updatePost).toBeDefined();
+  expect(updateResponse.data.updatePost.id).toEqual(id);
+  expect(updateResponse.data.updatePost.title).toEqual(newTitle);
 
-//   // Wait for the Update Post to sync to Elasticsearch
-//   await cf.wait(10, () => Promise.resolve());
+  // Wait for the Update Post to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
 
-//   const searchResponse2 = await runQuery(
-//     `query {
-//         searchPosts(filter: {
-//             id: { eq: "${id}" }
-//         }) {
-//             items { ...FullPost }
-//         }
-//     }`,
-//     'Test updatePost syncing with Elasticsearch Search_After response: ',
-//   );
-//   expect(searchResponse2).toBeDefined();
-//   expect(searchResponse2.data.searchPosts.items).toBeDefined();
-//   const items2 = searchResponse2.data.searchPosts.items;
-//   expect(items2.length).toEqual(1);
-//   expect(items2[0].id).toEqual(id);
-//   expect(items2[0].author).toEqual(author);
-//   expect(items2[0].title).toEqual(newTitle);
-//   expect(items2[0].ups).toEqual(ups);
-//   expect(items2[0].downs).toEqual(downs);
-//   expect(items2[0].percentageUp).toEqual(percentageUp);
-//   expect(items2[0].isPublished).toEqual(isPublished);
-// });
+  const searchResponse2 = await runQuery(
+    `query {
+        searchPosts(filter: {
+            id: { eq: "${id}" }
+        }) {
+            items { ...FullPost }
+        }
+    }`,
+    'Test updatePost syncing with Elasticsearch Search_After response: ',
+  );
+  expect(searchResponse2).toBeDefined();
+  expect(searchResponse2.data.searchPosts.items).toBeDefined();
+  const items2 = searchResponse2.data.searchPosts.items;
+  expect(items2.length).toEqual(1);
+  expect(items2[0].id).toEqual(id);
+  expect(items2[0].author).toEqual(author);
+  expect(items2[0].title).toEqual(newTitle);
+  expect(items2[0].ups).toEqual(ups);
+  expect(items2[0].downs).toEqual(downs);
+  expect(items2[0].percentageUp).toEqual(percentageUp);
+  expect(items2[0].isPublished).toEqual(isPublished);
+});
 
-// test('query users knowing userItems is a string set in ddb but should be a list in es', async () => {
-//   const searchResponse = await GRAPHQL_CLIENT.query(
-//     `query {
-//       searchUsers {
-//         items {
-//           id
-//           name
-//           userItems
-//         }
-//         nextToken
-//         total
-//       }
-//     }`,
-//     {},
-//   );
-//   expect(searchResponse).toBeDefined();
-//   const items = searchResponse.data.searchUsers.items;
-//   expect(items.length).toEqual(4);
-// });
+test('query users knowing userItems is a string set in ddb but should be a list in es', async () => {
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchUsers {
+        items {
+          id
+          name
+          userItems
+        }
+        nextToken
+        total
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  const items = searchResponse.data.searchUsers.items;
+  expect(items.length).toEqual(4);
+});
 
-// test('query using string range between names', async () => {
-//   // using string range queries
-//   const expectedUsers = ['user2', 'user3'];
-//   const expectedLength = 2;
-//   const searchResponse = await GRAPHQL_CLIENT.query(
-//     `query {
-//       searchUsers(filter: {
-//         name: {
-//           lt: "user4"
-//           gt: "user1"
-//         }
-//       }) {
-//         items {
-//           id
-//           name
-//         }
-//       }
-//     }`,
-//     {},
-//   );
-//   expect(searchResponse).toBeDefined();
-//   const items = searchResponse.data.searchUsers.items;
-//   console.log(items);
-//   expect(items.length).toEqual(expectedLength);
-//   items.forEach((item: any) => {
-//     expect(expectedUsers).toContain(item.name);
-//   });
-// });
+test('query using string range between names', async () => {
+  // using string range queries
+  const expectedUsers = ['user2', 'user3'];
+  const expectedLength = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchUsers(filter: {
+        name: {
+          lt: "user4"
+          gt: "user1"
+        }
+      }) {
+        items {
+          id
+          name
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  const items = searchResponse.data.searchUsers.items;
+  console.log(items);
+  expect(items.length).toEqual(expectedLength);
+  items.forEach((item: any) => {
+    expect(expectedUsers).toContain(item.name);
+  });
+});
 
-// test('query using date range for createdAt', async () => {
-//   const expectedDates = ['2017-06-10', '2017-08-22'];
-//   const expectedLength = 2;
-//   const searchResponse = await GRAPHQL_CLIENT.query(
-//     `query {
-//       searchUsers(filter: {
-//         createdAt: {
-//           lte: "2017-08-22"
-//           gte: "2017-06-10"
-//         }
-//       }) {
-//         items {
-//           id
-//           name
-//           createdAt
-//           userItems
-//         }
-//       }
-//     }`,
-//     {},
-//   );
-//   expect(searchResponse).toBeDefined();
-//   const items = searchResponse.data.searchUsers.items;
-//   console.log(items);
-//   expect(items.length).toEqual(expectedLength);
-//   items.forEach((item: any) => {
-//     expect(expectedDates).toContain(item.createdAt);
-//   });
-// });
+test('query using date range for createdAt', async () => {
+  const expectedDates = ['2017-06-10', '2017-08-22'];
+  const expectedLength = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchUsers(filter: {
+        createdAt: {
+          lte: "2017-08-22"
+          gte: "2017-06-10"
+        }
+      }) {
+        items {
+          id
+          name
+          createdAt
+          userItems
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  const items = searchResponse.data.searchUsers.items;
+  console.log(items);
+  expect(items.length).toEqual(expectedLength);
+  items.forEach((item: any) => {
+    expect(expectedDates).toContain(item.createdAt);
+  });
+});
 
-// test('query for books by Agatha Christie with model using @key', async () => {
-//   const expectedBookItemsLength = 2;
-//   const expectedBookNames: string[] = ['Murder on the Orient Express', 'Death on the Nile'];
-//   const searchResponse = await GRAPHQL_CLIENT.query(
-//     `
-//     query SearchBooks {
-//       searchBooks(filter: {
-//         author: {
-//           eq: "Agatha Christie"
-//         }
-//       }) {
-//         items {
-//           author
-//           name
-//           genre
-//         }
-//       }
-//     }
-//     `,
-//     {},
-//   );
-//   expect(searchResponse).toBeDefined();
-//   const items: any[] = searchResponse.data.searchBooks.items;
-//   expect(items.length).toEqual(expectedBookItemsLength);
-//   items.forEach((item: any) => {
-//     expect(expectedBookNames).toContain(item.name);
-//   });
-// });
+test('query for books by Agatha Christie with model using @key', async () => {
+  const expectedBookItemsLength = 2;
+  const expectedBookNames: string[] = ['Murder on the Orient Express', 'Death on the Nile'];
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `
+    query SearchBooks {
+      searchBooks(filter: {
+        author: {
+          eq: "Agatha Christie"
+        }
+      }) {
+        items {
+          author
+          name
+          genre
+        }
+      }
+    }
+    `,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  const items: any[] = searchResponse.data.searchBooks.items;
+  expect(items.length).toEqual(expectedBookItemsLength);
+  items.forEach((item: any) => {
+    expect(expectedBookNames).toContain(item.name);
+  });
+});
 
 test('test searches with datastore enabled types', async () => {
   const createTodoResponse = await createTodo({ id: '001', name: 'get milk' });
