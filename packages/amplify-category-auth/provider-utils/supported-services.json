@@ -734,7 +734,7 @@
       },
       {
         "key": "hostedUIDomainName",
-        "question": "What domain name prefix you want us to create for you?",
+        "question": "What domain name prefix do you want to use?",
         "required": true,
         "andConditions": [
           {
