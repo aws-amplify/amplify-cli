@@ -41,7 +41,7 @@ export type SyncConfigLAMBDA = {
 export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
 
 export type ResolverConfig = {
-  project: SyncConfig;
+  project?: SyncConfig;
   models?: {
     [key: string]: SyncConfig;
   };
