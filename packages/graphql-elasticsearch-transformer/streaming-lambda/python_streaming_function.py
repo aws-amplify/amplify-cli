@@ -174,16 +174,6 @@ def _lambda_handler(event, context):
         if event_name == 'AWS:KINESIS:RECORD':
             event_name = 'INSERT'
 
-        # Update counters
-        if event_name == 'INSERT':
-            cnt_insert += 1
-        elif event_name == 'MODIFY':
-            cnt_modify += 1
-        elif event_name == 'REMOVE':
-            cnt_remove += 1
-        else:
-            logger.warning('Unsupported event_name: %s', event_name)
-
         is_ddb_insert_or_update = (event_name == 'INSERT') or (event_name == 'MODIFY')
         is_ddb_delete = event_name == 'REMOVE'
         image_name = 'NewImage' if is_ddb_insert_or_update else 'OldImage'
@@ -195,6 +185,21 @@ def _lambda_handler(event, context):
         logger.debug(image_name + ': %s', ddb[image_name])
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
+        
+        # Sync enabled APIs do soft delete. We need to delete the record in ES if _deleted field is set
+        if ES_USE_EXTERNAL_VERSIONING and event_name == 'MODIFY' and '_deleted' in  doc_fields and doc_fields['_deleted']:
+            is_ddb_insert_or_update = False
+            is_ddb_delete = True
+            
+         # Update counters
+        if event_name == 'INSERT':
+            cnt_insert += 1
+        elif event_name == 'MODIFY':
+            cnt_modify += 1
+        elif event_name == 'REMOVE':
+            cnt_remove += 1
+        else:
+            logger.warning('Unsupported event_name: %s', event_name)
 
         logger.debug('Deserialized doc_fields: %s', doc_fields)
 
@@ -210,12 +215,13 @@ def _lambda_handler(event, context):
                                 '_type': doc_type,
                                 '_id': doc_id}}
             # Add external versioning if necessary
-            if ES_USE_EXTERNAL_VERSIONING:
+            if ES_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['index'].update([
                     ('version_type', 'external'),
                     ('_version', doc_fields['_version'])
                 ])
-                del doc_fields['_version']
+                doc_fields.pop('_ttl', None)
+                doc_fields.pop('_version', None)
             # Append ES Action line with 'index' directive
             es_actions.append(json.dumps(action))
             # Append JSON payload
@@ -229,7 +235,7 @@ def _lambda_handler(event, context):
         elif is_ddb_delete:
             action = {'delete': {'_index': doc_es_index_name,
                                 '_type': doc_type, '_id': doc_id}}
-            if ES_USE_EXTERNAL_VERSIONING:
+            if ES_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['delete'].update([
                     ('version_type', 'external'),
                     ('_version', doc_fields['_version'])
