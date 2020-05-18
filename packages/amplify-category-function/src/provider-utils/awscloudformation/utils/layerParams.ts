@@ -2,11 +2,12 @@ import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interf
 
 export type LayerParameters = {
   layerName: string;
-  layerPermissions: Permissions;
+  layerPermissions: Permissions[];
   runtimes: FunctionRuntime[];
   providerContext: ProviderContext;
   authorizedAccountIds?: string;
   authorizedOrgId?: string;
+  layerVersion?: string;
 };
 
 export enum Permissions {

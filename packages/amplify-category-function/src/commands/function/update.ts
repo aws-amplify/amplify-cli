@@ -1,7 +1,9 @@
-import { category as categoryName } from '../../constants';
+import { categoryName ,chooseServiceMessage,chooseServiceChoices,ServiceNames} from '../../provider-utils/awscloudformation/utils/constants';
 import { supportedServices } from '../../provider-utils/supported-services';
 
 const subcommand = 'update';
+
+let options;
 
 module.exports = {
   name: subcommand,
@@ -10,7 +12,7 @@ module.exports = {
     const { amplify } = context;
     const servicesMetadata = supportedServices;
     return amplify
-      .serviceSelectionPrompt(context, categoryName, servicesMetadata)
+      .serviceSelectionPrompt(context, categoryName, servicesMetadata,chooseServiceMessage, chooseServiceChoices)
       .then(result => {
         const providerController = servicesMetadata[result.service].providerController;
         if (!providerController) {
@@ -19,7 +21,15 @@ module.exports = {
         }
         return providerController.updateResource(context, categoryName, result.service);
       })
-      .then(() => context.print.success('Successfully updated resource'))
+      .then(result => {
+        const { print } = context;
+        const { name, service } = result;
+        if (service === ServiceNames.LambdaFunction) {
+          print.success(`Successfully added resource ${name} locally.`);
+        } else if (service === ServiceNames.LambdaLayer) {
+          print.success(`Successfully added resource ${name} locally.`);
+        }
+      })
       .catch(err => {
         context.print.error(err.stack);
       });

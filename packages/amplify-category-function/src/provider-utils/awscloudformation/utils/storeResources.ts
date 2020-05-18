@@ -122,7 +122,16 @@ export function saveCFNParameters(
   }
 }
 
-function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
+export function createLayerParametersFile(context,parameters,layerDirPath){
+  let parametersFileName = 'layer-parameters.json';
+  fs.ensureDirSync(layerDirPath);
+  const parametersFilePath = path.join(layerDirPath, parametersFileName);
+  const currentParameters = fs.existsSync(parametersFilePath) ? context.amplify.readJsonFile(parametersFilePath) : {};
+  const jsonString = JSON.stringify({ ...currentParameters, ...parameters }, null, 4);
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+}
+
+export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
   fs.ensureDirSync(resourceDirPath);

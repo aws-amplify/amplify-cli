@@ -139,6 +139,8 @@ async function addLayerResource(
   await serviceConfig.walkthroughs.createWalkthrough(context, parameters);
 
   const layerDirPath = createLayerFolders(context, parameters);
+  const layerParams = _.pick(parameters,['runtimes','layerPermissions']);
+  createLayerParametersFile(context,layerParams,layerDirPath);
   createLayerCfnFile(context, parameters, layerDirPath);
 
   const { print } = context;
@@ -163,9 +165,56 @@ export async function updateResource(
   context,
   category,
   service,
-  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
+  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
   resourceToUpdate?,
 ) {
+    // load the service config for this service
+    const serviceConfig: ServiceConfig = supportedServices[service];
+    const BAD_SERVICE_ERR = `amplify-category-function is not configured to provide service type ${service}`;
+    if (!serviceConfig) {
+      throw BAD_SERVICE_ERR;
+    }
+    switch (service) {
+      case ServiceNames.LambdaFunction:
+        return updateFunctionResource(context, category, service, parameters, resourceToUpdate);
+      case ServiceNames.LambdaLayer:
+        return updateLayerResource(context,category,service,serviceConfig,parameters);
+      default:
+        throw BAD_SERVICE_ERR;
+    }
+}
+
+export async function updateLayerResource(context,
+  category,
+  service,
+  serviceConfig: ServiceConfig,
+  parameters?: Partial<LayerParameters>,
+): Promise<object> {
+
+  if (!serviceConfig) {
+    throw `amplify-category-function is not configured to provide service type ${service}`;
+  }
+
+  if (!parameters) {
+    parameters = {};
+    parameters.providerContext = {
+      provider: provider,
+      service: ServiceNames.LambdaLayer, // TODO: switch to using service
+      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+    };
+  }
+  await serviceConfig.walkthroughs.updateWalkthrough(context,parameters);
+
+  // generate layer parameters file and CFn file for the updated layer
+  const layerDirPath = createLayerFolders(context, parameters); // update based
+  const layerParams = _.pick(parameters,['runtimes','layerPermissions']);
+  createLayerParametersFile(context,layerParams,layerDirPath);
+  createLayerCfnFile(context, parameters, layerDirPath);
+  return { name: parameters.layerName, service: service };
+}
+
+export async function updateFunctionResource(context, category, service, parameters, resourceToUpdate){
+  let answers;
   const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;

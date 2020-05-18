@@ -57,7 +57,7 @@ export async function templateWalkthrough(context: any, params: Partial<Function
  */
 export async function runtimeWalkthrough(
   context: any,
-  params: Partial<FunctionParameters> | Partial<LayerParameters>,
+  params: Partial<FunctionParameters>,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
   const { service } = params.providerContext;
   const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
@@ -71,7 +71,49 @@ export async function runtimeWalkthrough(
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
   };
-  const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
+  // runtime selections
+  const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
+  const plugins = [];
+  for (let selection of selections) {
+    const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
+    const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
+    if (!depCheck.hasRequiredDependencies) {
+      context.print.warning(
+        depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed',
+      );
+    }
+    plugins.push(plugin);
+  }
+  if (service === ServiceNames.LambdaFunction) {
+    return _functionRuntimeWalkthroughHelper(params, plugins[0], selections[0]);
+  } else if (service === ServiceNames.LambdaLayer) {
+    return _layerRuntimeWalkthroughHelper(params, plugins, selections);
+  }
+}
+
+/**
+ * Selects a layer runtime
+ */
+export async function runtimeWalkthroughLayer(
+  context: any,
+  params: Partial<LayerParameters>,
+): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
+  const { service } = params.providerContext;
+  //get the runtimes from template parameters
+  const runtime = params.runtimes.map(runtime => runtime.name);
+  const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
+    pluginType: 'functionRuntime',
+    listOptionsField: 'runtimes',
+    predicate: condition => {
+      return condition.provider === params.providerContext.provider && _.includes(condition.service,service);
+    },
+    selectionPrompt: 'Choose the function runtime that you want to use:',
+    notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
+    service: service,
+    runtimeState: runtime
+  };
+  // runtime selections
+  const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugins = [];
   for (let selection of selections) {
     const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
@@ -162,6 +204,13 @@ async function getSelectionsFromContributors<T>(
     .reduce((acc, it) => acc.concat(it), [])
     .sort((a, b) => a.name.localeCompare(b.name)); // sort by display name so that selections order is deterministic
 
+  // getting old default state
+  const prevruntime = selections.filter(runtime => {
+    for(let val of selectionOptions.runtimeState){
+      if(val === runtime.name)
+      return runtime;
+    }
+  }).sort((a, b) => a.name.localeCompare(b.name));
   // sanity checks
   let selection;
   if (selections.length === 0) {
@@ -186,12 +235,12 @@ async function getSelectionsFromContributors<T>(
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
-        default: selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : undefined,
+        default: selectionOptions.service === ServiceNames.LambdaFunction ? (selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : undefined) : Object.values(prevruntime)
       },
     ]);
     selection = answer.selection;
   }
-
+  prevruntime.forEach(runtime => selection.push(runtime.value)); // remove duplicate
   if (!Array.isArray(selection)) {
     selection = [selection];
   }
@@ -226,6 +275,7 @@ interface PluginSelectionOptions<T extends FunctionRuntimeCondition | FunctionTe
   notFoundMessage: string;
   selectionPrompt: string;
   service: string;
+  runtimeState?: string[];
 }
 
 interface PluginSelection {

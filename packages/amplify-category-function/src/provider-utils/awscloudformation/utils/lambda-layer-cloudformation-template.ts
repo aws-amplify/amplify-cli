@@ -19,36 +19,38 @@ export default function generateLayerCfnObj(parameters) {
   layer.deletionPolicy(POLICY_RETAIN);
   _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });
 
-  const layerVersionPermissionInput = {
+  let layerVersionPermissionInput  = {
     Action: 'lambda:GetLayerPermission',
-    LayerVersionArn: Fn.Ref(layer.Properties.LayerName),
+    LayerVersionArn: Fn.Ref(layer.Properties.LayerName), // generate layer version name with version param
   };
-  let layerVersionPermission;
+  let currentParams = {
+    OrganizationId: undefined,
+    Principal: undefined
+  };
 
-  if (parameters.layerPermissions === Permissions.awsOrg) {
-    if (!parameters.authorizedOrgId) {
-      throw 'AWS Organization ID is missing, failed to generate cloudformation.';
+  parameters.layerPermissions.forEach(permission => {
+    if (permission === Permissions.awsOrg) {
+      if (!parameters.authorizedOrgId) {
+        throw 'AWS Organization ID is missing, failed to generate cloudformation.';
+      }
+      currentParams.OrganizationId = parameters.authorizedOrgId;
+    } else if (permission === Permissions.public) {
+      currentParams.Principal = '*';
     }
-
-    layerVersionPermission = new Lambda.LayerVersionPermission({
-      ...layerVersionPermissionInput,
-      Principal: '*',
-    });
-    layerVersionPermission.OganizationId = parameters.authorizedOrgId;
-  } else if (parameters.layerPermissions === Permissions.awsAccounts) {
-    if (!parameters.authorizedAccountIds || parameters.authorizedAccountIds.length <= 0) {
-      throw 'No AWS Account IDs present, failed to generate cloudformation.';
+    else{
+      currentParams.Principal = "accountId-private";
     }
+  });
+  let layerVersionPermission = new Lambda.LayerVersionPermission({
+    ...layerVersionPermissionInput,
+    Principal: currentParams.Principal,
+    OrganizationId: currentParams.OrganizationId
+  });
 
-    layerVersionPermission = new Lambda.LayerVersionPermission({
-      ...layerVersionPermissionInput,
-      Principal: parameters.authorizedAccountIds,
-    });
-  } else if (parameters.layerPermissions === Permissions.public) {
-    layerVersionPermission = new Lambda.LayerVersionPermission({
-      ...layerVersionPermissionInput,
-      Principal: '*',
-    });
+
+  if (layerVersionPermission) {
+    layerVersionPermission.deletionPolicy(POLICY_RETAIN);
+    _.assign(layerVersionPermission, { UpdateReplacePolicy: POLICY_RETAIN });
   }
 
   const cfnObj = {
@@ -64,6 +66,7 @@ export default function generateLayerCfnObj(parameters) {
     },
     Resources: {
       LambdaLayer: layer,
+      LambdaLayerPermission: layerVersionPermission,
     },
     Outputs: {
       Arn: {
@@ -78,18 +81,10 @@ export default function generateLayerCfnObj(parameters) {
       },
       Permission: {
         Value: {
-          Ref: 'LambdaLayerPermission',
+          Ref: 'layerVersionPermission',
         },
       },
     },
   };
-
-  if (layerVersionPermission) {
-    layerVersionPermission.deletionPolicy(POLICY_RETAIN);
-    layerVersionPermission.UpdateReplacePolicy = POLICY_RETAIN;
-    _.assign(layerVersionPermission, { UpdateReplacePolicy: POLICY_RETAIN });
-
-    cfnObj.Resources = { ...cfnObj.Resources, ...layerVersionPermission };
-  }
   return cfnObj;
 }

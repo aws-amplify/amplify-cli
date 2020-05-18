@@ -1,8 +1,12 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import uuid from 'uuid';
+import path from 'path';
 import { LayerParameters, Permissions } from '../utils/layerParams';
-import { runtimeWalkthrough } from '../utils/functionPluginLoader';
+import { runtimeWalkthrough,runtimeWalkthroughLayer } from '../utils/functionPluginLoader';
+import { ServiceNames, categoryName, layerParametersFileName} from '../utils/constants';
+import { objectExtension } from 'graphql-transformer-core/lib/TransformerContext';
+
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
@@ -12,15 +16,110 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
 
   _.assign(parameters, await inquirer.prompt(layerPermissionsQuestion()));
 
-  switch (parameters.layerPermissions) {
-    case Permissions.awsAccounts:
-      _.assign(parameters, await inquirer.prompt(layerAccountAccessQuestion()));
-      break;
-    case Permissions.awsOrg:
-      _.assign(parameters.authorizedOrgId, await inquirer.prompt(layerOrgAccessQuestion()));
-      break;
+  parameters.layerPermissions.forEach(async (permissions) => {
+    switch (permissions) {
+      case Permissions.awsAccs:
+        _.assign(parameters, await inquirer.prompt(layerAccountAccessQuestion()));
+        break;
+      case Permissions.awsOrg:
+        _.assign(parameters, await inquirer.prompt(layerOrgAccessQuestion()));
+        break;
+    }
+  });
+  return parameters;
+}
+
+export async function updateLayerWalkthrough(
+  context: any,
+  templateParameters: Partial<LayerParameters> = {},
+): Promise<Partial<LayerParameters>> {
+
+  const {allResources} = await context.amplify.getResourceStatus();
+  const resources = allResources
+  .filter(resource => resource.service === ServiceNames.LambdaLayer)
+  .map(resource => resource.resourceName);
+
+  if (resources.length === 0) {
+    context.print.error('No Lambda Layer resource to update. Please use "amplify add function" command to create a new Function');
+    process.exit(0);
+    return;
+  }
+  const resourceQuestion = [
+    {
+      name: 'resourceName',
+      message: 'Please select the Lambda Layer you would want to update',
+      type: 'list',
+      choices: resources,
+    },
+  ];
+  const resourceAnswer = await inquirer.prompt(resourceQuestion);
+  let answer;
+  templateParameters.layerName = String(resourceAnswer.resourceName);
+
+  // get layer-patameters
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(projectBackendDirPath, categoryName, templateParameters.layerName);
+  const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
+  let currentParameters;
+  try {
+    currentParameters = context.amplify.readJsonFile(parametersFilePath);
+  } catch (e) {
+    currentParameters = {};
+  }
+
+  //templateParameters = {...templateParameters , ...currentParameters};
+  _.assign(templateParameters,currentParameters);
+  // runtime question
+  let islayerVersionChanged : boolean = true;
+  if(await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)){
+    let runtimeReturn = await runtimeWalkthroughLayer(context, templateParameters);
+    templateParameters.runtimes = runtimeReturn.map(val => val.runtime);
+  }else{
+    islayerVersionChanged = false;
+  }
+  if(await context.amplify.confirmPrompt.run("Do you want to adjust who can access the current & new layer version?",true)){
+    _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion()));
+
+    for(let permissions of templateParameters.layerPermissions){
+      switch (permissions) {
+        case Permissions.awsAccs:
+          _.assign(templateParameters, await inquirer.prompt(layerAccountAccessQuestion()));
+          break;
+        case Permissions.awsOrg:
+          _.assign(templateParameters, await inquirer.prompt(layerOrgAccessQuestion()));
+          break;
+      }
+    };
+    if(islayerVersionChanged){
+      _.assign(templateParameters,await inquirer.prompt(layerVersionQuestion(context)))
+    }
   }
   return parameters;
+}
+
+function layerVersionQuestion(context : any){
+  return[
+    {
+      type: 'input',
+      name: 'layerVersion',
+      message: 'Provide a version number for your updated Lambda layer:',
+      validate: input => {
+        // TODO: make sure name is unique from other layers in project
+        if (/^[a-zA-Z0-9_\-]{1,140}$/.test(input)) {
+          return true;
+        }
+        return 'Lambda Layer names are 1-140 characters long and can only contain letters, numbers, -, _';
+      },
+      default: () => {
+        const appName = context.amplify
+          .getProjectDetails()
+          .projectConfig.projectName.toLowerCase()
+          .replace(/[^a-zA-Z0-9]/gi, '');
+        const [shortId] = uuid().split('-');
+        return `${appName}${shortId}`;
+      },
+    },
+  ];
 }
 
 function layerNameQuestion(context: any) {
@@ -54,7 +153,7 @@ function layerNameQuestion(context: any) {
 function layerPermissionsQuestion() {
   return [
     {
-      type: 'list',
+      type: 'checkbox',
       name: 'layerPermissions',
       message: 'Who should have permission to use this layer?',
       choices: [
@@ -84,7 +183,7 @@ function layerAccountAccessQuestion() {
   return [
     {
       type: 'input',
-      name: 'layerAccountAccess',
+      name: 'authorizedAccountIds',
       message: 'Provide a list of comma-separated AWS account IDs:',
       validate: input => {
         const accounts = input.split(',');
@@ -109,7 +208,7 @@ function layerOrgAccessQuestion() {
   return [
     {
       type: 'input',
-      name: 'layerOrgAccess',
+      name: 'authorizedOrgId',
       message: 'Provide an AWS organization ID:',
       validate: input => {
         if (/^o-[a-zA-Z0-9]{10,32}$/.test(input)) {
