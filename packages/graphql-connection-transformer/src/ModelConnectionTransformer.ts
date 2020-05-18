@@ -17,6 +17,7 @@ import {
   makeModelSortDirectionEnumObject,
   SortKeyFieldInfoTypeName,
   CONDITIONS_MINIMUM_VERSION,
+  makeAttributeTypeEnum,
 } from 'graphql-dynamodb-transformer';
 import {
   getBaseType,
@@ -683,6 +684,13 @@ export class ModelConnectionTransformer extends Transformer {
     const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx, this.supportsConditions(ctx));
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
+    }
+
+    if (this.supportsConditions(ctx)) {
+      const attributeTypeEnum = makeAttributeTypeEnum();
+      if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
+        ctx.addType(attributeTypeEnum);
+      }
     }
 
     // Create sort key condition inputs for valid sort key types

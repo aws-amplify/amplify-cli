@@ -1,3 +1,4 @@
+import { URLSearchParams } from 'url';
 import { decodeHeaderFromQueryParam } from '../../../../../server/subscription/websocket-server/utils/decode-header';
 
 describe('decodeHeaderFromQueryParam', () => {

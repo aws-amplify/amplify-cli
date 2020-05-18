@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.15.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.14.0...graphql-transformer-common@4.15.0) (2020-05-08)
+
+
+### Features
+
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+
+
+
+
+
 # [4.14.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.13.3...graphql-transformer-common@4.14.0) (2020-03-22)
 
 

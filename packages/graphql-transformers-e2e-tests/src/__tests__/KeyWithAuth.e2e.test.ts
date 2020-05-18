@@ -107,7 +107,7 @@ beforeAll(async () => {
         @auth(rules: [{ allow: owner, ownerField: "customerEmail" }, { allow: groups, groups: ["Admin"] }])
     {
         customerEmail: String!
-        createdAt: String
+        createdAt: AWSDateTime
         orderId: String!
     }
     `;

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.2...amplify-e2e-tests@2.17.3) (2020-05-15)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** adding unique Id to Role name ([#4231](https://github.com/aws-amplify/amplify-cli/issues/4231)) ([21de1af](https://github.com/aws-amplify/amplify-cli/commit/21de1affd89142598a1f8022c387b3c04994b1e0))
+* **cli:** add information on pre/post pull in learn more ([#3880](https://github.com/aws-amplify/amplify-cli/issues/3880)) ([b40867f](https://github.com/aws-amplify/amplify-cli/commit/b40867f148454d8d87a619d67e1df2e6a6f982dc))
+* **cli:** fixes issues for missing build or start command ([#3918](https://github.com/aws-amplify/amplify-cli/issues/3918)) ([25c53ce](https://github.com/aws-amplify/amplify-cli/commit/25c53ce81a74c3f706f60b0519eda0a4338edbf7)), closes [#3728](https://github.com/aws-amplify/amplify-cli/issues/3728) [#3806](https://github.com/aws-amplify/amplify-cli/issues/3806)
+
+
+
+
+
+## [2.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.1...amplify-e2e-tests@2.17.2) (2020-05-08)
+
+
+### Bug Fixes
+
+* add AttributeTypeEnum for connections on models with no codegen ([#4102](https://github.com/aws-amplify/amplify-cli/issues/4102)) ([4e92402](https://github.com/aws-amplify/amplify-cli/commit/4e92402e0b0fae30501972f3ad16203fc19ba287))
+* e2e init and prediction test failures ([#4195](https://github.com/aws-amplify/amplify-cli/issues/4195)) ([2ea6a42](https://github.com/aws-amplify/amplify-cli/commit/2ea6a42829086d0c6ab10acd77cbbd0fc9320938))
+* remove duplicate permissions from resources in same category ([#4091](https://github.com/aws-amplify/amplify-cli/issues/4091)) ([3f6036b](https://github.com/aws-amplify/amplify-cli/commit/3f6036b6b614a5e7a5f89e3ede289ffafba9fbb3))
+
+
+
+
+
 ## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.0...amplify-e2e-tests@2.17.1) (2020-04-23)
 
 

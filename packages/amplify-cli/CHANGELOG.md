@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.20.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.19.0...@aws-amplify/cli@4.20.0) (2020-05-15)
+
+
+### Bug Fixes
+
+* **cli:** add information on pre/post pull in learn more ([#3880](https://github.com/aws-amplify/amplify-cli/issues/3880)) ([b40867f](https://github.com/aws-amplify/amplify-cli/commit/b40867f148454d8d87a619d67e1df2e6a6f982dc))
+* **cli:** fixes issues for missing build or start command ([#3918](https://github.com/aws-amplify/amplify-cli/issues/3918)) ([25c53ce](https://github.com/aws-amplify/amplify-cli/commit/25c53ce81a74c3f706f60b0519eda0a4338edbf7)), closes [#3728](https://github.com/aws-amplify/amplify-cli/issues/3728) [#3806](https://github.com/aws-amplify/amplify-cli/issues/3806)
+* append env resource params instead of replace ([#4161](https://github.com/aws-amplify/amplify-cli/issues/4161)) ([4f1aa97](https://github.com/aws-amplify/amplify-cli/commit/4f1aa97685c0162044e299d97668b1d92e4ad1dc))
+* revert esm change temporarily, it conflicts with some imports ([#4223](https://github.com/aws-amplify/amplify-cli/issues/4223)) ([1b9bf06](https://github.com/aws-amplify/amplify-cli/commit/1b9bf063c500b32c13d8190277e1940fcba8cf21))
+
+
+### Features
+
+* make 'dev' the default envname if it's not present ([#4201](https://github.com/aws-amplify/amplify-cli/issues/4201)) ([0b0e775](https://github.com/aws-amplify/amplify-cli/commit/0b0e7758b825d78686af2fd37b13b8dcd1f28674))
+
+
+### Performance Improvements
+
+* use node's async esm module loader above node>=12 ([#4221](https://github.com/aws-amplify/amplify-cli/issues/4221)) ([a26eebe](https://github.com/aws-amplify/amplify-cli/commit/a26eebe68fde928b1286b158c33eeaa2db6151e9))
+
+
+
+
+
+# [4.19.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.18.1...@aws-amplify/cli@4.19.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* prevent naming conflicts with new env names ([#3875](https://github.com/aws-amplify/amplify-cli/issues/3875)) ([a7734ae](https://github.com/aws-amplify/amplify-cli/commit/a7734aedb8e846620874ae69e5c38da393dbbe30)), closes [#3854](https://github.com/aws-amplify/amplify-cli/issues/3854)
+* replaced v1 docs references with v2 docs references ([#4169](https://github.com/aws-amplify/amplify-cli/issues/4169)) ([b578c2d](https://github.com/aws-amplify/amplify-cli/commit/b578c2dcd10038367c653ede2f6da42e7644b41b))
+
+
+### Features
+
+* notify if a CLI update is available ([#4046](https://github.com/aws-amplify/amplify-cli/issues/4046)) ([1a597a8](https://github.com/aws-amplify/amplify-cli/commit/1a597a8c05609521ea283be3d28a1f51ba3c4a8a))
+
+
+### Performance Improvements
+
+* plugin scan perf optimization ([#4187](https://github.com/aws-amplify/amplify-cli/issues/4187)) ([3b2cae6](https://github.com/aws-amplify/amplify-cli/commit/3b2cae6f5deb78069955676714c9b8248ca89019))
+
+
+
+
+
 ## [4.18.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.18.0...@aws-amplify/cli@4.18.1) (2020-04-23)
 
 
@@ -27,7 +73,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 * add default editor if not present ([#3844](https://github.com/aws-amplify/amplify-cli/issues/3844)) ([549e1ad](https://github.com/aws-amplify/amplify-cli/commit/549e1ade795da3f7d3d9e9fbeb5a380bacab6dd2))
-* dotnet fucntion provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
+* dotnet function provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
 * rename node pluign packages ([#3788](https://github.com/aws-amplify/amplify-cli/issues/3788)) ([7b1f0f2](https://github.com/aws-amplify/amplify-cli/commit/7b1f0f2c7bb67a9d154e8462643fb0fe35e88399))
 
 

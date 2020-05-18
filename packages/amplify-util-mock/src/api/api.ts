@@ -111,6 +111,7 @@ export class APITest {
   private async reload(context, filePath, action) {
     const apiDir = await this.getAPIBackendDirectory(context);
     const inputSchemaPath = path.join(apiDir, 'schema');
+    const customStackPath = path.join(apiDir, 'stacks');
     const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
@@ -141,8 +142,16 @@ export class APITest {
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
       } else if (filePath.includes(parameterFilePath)) {
-        context.print.info('API Parameter change detected. Reloading...');
-        this.apiParameters = await this.loadAPIParameters(context);
+        const apiParameters = await this.loadAPIParameters(context);
+        if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
+          context.print.info('API Parameter change detected. Reloading...');
+          this.apiParameters = apiParameters;
+          const config = await this.runTransformer(context, this.apiParameters);
+          await this.appSyncSimulator.reload(config);
+          await this.generateCode(context);
+        }
+      } else if (filePath.includes(customStackPath)) {
+        context.print.info('Custom stack change detected. Reloading...');
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
@@ -206,7 +215,7 @@ export class APITest {
             };
           } else {
             throw new Error(
-              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function',
+              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://docs.amplify.aws/cli/graphql-transformer/directives#function',
             );
           }
         }),

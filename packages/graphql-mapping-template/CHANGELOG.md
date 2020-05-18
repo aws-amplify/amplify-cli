@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.13.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.3...graphql-mapping-template@4.13.4) (2020-05-08)
+
+
+### Bug Fixes
+
+* use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+
+
+
+
+
 ## [4.13.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.2...graphql-mapping-template@4.13.3) (2020-02-13)
 
 **Note:** Version bump only for package graphql-mapping-template

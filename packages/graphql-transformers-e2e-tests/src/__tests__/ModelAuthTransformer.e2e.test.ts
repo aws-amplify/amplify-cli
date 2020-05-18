@@ -105,8 +105,8 @@ describe(`ModelAuthTests`, async () => {
       type Post @model @auth(rules: [{ allow: owner }]) {
           id: ID!
           title: String!
-          createdAt: String
-          updatedAt: String
+          createdAt: AWSDateTime
+          updatedAt: AWSDateTime
           owner: String
       }
       type Salary @model @auth(

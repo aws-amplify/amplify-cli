@@ -6,7 +6,7 @@ import { constants } from '../domain/constants';
 import { AmplifyEvent } from '../domain/amplify-event';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
 import { readJsonFileSync } from '../utils/readJsonFile';
-import { validPluginNameSync } from './verify-plugin';
+import { validPluginName } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';
 
 const INDENTATIONSPACE = 4;
@@ -33,8 +33,8 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
       name: 'pluginName',
       message: 'What should be the name of the plugin:',
       default: pluginName,
-      validate: (input: string) => {
-        const pluginNameValidationResult = validPluginNameSync(input);
+      validate: async (input: string) => {
+        const pluginNameValidationResult = await validPluginName(input);
         if (!pluginNameValidationResult.isValid) {
           return pluginNameValidationResult.message || 'Invalid plugin name';
         }
@@ -131,7 +131,7 @@ generation of all the configuration files required by the frontend framework.`);
   context.print.green(`${AmplifyPluginType.util} plugins are general purpose utility plugins, \
 they provide utility functions for other plugins.`);
   context.print.green('For more information please read - \
-https://aws-amplify.github.io/docs/cli-toolchain/plugins');
+  https://docs.amplify.aws/cli/usage/plugin');
 }
 
 async function promptForEventSubscription(context: Context): Promise<string[]> {
@@ -181,6 +181,12 @@ executionof the amplify push command.`);
   context.print.red(AmplifyEvent.PostPush);
   context.print.green(`${indentationStr}${AmplifyEvent.PostPush} handler is invoked on the \
 complete execution of the amplify push command.`);
+  context.print.red(AmplifyEvent.PrePull);
+  context.print.green(`${indentationStr}${AmplifyEvent.PrePull} handler is invoked prior to the \
+executionof the amplify pull command.`);
+  context.print.red(AmplifyEvent.PostPull);
+  context.print.green(`${indentationStr}${AmplifyEvent.PostPull} handler is invoked on the \
+complete execution of the amplify pull command.`);
   context.print.warning('This feature is currently under actively development, \
 events might be added or removed in future releases');
 }

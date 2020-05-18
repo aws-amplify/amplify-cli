@@ -124,20 +124,17 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
           };
 
           const crudPermissionAnswer = await inquirer.prompt([crudPermissionQuestion]);
-          if (!parameters.permissions[category]) {
-            parameters.permissions[category] = {};
-          }
 
-          parameters.permissions[category][resourceName] = crudPermissionAnswer.crudOptions;
+          const resourcePolicy: any = crudPermissionAnswer.crudOptions;
           // overload crudOptions when user selects graphql @model-backing DynamoDB table
           // as there is no actual storage category resource where getPermissionPolicies can derive service and provider
           if (resourceName.endsWith(appsyncTableSuffix)) {
-            parameters.permissions[category][resourceName].providerPlugin = 'awscloudformation';
-            parameters.permissions[category][resourceName].service = 'DynamoDB';
+            resourcePolicy.providerPlugin = 'awscloudformation';
+            resourcePolicy.service = 'DynamoDB';
             const dynamoDBTableARNComponents = constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
 
             // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
-            parameters.permissions[category][resourceName].customPolicyResource = [
+            resourcePolicy.customPolicyResource = [
               {
                 'Fn::Join': ['', dynamoDBTableARNComponents],
               },
@@ -147,8 +144,13 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
             ];
           }
 
-          const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, parameters.permissions[category]);
+          const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, { [resourceName]: resourcePolicy });
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
+
+          if (!parameters.permissions[category]) {
+            parameters.permissions[category] = {};
+          }
+          parameters.permissions[category][resourceName] = resourcePolicy;
 
           // replace resource attributes for @model-backed dynamoDB tables
           resources = resources.concat(

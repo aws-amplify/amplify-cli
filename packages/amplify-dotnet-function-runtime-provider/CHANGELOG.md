@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.1.0...amplify-dotnet-function-runtime-provider@1.1.1) (2020-05-15)
+
+
+### Bug Fixes
+
+* match dotnet version per line ([#4251](https://github.com/aws-amplify/amplify-cli/issues/4251)) ([b38deb5](https://github.com/aws-amplify/amplify-cli/commit/b38deb59223417c67d41838c7af21fe4184babd0))
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.0.2...amplify-dotnet-function-runtime-provider@1.1.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* **amplify-dotnet-function-runtime-provider:** added mock/debug build ([#4108](https://github.com/aws-amplify/amplify-cli/issues/4108)) ([bf476e2](https://github.com/aws-amplify/amplify-cli/commit/bf476e2472c09abc387806cc85eafeb8536f449b))
+* **amplify-dotnet-function-runtime-provider:** mock build fix ([#4116](https://github.com/aws-amplify/amplify-cli/issues/4116)) ([554a6c2](https://github.com/aws-amplify/amplify-cli/commit/554a6c29637284c5b5045807bb3484ee8fdc8f17))
+
+
+### Features
+
+* changes to use .NET global tools ([#4079](https://github.com/aws-amplify/amplify-cli/issues/4079)) ([7c8802e](https://github.com/aws-amplify/amplify-cli/commit/7c8802eea55fcd86bad1f2e3f347193c62b68c40))
+
+
+
+
+
 ## [1.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.0.1...amplify-dotnet-function-runtime-provider@1.0.2) (2020-04-23)
 
 

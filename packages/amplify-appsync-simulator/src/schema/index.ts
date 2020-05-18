@@ -1,7 +1,7 @@
 import { buildASTSchema, concatAST, DocumentNode, GraphQLObjectType, parse, Source } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
 import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncSimulatorBaseResolverConfig } from '../type-definition';
+import { AppSyncSimulatorPipelineResolverConfig, AppSyncSimulatorUnitResolverConfig } from '../type-definition';
 import { scalars } from './appsync-scalars';
 import { AwsAuth, AwsSubscribe, protectResolversWithAuthRules } from './directives';
 import { AppSyncSimulatorDirectiveBase } from './directives/directive-base';
@@ -12,7 +12,7 @@ const KNOWN_DIRECTIVES: {
 
 export function generateResolvers(
   schema: Source,
-  resolversConfig: AppSyncSimulatorBaseResolverConfig[] = [],
+  resolversConfig: (AppSyncSimulatorUnitResolverConfig | AppSyncSimulatorPipelineResolverConfig)[] = [],
   simulatorContext: AmplifyAppSyncSimulator,
 ) {
   const appSyncScalars = new Source(
@@ -105,7 +105,7 @@ export function generateResolvers(
 
 function generateDefaultSubscriptions(
   doc: DocumentNode,
-  configuredResolvers: AppSyncSimulatorBaseResolverConfig[],
+  configuredResolvers: (AppSyncSimulatorUnitResolverConfig | AppSyncSimulatorPipelineResolverConfig)[],
   simulatorContext: AmplifyAppSyncSimulator,
 ) {
   const configuredSubscriptions = configuredResolvers.filter(cfg => cfg.fieldName === 'Subscription').map(cfg => cfg.typeName);

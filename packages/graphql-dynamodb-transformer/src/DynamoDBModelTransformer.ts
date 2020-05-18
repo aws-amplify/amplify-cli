@@ -1,17 +1,16 @@
 import { DeletionPolicy } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 import {
   blankObject,
   makeConnectionField,
   makeField,
   makeInputValueDefinition,
-  makeObjectDefinition,
   wrapNonNull,
   makeNamedType,
   makeNonNullType,
   ModelResourceIDs,
   ResolverResourceIDs,
-  getDirectiveArgument,
+  getBaseType,
 } from 'graphql-transformer-common';
 import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig } from 'graphql-transformer-core';
 import {
@@ -29,7 +28,7 @@ import {
   makeModelXConditionInputObject,
   makeAttributeTypeEnum,
 } from './definitions';
-import { ModelDirectiveArgs } from './ModelDirectiveArgs';
+import { ModelDirectiveArgs, getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
 import { ResourceFactory } from './resources';
 
 export interface DynamoDBModelTransformerOptions {
@@ -60,37 +59,45 @@ export const CONDITIONS_MINIMUM_VERSION = 5;
  * }
  */
 
+export const directiveDefinition = gql`
+  directive @model(
+    queries: ModelQueryMap
+    mutations: ModelMutationMap
+    subscriptions: ModelSubscriptionMap
+    timestamps: TimestampConfiguration
+  ) on OBJECT
+  input ModelMutationMap {
+    create: String
+    update: String
+    delete: String
+  }
+  input ModelQueryMap {
+    get: String
+    list: String
+  }
+  input ModelSubscriptionMap {
+    onCreate: [String]
+    onUpdate: [String]
+    onDelete: [String]
+    level: ModelSubscriptionLevel
+  }
+  enum ModelSubscriptionLevel {
+    off
+    public
+    on
+  }
+  input TimestampConfiguration {
+    createdAt: String
+    updatedAt: String
+  }
+`;
+
 export class DynamoDBModelTransformer extends Transformer {
   resources: ResourceFactory;
   opts: DynamoDBModelTransformerOptions;
 
   constructor(opts: DynamoDBModelTransformerOptions = {}) {
-    super(
-      'DynamoDBModelTransformer',
-      gql`
-        directive @model(queries: ModelQueryMap, mutations: ModelMutationMap, subscriptions: ModelSubscriptionMap) on OBJECT
-        input ModelMutationMap {
-          create: String
-          update: String
-          delete: String
-        }
-        input ModelQueryMap {
-          get: String
-          list: String
-        }
-        input ModelSubscriptionMap {
-          onCreate: [String]
-          onUpdate: [String]
-          onDelete: [String]
-          level: ModelSubscriptionLevel
-        }
-        enum ModelSubscriptionLevel {
-          off
-          public
-          on
-        }
-      `,
-    );
+    super('DynamoDBModelTransformer', directiveDefinition);
     this.opts = this.getOpts(opts);
     this.resources = new ResourceFactory();
   }
@@ -169,15 +176,55 @@ export class DynamoDBModelTransformer extends Transformer {
     // change type to include sync related fields if sync is enabled
     if (isSyncEnabled) {
       const obj = ctx.getObject(def.name.value);
-      const newObj = makeObjectDefinition(obj.name.value, [
+      const newFields = [
         ...obj.fields,
         makeField('_version', [], wrapNonNull(makeNamedType('Int'))),
         makeField('_deleted', [], makeNamedType('Boolean')),
         makeField('_lastChangedAt', [], wrapNonNull(makeNamedType('AWSTimestamp'))),
-      ]);
+      ];
+
+      const newObj = {
+        ...obj,
+        fields: newFields,
+      };
+
       ctx.updateObject(newObj);
     }
+    this.addTimestampFields(def, directive, ctx);
   };
+
+  private addTimestampFields(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+    const createdAtField = getCreatedAtFieldName(directive);
+    const updatedAtField = getUpdatedAtFieldName(directive);
+    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+    // Todo: Consolidate how warnings are shown. Instead of printing them here, the invoker of transformer should get
+    // all the warnings together and decide how to render those warning
+    if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField)) {
+      console.log(
+        `${def.name.value}.${existingCreatedAtField.name.value} is of type ${getBaseType(
+          existingCreatedAtField.type,
+        )}. To support auto population change the type to AWSDateTime or String`,
+      );
+    }
+    if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingUpdatedAtField)) {
+      console.log(
+        `${def.name.value}.${existingUpdatedAtField.name.value} is of type ${getBaseType(
+          existingUpdatedAtField.type,
+        )}. To support auto population change the type to AWSDateTime or String`,
+      );
+    }
+    const obj = ctx.getObject(def.name.value);
+    const newObj: ObjectTypeDefinitionNode = {
+      ...obj,
+      fields: [
+        ...obj.fields,
+        ...(createdAtField && !existingCreatedAtField ? [makeField(createdAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // createdAt field
+        ...(updatedAtField && !existingUpdatedAtField ? [makeField(updatedAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // updated field
+      ],
+    };
+    ctx.updateObject(newObj);
+  }
 
   private createMutations = (
     def: ObjectTypeDefinitionNode,
@@ -200,6 +247,19 @@ export class DynamoDBModelTransformer extends Transformer {
     let createFieldNameOverride = undefined;
     let updateFieldNameOverride = undefined;
     let deleteFieldNameOverride = undefined;
+
+    // timestamp fields
+    const createdAtField = getCreatedAtFieldName(directive);
+    const updatedAtField = getUpdatedAtFieldName(directive);
+
+    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+
+    // auto populate the timestamp field only if they are of AWSDateTime type
+    const timestampFields = {
+      createdAtField: DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField) ? createdAtField : undefined,
+      updatedAtField: DynamoDBModelTransformer.isTimestampCompatibleField(existingUpdatedAtField) ? updatedAtField : undefined,
+    };
 
     // Figure out which mutations to make and if they have name overrides
     if (directiveArguments.mutations === null) {
@@ -228,7 +288,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
     // Create the mutations.
     if (shouldMakeCreate) {
-      const createInput = makeCreateInputObject(def, nonModelArray, ctx, isSyncEnabled);
+      const createInput = makeCreateInputObject(def, directive, nonModelArray, ctx, isSyncEnabled);
       if (!ctx.getType(createInput.name.value)) {
         ctx.addInput(createInput);
       }
@@ -236,6 +296,7 @@ export class DynamoDBModelTransformer extends Transformer {
         type: def.name.value,
         nameOverride: createFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
+        timestamps: timestampFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
       ctx.setResource(resourceId, createResolver);
@@ -256,6 +317,7 @@ export class DynamoDBModelTransformer extends Transformer {
         type: def.name.value,
         nameOverride: updateFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
+        timestamps: timestampFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
       ctx.setResource(resourceId, updateResolver);
@@ -622,5 +684,12 @@ export class DynamoDBModelTransformer extends Transformer {
 
   private supportsConditions(context: TransformerContext) {
     return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
+  }
+
+  private static isTimestampCompatibleField(field?: FieldDefinitionNode): boolean {
+    if (field && !(getBaseType(field.type) === 'AWSDateTime' || getBaseType(field.type) === 'String')) {
+      return false;
+    }
+    return true;
   }
 }

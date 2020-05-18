@@ -190,7 +190,7 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
     type Test @model @key(fields: ["email", "createdAt"])
     @key(name: "CategoryGSI", fields: ["category", "createdAt"], queryField: "testsByCategory") {
         email: String!
-        createdAt: String!
+        createdAt: AWSDateTime!
         category: String!
         description: String
     }
@@ -241,8 +241,8 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
         @model @key(fields: ["email", "createdAt"])
         @key(name: "GSI_Email_UpdatedAt", fields: ["email", "updatedAt"], queryField: "testsByEmailByUpdatedAt") {
         email: String!
-        createdAt: String!
-        updatedAt: String!
+        createdAt: AWSDateTime!
+        updatedAt: AWSDateTime!
     }
     `;
 
@@ -294,13 +294,13 @@ test('Test that a primary @key with complex fields will update the input objects
   expect(tableResource.Properties.AttributeDefinitions[0].AttributeType).toEqual('S');
   const schema = parse(out.schema);
   const createInput = schema.definitions.find(
-    (def: any) => def.name && def.name.value === 'CreateTestInput'
+    (def: any) => def.name && def.name.value === 'CreateTestInput',
   ) as InputObjectTypeDefinitionNode;
   const updateInput = schema.definitions.find(
-    (def: any) => def.name && def.name.value === 'UpdateTestInput'
+    (def: any) => def.name && def.name.value === 'UpdateTestInput',
   ) as InputObjectTypeDefinitionNode;
   const deleteInput = schema.definitions.find(
-    (def: any) => def.name && def.name.value === 'DeleteTestInput'
+    (def: any) => def.name && def.name.value === 'DeleteTestInput',
   ) as InputObjectTypeDefinitionNode;
   expect(createInput).toBeDefined();
   expectNonNullInputValues(createInput, ['email', 'nonNullListInput', 'nonNullListInputOfNonNullStrings']);
@@ -352,7 +352,7 @@ test('Test that connection type is generated for custom query when queries is se
   const out = transformer.transform(validSchema);
   const schema = parse(out.schema);
   const modelContentCategoryConnection = schema.definitions.find(
-    (def: any) => def.name && def.name.value === 'ModelContentCategoryConnection'
+    (def: any) => def.name && def.name.value === 'ModelContentCategoryConnection',
   ) as ObjectTypeDefinitionNode;
 
   expect(modelContentCategoryConnection).toBeDefined();

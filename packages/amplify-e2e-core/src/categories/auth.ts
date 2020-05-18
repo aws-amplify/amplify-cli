@@ -20,6 +20,24 @@ export function addAuthWithDefault(cwd: string, settings: any) {
   });
 }
 
+export function removeAuthWithDefault(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
+      .wait('Choose the resource you would want to remove')
+      .sendCarriageReturn()
+      .wait('Are you sure you want to delete the resource? This')
+      .sendLine('y')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addAuthWithGroupTrigger(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -367,7 +385,7 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any) {
       .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
       .sendCarriageReturn()
-      .wait('What domain name prefix you want us to create for you?')
+      .wait('What domain name prefix do you want to use?')
       .sendCarriageReturn()
       .wait('Enter your redirect signin URI:')
       .sendLine(settings.signinUrl)
@@ -428,19 +446,16 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any) {
       .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
       .sendCarriageReturn()
-      .wait('What domain name prefix you want us to create for you?')
+      .wait('What domain name prefix do you want to use?')
       .sendCarriageReturn()
       .wait('Enter your redirect signin URI:')
       .sendLine('https://www.google.com/')
       .wait('Do you want to add another redirect signin URI')
       .sendLine('n')
-      .sendCarriageReturn()
       .wait('Enter your redirect signout URI:')
       .sendLine('https://www.nytimes.com/')
-      .sendCarriageReturn()
       .wait('Do you want to add another redirect signout URI')
       .sendLine('n')
-      .sendCarriageReturn()
       .wait('Select the social providers you want to configure for your user pool:')
       .send('a')
       .sendCarriageReturn()
@@ -547,7 +562,7 @@ export function addAuthUserPoolOnly(cwd: string, settings: any) {
       .sendCarriageReturn()
       .wait('Do you want to use an OAuth flow')
       .sendCarriageReturn()
-      .wait('What domain name prefix you want us to create for you')
+      .wait('What domain name prefix do you want to use?')
       .sendCarriageReturn()
       .wait('Enter your redirect signin URI')
       .send('https://signin1/')
@@ -811,7 +826,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any) {
       .sendCarriageReturn()
       .wait('Do you want to use an OAuth flow')
       .sendCarriageReturn()
-      .wait('What domain name prefix you want us to create for you')
+      .wait('What domain name prefix do you want to use?')
       .sendCarriageReturn()
       .wait('Enter your redirect signin URI')
       .sendLine('https://signin1/')

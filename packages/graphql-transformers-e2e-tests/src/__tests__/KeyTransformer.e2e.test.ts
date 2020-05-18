@@ -37,7 +37,7 @@ beforeAll(async () => {
   const validSchema = `
     type Order @model @key(fields: ["customerEmail", "createdAt"]) {
         customerEmail: String!
-        createdAt: String!
+        createdAt: AWSDateTime!
         orderId: ID!
     }
     type Customer @model @key(fields: ["email"]) {
@@ -334,8 +334,16 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
   await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
 });
 
-test('Test update mutation validation with three part secondary key.', async () => {
-  await createShippingUpdate('order1', 'item1', 'PENDING', 'name1');
+test('Test create/update mutation validation with three part secondary key.', async () => {
+  const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: 'order1', itemId: 'item1', name: '42' });
+  expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
+  expect(createResponseMissingLastSortKey.errors).toHaveLength(1);
+
+  const createResponseMissingFirstSortKey = await createShippingUpdate({ orderId: '2ndtry', status: 'PENDING', name: '43?' });
+  expect(createResponseMissingFirstSortKey.data.createShippingUpdate).toBeNull();
+  expect(createResponseMissingFirstSortKey.errors).toHaveLength(1);
+
+  await createShippingUpdate({ orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1' });
   const items = await getShippingUpdates('order1');
   expect(items.data.shippingUpdates.items).toHaveLength(1);
   const item = items.data.shippingUpdates.items[0];
@@ -386,14 +394,14 @@ test('Test Customer Mutation with list member', async () => {
 });
 
 test('Test @key directive with customer sortDirection', async () => {
-  await createOrder('testorder1@email.com', '1', '2016-03-10');
-  await createOrder('testorder1@email.com', '2', '2018-05-22');
-  await createOrder('testorder1@email.com', '3', '2019-06-27');
+  await createOrder('testorder1@email.com', '1', '2016-03-10T00:45:08+00:00');
+  await createOrder('testorder1@email.com', '2', '2018-05-22T21:45:08+00:00');
+  await createOrder('testorder1@email.com', '3', '2019-06-27T12:00:08+00:00');
   const newOrders = await listOrders('testorder1@email.com', { beginsWith: '201' }, 'DESC');
   const oldOrders = await listOrders('testorder1@email.com', { beginsWith: '201' }, 'ASC');
-  expect(newOrders.data.listOrders.items[0].createdAt).toEqual('2019-06-27');
+  expect(newOrders.data.listOrders.items[0].createdAt).toEqual('2019-06-27T12:00:08+00:00');
   expect(newOrders.data.listOrders.items[0].orderId).toEqual('3');
-  expect(oldOrders.data.listOrders.items[0].createdAt).toEqual('2016-03-10');
+  expect(oldOrders.data.listOrders.items[0].createdAt).toEqual('2016-03-10T00:45:08+00:00');
   expect(oldOrders.data.listOrders.items[0].orderId).toEqual('1');
 });
 
@@ -401,10 +409,10 @@ test('Test @key directive with customer sortDirection', async () => {
 // DELIVERED IN_TRANSIT PENDING UNKNOWN
 // (orderId: string, itemId: string, sortDirection: string)
 test('Test @key directive with sortDirection on GSI', async () => {
-  await createShippingUpdate('order1', 'product1', 'PENDING', 'order1Name1');
-  await createShippingUpdate('order1', 'product2', 'IN_TRANSIT', 'order1Name2');
-  await createShippingUpdate('order1', 'product3', 'DELIVERED', 'order1Name3');
-  await createShippingUpdate('order1', 'product4', 'DELIVERED', 'order1Name4');
+  await createShippingUpdate({ orderId: 'order1', itemId: 'product1', status: 'PENDING', name: 'order1Name1' });
+  await createShippingUpdate({ orderId: 'order1', itemId: 'product2', status: 'IN_TRANSIT', name: 'order1Name2' });
+  await createShippingUpdate({ orderId: 'order1', itemId: 'product3', status: 'DELIVERED', name: 'order1Name3' });
+  await createShippingUpdate({ orderId: 'order1', itemId: 'product4', status: 'DELIVERED', name: 'order1Name4' });
   const newShippingUpdates = await listGSIShippingUpdate('order1', { beginsWith: { itemId: 'product' } }, 'DESC');
   const oldShippingUpdates = await listGSIShippingUpdate('order1', { beginsWith: { itemId: 'product' } }, 'ASC');
   expect(oldShippingUpdates.data.shippingUpdates.items[0].status).toEqual('PENDING');
@@ -517,7 +525,7 @@ async function deleteOrder(customerEmail: string, createdAt: string) {
 
 async function getOrder(customerEmail: string, createdAt: string) {
   const result = await GRAPHQL_CLIENT.query(
-    `query GetOrder($customerEmail: String!, $createdAt: String!) {
+    `query GetOrder($customerEmail: String!, $createdAt: AWSDateTime!) {
         getOrder(customerEmail: $customerEmail, createdAt: $createdAt) {
             customerEmail
             orderId
@@ -718,8 +726,15 @@ async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionIn
   return result;
 }
 
-async function createShippingUpdate(orderId: string, itemId: string, status: string, name?: string) {
-  const input = { status, orderId, itemId, name };
+interface CreateShippingInput {
+  id?: string;
+  orderId?: string;
+  status?: string;
+  itemId?: string;
+  name?: string;
+}
+
+async function createShippingUpdate(input: CreateShippingInput) {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateShippingUpdate($input: CreateShippingUpdateInput!) {
         createShippingUpdate(input: $input) {
@@ -772,7 +787,6 @@ interface UpdateShippingInput {
   name?: string;
 }
 async function updateShippingUpdate(input: UpdateShippingInput) {
-  // const input = { id, status, orderId, itemId, name };
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateShippingUpdate($input: UpdateShippingUpdateInput!) {
         updateShippingUpdate(input: $input) {
