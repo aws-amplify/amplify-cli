@@ -68,6 +68,7 @@ function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
     amplifyConfig = context.amplify.readJsonFile(targetFilePath);
   }
 
+  // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
   const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
   amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig, newAWSConfig);
 

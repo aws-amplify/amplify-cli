@@ -6,6 +6,7 @@ function generateConfig(context, amplifyConfig, newAWSConfig) {
   };
   constructAnalytics(metadata, amplifyConfig);
   constructApi(metadata, amplifyConfig);
+  // Auth plugin with entire awsconfiguration contained required for Native GA release
   constructAuth(metadata, amplifyConfig, newAWSConfig);
   constructPredictions(metadata, amplifyConfig);
   constructStorage(metadata, amplifyConfig);
