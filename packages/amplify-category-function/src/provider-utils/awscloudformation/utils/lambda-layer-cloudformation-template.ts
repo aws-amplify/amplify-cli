@@ -35,7 +35,7 @@ export default function generateLayerCfnObj(parameters) {
       Principal: '*',
     });
     layerVersionPermission.OganizationId = parameters.authorizedOrgId;
-  } else if (parameters.layerPermissions === Permissions.awsAccs) {
+  } else if (parameters.layerPermissions === Permissions.awsAccounts) {
     if (!parameters.authorizedAccountIds || parameters.authorizedAccountIds.length <= 0) {
       throw 'No AWS Account IDs present, failed to generate cloudformation.';
     }

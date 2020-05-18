@@ -92,7 +92,7 @@ async function addLayerResource(
 
   parameters.providerContext = {
     provider: provider,
-    service: ServiceNames.LambdaFunction, // TODO: switch to using service
+    service: service,
     projectName: context.amplify.getProjectDetails().projectConfig.projectName,
   };
 

@@ -4,27 +4,23 @@ import uuid from 'uuid';
 import { LayerParameters, Permissions } from '../utils/layerParams';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 
-export async function createLayerWalkthrough(
-  context: any,
-  templateParameters: Partial<LayerParameters> = {},
-): Promise<Partial<LayerParameters>> {
-  _.assign(templateParameters, await inquirer.prompt(layerNameQuestion(context)));
+export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
+  _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
 
-  let runtimeReturn = await runtimeWalkthrough(context, templateParameters);
-  templateParameters.runtimes = runtimeReturn.map(val => val.runtime);
-  // let { runtimePluginId } = runtimeReturn;
+  let runtimeReturn = await runtimeWalkthrough(context, parameters);
+  parameters.runtimes = runtimeReturn.map(val => val.runtime);
 
-  _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion()));
+  _.assign(parameters, await inquirer.prompt(layerPermissionsQuestion()));
 
-  switch (templateParameters.layerPermissions) {
-    case Permissions.awsAccs:
-      _.assign(templateParameters, await inquirer.prompt(layerAccountAccessQuestion()));
+  switch (parameters.layerPermissions) {
+    case Permissions.awsAccounts:
+      _.assign(parameters, await inquirer.prompt(layerAccountAccessQuestion()));
       break;
     case Permissions.awsOrg:
-      _.assign(templateParameters.authorizedOrgId, await inquirer.prompt(layerOrgAccessQuestion()));
+      _.assign(parameters.authorizedOrgId, await inquirer.prompt(layerOrgAccessQuestion()));
       break;
   }
-  return templateParameters;
+  return parameters;
 }
 
 function layerNameQuestion(context: any) {
@@ -34,11 +30,14 @@ function layerNameQuestion(context: any) {
       name: 'layerName',
       message: 'Provide a name for your Lambda layer:',
       validate: input => {
-        // TODO: make sure name is unique from other layers in project
-        if (/^[a-zA-Z0-9_\-]{1,140}$/.test(input)) {
-          return true;
+        input = input.trim();
+        const meta = context.amplify.getProjectMeta();
+        if (!/^[a-zA-Z0-9_\-]{1,140}$/.test(input)) {
+          return 'Lambda Layer names are 1-140 characters long and can only contain letters, numbers, -, _';
+        } else if (meta.function.hasOwnProperty(input)) {
+          return `A Lambda Layer with the name ${input} already exists in this project.`;
         }
-        return 'Lambda Layer names are 1-140 characters long and can only contain letters, numbers, -, _';
+        return true;
       },
       default: () => {
         const appName = context.amplify
@@ -65,7 +64,7 @@ function layerPermissionsQuestion() {
         },
         {
           name: 'Specific AWS accounts',
-          value: Permissions.awsAccs,
+          value: Permissions.awsAccounts,
         },
         {
           name: 'Specific AWS organization',

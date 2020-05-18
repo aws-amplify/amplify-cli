@@ -7,7 +7,8 @@ import {
   FunctionTemplateParameters,
   Contributor,
   FunctionRuntimeLifecycleManager,
-  ContributionRequest,
+  RuntimeContributionRequest,
+  TemplateContributionRequest,
 } from 'amplify-function-plugin-interface';
 import { ServiceNames } from './constants';
 import _ from 'lodash';
@@ -20,25 +21,26 @@ import { LayerParameters } from './layerParams';
  * Selects a function template
  */
 export async function templateWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<FunctionTemplateParameters> {
+  const { service } = params.providerContext;
   const selectionOptions: PluginSelectionOptions<FunctionTemplateCondition> = {
     pluginType: 'functionTemplate',
     listOptionsField: 'templates',
     predicate: condition => {
       return (
         condition.provider === params.providerContext.provider &&
-        condition.service === params.providerContext.service &&
+        condition.services.includes(service) &&
         (condition.runtime === params.runtime.value ||
           (Array.isArray(condition.runtime) && condition.runtime.includes(params.runtime.value)))
       );
     },
     selectionPrompt: 'Choose the function template that you want to use:',
     notFoundMessage: `No ${params.runtime.name} ${params.providerContext.service} templates found`,
-    service: params.providerContext.service,
+    service,
   };
   let res = await getSelectionFromContributors<FunctionTemplateCondition>(context, selectionOptions);
   const selection = res[0];
   const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionTemplateContributorFactory', context);
-  const contributionRequest: ContributionRequest = {
+  const contributionRequest: TemplateContributionRequest = {
     selection: selection.value,
     contributionContext: {
       runtime: params.runtime,
@@ -50,7 +52,8 @@ export async function templateWalkthrough(context: any, params: Partial<Function
 }
 
 /**
- * Selects a function runtime
+ * Selects a single runtime for a Lambda Function
+ * Selects one or more runtimes for a Lambda Layer
  */
 export async function runtimeWalkthrough(
   context: any,
@@ -61,11 +64,11 @@ export async function runtimeWalkthrough(
     pluginType: 'functionRuntime',
     listOptionsField: 'runtimes',
     predicate: condition => {
-      return condition.provider === params.providerContext.provider && condition.service === service;
+      return condition.provider === params.providerContext.provider && condition.services.includes(service);
     },
-    selectionPrompt: 'Choose the function runtime that you want to use:',
+    selectionPrompt: 'Choose the runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
-    service: service,
+    service,
   };
   const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugins = [];
@@ -91,45 +94,38 @@ async function _functionRuntimeWalkthroughHelper(
   plugin,
   selection,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
-  const contributionRequest: ContributionRequest = {
+  const contributionRequest: RuntimeContributionRequest = {
     selection: selection.value,
     contributionContext: {
-      runtime: params.runtime,
       functionName: params.functionName,
       resourceName: params.resourceName,
     },
   };
   const contribution = await plugin.contribute(contributionRequest);
-  return [
-    {
-      ...contribution,
-      runtimePluginId: selection.pluginId,
-    },
-  ];
+  return [{ ...contribution, runtimePluginId: selection.pluginId }];
 }
 
 async function _layerRuntimeWalkthroughHelper(
   params: Partial<LayerParameters>,
-  plugin,
+  plugins,
   selections,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
-  const retVal = [];
-  for (let selection of selections) {
-    const contributionRequest: ContributionRequest = {
-      selection: selection.value,
+  const runtimes = [];
+  for (let i = 0; i < selections.length && i < plugins.length; ++i) {
+    const contributionRequest: RuntimeContributionRequest = {
+      selection: selections[i].value,
       contributionContext: {
-        runtime: params.runtimes[0],
         functionName: params.layerName,
         resourceName: params.layerName,
       },
     };
-    const contribution = await plugin.contribute(contributionRequest);
-    retVal.push({
+    const contribution = await plugins[i].contribute(contributionRequest);
+    runtimes.push({
       ...contribution,
-      runtimePluginId: selections.pluginId,
+      runtimePluginId: selections[i].pluginId,
     });
   }
-  return retVal;
+  return runtimes;
 }
 
 /**
@@ -192,23 +188,16 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     selection = answer.selection;
   }
 
-  if (Array.isArray(selection)) {
-    return selection.map(s => {
-      return {
-        value: s,
-        pluginPath: selectionMap.get(s).path,
-        pluginId: selectionMap.get(s).pluginId,
-      };
-    });
+  if (!Array.isArray(selection)) {
+    selection = [selection];
   }
-
-  return [
-    {
-      value: selection,
-      pluginPath: selectionMap.get(selection).path,
-      pluginId: selectionMap.get(selection).pluginId,
-    },
-  ];
+  return selection.map(s => {
+    return {
+      value: s,
+      pluginPath: selectionMap.get(s).path,
+      pluginId: selectionMap.get(s).pluginId,
+    };
+  });
 }
 
 export async function loadPluginFromFactory(pluginPath, expectedFactoryFunction, context): Promise<any> {

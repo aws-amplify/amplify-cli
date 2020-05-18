@@ -36,7 +36,6 @@ module.exports = {
         if (service === ServiceNames.LambdaFunction) {
           print.success(`Successfully added resource ${name} locally.`);
         } else if (service === ServiceNames.LambdaLayer) {
-          // TODO
           print.info('Lambda layer folders & files created:');
           print.info(layerDirPath);
         }
@@ -50,10 +49,8 @@ module.exports = {
           print.info('"amplify mock function <functionName>" runs your function locally');
         } else if (service === ServiceNames.LambdaLayer) {
           print.info('Move your libraries in the following folder:');
-          // TODO
           print.info('Include any files you want to share across runtimes in this folder:');
           print.info(`amplify/backend/function/${name}/opt/data`);
-
           print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
         }
 

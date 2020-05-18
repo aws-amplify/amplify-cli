@@ -12,6 +12,6 @@ export type LayerParameters = {
 export enum Permissions {
   private = 'private',
   public = 'public',
-  awsAccs = 'aws-accs',
-  awsOrg = 'aws-org',
+  awsAccounts = 'awsAccounts',
+  awsOrg = 'awsOrg',
 }

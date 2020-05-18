@@ -25,8 +25,8 @@ function serviceQuestionWalkthrough(context, supportedServices, category, custom
   const options = [];
   for (let i = 0; i < supportedServices.length; ++i) {
     const optionName =
-      customChoices && customChoices[i]
-        ? customChoices[i]
+      customChoices && customChoices[supportedServices[i].service]
+        ? customChoices[supportedServices[i].service]
         : supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
     options.push({
       name: optionName,

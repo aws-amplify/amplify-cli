@@ -99,11 +99,10 @@ export function createLayerFolders(context, parameters) {
 }
 
 export function createLayerCfnFile(context, parameters, layerDirPath) {
-  fs.ensureDirSync(layerDirPath);
-  fs.writeFileSync(
-    path.join(layerDirPath, 'layer-awscloudformation.json'),
-    JSON.stringify(generateLayerCfnObj(parameters), null, 4),
-    'utf8',
+  context.amplify.writeObjectAsJson(
+    path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
+    generateLayerCfnObj(parameters),
+    true,
   );
   context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, {
     providerPlugin: parameters.providerContext.provider,
