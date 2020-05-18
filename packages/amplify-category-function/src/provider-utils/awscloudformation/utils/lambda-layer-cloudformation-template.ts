@@ -9,8 +9,8 @@ export default function generateLayerCfnObj(parameters) {
   const layer = new Lambda.LayerVersion({
     CompatibleRuntimes: parameters.runtimes.map(runtime => runtime.cloudTemplateValue),
     Content: {
-      S3Bucket: '<S3Bucket>',
-      S3Key: '<S3Key>',
+      S3Bucket: Fn.Ref('deploymentBucketName'),
+      S3Key: Fn.Ref('s3Key'),
     },
     Description: parameters.description || '',
     LayerName: parameters.layerName,
@@ -54,6 +54,14 @@ export default function generateLayerCfnObj(parameters) {
   const cfnObj = {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda Layer resource stack creation using Amplify CLI',
+    Parameters: {
+      deploymentBucketName: {
+        Type: 'String',
+      },
+      s3Key: {
+        Type: 'String',
+      },
+    },
     Resources: {
       LambdaLayer: layer,
     },
