@@ -1,7 +1,7 @@
-const xcode = require('xcode');
+const fs = require('fs-extra');
 const glob = require('glob');
 const path = require('path');
-const fs = require('fs-extra');
+const xcode = require('xcode');
 
 /**
  * @typedef {Object} PBXGroup
@@ -143,6 +143,10 @@ async function addAmplifyFiles() {
         return;
       }
 
+      // only overwrite the project when files are actually modified
+      /** @type {boolean} */
+      let hasGeneratedFiles = false;
+
       try {
         // step 1: add generated models
         const modelsFilePattern = path.join(rootDir, 'amplify', 'generated', 'models', '*.swift');
@@ -156,6 +160,7 @@ async function addAmplifyFiles() {
             if (!groupHasFile(modelsGroup, filename)) {
               console.log(`adding model source file... ${file}`);
               project.addSourceFile(file, {}, modelsGroup.uuid);
+              hasGeneratedFiles = true;
             }
           });
         }
@@ -164,20 +169,35 @@ async function addAmplifyFiles() {
         const amplifyConfigGroup = getOrCreateGroup(project, 'AmplifyConfig');
 
         // add the amplifytools config file
-        project.addFile('./amplifytools.xcconfig', amplifyConfigGroup.uuid);
+        const amplifyToolsConfigFile = 'amplifytools.xcconfig';
+        if (!groupHasFile(amplifyConfigGroup, amplifyToolsConfigFile)) {
+          project.addFile(amplifyToolsConfigFile, amplifyConfigGroup.uuid);
+          hasGeneratedFiles = true;
+        }
 
         // adding resources (i.e. files that are added to the app bundle)
         project.addPbxGroup([], 'Resources', 'Resources', '"<group>"');
-        project.addResourceFile('amplifyconfiguration.json', null, amplifyConfigGroup.uuid);
-        project.addResourceFile('awsconfiguration.json', null, amplifyConfigGroup.uuid);
+        const amplifyConfigFile = 'amplifyconfiguration.json';
+        const awsConfigFile = 'awsconfiguration.json';
+        if (!groupHasFile(amplifyConfigGroup, amplifyConfigFile)) {
+          project.addResourceFile(amplifyConfigFile, null, amplifyConfigGroup.uuid);
+          project.addResourceFile(awsConfigFile, null, amplifyConfigGroup.uuid);
+          hasGeneratedFiles = true;
+        }
         project.removePbxGroup('Resources');
 
         // add schema.graphql
-        project.addFile(path.relative(rootDir, schemaFile), amplifyConfigGroup.uuid, {
-          lastKnownFileType: 'text',
-        });
+        if (!groupHasFile(amplifyConfigGroup, 'schema.graphql')) {
+          const schemaFilePath = path.relative(rootDir, schemaFile);
+          project.addFile(schemaFilePath, amplifyConfigGroup.uuid, {
+            lastKnownFileType: 'text',
+          });
+          hasGeneratedFiles = true;
+        }
 
-        fs.writeFileSync(projectDir, project.writeSync());
+        if (hasGeneratedFiles) {
+          fs.writeFileSync(projectDir, project.writeSync());
+        }
         resolve();
       } catch (projectError) {
         reject(projectError);
