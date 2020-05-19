@@ -176,7 +176,7 @@ async function bucketExists(bucket: string) {
     await s3.waitFor('bucketExists', params).promise();
     return true;
   } catch (error) {
-    if (error.statusCode === 200) {
+    if (error.statusCode === 404) {
       return false;
     }
     throw error;
