@@ -52,25 +52,25 @@ describe('amplify delete', () => {
     await testDeletion(projRoot, { android: true });
   });
 
-  // it('should not delete amplify app', async () => {
-  //   const projRoot2 = await createNewProjectDir('delete-dep');
-  //   const envName = 'testdelete';
-  //   await initJSProjectWithProfile(projRoot, {});
-  //   await addApiWithoutSchema(projRoot);
-  //   const amplifyMeta = getProjectMeta(projRoot);
-  //   const meta = amplifyMeta.providers.awscloudformation;
-  //   const { AmplifyAppId, Region, StackName, DeploymentBucketName } = meta;
-  //   expect(AmplifyAppId).toBeDefined();
-  //   await createEnv(AmplifyAppId, envName, Region, StackName, DeploymentBucketName);
-  //   await pullProject(projRoot2, { appId: AmplifyAppId, envName });
-  //   await initIosProjectWithProfile(projRoot2, {});
-  //   await deleteProject(projRoot);
-  //   expect(await appExists(AmplifyAppId, Region)).toBeTruthy();
-  //   // clean up
-  //   await deleteProject(projRoot2);
-  //   deleteProjectDir(projRoot2);
-  //   await deleteAmplifyApp(AmplifyAppId, Region);
-  // });
+  it('should not delete amplify app', async () => {
+    const projRoot2 = await createNewProjectDir('delete-dep');
+    const envName = 'testdelete';
+    await initJSProjectWithProfile(projRoot, {});
+    await addApiWithoutSchema(projRoot);
+    const amplifyMeta = getProjectMeta(projRoot);
+    const meta = amplifyMeta.providers.awscloudformation;
+    const { AmplifyAppId, Region, StackName, DeploymentBucketName } = meta;
+    expect(AmplifyAppId).toBeDefined();
+    await createEnv(AmplifyAppId, envName, Region, StackName, DeploymentBucketName);
+    await pullProject(projRoot2, { appId: AmplifyAppId, envName });
+    await initIosProjectWithProfile(projRoot2, {});
+    await deleteProject(projRoot);
+    expect(await appExists(AmplifyAppId, Region)).toBeTruthy();
+    // clean up
+    await deleteProject(projRoot2);
+    deleteProjectDir(projRoot2);
+    await deleteAmplifyApp(AmplifyAppId, Region);
+  });
   it('should delete pinpoint project', async () => {
     await initProject(projRoot);
     const pinpointResourceName = await addPinpointAnalytics(projRoot);
