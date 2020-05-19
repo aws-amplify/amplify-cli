@@ -8,6 +8,7 @@ export enum Service {
 }
 
 export interface ServiceConfig {
+  alias: string;
   walkthroughs: WalkthroughProvider;
   cfnFilename: string;
   provider: string;

@@ -7,6 +7,7 @@ import { askExecRolePermissionsQuestions } from './awscloudformation/service-wal
 
 export const supportedServices: SupportedServices = {
   LambdaFunction: {
+    alias: 'Lambda function (serverless function)',
     walkthroughs: {
       createWalkthrough: createWalkthrough,
       updateWalkthrough: updateWalkthrough,
@@ -19,6 +20,7 @@ export const supportedServices: SupportedServices = {
     providerController: lambdaController,
   },
   LambdaLayer: {
+    alias: 'Lambda layer (shared code & resource used across functions)',
     walkthroughs: {
       createWalkthrough: createLayerWalkthrough,
       updateWalkthrough: null,
