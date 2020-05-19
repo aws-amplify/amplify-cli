@@ -10,7 +10,7 @@ import {
   RuntimeContributionRequest,
   TemplateContributionRequest,
 } from 'amplify-function-plugin-interface';
-import { ServiceNames } from './constants';
+import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
 /*
@@ -82,9 +82,9 @@ export async function runtimeWalkthrough(
     }
     plugins.push(plugin);
   }
-  if (service === ServiceNames.LambdaFunction) {
+  if (service === ServiceName.LambdaFunction) {
     return _functionRuntimeWalkthroughHelper(params, plugins[0], selections[0]);
-  } else if (service === ServiceNames.LambdaLayer) {
+  } else if (service === ServiceName.LambdaLayer) {
     return _layerRuntimeWalkthroughHelper(params, plugins, selections);
   }
 }
@@ -178,7 +178,7 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
     // ask which template to use
     let answer = await inquirer.prompt([
       {
-        type: selectionOptions.service === ServiceNames.LambdaLayer ? 'checkbox' : 'list',
+        type: selectionOptions.service === ServiceName.LambdaLayer ? 'checkbox' : 'list',
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,

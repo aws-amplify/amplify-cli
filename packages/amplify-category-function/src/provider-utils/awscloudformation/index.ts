@@ -2,13 +2,16 @@ import { FunctionParameters, FunctionTriggerParameters } from 'amplify-function-
 import { LayerParameters } from './utils/layerParams';
 import { supportedServices } from '../supported-services';
 import { FunctionWalkthroughProvider } from '../supportedServicesType';
-import { ServiceNames, provider, categoryName } from './utils/constants';
+import { ServiceName, provider } from './utils/constants';
+import { category as categoryName } from '../../constants';
 import { copyFunctionResources, createLayerCfnFile, createLayerFolders, createParametersFile } from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
 import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
+import open from 'open';
+import { IsMockableResponse } from '../..';
 
 /**
  * Entry point for creating a new function
@@ -26,9 +29,9 @@ export async function addResource(context, category, service, options, parameter
     throw BAD_SERVICE_ERR;
   }
   switch (service) {
-    case ServiceNames.LambdaFunction:
+    case ServiceName.LambdaFunction:
       return addFunctionResource(context, category, service, serviceConfig, options, parameters);
-    case ServiceNames.LambdaLayer:
+    case ServiceName.LambdaLayer:
       return addLayerResource(context, category, service, serviceConfig, options, parameters);
     default:
       throw BAD_SERVICE_ERR;
@@ -273,10 +276,17 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
   return envParams;
 }
 
-module.exports = {
-  addResource,
-  updateResource,
-  migrateResource,
-  getPermissionPolicies,
-  updateConfigOnEnvInit,
-};
+export function openConsole(context, service: ServiceName) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  const region = amplifyMeta.providers[provider].Region;
+  const selection = service === ServiceName.LambdaFunction ? 'functions' : 'layers';
+  const url = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/${selection}`;
+  open(url, { wait: false });
+}
+
+export function isMockable(service: ServiceName): IsMockableResponse {
+  return {
+    isMockable: service === ServiceName.LambdaFunction,
+    reason: 'Lambda Layers cannot be mocked locally', // this will only be shown when isMockable is false
+  };
+}

@@ -1,9 +1,5 @@
-import {
-  categoryName,
-  chooseServiceMessage,
-  chooseServiceChoices,
-  ServiceNames,
-} from '../../provider-utils/awscloudformation/utils/constants';
+import { chooseServiceMessage, chooseServiceChoices, ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
+import { category as categoryName } from '../../constants';
 import { supportedServices } from '../../provider-utils/supported-services';
 
 const subcommand = 'add';
@@ -33,9 +29,9 @@ module.exports = {
       .then(result => {
         const { print } = context;
         const { name, service, layerDirPath } = result;
-        if (service === ServiceNames.LambdaFunction) {
+        if (service === ServiceName.LambdaFunction) {
           print.success(`Successfully added resource ${name} locally.`);
-        } else if (service === ServiceNames.LambdaLayer) {
+        } else if (service === ServiceName.LambdaLayer) {
           print.info('Lambda layer folders & files created:');
           print.info(layerDirPath);
         }
@@ -43,11 +39,11 @@ module.exports = {
         print.info('');
         print.success('Next steps:');
 
-        if (service === ServiceNames.LambdaFunction) {
+        if (service === ServiceName.LambdaFunction) {
           print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${name}/src`);
           print.info('"amplify function build" builds all of your functions currently in the project');
           print.info('"amplify mock function <functionName>" runs your function locally');
-        } else if (service === ServiceNames.LambdaLayer) {
+        } else if (service === ServiceName.LambdaLayer) {
           print.info('Move your libraries in the following folder:');
           print.info('Include any files you want to share across runtimes in this folder:');
           print.info(`amplify/backend/function/${name}/opt/data`);
@@ -56,7 +52,7 @@ module.exports = {
 
         print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
 
-        if (service === ServiceNames.LambdaFunction) {
+        if (service === ServiceName.LambdaFunction) {
           print.info(
             '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
           );

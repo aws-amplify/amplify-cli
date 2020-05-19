@@ -1,7 +1,8 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { categoryName, provider, ServiceNames } from './constants';
+import { provider, ServiceName } from './constants';
+import { category as categoryName } from '../../../constants';
 import generateLayerCfnObj from './lambda-layer-cloudformation-template';
 import _ from 'lodash';
 
@@ -122,7 +123,7 @@ function translateFuncParamsToResourceOpts(params: FunctionParameters | Function
   let result: any = {
     build: true,
     providerPlugin: provider,
-    service: ServiceNames.LambdaFunction,
+    service: ServiceName.LambdaFunction,
   };
   if (!('trigger' in params)) {
     result.dependsOn = params.dependsOn;
