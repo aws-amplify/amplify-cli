@@ -88,8 +88,8 @@ describe('amplify delete', () => {
     const amplifyMeta = getProjectMeta(projRoot);
     const meta = amplifyMeta.providers.awscloudformation;
     const bucketName = meta.DeploymentBucketName;
-    expect(await bucketExists(bucketName)).toBeTruthy();
     await deleteBucket(bucketName);
+    expect(await bucketNotExists(bucketName)).toBeTruthy();
     await deleteProject(projRoot);
   });
 });
