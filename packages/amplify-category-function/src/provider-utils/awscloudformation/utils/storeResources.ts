@@ -77,21 +77,11 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
 export function createLayerFolders(context, parameters) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const layerDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
-  const layerDirSrcPath = path.join(layerDirPath, 'src');
-  fs.mkdirSync(layerDirSrcPath, { recursive: true });
-  fs.mkdirSync(path.join(layerDirPath, 'bin'));
-  fs.mkdirSync(path.join(layerDirPath, 'opt'));
+  fs.mkdirSync(path.join(layerDirPath, 'opt'), { recursive: true });
 
-  // Temporary hack
-  const runtimePaths = {
-    nodejs: path.join(layerDirSrcPath, 'nodejs', 'node_modules'),
-    python: path.join(layerDirSrcPath, 'python'),
-    java: path.join(layerDirSrcPath, 'java', 'lib'),
-    dotnet: path.join(layerDirSrcPath, 'dotnet', 'dist'),
-  };
   let moduleDirPath;
   for (let runtime of parameters.runtimes) {
-    moduleDirPath = path.join(runtimePaths[runtime.value], parameters.layerName);
+    moduleDirPath = path.join(layerDirPath, runtime.layerExecutablePath, parameters.layerName);
     fs.mkdirSync(moduleDirPath, { recursive: true });
     fs.writeFileSync(path.join(moduleDirPath, 'README.txt'), 'Replace this file with your layer files');
   }

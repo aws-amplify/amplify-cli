@@ -159,6 +159,7 @@ export interface FunctionRuntime {
   value: string; // value used internally to identify this runtime
   cloudTemplateValue: string; // value set in the CFN file
   defaultHandler: string; // default handler to set in the CFN file
+  layerExecutablePath?: string; // directory structure for Lambda Layers
 }
 
 export interface FunctionTemplate {

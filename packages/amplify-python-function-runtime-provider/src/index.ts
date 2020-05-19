@@ -17,6 +17,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'python',
           cloudTemplateValue: 'python3.8',
           defaultHandler: 'index.handler',
+          layerExecutablePath: 'src/python/',
         },
       });
     },
