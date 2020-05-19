@@ -6,8 +6,9 @@ exemptLabels:
   - security
   - feature-request
   - enhancement
-  - to-be-reproduced
+  - pending-triage
   - bug
+  - question
   - critical-bug
   - RFC
 staleLabel: pending-close-response-required
