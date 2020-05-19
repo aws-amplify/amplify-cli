@@ -1,11 +1,5 @@
 import { S3, Amplify } from 'aws-sdk';
-import {
-  initJSProjectWithProfile,
-  initIosProjectWithProfile,
-  initAndroidProjectWithProfile,
-  deleteProject,
-  pullProject,
-} from 'amplify-e2e-core';
+import { initJSProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
@@ -162,39 +156,6 @@ async function putFiles(bucket: string, count = 1001) {
   await Promise.all(s3Params.map(p => s3.putObject(p).promise()));
 }
 
-async function bucketExists(bucket: string) {
-  const s3 = new S3();
-  const params = {
-    Bucket: bucket,
-  };
-  try {
-    await s3.headBucket(params).promise();
-    return true;
-  } catch (error) {
-    if (error.statusCode === 404) {
-      return false;
-    }
-    throw error;
-  }
-}
-
-async function deleteAmplifyApp(appId, region) {
-  const amplify = new Amplify({ region });
-  await amplify.deleteApp({ appId }).promise();
-}
-
-async function createEnv(appId, envName, region, stackName, deploymentArtifacts) {
-  const amplify = new Amplify({ region });
-  await amplify
-    .createBackendEnvironment({
-      appId,
-      environmentName: envName,
-      stackName,
-      deploymentArtifacts,
-    })
-    .promise();
-}
-
 async function appExists(appId: string, region: string) {
   const amplify = new Amplify({ region });
   try {
@@ -202,6 +163,23 @@ async function appExists(appId: string, region: string) {
     return true;
   } catch (ex) {
     return false;
+  }
+}
+
+async function bucketExists(bucket: string) {
+  const s3 = new S3();
+  const params = {
+    Bucket: bucket,
+    $waiter: { maxAttempts: 10, delay: 30 },
+  };
+  try {
+    await s3.waitFor('bucketExists', params).promise();
+    return true;
+  } catch (error) {
+    if (error.statusCode === 200) {
+      return false;
+    }
+    throw error;
   }
 }
 
