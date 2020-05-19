@@ -325,7 +325,7 @@ export class ResourceFactory {
       identifyLabels: {
         request: compoundExpression([
           set(ref('bucketName'), ref('ctx.stash.get("s3Bucket")')),
-          set(ref('identifyLabelKey'), ref('util.toJson($ctx.args.input.identifyLabels.key)')),
+          set(ref('identifyLabelKey'), ref('ctx.args.input.identifyLabels.key')),
           qref('$ctx.stash.put("isList", true)'),
           obj({
             version: str('2018-05-29'),
