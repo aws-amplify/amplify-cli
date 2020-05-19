@@ -5,6 +5,8 @@ import { schemaTypeMap } from '../configs/swift-config';
 import { SwiftDeclarationBlock, escapeKeywords, ListType } from '../languages/swift-declaration-block';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
+import { AuthDirective, AuthStrategy } from '../utils/process-auth';
+import { printWarning } from '../utils/warn';
 
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
@@ -149,11 +151,12 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     const fields = model.fields.map(field => {
       return this.generateFieldSchema(field, keysName);
     });
-
+    const authRules = this.generateAuthRules(model);
     const closure = [
       '{ model in',
       `let ${keysName} = ${this.getModelName(model)}.keys`,
       '',
+      ...(authRules.length ? [`model.authRules = ${authRules}`, ''] : []),
       `model.pluralName = "${this.pluralizeModelName(model)}"`,
       '',
       'model.fields(',
@@ -303,5 +306,40 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       return false;
     }
     return !field.isNullable;
+  }
+
+  protected generateAuthRules(model: CodeGenModel): string {
+    const authDirectives: AuthDirective[] = (model.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+    const rules: string[] = [];
+    authDirectives.forEach(directive => {
+      directive.arguments?.rules.forEach(rule => {
+        const authRule = [];
+        switch (rule.allow) {
+          case AuthStrategy.owner:
+            authRule.push('allow: .owner');
+            authRule.push(`identityClaim: "${rule.identityClaim}"`);
+            authRule.push(`ownerField: "${rule.ownerField}"`);
+            break;
+          case AuthStrategy.groups:
+            authRule.push('allow: .groups');
+            authRule.push(`groupClaim: "${rule.groupClaim}"`);
+            if (rule.groups) {
+              authRule.push(`groups: [${rule.groups?.map(group => `"${group}"`).join(', ')}]`);
+            } else {
+              authRule.push(`groupsField: "${rule.groupField}"`);
+            }
+            break;
+          default:
+            printWarning(`Model ${model.name} has auth with authStrategy ${rule.allow} of which is not yet supported in DataStore.`);
+            return;
+        }
+        authRule.push(`operations: [${rule.operations?.map(op => `.${op}`).join(', ')}]`);
+        rules.push(`rule(${authRule.join(', ')})`);
+      });
+    });
+    if (rules.length) {
+      return ['[', `${indentMultiline(rules.join(',\n'))}`, ']'].join('\n');
+    }
+    return '';
   }
 }
