@@ -1,5 +1,4 @@
-const path = require('path');
-
+import path from 'path';
 const category = 'storage';
 
 async function add(context, providerName, service) {

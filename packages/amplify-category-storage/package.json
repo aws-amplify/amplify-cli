@@ -7,9 +7,15 @@
     "url": "https://github.com/aws-amplify/amplify-cli.git",
     "directory": "packages/amplify-category-storage"
   },
+  "scripts": {
+    "build": "yarn buildAllSchemas && tsc",
+    "clean": "rimraf ./lib && rm tsconfig.tsbuildinfo",
+    "buildAllSchemas": "yarn buildAddStorage",
+    "buildAddStorage": "mkdirp schemas/v1 && typescript-json-schema src/headless-interface/v1/types/addStorage.ts AddStorage -o schemas/v1/addStorage.schema.json --required"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "keywords": [
     "amplify",
     "aws"
@@ -20,5 +26,9 @@
     "inquirer": "^7.0.3",
     "lodash": "^4.17.15",
     "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "typescript-json-schema": "^0.42.0",
+    "mkdirp":"^1.0.4"
   }
 }

@@ -1,0 +1,21 @@
+{
+  "name": "amplify-util-headless-input",
+  "version": "1.0.0",
+  "description": "Logic for validating objects against JSON-schema specs and performing version upgrades when necessary / possible",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest",
+    "test-ci": "jest --ci",
+    "build": "tsc",
+    "clean": "rimraf ./lib && rm tsconfig.tsbuildinfo"
+  },
+  "keywords": [
+    "amplify",
+    "headless"
+  ],
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "ajv":"^6.12.2"
+  }
+}
