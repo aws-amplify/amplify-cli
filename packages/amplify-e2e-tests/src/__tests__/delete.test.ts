@@ -1,11 +1,5 @@
 import { S3, Amplify } from 'aws-sdk';
-import {
-  initJSProjectWithProfile,
-  initIosProjectWithProfile,
-  initAndroidProjectWithProfile,
-  deleteProject,
-  pullProject,
-} from 'amplify-e2e-core';
+import { initJSProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
@@ -52,25 +46,6 @@ describe('amplify delete', () => {
     await testDeletion(projRoot, { android: true });
   });
 
-  // it('should not delete amplify app', async () => {
-  //   const projRoot2 = await createNewProjectDir('delete-dep');
-  //   const envName = 'testdelete';
-  //   await initJSProjectWithProfile(projRoot, {});
-  //   await addApiWithoutSchema(projRoot);
-  //   const amplifyMeta = getProjectMeta(projRoot);
-  //   const meta = amplifyMeta.providers.awscloudformation;
-  //   const { AmplifyAppId, Region, StackName, DeploymentBucketName } = meta;
-  //   expect(AmplifyAppId).toBeDefined();
-  //   await createEnv(AmplifyAppId, envName, Region, StackName, DeploymentBucketName);
-  //   await pullProject(projRoot2, { appId: AmplifyAppId, envName });
-  //   await initIosProjectWithProfile(projRoot2, {});
-  //   await deleteProject(projRoot);
-  //   expect(await appExists(AmplifyAppId, Region)).toBeTruthy();
-  //   // clean up
-  //   await deleteProject(projRoot2);
-  //   deleteProjectDir(projRoot2);
-  //   await deleteAmplifyApp(AmplifyAppId, Region);
-  // });
   it('should delete pinpoint project', async () => {
     await initProject(projRoot);
     const pinpointResourceName = await addPinpointAnalytics(projRoot);
@@ -176,23 +151,6 @@ async function bucketExists(bucket: string) {
     }
     throw error;
   }
-}
-
-async function deleteAmplifyApp(appId, region) {
-  const amplify = new Amplify({ region });
-  await amplify.deleteApp({ appId }).promise();
-}
-
-async function createEnv(appId, envName, region, stackName, deploymentArtifacts) {
-  const amplify = new Amplify({ region });
-  await amplify
-    .createBackendEnvironment({
-      appId,
-      environmentName: envName,
-      stackName,
-      deploymentArtifacts,
-    })
-    .promise();
 }
 
 async function appExists(appId: string, region: string) {
