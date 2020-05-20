@@ -105,7 +105,7 @@ export async function runtimeWalkthroughLayer(
     pluginType: 'functionRuntime',
     listOptionsField: 'runtimes',
     predicate: condition => {
-      return condition.provider === params.providerContext.provider && _.includes(condition.service,service);
+      return condition.provider === params.providerContext.provider && _.includes(condition.services,service);
     },
     selectionPrompt: 'Choose the function runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
@@ -125,11 +125,7 @@ export async function runtimeWalkthroughLayer(
     }
     plugins.push(plugin);
   }
-  if (service === ServiceName.LambdaFunction) {
-    return _functionRuntimeWalkthroughHelper(params, plugins[0], selections[0]);
-  } else if (service === ServiceName.LambdaLayer) {
-    return _layerRuntimeWalkthroughHelper(params, plugins, selections);
-  }
+  return _layerRuntimeWalkthroughHelper(params, plugins, selections);
 }
 
 async function _functionRuntimeWalkthroughHelper(
@@ -204,13 +200,16 @@ async function getSelectionsFromContributors<T>(
     .reduce((acc, it) => acc.concat(it), [])
     .sort((a, b) => a.name.localeCompare(b.name)); // sort by display name so that selections order is deterministic
 
-  // getting old default state
-  const prevruntime = selections.filter(runtime => {
-    for(let val of selectionOptions.runtimeState){
-      if(val === runtime.name)
-      return runtime;
-    }
-  }).sort((a, b) => a.name.localeCompare(b.name));
+  //getting old default state
+  let prevruntime;
+  if(selectionOptions.runtimeState !== undefined){
+     prevruntime = selections.filter(runtime => {
+      for(let val of selectionOptions.runtimeState){
+        if(val === runtime.name)
+        return runtime;
+      }
+    }).sort((a, b) => a.name.localeCompare(b.name));
+  }
   // sanity checks
   let selection;
   if (selections.length === 0) {
@@ -235,15 +234,18 @@ async function getSelectionsFromContributors<T>(
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
-        default: selectionOptions.service === ServiceNames.LambdaFunction ? (selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : undefined) : Object.values(prevruntime)
+        default: selectionOptions.service === ServiceNames.LambdaFunction ? (selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : undefined) : (selectionOptions.runtimeState === undefined ? undefined : prevruntime)
       },
     ]);
     selection = answer.selection;
   }
-  prevruntime.forEach(runtime => selection.push(runtime.value)); // remove duplicate
+  if(selectionOptions.runtimeState !== undefined){
+    prevruntime.forEach(runtime => selection.push(runtime.value));
+  }
   if (!Array.isArray(selection)) {
     selection = [selection];
   }
+  selection = _.uniq(selection); // remove duplicates
   return selection.map(s => {
     return {
       value: s,

@@ -209,7 +209,7 @@ export async function updateLayerResource(context,
   const layerDirPath = createLayerFolders(context, parameters); // update based
   const layerParams = _.pick(parameters,['runtimes','layerPermissions']);
   createLayerParametersFile(context,layerParams,layerDirPath);
-  createLayerCfnFile(context, parameters, layerDirPath);
+  updateLayerCfnFile(context, parameters, layerDirPath);
   return { name: parameters.layerName, service: service };
 }
 

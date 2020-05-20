@@ -16,16 +16,16 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
 
   _.assign(parameters, await inquirer.prompt(layerPermissionsQuestion()));
 
-  parameters.layerPermissions.forEach(async (permissions) => {
+  for(let permissions of parameters.layerPermissions){
     switch (permissions) {
-      case Permissions.awsAccs:
+      case Permissions.awsAccounts:
         _.assign(parameters, await inquirer.prompt(layerAccountAccessQuestion()));
         break;
       case Permissions.awsOrg:
         _.assign(parameters, await inquirer.prompt(layerOrgAccessQuestion()));
         break;
     }
-  });
+  };
   return parameters;
 }
 
@@ -53,7 +53,6 @@ export async function updateLayerWalkthrough(
     },
   ];
   const resourceAnswer = await inquirer.prompt(resourceQuestion);
-  let answer;
   templateParameters.layerName = String(resourceAnswer.resourceName);
 
   // get layer-patameters
@@ -67,7 +66,6 @@ export async function updateLayerWalkthrough(
     currentParameters = {};
   }
 
-  //templateParameters = {...templateParameters , ...currentParameters};
   _.assign(templateParameters,currentParameters);
   // runtime question
   let islayerVersionChanged : boolean = true;
@@ -82,7 +80,7 @@ export async function updateLayerWalkthrough(
 
     for(let permissions of templateParameters.layerPermissions){
       switch (permissions) {
-        case Permissions.awsAccs:
+        case Permissions.awsAccounts:
           _.assign(templateParameters, await inquirer.prompt(layerAccountAccessQuestion()));
           break;
         case Permissions.awsOrg:
@@ -94,7 +92,7 @@ export async function updateLayerWalkthrough(
       _.assign(templateParameters,await inquirer.prompt(layerVersionQuestion(context)))
     }
   }
-  return parameters;
+  return templateParameters;
 }
 
 function layerVersionQuestion(context : any){

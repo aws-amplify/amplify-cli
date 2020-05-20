@@ -122,6 +122,16 @@ export function saveCFNParameters(
   }
 }
 
+export function updateLayerCfnFile(context, parameters, layerDirPath) {
+  context.amplify.writeObjectAsJson(
+    path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
+    generateLayerCfnObj(parameters),
+    true,
+  );
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName,'runtimes', parameters.runtimes);
+
+}
+
 export function createLayerParametersFile(context,parameters,layerDirPath){
   let parametersFileName = 'layer-parameters.json';
   fs.ensureDirSync(layerDirPath);
