@@ -284,7 +284,7 @@ describe('AppSyncModelVisitor', () => {
       expect(ownerRule.provider).toEqual('userPools');
       expect(ownerRule.identityClaim).toEqual('cognito:username');
       expect(ownerRule.ownerField).toEqual('owner');
-      expect(ownerRule.operations).toEqual(['create', 'update', 'delete']);
+      expect(ownerRule.operations).toEqual(['create', 'update', 'delete', 'read']);
     });
 
     it('should process group with owner authorization', () => {
@@ -309,7 +309,7 @@ describe('AppSyncModelVisitor', () => {
       expect(groupRule).toBeDefined();
       expect(groupRule.provider).toEqual('userPools');
       expect(groupRule.groupClaim).toEqual('cognito:groups');
-      expect(groupRule.operations).toEqual(['create', 'update', 'delete']);
+      expect(groupRule.operations).toEqual(['create', 'update', 'delete', 'read']);
     });
   });
   describe('model less type', () => {
