@@ -1,4 +1,4 @@
-import { chooseServiceMessage, ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
+import { chooseServiceMessage } from '../../provider-utils/awscloudformation/utils/constants';
 import { category as categoryName } from '../../constants';
 import { supportedServices } from '../../provider-utils/supported-services';
 
