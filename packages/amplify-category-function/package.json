@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf ./lib",
-    "test": "jest  src/__tests__/**/*.test.ts"
+    "test": "jest"
   },
   "keywords": [
     "amplify",
