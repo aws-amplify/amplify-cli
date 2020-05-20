@@ -18,6 +18,6 @@ describe('amplify add lambda layer', () => {
 
   it('init a project and add simple layer', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot, {});
+    await addLayer(projRoot);
   });
 });

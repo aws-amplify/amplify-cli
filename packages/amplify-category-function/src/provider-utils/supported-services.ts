@@ -25,7 +25,6 @@ export const supportedServices: SupportedServices = {
       createWalkthrough: createLayerWalkthrough,
       updateWalkthrough: null,
     },
-    cfnFilename: null,
     provider: 'awscloudformation',
     providerController: lambdaController,
   },

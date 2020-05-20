@@ -1,31 +1,23 @@
 import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { LayerParameters } from './awscloudformation/utils/layerParams';
 
-export type SupportedServices = Record<Service, ServiceConfig>;
-
-export enum Service {
-  LambdaFunction = 'LambdaFunction',
-  LambdaLayer = 'LambdaLayer',
+export interface SupportedServices {
+  LambdaFunction: ServiceConfig<FunctionParameters>;
+  LambdaLayer: ServiceConfig<LayerParameters>;
 }
 
-export interface ServiceConfig {
+export interface ServiceConfig<T> {
   alias: string;
-  walkthroughs: WalkthroughProvider;
-  cfnFilename: string;
+  walkthroughs: WalkthroughProvider<T>;
+  cfnFilename?: string;
   provider: string;
   providerController: any;
 }
 
-export type WalkthroughProvider = FunctionWalkthroughProvider | LayerWalkthroughProvider;
-
-export interface FunctionWalkthroughProvider {
-  createWalkthrough: (context: any, params: Partial<FunctionParameters>) => Promise<Partial<FunctionParameters>>;
+export interface WalkthroughProvider<T> {
+  createWalkthrough: (context: any, params: Partial<T>) => Promise<Partial<T>>;
   updateWalkthrough: Function;
   migrate?: Function;
-  getIAMPolicies: Function;
-  askExecRolePermissionsQuestions: Function;
-}
-
-export interface LayerWalkthroughProvider {
-  createWalkthrough: Function;
-  updateWalkthrough: Function;
+  getIAMPolicies?: Function;
+  askExecRolePermissionsQuestions?: Function;
 }

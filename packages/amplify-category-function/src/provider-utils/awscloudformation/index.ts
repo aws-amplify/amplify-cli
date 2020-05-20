@@ -1,7 +1,6 @@
 import { FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './utils/layerParams';
 import { supportedServices } from '../supported-services';
-import { FunctionWalkthroughProvider } from '../supportedServicesType';
 import { ServiceName, provider } from './utils/constants';
 import { category as categoryName } from '../../constants';
 import { copyFunctionResources, createLayerCfnFile, createLayerFolders, createParametersFile } from './utils/storeResources';
@@ -21,9 +20,15 @@ import { IsMockableResponse } from '../..';
  * @param options Legacy parameter
  * @param parameters Parameters used to define the function. If not specified, a walkthrough will be launched to populate it.
  */
-export async function addResource(context, category, service, options, parameters?: any): Promise<object> {
+export async function addResource(
+  context,
+  category,
+  service,
+  options,
+  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
+): Promise<TextObjectOutput[]> {
   // load the service config for this service
-  const serviceConfig: ServiceConfig = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
   const BAD_SERVICE_ERR = `amplify-category-function is not configured to provide service type ${service}`;
   if (!serviceConfig) {
     throw BAD_SERVICE_ERR;
@@ -32,7 +37,7 @@ export async function addResource(context, category, service, options, parameter
     case ServiceName.LambdaFunction:
       return addFunctionResource(context, category, service, serviceConfig, options, parameters);
     case ServiceName.LambdaLayer:
-      return addLayerResource(context, category, service, serviceConfig, options, parameters);
+      return addLayerResource(context, category, service, serviceConfig, options, parameters as LayerParameters);
     default:
       throw BAD_SERVICE_ERR;
   }
@@ -42,10 +47,10 @@ async function addFunctionResource(
   context,
   category,
   service,
-  serviceConfig: ServiceConfig,
+  serviceConfig: ServiceConfig<FunctionParameters>,
   options,
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
-): Promise<object> {
+): Promise<TextObjectOutput[]> {
   // Go through the walkthrough if the parameters are incomplete function parameters
   let completeParams: FunctionParameters | FunctionTriggerParameters;
   if (!parameters || (!isComplete(parameters) && !('trigger' in parameters))) {
@@ -78,17 +83,31 @@ async function addFunctionResource(
     await openEditor(context, category, completeParams);
   }
 
-  return { name: completeParams.resourceName, service: service };
+  let textOutput = [
+    { text: `Successfully added resource ${completeParams.resourceName} locally.`, type: 'success' },
+    { text: '' },
+    { text: 'Next steps:', type: 'success' },
+    { text: `Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src` },
+    { text: '"amplify function build" builds all of your functions currently in the project' },
+    { text: '"amplify mock function <functionName>" runs your function locally' },
+    { text: '"amplify push" builds all of your local backend resources and provisions them in the cloud' },
+    {
+      text:
+        '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
+    },
+  ];
+
+  return textOutput;
 }
 
 async function addLayerResource(
   context,
   category,
   service,
-  serviceConfig: ServiceConfig,
+  serviceConfig: ServiceConfig<LayerParameters>,
   options,
   parameters?: Partial<LayerParameters>,
-): Promise<object> {
+): Promise<TextObjectOutput[]> {
   if (parameters === undefined) {
     parameters = {};
   }
@@ -104,12 +123,34 @@ async function addLayerResource(
   const layerDirPath = createLayerFolders(context, parameters);
   createLayerCfnFile(context, parameters, layerDirPath);
 
-  return { name: parameters.layerName, service, layerDirPath };
+  let textOutput = [
+    { text: 'Lambda layer folders & files created:' },
+    { text: layerDirPath },
+    { text: '' },
+    { text: 'Next steps:', type: 'success' },
+    { text: 'Move your libraries in the following folder:' },
+  ];
+
+  for (let runtime of parameters.runtimes) {
+    textOutput.push({ text: `[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}` });
+  }
+
+  textOutput = [
+    ...textOutput,
+    ...[
+      { text: '' },
+      { text: 'Include any files you want to share across runtimes in this folder:' },
+      { text: `amplify/backend/function/${parameters.layerName}/opt/data` },
+      { text: '"amplify function update <function-name>" - configure a function with this Lambda layer' },
+      { text: '"amplify push" builds all of your local backend resources and provisions them in the cloud' },
+    ],
+  ];
+  return textOutput;
 }
 
 export async function updateResource(context, category, service, parameters, resourceToUpdate) {
   let answers;
-  const serviceConfig: ServiceConfig = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
   }
@@ -196,25 +237,25 @@ async function openEditor(context, category, options: FunctionParameters | Funct
 
 // TODO refactor this to not depend on supported-service.json
 export function migrateResource(context, projectPath, service, resourceName) {
-  const serviceConfig: ServiceConfig = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
 
-  if (!(serviceConfig.walkthroughs as FunctionWalkthroughProvider).migrate) {
+  if (!serviceConfig.walkthroughs.migrate) {
     context.print.info(`No migration required for ${resourceName}`);
     return;
   }
 
-  return (serviceConfig.walkthroughs as FunctionWalkthroughProvider).migrate(context, projectPath, resourceName);
+  return serviceConfig.walkthroughs.migrate(context, projectPath, resourceName);
 }
 
 export function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  const serviceConfig: ServiceConfig = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
 
-  if (!(serviceConfig.walkthroughs as FunctionWalkthroughProvider).getIAMPolicies) {
+  if (!serviceConfig.walkthroughs.getIAMPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
     return;
   }
 
-  return (serviceConfig.walkthroughs as FunctionWalkthroughProvider).getIAMPolicies(resourceName, crudOptions);
+  return serviceConfig.walkthroughs.getIAMPolicies(resourceName, crudOptions);
 }
 
 function isInHeadlessMode(context) {
@@ -229,7 +270,7 @@ function getHeadlessParams(context, service) {
 }
 
 export async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData: ServiceConfig = supportedServices[service];
+  const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
   const functionParametersPath = `${context.amplify.pathManager.getBackendDirPath()}/function/${service}/function-parameters.json`;
   let resourceParams: any = {};
@@ -251,7 +292,7 @@ export async function updateConfigOnEnvInit(context, category, service) {
   return envParams;
 }
 
-async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData: ServiceConfig) {
+async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData: ServiceConfig<FunctionParameters>) {
   if (resourceParams && resourceParams.parentStack && resourceParams.parentResource) {
     const parentResourceParams = providerPlugin.loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
     const triggers =
@@ -289,4 +330,9 @@ export function isMockable(service: ServiceName): IsMockableResponse {
     isMockable: service === ServiceName.LambdaFunction,
     reason: 'Lambda Layers cannot be mocked locally', // this will only be shown when isMockable is false
   };
+}
+
+interface TextObjectOutput {
+  text: string;
+  type?: string;
 }

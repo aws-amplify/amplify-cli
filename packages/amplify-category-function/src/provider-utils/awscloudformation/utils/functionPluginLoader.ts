@@ -66,7 +66,8 @@ export async function runtimeWalkthrough(
     predicate: condition => {
       return condition.provider === params.providerContext.provider && condition.services.includes(service);
     },
-    selectionPrompt: 'Choose the runtime that you want to use:',
+    selectionPrompt:
+      service === ServiceName.LambdaLayer ? 'Select up to 5 compatible runtimes:' : 'Choose the runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
   };
