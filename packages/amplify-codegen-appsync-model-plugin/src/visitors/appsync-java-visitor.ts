@@ -9,6 +9,7 @@ import {
   CONNECTION_RELATIONSHIP_IMPORTS,
   NON_MODEL_CLASS_IMPORT_PACKAGES,
 } from '../configs/java-config';
+import { JAVA_TYPE_IMPORT_MAP } from '../scalars';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 import { CodeGenConnectionType } from '../utils/process-connections';
@@ -615,10 +616,8 @@ export class AppSyncModelJavaVisitor<
 
   protected getNativeType(field: CodeGenField): string {
     const nativeType = super.getNativeType(field);
-    if (nativeType.includes('.')) {
-      const classSplit = nativeType.split('.');
-      this.additionalPackages.add(nativeType);
-      return classSplit[classSplit.length - 1];
+    if (Object.keys(JAVA_TYPE_IMPORT_MAP).includes(nativeType)) {
+      this.additionalPackages.add(JAVA_TYPE_IMPORT_MAP[nativeType]);
     }
     return nativeType;
   }
