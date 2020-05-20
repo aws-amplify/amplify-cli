@@ -978,7 +978,7 @@ describe('AppSyncSwiftVisitor', () => {
               let post = Post.keys
               
               model.authRules = [
-                rule(allow: .owner, identityClaim: \\"cognito:username\\", ownerField: \\"owner\\", operations: [.create, .update, .delete, .read])
+                rule(allow: .owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete, .read])
               ]
               
               model.pluralName = \\"Posts\\"
@@ -1023,7 +1023,7 @@ describe('AppSyncSwiftVisitor', () => {
               let post = Post.keys
               
               model.authRules = [
-                rule(allow: .owner, identityClaim: \\"cognito:username\\", ownerField: \\"author\\", operations: [.create, .update, .delete, .read])
+                rule(allow: .owner, ownerField: \\"author\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete, .read])
               ]
               
               model.pluralName = \\"Posts\\"
@@ -1069,7 +1069,7 @@ describe('AppSyncSwiftVisitor', () => {
               let post = Post.keys
               
               model.authRules = [
-                rule(allow: .owner, identityClaim: \\"cognito:username\\", ownerField: \\"author\\", operations: [.create, .update, .delete])
+                rule(allow: .owner, ownerField: \\"author\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete])
               ]
               
               model.pluralName = \\"Posts\\"
@@ -1115,7 +1115,7 @@ describe('AppSyncSwiftVisitor', () => {
               let post = Post.keys
               
               model.authRules = [
-                rule(allow: .owner, identityClaim: \\"sub\\", ownerField: \\"author\\", operations: [.create, .update, .delete, .read])
+                rule(allow: .owner, ownerField: \\"author\\", identityClaim: \\"sub\\", operations: [.create, .update, .delete, .read])
               ]
               
               model.pluralName = \\"Posts\\"
@@ -1346,7 +1346,7 @@ describe('AppSyncSwiftVisitor', () => {
           
           model.authRules = [
             rule(allow: .groups, groupClaim: \\"cognito:groups\\", groups: [\\"admin\\"], operations: [.create, .update, .delete, .read]),
-            rule(allow: .owner, identityClaim: \\"cognito:username\\", ownerField: \\"owner\\", operations: [.create, .update])
+            rule(allow: .owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", operations: [.create, .update])
           ]
           
           model.pluralName = \\"Posts\\"

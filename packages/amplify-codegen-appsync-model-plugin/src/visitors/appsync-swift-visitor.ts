@@ -317,8 +317,8 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
         switch (rule.allow) {
           case AuthStrategy.owner:
             authRule.push('allow: .owner');
-            authRule.push(`identityClaim: "${rule.identityClaim}"`);
             authRule.push(`ownerField: "${rule.ownerField}"`);
+            authRule.push(`identityClaim: "${rule.identityClaim}"`);
             break;
           case AuthStrategy.groups:
             authRule.push('allow: .groups');
