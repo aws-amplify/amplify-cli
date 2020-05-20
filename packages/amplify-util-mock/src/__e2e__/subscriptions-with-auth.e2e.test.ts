@@ -46,10 +46,19 @@ const USERNAME2 = 'user2@domain.com';
 const USERNAME3 = 'user3@domain.com';
 
 const INSTRUCTOR_GROUP_NAME = 'Instructor';
+const ADMIN_GROUP_NAME = 'Admin';
+const MEMBER_GROUP_NAME = 'Member';
 
 /**
  * Interface Inputs
  */
+interface MemberInput {
+  id: string;
+  name: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 interface CreateStudentInput {
   id?: string;
   name?: string;
@@ -85,6 +94,17 @@ beforeAll(async () => {
             name: String,
             email: AWSEmail,
             ssn: String @auth(rules: [{allow: owner}])
+        }
+
+        type Member @model
+        @auth(rules: [
+          { allow: groups, groups: ["Admin"] }
+          { allow: groups, groups: ["Member"], operations: [read] }
+        ]) {
+          id: ID
+          name: String
+          createdAt: AWSDateTime
+          updatedAt: AWSDateTime
         }
 
         type Post @model
@@ -124,7 +144,7 @@ beforeAll(async () => {
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
     // Configure Amplify, create users, and sign in.
-    const idToken1 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [INSTRUCTOR_GROUP_NAME]);
+    const idToken1 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [INSTRUCTOR_GROUP_NAME, ADMIN_GROUP_NAME]);
     GRAPHQL_CLIENT_1 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -137,7 +157,7 @@ beforeAll(async () => {
         jwtToken: idToken1,
       },
     });
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [INSTRUCTOR_GROUP_NAME]);
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -338,6 +358,44 @@ test('Test a subscription on delete', async done => {
   await deleteStudent(GRAPHQL_CLIENT_1, { id: student4ID });
 });
 
+test('test that group is only allowed to listen to subscriptions', async done => {
+  const memberID = '001';
+  const memberName = 'username00';
+  // test that a user that only read can't mutate
+  try {
+    await createMember(GRAPHQL_CLIENT_2, { id: '001', name: 'notUser' });
+  } catch (err) {
+    expect(err).toBeDefined();
+    expect((err.graphQLErrors[0] as any).errorType).toEqual('Unauthorized');
+  }
+
+  // though they should see when a new member is created
+  const observer = GRAPHQL_CLIENT_2.subscribe({
+    query: gql`
+      subscription OnCreateMember {
+        onCreateMember {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `,
+  });
+  console.log(observer);
+  const subscription = observer.subscribe((event: any) => {
+    const member = event.data.onCreateMember;
+    subscription.unsubscribe();
+    expect(member).toBeDefined();
+    expect(member.id).toEqual(memberID);
+    expect(member.name).toEqual(memberName);
+    done();
+  });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+
+  createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+});
+
 // ownerField Tests
 test('Test subscription onCreatePost with ownerField', async done => {
   const observer = GRAPHQL_CLIENT_1.subscribe({
@@ -375,6 +433,20 @@ async function createStudent(client: AWSAppSyncClient<any>, input: CreateStudent
         email
         ssn
         owner
+      }
+    }
+  `;
+  return await client.mutate({ mutation: request, variables: { input } });
+}
+
+async function createMember(client: AWSAppSyncClient<any>, input: MemberInput) {
+  const request = gql`
+    mutation CreateMember($input: CreateMemberInput!) {
+      createMember(input: $input) {
+        id
+        name
+        createdAt
+        updatedAt
       }
     }
   `;
