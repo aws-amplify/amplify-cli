@@ -392,15 +392,15 @@ describe('AppSyncSwiftVisitor', () => {
             public var title: String
             public var done: Bool
             public var todo: Todo?
-            public var time: Date?
-            public var createdOn: Date?
+            public var time: Temporal.Time?
+            public var createdOn: Temporal.Date?
             
             public init(id: String = UUID().uuidString,
                 title: String,
                 done: Bool,
                 todo: Todo? = nil,
-                time: Date? = nil,
-                createdOn: Date? = nil) {
+                time: Temporal.Time? = nil,
+                createdOn: Temporal.Date? = nil) {
                 self.id = id
                 self.title = title
                 self.done = done
@@ -646,7 +646,7 @@ describe('AppSyncSwiftVisitor', () => {
         public var strArr: [String]?
         public var floatArr: [Double]?
         public var boolArr: [Bool]?
-        public var dateArr: [Date]?
+        public var dateArr: [Temporal.Date]?
         public var enumArr: [EnumType]?
         
         public init(id: String = UUID().uuidString,
@@ -654,7 +654,7 @@ describe('AppSyncSwiftVisitor', () => {
             strArr: [String]? = [],
             floatArr: [Double]? = [],
             boolArr: [Bool]? = [],
-            dateArr: [Date]? = [],
+            dateArr: [Temporal.Date]? = [],
             enumArr: [EnumType]? = []) {
             self.id = id
             self.intArr = intArr
@@ -700,7 +700,7 @@ describe('AppSyncSwiftVisitor', () => {
             .field(objectWithNativeTypes.strArr, is: .optional, ofType: .customType([String].self)),
             .field(objectWithNativeTypes.floatArr, is: .optional, ofType: .customType([Double].self)),
             .field(objectWithNativeTypes.boolArr, is: .optional, ofType: .customType([Bool].self)),
-            .field(objectWithNativeTypes.dateArr, is: .optional, ofType: .customType([Date].self)),
+            .field(objectWithNativeTypes.dateArr, is: .optional, ofType: .customType([Temporal.Date].self)),
             .field(objectWithNativeTypes.enumArr, is: .optional, ofType: .customType([EnumType].self))
           )
           }
