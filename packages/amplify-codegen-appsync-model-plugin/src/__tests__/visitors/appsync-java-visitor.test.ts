@@ -3,6 +3,7 @@ import { validateJava } from '../utils/validate-java';
 import { directives, scalars } from '../../scalars/supported-directives';
 import { AppSyncModelJavaVisitor } from '../../visitors/appsync-java-visitor';
 import { CodeGenGenerateEnum } from '../../visitors/appsync-visitor';
+import { JAVA_SCALAR_MAP } from '../../scalars';
 
 const buildSchemaWithDirectives = (schema: String): GraphQLSchema => {
   return buildSchema([schema, directives, scalars].join('\n'));
@@ -11,7 +12,11 @@ const buildSchemaWithDirectives = (schema: String): GraphQLSchema => {
 const getVisitor = (schema: string, selectedType?: string, generate: CodeGenGenerateEnum = CodeGenGenerateEnum.code) => {
   const ast = parse(schema);
   const builtSchema = buildSchemaWithDirectives(schema);
-  const visitor = new AppSyncModelJavaVisitor(builtSchema, { directives, target: 'android', generate }, { selectedType });
+  const visitor = new AppSyncModelJavaVisitor(
+    builtSchema,
+    { directives, target: 'android', generate, scalars: JAVA_SCALAR_MAP },
+    { selectedType },
+  );
   visit(ast, { leave: visitor });
   return visitor;
 };
@@ -184,6 +189,22 @@ describe('AppSyncModelVisitor', () => {
       expect(() => validateJava(generatedCode)).not.toThrow();
       expect(generatedCode).toMatchSnapshot();
     });
+  });
+
+  it('should generate Temporal type for AWSDate* scalars', () => {
+    const schema = /* GraphQL */ `
+      type TypeWithAWSDateScalars @model {
+        id: ID!
+        date: AWSDate
+        createdAt: AWSDateTime
+        time: AWSTime
+        timestamp: AWSTimestamp
+      }
+    `;
+    const visitor = getVisitor(schema, 'TypeWithAWSDateScalars');
+    const generatedCode = visitor.generate();
+    expect(() => validateJava(generatedCode)).not.toThrow();
+    expect(generatedCode).toMatchSnapshot();
   });
 
   describe('connection', () => {
