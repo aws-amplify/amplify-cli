@@ -84,9 +84,9 @@ export async function runtimeWalkthrough(
     }
     plugins.push(plugin);
   }
-  if (service === ServiceNames.LambdaFunction) {
+  if (service === ServiceName.LambdaFunction) {
     return _functionRuntimeWalkthroughHelper(params, plugins[0], selections[0]);
-  } else if (service === ServiceNames.LambdaLayer) {
+  } else if (service === ServiceName.LambdaLayer) {
     return _layerRuntimeWalkthroughHelper(params, plugins, selections);
   }
 }
@@ -105,12 +105,12 @@ export async function runtimeWalkthroughLayer(
     pluginType: 'functionRuntime',
     listOptionsField: 'runtimes',
     predicate: condition => {
-      return condition.provider === params.providerContext.provider && _.includes(condition.services,service);
+      return condition.provider === params.providerContext.provider && _.includes(condition.services, service);
     },
     selectionPrompt: 'Choose the function runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service: service,
-    runtimeState: runtime
+    runtimeState: runtime,
   };
   // runtime selections
   const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
@@ -202,13 +202,14 @@ async function getSelectionsFromContributors<T>(
 
   //getting old default state
   let prevruntime;
-  if(selectionOptions.runtimeState !== undefined){
-     prevruntime = selections.filter(runtime => {
-      for(let val of selectionOptions.runtimeState){
-        if(val === runtime.name)
-        return runtime;
-      }
-    }).sort((a, b) => a.name.localeCompare(b.name));
+  if (selectionOptions.runtimeState !== undefined) {
+    prevruntime = selections
+      .filter(runtime => {
+        for (let val of selectionOptions.runtimeState) {
+          if (val === runtime.name) return runtime;
+        }
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
   // sanity checks
   let selection;
@@ -234,12 +235,19 @@ async function getSelectionsFromContributors<T>(
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
-        default: selectionOptions.service === ServiceNames.LambdaFunction ? (selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : undefined) : (selectionOptions.runtimeState === undefined ? undefined : prevruntime)
+        default:
+          selectionOptions.service === ServiceName.LambdaFunction
+            ? selectionOptions.listOptionsField === 'runtimes'
+              ? 'nodejs'
+              : undefined
+            : selectionOptions.runtimeState === undefined
+            ? undefined
+            : prevruntime,
       },
     ]);
     selection = answer.selection;
   }
-  if(selectionOptions.runtimeState !== undefined){
+  if (selectionOptions.runtimeState !== undefined) {
     prevruntime.forEach(runtime => selection.push(runtime.value));
   }
   if (!Array.isArray(selection)) {

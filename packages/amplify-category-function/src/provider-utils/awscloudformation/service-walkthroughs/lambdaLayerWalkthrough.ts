@@ -3,10 +3,9 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import path from 'path';
 import { LayerParameters, Permissions } from '../utils/layerParams';
-import { runtimeWalkthrough,runtimeWalkthroughLayer } from '../utils/functionPluginLoader';
-import { ServiceNames, categoryName, layerParametersFileName} from '../utils/constants';
+import { runtimeWalkthrough, runtimeWalkthroughLayer } from '../utils/functionPluginLoader';
+import { ServiceName, categoryName, layerParametersFileName } from '../utils/constants';
 import { objectExtension } from 'graphql-transformer-core/lib/TransformerContext';
-
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
@@ -16,7 +15,7 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
 
   _.assign(parameters, await inquirer.prompt(layerPermissionsQuestion()));
 
-  for(let permissions of parameters.layerPermissions){
+  for (let permissions of parameters.layerPermissions) {
     switch (permissions) {
       case Permissions.awsAccounts:
         _.assign(parameters, await inquirer.prompt(layerAccountAccessQuestion()));
@@ -25,7 +24,7 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
         _.assign(parameters, await inquirer.prompt(layerOrgAccessQuestion()));
         break;
     }
-  };
+  }
   return parameters;
 }
 
@@ -33,11 +32,8 @@ export async function updateLayerWalkthrough(
   context: any,
   templateParameters: Partial<LayerParameters> = {},
 ): Promise<Partial<LayerParameters>> {
-
-  const {allResources} = await context.amplify.getResourceStatus();
-  const resources = allResources
-  .filter(resource => resource.service === ServiceNames.LambdaLayer)
-  .map(resource => resource.resourceName);
+  const { allResources } = await context.amplify.getResourceStatus();
+  const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
 
   if (resources.length === 0) {
     context.print.error('No Lambda Layer resource to update. Please use "amplify add function" command to create a new Function');
@@ -66,19 +62,19 @@ export async function updateLayerWalkthrough(
     currentParameters = {};
   }
 
-  _.assign(templateParameters,currentParameters);
+  _.assign(templateParameters, currentParameters);
   // runtime question
-  let islayerVersionChanged : boolean = true;
-  if(await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)){
+  let islayerVersionChanged: boolean = true;
+  if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
     let runtimeReturn = await runtimeWalkthroughLayer(context, templateParameters);
     templateParameters.runtimes = runtimeReturn.map(val => val.runtime);
-  }else{
+  } else {
     islayerVersionChanged = false;
   }
-  if(await context.amplify.confirmPrompt.run("Do you want to adjust who can access the current & new layer version?",true)){
+  if (await context.amplify.confirmPrompt.run('Do you want to adjust who can access the current & new layer version?', true)) {
     _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion()));
 
-    for(let permissions of templateParameters.layerPermissions){
+    for (let permissions of templateParameters.layerPermissions) {
       switch (permissions) {
         case Permissions.awsAccounts:
           _.assign(templateParameters, await inquirer.prompt(layerAccountAccessQuestion()));
@@ -87,16 +83,16 @@ export async function updateLayerWalkthrough(
           _.assign(templateParameters, await inquirer.prompt(layerOrgAccessQuestion()));
           break;
       }
-    };
-    if(islayerVersionChanged){
-      _.assign(templateParameters,await inquirer.prompt(layerVersionQuestion(context)))
+    }
+    if (islayerVersionChanged) {
+      _.assign(templateParameters, await inquirer.prompt(layerVersionQuestion(context)));
     }
   }
   return templateParameters;
 }
 
-function layerVersionQuestion(context : any){
-  return[
+function layerVersionQuestion(context: any) {
+  return [
     {
       type: 'input',
       name: 'layerVersion',
