@@ -1,3 +1,5 @@
+import {handleAddStorageHeadlessRequest} from '../../provider-utils/awscloudformation/headlessHandler';
+
 const subcommand = 'add';
 const category = 'storage';
 
@@ -6,6 +8,10 @@ let options;
 module.exports = {
   name: subcommand,
   run: async context => {
+    if (context.input.options && context.input.options.headless) {
+      await handleAddStorageHeadlessRequest(context);
+      return;
+    }
     const { amplify } = context;
     const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
     return amplify

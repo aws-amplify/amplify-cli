@@ -22,6 +22,7 @@
   ],
   "dependencies": {
     "amplify-category-auth": "2.15.6",
+    "amplify-util-headless-input": "1.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",
     "lodash": "^4.17.15",

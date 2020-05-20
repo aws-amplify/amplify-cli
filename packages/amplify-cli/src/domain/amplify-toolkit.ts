@@ -74,6 +74,7 @@ export class AmplifyToolkit {
   private _leaveBreadcrumbs: any;
   private _readBreadcrumbs: any;
   private _loadRuntimePlugin: any;
+  private _getHeadlessInput: any;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -425,5 +426,10 @@ export class AmplifyToolkit {
     this._loadRuntimePlugin =
       this._loadRuntimePlugin || require(path.join(this._amplifyHelpersDirPath, 'load-runtime-plugin')).loadRuntimePlugin;
     return this._loadRuntimePlugin;
+  }
+
+  get getHeadlessInput(): any {
+    this._getHeadlessInput = this._getHeadlessInput || require(path.join(this._amplifyHelpersDirPath, 'get-headless-input')).getHeadlessInput;
+    return this._getHeadlessInput;
   }
 }
