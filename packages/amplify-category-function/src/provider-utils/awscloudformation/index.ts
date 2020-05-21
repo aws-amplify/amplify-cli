@@ -9,6 +9,10 @@ import {
   createLayerFolders,
   saveMutableState,
   saveCFNParameters,
+  createParametersFile,
+  copyFunctionResources,
+  updateLayerCfnFile,
+  createLayerParametersFile
 } from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
@@ -169,7 +173,7 @@ export async function updateResource(
   resourceToUpdate?,
 ) {
   // load the service config for this service
-  const serviceConfig: ServiceConfig = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
   const BAD_SERVICE_ERR = `amplify-category-function is not configured to provide service type ${service}`;
   if (!serviceConfig) {
     throw BAD_SERVICE_ERR;
@@ -188,7 +192,7 @@ export async function updateLayerResource(
   context,
   category,
   service,
-  serviceConfig: ServiceConfig,
+  serviceConfig: ServiceConfig<LayerParameters>,
   parameters?: Partial<LayerParameters>,
 ): Promise<object> {
   if (!serviceConfig) {

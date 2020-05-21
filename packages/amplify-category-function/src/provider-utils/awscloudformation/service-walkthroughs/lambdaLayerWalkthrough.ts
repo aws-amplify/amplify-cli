@@ -3,7 +3,7 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import path from 'path';
 import { LayerParameters, Permissions } from '../utils/layerParams';
-import { runtimeWalkthrough, runtimeWalkthroughLayer } from '../utils/functionPluginLoader';
+import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import { ServiceName, categoryName, layerParametersFileName } from '../utils/constants';
 import { objectExtension } from 'graphql-transformer-core/lib/TransformerContext';
 
@@ -13,7 +13,7 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
   let runtimeReturn = await runtimeWalkthrough(context, parameters);
   parameters.runtimes = runtimeReturn.map(val => val.runtime);
 
-  _.assign(parameters, await inquirer.prompt(layerPermissionsQuestion()));
+  _.assign(parameters, await inquirer.prompt(layerPermissionsQuestion(parameters)));
 
   for (let permissions of parameters.layerPermissions) {
     switch (permissions) {
@@ -66,13 +66,13 @@ export async function updateLayerWalkthrough(
   // runtime question
   let islayerVersionChanged: boolean = true;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
-    let runtimeReturn = await runtimeWalkthroughLayer(context, templateParameters);
+    let runtimeReturn = await runtimeWalkthrough(context, templateParameters);
     templateParameters.runtimes = runtimeReturn.map(val => val.runtime);
   } else {
     islayerVersionChanged = false;
   }
   if (await context.amplify.confirmPrompt.run('Do you want to adjust who can access the current & new layer version?', true)) {
-    _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion()));
+    _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion(templateParameters)));
 
     for (let permissions of templateParameters.layerPermissions) {
       switch (permissions) {
@@ -144,7 +144,7 @@ function layerNameQuestion(context: any) {
   ];
 }
 
-function layerPermissionsQuestion() {
+function layerPermissionsQuestion(params : Partial<LayerParameters>) {
   return [
     {
       type: 'checkbox',
@@ -154,21 +154,24 @@ function layerPermissionsQuestion() {
         {
           name: 'Only the current AWS account',
           value: Permissions.private,
+          checked: _.includes(params.layerPermissions,Permissions.private)? true : false
         },
         {
           name: 'Specific AWS accounts',
           value: Permissions.awsAccounts,
+          checked: _.includes(params.layerPermissions,Permissions.awsAccounts)? true : false
         },
         {
           name: 'Specific AWS organization',
           value: Permissions.awsOrg,
+          checked: _.includes(params.layerPermissions,Permissions.awsOrg)? true : false
         },
         {
           name: 'Public (everyone on AWS can use this layer)',
           value: Permissions.public,
+          checked: _.includes(params.layerPermissions,Permissions.public)? true : false
         },
       ],
-      default: Permissions.private,
     },
   ];
 }

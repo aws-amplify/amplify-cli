@@ -57,9 +57,14 @@ export async function templateWalkthrough(context: any, params: Partial<Function
  */
 export async function runtimeWalkthrough(
   context: any,
-  params: Partial<FunctionParameters>,
+  params: Partial<FunctionParameters> | Partial<LayerParameters>,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
   const { service } = params.providerContext;
+    //get the runtimes from template parameters
+  let runtimeLayer;
+  if(isLayerParameter(params)){
+    runtimeLayer = params.runtimes.map(runtime => runtime.name);
+  }
   const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
     pluginType: 'functionRuntime',
     listOptionsField: 'runtimes',
@@ -70,6 +75,7 @@ export async function runtimeWalkthrough(
       service === ServiceName.LambdaLayer ? 'Select up to 5 compatible runtimes:' : 'Choose the runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
+    runtimeState: runtimeLayer,
   };
   // runtime selections
   const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
@@ -84,68 +90,11 @@ export async function runtimeWalkthrough(
     }
     plugins.push(plugin);
   }
-  if (service === ServiceName.LambdaFunction) {
-    return _functionRuntimeWalkthroughHelper(params, plugins[0], selections[0]);
-  } else if (service === ServiceName.LambdaLayer) {
-    return _layerRuntimeWalkthroughHelper(params, plugins, selections);
-  }
-}
-
-/**
- * Selects a layer runtime
- */
-export async function runtimeWalkthroughLayer(
-  context: any,
-  params: Partial<LayerParameters>,
-): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
-  const { service } = params.providerContext;
-  //get the runtimes from template parameters
-  const runtime = params.runtimes.map(runtime => runtime.name);
-  const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
-    pluginType: 'functionRuntime',
-    listOptionsField: 'runtimes',
-    predicate: condition => {
-      return condition.provider === params.providerContext.provider && _.includes(condition.services, service);
-    },
-    selectionPrompt: 'Choose the function runtime that you want to use:',
-    notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
-    service: service,
-    runtimeState: runtime,
-  };
-  // runtime selections
-  const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
-  const plugins = [];
-  for (let selection of selections) {
-    const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
-    const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
-    if (!depCheck.hasRequiredDependencies) {
-      context.print.warning(
-        depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed',
-      );
-    }
-    plugins.push(plugin);
-  }
-  return _layerRuntimeWalkthroughHelper(params, plugins, selections);
+  return _functionRuntimeWalkthroughHelper(params, plugins, selections);
 }
 
 async function _functionRuntimeWalkthroughHelper(
-  params: Partial<FunctionParameters>,
-  plugin,
-  selection,
-): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
-  const contributionRequest: RuntimeContributionRequest = {
-    selection: selection.value,
-    contributionContext: {
-      functionName: params.functionName,
-      resourceName: params.resourceName,
-    },
-  };
-  const contribution = await plugin.contribute(contributionRequest);
-  return [{ ...contribution, runtimePluginId: selection.pluginId }];
-}
-
-async function _layerRuntimeWalkthroughHelper(
-  params: Partial<LayerParameters>,
+  params: Partial<FunctionParameters> | Partial<LayerParameters>,
   plugins,
   selections,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
@@ -154,8 +103,8 @@ async function _layerRuntimeWalkthroughHelper(
     const contributionRequest: RuntimeContributionRequest = {
       selection: selections[i].value,
       contributionContext: {
-        functionName: params.layerName,
-        resourceName: params.layerName,
+        functionName: isLayerParameter(params) ? params.layerName : params.functionName,
+        resourceName: isLayerParameter(params) ? params.layerName : params.resourceName
       },
     };
     const contribution = await plugins[i].contribute(contributionRequest);
@@ -200,7 +149,6 @@ async function getSelectionsFromContributors<T>(
     .reduce((acc, it) => acc.concat(it), [])
     .sort((a, b) => a.name.localeCompare(b.name)); // sort by display name so that selections order is deterministic
 
-  //getting old default state
   let prevruntime;
   if (selectionOptions.runtimeState !== undefined) {
     prevruntime = selections
@@ -209,7 +157,9 @@ async function getSelectionsFromContributors<T>(
           if (val === runtime.name) return runtime;
         }
       })
-      .sort((a, b) => a.name.localeCompare(b.name));
+    prevruntime.forEach(selection =>{
+      _.assign(selection,{checked : true})
+    });
   }
   // sanity checks
   let selection;
@@ -247,9 +197,7 @@ async function getSelectionsFromContributors<T>(
     ]);
     selection = answer.selection;
   }
-  if (selectionOptions.runtimeState !== undefined) {
-    prevruntime.forEach(runtime => selection.push(runtime.value));
-  }
+
   if (!Array.isArray(selection)) {
     selection = [selection];
   }
@@ -297,4 +245,8 @@ interface PluginSelection {
 interface ListOption {
   name: string;
   value: string;
+}
+
+function isLayerParameter(params: Partial<LayerParameters> | Partial<FunctionParameters> ): params is Partial<LayerParameters> {
+  return (((params as Partial<LayerParameters>) !== undefined) && ((params as Partial<LayerParameters>).runtimes !== undefined));
 }
