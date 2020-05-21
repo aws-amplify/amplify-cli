@@ -20,6 +20,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'java',
           cloudTemplateValue: 'java11',
           defaultHandler: 'example.LambdaRequestHandler::handleRequest',
+          layerExecutablePath: 'bin/java/lib/',
         },
       });
     },

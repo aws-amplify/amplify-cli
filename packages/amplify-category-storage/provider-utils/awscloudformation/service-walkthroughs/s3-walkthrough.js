@@ -734,7 +734,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
     // Update amplify-meta and backend-config
 
     const backendConfigs = {
-      service: 'Lambda',
+      service: 'LambdaFunction',
       providerPlugin: 'awscloudformation',
       build: true,
     };
@@ -970,7 +970,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
 
 async function getLambdaFunctions(context) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaResources = allResources.filter(resource => resource.service === 'Lambda').map(resource => resource.resourceName);
+  const lambdaResources = allResources.filter(resource => resource.service === 'LambdaFunction').map(resource => resource.resourceName);
 
   return lambdaResources;
 }

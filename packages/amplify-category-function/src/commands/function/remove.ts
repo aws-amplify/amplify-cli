@@ -1,4 +1,4 @@
-import { categoryName } from '../../provider-utils/awscloudformation/utils/constants';
+import { category as categoryName } from '../../constants';
 
 const subcommand = 'remove';
 

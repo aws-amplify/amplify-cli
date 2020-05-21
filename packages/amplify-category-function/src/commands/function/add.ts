@@ -1,4 +1,5 @@
-import { categoryName } from '../../provider-utils/awscloudformation/utils/constants';
+import { chooseServiceMessage } from '../../provider-utils/awscloudformation/utils/constants';
+import { category as categoryName } from '../../constants';
 import { supportedServices } from '../../provider-utils/supported-services';
 
 const subcommand = 'add';
@@ -11,7 +12,7 @@ module.exports = {
     const { amplify } = context;
     const servicesMetadata = supportedServices;
     return amplify
-      .serviceSelectionPrompt(context, categoryName, servicesMetadata)
+      .serviceSelectionPrompt(context, categoryName, servicesMetadata, chooseServiceMessage)
       .then(result => {
         options = {
           service: result.service,
@@ -25,19 +26,8 @@ module.exports = {
         }
         return providerController.addResource(context, categoryName, result.service, options);
       })
-      .then(resourceName => {
-        const { print } = context;
-        print.success(`Successfully added resource ${resourceName} locally.`);
-        print.info('');
-        print.success('Next steps:');
-        print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${resourceName}/src`);
-        print.info('"amplify function build" builds all of your functions currently in the project');
-        print.info('"amplify mock function <functionName>" runs your function locally');
-        print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
-        print.info(
-          '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
-        );
-        print.info('');
+      .then(() => {
+        context.print.info('');
       })
       .catch(err => {
         context.print.info(err.stack);

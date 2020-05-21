@@ -1,9 +1,10 @@
 import path from 'path';
 import { category } from './constants';
-import { categoryName } from './provider-utils/awscloudformation/utils/constants';
+export { category } from './constants';
 import { FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
+import { supportedServices } from './provider-utils/supported-services';
 
 export async function add(context, providerName, service, parameters) {
   const options = {
@@ -110,8 +111,8 @@ export async function initEnv(context) {
 
 // returns a function that can be used to invoke the lambda locally
 export async function getInvoker(context: any, params: InvokerParameters): Promise<({ event: any }) => Promise<any>> {
-  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, params.resourceName);
-  const breadcrumbs: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(context, categoryName, params.resourceName);
+  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), category, params.resourceName);
+  const breadcrumbs: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(context, category, params.resourceName);
   const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, breadcrumbs.pluginId);
 
   const lastBuildTimestampStr = (await context.amplify.getResourceStatus(category, params.resourceName)).allResources.find(
@@ -128,6 +129,11 @@ export async function getInvoker(context: any, params: InvokerParameters): Promi
       envVars: params.envVars,
       lastBuildTimestamp: lastBuildTimestampStr ? new Date(lastBuildTimestampStr) : undefined,
     });
+}
+
+export function isMockable(context: any, resourceName: string): IsMockableResponse {
+  const service = context.amplify.getProjectMeta()[category][resourceName].service;
+  return supportedServices[service].providerController.isMockable(service);
 }
 
 export async function executeAmplifyCommand(context) {
@@ -153,3 +159,8 @@ export type InvokerParameters = {
   handler: string;
   envVars?: { [key: string]: string };
 };
+
+export interface IsMockableResponse {
+  isMockable: boolean;
+  reason?: string;
+}

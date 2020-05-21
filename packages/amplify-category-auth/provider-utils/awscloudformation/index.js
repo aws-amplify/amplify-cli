@@ -795,7 +795,7 @@ async function createAdminAuthFunction(context, authResourceName, functionName, 
   if (operation === 'add') {
     // add amplify-meta and backend-config
     const backendConfigs = {
-      service: 'Lambda',
+      service: 'LambdaFunction',
       providerPlugin: 'awscloudformation',
       build: true,
       dependsOn,

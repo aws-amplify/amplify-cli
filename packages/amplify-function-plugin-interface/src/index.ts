@@ -3,7 +3,9 @@
 */
 
 // All Function Runtime Contributor plugins must export a function of this type named 'functionRuntimeContributorFactory'
-export type FunctionRuntimeContributorFactory = (context: any) => Contributor<FunctionRuntimeParameters> & FunctionRuntimeLifecycleManager;
+export type FunctionRuntimeContributorFactory = (
+  context: any,
+) => Contributor<FunctionRuntimeParameters, RuntimeContributionRequest> & FunctionRuntimeLifecycleManager;
 
 // Subset of FunctionParameters that defines the function runtime
 export type FunctionRuntimeParameters = Pick<FunctionParameters, 'runtime'>;
@@ -13,17 +15,16 @@ export type FunctionRuntimeParameters = Pick<FunctionParameters, 'runtime'>;
 */
 
 // All Function Template Contributor plugins must export a function of this type named 'functionTemplateContributorFactory'
-export type FunctionTemplateContributorFactory = ContributorFactory<FunctionTemplateParameters>;
+export type FunctionTemplateContributorFactory = (context: any) => Contributor<Partial<FunctionParameters>, TemplateContributionRequest>;
 
 // Subset of FunctionParameters that defines the function template
 export type FunctionTemplateParameters = Pick<FunctionParameters, 'dependsOn' | 'functionTemplate' | 'triggerEventSourceMappings'>;
 
 // Generic interfaces / types for all contributors
 // context is the Amplify core context object (unfourtunately no type for this)
-export type ContributorFactory<T extends Partial<FunctionParameters>> = (context: any) => Contributor<T>;
 
-export interface Contributor<T extends Partial<FunctionParameters>> {
-  contribute(request: ContributionRequest): Promise<T>;
+export interface Contributor<T extends Partial<FunctionParameters>, K> {
+  contribute(request: K): Promise<T>;
 }
 
 export interface FunctionRuntimeLifecycleManager {
@@ -33,10 +34,18 @@ export interface FunctionRuntimeLifecycleManager {
   invoke(request: InvocationRequest): Promise<any>;
 }
 
-export type ContributionRequest = {
+export type TemplateContributionRequest = {
   selection: string;
   contributionContext: {
     runtime: FunctionRuntime;
+    functionName: string;
+    resourceName: string;
+  };
+};
+
+export type RuntimeContributionRequest = {
+  selection: string;
+  contributionContext: {
     functionName: string;
     resourceName: string;
   };
@@ -149,6 +158,7 @@ export interface FunctionRuntime {
   value: string; // value used internally to identify this runtime
   cloudTemplateValue: string; // value set in the CFN file
   defaultHandler: string; // default handler to set in the CFN file
+  layerExecutablePath?: string; // directory structure for Lambda Layers
 }
 
 export interface FunctionTemplate {
@@ -180,12 +190,12 @@ export interface FunctionDependency {
 
 interface FunctionContributorCondition {
   provider?: string;
-  service?: string;
+  services?: Array<string>;
   runtime?: string | Array<string>;
 }
 
 export type FunctionTemplateCondition = FunctionContributorCondition;
-export type FunctionRuntimeCondition = Pick<FunctionContributorCondition, 'provider' | 'service'>;
+export type FunctionRuntimeCondition = Pick<FunctionContributorCondition, 'provider' | 'services'>;
 
 export interface FunctionBreadcrumbs {
   pluginId: string;

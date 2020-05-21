@@ -6,7 +6,7 @@
   "functionTemplate": {
     "conditions": {
       "provider": "awscloudformation",
-      "service": "Lambda",
+      "services": ["LambdaFunction"],
       "runtime": "java"
     },
     "templates": [
