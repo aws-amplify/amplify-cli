@@ -173,6 +173,26 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
   });
 }
 
+export function apiUpdateToggleDataStore(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait('Select from the options below')
+      .send(KEY_DOWN_ARROW)
+      .sendLine(KEY_DOWN_ARROW) // select enable datastore for the api
+      .wait(/.*Successfully updated resource.*/)
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
