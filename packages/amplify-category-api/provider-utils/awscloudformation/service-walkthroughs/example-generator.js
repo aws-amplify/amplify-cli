@@ -4,10 +4,14 @@ const ejs = require('ejs');
 const path = require('path');
 
 const authProviderExamplesSingleObject = {
-  API_KEY: `${EOL}#   @auth(rules: [{allow: owner}])${EOL}`,
+  API_KEY: ``,
   AMAZON_COGNITO_USER_POOLS: `${EOL}\
-# Uncomment below to enable authentication by group and replacing group "mygroup" by group you have setup${EOL}\
-#   @auth(rules: [{ allow: groups, groups: ["mygroup"]}])${EOL}\
+# Uncomment below to enable authentication by group${EOL}\
+#   @auth(rules: [${EOL}\
+#    { allow: owner, ownerField: \"editors\", operations: [update] },${EOL}\
+#    # Admin users can access any operation.${EOL}\
+#    { allow: groups, groups: [\"Admin\"] }${EOL}\
+#])${EOL}\
   `,
   AWS_IAM: `${EOL}\
 #  Uncomment below to enable IAM based authentication${EOL}\
@@ -23,12 +27,7 @@ const authProviderExamplesSingleObject = {
 };
 const authProviderExamplesManyToMany = {
   API_KEY: {
-    blog: `${EOL}
-#   @auth(\
-#   rules: [\
-#     {allow: owner, operations: [create, update, delete, read]},\
-#   ])${EOL}\
-    `,
+    blog: ``,
     post: ``,
     comment: ``,
   },
@@ -75,6 +74,11 @@ const keyFileMap = {
 export async function generateExample(authTypes, schemaFilePath, targetFilePath, schema) {
   const defaultAuthType = authTypes[0];
   const file = path.join(schemaFilePath, keyFileMap[schema]);
-  const string = await ejs.renderFile(file, { authDirective: authDirectiveByFile[schema][defaultAuthType] });
+  const string = escape(await ejs.renderFile(file, { authDirective: authDirectiveByFile[schema][defaultAuthType] }, {}));
   fs.writeFileSync(targetFilePath, string);
+}
+function escape(x) {
+  return x.replace(/&#(\d+);/g, function(match, dec) {
+    return String.fromCharCode(dec);
+  });
 }
