@@ -26,7 +26,7 @@ module.exports = {
         }
         return providerController.addResource(context, categoryName, result.service, options);
       })
-      .then(result => {
+      .then(() => {
         context.print.info('');
       })
       .catch(err => {
