@@ -26,7 +26,7 @@ const XCODE_PROJ_EXTENSION = '.xcodeproj';
 
 /**
  * @private
- * @returns {string}
+ * @returns {string} or undefined if not in an XCode project
  */
 function getXcodeProjectDir() {
   const files = fs.readdirSync(process.cwd());
@@ -121,6 +121,10 @@ function groupHasFile(group, name) {
  */
 async function addAmplifyFiles() {
   const projectDir = getXcodeProjectDir();
+  if (!projectDir) {
+    // if not in a xcode project do not move forward with xcode logic
+    return;
+  }
   const rootDir = path.resolve(projectDir, '..', '..');
   const project = xcode.project(projectDir);
   return new Promise((resolve, reject) => {
@@ -138,7 +142,7 @@ async function addAmplifyFiles() {
       }
 
       const rootGroup = getRootGroup(project);
-      if (rootGroup == null || typeof rootGroup.uuid !== 'string') {
+      if (!rootGroup || typeof rootGroup.uuid !== 'string') {
         reject(new Error('Could not find root group of Xcode project'));
         return;
       }
