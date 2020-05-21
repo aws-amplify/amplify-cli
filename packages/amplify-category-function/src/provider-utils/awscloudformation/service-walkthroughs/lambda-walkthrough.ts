@@ -30,8 +30,8 @@ export async function createWalkthrough(
 
   // ask runtime selection questions and merge in results
   if (!templateParameters.runtime) {
-    let res = await runtimeWalkthrough(context, templateParameters);
-    templateParameters = merge(templateParameters, res[0]);
+    let runtimeSelection = await runtimeWalkthrough(context, templateParameters);
+    templateParameters = merge(templateParameters, runtimeSelection[0]);
   }
 
   // ask template selection questions and merge in results

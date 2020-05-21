@@ -37,8 +37,8 @@ export async function templateWalkthrough(context: any, params: Partial<Function
     notFoundMessage: `No ${params.runtime.name} ${params.providerContext.service} templates found`,
     service,
   };
-  let res = await getSelectionFromContributors<FunctionTemplateCondition>(context, selectionOptions);
-  const selection = res[0];
+  const selections = await getSelectionsFromContributors<FunctionTemplateCondition>(context, selectionOptions);
+  const selection = selections[0];
   const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionTemplateContributorFactory', context);
   const contributionRequest: TemplateContributionRequest = {
     selection: selection.value,
@@ -71,7 +71,7 @@ export async function runtimeWalkthrough(
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
   };
-  const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
+  const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugins = [];
   for (let selection of selections) {
     const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
@@ -132,7 +132,10 @@ async function _layerRuntimeWalkthroughHelper(
 /**
  * Parses plugin metadata to present plugin selections to the user and return the selection.
  */
-async function getSelectionFromContributors<T>(context: any, selectionOptions: PluginSelectionOptions<T>): Promise<Array<PluginSelection>> {
+async function getSelectionsFromContributors<T>(
+  context: any,
+  selectionOptions: PluginSelectionOptions<T>,
+): Promise<Array<PluginSelection>> {
   const notFoundSuffix = 'You can download and install additional plugins then rerun this command';
   // get providers from context
   const templateProviders = context.pluginPlatform.plugins[selectionOptions.pluginType];

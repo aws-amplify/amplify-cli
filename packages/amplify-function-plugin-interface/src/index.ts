@@ -22,7 +22,6 @@ export type FunctionTemplateParameters = Pick<FunctionParameters, 'dependsOn' | 
 
 // Generic interfaces / types for all contributors
 // context is the Amplify core context object (unfourtunately no type for this)
-// export type ContributorFactory<T extends Partial<FunctionParameters>> = (context: any) => Contributor<T>;
 
 export interface Contributor<T extends Partial<FunctionParameters>, K> {
   contribute(request: K): Promise<T>;

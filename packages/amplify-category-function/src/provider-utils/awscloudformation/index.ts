@@ -26,7 +26,7 @@ export async function addResource(
   service,
   options,
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
-): Promise<TextObjectOutput[]> {
+): Promise<void> {
   // load the service config for this service
   const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
   const BAD_SERVICE_ERR = `amplify-category-function is not configured to provide service type ${service}`;
@@ -50,7 +50,7 @@ async function addFunctionResource(
   serviceConfig: ServiceConfig<FunctionParameters>,
   options,
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
-): Promise<TextObjectOutput[]> {
+): Promise<void> {
   // Go through the walkthrough if the parameters are incomplete function parameters
   let completeParams: FunctionParameters | FunctionTriggerParameters;
   if (!parameters || (!isComplete(parameters) && !('trigger' in parameters))) {
@@ -83,21 +83,18 @@ async function addFunctionResource(
     await openEditor(context, category, completeParams);
   }
 
-  let textOutput = [
-    { text: `Successfully added resource ${completeParams.resourceName} locally.`, type: 'success' },
-    { text: '' },
-    { text: 'Next steps:', type: 'success' },
-    { text: `Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src` },
-    { text: '"amplify function build" builds all of your functions currently in the project' },
-    { text: '"amplify mock function <functionName>" runs your function locally' },
-    { text: '"amplify push" builds all of your local backend resources and provisions them in the cloud' },
-    {
-      text:
-        '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
-    },
-  ];
+  const { print } = context;
 
-  return textOutput;
+  print.success(`Successfully added resource ${completeParams.resourceName} locally.`);
+  print.info('');
+  print.success('Next steps:');
+  print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src`);
+  print.info('"amplify function build" builds all of your functions currently in the project');
+  print.info('"amplify mock function <functionName>" runs your function locally');
+  print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+  print.info(
+    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
+  );
 }
 
 async function addLayerResource(
@@ -107,7 +104,7 @@ async function addLayerResource(
   serviceConfig: ServiceConfig<LayerParameters>,
   options,
   parameters?: Partial<LayerParameters>,
-): Promise<TextObjectOutput[]> {
+): Promise<void> {
   if (parameters === undefined) {
     parameters = {};
   }
@@ -123,29 +120,22 @@ async function addLayerResource(
   const layerDirPath = createLayerFolders(context, parameters);
   createLayerCfnFile(context, parameters, layerDirPath);
 
-  let textOutput = [
-    { text: 'Lambda layer folders & files created:' },
-    { text: layerDirPath },
-    { text: '' },
-    { text: 'Next steps:', type: 'success' },
-    { text: 'Move your libraries in the following folder:' },
-  ];
+  const { print } = context;
+  print.info('Lambda layer folders & files created:');
+  print.info(layerDirPath);
+  print.info('');
+  print.success('Next steps:');
+  print.info('Move your libraries in the following folder:');
 
   for (let runtime of parameters.runtimes) {
-    textOutput.push({ text: `[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}` });
+    print.info(`[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}`);
   }
 
-  textOutput = [
-    ...textOutput,
-    ...[
-      { text: '' },
-      { text: 'Include any files you want to share across runtimes in this folder:' },
-      { text: `amplify/backend/function/${parameters.layerName}/opt/data` },
-      { text: '"amplify function update <function-name>" - configure a function with this Lambda layer' },
-      { text: '"amplify push" builds all of your local backend resources and provisions them in the cloud' },
-    ],
-  ];
-  return textOutput;
+  print.info('');
+  print.info('Include any files you want to share across runtimes in this folder:');
+  print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
+  print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
 }
 
 export async function updateResource(context, category, service, parameters, resourceToUpdate) {
@@ -330,9 +320,4 @@ export function isMockable(service: ServiceName): IsMockableResponse {
     isMockable: service === ServiceName.LambdaFunction,
     reason: 'Lambda Layers cannot be mocked locally', // this will only be shown when isMockable is false
   };
-}
-
-interface TextObjectOutput {
-  text: string;
-  type?: string;
 }

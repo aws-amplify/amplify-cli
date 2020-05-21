@@ -27,11 +27,7 @@ module.exports = {
         return providerController.addResource(context, categoryName, result.service, options);
       })
       .then(result => {
-        const { print } = context;
-        for (let textObj of result) {
-          print[textObj.type || 'info'](textObj.text);
-        }
-        print.info('');
+        context.print.info('');
       })
       .catch(err => {
         context.print.info(err.stack);
