@@ -84,37 +84,37 @@ export async function updateLayerWalkthrough(
           break;
       }
     }
-    if (islayerVersionChanged) {
-      _.assign(templateParameters, await inquirer.prompt(layerVersionQuestion(context)));
-    }
+    // if (islayerVersionChanged) {
+    //   _.assign(templateParameters, await inquirer.prompt(layerVersionQuestion(context)));
+    // }
   }
   return templateParameters;
 }
 
-function layerVersionQuestion(context: any) {
-  return [
-    {
-      type: 'input',
-      name: 'layerVersion',
-      message: 'Provide a version number for your updated Lambda layer:',
-      validate: input => {
-        // TODO: make sure name is unique from other layers in project
-        if (/^[a-zA-Z0-9_\-]{1,140}$/.test(input)) {
-          return true;
-        }
-        return 'Lambda Layer names are 1-140 characters long and can only contain letters, numbers, -, _';
-      },
-      default: () => {
-        const appName = context.amplify
-          .getProjectDetails()
-          .projectConfig.projectName.toLowerCase()
-          .replace(/[^a-zA-Z0-9]/gi, '');
-        const [shortId] = uuid().split('-');
-        return `${appName}${shortId}`;
-      },
-    },
-  ];
-}
+// function layerVersionQuestion(context: any) {
+//   return [
+//     {
+//       type: 'input',
+//       name: 'layerVersion',
+//       message: 'Provide a version number for your updated Lambda layer:',
+//       validate: input => {
+//         // TODO: make sure name is unique from other layers in project
+//         if (/^[a-zA-Z0-9_\-]{1,140}$/.test(input)) {
+//           return true;
+//         }
+//         return 'Lambda Layer names are 1-140 characters long and can only contain letters, numbers, -, _';
+//       },
+//       default: () => {
+//         const appName = context.amplify
+//           .getProjectDetails()
+//           .projectConfig.projectName.toLowerCase()
+//           .replace(/[^a-zA-Z0-9]/gi, '');
+//         const [shortId] = uuid().split('-');
+//         return `${appName}${shortId}`;
+//       },
+//     },
+//   ];
+// }
 
 function layerNameQuestion(context: any) {
   return [
@@ -144,7 +144,7 @@ function layerNameQuestion(context: any) {
   ];
 }
 
-function layerPermissionsQuestion(params : Partial<LayerParameters>) {
+function layerPermissionsQuestion(params: Partial<LayerParameters>) {
   return [
     {
       type: 'checkbox',
@@ -154,22 +154,22 @@ function layerPermissionsQuestion(params : Partial<LayerParameters>) {
         {
           name: 'Only the current AWS account',
           value: Permissions.private,
-          checked: _.includes(params.layerPermissions,Permissions.private)? true : false
+          checked: _.includes(params.layerPermissions, Permissions.private) ? true : false,
         },
         {
           name: 'Specific AWS accounts',
           value: Permissions.awsAccounts,
-          checked: _.includes(params.layerPermissions,Permissions.awsAccounts)? true : false
+          checked: _.includes(params.layerPermissions, Permissions.awsAccounts) ? true : false,
         },
         {
           name: 'Specific AWS organization',
           value: Permissions.awsOrg,
-          checked: _.includes(params.layerPermissions,Permissions.awsOrg)? true : false
+          checked: _.includes(params.layerPermissions, Permissions.awsOrg) ? true : false,
         },
         {
           name: 'Public (everyone on AWS can use this layer)',
           value: Permissions.public,
-          checked: _.includes(params.layerPermissions,Permissions.public)? true : false
+          checked: _.includes(params.layerPermissions, Permissions.public) ? true : false,
         },
       ],
     },

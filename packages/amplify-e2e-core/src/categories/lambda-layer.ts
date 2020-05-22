@@ -109,6 +109,64 @@ export function removeLayer(cwd: string) {
   });
 }
 
+export function updateLayer(cwd: string, settings?: any) {
+  const defaultSettings = {
+    layerName: 'test-layer',
+    runtimes: ['nodejs'],
+    permission: ['private'],
+  };
+  settings = { ...defaultSettings, ...settings };
+  return new Promise((resolve, reject) => {
+    let chain: ExecutionContext = spawn(getCLIPath(), ['update', 'function'], { cwd, stripColors: true })
+      .wait('Select which capability you want to update:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn() // Layer
+      .wait('Please select the Lambda Layer you would want to update')
+      .sendCarriageReturn();
+
+    const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
+    expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
+
+    chain.wait('Do you want to change the compatible runtimes?').sendLine('y');
+    multiSelect(chain, runtimeDisplayNames, runtimeChoices);
+    chain.wait('Do you want to adjust who can access the current & new layer version? ').sendLine('y');
+    multiSelect(chain, settings.permission, permissionChoices);
+
+    const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
+
+    chain
+      .wait('Lambda layer folders & files created:')
+      .wait(layerDirRegex)
+      .wait('Next steps:')
+      .wait('Move your libraries in the following folder:');
+
+    for (let i = 0; i < settings.runtimes.length; ++i) {
+      let layerRuntimeDirRegex = new RegExp(
+        `\\[${runtimeDisplayNames[i]}\\]: ` +
+          '.*/amplify/backend/function/' +
+          settings.layerName +
+          '/(?:src|bin)/' +
+          settings.runtimes[i] +
+          '/*',
+      );
+      chain.wait(layerRuntimeDirRegex);
+    }
+
+    chain
+      .wait('Include any files you want to share across runtimes in this folder:')
+      .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
+      .wait('"amplify push" builds all of your local backend resources and provisions them in the cloud')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
   return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
 }
