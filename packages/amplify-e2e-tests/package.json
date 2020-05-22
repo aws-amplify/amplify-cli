@@ -27,7 +27,8 @@
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.18.0",
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "os": "^0.1.1"
   },
   "devDependencies": {
     "ts-node": "^8.9.0"
