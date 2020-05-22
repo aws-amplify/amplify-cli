@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.3...amplify-e2e-core@1.1.4-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* deleted extra carriageReturn calls, fixed grammar in Auth dx ([#4237](https://github.com/aws-amplify/amplify-cli/issues/4237)) ([4322a32](https://github.com/aws-amplify/amplify-cli/commit/4322a326df8c5c0a89de5f5e8f46bcfd4e1ad770))
+* **amplify-category-api:** toggle datastore in update ([#4276](https://github.com/aws-amplify/amplify-cli/issues/4276)) ([c522f29](https://github.com/aws-amplify/amplify-cli/commit/c522f295304410aeb1d6f60aaba9b466d3304ee1)), closes [#4058](https://github.com/aws-amplify/amplify-cli/issues/4058)
+
+
+
+
+
 ## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.2...amplify-e2e-core@1.1.3) (2020-05-15)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.17.0...graphql-key-transformer@2.17.1-beta.0) (2020-05-22)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 # [2.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.16.0...graphql-key-transformer@2.17.0) (2020-05-15)
 
 

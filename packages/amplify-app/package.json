@@ -1,6 +1,6 @@
 {
   "name": "amplify-app",
-  "version": "2.16.0",
+  "version": "2.17.0-beta.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",

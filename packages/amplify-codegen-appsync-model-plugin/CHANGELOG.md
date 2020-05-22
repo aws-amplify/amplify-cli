@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.19.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.18.0...amplify-codegen-appsync-model-plugin@1.19.0-beta.0) (2020-05-22)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** iOS add suport for auth ([#4329](https://github.com/aws-amplify/amplify-cli/issues/4329)) ([17ac344](https://github.com/aws-amplify/amplify-cli/commit/17ac344d7096470e698b26d68d8c586446190352))
+
+
+
+
+
 # [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.17.0...amplify-codegen-appsync-model-plugin@1.18.0) (2020-05-15)
 
 

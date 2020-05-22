@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.16.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.16.0...graphql-auth-transformer@6.16.1-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([f57f824](https://github.com/aws-amplify/amplify-cli/commit/f57f8242f18c79d48b751e29952e3cdd21409f98)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+
+
+
+
+
 # [6.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.15.4...graphql-auth-transformer@6.16.0) (2020-05-15)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.19.2...amplify-category-api@2.19.3-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** toggle datastore in update ([#4276](https://github.com/aws-amplify/amplify-cli/issues/4276)) ([c522f29](https://github.com/aws-amplify/amplify-cli/commit/c522f295304410aeb1d6f60aaba9b466d3304ee1)), closes [#4058](https://github.com/aws-amplify/amplify-cli/issues/4058)
+
+
+
+
+
 ## [2.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.19.1...amplify-category-api@2.19.2) (2020-05-15)
 
 **Note:** Version bump only for package amplify-category-api

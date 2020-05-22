@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.3...amplify-e2e-tests@2.18.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** toggle datastore in update ([#4276](https://github.com/aws-amplify/amplify-cli/issues/4276)) ([c522f29](https://github.com/aws-amplify/amplify-cli/commit/c522f295304410aeb1d6f60aaba9b466d3304ee1)), closes [#4058](https://github.com/aws-amplify/amplify-cli/issues/4058)
+
+
+### Features
+
+* **amplify-app:** group amplify files in xcode integration ([#4268](https://github.com/aws-amplify/amplify-cli/issues/4268)) ([73f3eab](https://github.com/aws-amplify/amplify-cli/commit/73f3eabc11def219faa1724fee93ce171949e40f))
+
+
+### Reverts
+
+* Revert "test(amplify-e2e-tests):test uncommented (#3742)" (#4324) ([b4eb173](https://github.com/aws-amplify/amplify-cli/commit/b4eb1733139f24612fd89c046582b14a2e643227)), closes [#3742](https://github.com/aws-amplify/amplify-cli/issues/3742) [#4324](https://github.com/aws-amplify/amplify-cli/issues/4324)
+
+
+
+
+
 ## [2.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.2...amplify-e2e-tests@2.17.3) (2020-05-15)
 
 

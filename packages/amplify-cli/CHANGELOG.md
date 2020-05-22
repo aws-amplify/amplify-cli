@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.21.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.20.0...@aws-amplify/cli@4.21.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* **cli:** update the warning message for delete command ([#4288](https://github.com/aws-amplify/amplify-cli/issues/4288)) ([cf0c528](https://github.com/aws-amplify/amplify-cli/commit/cf0c528d9763e6a9b525893acbf609e2aa4c6495))
+
+
+### Features
+
+* **amplify-app:** group amplify files in xcode integration ([#4268](https://github.com/aws-amplify/amplify-cli/issues/4268)) ([73f3eab](https://github.com/aws-amplify/amplify-cli/commit/73f3eabc11def219faa1724fee93ce171949e40f))
+
+
+
+
+
 # [4.20.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.19.0...@aws-amplify/cli@4.20.0) (2020-05-15)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.18.0...graphql-transformer-core@6.18.1-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([f57f824](https://github.com/aws-amplify/amplify-cli/commit/f57f8242f18c79d48b751e29952e3cdd21409f98)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+
+
+
+
+
 # [6.18.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.17.1...graphql-transformer-core@6.18.0) (2020-05-15)
 
 
