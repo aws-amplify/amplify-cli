@@ -34,7 +34,7 @@ export function addLayer(cwd: string, settings?: any) {
   const defaultSettings = {
     layerName: 'test-layer',
     runtimes: ['nodejs'],
-    permission: 'Only the current AWS account',
+    permission: ['Only the current AWS account'],
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
@@ -51,7 +51,7 @@ export function addLayer(cwd: string, settings?: any) {
     chain.wait('Select up to 5 compatible runtimes:');
     multiSelect(chain, runtimeDisplayNames, runtimeChoices);
     chain.wait('Who should have permission to use this layer?');
-    singleSelect(chain, settings.permission, permissionChoices);
+    multiSelect(chain, settings.permission, permissionChoices);
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
@@ -112,8 +112,8 @@ export function removeLayer(cwd: string) {
 export function updateLayer(cwd: string, settings?: any) {
   const defaultSettings = {
     layerName: 'test-layer',
-    runtimes: ['nodejs'],
-    permission: ['private'],
+    runtimes: ['java'],
+    permission: ['Public (everyone on AWS can use this layer)'],
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
@@ -128,8 +128,10 @@ export function updateLayer(cwd: string, settings?: any) {
     expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
 
     chain.wait('Do you want to change the compatible runtimes?').sendLine('y');
+    chain.wait('Select up to 5 compatible runtimes:');
     multiSelect(chain, runtimeDisplayNames, runtimeChoices);
     chain.wait('Do you want to adjust who can access the current & new layer version? ').sendLine('y');
+    chain.wait('Who should have permission to use this layer?');
     multiSelect(chain, settings.permission, permissionChoices);
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);

@@ -194,7 +194,7 @@ export async function updateLayerResource(
   service,
   serviceConfig: ServiceConfig<LayerParameters>,
   parameters?: Partial<LayerParameters>,
-): Promise<object> {
+): Promise<void> {
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
   }
@@ -214,7 +214,22 @@ export async function updateLayerResource(
   const layerParams = _.pick(parameters, ['runtimes', 'layerPermissions']);
   createLayerParametersFile(context, layerParams, layerDirPath);
   updateLayerCfnFile(context, parameters, layerDirPath);
-  return { name: parameters.layerName, service: service };
+  const { print } = context;
+  print.info('Lambda layer folders & files created:');
+  print.info(layerDirPath);
+  print.info('');
+  print.success('Next steps:');
+  print.info('Move your libraries in the following folder:');
+
+  for (let runtime of parameters.runtimes) {
+    print.info(`[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}`);
+  }
+
+  print.info('');
+  print.info('Include any files you want to share across runtimes in this folder:');
+  print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
+  print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
 }
 
 export async function updateFunctionResource(context, category, service, parameters, resourceToUpdate) {

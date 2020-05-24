@@ -78,7 +78,7 @@ export async function runtimeWalkthrough(
     runtimeState: runtimeLayer,
   };
   // runtime selections
-  const selections = await getSelectionFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
+  const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugins = [];
   for (let selection of selections) {
     const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);

@@ -43,4 +43,16 @@ describe('amplify add lambda layer', () => {
     await addLayer(projRoot);
     await updateLayer(projRoot);
   });
+
+  it('Update simple layer with multiple permissions on same version', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addLayer(projRoot);
+    await updateLayer(projRoot);
+  });
+
+  it('Update simple layer with multiple runtime to change version', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addLayer(projRoot);
+    await updateLayer(projRoot);
+  });
 });
