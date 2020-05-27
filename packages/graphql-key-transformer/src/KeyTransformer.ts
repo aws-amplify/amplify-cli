@@ -703,24 +703,6 @@ function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string
   });
 }
 
-// Key fields are non-nullable, non-key fields follow what their @model declaration makes.
-function replaceCreateInput(
-  definition: ObjectTypeDefinitionNode,
-  input: InputObjectTypeDefinitionNode,
-  keyFields: string[],
-): InputObjectTypeDefinitionNode {
-  return {
-    ...input,
-    fields: input.fields.reduce((acc, f) => {
-      // If the field is a key, make it non-null.
-      if (keyFields.find(k => k === f.name.value)) {
-        return [...acc, makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))))];
-      }
-      return [...acc, f];
-    }, []),
-  };
-}
-
 // Key fields are non-nullable, non-key fields are not non-nullable.
 function replaceUpdateInput(
   definition: ObjectTypeDefinitionNode,
