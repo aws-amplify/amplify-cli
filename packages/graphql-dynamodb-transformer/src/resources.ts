@@ -449,7 +449,7 @@ export class ResourceFactory {
   }
 
   public initalizeDefaultInputForCreateMutation(input: InputObjectTypeDefinitionNode, timestamps): string {
-    const hasDefaultIdField = input.fields?.find(field => field.name.value === 'id' && getBaseType(field.type) === 'ID');
+    const hasDefaultIdField = input.fields?.find(field => field.name.value === 'id' && ['ID', 'String'].includes(getBaseType(field.type)));
     return printBlock('Set default values')(
       compoundExpression([
         ...(hasDefaultIdField ? [qref(`$context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId()))`)] : []),
