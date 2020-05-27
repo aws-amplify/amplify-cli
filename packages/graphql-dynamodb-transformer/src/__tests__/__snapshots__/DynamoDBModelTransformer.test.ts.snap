@@ -269,12 +269,15 @@ type Subscription {
 `;
 
 exports[`Test create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable 2`] = `
-"## [Start] Prepare DynamoDB PutItem Request. **
+"## [Start] Set default values. **
+$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
 #set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
 $util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
 $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
+## [End] Set default values. **
+## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -299,7 +302,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": $util.toJson($condition)
@@ -551,7 +554,10 @@ type Subscription {
 `;
 
 exports[`Test not to include createdAt and updatedAt field when timestamps is set to null 2`] = `
-"## [Start] Prepare DynamoDB PutItem Request. **
+"## [Start] Set default values. **
+$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
+## [End] Set default values. **
+## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -576,7 +582,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": $util.toJson($condition)
@@ -848,7 +854,10 @@ type Subscription {
 `;
 
 exports[`Test resolver template not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 2`] = `
-"## [Start] Prepare DynamoDB PutItem Request. **
+"## [Start] Set default values. **
+$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
+## [End] Set default values. **
+## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -873,7 +882,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": $util.toJson($condition)
@@ -1244,12 +1253,15 @@ type Subscription {
 `;
 
 exports[`Test timestamp parameters when generating resolvers and output schema 2`] = `
-"## [Start] Prepare DynamoDB PutItem Request. **
+"## [Start] Set default values. **
+$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
 #set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
 $util.qr($context.args.input.put(\\"createdOn\\", $util.defaultIfNull($ctx.args.input.createdOn, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
 $util.qr($context.args.input.put(\\"updatedOn\\", $util.defaultIfNull($ctx.args.input.updatedOn, $createdAt)))
+## [End] Set default values. **
+## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -1274,7 +1286,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": $util.toJson($condition)

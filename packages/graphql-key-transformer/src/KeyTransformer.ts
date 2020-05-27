@@ -348,10 +348,12 @@ export class KeyTransformer extends Transformer {
   private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     if (this.isPrimaryKey(directive)) {
       const directiveArgs: KeyArguments = getDirectiveArguments(directive);
-      const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
-      if (createInput) {
-        ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
-      }
+
+      // There is no need to update the create Input as fields that can be in the index have to be non-nullable (which is enforece by
+      // @key directive). The @model transformer generates the createXInput where non-nullable fields  are
+      // also non-nullables in the input types as wekk. Only exception to this is when these fields can be automatically populated
+      // like id, createdAt and updatedAt, which will automatically get default value
+
       const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
       if (updateInput) {
         ctx.putType(replaceUpdateInput(definition, updateInput, directiveArgs.fields));

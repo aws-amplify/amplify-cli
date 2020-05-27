@@ -88,7 +88,7 @@
     "globals": {
       "window": {},
       "ts-jest": {
-        "tsConfig": "tsconfig.tests.json"
+        "tsConfig": "<rootDir>/tsconfig.tests.json"
       }
     }
   },
