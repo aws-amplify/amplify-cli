@@ -31,6 +31,12 @@ describe('JavaString', () => {
     expect(str.endsWith(new JavaString('elit'))).toEqual(true);
   });
 
+  it('equals', () => {
+    const str = new JavaString('Lorem ipsum dolor sit amet, consectetur adipiscing elit');
+    expect(str.equals(new JavaString('Lorem ipsum dolor sit amet, consectetur adipiscing elit'))).toEqual(true);
+    expect(str.equals(new JavaString('ipsum'))).toEqual(false);
+  });
+
   it('indexOf', () => {
     const str = new JavaString('Lorem ipsum dolor sit amet, consectetur adipiscing elit');
     expect(str.indexOf(new JavaString('ipsum'))).toEqual(6);
