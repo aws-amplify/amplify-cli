@@ -1,5 +1,5 @@
 import { supportedServices } from '../../provider-utils/supported-services';
-import { chooseServiceMessage, ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
+import { chooseServiceMessageUpdate } from '../../provider-utils/awscloudformation/utils/constants';
 import { category as categoryName } from '../../constants';
 
 const subcommand = 'update';
@@ -13,7 +13,7 @@ module.exports = {
     const { amplify } = context;
     const servicesMetadata = supportedServices;
     return amplify
-      .serviceSelectionPrompt(context, categoryName, servicesMetadata, chooseServiceMessage)
+      .serviceSelectionPrompt(context, categoryName, servicesMetadata, chooseServiceMessageUpdate)
       .then(result => {
         const providerController = servicesMetadata[result.service].providerController;
         if (!providerController) {
@@ -22,17 +22,12 @@ module.exports = {
         }
         return providerController.updateResource(context, categoryName, result.service);
       })
-      .then(result => {
-        const { print } = context;
-        const { name, service } = result;
-        if (service === ServiceName.LambdaFunction) {
-          print.success(`Successfully added resource ${name} locally.`);
-        } else if (service === ServiceName.LambdaLayer) {
-          print.success(`Successfully added resource ${name} locally.`);
-        }
+      .then(() => {
+        context.print.info('');
       })
       .catch(err => {
-        context.print.error(err.stack);
+        context.print.info(err.stack);
+        context.print.error('There was an error adding the function resource');
       });
   },
 };

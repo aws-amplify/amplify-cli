@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath } from '../../src';
 import { runtimeChoices } from './lambda-function';
-import { multiSelect, singleSelect } from '../utils/selectors';
+import { multiSelect } from '../utils/selectors';
 
 type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
 
@@ -55,36 +55,14 @@ export function addLayer(cwd: string, settings?: any) {
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
-    chain
-      .wait('Lambda layer folders & files created:')
-      .wait(layerDirRegex)
-      .wait('Next steps:')
-      .wait('Move your libraries in the following folder:');
-
-    for (let i = 0; i < settings.runtimes.length; ++i) {
-      let layerRuntimeDirRegex = new RegExp(
-        `\\[${runtimeDisplayNames[i]}\\]: ` +
-          '.*/amplify/backend/function/' +
-          settings.layerName +
-          '/(?:src|bin)/' +
-          settings.runtimes[i] +
-          '/*',
-      );
-      chain.wait(layerRuntimeDirRegex);
-    }
-
-    chain
-      .wait('Include any files you want to share across runtimes in this folder:')
-      .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
-      .wait('"amplify push" builds all of your local backend resources and provisions them in the cloud')
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain = printFlow(chain,settings ,layerDirRegex , runtimeDisplayNames);
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -136,36 +114,14 @@ export function updateLayer(cwd: string, settings?: any) {
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
-    chain
-      .wait('Lambda layer folders & files created:')
-      .wait(layerDirRegex)
-      .wait('Next steps:')
-      .wait('Move your libraries in the following folder:');
-
-    for (let i = 0; i < settings.runtimes.length; ++i) {
-      let layerRuntimeDirRegex = new RegExp(
-        `\\[${runtimeDisplayNames[i]}\\]: ` +
-          '.*/amplify/backend/function/' +
-          settings.layerName +
-          '/(?:src|bin)/' +
-          settings.runtimes[i] +
-          '/*',
-      );
-      chain.wait(layerRuntimeDirRegex);
-    }
-
-    chain
-      .wait('Include any files you want to share across runtimes in this folder:')
-      .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
-      .wait('"amplify push" builds all of your local backend resources and provisions them in the cloud')
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain = printFlow(chain,settings ,layerDirRegex , runtimeDisplayNames);
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -188,4 +144,31 @@ function getLayerRuntimeInfo(runtime: LayerRuntimes) {
     default:
       throw new Error(`Invalid runtime value: ${runtime}`);
   }
+};
+
+function printFlow(chain : ExecutionContext , settings : any ,layerDirRegex , runtimeDisplayNames){
+  chain
+  .wait('Lambda layer folders & files created:')
+  .wait(layerDirRegex)
+  .wait('Next steps:')
+  .wait('Move your libraries in the following folder:');
+
+for (let i = 0; i < settings.runtimes.length; ++i) {
+  let layerRuntimeDirRegex = new RegExp(
+    `\\[${runtimeDisplayNames[i]}\\]: ` +
+      '.*/amplify/backend/function/' +
+      settings.layerName +
+      '/(?:src|bin)/' +
+      settings.runtimes[i] +
+      '/*',
+  );
+  chain.wait(layerRuntimeDirRegex);
+}
+
+chain
+  .wait('Include any files you want to share across runtimes in this folder:')
+  .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
+  .wait('"amplify push" builds all of your local backend resources and provisions them in the cloud')
+  .sendEof()
+  return chain;
 }

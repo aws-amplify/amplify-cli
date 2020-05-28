@@ -149,18 +149,6 @@ async function getSelectionsFromContributors<T>(
     .reduce((acc, it) => acc.concat(it), [])
     .sort((a, b) => a.name.localeCompare(b.name)); // sort by display name so that selections order is deterministic
 
-  let prevruntime;
-  if (selectionOptions.runtimeState !== undefined) {
-    prevruntime = selections
-      .filter(runtime => {
-        for (let val of selectionOptions.runtimeState) {
-          if (val === runtime.name) return runtime;
-        }
-      })
-    prevruntime.forEach(selection =>{
-      _.assign(selection,{checked : true})
-    });
-  }
   // sanity checks
   let selection;
   if (selections.length === 0) {
@@ -186,13 +174,7 @@ async function getSelectionsFromContributors<T>(
         message: selectionOptions.selectionPrompt,
         choices: selections,
         default:
-          selectionOptions.service === ServiceName.LambdaFunction
-            ? selectionOptions.listOptionsField === 'runtimes'
-              ? 'nodejs'
-              : undefined
-            : selectionOptions.runtimeState === undefined
-            ? undefined
-            : prevruntime,
+          defaultSelection(selectionOptions,selections),
       },
     ]);
     selection = answer.selection;
@@ -201,7 +183,7 @@ async function getSelectionsFromContributors<T>(
   if (!Array.isArray(selection)) {
     selection = [selection];
   }
-  selection = _.uniq(selection); // remove duplicates
+
   return selection.map(s => {
     return {
       value: s,
@@ -249,4 +231,24 @@ interface ListOption {
 
 function isLayerParameter(params: Partial<LayerParameters> | Partial<FunctionParameters> ): params is Partial<LayerParameters> {
   return (((params as Partial<LayerParameters>) !== undefined) && ((params as Partial<LayerParameters>).runtimes !== undefined));
+}
+
+function defaultSelection(selectionOptions : PluginSelectionOptions<FunctionRuntimeCondition>,selections){
+  if(selectionOptions.service === ServiceName.LambdaFunction){
+    if(selectionOptions.listOptionsField === 'runtimes'){
+      return 'node.js'
+    }else{
+      return undefined;
+    }
+  }else{
+    if(selectionOptions.runtimeState !== undefined){
+      let prevruntime =  selections
+      .filter(selection => selectionOptions.runtimeState.includes(selection.name))
+      .forEach(selection => _.assign(selection, {checked: true}));
+      return prevruntime;
+    }
+    else{
+      return undefined;
+    }
+  }
 }

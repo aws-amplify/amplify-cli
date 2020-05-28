@@ -5,7 +5,6 @@ import path from 'path';
 import { LayerParameters, Permissions } from '../utils/layerParams';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import { ServiceName, categoryName, layerParametersFileName } from '../utils/constants';
-import { objectExtension } from 'graphql-transformer-core/lib/TransformerContext';
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
@@ -30,7 +29,7 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
 
 export async function updateLayerWalkthrough(
   context: any,
-  templateParameters: Partial<LayerParameters> = {},
+  templateParameters: Partial<LayerParameters>,
 ): Promise<Partial<LayerParameters>> {
   const { allResources } = await context.amplify.getResourceStatus();
   const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
@@ -43,15 +42,14 @@ export async function updateLayerWalkthrough(
   const resourceQuestion = [
     {
       name: 'resourceName',
-      message: 'Please select the Lambda Layer you would want to update',
+      message: 'Please select the Lambda Layer you want to update',
       type: 'list',
       choices: resources,
     },
   ];
   const resourceAnswer = await inquirer.prompt(resourceQuestion);
-  templateParameters.layerName = String(resourceAnswer.resourceName);
+  _.assign(templateParameters ,{layerName : resourceAnswer.resourceName});
 
-  // get layer-patameters
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, templateParameters.layerName);
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
@@ -62,11 +60,11 @@ export async function updateLayerWalkthrough(
     currentParameters = {};
   }
 
-  _.assign(templateParameters, currentParameters);
+  _.assign(templateParameters, currentParameters.parameters);
   // runtime question
   let islayerVersionChanged: boolean = true;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
-    let runtimeReturn = await runtimeWalkthrough(context, templateParameters);
+    let runtimeReturn = await runtimeWalkthrough(context, templateParameters as LayerParameters);
     templateParameters.runtimes = runtimeReturn.map(val => val.runtime);
   } else {
     islayerVersionChanged = false;
@@ -84,37 +82,9 @@ export async function updateLayerWalkthrough(
           break;
       }
     }
-    // if (islayerVersionChanged) {
-    //   _.assign(templateParameters, await inquirer.prompt(layerVersionQuestion(context)));
-    // }
   }
   return templateParameters;
 }
-
-// function layerVersionQuestion(context: any) {
-//   return [
-//     {
-//       type: 'input',
-//       name: 'layerVersion',
-//       message: 'Provide a version number for your updated Lambda layer:',
-//       validate: input => {
-//         // TODO: make sure name is unique from other layers in project
-//         if (/^[a-zA-Z0-9_\-]{1,140}$/.test(input)) {
-//           return true;
-//         }
-//         return 'Lambda Layer names are 1-140 characters long and can only contain letters, numbers, -, _';
-//       },
-//       default: () => {
-//         const appName = context.amplify
-//           .getProjectDetails()
-//           .projectConfig.projectName.toLowerCase()
-//           .replace(/[^a-zA-Z0-9]/gi, '');
-//         const [shortId] = uuid().split('-');
-//         return `${appName}${shortId}`;
-//       },
-//     },
-//   ];
-// }
 
 function layerNameQuestion(context: any) {
   return [
@@ -154,22 +124,22 @@ function layerPermissionsQuestion(params: Partial<LayerParameters>) {
         {
           name: 'Only the current AWS account',
           value: Permissions.private,
-          checked: _.includes(params.layerPermissions, Permissions.private) ? true : false,
+          checked: _.includes(params.layerPermissions, Permissions.private),
         },
         {
           name: 'Specific AWS accounts',
           value: Permissions.awsAccounts,
-          checked: _.includes(params.layerPermissions, Permissions.awsAccounts) ? true : false,
+          checked: _.includes(params.layerPermissions, Permissions.awsAccounts),
         },
         {
           name: 'Specific AWS organization',
           value: Permissions.awsOrg,
-          checked: _.includes(params.layerPermissions, Permissions.awsOrg) ? true : false,
+          checked: _.includes(params.layerPermissions, Permissions.awsOrg),
         },
         {
           name: 'Public (everyone on AWS can use this layer)',
           value: Permissions.public,
-          checked: _.includes(params.layerPermissions, Permissions.public) ? true : false,
+          checked: _.includes(params.layerPermissions, Permissions.public),
         },
       ],
     },

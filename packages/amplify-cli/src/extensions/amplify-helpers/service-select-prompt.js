@@ -47,12 +47,7 @@ function serviceQuestionWalkthrough(context, supportedServices, category, custom
     });
   }
 
-  let customFlowQuestion;
-  if(context.input.command === 'add'){
-    customFlowQuestion = customQuestion[0];
-  }else{
-    customFlowQuestion = customQuestion[1];
-  }
+  let customFlowQuestion = customQuestion;
 
   const question = [
     {

@@ -1,7 +1,7 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { provider, ServiceName } from './constants';
+import { provider, ServiceName, layerParametersFileName } from './constants';
 import { category as categoryName } from '../../../constants';
 import generateLayerCfnObj from './lambda-layer-cloudformation-template';
 import _ from 'lodash';
@@ -133,12 +133,10 @@ export function updateLayerCfnFile(context, parameters, layerDirPath) {
 }
 
 export function createLayerParametersFile(context,parameters,layerDirPath){
-  let parametersFileName = 'layer-parameters.json';
   fs.ensureDirSync(layerDirPath);
-  const parametersFilePath = path.join(layerDirPath, parametersFileName);
-  const currentParameters = fs.existsSync(parametersFilePath) ? context.amplify.readJsonFile(parametersFilePath) : {};
-  const jsonString = JSON.stringify({ ...currentParameters, ...parameters }, null, 4);
-  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+  const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
+  const jsonString = JSON.stringify({parameters }, null, 4);
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf-8');
 }
 
 export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {

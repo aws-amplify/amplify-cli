@@ -53,7 +53,7 @@ export async function addResource(
   }
 }
 
-async function addFunctionResource(
+export async function addFunctionResource(
   context,
   category,
   service,
@@ -122,7 +122,7 @@ async function addFunctionResource(
   );
 }
 
-async function addLayerResource(
+export async function addLayerResource(
   context,
   category,
   service,
@@ -182,7 +182,7 @@ export async function updateResource(
     case ServiceName.LambdaFunction:
       return updateFunctionResource(context, category, service, parameters, resourceToUpdate);
     case ServiceName.LambdaLayer:
-      return updateLayerResource(context, category, service, serviceConfig, parameters);
+      return updateLayerResource(context, category, service, serviceConfig, parameters as LayerParameters);
     default:
       throw BAD_SERVICE_ERR;
   }
@@ -203,11 +203,11 @@ export async function updateLayerResource(
     parameters = {};
     parameters.providerContext = {
       provider: provider,
-      service: ServiceName.LambdaLayer, // TODO: switch to using service
+      service: service,
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
   }
-  await serviceConfig.walkthroughs.updateWalkthrough(context, parameters);
+  await serviceConfig.walkthroughs.updateWalkthrough(context, parameters as LayerParameters);
 
   // generate layer parameters file and CFn file for the updated layer
   const layerDirPath = createLayerFolders(context, parameters); // update based
