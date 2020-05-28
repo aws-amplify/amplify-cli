@@ -1,7 +1,6 @@
+import { GraphQLResolveInfo } from 'graphql';
 import { create } from '../../../velocity/util/index';
 import { JavaMap } from '../../../velocity/value-mapper/map';
-import { GraphQLResolveInfo } from 'graphql';
-import { TemplateSentError } from '../../../velocity/util/errors';
 
 const stubInfo = {
   fieldName: 'testFieldName',
@@ -59,4 +58,16 @@ it('appendError_filterDataJavaMap', () => {
   util.appendError('test message', 'ERROR_TYPE', stubJavaMap);
   expect(util.errors.length).toBe(1);
   expect(util.errors[0].data).toStrictEqual({ field1: 'field1Value', field2: 'field2Value' });
+});
+
+test('util.isNullOrEmpty should return false for truthy values', () => {
+  expect(util.isNullOrEmpty(true)).toBe(false);
+  expect(util.isNullOrEmpty('not empty')).toBe(false);
+});
+
+test('util.isNullOrEmpty should return true for false, empty or null values', () => {
+  expect(util.isNullOrEmpty(false)).toBe(true);
+  expect(util.isNullOrEmpty('')).toBe(true);
+  expect(util.isNullOrEmpty(null)).toBe(true);
+  expect(util.isNullOrEmpty(undefined)).toBe(true);
 });

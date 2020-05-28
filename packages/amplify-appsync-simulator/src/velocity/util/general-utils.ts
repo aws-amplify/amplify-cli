@@ -70,7 +70,7 @@ export const generalUtils = {
     if (value instanceof JavaArray || value instanceof JavaString) {
       return value.toJSON().length == 0;
     }
-    return !!value;
+    return !value;
   },
 
   isNullOrBlank(value) {
