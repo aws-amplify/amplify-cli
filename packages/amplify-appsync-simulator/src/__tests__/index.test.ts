@@ -18,6 +18,39 @@ jest.mock('../velocity');
 const generateResolversMock = generateResolvers as jest.Mock;
 const VelocityTemplateMock = VelocityTemplate as jest.Mock<VelocityTemplate>;
 
+describe('CodeCov test trigger', () => {
+  let simulator: AmplifyAppSyncSimulator;
+  let baseConfig: AmplifyAppSyncSimulatorConfig;
+
+  beforeEach(() => {
+    const schema = `type Query {
+      noop: String
+    }`;
+
+    simulator = new AmplifyAppSyncSimulator();
+    baseConfig = {
+      appSync: {
+        defaultAuthenticationType: { authenticationType: AmplifyAppSyncSimulatorAuthenticationType.API_KEY },
+        name: 'test',
+        apiKey: 'fake-api-key',
+        additionalAuthenticationProviders: [],
+      },
+      schema: {
+        content: schema,
+      },
+      mappingTemplates: [],
+    };
+  });
+
+  it('should support accept minimal configuration', () => {
+    generateResolversMock.mockReturnValueOnce('MOCK SCHEMA');
+    expect(() => simulator.init(baseConfig)).not.toThrowError();
+    expect(simulator.schema).toEqual('MOCK SCHEMA');
+    expect(generateResolvers).toHaveBeenCalled();
+    expect(simulator.appSyncConfig);
+  });
+});
+
 describe('AmplifyAppSyncSimulator', () => {
   let simulator: AmplifyAppSyncSimulator;
   let baseConfig: AmplifyAppSyncSimulatorConfig;
