@@ -1,6 +1,8 @@
 import { DynamoDB } from 'aws-sdk';
 import { unmarshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
+import { TransactWriteItemList, TransactWriteItem, ExpressionAttributeValueMap } from 'aws-sdk/clients/dynamodb';
+import { QueryDocumentKeys } from 'graphql/language/visitor';
 
 type DynamoDBConnectionConfig = {
   endpoint: string;
@@ -41,6 +43,8 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
           return await this.query(payload);
         case 'Scan':
           return await this.scan(payload);
+        case 'TransactWriteItems':
+          return await this.transactWriteItems(payload);
 
         case 'BatchGetItem':
         case 'BatchPutItem':
@@ -211,5 +215,65 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       scannedCount,
       nextToken: resultNextToken ? Buffer.from(JSON.stringify(resultNextToken)).toString('base64') : null,
     };
+  }
+
+  private async transactWriteItems({ transactItems }: { transactItems: (TransactOperationPutItem | TransactOperationUpdateItem)[] }) {
+    const TransactItems: TransactWriteItemList = transactItems.map((item): TransactWriteItem => {
+      switch (item.operation) {
+        case 'PutItem':
+          return {
+            Put: {
+              TableName: item.table,
+              Item: {
+                ...item.key,
+                ...item.attributeValues
+              },
+              ConditionExpression: (item.condition || {}).expression,
+              ExpressionAttributeValues: (item.condition || {}).expressionValues,
+            }
+          };
+        case 'UpdateItem':
+          return {
+            Update: {
+              TableName: item.table,
+              Key: item.key,
+              UpdateExpression: item.update.expression,
+              ExpressionAttributeValues: {
+                ...(item.update || {}).expressionValues,
+                ...(item.condition || {}).expressionValues
+              },
+              ConditionExpression: (item.condition || {}).expression,
+            }
+          }
+      }
+    })
+    await this.client.transactWriteItems({ TransactItems }).promise();
+    return { keys: transactItems.map(item => DynamoDB.Converter.unmarshall(item.key)) };
+  }
+}
+
+
+interface TransactOperationPutItem {
+  table: string;
+  operation: 'PutItem';
+  key: DynamoDB.Key;
+  attributeValues: ExpressionAttributeValueMap;
+  condition?: {
+    expression: string;
+    expressionValues?: ExpressionAttributeValueMap;
+  }
+}
+
+interface TransactOperationUpdateItem {
+  table: string;
+  operation: 'UpdateItem';
+  key: DynamoDB.Key;
+  update: {
+    expression: string;
+    expressionValues?: ExpressionAttributeValueMap;
+  },
+  condition?: {
+    expression: string;
+    expressionValues?: ExpressionAttributeValueMap;
   }
 }
