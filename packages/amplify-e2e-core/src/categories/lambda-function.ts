@@ -48,7 +48,7 @@ const coreFunction = (
     if (action === 'create') {
       chain
         .wait('Select which capability you want to add:')
-        .sendCarriageReturn() // function
+        .sendCarriageReturn() // lambda function
         .wait('Provide a friendly name for your resource to be used as a label')
         .sendLine(settings.name || '')
         .wait('Provide the AWS Lambda function name:')
@@ -61,7 +61,11 @@ const coreFunction = (
         singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
       }
     } else {
-      chain.wait('Please select the Lambda Function you would want to update').sendCarriageReturn();
+      chain
+        .wait('Please select from one of the below mentioned services:')
+        .sendCarriageReturn() // lambda function
+        .wait('Please select the Lambda Function you would want to update')
+        .sendCarriageReturn(); // assumes only one function configured in the project
     }
 
     if (functionConfigCallback) {
@@ -205,7 +209,7 @@ export const functionBuild = (cwd: string, settings: any) => {
 
 export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
-  chain.wait('Choose the function runtime that you want to use');
+  chain.wait('Choose the runtime that you want to use');
 
   // reset cursor to top of list because node is default but it throws off offset calculations
   moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));
