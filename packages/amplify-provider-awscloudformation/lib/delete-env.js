@@ -1,4 +1,5 @@
 const Cloudformation = require('../src/aws-utils/aws-cfn');
+const fs = require('fs-extra');
 const S3 = require('../src/aws-utils/aws-s3');
 const { loadConfigurationForEnv } = require('./configuration-manager');
 const { deleteEnv } = require('./amplify-service-manager');
@@ -33,6 +34,7 @@ async function getStorageBucket(context, envName, s3) {
   const amplifyMeta = context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
   const storage = amplifyMeta['storage'] || {};
   const s3Storage = Object.keys(storage).filter(r => storage[r].service === 'S3');
+  fs.removeSync(tempDir);
   if (!s3Storage.length) return;
   const fStorageName = s3Storage[0];
   return storage[fStorageName].output.BucketName;
