@@ -652,6 +652,36 @@ test('Connection on models with no codegen includes AttributeTypeEnum', () => {
   expect(out.schema).toMatchSnapshot();
 });
 
+test('Connection on models with no codegen includes custom enum filters', () => {
+  const validSchema = `
+    type Cart @model(queries: null, mutations: null, subscriptions: null) {
+      id: ID!,
+      cartItems: [CartItem] @connection(name: "CartCartItem")
+    }
+    
+    type CartItem @model(queries: null, mutations: null, subscriptions: null) {
+      id: ID!
+      productType: PRODUCT_TYPE!
+      cart: Cart @connection(name: "CartCartItem")
+    }
+    
+    enum PRODUCT_TYPE {
+      UNIT
+      PACKAGE
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.schema).toMatchSnapshot();
+});
+
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
   for (const fieldName of fields) {
     const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName);
