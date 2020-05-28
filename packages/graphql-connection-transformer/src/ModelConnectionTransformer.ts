@@ -18,6 +18,7 @@ import {
   SortKeyFieldInfoTypeName,
   CONDITIONS_MINIMUM_VERSION,
   makeAttributeTypeEnum,
+  makeEnumFilterInputObjects,
 } from 'graphql-dynamodb-transformer';
 import {
   getBaseType,
@@ -675,6 +676,14 @@ export class ModelConnectionTransformer extends Transformer {
   ): void {
     const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));
     for (const filter of scalarFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
+    // Create the Enum filters
+    const enumFilters = makeEnumFilterInputObjects(field, ctx, this.supportsConditions(ctx));
+    for (const filter of enumFilters) {
       if (!this.typeExist(filter.name.value, ctx)) {
         ctx.addInput(filter);
       }
