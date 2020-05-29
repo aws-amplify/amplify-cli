@@ -91,7 +91,7 @@ export function addLayer(cwd: string, settings?: any) {
 // Assumes first item in list is a layer and removes it
 export function removeLayer(cwd: string) {
   return new Promise((resolve, reject) => {
-    let chain: ExecutionContext = spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn() // first one
       .wait('When you delete a layer version, you can no longer configure functions to use it.')
