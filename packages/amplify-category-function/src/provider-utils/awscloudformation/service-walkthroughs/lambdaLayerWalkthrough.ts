@@ -92,7 +92,7 @@ function layerAccountAccessQuestion() {
         for (let accountID of accounts) {
           accountID = accountID.trim();
           if (!/^[0-9]{12}$/.test(accountID)) {
-            return 'AWS account IDs much be 12 digits long. ${accountID} did not match the criteria.';
+            return 'AWS account IDs must be 12 digits long. ${accountID} did not match the criteria.';
           }
           if (set.has(accountID)) {
             return `Duplicate ID detected: ${accountID}`;
