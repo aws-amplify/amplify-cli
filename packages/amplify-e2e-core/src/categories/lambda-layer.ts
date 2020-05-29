@@ -1,4 +1,6 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath /* getProjectMeta, invokeFunction */ } from '../../src';
+import fs from 'fs-extra';
+import path from 'path';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath } from '../../src';
 import { runtimeChoices } from './lambda-function';
 import { multiSelect, singleSelect } from '../utils/selectors';
 
@@ -10,6 +12,23 @@ const permissionChoices = [
   'Specific AWS organization',
   'Public (everyone on AWS can use this layer)',
 ];
+
+export function validateLayerDir(projRoot: string, layerName: string, layerExists: boolean, runtimes: LayerRuntimes[]): boolean {
+  let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', layerName);
+  if (layerExists) {
+    let validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
+    if (runtimes && runtimes.length) {
+      for (let runtime of runtimes) {
+        if (!fs.pathExistsSync(path.join(layerDir, getLayerRuntimeInfo(runtime).path))) {
+          return false;
+        }
+      }
+    }
+    return validDir;
+  } else {
+    return !fs.pathExistsSync(layerDir);
+  }
+}
 
 export function addLayer(cwd: string, settings?: any) {
   const defaultSettings = {
@@ -69,27 +88,48 @@ export function addLayer(cwd: string, settings?: any) {
   });
 }
 
+// Assumes first item in list is a layer and removes it
+export function removeLayer(cwd: string) {
+  return new Promise((resolve, reject) => {
+    let chain: ExecutionContext = spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
+      .wait('Choose the resource you would want to remove')
+      .sendCarriageReturn() // first one
+      .wait('When you delete a layer version, you can no longer configure functions to use it.')
+      .wait('However, any function that already uses the layer version continues to have access to it.')
+      .sendLine('y')
+      .wait('Successfully removed resource')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
   let runtimeDisplayNames = [];
   for (let i = 0; i < runtimes.length; ++i) {
-    runtimeDisplayNames[i] = getRuntimeDisplayName(runtimes[i]);
+    runtimeDisplayNames[i] = getLayerRuntimeInfo(runtimes[i]).displayName;
   }
   return runtimeDisplayNames;
 }
 
-const getRuntimeDisplayName = (runtime: LayerRuntimes) => {
+function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   switch (runtime) {
     case 'dotnetcore3.1':
-      return '.NET Core 3.1';
+      return { displayName: '.NET Core 3.1', path: path.join('bin', runtime) };
     case 'go1.x':
-      return 'Go';
+      return { displayName: 'Go', path: path.join('bin', runtime) };
     case 'java':
-      return 'Java';
+      return { displayName: 'Java', path: path.join('bin', runtime, 'lib') };
     case 'nodejs':
-      return 'NodeJS';
+      return { displayName: 'NodeJS', path: path.join('src', runtime, 'node_modules') };
     case 'python':
-      return 'Python';
+      return { displayName: 'Python', path: path.join('src', runtime) };
     default:
       throw new Error(`Invalid runtime value: ${runtime}`);
   }
-};
+}
