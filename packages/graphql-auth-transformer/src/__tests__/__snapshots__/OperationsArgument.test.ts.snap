@@ -5,7 +5,15 @@ exports[`Test "create", "update", "delete" auth operations 1`] = `"$util.toJson(
 exports[`Test "create", "update", "delete" auth operations 2`] = `"$util.toJson($ctx.result)"`;
 
 exports[`Test "create", "update", "delete" auth operations 3`] = `
-"## [Start] Determine request authentication mode **
+"## [Start] Set default values. **
+$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
+#set( $createdAt = $util.time.nowISO8601() )
+## Automatically set the createdAt timestamp. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
+## [End] Set default values. **
+## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
 #end
@@ -42,11 +50,6 @@ exports[`Test "create", "update", "delete" auth operations 3`] = `
 ## [End] Check authMode and execute owner/group checks **
 
 ## [Start] Prepare DynamoDB PutItem Request. **
-#set( $createdAt = $util.time.nowISO8601() )
-## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
-## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -71,7 +74,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": $util.toJson($condition)
@@ -635,7 +638,15 @@ exports[`Test that operation overwrites queries in auth operations 1`] = `"$util
 exports[`Test that operation overwrites queries in auth operations 2`] = `"$util.toJson($ctx.result)"`;
 
 exports[`Test that operation overwrites queries in auth operations 3`] = `
-"## [Start] Determine request authentication mode **
+"## [Start] Set default values. **
+$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
+#set( $createdAt = $util.time.nowISO8601() )
+## Automatically set the createdAt timestamp. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
+## [End] Set default values. **
+## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
 #end
@@ -672,11 +683,6 @@ exports[`Test that operation overwrites queries in auth operations 3`] = `
 ## [End] Check authMode and execute owner/group checks **
 
 ## [Start] Prepare DynamoDB PutItem Request. **
-#set( $createdAt = $util.time.nowISO8601() )
-## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
-## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -701,7 +707,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": $util.toJson($condition)
