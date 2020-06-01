@@ -34,40 +34,46 @@ function outputValueSelector(key: string) {
 }
 
 beforeAll(async () => {
-  const validSchema = `
+  const validSchema = /* GraphQL */ `
     type Order @model @key(fields: ["customerEmail", "createdAt"]) {
-        customerEmail: String!
-        createdAt: AWSDateTime!
-        orderId: ID!
+      customerEmail: String!
+      createdAt: AWSDateTime!
+      orderId: ID!
     }
     type Customer @model @key(fields: ["email"]) {
-        email: String!
-        addresslist:  [String]
-        username: String
+      email: String!
+      addresslist: [String]
+      username: String
     }
-    type Item @model
-        @key(fields: ["orderId", "status", "createdAt"])
-        @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
-        @key(name: "ByCreatedAt", fields: ["createdAt", "status"], queryField: "itemsByCreatedAt")
-    {
-        orderId: ID!
-        status: Status!
-        createdAt: AWSDateTime!
-        name: String!
+    type Item
+      @model
+      @key(fields: ["orderId", "status", "createdAt"])
+      @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
+      @key(name: "ByCreatedAt", fields: ["createdAt", "status"], queryField: "itemsByCreatedAt") {
+      orderId: ID!
+      status: Status!
+      createdAt: AWSDateTime!
+      name: String!
     }
     enum Status {
-        DELIVERED IN_TRANSIT PENDING UNKNOWN
+      DELIVERED
+      IN_TRANSIT
+      PENDING
+      UNKNOWN
     }
-    type ShippingUpdate @model
-        @key(name: "ByOrderItemStatus", fields: ["orderId", "itemId", "status"], queryField: "shippingUpdates")
-    {
-        id: ID!
-        orderId: ID
-        itemId: ID
-        status: Status
-        name: String
+    type ShippingUpdate @model @key(name: "ByOrderItemStatus", fields: ["orderId", "itemId", "status"], queryField: "shippingUpdates") {
+      id: ID!
+      orderId: ID
+      itemId: ID
+      status: Status
+      name: String
     }
-    `;
+    type ModelWithIdAndCreatedAtAsKey @model @key(fields: ["id", "createdAt"]) {
+      id: ID!
+      createdAt: AWSDateTime!
+      name: String!
+    }
+  `;
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
@@ -419,6 +425,21 @@ test('Test @key directive with sortDirection on GSI', async () => {
   expect(oldShippingUpdates.data.shippingUpdates.items[0].name).toEqual('testing2');
   expect(newShippingUpdates.data.shippingUpdates.items[0].status).toEqual('DELIVERED');
   expect(newShippingUpdates.data.shippingUpdates.items[0].name).toEqual('order1Name4');
+});
+
+test('Test @key directive supports auto Id and createdAt fields in create mutation', async () => {
+  const result = await GRAPHQL_CLIENT.query(
+    `mutation CreateModelWithIdAndCreatedAtAsKey{
+        createModelWithIdAndCreatedAtAsKey(input:{ name: "John Doe" }) {
+            id
+            createdAt
+            name
+        }
+    }`,
+  );
+  expect(result.data.createModelWithIdAndCreatedAtAsKey.id).not.toBeNull();
+  expect(result.data.createModelWithIdAndCreatedAtAsKey.createdAt).not.toBeNull();
+  expect(result.data.createModelWithIdAndCreatedAtAsKey.name).toEqual('John Doe');
 });
 
 async function createCustomer(email: string, addresslist: string[], username: string) {

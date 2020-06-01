@@ -58,6 +58,16 @@ describe('amplify add auth...', () => {
     expect(userPool.UserPool).toBeDefined();
   });
 
+  it('should init with a long env name and add default auth', async () => {
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, envName: 'longenviro' });
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    expect(userPool.UserPool).toBeDefined();
+  });
+
   it('...should init a project and add auth with defaults and then remove auth and add another auth and push', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});

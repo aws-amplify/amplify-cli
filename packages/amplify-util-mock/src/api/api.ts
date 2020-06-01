@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as chokidar from 'chokidar';
 
 import { getAmplifyMeta, addCleanupTask, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
+import { checkJavaVersion } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
@@ -35,6 +36,8 @@ export class APITest {
       });
       this.projectRoot = context.amplify.getEnvInfo().projectPath;
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
+      // check java version
+      await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
@@ -142,11 +145,14 @@ export class APITest {
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
       } else if (filePath.includes(parameterFilePath)) {
-        context.print.info('API Parameter change detected. Reloading...');
-        this.apiParameters = await this.loadAPIParameters(context);
-        const config = await this.runTransformer(context, this.apiParameters);
-        await this.appSyncSimulator.reload(config);
-        await this.generateCode(context);
+        const apiParameters = await this.loadAPIParameters(context);
+        if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
+          context.print.info('API Parameter change detected. Reloading...');
+          this.apiParameters = apiParameters;
+          const config = await this.runTransformer(context, this.apiParameters);
+          await this.appSyncSimulator.reload(config);
+          await this.generateCode(context);
+        }
       } else if (filePath.includes(customStackPath)) {
         context.print.info('Custom stack change detected. Reloading...');
         const config = await this.runTransformer(context, this.apiParameters);

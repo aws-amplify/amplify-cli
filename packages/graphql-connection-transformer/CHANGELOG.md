@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.17.0...graphql-connection-transformer@4.17.1) (2020-05-26)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** limit was not respected ([#4021](https://github.com/aws-amplify/amplify-cli/issues/4021)) ([9800384](https://github.com/aws-amplify/amplify-cli/commit/9800384efff53a57973105508482cad945523727))
+
+
+
+
+
+# [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.16.0...graphql-connection-transformer@4.17.0) (2020-05-15)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+
+
+
+
+
 # [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.15.3...graphql-connection-transformer@4.16.0) (2020-05-08)
 
 

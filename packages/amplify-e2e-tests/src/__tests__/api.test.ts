@@ -8,16 +8,13 @@ import {
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategy,
-} from 'amplify-e2e-core';
-import { addFunction } from 'amplify-e2e-core';
-import { addSimpleDDB } from 'amplify-e2e-core';
-import {
+  apiUpdateToggleDataStore,
+  addFunction,
+  addSimpleDDB,
   checkIfBucketExists,
   createNewProjectDir,
   deleteProjectDir,
   getAppSyncApi,
-  getDDBTable,
-  getLambdaFunction,
   getProjectMeta,
   getTransformConfig,
 } from 'amplify-e2e-core';
@@ -167,7 +164,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 
-  it('init a project with conflict detection enabled', async () => {
+  it('init a project with conflict detection enabled and toggle disable', async () => {
     const name = `conflictdetection`;
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithSchemaAndConflictDetection(projRoot, 'simple_model.graphql');
@@ -193,6 +190,13 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.ResolverConfig.project).toBeDefined();
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+
+    // remove datastore feature
+    await apiUpdateToggleDataStore(projRoot, {});
+    await amplifyPushUpdate(projRoot);
+    const disableDSConfig = getTransformConfig(projRoot, name);
+    expect(disableDSConfig).toBeDefined();
+    expect(disableDSConfig.ResolverConfig).toBeUndefined();
   });
 
   it('init a sync enabled project and update conflict resolution strategy', async () => {
@@ -230,6 +234,39 @@ describe('amplify add api (GraphQL)', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+  });
+
+  it('init a datastore enabled project and then remove datastore config in update', async () => {
+    const name = 'withoutdatastore';
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api[name];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+    // check project doesn't have datastore
+    const withoutDSConfig = getTransformConfig(projRoot, name);
+    expect(withoutDSConfig).toBeDefined();
+    expect(withoutDSConfig.ResolverConfig).toBeUndefined();
+
+    // amplify update api to enable datastore
+    await apiUpdateToggleDataStore(projRoot, {});
+    let transformConfigWithDS = getTransformConfig(projRoot, name);
+    expect(transformConfigWithDS).toBeDefined();
+    expect(transformConfigWithDS.ResolverConfig).toBeDefined();
+    expect(transformConfigWithDS.ResolverConfig.project).toBeDefined();
+    expect(transformConfigWithDS.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
+    expect(transformConfigWithDS.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
   });
 
   // TODO: Disabling for now until further conversation.

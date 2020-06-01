@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.0...amplify-app@2.17.1) (2020-05-26)
+
+
+### Bug Fixes
+
+* update amplify app package dependencies to latest ([#4374](https://github.com/aws-amplify/amplify-cli/issues/4374)) ([c908891](https://github.com/aws-amplify/amplify-cli/commit/c908891e8408e1285b31e962c898e7e5072ec339))
+
+
+
+
+
+# [2.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.16.0...amplify-app@2.17.0) (2020-05-26)
+
+
+### Bug Fixes
+
+* fix amplify-app ios when not in xcode project ([#4344](https://github.com/aws-amplify/amplify-cli/issues/4344)) ([f74a45d](https://github.com/aws-amplify/amplify-cli/commit/f74a45d0eb94e180440b2639211e43eafacee43e))
+
+
+### Features
+
+* **amplify-app:** group amplify files in xcode integration ([#4268](https://github.com/aws-amplify/amplify-cli/issues/4268)) ([73f3eab](https://github.com/aws-amplify/amplify-cli/commit/73f3eabc11def219faa1724fee93ce171949e40f))
+
+
+
+
+
 # [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.15.1...amplify-app@2.16.0) (2020-04-06)
 
 

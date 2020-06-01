@@ -24,6 +24,7 @@ import {
   print,
   ifElse,
   newline,
+  methodCall,
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
 import GraphQLApi, {
@@ -1078,16 +1079,27 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
    * ES EXPRESSIONS
    */
 
-  public makeESItemsExpression() {
+  public makeESItemsExpression(includeVersion: boolean) {
     // generate es expresion to appsync
     return compoundExpression([
       set(ref('es_items'), list([])),
       forEach(ref('entry'), ref('context.result.hits.hits'), [
         iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('entry.sort.get(0)'))),
-        qref('$es_items.add($entry.get("_source"))'),
+        ...this.getSourceMapper(includeVersion),
       ]),
     ]);
   }
+
+  private getSourceMapper = (includeVersion: boolean) => {
+    if (includeVersion) {
+      return [
+        set(ref('row'), methodCall(ref('entry.get'), str('_source'))),
+        qref('$row.put("_version", $entry.get("_version"))'),
+        qref('$es_items.add($row)'),
+      ];
+    }
+    return [qref('$es_items.add($entry.get("_source"))')];
+  };
 
   public makeESToGQLExpression() {
     return compoundExpression([
