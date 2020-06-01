@@ -47,12 +47,10 @@ function serviceQuestionWalkthrough(context, supportedServices, category, custom
     });
   }
 
-  let customFlowQuestion = customQuestion;
-
   const question = [
     {
       name: 'service',
-      message: customFlowQuestion || 'Please select from one of the below mentioned services:',
+      message: customQuestion || 'Please select from one of the below mentioned services:',
       type: 'list',
       choices: options,
     },

@@ -7,7 +7,7 @@ export type LayerParameters = {
   providerContext: ProviderContext;
   authorizedAccountIds?: string;
   authorizedOrgId?: string;
-  layerVersion?: string;
+  layerVersionArn?: string;
 };
 
 export enum Permissions {

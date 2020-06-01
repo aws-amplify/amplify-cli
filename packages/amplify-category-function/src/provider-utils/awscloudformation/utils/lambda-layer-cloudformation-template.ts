@@ -2,19 +2,20 @@ import { Fn, DeletionPolicy } from 'cloudform';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
 import { Permissions } from './layerParams';
-import { copyFunctionResources } from './storeResources';
+
 export default function generateLayerCfnObj(parameters) {
 
   const cfnObj = {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda Layer resource stack creation using Amplify CLI',
     Parameters: {
-      deploymentBucketName: {
+      layerVersionArn:{
         Type: 'String',
+        Default: '1'
       },
-      s3Key: {
-        Type: 'String',
-      },
+      env: {
+        Type: "String"
+      }
     },
     Resources: {
     },
@@ -30,6 +31,20 @@ export default function generateLayerCfnObj(parameters) {
         },
       },
     },
+    Conditions: {
+      HasEnvironmentParameter: {
+        "Fn::Not": [
+          {
+            "Fn::Equals": [
+                {
+                    Ref: "env"
+                },
+                "NONE"
+            ]
+          }
+        ]
+      }
+    }
   };
   const POLICY_RETAIN = DeletionPolicy.Retain;
   const layer = new Lambda.LayerVersion({
@@ -39,7 +54,7 @@ export default function generateLayerCfnObj(parameters) {
       S3Key: Fn.Ref('s3Key'),
     },
     Description: parameters.description || '',
-    LayerName: parameters.layerName,
+    LayerName: joinWithEnv('-', [parameters.layerName]),
     LicenseInfo: 'MIT',
   });
   layer.deletionPolicy(POLICY_RETAIN);
@@ -62,7 +77,7 @@ function assignLayerPermissions(cfnObj,parameters,permissions){
     // assign permissions
     const layerVersionPermissionInput = {
       Action: 'lambda:GetLayerPermission',
-      LayerVersionArn: Fn.Ref("LambdaLayer"),
+      LayerVersionArn: parameters.layerVersionArn !== undefined ? Fn.Ref("LayerVersionArn") : Fn.Ref("LambdaLayer")
     };
   let layerVersionPermission = new Lambda.LayerVersionPermission({
     ...layerVersionPermissionInput,
@@ -94,7 +109,7 @@ function assignLayerPermissionsAccounts(cfnObj,parameters,permissions){
   let whitelistAccountIds = parameters.authorizedAccountIds.split(',');
   whitelistAccountIds.forEach(account => {
     const layerVersionPermissionInput = {
-      Action: 'lambda:GetLayerPermission',
+      Action: 'lambda:GetLayerVersion',
       LayerVersionArn: Fn.Ref("LambdaLayer"),
     };
     let layerVersionPermission = new Lambda.LayerVersionPermission({
@@ -106,4 +121,12 @@ function assignLayerPermissionsAccounts(cfnObj,parameters,permissions){
     layerVersionPermission.Properties.Principal = `${account}`;
     cfnObj.Resources[temp] = layerVersionPermission;
   })
+}
+
+function joinWithEnv(separator: string, listToJoin: any[]) {
+  return Fn.If(
+    "HasEnvironmentParameter",
+    Fn.Join(separator, [...listToJoin, Fn.Ref("env")]),
+    listToJoin[0]
+  );
 }

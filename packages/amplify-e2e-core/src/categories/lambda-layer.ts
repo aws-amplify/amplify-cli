@@ -153,22 +153,22 @@ function printFlow(chain : ExecutionContext , settings : any ,layerDirRegex , ru
   .wait('Next steps:')
   .wait('Move your libraries in the following folder:');
 
-for (let i = 0; i < settings.runtimes.length; ++i) {
-  let layerRuntimeDirRegex = new RegExp(
-    `\\[${runtimeDisplayNames[i]}\\]: ` +
-      '.*/amplify/backend/function/' +
-      settings.layerName +
-      '/(?:src|bin)/' +
-      settings.runtimes[i] +
-      '/*',
-  );
-  chain.wait(layerRuntimeDirRegex);
-}
+  for (let i = 0; i < settings.runtimes.length; ++i) {
+    let layerRuntimeDirRegex = new RegExp(
+      `\\[${runtimeDisplayNames[i]}\\]: ` +
+        '.*/amplify/backend/function/' +
+        settings.layerName +
+        '/(?:src|bin)/' +
+        settings.runtimes[i] +
+        '/*',
+    );
+    chain.wait(layerRuntimeDirRegex);
+  }
 
-chain
-  .wait('Include any files you want to share across runtimes in this folder:')
-  .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
-  .wait('"amplify push" builds all of your local backend resources and provisions them in the cloud')
-  .sendEof()
+  chain
+    .wait('Include any files you want to share across runtimes in this folder:')
+    .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
+    .wait('"amplify push" builds all of your local backend resources and provisions them in the cloud')
+    .sendEof()
   return chain;
 }

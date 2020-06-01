@@ -16,6 +16,9 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
+const ziparchiver = require('archiver')
+const glob = require('glob');
+
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -38,6 +41,8 @@ async function run(context, resourceDefinition) {
     validateCfnTemplates(context, resources);
 
     await packageResources(context, resources);
+
+    await packageResourcesLayer(context, resources);
 
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
@@ -473,6 +478,99 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
   idpUpdateRoleCfn.UpdateRolesWithIDPFunctionOutputs.Properties.idpId['Fn::GetAtt'].unshift(authLogicalResourceName);
 
   Object.assign(nestedStack.Resources, idpUpdateRoleCfn);
+}
+
+function packageResourcesLayer(context, resources) {
+  // Only package LmabdaLayer Resources
+  resources = resources.filter(resource => resource.service === 'LambdaLayer');
+  const packageResource = (context, resource) => {
+    let s3Key;
+    return packageLayer(context, resource)
+      .then(result => {
+        // Upload zip file to S3
+        s3Key = `amplify-builds/${result.zipFilename}`;
+        return new S3(context).then(s3 => {
+          const s3Params = {
+            Body: fs.createReadStream(result.zipFilePath),
+            Key: s3Key,
+          };
+          return s3.uploadFile(s3Params);
+        });
+      })
+      .then(s3Bucket => {
+        // Update cfn template
+        const { category, resourceName } = resource;
+        const backEndDir = context.amplify.pathManager.getBackendDirPath();
+        const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+
+        const files = fs.readdirSync(resourceDir);
+        // Fetch all the Cloudformation templates for the resource (can be json or yml)
+        const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
+
+        if (cfnFiles.length !== 1) {
+          context.print.error('Only one CloudFormation template is allowed in the resource directory');
+          context.print.error(resourceDir);
+          throw new Error('Only one CloudFormation template is allowed in the resource directory');
+        }
+
+        const cfnFile = cfnFiles[0];
+        const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
+
+        const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
+
+        cfnMeta.Resources.LambdaLayer.Properties.Content = {
+          S3Bucket: s3Bucket,
+          S3Key: s3Key,
+        };
+
+        const jsonString = JSON.stringify(cfnMeta, null, '\t');
+        fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+      });
+  };
+
+  const promises = [];
+  for (let i = 0; i < resources.length; i += 1) {
+    promises.push(packageResource(context, resources[i]));
+  }
+
+  return Promise.all(promises);
+}
+
+ function packageLayer(context,resource){
+  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
+  const resourcePathSrc = path.join(resourcePath,'src');
+  const zipFilename = 'latest-build.zip';
+
+  // package the function
+  const distDir = path.join(resourcePath, 'dist');
+  if (!fs.existsSync(distDir)) {
+    fs.mkdirSync(distDir);
+  }
+  const destination = path.join(distDir,zipFilename );
+  // verify the folder structure
+
+  // create write stream
+  let zip = ziparchiver.create('zip');
+  let output = fs.createWriteStream(destination);
+  return new Promise((resolve, reject) => {
+    output.on('close', () => {
+      resolve({ zipFilePath : destination, zipFilename : zipFilename });
+    });
+    output.on('error', () => {
+      reject(new Error('Failed to zip code.'));
+    });
+
+    zip.pipe(output);
+    let folders = glob.sync(resourcePathSrc + '/*');
+    folders.forEach(folder =>{
+      if(fs.lstatSync(folder).isDirectory()){
+        // 1) check valid folder structure
+        // 2) create zip
+        zip.directory(folder,path.basename(folder));
+      }
+    })
+    zip.finalize();
+  });
 }
 
 module.exports = {
