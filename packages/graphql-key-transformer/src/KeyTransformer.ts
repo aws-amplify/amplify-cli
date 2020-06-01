@@ -1,4 +1,5 @@
 import { Transformer, gql, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
+import { pascalCase } from 'change-case';
 import {
   obj,
   str,
@@ -58,6 +59,7 @@ interface KeyArguments {
   name?: string;
   fields: string[];
   queryField?: string;
+  generateQuery?: boolean;
 }
 
 export class KeyTransformer extends Transformer {
@@ -67,7 +69,7 @@ export class KeyTransformer extends Transformer {
     super(
       'KeyTransformer',
       gql`
-        directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
+        directive @key(name: String, fields: [String!]!, queryField: String, generateQuery: Boolean) repeatable on OBJECT
       `
     );
   }
@@ -184,10 +186,11 @@ export class KeyTransformer extends Transformer {
           deleteResolver.Properties.RequestMappingTemplate,
         ]);
       }
-      if (directiveArgs.queryField) {
+      if (directiveArgs.generateQuery !== false) {
+        const queryFieldName = getQueryFieldName(directiveArgs);
         const queryTypeName = ctx.getQueryTypeName();
-        const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, directiveArgs.queryField);
-        const queryResolver = makeQueryResolver(definition, directive, ctx);
+        const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryFieldName);
+        const queryResolver = makeQueryResolver(definition, directive, ctx, queryFieldName);
         ctx.mapResourceToStack(definition.name.value, queryResolverId);
         ctx.setResource(queryResolverId, queryResolver);
       }
@@ -307,7 +310,8 @@ export class KeyTransformer extends Transformer {
   // If this is a secondary key and a queryField has been provided, create the query field.
   private ensureQueryField = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const args: KeyArguments = getDirectiveArguments(directive);
-    if (args.queryField && !this.isPrimaryKey(directive)) {
+    if (args.generateQuery !== false && !this.isPrimaryKey(directive)) {
+      const queryFieldName = getQueryFieldName(args);
       let queryType = ctx.getQuery();
       let queryArguments = [];
       if (args.fields.length > 2) {
@@ -320,7 +324,7 @@ export class KeyTransformer extends Transformer {
         queryArguments = addHashField(definition, args, queryArguments);
       }
       queryArguments.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
-      const queryField = makeConnectionField(args.queryField, definition.name.value, queryArguments);
+      const queryField = makeConnectionField(queryFieldName, definition.name.value, queryArguments);
       queryType = {
         ...queryType,
         fields: [...queryType.fields, queryField],
@@ -800,11 +804,10 @@ function condenseRangeKey(fields: string[]) {
   return fields.join(ModelResourceIDs.ModelCompositeKeySeparator());
 }
 
-function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) {
+function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext, fieldName) {
   const type = definition.name.value;
   const directiveArgs: KeyArguments = getDirectiveArguments(directive);
   const index = directiveArgs.name;
-  const fieldName = directiveArgs.queryField;
   const queryTypeName = ctx.getQueryTypeName();
   const requestVariable = 'QueryRequest';
   return new AppSync.Resolver({
@@ -897,4 +900,9 @@ function addCompositeSortKey(
 }
 function joinSnippets(lines: string[]): string {
   return lines.join('\n');
+}
+
+function getQueryFieldName(directiveArgs: KeyArguments): string {
+  if (directiveArgs.queryField) return directiveArgs.queryField;
+  return `query${pascalCase(directiveArgs.name)}`;
 }

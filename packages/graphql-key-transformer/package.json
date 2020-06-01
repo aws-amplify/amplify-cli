@@ -22,6 +22,7 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
+    "change-case":"^4.1.1",
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
     "graphql-dynamodb-transformer": "6.19.0",
