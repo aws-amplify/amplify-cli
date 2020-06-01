@@ -20,11 +20,20 @@ import {
   forEach,
   and,
 } from 'graphql-mapping-template';
-import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs, SyncResourceIDs } from 'graphql-transformer-common';
+import {
+  ResourceConstants,
+  plurality,
+  graphqlName,
+  toUpper,
+  ModelResourceIDs,
+  SyncResourceIDs,
+  getBaseType,
+} from 'graphql-transformer-common';
 import { plural } from 'pluralize';
 import { SyncConfig, SyncUtils } from 'graphql-transformer-core';
 import Template from 'cloudform-types/types/template';
 import md5 from 'md5';
+import { InputObjectTypeDefinitionNode } from 'graphql';
 
 type MutationResolverInput = {
   type: string;
@@ -374,7 +383,7 @@ export class ResourceFactory {
    * Create a resolver that creates an item in DynamoDB.
    * @param type
    */
-  public makeCreateResolver({ type, nameOverride, syncConfig, timestamps, mutationTypeName = 'Mutation' }: MutationResolverInput) {
+  public makeCreateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type));
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -383,25 +392,6 @@ export class ResourceFactory {
       TypeName: mutationTypeName,
       RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
         compoundExpression([
-          ...(timestamps && (timestamps.createdAtField || timestamps.updatedAtField)
-            ? [set(ref('createdAt'), ref('util.time.nowISO8601()'))]
-            : []),
-          ...(timestamps && timestamps.createdAtField
-            ? [
-                comment(`Automatically set the createdAt timestamp.`),
-                qref(
-                  `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $createdAt))`,
-                ),
-              ]
-            : []),
-          ...(timestamps && timestamps.updatedAtField
-            ? [
-                comment(`Automatically set the updatedAt timestamp.`),
-                qref(
-                  `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $createdAt))`,
-                ),
-              ]
-            : []),
           qref(`$context.args.input.put("__typename", "${type}")`),
           set(
             ref('condition'),
@@ -442,7 +432,7 @@ export class ResourceFactory {
                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
                 raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
                 obj({
-                  id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`),
+                  id: raw(`$util.dynamodb.toDynamoDBJson($ctx.args.input.id)`),
                 }),
                 true,
               ),
@@ -456,6 +446,34 @@ export class ResourceFactory {
       ResponseMappingTemplate: syncConfig ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
+  }
+
+  public initalizeDefaultInputForCreateMutation(input: InputObjectTypeDefinitionNode, timestamps): string {
+    const hasDefaultIdField = input.fields?.find(field => field.name.value === 'id' && ['ID', 'String'].includes(getBaseType(field.type)));
+    return printBlock('Set default values')(
+      compoundExpression([
+        ...(hasDefaultIdField ? [qref(`$context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId()))`)] : []),
+        ...(timestamps && (timestamps.createdAtField || timestamps.updatedAtField)
+          ? [set(ref('createdAt'), ref('util.time.nowISO8601()'))]
+          : []),
+        ...(timestamps && timestamps.createdAtField
+          ? [
+              comment(`Automatically set the createdAt timestamp.`),
+              qref(
+                `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $createdAt))`,
+              ),
+            ]
+          : []),
+        ...(timestamps && timestamps.updatedAtField
+          ? [
+              comment(`Automatically set the updatedAt timestamp.`),
+              qref(
+                `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $createdAt))`,
+              ),
+            ]
+          : []),
+      ]),
+    );
   }
 
   public makeUpdateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation', timestamps }: MutationResolverInput) {

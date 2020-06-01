@@ -1,4 +1,4 @@
-import { DeletionPolicy } from 'cloudform-types';
+import { DeletionPolicy, AppSync } from 'cloudform-types';
 import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 import {
   blankObject,
@@ -30,6 +30,8 @@ import {
 } from './definitions';
 import { ModelDirectiveArgs, getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
 import { ResourceFactory } from './resources';
+
+const METADATA_KEY = 'DynamoDBTransformerMetadata';
 
 export interface DynamoDBModelTransformerOptions {
   EnableDeletionProtection?: boolean;
@@ -108,6 +110,18 @@ export class DynamoDBModelTransformer extends Transformer {
     ctx.mergeParameters(template.Parameters);
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeConditions(template.Conditions);
+  };
+
+  public after = (ctx: TransformerContext): void => {
+    // append hoisted initalization code to the top of request mapping template
+    const ddbMetata = ctx.metadata.get(METADATA_KEY);
+    if (ddbMetata) {
+      Object.entries(ddbMetata.hoistedRequestMappingContent || {}).forEach(([resourceId, hoistedContent]) => {
+        const resource: AppSync.Resolver = ctx.getResource(resourceId) as any;
+        resource.Properties.RequestMappingTemplate = [hoistedContent, resource.Properties.RequestMappingTemplate].join('\n');
+        ctx.setResource(resourceId, resource);
+      });
+    }
   };
 
   /**
@@ -296,9 +310,10 @@ export class DynamoDBModelTransformer extends Transformer {
         type: def.name.value,
         nameOverride: createFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
-        timestamps: timestampFields,
       });
+      const hositedInitalization = this.resources.initalizeDefaultInputForCreateMutation(createInput, timestampFields);
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
+      this.addInitalizationMetadata(ctx, resourceId, hositedInitalization);
       ctx.setResource(resourceId, createResolver);
       ctx.mapResourceToStack(typeName, resourceId);
       const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))];
@@ -691,5 +706,14 @@ export class DynamoDBModelTransformer extends Transformer {
       return false;
     }
     return true;
+  }
+
+  private addInitalizationMetadata(ctx: TransformerContext, resourceId: string, initCode: string): void {
+    const ddbMetadata = ctx.metadata.has(METADATA_KEY) ? ctx.metadata.get(METADATA_KEY) : {};
+    ddbMetadata.hoistedRequestMappingContent = {
+      ...ddbMetadata?.hoistedRequestMappingContent,
+      [resourceId]: initCode,
+    };
+    ctx.metadata.set(METADATA_KEY, ddbMetadata);
   }
 }

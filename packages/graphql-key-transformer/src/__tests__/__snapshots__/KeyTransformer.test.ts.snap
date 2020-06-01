@@ -2,7 +2,14 @@
 
 exports[`Check KeyTransformer Resolver Code 1`] = `
 Object {
-  "Mutation.createItem.req.vtl": "
+  "Mutation.createItem.req.vtl": "## [Start] Set default values. **
+#set( $createdAt = $util.time.nowISO8601() )
+## Automatically set the createdAt timestamp. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
+## [End] Set default values. **
+
 
 
 
@@ -21,11 +28,6 @@ Object {
 #end
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
 ## [Start] Prepare DynamoDB PutItem Request. **
-#set( $createdAt = $util.time.nowISO8601() )
-## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
-## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
 #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -50,7 +52,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": $util.toJson($condition)

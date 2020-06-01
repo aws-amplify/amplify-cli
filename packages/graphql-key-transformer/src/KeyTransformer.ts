@@ -348,10 +348,12 @@ export class KeyTransformer extends Transformer {
   private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     if (this.isPrimaryKey(directive)) {
       const directiveArgs: KeyArguments = getDirectiveArguments(directive);
-      const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
-      if (createInput) {
-        ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
-      }
+
+      // There is no need to update the create Input as fields that can be in the index have to be non-nullable (which is enforece by
+      // @key directive). The @model transformer generates the createXInput where non-nullable fields  are
+      // also non-nullables in the input types as wekk. Only exception to this is when these fields can be automatically populated
+      // like id, createdAt and updatedAt, which will automatically get default value
+
       const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
       if (updateInput) {
         ctx.putType(replaceUpdateInput(definition, updateInput, directiveArgs.fields));
@@ -699,24 +701,6 @@ function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string
     const keyField: FieldDefinitionNode = definition.fields.find(field => field.name.value === keyFieldName);
     return makeInputValueDefinition(keyFieldName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
   });
-}
-
-// Key fields are non-nullable, non-key fields follow what their @model declaration makes.
-function replaceCreateInput(
-  definition: ObjectTypeDefinitionNode,
-  input: InputObjectTypeDefinitionNode,
-  keyFields: string[],
-): InputObjectTypeDefinitionNode {
-  return {
-    ...input,
-    fields: input.fields.reduce((acc, f) => {
-      // If the field is a key, make it non-null.
-      if (keyFields.find(k => k === f.name.value)) {
-        return [...acc, makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))))];
-      }
-      return [...acc, f];
-    }, []),
-  };
 }
 
 // Key fields are non-nullable, non-key fields are not non-nullable.
