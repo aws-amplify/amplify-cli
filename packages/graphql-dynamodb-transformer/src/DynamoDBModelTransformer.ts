@@ -313,7 +313,7 @@ export class DynamoDBModelTransformer extends Transformer {
       });
       const hositedInitalization = this.resources.initalizeDefaultInputForCreateMutation(createInput, timestampFields);
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
-      this.addInitalizationMetaData(ctx, resourceId, hositedInitalization);
+      this.addInitalizationMetadata(ctx, resourceId, hositedInitalization);
       ctx.setResource(resourceId, createResolver);
       ctx.mapResourceToStack(typeName, resourceId);
       const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))];
@@ -708,7 +708,7 @@ export class DynamoDBModelTransformer extends Transformer {
     return true;
   }
 
-  private addInitalizationMetaData(ctx: TransformerContext, resourceId: string, initCode: string): void {
+  private addInitalizationMetadata(ctx: TransformerContext, resourceId: string, initCode: string): void {
     const ddbMetadata = ctx.metadata.has(METADATA_KEY) ? ctx.metadata.get(METADATA_KEY) : {};
     ddbMetadata.hoistedRequestMappingContent = {
       ...ddbMetadata?.hoistedRequestMappingContent,
