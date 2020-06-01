@@ -25,6 +25,10 @@
       {
         "name": "Lambda trigger",
         "value": "trigger"
+      },
+      {
+        "name": "Stripe webhook event handler",
+        "value": "stripe-webhook"
       }
     ]
   }

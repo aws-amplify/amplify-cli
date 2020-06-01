@@ -28,6 +28,7 @@ export const nodeJSTemplateChoices = [
   'Hello World',
   'Lambda trigger',
   'Serverless ExpressJS function (Integration with API Gateway)',
+  'Stripe webhook event handler',
 ];
 
 const pythonTemplateChoices = ['Hello World'];
