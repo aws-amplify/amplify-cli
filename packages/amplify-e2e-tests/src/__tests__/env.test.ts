@@ -66,7 +66,7 @@ describe('environment commands', () => {
 });
 
 /* Disabling test for now */
-describe('cross project environment commands', () => {
+describe.skip('cross project environment commands', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('import-env-test');
