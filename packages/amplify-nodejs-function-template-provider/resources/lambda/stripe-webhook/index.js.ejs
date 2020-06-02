@@ -5,6 +5,10 @@
  * fulfillment for our successful payments.
  *
  * @see https://stripe.com/docs/payments/handling-payment-events
+ *
+ * NOTE: You need to make the following environment variables available to this function:
+ * STRIPE_SECRET_KEY (can be found at https://dashboard.stripe.com/apikeys)
+ * STRIPE_WEBHOOK_SECRET (can be set up at https://dashboard.stripe.com/webhooks)
  */
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2020-03-02',
