@@ -1,6 +1,12 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, addLayer, updateFunction, functionBuild, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction } from 'amplify-e2e-core';
+import {
+  addLayer,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
+  removeLayer,
+  validateLayerDir,
+} from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -17,7 +23,11 @@ describe('amplify add lambda layer', () => {
   });
 
   it('init a project and add simple layer', async () => {
+    const layerName = 'simple-layer';
     await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot);
+    await addLayer(projRoot, { layerName });
+    expect(validateLayerDir(projRoot, layerName, true)).toBeTruthy();
+    await removeLayer(projRoot);
+    expect(validateLayerDir(projRoot, layerName, false)).toBeTruthy();
   });
 });
