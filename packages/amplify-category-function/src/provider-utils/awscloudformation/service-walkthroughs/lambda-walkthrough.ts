@@ -76,25 +76,15 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   ];
 
   const newParams = {};
-  const answers: any = {};
-  const currentDefaults: any = {};
+  const functionProperties: any = {};
 
   const resourceName = lambdaToUpdate || (await inquirer.prompt(resourceQuestion)).resourceName as string;
-  answers.resourceName = resourceName;
+  functionProperties.resourceName = resourceName;
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
   const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
-  let currentParameters;
-  try {
-    currentParameters = context.amplify.readJsonFile(parametersFilePath);
-  } catch (e) {
-    currentParameters = {};
-  }
-  if (currentParameters.permissions) {
-    currentDefaults.categories = Object.keys(currentParameters.permissions);
-    currentDefaults.categoryPermissionMap = currentParameters.permissions;
-  }
+  const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
 
   if (
     await context.amplify.confirmPrompt.run(
@@ -102,32 +92,29 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     )
   ) {
     // Get current dependsOn for the resource
-
-    context
     const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
     const amplifyMeta = context.amplify.getProjectMeta(amplifyMetaFilePath);
-    const resourceDependsOn = amplifyMeta.function[answers.resourceName].dependsOn || [];
-    answers.dependsOn = resourceDependsOn;
+    functionProperties.dependsOn = amplifyMeta.function[functionProperties.resourceName].dependsOn || [];
 
-    const { topLevelComment } = await askExecRolePermissionsQuestions(context, answers, newParams, currentDefaults);
+    const { topLevelComment } = await askExecRolePermissionsQuestions(context, functionProperties, newParams, currentParameters.permissions);
 
     const cfnFileName = `${resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
     const cfnContent = context.amplify.readJsonFile(cfnFilePath);
     const dependsOnParams = { env: { Type: 'String' } };
 
-    Object.keys(answers.resourcePropertiesJSON)
-      .filter(resourceProperty => 'Ref' in answers.resourcePropertiesJSON[resourceProperty])
+    Object.keys(functionProperties.resourcePropertiesJSON)
+      .filter(resourceProperty => 'Ref' in functionProperties.resourcePropertiesJSON[resourceProperty])
       .forEach(resourceProperty => {
-        dependsOnParams[answers.resourcePropertiesJSON[resourceProperty].Ref] = {
+        dependsOnParams[functionProperties.resourcePropertiesJSON[resourceProperty].Ref] = {
           Type: 'String',
-          Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
+          Default: functionProperties.resourcePropertiesJSON[resourceProperty].Ref,
         };
       });
 
     cfnContent.Parameters = getNewCFNParameters(cfnContent.Parameters, currentParameters, dependsOnParams, newParams);
 
-    Object.assign(answers.resourcePropertiesJSON, { ENV: { Ref: 'env' }, REGION: { Ref: 'AWS::Region' } });
+    Object.assign(functionProperties.resourcePropertiesJSON, { ENV: { Ref: 'env' }, REGION: { Ref: 'AWS::Region' } });
 
     if (!cfnContent.Resources.AmplifyResourcesPolicy) {
       cfnContent.Resources.AmplifyResourcesPolicy = {
@@ -148,16 +135,16 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
       };
     }
 
-    if (answers.categoryPolicies.length === 0) {
+    if (functionProperties.categoryPolicies.length === 0) {
       delete cfnContent.Resources.AmplifyResourcesPolicy;
     } else {
-      cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement = answers.categoryPolicies;
+      cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement = functionProperties.categoryPolicies;
     }
 
     cfnContent.Resources.LambdaFunction.Properties.Environment.Variables = getNewCFNEnvVariables(
       cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
       currentParameters,
-      answers.resourcePropertiesJSON,
+      functionProperties.resourcePropertiesJSON,
       newParams,
     ); // Need to update
     // Update top level comment in app.js or index.js file
@@ -184,7 +171,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     }
 
     fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
-    answers.parameters = newParams;
+    functionProperties.parameters = newParams;
   }
   // ask scheduling Lambda questions and merge in results
   const scheduleParametersFilePath = path.join(resourceDirPath, parametersFileName);
@@ -196,11 +183,11 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   }
   let scheduleParameters: Partial<FunctionParameters> = params;
   scheduleParameters.cloudwatchRule = params.CloudWatchRule;
-  scheduleParameters.resourceName = answers.resourceName;
+  scheduleParameters.resourceName = functionProperties.resourceName;
   let scheduleParams = await scheduleWalkthrough(context, scheduleParameters);
-  answers.parameters = newParams;
-  answers.parameters.CloudWatchRule = scheduleParams.cloudwatchRule;
-  return { answers };
+  functionProperties.parameters = newParams;
+  functionProperties.parameters.CloudWatchRule = scheduleParams.cloudwatchRule;
+  return functionProperties;
 }
 
 export function migrate(context, projectPath, resourceName) {
