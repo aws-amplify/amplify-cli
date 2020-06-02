@@ -73,10 +73,7 @@ async function removeResource(context, category, resourceName, questionOptions =
   const resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
 
   return context.amplify.confirmPrompt
-    .run(
-      questionOptions.confirmPrompt ||
-        'Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.',
-    )
+    .run('Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.')
     .then(async confirm => {
       if (confirm) {
         return deleteResourceFiles(context, category, resourceName, resourceDir);
