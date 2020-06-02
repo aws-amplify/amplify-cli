@@ -186,8 +186,8 @@ export class KeyTransformer extends Transformer {
           deleteResolver.Properties.RequestMappingTemplate,
         ]);
       }
-      if (directiveArgs.generateQuery !== false) {
-        const queryFieldName = getQueryFieldName(directiveArgs);
+      if (shouldGenerateQuery(definition, directiveArgs)) {
+        const queryFieldName = getQueryFieldName(definition, directiveArgs);
         const queryTypeName = ctx.getQueryTypeName();
         const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryFieldName);
         const queryResolver = makeQueryResolver(definition, directive, ctx, queryFieldName);
@@ -310,8 +310,8 @@ export class KeyTransformer extends Transformer {
   // If this is a secondary key and a queryField has been provided, create the query field.
   private ensureQueryField = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const args: KeyArguments = getDirectiveArguments(directive);
-    if (args.generateQuery !== false && !this.isPrimaryKey(directive)) {
-      const queryFieldName = getQueryFieldName(args);
+    if (shouldGenerateQuery(definition, args) && !this.isPrimaryKey(directive)) {
+      const queryFieldName = getQueryFieldName(definition, args);
       let queryType = ctx.getQuery();
       let queryArguments = [];
       if (args.fields.length > 2) {
@@ -868,7 +868,9 @@ function addHashField(
 ): InputValueDefinitionNode[] {
   let hashFieldName = args.fields[0];
   const hashField = definition.fields.find(field => field.name.value === hashFieldName);
-  const hashKey = makeInputValueDefinition(hashFieldName, makeNamedType(getBaseType(hashField.type)));
+  const hasFieldType = makeNamedType(getBaseType(hashField.type));
+  // Primary index does support scan operation in list but named query needs the hash key to be passed. Making it non-nullable field
+  const hashKey = makeInputValueDefinition(hashFieldName, args.name ? makeNonNullType(hasFieldType) : hasFieldType);
   return [hashKey, ...elems];
 }
 function addSimpleSortKey(
@@ -902,7 +904,18 @@ function joinSnippets(lines: string[]): string {
   return lines.join('\n');
 }
 
-function getQueryFieldName(directiveArgs: KeyArguments): string {
+function getQueryFieldName(definition: ObjectTypeDefinitionNode, directiveArgs: KeyArguments): string {
   if (directiveArgs.queryField) return directiveArgs.queryField;
-  return `query${pascalCase(directiveArgs.name)}`;
+  return `query${definition.name.value}${pascalCase(directiveArgs.name)}`;
+}
+
+function shouldGenerateQuery(definition: ObjectTypeDefinitionNode, directiveArgs: KeyArguments): boolean {
+  return directiveArgs.generateQuery !== false;
+  // Todo: Decide in API Bar raiser meeting how do we handle the case when query is set to null
+
+  // if (directiveArgs.generateQuery) return true;
+
+  // const modelDirective = definition.directives.find(d => d.name.value === 'model');
+  // const queryArg = modelDirective.arguments.find(arg => arg.name.value === 'query');
+  // return queryArg !== null;
 }
