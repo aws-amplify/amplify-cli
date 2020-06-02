@@ -4,11 +4,12 @@ import path from 'path';
 import * as TransformPackage from 'graphql-transformer-core';
 import _ from 'lodash';
 import { topLevelCommentPrefix, topLevelCommentSuffix, envVarPrintoutPrefix } from '../../../constants';
+import { fetchPermissionCategories, fetchPermissionResourcesForCategory, fetchPermissionsForResourceInCategory } from '../utils/updateFuncWalkthroughUtils';
 
 /**
  * This whole file desperately needs to be refactored
  */
-export async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults?) {
+export async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentPermissionMap?: object) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
@@ -31,7 +32,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
     name: 'categories',
     message: 'Select the category',
     choices: categories,
-    default: currentDefaults ? currentDefaults.categories : undefined,
+    default: fetchPermissionCategories(currentPermissionMap)
   };
   const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
   const categoryPermissionAnswer = await inquirer.prompt([categoryPermissionQuestion]);
@@ -83,11 +84,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
             }
             return true;
           },
-          default: () => {
-            if (currentDefaults && currentDefaults.categoryPermissionMap && currentDefaults.categoryPermissionMap[category]) {
-              return Object.keys(currentDefaults.categoryPermissionMap[category]);
-            }
-          },
+          default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
         };
 
         const resourceAnswer = await inquirer.prompt([resourceQuestion]);
@@ -114,16 +111,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
 
               return true;
             },
-            default: () => {
-              if (
-                currentDefaults &&
-                currentDefaults.categoryPermissionMap &&
-                currentDefaults.categoryPermissionMap[category] &&
-                currentDefaults.categoryPermissionMap[category][resourceName]
-              ) {
-                return currentDefaults.categoryPermissionMap[category][resourceName];
-              }
-            },
+            default: fetchPermissionsForResourceInCategory(currentPermissionMap, category, resourceName),
           };
 
           const crudPermissionAnswer = await inquirer.prompt([crudPermissionQuestion]);

@@ -51,35 +51,39 @@ export async function createWalkthrough(
   return templateParameters;
 }
 
-export async function updateWalkthrough(context, lambdaToUpdate) {
-  const { allResources } = await context.amplify.getResourceStatus();
-  const resources = allResources.filter(resource => resource.service === ServiceName.LambdaFunction).map(resource => resource.resourceName);
+export async function updateWalkthrough(context, lambdaToUpdate?: string) {
+  const lambdaFuncResourceNames = ((await context.amplify.getResourceStatus()).allResources as any[])
+    .filter(resource => resource.service === ServiceName.LambdaFunction)
+    .map(resource => resource.resourceName);
 
-  if (resources.length === 0) {
-    context.print.error('No Lambda Functions resource to update. Please use "amplify add function" command to create a new Function');
-    process.exit(0);
+  if (lambdaFuncResourceNames.length === 0) {
+    context.print.error('No Lambda Functions resource to update. Please use "amplify add function" command to create a new Function.');
+    return;
+  }
+
+  if (!lambdaFuncResourceNames.includes(lambdaToUpdate)) {
+    context.print.error(`No Lambda Function named ${lambdaToUpdate} exists in the project.`)
     return;
   }
 
   const resourceQuestion = [
     {
       name: 'resourceName',
-      message: 'Please select the Lambda Function you would want to update',
+      message: 'Select the Lambda Function you want to update',
       type: 'list',
-      choices: resources,
+      choices: lambdaFuncResourceNames,
     },
   ];
 
   const newParams = {};
   const answers: any = {};
   const currentDefaults: any = {};
-  let dependsOn;
 
-  const resourceAnswer = !lambdaToUpdate ? await inquirer.prompt(resourceQuestion) : { resourceName: lambdaToUpdate };
-  answers.resourceName = resourceAnswer.resourceName;
+  const resourceName = lambdaToUpdate || (await inquirer.prompt(resourceQuestion)).resourceName as string;
+  answers.resourceName = resourceName;
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceAnswer.resourceName);
+  const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
   const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
   let currentParameters;
   try {
@@ -94,19 +98,20 @@ export async function updateWalkthrough(context, lambdaToUpdate) {
 
   if (
     await context.amplify.confirmPrompt.run(
-      'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
+      'Do you want to update the Lambda function permissions to access other resources in your project?',
     )
   ) {
     // Get current dependsOn for the resource
 
+    context
     const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+    const amplifyMeta = context.amplify.getProjectMeta(amplifyMetaFilePath);
     const resourceDependsOn = amplifyMeta.function[answers.resourceName].dependsOn || [];
     answers.dependsOn = resourceDependsOn;
 
     const { topLevelComment } = await askExecRolePermissionsQuestions(context, answers, newParams, currentDefaults);
 
-    const cfnFileName = `${resourceAnswer.resourceName}-cloudformation-template.json`;
+    const cfnFileName = `${resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
     const cfnContent = context.amplify.readJsonFile(cfnFilePath);
     const dependsOnParams = { env: { Type: 'String' } };
@@ -180,10 +185,6 @@ export async function updateWalkthrough(context, lambdaToUpdate) {
 
     fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
     answers.parameters = newParams;
-    ({ dependsOn } = answers);
-    if (!dependsOn) {
-      dependsOn = [];
-    }
   }
   // ask scheduling Lambda questions and merge in results
   const scheduleParametersFilePath = path.join(resourceDirPath, parametersFileName);
@@ -199,7 +200,7 @@ export async function updateWalkthrough(context, lambdaToUpdate) {
   let scheduleParams = await scheduleWalkthrough(context, scheduleParameters);
   answers.parameters = newParams;
   answers.parameters.CloudWatchRule = scheduleParams.cloudwatchRule;
-  return { answers, dependsOn };
+  return { answers };
 }
 
 export function migrate(context, projectPath, resourceName) {
@@ -279,8 +280,3 @@ export function migrate(context, projectPath, resourceName) {
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
 }
 
-module.exports = {
-  createWalkthrough,
-  updateWalkthrough,
-  migrate,
-};
