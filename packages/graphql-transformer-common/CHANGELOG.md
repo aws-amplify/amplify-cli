@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.16.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.15.0...graphql-transformer-common@4.16.0-beta.0) (2020-06-02)
+
+
+### Features
+
+* **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([c0a4f88](https://github.com/aws-amplify/amplify-cli/commit/c0a4f8889fc363bb9c9d08ff822c591874777f7b))
+
+
+
+
+
 # [4.15.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.14.0...graphql-transformer-common@4.15.0) (2020-05-08)
 
 

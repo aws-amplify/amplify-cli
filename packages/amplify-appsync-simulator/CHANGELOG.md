@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.2...amplify-appsync-simulator@1.20.3-beta.0) (2020-06-02)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** adds equals method to JavaString class ([#4316](https://github.com/aws-amplify/amplify-cli/issues/4316)) ([4c0c692](https://github.com/aws-amplify/amplify-cli/commit/4c0c692fa6cab2e8461f20099581ff8d7d7504f8))
+* **amplify-appsync-simulator:** after pipeline template mapping ([#4303](https://github.com/aws-amplify/amplify-cli/issues/4303)) ([72d4039](https://github.com/aws-amplify/amplify-cli/commit/72d403937b8ab5a298d35910c061e0c10c5c43ce))
+* **amplify-appsync-simulator:** replace "extend" with "_.defaultsDeep" ([#4285](https://github.com/aws-amplify/amplify-cli/issues/4285)) ([a74c2f8](https://github.com/aws-amplify/amplify-cli/commit/a74c2f80864adae0cbabce1df342a40b762ba5a7))
+
+
+
+
+
 ## [1.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.1...amplify-appsync-simulator@1.20.2) (2020-05-15)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.17.1...graphql-connection-transformer@4.17.2-beta.0) (2020-06-02)
+
+
+### Bug Fixes
+
+* add custom enum filter to connection filter ([#4269](https://github.com/aws-amplify/amplify-cli/issues/4269)) ([a29d427](https://github.com/aws-amplify/amplify-cli/commit/a29d427dc23f82f04d4e7b79402dd9642591e759))
+
+
+
+
+
 ## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.17.0...graphql-connection-transformer@4.17.1) (2020-05-26)
 
 

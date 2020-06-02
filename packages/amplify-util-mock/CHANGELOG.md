@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.20.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.20.1...amplify-util-mock@3.20.2-beta.0) (2020-06-02)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** use read to allow subscriptions ([#4340](https://github.com/aws-amplify/amplify-cli/issues/4340)) ([15eac84](https://github.com/aws-amplify/amplify-cli/commit/15eac8454e0455cd402776308a2716ac406bacbb)), closes [#3777](https://github.com/aws-amplify/amplify-cli/issues/3777) [#4182](https://github.com/aws-amplify/amplify-cli/issues/4182) [#4137](https://github.com/aws-amplify/amplify-cli/issues/4137)
+
+
+
+
+
 ## [3.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.20.0...amplify-util-mock@3.20.1) (2020-05-26)
 
 
