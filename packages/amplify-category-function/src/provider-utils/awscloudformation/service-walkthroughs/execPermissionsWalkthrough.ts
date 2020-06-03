@@ -3,12 +3,18 @@ import inquirer from 'inquirer';
 import path from 'path';
 import * as TransformPackage from 'graphql-transformer-core';
 import _ from 'lodash';
-import { topLevelCommentPrefix, topLevelCommentSuffix, envVarPrintoutPrefix } from '../../../constants';
+import { topLevelCommentPrefix, topLevelCommentSuffix, envVarPrintoutPrefix, CRUDOperation } from '../../../constants';
+import {
+  fetchPermissionCategories,
+  fetchPermissionResourcesForCategory,
+  fetchPermissionsForResourceInCategory,
+} from '../utils/permissionMapUtils';
+import { FunctionParameters, FunctionDependency } from 'amplify-function-plugin-interface/src';
 
 /**
  * This whole file desperately needs to be refactored
  */
-export async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults?) {
+export const askExecRolePermissionsQuestions = async (context, currentPermissionMap?): Promise<ExecRolePermissionsResponse> => {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
@@ -31,15 +37,15 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
     name: 'categories',
     message: 'Select the category',
     choices: categories,
-    default: currentDefaults ? currentDefaults.categories : undefined,
+    default: fetchPermissionCategories(currentPermissionMap),
   };
   const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
   const categoryPermissionAnswer = await inquirer.prompt([categoryPermissionQuestion]);
   const selectedCategories = categoryPermissionAnswer.categories as any[];
   let categoryPolicies = [];
   let resources = [];
-  const crudOptions = ['create', 'read', 'update', 'delete'];
-  parameters.permissions = {};
+  const crudOptions = _.values(CRUDOperation);
+  const permissions = {};
 
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const appsyncTableSuffix = '@model(appsync)';
@@ -83,11 +89,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
             }
             return true;
           },
-          default: () => {
-            if (currentDefaults && currentDefaults.categoryPermissionMap && currentDefaults.categoryPermissionMap[category]) {
-              return Object.keys(currentDefaults.categoryPermissionMap[category]);
-            }
-          },
+          default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
         };
 
         const resourceAnswer = await inquirer.prompt([resourceQuestion]);
@@ -114,16 +116,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
 
               return true;
             },
-            default: () => {
-              if (
-                currentDefaults &&
-                currentDefaults.categoryPermissionMap &&
-                currentDefaults.categoryPermissionMap[category] &&
-                currentDefaults.categoryPermissionMap[category][resourceName]
-              ) {
-                return currentDefaults.categoryPermissionMap[category][resourceName];
-              }
-            },
+            default: fetchPermissionsForResourceInCategory(currentPermissionMap, category, resourceName),
           };
 
           const crudPermissionAnswer = await inquirer.prompt([crudPermissionQuestion]);
@@ -150,10 +143,10 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
           const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, { [resourceName]: resourcePolicy });
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
 
-          if (!parameters.permissions[category]) {
-            parameters.permissions[category] = {};
+          if (!permissions[category]) {
+            permissions[category] = {};
           }
-          parameters.permissions[category][resourceName] = resourcePolicy;
+          permissions[category][resourceName] = resourcePolicy;
 
           // replace resource attributes for @model-backed dynamoDB tables
           resources = resources.concat(
@@ -188,15 +181,13 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
     }
   }
 
-  allDefaultValues.categoryPolicies = categoryPolicies;
-  const resourceProperties = [];
-  const resourcePropertiesJSON = {};
+  const environmentMap = {};
   const envVars = new Set<string>();
-  allDefaultValues.dependsOn = []; // reset the dependsOn field for this resource because it will be re-populated based on the update selections
+  const dependsOn: FunctionDependency[] = [];
   resources.forEach(resource => {
     const { category, resourceName, attributes } = resource;
     /**
-     * while resourceProperties and resourcePropertiesJson
+     * while resourceProperties
      * (which are utilized to set Lambda environment variables on CF side)
      * are derived from dependencies on other category resources that in-turn are set as CF-template parameters
      * we need to inject extra when blending appsync @model-backed dynamoDB tables into storage category flow
@@ -204,38 +195,34 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
      */
     if (resource.needsAdditionalDynamoDBResourceProps) {
       const modelEnvPrefix = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${resource._modelName.toUpperCase()}`;
-      let modelArnResourcePropValue = {
+      const modelEnvNameKey = `${modelEnvPrefix}_NAME`;
+      const modelEnvArnKey = `${modelEnvPrefix}_ARN`;
+
+      environmentMap[modelEnvNameKey] = resource._cfJoinComponentTableName;
+      environmentMap[modelEnvArnKey] = {
         'Fn::Join': ['', resource._cfJoinComponentTableArn],
       };
 
-      resourceProperties.push(`"${modelEnvPrefix}_NAME": ${JSON.stringify(resource._cfJoinComponentTableName)}`);
-      resourceProperties.push(`"${modelEnvPrefix}_ARN": ${JSON.stringify(modelArnResourcePropValue)}`);
-      resourcePropertiesJSON[`${modelEnvPrefix}_NAME`] = resource._cfJoinComponentTableName;
-      resourcePropertiesJSON[`${modelEnvPrefix}_ARN`] = modelArnResourcePropValue;
-
-      envVars.add(`${modelEnvPrefix}_NAME`);
-      envVars.add(`${modelEnvPrefix}_ARN`);
+      envVars.add(modelEnvNameKey);
+      envVars.add(modelEnvArnKey);
     }
 
     attributes.forEach(attribute => {
       const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
       const refName = `${category}${resourceName}${attribute}`;
-
-      resourceProperties.push(`"${envName}": {"Ref": "${refName}"}`);
-      resourcePropertiesJSON[`${envName}`] = { Ref: refName };
-
+      environmentMap[envName] = { Ref: refName };
       envVars.add(envName);
     });
 
     let resourceExists = false;
-    allDefaultValues.dependsOn.forEach(amplifyResource => {
+    dependsOn.forEach(amplifyResource => {
       if (amplifyResource.resourceName === resourceName) {
         resourceExists = true;
       }
     });
 
     if (!resourceExists) {
-      allDefaultValues.dependsOn.push({
+      dependsOn.push({
         category: resource.category,
         resourceName: resource.resourceName,
         attributes: resource.attributes,
@@ -243,17 +230,21 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
     }
   });
 
-  allDefaultValues.resourceProperties = resourceProperties.join(',\n');
-  allDefaultValues.resourcePropertiesJSON = resourcePropertiesJSON;
-
-  envVars.add('ENV');
-  envVars.add('REGION');
-
   const envVarStringList = Array.from(envVars)
     .sort()
     .join('\n\t');
 
   context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
 
-  return { topLevelComment: `${topLevelCommentPrefix}${envVarStringList}${topLevelCommentSuffix}` };
-}
+  return {
+    dependsOn,
+    topLevelComment: `${topLevelCommentPrefix}${envVarStringList}${topLevelCommentSuffix}`,
+    environmentMap,
+    mutableParametersState: { permissions: permissions },
+    categoryPolicies,
+  };
+};
+
+export type ExecRolePermissionsResponse = Required<
+  Pick<FunctionParameters, 'categoryPolicies' | 'environmentMap' | 'topLevelComment' | 'dependsOn' | 'mutableParametersState'>
+>;

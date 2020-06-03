@@ -64,7 +64,7 @@ const coreFunction = (
       chain
         .wait('Please select from one of the below mentioned services:')
         .sendCarriageReturn() // lambda function
-        .wait('Please select the Lambda Function you would want to update')
+        .wait('Select the Lambda Function you want to update')
         .sendCarriageReturn(); // assumes only one function configured in the project
     }
 
@@ -75,8 +75,8 @@ const coreFunction = (
     if (!settings.expectFailure) {
       chain.wait(
         action === 'create'
-          ? 'Do you want to access other resources created in this project from your Lambda function?'
-          : 'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
+          ? 'Do you want to access other resources in this project from your Lambda function?'
+          : 'Do you want to update the Lambda function permissions to access other resources in this project?',
       );
 
       if (settings.additionalPermissions) {
