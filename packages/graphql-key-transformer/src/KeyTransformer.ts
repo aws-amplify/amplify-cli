@@ -51,6 +51,7 @@ import {
   Kind,
   InputValueDefinitionNode,
   EnumTypeDefinitionNode,
+  isObjectType,
 } from 'graphql';
 import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
@@ -186,7 +187,7 @@ export class KeyTransformer extends Transformer {
           deleteResolver.Properties.RequestMappingTemplate,
         ]);
       }
-      if (shouldGenerateQuery(definition, directiveArgs)) {
+      if (shouldGenerateQuery(definition, directiveArgs, ctx)) {
         const queryFieldName = getQueryFieldName(definition, directiveArgs);
         const queryTypeName = ctx.getQueryTypeName();
         const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryFieldName);
@@ -310,7 +311,7 @@ export class KeyTransformer extends Transformer {
   // If this is a secondary key and a queryField has been provided, create the query field.
   private ensureQueryField = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const args: KeyArguments = getDirectiveArguments(directive);
-    if (shouldGenerateQuery(definition, args) && !this.isPrimaryKey(directive)) {
+    if (shouldGenerateQuery(definition, args, ctx) && !this.isPrimaryKey(directive)) {
       const queryFieldName = getQueryFieldName(definition, args);
       let queryType = ctx.getQuery();
       let queryArguments = [];
@@ -909,13 +910,30 @@ function getQueryFieldName(definition: ObjectTypeDefinitionNode, directiveArgs: 
   return `query${definition.name.value}${pascalCase(directiveArgs.name)}`;
 }
 
-function shouldGenerateQuery(definition: ObjectTypeDefinitionNode, directiveArgs: KeyArguments): boolean {
-  return directiveArgs.generateQuery !== false;
-  // Todo: Decide in API Bar raiser meeting how do we handle the case when query is set to null
+function shouldGenerateQuery(definition: ObjectTypeDefinitionNode, directiveArgs: KeyArguments, ctx: TransformerContext): boolean {
+  // 1. When generateQuery is explictly set honor that
+  if (typeof directiveArgs.generateQuery !== 'undefined') return directiveArgs.generateQuery;
+  // 2. When queryField is set generate query
+  if (directiveArgs.queryField) return true;
 
-  // if (directiveArgs.generateQuery) return true;
+  // Todo: Decide in API Review meeting how do we handle the case when query is set to null
+  // 3. when neither generateQuery is not set nor queryField is set, generate query if and only if they key is not used in
+  // any connection
+  const objTypes = ctx.inputDocument.definitions.filter(def => def.kind === 'ObjectTypeDefinition');
+  const isUsedByConnection = objTypes.some((def: ObjectTypeDefinitionNode) => {
+    return def.fields.some(field => isUsingKey(directiveArgs.name!, field, definition));
+  });
+  return !isUsedByConnection;
+}
 
-  // const modelDirective = definition.directives.find(d => d.name.value === 'model');
-  // const queryArg = modelDirective.arguments.find(arg => arg.name.value === 'query');
-  // return queryArg !== null;
+function isUsingKey(keyName: string, field: FieldDefinitionNode, objectType: ObjectTypeDefinitionNode): boolean {
+  const baseType = getBaseType(field.type);
+  if (baseType === objectType.name.value) {
+    const connectionDirective = field.directives.find(d => d.name.value === 'connection');
+    if (connectionDirective) {
+      const connectionArgs = getDirectiveArguments(connectionDirective);
+      if (connectionArgs?.keyName === keyName) return true;
+    }
+  }
+  return false;
 }

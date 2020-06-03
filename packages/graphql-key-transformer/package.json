@@ -30,6 +30,9 @@
     "graphql-transformer-common": "4.16.0",
     "graphql-transformer-core": "6.18.2"
   },
+  "devDependencies": {
+    "graphql-connection-transformer": "4.17.2"
+  },
   "jest": {
     "testURL": "http://localhost",
     "transform": {

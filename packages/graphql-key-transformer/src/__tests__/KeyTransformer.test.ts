@@ -1,6 +1,7 @@
 import { GraphQLTransform, InvalidDirectiveError, EXTRA_DIRECTIVES_DOCUMENT, EXTRA_SCALARS_DOCUMENT } from 'graphql-transformer-core';
 import { KeyTransformer } from '../KeyTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { isNullableType, buildSchema, print } from 'graphql';
 
 test('Check KeyTransformer Resolver Code', () => {
@@ -143,6 +144,35 @@ test('KeyTransformer should generate queryFeild automatically', () => {
   expect(isNullableType(status)).not.toBeTruthy();
 });
 
+test('KeyTransformer should generate queryFeild automatically when queryField is set', () => {
+  const validSchema = `
+    type Item @model
+        @key(fields: ["orderId", "status", "createdAt"])
+        @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "myQuery")
+    {
+        orderId: ID!
+        status: Status!
+        createdAt: AWSDateTime!
+        name: String!
+    }
+    enum Status {
+      DELIVERED IN_TRANSIT PENDING UNKNOWN
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const schema = buildSchema([print(EXTRA_DIRECTIVES_DOCUMENT), print(EXTRA_SCALARS_DOCUMENT), out.schema].join('\n'));
+  const queryType = schema.getQueryType();
+  const queryFields = queryType.getFields();
+  const queryItemByStatus = queryFields['myQuery'];
+  expect(queryItemByStatus).toBeDefined();
+  const status = queryItemByStatus.args.find(arg => arg.name === 'status');
+  expect(isNullableType(status)).not.toBeTruthy();
+});
+
 test('KeyTransformer should not generate queryFeild automatically when generateQuery set to false', () => {
   const validSchema = `
     type Item @model
@@ -168,4 +198,63 @@ test('KeyTransformer should not generate queryFeild automatically when generateQ
   const queryFields = queryType.getFields();
   const queryItemByStatus = queryFields['queryItemByStatus'];
   expect(queryItemByStatus).not.toBeDefined();
+});
+
+test('KeyTransformer should not generate queryFeild automatically when key is used in connection', () => {
+  const validSchema = /* GraphQL */ `
+    type Post @model {
+      id: ID!
+      title: String!
+      comment: [Comment] @connection(keyName: "byUpdatedAt", fields: ["id"])
+    }
+
+    type Comment @model @key(fields: ["id", "createdAt"]) @key(name: "byUpdatedAt", fields: ["id", "updatedAt"]) {
+      id: ID!
+      title: String!
+      createdAt: AWSDateTime!
+      updatedAt: AWSDateTime!
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const schema = buildSchema([print(EXTRA_DIRECTIVES_DOCUMENT), print(EXTRA_SCALARS_DOCUMENT), out.schema].join('\n'));
+  const queryType = schema.getQueryType();
+  const queryFields = queryType.getFields();
+  const queryItemByStatus = queryFields['queryCommentByUpdatedAt'];
+  expect(queryItemByStatus).not.toBeDefined();
+});
+
+test('KeyTransformer should  generate queryFeild when queryField is explictly defined even if key is used in connection', () => {
+  const validSchema = /* GraphQL */ `
+    type Post @model {
+      id: ID!
+      title: String!
+      comment: [Comment] @connection(keyName: "byUpdatedAt", fields: ["id"])
+    }
+
+    type Comment
+      @model
+      @key(fields: ["id", "createdAt"])
+      @key(name: "byUpdatedAt", fields: ["id", "updatedAt"], queryField: "queryByUpdatedAt") {
+      id: ID!
+      title: String!
+      createdAt: AWSDateTime!
+      updatedAt: AWSDateTime!
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const schema = buildSchema([print(EXTRA_DIRECTIVES_DOCUMENT), print(EXTRA_SCALARS_DOCUMENT), out.schema].join('\n'));
+  const queryType = schema.getQueryType();
+  const queryFields = queryType.getFields();
+  const queryItemByStatus = queryFields['queryByUpdatedAt'];
+  expect(queryItemByStatus).toBeDefined();
 });
