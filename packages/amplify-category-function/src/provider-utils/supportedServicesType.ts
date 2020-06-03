@@ -16,7 +16,7 @@ export interface ServiceConfig<T> {
 
 export interface WalkthroughProvider<T> {
   createWalkthrough: (context: any, params: Partial<T>) => Promise<Partial<T>>;
-  updateWalkthrough: Function;
+  updateWalkthrough: (context: any, resourceToUpdate?: string) => Promise<Partial<T>>;
   migrate?: Function;
   getIAMPolicies?: Function;
   askExecRolePermissionsQuestions?: Function;

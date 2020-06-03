@@ -1,9 +1,15 @@
-import { FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './utils/layerParams';
 import { supportedServices } from '../supported-services';
 import { ServiceName, provider } from './utils/constants';
 import { category as categoryName } from '../../constants';
-import { copyFunctionResources, createLayerCfnFile, createLayerFolders, createParametersFile } from './utils/storeResources';
+import {
+  createFunctionResources,
+  createLayerCfnFile,
+  createLayerFolders,
+  saveMutableState,
+  saveCFNParameters,
+} from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
 import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
@@ -69,6 +75,18 @@ async function addFunctionResource(
     // merge in the CFN file
     funcParams = merge(funcParams, { cloudResourceTemplatePath: serviceConfig.cfnFilename });
 
+    // merge in the default CFN params
+    funcParams = merge(funcParams, {
+      environmentMap: {
+        ENV: {
+          Ref: 'env',
+        },
+        REGION: {
+          Ref: 'AWS::Region',
+        },
+      },
+    });
+
     // populate the parameters for the resource
     // This will modify funcParams
     await serviceConfig.walkthroughs.createWalkthrough(context, funcParams);
@@ -77,10 +95,10 @@ async function addFunctionResource(
     completeParams = parameters;
   }
 
-  copyFunctionResources(context, completeParams);
+  createFunctionResources(context, completeParams);
 
   if (!completeParams.skipEdit) {
-    await openEditor(context, category, completeParams);
+    await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
   }
 
   const { print } = context;
@@ -138,89 +156,65 @@ async function addLayerResource(
   print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
 }
 
-export async function updateResource(context, category, service, parameters, resourceToUpdate) {
-  let answers;
+export async function updateResource(
+  context,
+  category,
+  service,
+  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
+  resourceToUpdate?,
+) {
   const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
   }
 
-  let result;
-
-  if (!parameters) {
-    result = await serviceConfig.walkthroughs.updateWalkthrough(context, resourceToUpdate);
-  } else {
-    result = { answers: parameters };
-  }
-
-  if (result.answers) {
-    ({ answers } = result);
-  } else {
-    answers = result;
-  }
-
-  if (!answers.resourceName) {
-    answers.resourceName = answers.functionName;
-  }
-
-  if (result.dependsOn) {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName, 'dependsOn', result.dependsOn);
-  }
-
-  if (answers.parameters) {
-    let cloudWatchParams = _.pick(answers.parameters, ['CloudWatchRule']);
-    let params = _.omit(answers.parameters, ['CloudWatchRule']);
-    createParametersFile(context, params, answers.resourceName);
-    createParametersFile(context, cloudWatchParams, answers.resourceName, 'parameters.json');
-  }
-
-  if (answers.trigger) {
+  if (parameters && 'trigger' in parameters) {
     const parametersFilePath = `${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`;
     let previousParameters;
 
     if (fs.existsSync(parametersFilePath)) {
       previousParameters = context.amplify.readJsonFile(parametersFilePath);
 
-      if (previousParameters.trigger === true) {
-        answers = Object.assign(answers, previousParameters);
+      if ('trigger' in previousParameters) {
+        parameters = _.assign(parameters, previousParameters);
       }
     }
-    createParametersFile(context, parameters, answers.resourceName);
+    saveMutableState(context, parameters);
+  } else {
+    parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, resourceToUpdate);
+    if (parameters.dependsOn) {
+      context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
+    }
+    saveMutableState(context, parameters);
+    saveCFNParameters(context, parameters);
   }
 
   if (!parameters || (parameters && !parameters.skipEdit)) {
-    const breadcrumb = context.amplify.readBreadcrumbs(context, categoryName, answers.resourceName);
-    answers.functionTemplate = {
-      defaultEditorFile: breadcrumb.defaultEditorFile,
-    };
-    await openEditor(context, category, answers);
+    const breadcrumb = context.amplify.readBreadcrumbs(context, categoryName, parameters.resourceName);
+    const displayName = 'trigger' in parameters ? parameters.resourceName : undefined;
+    await openEditor(context, category, parameters.resourceName, { defaultEditorFile: breadcrumb.defaultEditorFile }, displayName);
   }
 
-  return answers.resourceName;
+  return parameters.resourceName;
 }
 
-async function openEditor(context, category, options: FunctionParameters | FunctionTriggerParameters) {
-  let displayName = 'local';
-  if ('trigger' in options) {
-    displayName = options.resourceName;
-  }
+async function openEditor(context, category: string, resourceName: string, template: Partial<FunctionTemplate>, displayName = 'local') {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   if (await context.amplify.confirmPrompt.run(`Do you want to edit the ${displayName} lambda function now?`)) {
     let targetFile = '';
 
     // try to load the default editor file from the function template
-    if (options.functionTemplate) {
-      const template = options.functionTemplate;
+    if (template) {
       if (template.defaultEditorFile) {
         targetFile = template.defaultEditorFile;
       } else if (template.sourceFiles && template.sourceFiles.length > 0) {
-        let srcFile = options.functionTemplate.sourceFiles[0];
-        targetFile = _.get(options.functionTemplate, ['destMap', srcFile], srcFile);
+        let srcFile = template.sourceFiles[0];
+        targetFile = _.get(template, ['destMap', srcFile], srcFile);
       }
     }
 
     // if above loading didn't work, just open the folder directory
-    const target = path.join(targetDir, category, options.resourceName, targetFile);
+    const target = path.join(targetDir, category, resourceName, targetFile);
     await context.amplify.openEditor(context, target);
   }
 }

@@ -9,7 +9,7 @@ import _ from 'lodash';
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
 
-export function copyFunctionResources(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
+export function createFunctionResources(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
   context.amplify.updateamplifyMetaAfterResourceAdd(
     categoryName,
     parameters.resourceName || parameters.functionName,
@@ -18,22 +18,9 @@ export function copyFunctionResources(context: any, parameters: FunctionParamete
 
   // copy template, CFN and parameter files
   copyTemplateFiles(context, parameters);
-  createParametersFile(context, buildParametersFileObj(parameters), parameters.resourceName);
-  if ('trigger' in parameters) {
-    const params = {
-      modules: parameters.modules.join(),
-      resourceName: parameters.resourceName,
-    };
-    createParametersFile(context, params, parameters.resourceName, 'parameters.json');
-  }
+  saveMutableState(context, parameters);
+  saveCFNParameters(context, parameters);
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
-
-  if ('cloudwatchRule' in parameters) {
-    const params = {
-      CloudWatchRule: parameters.cloudwatchRule,
-    };
-    createParametersFile(context, params, parameters.resourceName, 'parameters.json');
-  }
 }
 
 export function copyTemplateFiles(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
@@ -102,7 +89,33 @@ export function createLayerCfnFile(context, parameters, layerDirPath) {
   });
 }
 
-export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
+export function saveMutableState(
+  context,
+  parameters: Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName'>> | FunctionTriggerParameters,
+) {
+  createParametersFile(context, buildParametersFileObj(parameters), parameters.resourceName);
+}
+
+export function saveCFNParameters(
+  context,
+  parameters: Partial<Pick<FunctionParameters, 'cloudwatchRule' | 'resourceName'>> | FunctionTriggerParameters,
+) {
+  if ('trigger' in parameters) {
+    const params = {
+      modules: parameters.modules.join(),
+      resourceName: parameters.resourceName,
+    };
+    createParametersFile(context, params, parameters.resourceName, 'parameters.json');
+  }
+  if ('cloudwatchRule' in parameters) {
+    const params = {
+      CloudWatchRule: parameters.cloudwatchRule,
+    };
+    createParametersFile(context, params, parameters.resourceName, 'parameters.json');
+  }
+}
+
+function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
   fs.ensureDirSync(resourceDirPath);
@@ -112,11 +125,11 @@ export function createParametersFile(context, parameters, resourceName, paramete
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 }
 
-function buildParametersFileObj(parameters: FunctionParameters | FunctionTriggerParameters): any {
+function buildParametersFileObj(parameters: Pick<FunctionParameters, 'mutableParametersState'> | FunctionTriggerParameters): any {
   if ('trigger' in parameters) {
     return _.omit(parameters, ['functionTemplate', 'cloudResourceTemplatePath']);
   }
-  return parameters.parametersFileObj;
+  return parameters.mutableParametersState;
 }
 
 function translateFuncParamsToResourceOpts(params: FunctionParameters | FunctionTriggerParameters): any {

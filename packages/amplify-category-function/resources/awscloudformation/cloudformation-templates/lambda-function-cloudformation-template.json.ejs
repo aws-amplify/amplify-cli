@@ -66,15 +66,7 @@
                 ]
             },
             "Environment": {
-                "Variables" : {
-                    "ENV": {
-                        "Ref": "env"
-                    },
-                    "REGION": {
-                        "Ref": "AWS::Region"
-                    }
-                    <% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>
-                }
+                "Variables" : <%- JSON.stringify(props.environmentMap) %>
             },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
             "Runtime": "<%= props.runtime.cloudTemplateValue %>",

@@ -75,8 +75,8 @@ const coreFunction = (
     if (!settings.expectFailure) {
       chain.wait(
         action === 'create'
-          ? 'Do you want to access other resources created in this project from your Lambda function?'
-          : 'Do you want to update the Lambda function permissions to access other resources in your project?',
+          ? 'Do you want to access other resources in this project from your Lambda function?'
+          : 'Do you want to update the Lambda function permissions to access other resources in this project?',
       );
 
       if (settings.additionalPermissions) {
