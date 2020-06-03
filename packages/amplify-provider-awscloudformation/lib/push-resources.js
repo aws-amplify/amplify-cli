@@ -484,9 +484,9 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
 
   Object.assign(nestedStack.Resources, idpUpdateRoleCfn);
 }
+
  function packageLayer(context,resource){
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-  //const resourcePathSrc = path.join(resourcePath,'src');
   const layerObj = context.amplify.readJsonFile(path.join(resourcePath,'layer-parameters.json'));
   const layerVersionArn = layerObj.parameters.layerVersionsArray[0];
   const zipFilename = 'latest-build.zip';
@@ -504,11 +504,15 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
   let output = fs.createWriteStream(destination);
   // get layer version ARN
   return new Promise((resolve, reject) => {
-    output.on('close', () => {
-      //check zip size is less than 250MB
+    output.on('close', () => {//check zip size is less than 250MB
+      if(validFilesize(destination)){
         const zipName = `${resource.resourceName}-${layerVersionArn}-build.zip`;
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipName);
         resolve({ zipFilePath : destination, zipFilename : zipName });
+      }
+      else{
+        reject(new Error("File size greater than 250MB"))
+      }
     });
     output.on('error', () => {
       reject(new Error('Failed to zip code.'));
@@ -523,6 +527,16 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
     })
     zip.finalize();
   });
+}
+
+ function validFilesize(path , maxSize = 250){
+  try{
+   const {size} =  fs.statSync(path);
+   const fileSize = Math.round(size / 1024 ** 2, 2);
+   return fileSize < maxSize
+  }catch(error){
+    return reject("error in calculating File size")
+  }
 }
 
 module.exports = {
