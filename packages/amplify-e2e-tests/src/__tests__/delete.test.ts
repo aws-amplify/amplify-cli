@@ -56,6 +56,7 @@ describe('amplify delete', () => {
     expect(pinpointAppExists).toBeTruthy();
     await amplifyDelete(projRoot);
     pinpointAppExists = await pinpointAppExist(pintpointAppId);
+    await timeout(4 * 1000);
     expect(pinpointAppExists).toBeFalsy();
   });
 
@@ -161,6 +162,12 @@ async function appExists(appId: string, region: string) {
   } catch (ex) {
     return false;
   }
+}
+
+async function timeout(timeout: number) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, timeout);
+  });
 }
 
 async function bucketNotExists(bucket: string) {
