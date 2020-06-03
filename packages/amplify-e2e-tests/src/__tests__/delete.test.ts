@@ -55,8 +55,8 @@ describe('amplify delete', () => {
     let pinpointAppExists = await pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeTruthy();
     await amplifyDelete(projRoot);
-    pinpointAppExists = await pinpointAppExist(pintpointAppId);
     await timeout(4 * 1000);
+    pinpointAppExists = await pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeFalsy();
   });
 
