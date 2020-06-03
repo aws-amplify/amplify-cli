@@ -93,6 +93,7 @@ export function createLayerCfnFile(context, parameters, layerDirPath) {
     providerPlugin: parameters.providerContext.provider,
     service: parameters.providerContext.service,
     runtimes: parameters.runtimes,
+    build: true,
   });
 }
 

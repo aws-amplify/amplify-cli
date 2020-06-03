@@ -143,7 +143,7 @@ export async function addLayerResource(
   await serviceConfig.walkthroughs.createWalkthrough(context, parameters);
 
   const layerDirPath = createLayerFolders(context, parameters);
-  const layerParams = _.pick(parameters, ['runtimes', 'layerPermissions']);
+  const layerParams = _.pick(parameters, ['runtimes', 'layerPermissions','layerVersionsArray']);
   createLayerParametersFile(context, layerParams, layerDirPath);
   createParametersFile(context, {}, parameters.layerName, 'parameters.json');
   createLayerCfnFile(context, parameters, layerDirPath);
@@ -212,7 +212,7 @@ export async function updateLayerResource(
 
   // generate layer parameters file and CFn file for the updated layer
   const layerDirPath = createLayerFolders(context, parameters); // update based
-  const layerParams = _.pick(parameters, ['runtimes', 'layerPermissions']);
+  const layerParams = _.pick(parameters, ['runtimes', 'layerPermissions' , 'layerVersionsArray','layerVersion']);
   createLayerParametersFile(context, layerParams, layerDirPath);
   let layerParameters = _.pick(parameters,['layerVersionArn']);
   createParametersFile(context, layerParameters, parameters.layerName, 'parameters.json');

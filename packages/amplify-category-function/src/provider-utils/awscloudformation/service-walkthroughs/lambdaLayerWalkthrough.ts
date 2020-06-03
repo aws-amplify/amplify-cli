@@ -25,6 +25,8 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
         break;
     }
   }
+  // add layer version to parameters
+  _.assign(parameters, {layerVersionsArray : [1]});
   return parameters;
 }
 
@@ -86,53 +88,16 @@ export async function updateLayerWalkthrough(
   }
 
   if(!islayerVersionChanged){
-    // to chnage after disscussion
-    const lambda = await new Lambda({});
-    let data1 = await lambda.listLayerVersions({LayerName : templateParameters.layerName});
-    ///
-    // place holder for above code to make update work
-    let data = {
-      Layers: [
-         {
-        LatestMatchingVersion: {
-         CompatibleRuntimes: [
-            "python3.6",
-            "python3.7"
-         ],
-         CreatedDate: "2018-11-15T00:37:46.592+0000",
-         Description: "My layer",
-         LayerVersionArn: "arn:aws:lambda:us-east-2:123456789012:layer:my-layer:2",
-         Version: 2
-        },
-        LayerArn: "arn:aws:lambda:us-east-2:123456789012:layer:my-layer",
-        LayerName: "my-layer"
-       },
-       {
-        LatestMatchingVersion: {
-         CompatibleRuntimes: [
-            "python3.6",
-            "python3.7"
-         ],
-         CreatedDate: "2018-11-15T00:37:46.592+0000",
-         Description: "My layer",
-         LayerVersionArn: "arn:aws:lambda:us-east-2:123456789012:layer:my-layer:3",
-         Version: 3
-        },
-        LayerArn: "arn:aws:lambda:us-east-2:123456789012:layer:my-layer",
-        LayerName: "my-layer"
-       }
-      ]
-     }
-
-    let versions = data.Layers.map(layer => _.pick(layer.LatestMatchingVersion,['Version','LayerVersionArn']));
-    let choices = [];
-    for(let version of versions){
-      let choice={};
-      choice['name'] = version.Version;
-      choice['value'] = version.LayerVersionArn;
-      choices.push(choice)
+    let versions = (templateParameters.layerVersionsArray);
+    const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
+    _.assign(templateParameters,{layerVersion : versionAnswer.layerVersion})
+  }
+  else{
+    let prevVersion = templateParameters.layerVersionsArray[0];
+    templateParameters.layerVersionsArray.unshift(prevVersion + 1);
+    if(templateParameters.layerVersion !== undefined){
+      delete templateParameters.layerVersion;
     }
-    _.assign(templateParameters,await inquirer.prompt(layerVersionQuestion(choices)));
   }
   return templateParameters;
 }
@@ -141,7 +106,7 @@ function layerVersionQuestion(choices){
   return [
     {
       type: 'list',
-      name: 'layerVersionArn',
+      name: 'layerVersion',
       message: 'Select the version number to update for given Lambda Layer: ',
       choices: choices
     }

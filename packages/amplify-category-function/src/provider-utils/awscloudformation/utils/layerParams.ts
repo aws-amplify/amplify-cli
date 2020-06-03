@@ -7,11 +7,12 @@ export type LayerParameters = {
   providerContext: ProviderContext;
   authorizedAccountIds?: string;
   authorizedOrgId?: string;
-  layerVersionArn?: string;
+  layerVersion: string;
+  layerVersionsArray?: number[];
 };
 
 export enum Permissions {
-  private = 'private',
+  private = 'private',// remove
   public = 'public',
   awsAccounts = 'awsAccounts',
   awsOrg = 'awsOrg',

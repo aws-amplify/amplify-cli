@@ -9,7 +9,7 @@ export default function generateLayerCfnObj(parameters) {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda Layer resource stack creation using Amplify CLI',
     Parameters: {
-      layerVersionArn:{
+      layerVersion:{
         Type: 'String',
         Default: '1'
       },
@@ -76,8 +76,8 @@ export default function generateLayerCfnObj(parameters) {
 function assignLayerPermissions(cfnObj,parameters,permissions){
     // assign permissions
     const layerVersionPermissionInput = {
-      Action: 'lambda:GetLayerPermission',
-      LayerVersionArn: parameters.layerVersionArn !== undefined ? Fn.Ref("LayerVersionArn") : Fn.Ref("LambdaLayer")
+      Action: 'lambda:GetLayerVersion',
+      LayerVersionArn: parameters.layerVersion !== undefined ? createLayerversionArn(parameters) : Fn.Ref("LambdaLayer")
     };
   let layerVersionPermission = new Lambda.LayerVersionPermission({
     ...layerVersionPermissionInput,
@@ -110,7 +110,7 @@ function assignLayerPermissionsAccounts(cfnObj,parameters,permissions){
   whitelistAccountIds.forEach(account => {
     const layerVersionPermissionInput = {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: Fn.Ref("LambdaLayer"),
+      LayerVersionArn: parameters.layerVersion !== undefined ? createLayerversionArn(parameters) : Fn.Ref("LambdaLayer"),
     };
     let layerVersionPermission = new Lambda.LayerVersionPermission({
       ...layerVersionPermissionInput,
@@ -123,10 +123,18 @@ function assignLayerPermissionsAccounts(cfnObj,parameters,permissions){
   })
 }
 
-function joinWithEnv(separator: string, listToJoin: any[]) {
+export function joinWithEnv(separator: string, listToJoin: any[]) {
   return Fn.If(
     "HasEnvironmentParameter",
     Fn.Join(separator, [...listToJoin, Fn.Ref("env")]),
     listToJoin[0]
   );
+}
+
+export function createLayerversionArn(parameters){
+  //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
+  return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}:${layerVersion}', {
+    layerName: joinWithEnv('-', [parameters.layerName]),
+    layerVersion: parameters.layerVersion
+  })
 }

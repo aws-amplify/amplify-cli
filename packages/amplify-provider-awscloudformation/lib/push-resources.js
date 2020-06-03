@@ -42,8 +42,6 @@ async function run(context, resourceDefinition) {
 
     await packageResources(context, resources);
 
-    await packageResourcesLayer(context, resources);
-
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options['minify'],
@@ -225,7 +223,7 @@ function packageResources(context, resources) {
 
   const packageResource = (context, resource) => {
     let s3Key;
-    return buildResource(context, resource)
+    return  resource.service === 'LambdaFunction' ?  buildResource(context, resource) : packageLayer(context, resource)
       .then(result => {
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
@@ -258,18 +256,25 @@ function packageResources(context, resources) {
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-          cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-            Bucket: s3Bucket,
-            Key: s3Key,
-          };
-        } else {
-          cfnMeta.Resources.LambdaFunction.Properties.Code = {
+        if(resources.service  === 'LambdaFunction'){
+          if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+            cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+              Bucket: s3Bucket,
+              Key: s3Key,
+            };
+          } else {
+            cfnMeta.Resources.LambdaFunction.Properties.Code = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+          }
+        }
+        else{
+          cfnMeta.Resources.LambdaLayer.Properties.Content = {
             S3Bucket: s3Bucket,
             S3Key: s3Key,
           };
         }
-
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
       });
@@ -479,66 +484,11 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
 
   Object.assign(nestedStack.Resources, idpUpdateRoleCfn);
 }
-
-function packageResourcesLayer(context, resources) {
-  // Only package LmabdaLayer Resources
-  resources = resources.filter(resource => resource.service === 'LambdaLayer');
-  const packageResource = (context, resource) => {
-    let s3Key;
-    return packageLayer(context, resource)
-      .then(result => {
-        // Upload zip file to S3
-        s3Key = `amplify-builds/${result.zipFilename}`;
-        return new S3(context).then(s3 => {
-          const s3Params = {
-            Body: fs.createReadStream(result.zipFilePath),
-            Key: s3Key,
-          };
-          return s3.uploadFile(s3Params);
-        });
-      })
-      .then(s3Bucket => {
-        // Update cfn template
-        const { category, resourceName } = resource;
-        const backEndDir = context.amplify.pathManager.getBackendDirPath();
-        const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-
-        const files = fs.readdirSync(resourceDir);
-        // Fetch all the Cloudformation templates for the resource (can be json or yml)
-        const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
-
-        if (cfnFiles.length !== 1) {
-          context.print.error('Only one CloudFormation template is allowed in the resource directory');
-          context.print.error(resourceDir);
-          throw new Error('Only one CloudFormation template is allowed in the resource directory');
-        }
-
-        const cfnFile = cfnFiles[0];
-        const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-
-        const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
-
-        cfnMeta.Resources.LambdaLayer.Properties.Content = {
-          S3Bucket: s3Bucket,
-          S3Key: s3Key,
-        };
-
-        const jsonString = JSON.stringify(cfnMeta, null, '\t');
-        fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
-      });
-  };
-
-  const promises = [];
-  for (let i = 0; i < resources.length; i += 1) {
-    promises.push(packageResource(context, resources[i]));
-  }
-
-  return Promise.all(promises);
-}
-
  function packageLayer(context,resource){
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-  const resourcePathSrc = path.join(resourcePath,'src');
+  //const resourcePathSrc = path.join(resourcePath,'src');
+  const layerObj = context.amplify.readJsonFile(path.join(resourcePath,'layer-parameters.json'));
+  const layerVersionArn = layerObj.parameters.layerVersionsArray[0];
   const zipFilename = 'latest-build.zip';
 
   // package the function
@@ -552,20 +502,22 @@ function packageResourcesLayer(context, resources) {
   // create write stream
   let zip = ziparchiver.create('zip');
   let output = fs.createWriteStream(destination);
+  // get layer version ARN
   return new Promise((resolve, reject) => {
     output.on('close', () => {
-      resolve({ zipFilePath : destination, zipFilename : zipFilename });
+      //check zip size is less than 250MB
+        const zipName = `${resource.resourceName}-${layerVersionArn}-build.zip`;
+        context.amplify.updateAmplifyMetaAfterPackage(resource, zipName);
+        resolve({ zipFilePath : destination, zipFilename : zipName });
     });
     output.on('error', () => {
       reject(new Error('Failed to zip code.'));
     });
 
     zip.pipe(output);
-    let folders = glob.sync(resourcePathSrc + '/*');
+    let folders = glob.sync(resourcePath + '/*');
     folders.forEach(folder =>{
-      if(fs.lstatSync(folder).isDirectory()){
-        // 1) check valid folder structure
-        // 2) create zip
+      if(fs.lstatSync(folder).isDirectory() && path.basename(folder) !== 'dist'){
         zip.directory(folder,path.basename(folder));
       }
     })
