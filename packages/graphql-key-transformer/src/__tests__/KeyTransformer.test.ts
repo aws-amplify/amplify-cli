@@ -112,3 +112,41 @@ test('KeyTransformer should fail if a non-existing type field is defined as key 
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
 });
+
+test('Check sortDirection validation code present in list resolver code for simple keys', () => {
+  const validSchema = `
+    type Blog
+      @model
+      @key(fields: ["id"])
+    {
+      id: ID!
+      title: String!
+      createdAt: AWSDateTime!
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.resolvers['Query.listBlogs.req.vtl']).toMatchSnapshot();
+});
+
+test('Check sortDirection validation code present in list resolver code for compound keys', () => {
+  const validSchema = `
+    type Blog
+      @model
+      @key(fields: ["id", "createdAt"])
+    {
+      id: ID!
+      title: String!
+      createdAt: AWSDateTime!
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.resolvers['Query.listBlogs.req.vtl']).toMatchSnapshot();
+});
