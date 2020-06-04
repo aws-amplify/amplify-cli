@@ -691,7 +691,7 @@ export class AppSyncModelJavaVisitor<
       fields
         .map((field, index) => {
           let fieldDelimiter = '';
-          if ((fields.length - 1) - index !== 0) {
+          if (fields.length - index - 1 !== 0) {
             fieldDelimiter = ' + ", "';
           }
           return '.append(' + field + fieldDelimiter + ')';
