@@ -14,4 +14,9 @@ describe('read schema', () => {
     }
     expect(invalidSchema).toThrowError('Could not parse graphql schema');
   });
+
+  it('Empty schema present in folder', async () => {
+    const graphqlSchemaPath = path.join(__dirname, 'mock-data', 'empty_schema.graphql');
+    expect(readSchema(graphqlSchemaPath)).toBeNull();
+  });
 });

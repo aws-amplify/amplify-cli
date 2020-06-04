@@ -113,8 +113,17 @@ module.exports = {
         const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
 
         if (schemaFileExists) {
+          const typesToBeMerged = [rdsGraphQLSchemaDoc];
           const currGraphQLSchemaDoc = readSchema(graphqlSchemaFilePath);
-          const concatGraphQLSchemaDoc = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
+
+          if (currGraphQLSchemaDoc) {
+            typesToBeMerged.unshift(currGraphQLSchemaDoc);
+          } else {
+            context.print.warning(`Graphql Schema file "${graphqlSchemaFilePath}" is empty.`);
+            context.print.info('');
+          }
+
+          const concatGraphQLSchemaDoc = mergeTypes(typesToBeMerged, { all: true });
           fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
         } else if (schemaDirectoryExists) {
           const rdsSchemaFilePath = path.join(apiDirPath, 'rds.graphql');
@@ -219,6 +228,11 @@ async function getAwsClient(context, action) {
 
 function readSchema(graphqlSchemaFilePath) {
   const graphqlSchemaRaw = fs.readFileSync(graphqlSchemaFilePath).toString();
+  const graphqlSchemaIsEmpty = graphqlSchemaRaw.trim().length === 0;
+  if (graphqlSchemaIsEmpty) {
+    return null;
+  }
+
   let currGraphQLSchemaDoc;
   try {
     currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);

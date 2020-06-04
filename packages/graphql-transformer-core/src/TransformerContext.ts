@@ -114,13 +114,22 @@ export class TransformerContext {
   private transformerVersion: Number;
 
   constructor(inputSDL: string) {
-    const doc: DocumentNode = parse(inputSDL);
-    for (const def of doc.definitions) {
-      if (def.kind === 'OperationDefinition' || def.kind === 'FragmentDefinition') {
-        throw new Error(`Found a ${def.kind}. Transformers accept only documents consisting of TypeSystemDefinitions.`);
+    const isInputSDLEmpty = inputSDL.trim().length === 0;
+    if (isInputSDLEmpty) {
+      this.inputDocument = {
+        kind: Kind.DOCUMENT,
+        definitions: [],
+      };
+    } else {
+      const doc: DocumentNode = parse(inputSDL);
+      for (const def of doc.definitions) {
+        if (def.kind === 'OperationDefinition' || def.kind === 'FragmentDefinition') {
+          throw new Error(`Found a ${def.kind}. Transformers accept only documents consisting of TypeSystemDefinitions.`);
+        }
       }
+      this.inputDocument = doc;
     }
-    this.inputDocument = doc;
+
     this.fillNodeMapWithInput();
   }
 

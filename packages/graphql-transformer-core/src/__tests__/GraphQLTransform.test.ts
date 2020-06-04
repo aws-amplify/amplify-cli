@@ -10,7 +10,7 @@ class ValidObjectTransformer extends Transformer {
       'ValidObjectTransformer',
       gql`
         directive @ObjectDirective on OBJECT
-      `
+      `,
     );
   }
 
@@ -25,10 +25,22 @@ class InvalidObjectTransformer extends Transformer {
       'InvalidObjectTransformer',
       gql`
         directive @ObjectDirective on OBJECT
-      `
+      `,
     );
   }
 }
+
+test('Test graphql transformer supports empty schema', () => {
+  const emptySchema = ``;
+  const transformer = new GraphQLTransform({
+    transformers: [new ValidObjectTransformer()],
+  });
+
+  const out = transformer.transform(emptySchema);
+
+  expect(out?.functions).toEqual({});
+  expect(out?.resolvers).toEqual({});
+});
 
 test('Test graphql transformer validation happy case', () => {
   const validSchema = `type Post @ObjectDirective { id: ID! }`;
@@ -72,7 +84,7 @@ class PingTransformer extends Transformer {
         input PingConfig {
           url: String!
         }
-      `
+      `,
     );
   }
 
