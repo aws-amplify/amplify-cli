@@ -70,7 +70,17 @@ export const generalUtils = {
     if (value instanceof JavaArray || value instanceof JavaString) {
       return value.toJSON().length == 0;
     }
-    return !value;
+
+    switch (typeof value) {
+      case 'string':
+        return !value;
+      case 'number':
+        return isNaN(value);
+      case 'boolean':
+        return false;
+      default:
+        return !!value;
+    }
   },
 
   isNullOrBlank(value) {
