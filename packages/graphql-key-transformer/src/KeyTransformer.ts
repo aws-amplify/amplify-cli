@@ -51,7 +51,6 @@ import {
   Kind,
   InputValueDefinitionNode,
   EnumTypeDefinitionNode,
-  isObjectType,
 } from 'graphql';
 import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
