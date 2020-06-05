@@ -119,6 +119,7 @@ export type FunctionParameters = {
   topLevelComment?: string; // LEGACY Used to write available environment variables at top of template files
   runtimePluginId: string;
   cloudwatchRule?: string;
+  lambdaLayers: LambdaLayer[];
 };
 
 /**
@@ -186,6 +187,18 @@ export interface FunctionDependency {
   resourceName: string; // name of the dependency
   attributes: string[]; // attributes that this function depends on (must be outputs of the dependencies CFN template)
   attributeEnvMap?: { [name: string]: string }; // optional attributes to environment variable names map that will be exposed to the function
+}
+
+export type LambdaLayer = ProjectLayer | ExternalLayer;
+export interface ProjectLayer {
+  type: 'ProjectLayer';
+  resourceName: string;
+  version: number;
+}
+
+export interface ExternalLayer {
+  type: 'ExternalLayer';
+  arn: string;
 }
 
 interface FunctionContributorCondition {

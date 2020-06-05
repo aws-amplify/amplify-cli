@@ -7,12 +7,14 @@ import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 import { ServiceName, functionParametersFileName, parametersFileName } from '../utils/constants';
-import { category as categoryName } from '../../../constants';
+import { category as categoryName, category } from '../../../constants';
 import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformationHelpers';
 import { askExecRolePermissionsQuestions } from './execPermissionsWalkthrough';
 import { scheduleWalkthrough } from './scheduleWalkthrough';
 import { merge } from '../utils/funcParamsUtils';
 import { tryUpdateTopLevelComment } from '../utils/updateTopLevelComment';
+import { addLayersToFunctionWalkthrough } from './addLayerToFunctionWalkthrough';
+import { convertLambdaLayerMetaToLayerCFNArray } from '../utils/layerArnConverter';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -43,6 +45,9 @@ export async function createWalkthrough(
 
   // ask scheduling Lambda questions and merge in results
   templateParameters = merge(templateParameters, await scheduleWalkthrough(context, templateParameters));
+
+  // ask lambda layer questions and merge in results
+  templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
   return templateParameters;
 }
 /**
@@ -152,6 +157,23 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     resourceName: functionParameters.resourceName,
   };
   merge(functionParameters, await scheduleWalkthrough(context, scheduleParameters));
+
+  const functionRuntime = context.amplify.readBreadcrumbs(context, category, functionParameters.resourceName).functionRuntime as string;
+  const currentFunctionParameters =
+    context.amplify.readJsonFile(path.join(resourceDirPath, functionParametersFileName), undefined, false) || {};
+  merge(
+    functionParameters,
+    await addLayersToFunctionWalkthrough(context, { value: functionRuntime }, currentFunctionParameters.lambdaLayers),
+  );
+
+  // writing to the CFN here because it's done above for the schedule and the permissions but we should really pull all of it into another function
+  const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
+  const cfnFilePath = path.join(resourceDirPath, cfnFileName);
+  const cfnContent = context.amplify.readJsonFile(cfnFilePath);
+
+  cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(functionParameters.lambdaLayers);
+  context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
+
   return functionParameters;
 }
 

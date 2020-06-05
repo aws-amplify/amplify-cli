@@ -3987,16 +3987,6 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-frontend-javascript@2.13.2:
-  version "2.13.2"
-  resolved "https://registry.npmjs.org/amplify-frontend-javascript/-/amplify-frontend-javascript-2.13.2.tgz#c97c6e1e792b08a84a9ab6be5333c54379f2eeaf"
-  integrity sha512-VbvqN6gVTPXKWKLGuCCitCy6QF3i8dPsUDvKwIouJvxjk/RnBqaHbQCv25RBza+l29y2cV7w5HuF7KwLOHa+Zg==
-  dependencies:
-    chalk "^3.0.0"
-    fs-extra "^8.1.0"
-    graphql-config "^2.2.1"
-    inquirer "^7.0.3"
-
 ansi-align@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/ansi-align/-/ansi-align-3.0.0.tgz#b536b371cf687caaef236c18d3e21fe3797467cb"
@@ -7982,7 +7972,7 @@ enhanced-resolve@^4.1.0:
     memory-fs "^0.5.0"
     tapable "^1.0.0"
 
-enquirer@^2.3.4:
+enquirer@^2.3.4, enquirer@^2.3.5:
   version "2.3.5"
   resolved "https://registry.npmjs.org/enquirer/-/enquirer-2.3.5.tgz#3ab2b838df0a9d8ab9e7dff235b0e8712ef92381"
   integrity sha512-BNT1C08P9XD0vNg3J475yIUG+mVdp9T6towYFHUv897X0KoHBjB1shyrNmhmtHWKP17iSWgo7Gqh7BBuzLZMSA==

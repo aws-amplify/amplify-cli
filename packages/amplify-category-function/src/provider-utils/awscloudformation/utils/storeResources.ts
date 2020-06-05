@@ -5,6 +5,7 @@ import { provider, ServiceName } from './constants';
 import { category as categoryName } from '../../../constants';
 import generateLayerCfnObj from './lambda-layer-cloudformation-template';
 import _ from 'lodash';
+import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
@@ -59,7 +60,13 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
     template: parameters.cloudResourceTemplatePath,
     target: path.join(destDir, categoryName, parameters.resourceName, `${parameters.resourceName}-cloudformation-template.json`),
   };
-  context.amplify.copyBatch(context, [cloudTemplateJob], parameters, false);
+
+  const copyJobParams: any = parameters;
+  if ('lambdaLayers' in parameters) {
+    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(parameters.lambdaLayers);
+    copyJobParams.lambdaLayersCFNArray = layerCFNValues;
+  }
+  context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, false);
 }
 
 export function createLayerFolders(context, parameters) {
@@ -91,7 +98,7 @@ export function createLayerCfnFile(context, parameters, layerDirPath) {
 
 export function saveMutableState(
   context,
-  parameters: Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName'>> | FunctionTriggerParameters,
+  parameters: Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers'>> | FunctionTriggerParameters,
 ) {
   createParametersFile(context, buildParametersFileObj(parameters), parameters.resourceName);
 }
@@ -125,11 +132,13 @@ function createParametersFile(context, parameters, resourceName, parametersFileN
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 }
 
-function buildParametersFileObj(parameters: Pick<FunctionParameters, 'mutableParametersState'> | FunctionTriggerParameters): any {
+function buildParametersFileObj(
+  parameters: Partial<Pick<FunctionParameters, 'mutableParametersState' | 'lambdaLayers'>> | FunctionTriggerParameters,
+): any {
   if ('trigger' in parameters) {
     return _.omit(parameters, ['functionTemplate', 'cloudResourceTemplatePath']);
   }
-  return parameters.mutableParametersState;
+  return _.pick(parameters, ['mutableParametersState', 'lambdaLayers']);
 }
 
 function translateFuncParamsToResourceOpts(params: FunctionParameters | FunctionTriggerParameters): any {

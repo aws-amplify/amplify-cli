@@ -27,6 +27,7 @@
     "graphql-transformer-core": "6.18.1",
     "inquirer": "^7.0.3",
     "inquirer-datepicker": "^1.1.0",
+    "enquirer": "^2.3.5",
     "jstreemap": "^1.28.2",
     "lodash": "^4.17.15",
     "mime-types": "^2.1.26",
