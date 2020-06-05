@@ -28,6 +28,7 @@ export const nodeJSTemplateChoices = [
   'Hello World',
   'Lambda trigger',
   'Serverless ExpressJS function (Integration with API Gateway)',
+  'Stripe Checkout session creation handler',
   'Stripe webhook event handler',
 ];
 

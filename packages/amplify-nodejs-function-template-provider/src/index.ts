@@ -4,6 +4,7 @@ import { provideHelloWorld } from './providers/helloWorldProvider';
 import { provideCrud } from './providers/crudProvider';
 import { provideServerless } from './providers/serverlessProvider';
 import { provideTrigger } from './providers/triggerProvider';
+import { provideStripeCheckoutSession } from './providers/stripeCheckoutSessionProvider';
 import { provideStripeWebhook } from './providers/stripeWebhookProvider';
 
 export const functionTemplateContributorFactory: FunctionTemplateContributorFactory = context => {
@@ -21,6 +22,9 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
         }
         case 'trigger': {
           return provideTrigger(context);
+        }
+        case 'stripe-checkout-session': {
+          return provideStripeCheckoutSession();
         }
         case 'stripe-webhook': {
           return provideStripeWebhook();

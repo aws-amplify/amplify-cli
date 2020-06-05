@@ -27,6 +27,10 @@
         "value": "trigger"
       },
       {
+        "name": "Stripe Checkout session creation handler",
+        "value": "stripe-checkout-session"
+      },
+      {
         "name": "Stripe webhook event handler",
         "value": "stripe-webhook"
       }
