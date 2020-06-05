@@ -1,5 +1,6 @@
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { pascalCase } from 'change-case';
+import { plural } from 'pluralize';
 export interface KeyDirectiveArguments {
   name?: string;
   fields: string[];
@@ -10,7 +11,7 @@ export interface KeyDirectiveArguments {
 export function getKeyDirectiveQueryFieldName(definition: ObjectTypeDefinitionNode, directiveArgs: KeyDirectiveArguments): string {
   if (!directiveArgs.name) throw new Error("KeyDirective without name can't have queryField");
   if (directiveArgs.queryField) return directiveArgs.queryField;
-  return `query${definition.name.value}${pascalCase(directiveArgs.name)}`;
+  return `query${plural(definition.name.value)}${pascalCase(directiveArgs.name)}`;
 }
 
 export function shouldKeyDirectiveGenerateQuery(directiveArgs: KeyDirectiveArguments): boolean {

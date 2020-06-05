@@ -12,7 +12,7 @@ describe('KeyTransformer Utils', () => {
         kind: 'ObjectTypeDefinition',
         name: { kind: 'Name', value: 'Book' },
       };
-      expect(getKeyDirectiveQueryFieldName(obj, arg)).toEqual('queryBookByAuthor');
+      expect(getKeyDirectiveQueryFieldName(obj, arg)).toEqual('queryBooksByAuthor');
     });
 
     it('should throw error when primary index is used to generate queryField name', () => {

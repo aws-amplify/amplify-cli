@@ -138,7 +138,7 @@ test('KeyTransformer should generate queryFeild automatically', () => {
   const schema = buildSchema([print(EXTRA_DIRECTIVES_DOCUMENT), print(EXTRA_SCALARS_DOCUMENT), out.schema].join('\n'));
   const queryType = schema.getQueryType();
   const queryFields = queryType.getFields();
-  const queryItemByStatus = queryFields['queryItemByStatus'];
+  const queryItemByStatus = queryFields['queryItemsByStatus'];
   expect(queryItemByStatus).toBeDefined();
   const status = queryItemByStatus.args.find(arg => arg.name === 'status');
   expect(isNullableType(status)).not.toBeTruthy();
@@ -196,6 +196,6 @@ test('KeyTransformer should not generate queryFeild automatically when generateQ
   const schema = buildSchema([print(EXTRA_DIRECTIVES_DOCUMENT), print(EXTRA_SCALARS_DOCUMENT), out.schema].join('\n'));
   const queryType = schema.getQueryType();
   const queryFields = queryType.getFields();
-  const queryItemByStatus = queryFields['queryItemByStatus'];
+  const queryItemByStatus = queryFields['queryItemsByStatus'];
   expect(queryItemByStatus).not.toBeDefined();
 });
