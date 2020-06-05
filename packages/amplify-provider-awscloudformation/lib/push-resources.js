@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
+const glob = require('glob');
 const ora = require('ora');
 const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
@@ -199,9 +200,9 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
     const { category, resourceName } = resourcesToBeUpdated[i];
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const files = fs.readdirSync(resourceDir);
-    // Fetch all the Cloudformation templates for the resource (can be json or yml)
-    const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && file.indexOf('.') !== 0);
+    const cfnFiles = glob.sync('*template*.+(yaml|yml|json)', {
+      cwd: resourceDir,
+    });
     for (let j = 0; j < cfnFiles.length; j += 1) {
       const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
       try {
@@ -238,9 +239,9 @@ function packageResources(context, resources) {
         const backEndDir = context.amplify.pathManager.getBackendDirPath();
         const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
 
-        const files = fs.readdirSync(resourceDir);
-        // Fetch all the Cloudformation templates for the resource (can be json or yml)
-        const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
+        const cfnFiles = glob.sync('*template*.+(yaml|yml|json)', {
+          cwd: resourceDir,
+        });
 
         if (cfnFiles.length !== 1) {
           context.print.error('Only one CloudFormation template is allowed in the resource directory');
@@ -332,8 +333,9 @@ function getCfnFiles(context, category, resourceName) {
    * Otherwise falls back to the default behavior.
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
-    const files = fs.readdirSync(resourceBuildDir);
-    const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
+    const cfnFiles = glob.sync('*template*.+(yaml|yml|json)', {
+      cwd: resourceBuildDir,
+    });
 
     if (cfnFiles.length > 0) {
       return {
@@ -342,8 +344,9 @@ function getCfnFiles(context, category, resourceName) {
       };
     }
   }
-  const files = fs.readdirSync(resourceDir);
-  const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
+  const cfnFiles = glob.sync('*template*.+(yaml|yml|json)', {
+    cwd: resourceDir,
+  });
   return {
     resourceDir,
     cfnFiles,
