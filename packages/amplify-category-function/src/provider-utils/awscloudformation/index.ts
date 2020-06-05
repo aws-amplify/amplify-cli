@@ -10,7 +10,6 @@ import {
   saveMutableState,
   saveCFNParameters,
   createParametersFile,
-  copyFunctionResources,
   updateLayerCfnFile,
   createLayerParametersFile
 } from './utils/storeResources';
@@ -208,7 +207,7 @@ export async function updateLayerResource(
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
   }
-  await serviceConfig.walkthroughs.updateWalkthrough(context, parameters as LayerParameters);
+  await serviceConfig.walkthroughs.updateWalkthrough(context, parameters);
 
   // generate layer parameters file and CFn file for the updated layer
   const layerDirPath = createLayerFolders(context, parameters); // update based
@@ -253,7 +252,7 @@ export async function updateFunctionResource(context, category, service, paramet
     }
     saveMutableState(context, parameters);
   } else {
-    parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, resourceToUpdate);
+    parameters = await serviceConfig.walkthroughs.updateWalkthrough(context,parameters,resourceToUpdate);
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }
