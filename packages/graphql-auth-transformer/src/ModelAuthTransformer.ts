@@ -550,6 +550,9 @@ Static group authorization should perform as expected.`,
         this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
         this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
       }
+
+      // Recursively process the nested types if there is any
+      this.propagateAuthDirectivesToNestedTypes(<ObjectTypeDefinitionNode>nonModelFieldType, rules, ctx);
     }
   }
 
