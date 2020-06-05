@@ -1,5 +1,5 @@
 import { Transformer, gql, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
-import { pascalCase } from 'change-case';
+
 import {
   obj,
   str,
@@ -40,6 +40,9 @@ import {
   graphqlName,
   toUpper,
   getDirectiveArgument,
+  KeyDirectiveArguments as KeyArguments,
+  shouldKeyDirectiveGenerateQuery as shouldGenerateQuery,
+  getKeyDirectiveQueryFieldName as getQueryFieldName,
 } from 'graphql-transformer-common';
 import { makeModelConnectionType } from 'graphql-dynamodb-transformer';
 import {
@@ -54,13 +57,6 @@ import {
 } from 'graphql';
 import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
-
-interface KeyArguments {
-  name?: string;
-  fields: string[];
-  queryField?: string;
-  generateQuery?: boolean;
-}
 
 export class KeyTransformer extends Transformer {
   constructor() {
@@ -186,7 +182,7 @@ export class KeyTransformer extends Transformer {
           deleteResolver.Properties.RequestMappingTemplate,
         ]);
       }
-      if (shouldGenerateQuery(definition, directiveArgs, ctx)) {
+      if (shouldGenerateQuery(directiveArgs)) {
         const queryFieldName = getQueryFieldName(definition, directiveArgs);
         const queryTypeName = ctx.getQueryTypeName();
         const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryFieldName);
@@ -310,7 +306,7 @@ export class KeyTransformer extends Transformer {
   // If this is a secondary key and a queryField has been provided, create the query field.
   private ensureQueryField = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const args: KeyArguments = getDirectiveArguments(directive);
-    if (shouldGenerateQuery(definition, args, ctx) && !this.isPrimaryKey(directive)) {
+    if (shouldGenerateQuery(args) && !this.isPrimaryKey(directive)) {
       const queryFieldName = getQueryFieldName(definition, args);
       let queryType = ctx.getQuery();
       let queryArguments = [];
@@ -902,37 +898,4 @@ function addCompositeSortKey(
 }
 function joinSnippets(lines: string[]): string {
   return lines.join('\n');
-}
-
-function getQueryFieldName(definition: ObjectTypeDefinitionNode, directiveArgs: KeyArguments): string {
-  if (directiveArgs.queryField) return directiveArgs.queryField;
-  return `query${definition.name.value}${pascalCase(directiveArgs.name)}`;
-}
-
-function shouldGenerateQuery(definition: ObjectTypeDefinitionNode, directiveArgs: KeyArguments, ctx: TransformerContext): boolean {
-  // 1. When generateQuery is explictly set honor that
-  if (typeof directiveArgs.generateQuery !== 'undefined') return directiveArgs.generateQuery;
-  // 2. When queryField is set generate query
-  if (directiveArgs.queryField) return true;
-
-  // Todo: Decide in API Review meeting how do we handle the case when query is set to null
-  // 3. when neither generateQuery is not set nor queryField is set, generate query if and only if they key is not used in
-  // any connection
-  const objTypes = ctx.inputDocument.definitions.filter(def => def.kind === 'ObjectTypeDefinition');
-  const isUsedByConnection = objTypes.some((def: ObjectTypeDefinitionNode) => {
-    return def.fields.some(field => isUsingKey(directiveArgs.name!, field, definition));
-  });
-  return !isUsedByConnection;
-}
-
-function isUsingKey(keyName: string, field: FieldDefinitionNode, objectType: ObjectTypeDefinitionNode): boolean {
-  const baseType = getBaseType(field.type);
-  if (baseType === objectType.name.value) {
-    const connectionDirective = field.directives.find(d => d.name.value === 'connection');
-    if (connectionDirective) {
-      const connectionArgs = getDirectiveArguments(connectionDirective);
-      if (connectionArgs?.keyName === keyName) return true;
-    }
-  }
-  return false;
 }
