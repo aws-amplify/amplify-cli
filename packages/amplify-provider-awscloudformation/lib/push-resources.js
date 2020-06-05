@@ -21,6 +21,8 @@ const amplifyServiceManager = require('./amplify-service-manager');
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 const optionalBuildDirectoryName = 'build';
+const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
+const parametersJson = 'parameters.json';
 
 async function run(context, resourceDefinition) {
   try {
@@ -200,8 +202,9 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
     const { category, resourceName } = resourcesToBeUpdated[i];
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const cfnFiles = glob.sync('*template*.+(yaml|yml|json)', {
+    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
+      ignore: [parametersJson],
     });
     for (let j = 0; j < cfnFiles.length; j += 1) {
       const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
@@ -239,8 +242,9 @@ function packageResources(context, resources) {
         const backEndDir = context.amplify.pathManager.getBackendDirPath();
         const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
 
-        const cfnFiles = glob.sync('*template*.+(yaml|yml|json)', {
+        const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
           cwd: resourceDir,
+          ignore: [parametersJson],
         });
 
         if (cfnFiles.length !== 1) {
@@ -333,8 +337,9 @@ function getCfnFiles(context, category, resourceName) {
    * Otherwise falls back to the default behavior.
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
-    const cfnFiles = glob.sync('*template*.+(yaml|yml|json)', {
+    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
+      ignore: [parametersJson],
     });
 
     if (cfnFiles.length > 0) {
@@ -344,8 +349,9 @@ function getCfnFiles(context, category, resourceName) {
       };
     }
   }
-  const cfnFiles = glob.sync('*template*.+(yaml|yml|json)', {
+  const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
+    ignore: [parametersJson],
   });
   return {
     resourceDir,
