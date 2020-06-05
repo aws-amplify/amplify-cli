@@ -489,18 +489,14 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
   const zipFilename = 'latest-build.zip';
 
-  // package the function
+
   const distDir = path.join(resourcePath, 'dist');
   if (!fs.existsSync(distDir)) {
     fs.mkdirSync(distDir);
   }
   const destination = path.join(distDir,zipFilename );
-  // verify the folder structure
-
-  // create write stream
-  let zip = ziparchiver.create('zip');
-  let output = fs.createWriteStream(destination);
-  // get layer version ARN
+  const zip = ziparchiver.create('zip');
+  const output = fs.createWriteStream(destination);
   return new Promise((resolve, reject) => {
     output.on('close', () => {//check zip size is less than 250MB
       if(validFilesize(destination)){

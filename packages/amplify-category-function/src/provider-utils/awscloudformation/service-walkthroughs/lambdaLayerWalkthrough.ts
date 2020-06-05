@@ -25,8 +25,9 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
         break;
     }
   }
+  _.assign(parameters,{layerVersion : "1"});
   // add layer version to parameters
-  _.assign(parameters, {layerVersionsMap: createVersionsMap(parameters,1)});
+  _.assign(parameters, {layerVersionsMap: createVersionsMap(parameters,"1")});
   return parameters;
 }
 
@@ -77,19 +78,16 @@ export async function updateLayerWalkthrough(
   }
 
   // get the latest version from #currentcloudbackend
-  let latestVersionPushed = getLastestVersionPushed(context,templateParameters.layerName);
+  let latestVersionPushed =  getLastestVersionPushed(context,templateParameters.layerName);
   let latestVersion = layerData.listVersions().reduce((a,b)=>{
     return Math.max(a,b);
-  })
+  });
 
-  if(islayerVersionChanged && latestVersion === latestVersionPushed){
-      latestVersion +=1;
-  }
-  _.assign(templateParameters,{layerVersion : String(latestVersion)});
   let layerPermissions = layerData.getVersion(latestVersion).permissions.map(permission => permission.type);
-  _.assign(templateParameters,{layerPermissions : layerPermissions});
 
+  // if no permission is selected , second last  version permission will be copied to latest
   if (await context.amplify.confirmPrompt.run('Do you want to adjust who can access the current & new layer version?', true)) {
+    _.assign(templateParameters,{layerPermissions : layerPermissions}); // assign permissions if layer is updated
     _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion(templateParameters.layerPermissions)));
 
     for (let permissions of templateParameters.layerPermissions) {
@@ -102,20 +100,25 @@ export async function updateLayerWalkthrough(
           break;
       }
     }
-      // if verson chnage then provide max version else given version
     if(!islayerVersionChanged){
       let versions = layerData.listVersions();
       const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
-      updateVersionMap(templateParameters,Object.values(versionAnswer.layerVersion)[0]);
-    }
-    else{
-      updateVersionMap(templateParameters,latestVersion);
+      updateVersionMap(templateParameters,String(versionAnswer.layerVersion),String(latestVersionPushed));
     }
   }
+
+  // if verson chnage then provide max version else given version
+  if(islayerVersionChanged){
+    if(latestVersion === latestVersionPushed){
+      latestVersion += 1;
+    }
+    updateVersionMap(templateParameters,String(latestVersion),String(latestVersionPushed));
+  }
+  _.assign(templateParameters,{layerVersion : String(latestVersion)});
   return templateParameters;
 }
 
-function getLastestVersionPushed(context,layerName : string){
+ function getLastestVersionPushed(context,layerName : string){
   const projectBackendDirPath = context.amplify.pathManager.getCurrentCloudBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
   if(!fs.existsSync(resourceDirPath)){
@@ -123,8 +126,9 @@ function getLastestVersionPushed(context,layerName : string){
   }
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
   let prevParameters =  context.amplify.readJsonFile(parametersFilePath);
-  const prevlayerData = layerMetadataFactory(_.pick(prevParameters,['runtimes','layerVersions']));
-  return prevlayerData.listVersions().reduce((a,b) =>{
-    return Math.max(a , b)
-  })
+  const prevlayerData = layerMetadataFactory(prevParameters.parameters);
+  let latestVersionPushed = prevlayerData.listVersions().reduce((a,b)=>{
+    return Math.max(a,b);
+  });
+  return latestVersionPushed;
 }

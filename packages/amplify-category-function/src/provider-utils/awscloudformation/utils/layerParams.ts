@@ -13,7 +13,7 @@ export type LayerParameters = {
 };
 
 export enum Permissions {
-  private = 'private',// remove
+  private = 'private',
   public = 'public',
   awsAccounts = 'awsAccounts',
   awsOrg = 'awsOrg',
@@ -65,14 +65,14 @@ export interface OrgsLayer {
 
   }
 
-  getVersion(version : number) : LayerVersionMetadata{
+   getVersion(version : number) : LayerVersionMetadata{
     const obj : LayerVersionMetadata = {
       permissions : this.versionsMap.get(version),
     };
     return obj;
   }
 
-  listVersions() {
+   listVersions() : number[] {
     return Array.from(this.versionsMap.keys());
   }
 

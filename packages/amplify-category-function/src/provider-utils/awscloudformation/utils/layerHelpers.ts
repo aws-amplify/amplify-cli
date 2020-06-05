@@ -120,7 +120,7 @@ export function layerOrgAccessQuestion() {
     }];
 }
 
-export function createVersionsMap(parameters : Partial<LayerParameters>,version : number){
+export function createVersionsMap(parameters : Partial<LayerParameters>,version : string){
   let versionMap : Object = {};
   let permissionObj: Array<LayerPermission>= [];
   parameters.layerPermissions.forEach(permission=>{
@@ -149,56 +149,66 @@ export function createVersionsMap(parameters : Partial<LayerParameters>,version 
       }
       permissionObj.push(obj);
   });
-  versionMap[String(version)] = permissionObj;
+  versionMap[version] = permissionObj;
   return versionMap;
 }
 
-export function updateVersionMap(parameters : Partial<LayerParameters>, version : number){
-  if(!parameters.layerVersionsMap.hasOwnProperty(version)){
-    _.assign(parameters, {layerVersionsMap: createVersionsMap(parameters,version)});
+export function updateVersionMap(parameters : Partial<LayerParameters>, version : string, latestVersionPushed : string){
+  if(!parameters.layerVersionsMap.hasOwnProperty(version)){ // version updated -> Add new set of permissions
+    if(parameters.layerPermissions === undefined){ // case when no permissions is selected after push
+      parameters.layerVersionsMap[version] = parameters.layerVersionsMap[latestVersionPushed];
+    }
+    else{ // both runtime and permissions after push
+      parameters.layerVersionsMap[version] = parameters.layerVersionsMap[latestVersionPushed];
+      updateExistingPermissions(parameters,version);
+    }
   }
   else{
+    // use filter to remove permissions
+    updateExistingPermissions(parameters,version);
+  }
+}
 
-    parameters.layerPermissions.forEach(permission =>{
-      let isPermissionExists = false;
-      parameters.layerVersionsMap[String(version)].some(val => {
-        if(val.type === permission){ // permission exists
-          if(val.type === Permissions.awsAccounts){
-            val.accounts = [...val.accounts , ...parameters.authorizedAccountIds.split(',')]
-          }
-          if(val.type === Permissions.awsOrg){
-            val.orgs = [...val.orgs , ...parameters.authorizedOrgId.split(',')]
-          }
-          isPermissionExists = true;
-          return true;
+function updateExistingPermissions(parameters : Partial<LayerParameters> , version : string){
+  parameters.layerPermissions.forEach(permission =>{ // version same  -> changing permissions on same version
+    let isPermissionExists = false;
+    parameters.layerVersionsMap[version].some(val => {
+      if(val.type === permission){ // permission exists
+        if(val.type === Permissions.awsAccounts){
+          val.accounts = [...val.accounts , ...parameters.authorizedAccountIds.split(',')]
         }
-      });
-      if(!isPermissionExists){
-        let obj : LayerPermission
-        if(permission === Permissions.public){
-          obj = {
-            type : Permissions.public,
-          }
+        if(val.type === Permissions.awsOrg){
+          val.orgs = [...val.orgs , ...parameters.authorizedOrgId.split(',')]
         }
-        else if(permission === Permissions.awsOrg){
-          obj = {
-            type : Permissions.awsOrg,
-            orgs : parameters.authorizedOrgId.split(',')
-          }
-        }
-        else if(permission === Permissions.awsAccounts){
-          obj = {
-            type : Permissions.awsAccounts,
-            accounts : parameters.authorizedAccountIds.split(',')
-          }
-        }
-        else{
-          obj = {
-            type : Permissions.private,
-          }
-        }
-        parameters.layerVersionsMap[String(version)].push(obj);
+        isPermissionExists = true;
+        return true;
       }
     });
-  }
+    if(!isPermissionExists){
+      let obj : LayerPermission
+      if(permission === Permissions.public){
+        obj = {
+          type : Permissions.public,
+        }
+      }
+      else if(permission === Permissions.awsOrg){
+        obj = {
+          type : Permissions.awsOrg,
+          orgs : parameters.authorizedOrgId.split(',')
+        }
+      }
+      else if(permission === Permissions.awsAccounts){
+        obj = {
+          type : Permissions.awsAccounts,
+          accounts : parameters.authorizedAccountIds.split(',')
+        }
+      }
+      else{
+        obj = {
+          type : Permissions.private,
+        }
+      }
+      parameters.layerVersionsMap[version].push(obj);
+    }
+  });
 }

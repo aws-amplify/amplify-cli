@@ -173,8 +173,7 @@ async function getSelectionsFromContributors<T>(
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
-        default:
-          defaultSelection(selectionOptions,selections),
+        default: defaultSelection(selectionOptions,selections),
       },
     ]);
     selection = answer.selection;
@@ -236,7 +235,7 @@ function isLayerParameter(params: Partial<LayerParameters> | Partial<FunctionPar
 function defaultSelection(selectionOptions : PluginSelectionOptions<FunctionRuntimeCondition>,selections){
   if(selectionOptions.service === ServiceName.LambdaFunction){
     if(selectionOptions.listOptionsField === 'runtimes'){
-      return 'node.js'
+      return 'nodejs'
     }else{
       return undefined;
     }

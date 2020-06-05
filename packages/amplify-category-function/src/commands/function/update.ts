@@ -4,8 +4,6 @@ import { category as categoryName } from '../../constants';
 
 const subcommand = 'update';
 
-let options;
-
 module.exports = {
   name: subcommand,
   alias: ['configure'],
