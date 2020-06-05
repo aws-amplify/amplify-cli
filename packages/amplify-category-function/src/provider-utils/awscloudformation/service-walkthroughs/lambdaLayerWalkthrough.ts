@@ -1,11 +1,11 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import uuid from 'uuid';
 import path from 'path';
-import { LayerParameters, Permissions } from '../utils/layerParams';
+import { LayerParameters, Permissions, layerMetadataFactory} from '../utils/layerParams';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
+import { layerNameQuestion, layerPermissionsQuestion, layerAccountAccessQuestion, layerOrgAccessQuestion, createVersionsMap, layerVersionQuestion, updateVersionMap} from '../utils/layerHelpers';
 import { ServiceName, categoryName, layerParametersFileName } from '../utils/constants';
-import {Lambda} from 'aws-sdk';
+import * as fs from 'fs-extra';
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
@@ -26,7 +26,7 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
     }
   }
   // add layer version to parameters
-  _.assign(parameters, {layerVersionsArray : [1]});
+  _.assign(parameters, {layerVersionsMap: createVersionsMap(parameters,1)});
   return parameters;
 }
 
@@ -64,6 +64,9 @@ export async function updateLayerWalkthrough(
   }
 
   _.assign(templateParameters, currentParameters.parameters);
+  // get the LayerObj
+
+  const layerData = layerMetadataFactory(_.pick(templateParameters,['runtimes','layerVersionsMap']));
   // runtime question
   let islayerVersionChanged: boolean = true;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
@@ -72,6 +75,20 @@ export async function updateLayerWalkthrough(
   } else {
     islayerVersionChanged = false;
   }
+
+  // get the latest version from #currentcloudbackend
+  let latestVersionPushed = getLastestVersionPushed(context,templateParameters.layerName);
+  let latestVersion = layerData.listVersions().reduce((a,b)=>{
+    return Math.max(a,b);
+  })
+
+  if(islayerVersionChanged && latestVersion === latestVersionPushed){
+      latestVersion +=1;
+  }
+  _.assign(templateParameters,{layerVersion : String(latestVersion)});
+  let layerPermissions = layerData.getVersion(latestVersion).permissions.map(permission => permission.type);
+  _.assign(templateParameters,{layerPermissions : layerPermissions});
+
   if (await context.amplify.confirmPrompt.run('Do you want to adjust who can access the current & new layer version?', true)) {
     _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion(templateParameters.layerPermissions)));
 
@@ -85,131 +102,29 @@ export async function updateLayerWalkthrough(
           break;
       }
     }
-  }
-
-  if(!islayerVersionChanged){
-    let versions = (templateParameters.layerVersionsArray);
-    const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
-    _.assign(templateParameters,{layerVersion : versionAnswer.layerVersion})
-  }
-  else{
-    let prevVersion = templateParameters.layerVersionsArray[0];
-    templateParameters.layerVersionsArray.unshift(prevVersion + 1);
-    if(templateParameters.layerVersion !== undefined){
-      delete templateParameters.layerVersion;
+      // if verson chnage then provide max version else given version
+    if(!islayerVersionChanged){
+      let versions = layerData.listVersions();
+      const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
+      updateVersionMap(templateParameters,Object.values(versionAnswer.layerVersion)[0]);
+    }
+    else{
+      updateVersionMap(templateParameters,latestVersion);
     }
   }
   return templateParameters;
 }
 
-function layerVersionQuestion(choices){
-  return [
-    {
-      type: 'list',
-      name: 'layerVersion',
-      message: 'Select the version number to update for given Lambda Layer: ',
-      choices: choices
-    }
-  ];
-}
-
-function layerNameQuestion(context: any) {
-  return [
-    {
-      type: 'input',
-      name: 'layerName',
-      message: 'Provide a name for your Lambda layer:',
-      validate: input => {
-        input = input.trim();
-        const meta = context.amplify.getProjectMeta();
-        if (!/^[a-zA-Z0-9_\-]{1,140}$/.test(input)) {
-          return 'Lambda Layer names are 1-140 characters long and can only contain letters, numbers, -, _';
-        } else if (meta.function && meta.function.hasOwnProperty(input)) {
-          return `A Lambda Layer with the name ${input} already exists in this project.`;
-        }
-        return true;
-      },
-      default: () => {
-        const appName = context.amplify
-          .getProjectDetails()
-          .projectConfig.projectName.toLowerCase()
-          .replace(/[^a-zA-Z0-9]/gi, '');
-        const [shortId] = uuid().split('-');
-        return `${appName}${shortId}`;
-      },
-    },
-  ];
-}
-
-function layerPermissionsQuestion(params: Permissions[]) {
-  return [
-    {
-      type: 'checkbox',
-      name: 'layerPermissions',
-      message: 'Who should have permission to use this layer?',
-      choices: [
-        {
-          name: 'Only the current AWS account',
-          value: Permissions.private,
-          checked: _.includes(params, Permissions.private),
-        },
-        {
-          name: 'Specific AWS accounts',
-          value: Permissions.awsAccounts,
-          checked: _.includes(params, Permissions.awsAccounts),
-        },
-        {
-          name: 'Specific AWS organization',
-          value: Permissions.awsOrg,
-          checked: _.includes(params, Permissions.awsOrg),
-        },
-        {
-          name: 'Public (everyone on AWS can use this layer)',
-          value: Permissions.public,
-          checked: _.includes(params, Permissions.public),
-        },
-      ],
-    },
-  ];
-}
-
-function layerAccountAccessQuestion() {
-  return [
-    {
-      type: 'input',
-      name: 'authorizedAccountIds',
-      message: 'Provide a list of comma-separated AWS account IDs:',
-      validate: input => {
-        const accounts = input.split(',');
-        const set = new Set();
-        for (let accountID of accounts) {
-          accountID = accountID.trim();
-          if (!/^[0-9]{12}$/.test(accountID)) {
-            return `AWS account IDs must be 12 digits long. ${accountID} did not match the criteria.`;
-          }
-          if (set.has(accountID)) {
-            return `Duplicate ID detected: ${accountID}`;
-          }
-          set.add(accountID);
-        }
-        return true;
-      },
-    },
-  ];
-}
-
-function layerOrgAccessQuestion() {
-  return [
-    {
-      type: 'input',
-      name: 'authorizedOrgId',
-      message: 'Provide an AWS organization ID:',
-      validate: input => {
-        if (/^o-[a-zA-Z0-9]{10,32}$/.test(input)) {
-          return true;
-        }
-        return 'The organization ID starts with "o-" followed by a 10-32 character-long alphanumeric string.';
-      },
-    },
-  ];
+function getLastestVersionPushed(context,layerName : string){
+  const projectBackendDirPath = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+  const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
+  if(!fs.existsSync(resourceDirPath)){
+    return 0;
+  }
+  const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
+  let prevParameters =  context.amplify.readJsonFile(parametersFilePath);
+  const prevlayerData = layerMetadataFactory(_.pick(prevParameters,['runtimes','layerVersions']));
+  return prevlayerData.listVersions().reduce((a,b) =>{
+    return Math.max(a , b)
+  })
 }

@@ -487,8 +487,6 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
 
  function packageLayer(context,resource){
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-  const layerObj = context.amplify.readJsonFile(path.join(resourcePath,'layer-parameters.json'));
-  const layerVersionArn = layerObj.parameters.layerVersionsArray[0];
   const zipFilename = 'latest-build.zip';
 
   // package the function
@@ -506,7 +504,7 @@ function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
   return new Promise((resolve, reject) => {
     output.on('close', () => {//check zip size is less than 250MB
       if(validFilesize(destination)){
-        const zipName = `${resource.resourceName}-${layerVersionArn}-build.zip`;
+        const zipName = `${resource.resourceName}-build.zip`;
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipName);
         resolve({ zipFilePath : destination, zipFilename : zipName });
       }

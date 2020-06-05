@@ -1,7 +1,8 @@
 import { Fn, DeletionPolicy } from 'cloudform';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
-import { Permissions } from './layerParams';
+import { Permissions} from './layerParams';
+
 
 export default function generateLayerCfnObj(parameters) {
 
@@ -62,36 +63,36 @@ export default function generateLayerCfnObj(parameters) {
 
   cfnObj.Resources["LambdaLayer"] = layer;
 
-  parameters.layerPermissions.forEach(permissions => {
-   if (permissions === Permissions.awsAccounts) {
-      assignLayerPermissionsAccounts(cfnObj,parameters,permissions);
-    }else{
-      assignLayerPermissions(cfnObj,parameters,permissions)
-    }
-
-  });
+  // parameters.laatestLayerVersion is defined
+  Object.entries(parameters.layerVersionsMap).forEach(([key , value]) => {
+    parameters.layerVersionsMap[key].forEach(permissions => {
+      if (permissions.type === Permissions.awsAccounts) {
+         assignLayerPermissionsAccounts(cfnObj,parameters,permissions.type,key);
+       }
+       else if (permissions.type === Permissions.awsOrg){
+         assignLayerPermissionsOrgs(cfnObj,parameters,permissions.type,key);
+       }
+       else{
+         assignLayerPermissions(cfnObj,parameters,permissions.type,key)
+       }
+     });
+  })
   return cfnObj;
 }
 
-function assignLayerPermissions(cfnObj,parameters,permissions){
+function assignLayerPermissions(cfnObj,parameters,permissions,version){
     // assign permissions
     const layerVersionPermissionInput = {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: parameters.layerVersion !== undefined ? createLayerversionArn(parameters) : Fn.Ref("LambdaLayer")
+      LayerVersionArn: parameters.layerVersion !== version ? createLayerversionArn(parameters,version) : Fn.Ref("LambdaLayer")
     };
   let layerVersionPermission = new Lambda.LayerVersionPermission({
     ...layerVersionPermissionInput,
     Principal: '*',
   });
   layerVersionPermission.deletionPolicy(DeletionPolicy.Retain);
-  let temp : string = `LambdaLayerPermission${permissions}`
-  if(permissions === Permissions.awsOrg){
-    if (!permissions) {
-      throw 'AWS Organization ID is missing, failed to generate cloudformation.';
-    }
-    layerVersionPermission.Properties.OrganizationId = parameters.authorizedOrgId;
-    cfnObj.Resources[temp] = layerVersionPermission;
-  }else if(permissions === Permissions.public){
+  let temp : string = `LambdaLayerPermission${permissions}${version}`
+  if(permissions === Permissions.public){
     layerVersionPermission.Properties.Principal = "*";
     cfnObj.Resources[temp] = layerVersionPermission;
   }
@@ -101,23 +102,40 @@ function assignLayerPermissions(cfnObj,parameters,permissions){
   }
 }
 
-function assignLayerPermissionsAccounts(cfnObj,parameters,permissions){
+function assignLayerPermissionsOrgs(cfnObj,parameters,permissions,version){
   // assign permissions
-  if (!parameters.authorizedAccountIds || parameters.authorizedAccountIds.length <= 0) {
-    throw 'No AWS Account IDs present, failed to generate cloudformation.';
-  }
-  let whitelistAccountIds = parameters.authorizedAccountIds.split(',');
-  whitelistAccountIds.forEach(account => {
+
+  let whitelistOrgIds = parameters.layerVersionsMap[version].filter(val =>  val.type === permissions)[0].orgs;
+  whitelistOrgIds.forEach(org => {
     const layerVersionPermissionInput = {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: parameters.layerVersion !== undefined ? createLayerversionArn(parameters) : Fn.Ref("LambdaLayer"),
+      LayerVersionArn: parameters.layerVersion !== version ? createLayerversionArn(parameters,version) : Fn.Ref("LambdaLayer"),
     };
     let layerVersionPermission = new Lambda.LayerVersionPermission({
       ...layerVersionPermissionInput,
       Principal: '*',
     });
     layerVersionPermission.deletionPolicy(DeletionPolicy.Retain);
-    let temp : string = `LambdaLayerPermission${permissions}${account}`
+    let temp : string = `LambdaLayerPermission${permissions}${org.replace('-','')}${version}`
+    layerVersionPermission.Properties.OrganizationId = `${org}`;
+    cfnObj.Resources[temp] = layerVersionPermission;
+  })
+}
+
+function assignLayerPermissionsAccounts(cfnObj,parameters,permissions,version){
+  // assign permissions
+  let whitelistAccountIds = parameters.layerVersionsMap[version].filter(val =>  val.type === permissions)[0].accounts;
+  whitelistAccountIds.forEach(account => {
+    const layerVersionPermissionInput = {
+      Action: 'lambda:GetLayerVersion',
+      LayerVersionArn: parameters.layerVersion !== version ? createLayerversionArn(parameters,version) : Fn.Ref("LambdaLayer"),
+    };
+    let layerVersionPermission = new Lambda.LayerVersionPermission({
+      ...layerVersionPermissionInput,
+      Principal: '*',
+    });
+    layerVersionPermission.deletionPolicy(DeletionPolicy.Retain);
+    let temp : string = `LambdaLayerPermission${permissions}${account}${version}`
     layerVersionPermission.Properties.Principal = `${account}`;
     cfnObj.Resources[temp] = layerVersionPermission;
   })
@@ -131,10 +149,10 @@ export function joinWithEnv(separator: string, listToJoin: any[]) {
   );
 }
 
-export function createLayerversionArn(parameters){
+export function createLayerversionArn(parameters,version){
   //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
   return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}:${layerVersion}', {
     layerName: joinWithEnv('-', [parameters.layerName]),
-    layerVersion: parameters.layerVersion
+    layerVersion: version
   })
 }

@@ -230,7 +230,7 @@ interface ListOption {
 }
 
 function isLayerParameter(params: Partial<LayerParameters> | Partial<FunctionParameters> ): params is Partial<LayerParameters> {
-  return (((params as Partial<LayerParameters>) !== undefined) && ((params as Partial<LayerParameters>).runtimes !== undefined));
+  return ( ((params as Partial<LayerParameters>).runtimes !== undefined));
 }
 
 function defaultSelection(selectionOptions : PluginSelectionOptions<FunctionRuntimeCondition>,selections){
