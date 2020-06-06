@@ -56,7 +56,7 @@ const coreFunction = (
 
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
-        singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
+        selectTemplate(chain, settings.functionTemplate, templateChoices);
       }
     } else {
       chain.wait('Please select the Lambda Function you would want to update').sendCarriageReturn();
@@ -209,6 +209,14 @@ export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));
 
   singleSelect(chain, runtimeName, runtimeChoices);
+};
+
+const selectTemplate = (chain: any, functionTemplate: string, templateChoices: string[]) => {
+  chain.wait('Choose the function template that you want to use');
+  // reset cursor to top of list because Hello World is default but it throws off offset calculations
+  moveUp(chain, templateChoices.indexOf('Hello World'));
+
+  singleSelect(chain, functionTemplate, templateChoices);
 };
 
 const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string) => {
