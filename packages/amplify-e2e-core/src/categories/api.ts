@@ -2,7 +2,6 @@ import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
 import { selectRuntime, selectTemplate } from './function';
-import { singleSelect } from '../utils/selectors';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
