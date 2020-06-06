@@ -43,12 +43,12 @@ export interface PublicLayer {
 
 export interface AccountsLayer {
   type: Permissions.awsAccounts
-  accounts: string[]
+  accounts?: string[]
 }
 
 export interface OrgsLayer {
   type: Permissions.awsOrg
-  orgs: string[]
+  orgs?: string[]
 }
 
  class LayerState implements LayerMetadata , LayerVersionMetadata{

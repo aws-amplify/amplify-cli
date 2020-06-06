@@ -1,9 +1,9 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { LayerParameters, Permissions, layerMetadataFactory} from '../utils/layerParams';
+import { LayerParameters, Permissions, layerMetadataFactory, OrgsLayer, AccountsLayer} from '../utils/layerParams';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
-import { layerNameQuestion, layerPermissionsQuestion, layerAccountAccessQuestion, layerOrgAccessQuestion, createVersionsMap, layerVersionQuestion, updateVersionMap} from '../utils/layerHelpers';
+import { layerNameQuestion, layerPermissionsQuestion, layerAccountAccessQuestion, layerOrgAccessQuestion, createVersionsMap, layerVersionQuestion} from '../utils/layerHelpers';
 import { ServiceName, categoryName, layerParametersFileName } from '../utils/constants';
 import * as fs from 'fs-extra';
 
@@ -83,36 +83,43 @@ export async function updateLayerWalkthrough(
     return Math.max(a,b);
   });
 
+  // get the latest accounts/orgsid
   let layerPermissions = layerData.getVersion(latestVersion).permissions.map(permission => permission.type);
+  let defaultorgsId =  layerData.getVersion(latestVersion).permissions.filter(permission => permission.type === Permissions.awsOrg);
+  let defaultaccountsId = layerData.getVersion(latestVersion).permissions.filter(permission => permission.type === Permissions.awsAccounts);
+  let defaultaccounts : string[] = defaultaccountsId.length !== 0 ? (defaultaccountsId[0] as AccountsLayer).accounts : [];
+  let defaultorgs : string[] = defaultorgsId.length !== 0 ? (defaultorgsId[0] as OrgsLayer).orgs : [];
 
-  // if no permission is selected , second last  version permission will be copied to latest
   if (await context.amplify.confirmPrompt.run('Do you want to adjust who can access the current & new layer version?', true)) {
     _.assign(templateParameters,{layerPermissions : layerPermissions}); // assign permissions if layer is updated
     _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion(templateParameters.layerPermissions)));
+    // get the account/ordsID based on the permissions selected and pass defaults in the questions workflow
 
     for (let permissions of templateParameters.layerPermissions) {
       switch (permissions) {
         case Permissions.awsAccounts:
-          _.assign(templateParameters, await inquirer.prompt(layerAccountAccessQuestion()));
+          _.assign(templateParameters, await inquirer.prompt(layerAccountAccessQuestion(defaultaccounts)));
           break;
         case Permissions.awsOrg:
-          _.assign(templateParameters, await inquirer.prompt(layerOrgAccessQuestion()));
+          _.assign(templateParameters, await inquirer.prompt(layerOrgAccessQuestion(defaultorgs)));
           break;
       }
     }
-    if(!islayerVersionChanged){
-      let versions = layerData.listVersions();
-      const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
-      updateVersionMap(templateParameters,String(versionAnswer.layerVersion),String(latestVersionPushed));
-    }
   }
-
-  // if verson chnage then provide max version else given version
   if(islayerVersionChanged){
     if(latestVersion === latestVersionPushed){
       latestVersion += 1;
     }
-    updateVersionMap(templateParameters,String(latestVersion),String(latestVersionPushed));
+    // updating map for a new version
+    let map = createVersionsMap(templateParameters,String(latestVersion));
+    templateParameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
+  }
+  else{
+    //updating map for the selected version
+    let versions = layerData.listVersions();
+    const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
+    let map = createVersionsMap(templateParameters,String(versionAnswer.layerVersion));
+    templateParameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   }
   _.assign(templateParameters,{layerVersion : String(latestVersion)});
   return templateParameters;
