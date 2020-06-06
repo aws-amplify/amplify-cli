@@ -28,6 +28,7 @@
     "extract-zip": "^1.6.7",
     "folder-hash": "^3.3.0",
     "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
     "graphql": "^14.5.8",
     "graphql-auth-transformer": "6.17.0",
     "graphql-connection-transformer": "4.17.2",
