@@ -1,7 +1,7 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
-import { nodeJSTemplateChoices, selectRuntime } from './function';
+import { selectRuntime, selectTemplate } from './function';
 import { singleSelect } from '../utils/selectors';
 
 function getSchemaPath(schemaName: string): string {
@@ -263,7 +263,7 @@ export function addRestApi(cwd: string, settings: any) {
         const templateName = settings.isCrud
           ? 'CRUD function for DynamoDB (Integration with API Gateway)'
           : 'Serverless ExpressJS function (Integration with API Gateway)';
-        singleSelect(chain.wait('Choose the function template that you want to use'), templateName, nodeJSTemplateChoices);
+        selectTemplate(chain, templateName, 'nodejs');
 
         if (settings.isCrud) {
           chain
