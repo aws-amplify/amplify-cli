@@ -1,7 +1,12 @@
 import { DynamoDB } from 'aws-sdk';
 import { unmarshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
-import { TransactWriteItemList, TransactWriteItem, ExpressionAttributeValueMap } from 'aws-sdk/clients/dynamodb';
+import {
+  TransactWriteItemList,
+  TransactWriteItem,
+  ExpressionAttributeValueMap,
+  ExpressionAttributeNameMap,
+} from 'aws-sdk/clients/dynamodb';
 import { QueryDocumentKeys } from 'graphql/language/visitor';
 
 type DynamoDBConnectionConfig = {
@@ -217,41 +222,63 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     };
   }
 
-  private async transactWriteItems({ transactItems }: { transactItems: (TransactOperationPutItem | TransactOperationUpdateItem)[] }) {
-    const TransactItems: TransactWriteItemList = transactItems.map((item): TransactWriteItem => {
-      switch (item.operation) {
-        case 'PutItem':
-          return {
-            Put: {
-              TableName: item.table,
-              Item: {
-                ...item.key,
-                ...item.attributeValues
+  private async transactWriteItems({
+    transactItems,
+  }: {
+    transactItems: (TransactOperationPutItem | TransactOperationUpdateItem | TransactOperationDeleteItem)[];
+  }) {
+    const TransactItems: TransactWriteItemList = transactItems.map(
+      (item): TransactWriteItem => {
+        switch (item.operation) {
+          case 'PutItem':
+            return {
+              Put: {
+                TableName: item.table,
+                Item: {
+                  ...item.key,
+                  ...item.attributeValues,
+                },
+                ConditionExpression: (item.condition || {}).expression,
+                ExpressionAttributeValues: (item.condition || {}).expressionValues,
               },
-              ConditionExpression: (item.condition || {}).expression,
-              ExpressionAttributeValues: (item.condition || {}).expressionValues,
-            }
-          };
-        case 'UpdateItem':
-          return {
-            Update: {
-              TableName: item.table,
-              Key: item.key,
-              UpdateExpression: item.update.expression,
-              ExpressionAttributeValues: {
-                ...(item.update || {}).expressionValues,
-                ...(item.condition || {}).expressionValues
+            };
+          case 'UpdateItem':
+            return {
+              Update: {
+                TableName: item.table,
+                Key: item.key,
+                UpdateExpression: item.update.expression,
+                ConditionExpression: (item.condition || {}).expression,
+                ExpressionAttributeValues: {
+                  ...(item.update || {}).expressionValues,
+                  ...(item.condition || {}).expressionValues,
+                },
+                ExpressionAttributeNames: {
+                  ...(item.update || {}).expressionNames,
+                },
               },
-              ConditionExpression: (item.condition || {}).expression,
-            }
-          }
-      }
-    })
+            };
+          case 'DeleteItem':
+            return {
+              Delete: {
+                TableName: item.table,
+                Key: item.key,
+                ConditionExpression: (item.condition || {}).expression,
+                ExpressionAttributeValues: {
+                  ...(item.condition || {}).expressionValues,
+                },
+                ExpressionAttributeNames: {
+                  ...(item.condition || {}).expressionNames,
+                },
+              },
+            };
+        }
+      },
+    );
     await this.client.transactWriteItems({ TransactItems }).promise();
     return { keys: transactItems.map(item => DynamoDB.Converter.unmarshall(item.key)) };
   }
 }
-
 
 interface TransactOperationPutItem {
   table: string;
@@ -261,7 +288,8 @@ interface TransactOperationPutItem {
   condition?: {
     expression: string;
     expressionValues?: ExpressionAttributeValueMap;
-  }
+    expressionNames?: ExpressionAttributeNameMap;
+  };
 }
 
 interface TransactOperationUpdateItem {
@@ -271,9 +299,22 @@ interface TransactOperationUpdateItem {
   update: {
     expression: string;
     expressionValues?: ExpressionAttributeValueMap;
-  },
+    expressionNames?: ExpressionAttributeNameMap;
+  };
   condition?: {
     expression: string;
     expressionValues?: ExpressionAttributeValueMap;
-  }
+    expressionNames?: ExpressionAttributeNameMap;
+  };
+}
+
+interface TransactOperationDeleteItem {
+  table: string;
+  operation: 'DeleteItem';
+  key: DynamoDB.Key;
+  condition?: {
+    expression: string;
+    expressionValues?: ExpressionAttributeValueMap;
+    expressionNames?: ExpressionAttributeNameMap;
+  };
 }
