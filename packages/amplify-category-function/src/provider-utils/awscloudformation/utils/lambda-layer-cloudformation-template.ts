@@ -104,7 +104,6 @@ function assignLayerPermissions(cfnObj,parameters,permissions,version){
 
 function assignLayerPermissionsOrgs(cfnObj,parameters,permissions,version){
   // assign permissions
-
   let whitelistOrgIds = parameters.layerVersionsMap[version].filter(val =>  val.type === permissions)[0].orgs;
   whitelistOrgIds.forEach(org => {
     const layerVersionPermissionInput = {

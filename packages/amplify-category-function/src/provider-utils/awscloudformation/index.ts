@@ -233,7 +233,6 @@ export async function updateLayerResource(
 }
 
 export async function updateFunctionResource(context, category, service, parameters, resourceToUpdate) {
-  let answers;
   const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
@@ -252,7 +251,7 @@ export async function updateFunctionResource(context, category, service, paramet
     }
     saveMutableState(context, parameters);
   } else {
-    parameters = await serviceConfig.walkthroughs.updateWalkthrough(context,parameters,resourceToUpdate);
+    parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }

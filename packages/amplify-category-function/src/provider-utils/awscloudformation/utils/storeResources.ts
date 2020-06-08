@@ -93,6 +93,7 @@ export function createLayerCfnFile(context, parameters, layerDirPath) {
     providerPlugin: parameters.providerContext.provider,
     service: parameters.providerContext.service,
     runtimes: parameters.runtimes,
+    versionsMap: parameters.layerVersionsMap,
     build: true,
   });
 }
@@ -130,7 +131,7 @@ export function updateLayerCfnFile(context, parameters, layerDirPath) {
     true,
   );
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName,'runtimes', parameters.runtimes);
-
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName,'versionsMap', parameters.layerVersionsMap);
 }
 
 export function createLayerParametersFile(context,parameters,layerDirPath){

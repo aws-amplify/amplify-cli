@@ -79,9 +79,7 @@ export async function updateLayerWalkthrough(
 
   // get the latest version from #currentcloudbackend
   let latestVersionPushed =  getLastestVersionPushed(context,templateParameters.layerName);
-  let latestVersion = layerData.listVersions().reduce((a,b)=>{
-    return Math.max(a,b);
-  });
+  let latestVersion = layerData.listVersions().reduce((a,b)=>Math.max(a,b));
 
   // get the latest accounts/orgsid
   let layerPermissions = layerData.getVersion(latestVersion).permissions.map(permission => permission.type);
@@ -134,8 +132,6 @@ export async function updateLayerWalkthrough(
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
   let prevParameters =  context.amplify.readJsonFile(parametersFilePath);
   const prevlayerData = layerMetadataFactory(prevParameters.parameters);
-  let latestVersionPushed = prevlayerData.listVersions().reduce((a,b)=>{
-    return Math.max(a,b);
-  });
+  let latestVersionPushed = prevlayerData.listVersions().reduce((a,b)=> Math.max(a,b));
   return latestVersionPushed;
 }

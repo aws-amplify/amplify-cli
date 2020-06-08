@@ -6,10 +6,15 @@ import {
   initJSProjectWithProfile,
   removeLayer,
   validateLayerDir,
-  updateLayer
+  updateLayer,
+  amplifyPushAuth,
+  getProjectMeta,
+  getFunction,
+  getLayerVersion,
+  listVersions
 } from 'amplify-e2e-core';
-import fs from 'fs-extra';
-import path from 'path';
+import { v4 as uuid } from 'uuid';
+
 
 describe('amplify add lambda layer', () => {
   let projRoot: string;
@@ -32,27 +37,60 @@ describe('amplify add lambda layer', () => {
     expect(validateLayerDir(projRoot, layerName, false)).toBeTruthy();
   });
 
-  it.only('init a project and add/update simple layer', async () => {
+  it('init a project and add/update simple layer and push', async () => {
+    const [shortId] = uuid().split('-');
+    const settings = {
+      layerName: `testlayer${shortId}`,
+      versionChanged: true
+    };
     await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot);
-    await updateLayer(projRoot);
+    await addLayer(projRoot,settings);
+    await updateLayer(projRoot,settings);
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+
+    const { Arn: Arn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const runtimes = Object.keys(meta.function).map(key => meta.function[key])[0].runtimes;
+    const runtimeValue = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
+    const layerVersions = Object.keys(meta.function).map(key => meta.function[key])[0].versionsMap;
+    const localVersions = Object.keys(layerVersions);
+
+    expect(Arn).toBeDefined();
+    expect(region).toBeDefined();
+    const data = await getLayerVersion(Arn, region);
+    const {LayerVersions : Versions} = await listVersions(`${settings.layerName}-integtest`,region);
+    const cloudVersions = Versions.map(version => version.Version)
+    expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
+    expect(data.LayerVersionArn).toEqual(Arn);
+    expect(data.CompatibleRuntimes).toEqual(runtimeValue);
   });
 
-  it('init a project and add/update simple layer with multiple runtime and multiple permissions', async () => {
+  it('init a project and add/push and update/push updating version', async () => {
+    const [shortId] = uuid().split('-');
+    const settings = {
+      layerName: `testlayer${shortId}`, 
+      versionChanged: true
+    };
     await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot);
-    await updateLayer(projRoot);
-  });
+    await addLayer(projRoot,settings);
+    await amplifyPushAuth(projRoot);
+    await updateLayer(projRoot,settings);
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
 
-  it('Update simple layer with multiple permissions on same version', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot);
-    await updateLayer(projRoot);
-  });
+    const { Arn: Arn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const runtimes = Object.keys(meta.function).map(key => meta.function[key])[0].runtimes;
+    const runtimeValue = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
+    const layerVersions = Object.keys(meta.function).map(key => meta.function[key])[0].versionsMap;
+    const localVersions = Object.keys(layerVersions);
 
-  it('Update simple layer with multiple runtime to change version', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot);
-    await updateLayer(projRoot);
+    expect(Arn).toBeDefined();
+    expect(region).toBeDefined();
+    const data = await getLayerVersion(Arn, region);
+    const {LayerVersions : Versions} = await listVersions(`${settings.layerName}-integtest`,region);
+    const cloudVersions = Versions.map(version => version.Version)
+    expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
+    expect(data.LayerVersionArn).toEqual(Arn);
+    expect(data.CompatibleRuntimes).toEqual(runtimeValue);
   });
 });

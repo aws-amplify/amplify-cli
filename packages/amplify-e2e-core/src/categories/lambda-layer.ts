@@ -4,6 +4,7 @@ import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath } from '.
 import { runtimeChoices } from './lambda-function';
 import { multiSelect } from '../utils/selectors';
 
+
 type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
 
 const permissionChoices = [
@@ -32,7 +33,6 @@ export function validateLayerDir(projRoot: string, layerName: string, layerExist
 
 export function addLayer(cwd: string, settings?: any) {
   const defaultSettings = {
-    layerName: 'test-layer',
     runtimes: ['nodejs'],
     permission: ['Only the current AWS account'],
   };
@@ -89,7 +89,6 @@ export function removeLayer(cwd: string) {
 
 export function updateLayer(cwd: string, settings?: any) {
   const defaultSettings = {
-    layerName: 'test-layer',
     runtimes: ['java'],
     permission: ['Public (everyone on AWS can use this layer)'],
   };
@@ -99,18 +98,25 @@ export function updateLayer(cwd: string, settings?: any) {
       .wait('Select which capability you want to update:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn() // Layer
-      .wait('Please select the Lambda Layer you would want to update')
+      .wait('Please select the Lambda Layer you want to update')
       .sendCarriageReturn();
 
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
-    expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
-
-    chain.wait('Do you want to change the compatible runtimes?').sendLine('y');
-    chain.wait('Select up to 5 compatible runtimes:');
-    multiSelect(chain, runtimeDisplayNames, runtimeChoices);
+    //expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
+    if(settings.versionChanged){
+      chain.wait('Do you want to change the compatible runtimes?').sendLine('y');
+      chain.wait('Select up to 5 compatible runtimes:');
+      multiSelect(chain, runtimeDisplayNames, runtimeChoices);
+    }
+    else{
+      chain.wait('Do you want to change the compatible runtimes?').sendLine('n');
+    }
     chain.wait('Do you want to adjust who can access the current & new layer version? ').sendLine('y');
     chain.wait('Who should have permission to use this layer?');
     multiSelect(chain, settings.permission, permissionChoices);
+    if(!settings.versionChanged){
+      chain.wait('Select the version number to update for given Lambda Layer: ').sendCarriageReturn()
+    }
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 

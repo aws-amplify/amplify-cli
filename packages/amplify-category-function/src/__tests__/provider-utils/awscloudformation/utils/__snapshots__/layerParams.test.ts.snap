@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`layer metadata Factory Function Listversion happy case 1 1`] = `
+Array [
+  1,
+  2,
+  3,
+]
+`;
+
+exports[`layer metadata Factory Function Listversion happy case 2 1`] = `Array []`;
+
+exports[`layer metadata Factory Function getversion permissions happy case 1 1`] = `
+Array [
+  Object {
+    "type": "Permissions.public",
+  },
+]
+`;
+
+exports[`layer metadata Factory Function getversion permissions happy case 1 2`] = `
+Array [
+  Object {
+    "orgs": Array [
+      " o-dsjnkdjs",
+      " o-sdnckjsd",
+    ],
+    "type": "Permissions.awsOrg",
+  },
+  Object {
+    "accounts": Array [
+      "11111111111",
+      "222222222",
+    ],
+    "type": "Permissions.awsAccounts",
+  },
+]
+`;
+
+exports[`layer metadata Factory Function getversion permissions happy case 1 3`] = `
+Array [
+  Object {
+    "type": "Permissions.private",
+  },
+]
+`;
