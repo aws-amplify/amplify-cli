@@ -105,7 +105,8 @@ export class ResourceFactory {
     if (apiKeyConfig && apiKeyConfig.apiKeyExpirationDays) {
       expirationDays = apiKeyConfig.apiKeyExpirationDays;
     }
-    const expirationDateInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * expirationDays; /* d */
+    // add delay expiration time is valid upon resource creation
+    const expirationDateInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * expirationDays /* d */ + 60 * 2;
     const nowEpochTime = Math.floor(Date.now() / 1000);
     return new AppSync.ApiKey({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
