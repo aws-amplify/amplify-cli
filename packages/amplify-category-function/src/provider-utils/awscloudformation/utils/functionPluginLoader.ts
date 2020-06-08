@@ -137,7 +137,7 @@ async function getSelectionFromContributors<T>(context: any, selectionOptions: P
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
-        default: selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : undefined,
+        default: selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : 'hello-world',
       },
     ]);
     selection = answer.selection;

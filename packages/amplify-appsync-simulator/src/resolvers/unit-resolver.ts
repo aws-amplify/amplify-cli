@@ -1,12 +1,12 @@
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorUnitResolverConfig } from '../type-definition';
+import { AppSyncBaseResolver } from './base-resolver';
 
-export class AppSyncUnitResolver {
-  private config: AppSyncSimulatorUnitResolverConfig;
-  constructor(config: AppSyncSimulatorUnitResolverConfig, private simulatorContext: AmplifyAppSyncSimulator) {
+export class AppSyncUnitResolver extends AppSyncBaseResolver {
+  protected config: AppSyncSimulatorUnitResolverConfig;
+  constructor(config: AppSyncSimulatorUnitResolverConfig, simulatorContext: AmplifyAppSyncSimulator) {
+    super(config, simulatorContext);
     try {
-      simulatorContext.getMappingTemplate(config.requestMappingTemplateLocation);
-      simulatorContext.getMappingTemplate(config.responseMappingTemplateLocation);
       simulatorContext.getDataLoader(config.dataSourceName);
     } catch (e) {
       throw new Error(`Invalid config for UNIT_RESOLVER ${JSON.stringify(config)} \n ${e.message}`);
@@ -18,9 +18,9 @@ export class AppSyncUnitResolver {
     this.config = config;
   }
 
-  async resolve(source, args, context, info) {
-    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);
-    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
+  async resolve(source, args, context, info): Promise<any> {
+    const requestMappingTemplate = this.getRequestMappingTemplate();
+    const responseMappingTemplate = this.getResponseMappingTemplate();
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
     const { result: requestPayload, errors: requestTemplateErrors, isReturn } = requestMappingTemplate.render(
       { source, arguments: args },

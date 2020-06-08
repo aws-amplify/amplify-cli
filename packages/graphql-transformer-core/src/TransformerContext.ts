@@ -468,7 +468,7 @@ export class TransformerContext {
         ...acc,
         [field.name.value]: field,
       }),
-      {}
+      {},
     );
     const newFields = obj.fields || [];
     const mergedFields = [...oldFields];
@@ -486,7 +486,7 @@ export class TransformerContext {
         ...acc,
         [field.name.value]: field,
       }),
-      {}
+      {},
     );
     const newInterfaces = obj.interfaces || [];
     const mergedInterfaces = [...oldInterfaces];
@@ -526,7 +526,7 @@ export class TransformerContext {
         ...acc,
         [field.name.value]: field,
       }),
-      {}
+      {},
     );
     const newFields = obj.fields || [];
     const mergedFields = [...oldFields];
@@ -566,7 +566,7 @@ export class TransformerContext {
         ...acc,
         [field.name.value]: field,
       }),
-      {}
+      {},
     );
     const newFields = obj.fields || [];
     const mergedFields = [...oldFields];
@@ -606,7 +606,7 @@ export class TransformerContext {
         ...acc,
         [type.name.value]: true,
       }),
-      {}
+      {},
     );
     const newTypes = obj.types || [];
     const mergedFields = [...oldTypes];
@@ -646,7 +646,7 @@ export class TransformerContext {
         ...acc,
         [type.name.value]: true,
       }),
-      {}
+      {},
     );
     const newValues = obj.values || [];
     const mergedValues = [...oldValues];
@@ -719,5 +719,9 @@ export class TransformerContext {
 
   public getTransformerVersion(): Number {
     return this.transformerVersion;
+  }
+
+  public isProjectUsingDataStore(): boolean {
+    return this.resolverConfig && (typeof this.resolverConfig.project !== undefined || typeof this.resolverConfig.models !== undefined);
   }
 }

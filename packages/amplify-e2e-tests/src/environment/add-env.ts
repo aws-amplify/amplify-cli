@@ -1,5 +1,4 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
+import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
 
 export function addEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
@@ -39,7 +38,7 @@ export function checkoutEnvironment(cwd: string, settings: any) {
 export function removeEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
-      .wait(`Are you sure you want to continue? (This would delete '${settings.envName}' environment`)
+      .wait(`Are you sure you want to continue?`)
       .sendLine('y')
       .wait('Successfully removed environment from your project locally')
       .run((err: Error) => {

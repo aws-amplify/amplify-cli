@@ -1,5 +1,4 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
-import { getCLIPath } from '../utils';
+import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
 
 export async function newPlugin(cwd: string): Promise<string> {
   const pluginPackageDirName = 'newpluginpackage';
@@ -10,6 +9,9 @@ export async function newPlugin(cwd: string): Promise<string> {
       .sendLine(pluginPackageDirName)
       .wait('Specify the plugin type')
       .sendLine('')
+      .wait('What Amplify CLI events do you want the plugin to handle')
+      .sendLine('a')//will select "Learn more"
+      .wait('The Amplify CLI aims to provide a flexible and loosely-coupled pluggable platforms for the plugins.')
       .wait('What Amplify CLI events do you want the plugin to handle')
       .sendLine('')
       .run((err: Error) => {

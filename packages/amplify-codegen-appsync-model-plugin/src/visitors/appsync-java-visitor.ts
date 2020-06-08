@@ -2,12 +2,14 @@ import { indent, indentMultiline, transformComment } from '@graphql-codegen/visi
 import { camelCase, constantCase, pascalCase } from 'change-case';
 import dedent from 'ts-dedent';
 import {
-  CLASS_IMPORT_PACKAGES,
+  MODEL_CLASS_IMPORT_PACKAGES,
   GENERATED_PACKAGE_NAME,
   LOADER_CLASS_NAME,
   LOADER_IMPORT_PACKAGES,
   CONNECTION_RELATIONSHIP_IMPORTS,
+  NON_MODEL_CLASS_IMPORT_PACKAGES,
 } from '../configs/java-config';
+import { JAVA_TYPE_IMPORT_MAP } from '../scalars';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 import { CodeGenConnectionType } from '../utils/process-connections';
@@ -25,8 +27,10 @@ export class AppSyncModelJavaVisitor<
     }
     if (this.selectedTypeIsEnum()) {
       return this.generateEnums();
+    } else if (this.selectedTypeIsNonModel()) {
+      return this.generateNonModelClasses();
     }
-    return this.generateClasses();
+    return this.generateModelClasses();
   }
 
   generateClassLoader(): string {
@@ -135,20 +139,30 @@ export class AppSyncModelJavaVisitor<
     return result.join('\n');
   }
 
-  generateClasses(): string {
+  generateModelClasses(): string {
     const result: string[] = [];
     Object.entries(this.getSelectedModels()).forEach(([name, model]) => {
-      const modelDeclaration = this.generateClass(model);
+      const modelDeclaration = this.generateModelClass(model);
       result.push(...[modelDeclaration]);
     });
     const packageDeclaration = this.generatePackageHeader();
     return [packageDeclaration, ...result].join('\n');
   }
 
+  generateNonModelClasses(): string {
+    const result: string[] = [];
+    Object.entries(this.getSelectedNonModels()).forEach(([name, type]) => {
+      const nonModelDeclaration = this.generateNonModelClass(type);
+      result.push(...[nonModelDeclaration]);
+    });
+    const packageDeclaration = this.generatePackageHeader(false);
+    return [packageDeclaration, ...result].join('\n');
+  }
+
   generatePackageName(): string {
     return `package ${GENERATED_PACKAGE_NAME};`;
   }
-  generateClass(model: CodeGenModel): string {
+  generateModelClass(model: CodeGenModel): string {
     const classDeclarationBlock = new JavaDeclarationBlock()
       .asKind('class')
       .access('public')
@@ -164,7 +178,7 @@ export class AppSyncModelJavaVisitor<
     nonConnectedFields.forEach(field => this.generateQueryFields(field, classDeclarationBlock));
     model.fields.forEach(field => {
       const value = nonConnectedFields.includes(field) ? '' : 'null';
-      this.generateField(field, value, classDeclarationBlock);
+      this.generateModelField(field, value, classDeclarationBlock);
     });
 
     // step interface declarations
@@ -185,8 +199,12 @@ export class AppSyncModelJavaVisitor<
 
     // equals
     this.generateEqualsMethod(model, classDeclarationBlock);
+
     // hash code
     this.generateHashCodeMethod(model, classDeclarationBlock);
+
+    // toString
+    this.generateToStringMethod(model, classDeclarationBlock);
 
     // builder
     this.generateBuilderMethod(model, classDeclarationBlock);
@@ -200,8 +218,53 @@ export class AppSyncModelJavaVisitor<
     return classDeclarationBlock.string;
   }
 
-  protected generatePackageHeader(): string {
-    const imports = this.generateImportStatements([...Array.from(this.additionalPackages), '', ...CLASS_IMPORT_PACKAGES]);
+  generateNonModelClass(nonModel: CodeGenModel): string {
+    const classDeclarationBlock = new JavaDeclarationBlock()
+      .asKind('class')
+      .access('public')
+      .withName(this.getModelName(nonModel))
+      .withComment(`This is an auto generated class representing the ${nonModel.name} type in your schema.`)
+      .final();
+
+    const nonConnectedFields = this.getNonConnectedField(nonModel);
+    nonModel.fields.forEach(field => {
+      const value = nonConnectedFields.includes(field) ? '' : 'null';
+      this.generateNonModelField(field, value, classDeclarationBlock);
+    });
+
+    // step interface declarations
+    this.generateStepBuilderInterfaces(nonModel, false).forEach((builderInterface: JavaDeclarationBlock) => {
+      classDeclarationBlock.nestedClass(builderInterface);
+    });
+
+    // builder
+    this.generateBuilderClass(nonModel, classDeclarationBlock, false);
+
+    // copyOfBuilder for used for updating existing instance
+    this.generateCopyOfBuilderClass(nonModel, classDeclarationBlock, false);
+    // getters
+    this.generateGetters(nonModel, classDeclarationBlock);
+
+    // constructor
+    this.generateConstructor(nonModel, classDeclarationBlock);
+
+    // equals
+    this.generateEqualsMethod(nonModel, classDeclarationBlock);
+    // hash code
+    this.generateHashCodeMethod(nonModel, classDeclarationBlock);
+
+    // builder
+    this.generateBuilderMethod(nonModel, classDeclarationBlock);
+
+    // copyBuilder method
+    this.generateCopyOfBuilderMethod(nonModel, classDeclarationBlock);
+
+    return classDeclarationBlock.string;
+  }
+
+  protected generatePackageHeader(isModel: boolean = true): string {
+    const baseImports = isModel ? MODEL_CLASS_IMPORT_PACKAGES : NON_MODEL_CLASS_IMPORT_PACKAGES;
+    const imports = this.generateImportStatements([...Array.from(this.additionalPackages), '', ...baseImports]);
     return [this.generatePackageName(), '', imports].join('\n');
   }
 
@@ -230,15 +293,25 @@ export class AppSyncModelJavaVisitor<
     });
   }
   /**
-   * Add fields as members of the class
+   * Add fields as members of the model class
    * @param field
    * @param classDeclarationBlock
    */
-  protected generateField(field: CodeGenField, value: string, classDeclarationBlock: JavaDeclarationBlock): void {
+  protected generateModelField(field: CodeGenField, value: string, classDeclarationBlock: JavaDeclarationBlock): void {
     const annotations = this.generateFieldAnnotations(field);
     const fieldType = this.getNativeType(field);
     const fieldName = this.getFieldName(field);
     classDeclarationBlock.addClassMember(fieldName, fieldType, value, annotations, 'private', {
+      final: true,
+    });
+  }
+  /**
+   * Add non field members of the non model class
+   */
+  protected generateNonModelField(field: CodeGenField, value: string, classDeclarationBlock: JavaDeclarationBlock): void {
+    const fieldType = this.getNativeType(field);
+    const fieldName = this.getFieldName(field);
+    classDeclarationBlock.addClassMember(fieldName, fieldType, value, [], 'private', {
       final: true,
     });
   }
@@ -247,7 +320,7 @@ export class AppSyncModelJavaVisitor<
    * Generate step builder interfaces for each non-null field in the model
    *
    */
-  protected generateStepBuilderInterfaces(model: CodeGenModel): JavaDeclarationBlock[] {
+  protected generateStepBuilderInterfaces(model: CodeGenModel, isModel: boolean = true): JavaDeclarationBlock[] {
     const nonNullableFields = this.getNonConnectedField(model).filter(field => !field.isNullable);
     const nullableFields = this.getNonConnectedField(model).filter(field => field.isNullable);
     const requiredInterfaces = nonNullableFields.filter((field: CodeGenField) => !this.READ_ONLY_FIELDS.includes(field.name));
@@ -275,8 +348,10 @@ export class AppSyncModelJavaVisitor<
     // build method
     builderBody.push(`${this.getModelName(model)} build();`);
 
-    // id method. Special case as this can throw exception
-    builderBody.push(`${this.getStepInterfaceName('Build')} id(String id) throws IllegalArgumentException;`);
+    if (isModel) {
+      // id method. Special case as this can throw exception
+      builderBody.push(`${this.getStepInterfaceName('Build')} id(String id) throws IllegalArgumentException;`);
+    }
 
     nullableFields.forEach(field => {
       const fieldName = this.getFieldName(field);
@@ -292,7 +367,7 @@ export class AppSyncModelJavaVisitor<
    * @param model
    * @returns JavaDeclarationBlock
    */
-  protected generateBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+  protected generateBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock, isModel: boolean = true): void {
     const nonNullableFields = this.getNonConnectedField(model).filter(field => !field.isNullable);
     const nullableFields = this.getNonConnectedField(model).filter(field => field.isNullable);
     const stepFields = nonNullableFields.filter((field: CodeGenField) => !this.READ_ONLY_FIELDS.includes(field.name));
@@ -315,7 +390,7 @@ export class AppSyncModelJavaVisitor<
 
     // methods
     // build();
-    const buildImplementation = [`String id = this.id != null ? this.id : UUID.randomUUID().toString();`, ''];
+    const buildImplementation = isModel ? [`String id = this.id != null ? this.id : UUID.randomUUID().toString();`, ''] : [''];
     const buildParams = this.getNonConnectedField(model)
       .map(field => this.getFieldName(field))
       .join(',\n');
@@ -372,8 +447,9 @@ export class AppSyncModelJavaVisitor<
       );
     });
 
-    // Add id builder
-    const idBuildStepBody = dedent`this.id = id;
+    if (isModel) {
+      // Add id builder
+      const idBuildStepBody = dedent`this.id = id;
 
     try {
         UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
@@ -384,24 +460,25 @@ export class AppSyncModelJavaVisitor<
 
     return this;`;
 
-    const idComment = dedent`WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+      const idComment = dedent`WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
     This should only be set when referring to an already existing object.
     @param id id
     @return Current Builder instance, for fluent method chaining
     @throws IllegalArgumentException Checks that ID is in the proper format`;
 
-    builderClassDeclaration.addClassMethod(
-      'id',
-      this.getStepInterfaceName('Build'),
-      indentMultiline(idBuildStepBody),
-      [{ name: 'id', type: 'String' }],
-      [],
-      'public',
-      {},
-      [],
-      ['IllegalArgumentException'],
-      idComment,
-    );
+      builderClassDeclaration.addClassMethod(
+        'id',
+        this.getStepInterfaceName('Build'),
+        indentMultiline(idBuildStepBody),
+        [{ name: 'id', type: 'String' }],
+        [],
+        'public',
+        {},
+        [],
+        ['IllegalArgumentException'],
+        idComment,
+      );
+    }
     classDeclaration.nestedClass(builderClassDeclaration);
   }
 
@@ -412,7 +489,7 @@ export class AppSyncModelJavaVisitor<
    * @param model
    * @param classDeclaration
    */
-  protected generateCopyOfBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock): void {
+  protected generateCopyOfBuilderClass(model: CodeGenModel, classDeclaration: JavaDeclarationBlock, isModel: boolean = true): void {
     const builderName = 'CopyOfBuilder';
     const copyOfBuilderClassDeclaration = new JavaDeclarationBlock()
       .access('public')
@@ -423,7 +500,7 @@ export class AppSyncModelJavaVisitor<
 
     const nonNullableFields = this.getNonConnectedField(model)
       .filter(field => !field.isNullable)
-      .filter(f => f.name !== 'id');
+      .filter(f => (isModel ? f.name !== 'id' : true));
     const nullableFields = this.getNonConnectedField(model).filter(field => field.isNullable);
 
     // constructor
@@ -436,7 +513,7 @@ export class AppSyncModelJavaVisitor<
       return `.${methodName}(${argumentName})`;
     });
     const invocations = ['super', indentMultiline(stepBuilderInvocation.join('\n')).trim(), ';'].join('');
-    const body = ['super.id(id);', invocations].join('\n');
+    const body = [...(isModel ? ['super.id(id);'] : []), invocations].join('\n');
     copyOfBuilderClassDeclaration.addClassMethod(builderName, null, body, constructorArguments, [], 'private');
 
     // Non-nullable field setters need to be added to NewClass as this is not a step builder
@@ -539,10 +616,8 @@ export class AppSyncModelJavaVisitor<
 
   protected getNativeType(field: CodeGenField): string {
     const nativeType = super.getNativeType(field);
-    if (nativeType.includes('.')) {
-      const classSplit = nativeType.split('.');
-      this.additionalPackages.add(nativeType);
-      return classSplit[classSplit.length - 1];
+    if (Object.keys(JAVA_TYPE_IMPORT_MAP).includes(nativeType)) {
+      this.additionalPackages.add(JAVA_TYPE_IMPORT_MAP[nativeType]);
     }
     return nativeType;
   }
@@ -599,6 +674,24 @@ export class AppSyncModelJavaVisitor<
       '.hashCode();',
     ].join('\n');
     declarationBlock.addClassMethod('hashCode', 'int', indentMultiline(body).trimLeft(), [], [], 'public', {}, ['Override']);
+  }
+
+  protected generateToStringMethod(model: CodeGenModel, declarationBlock: JavaDeclarationBlock): void {
+    const body = [
+      'return new StringBuilder()',
+      `.append("${this.getModelName(model)} {")`,
+      this.getNonConnectedField(model)
+        .map(field => {
+          const fieldName = this.getFieldName(field);
+          const fieldGetterName = this.getFieldGetterName(field);
+
+          return '.append("' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
+        })
+        .join('\n'),
+      '.append("}")',
+      '.toString();',
+    ];
+    declarationBlock.addClassMethod('toString', 'String', indentMultiline(body.join('\n')).trimLeft(), [], [], 'public', {}, ['Override']);
   }
 
   /**
@@ -662,7 +755,7 @@ export class AppSyncModelJavaVisitor<
   protected generateModelFieldAnnotation(field: CodeGenField): string {
     const annotationArgs: string[] = [`targetType="${field.type}"`, !field.isNullable ? 'isRequired = true' : ''].filter(arg => arg);
 
-    return `ModelField(${annotationArgs.join(', ')})`;
+    return `ModelField${annotationArgs.length ? `(${annotationArgs.join(', ')})` : ''}`;
   }
   protected generateConnectionAnnotation(field: CodeGenField): string {
     if (!field.connectionInfo) return '';

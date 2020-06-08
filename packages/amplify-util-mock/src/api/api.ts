@@ -6,11 +6,12 @@ import * as path from 'path';
 import * as chokidar from 'chokidar';
 
 import { getAmplifyMeta, addCleanupTask, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
+import { checkJavaVersion } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
+import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
@@ -35,6 +36,8 @@ export class APITest {
       });
       this.projectRoot = context.amplify.getEnvInfo().projectPath;
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
+      // check java version
+      await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
@@ -111,6 +114,7 @@ export class APITest {
   private async reload(context, filePath, action) {
     const apiDir = await this.getAPIBackendDirectory(context);
     const inputSchemaPath = path.join(apiDir, 'schema');
+    const customStackPath = path.join(apiDir, 'stacks');
     const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
@@ -141,8 +145,16 @@ export class APITest {
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
       } else if (filePath.includes(parameterFilePath)) {
-        context.print.info('API Parameter change detected. Reloading...');
-        this.apiParameters = await this.loadAPIParameters(context);
+        const apiParameters = await this.loadAPIParameters(context);
+        if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
+          context.print.info('API Parameter change detected. Reloading...');
+          this.apiParameters = apiParameters;
+          const config = await this.runTransformer(context, this.apiParameters);
+          await this.appSyncSimulator.reload(config);
+          await this.generateCode(context);
+        }
+      } else if (filePath.includes(customStackPath)) {
+        context.print.info('Custom stack change detected. Reloading...');
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
@@ -164,7 +176,7 @@ export class APITest {
   }
   private async ensureDDBTables(config) {
     const tables = config.tables.map(t => t.Properties);
-    await ensureDynamoDBTables(this.ddbClient, config);
+    await createAndUpdateTable(this.ddbClient, config);
   }
 
   private async configureLambdaDataSource(context, config) {
@@ -206,7 +218,7 @@ export class APITest {
             };
           } else {
             throw new Error(
-              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function',
+              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://docs.amplify.aws/cli/graphql-transformer/directives#function',
             );
           }
         }),

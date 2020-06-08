@@ -1,3 +1,3 @@
-import 'core-js/fn/object/values';
-import 'core-js/fn/object/entries';
-import 'core-js/fn/array/flat-map';
+import 'core-js/stable/object/values';
+import 'core-js/stable/object/entries';
+import 'core-js/stable/array/flat-map';

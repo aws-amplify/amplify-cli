@@ -1,9 +1,10 @@
 import { nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../util';
+import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE, ORIGINAL_ENV } from './constants';
 
 const defaultSettings = {
   name: '\r',
-  envName: 'integtest',
+  envName: ORIGINAL_ENV,
   editor: '\r',
   appType: '\r',
   framework: '\r',
@@ -205,6 +206,38 @@ export function removeHosting(cwd: string) {
       .wait(/.*Are you sure you want to delete the resource*/)
       .sendLine('\r')
       .wait('Successfully removed resource')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function removeNonExistingHosting(cwd: string) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
+      .wait(/.*Hosting with Amplify Console*/)
+      .sendCarriageReturn()
+      .wait(HOSTING_NOT_ENABLED)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function removeHostingEnabledInConsole(cwd: string) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
+      .wait(/.*Hosting with Amplify Console*/)
+      .sendCarriageReturn()
+      .wait(HOSTING_ENABLED_IN_CONSOLE)
       .run((err: Error) => {
         if (!err) {
           resolve();

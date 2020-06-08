@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.16.1...graphql-auth-transformer@6.17.0) (2020-06-02)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** use read to allow subscriptions ([#4340](https://github.com/aws-amplify/amplify-cli/issues/4340)) ([15eac84](https://github.com/aws-amplify/amplify-cli/commit/15eac8454e0455cd402776308a2716ac406bacbb)), closes [#3777](https://github.com/aws-amplify/amplify-cli/issues/3777) [#4182](https://github.com/aws-amplify/amplify-cli/issues/4182) [#4137](https://github.com/aws-amplify/amplify-cli/issues/4137)
+
+
+### Features
+
+* **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([c0a4f88](https://github.com/aws-amplify/amplify-cli/commit/c0a4f8889fc363bb9c9d08ff822c591874777f7b))
+
+
+
+
+
+## [6.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.16.0...graphql-auth-transformer@6.16.1) (2020-05-26)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([f57f824](https://github.com/aws-amplify/amplify-cli/commit/f57f8242f18c79d48b751e29952e3cdd21409f98)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+
+
+
+
+
+# [6.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.15.4...graphql-auth-transformer@6.16.0) (2020-05-15)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+
+
+
+
+
+## [6.15.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.15.3...graphql-auth-transformer@6.15.4) (2020-05-08)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix dynamic group auth permission check ([#4084](https://github.com/aws-amplify/amplify-cli/issues/4084)) ([688e831](https://github.com/aws-amplify/amplify-cli/commit/688e83148f554eb5f0803d0a603ae569609757ab))
+
+
+
+
+
+## [6.15.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.15.2...graphql-auth-transformer@6.15.3) (2020-04-23)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 ## [6.15.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.15.1...graphql-auth-transformer@6.15.2) (2020-03-22)
 
 **Note:** Version bump only for package graphql-auth-transformer

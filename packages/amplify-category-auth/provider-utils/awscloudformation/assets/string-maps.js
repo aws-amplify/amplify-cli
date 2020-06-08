@@ -434,7 +434,7 @@ const signInOptions = [
     value: 'phone_number',
   },
   {
-    name: 'Email and Phone Number',
+    name: 'Email or Phone Number',
     value: 'email, phone_number',
   },
   ...learnMoreOption,

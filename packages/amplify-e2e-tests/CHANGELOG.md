@@ -3,6 +3,82 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.0...amplify-e2e-tests@2.18.1) (2020-06-02)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.3...amplify-e2e-tests@2.18.0) (2020-05-26)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** toggle datastore in update ([#4276](https://github.com/aws-amplify/amplify-cli/issues/4276)) ([c522f29](https://github.com/aws-amplify/amplify-cli/commit/c522f295304410aeb1d6f60aaba9b466d3304ee1)), closes [#4058](https://github.com/aws-amplify/amplify-cli/issues/4058)
+
+
+### Features
+
+* **amplify-app:** group amplify files in xcode integration ([#4268](https://github.com/aws-amplify/amplify-cli/issues/4268)) ([73f3eab](https://github.com/aws-amplify/amplify-cli/commit/73f3eabc11def219faa1724fee93ce171949e40f))
+
+
+### Reverts
+
+* Revert "test(amplify-e2e-tests):test uncommented (#3742)" (#4324) ([b4eb173](https://github.com/aws-amplify/amplify-cli/commit/b4eb1733139f24612fd89c046582b14a2e643227)), closes [#3742](https://github.com/aws-amplify/amplify-cli/issues/3742) [#4324](https://github.com/aws-amplify/amplify-cli/issues/4324)
+
+
+
+
+
+## [2.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.2...amplify-e2e-tests@2.17.3) (2020-05-15)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** adding unique Id to Role name ([#4231](https://github.com/aws-amplify/amplify-cli/issues/4231)) ([21de1af](https://github.com/aws-amplify/amplify-cli/commit/21de1affd89142598a1f8022c387b3c04994b1e0))
+* **cli:** add information on pre/post pull in learn more ([#3880](https://github.com/aws-amplify/amplify-cli/issues/3880)) ([b40867f](https://github.com/aws-amplify/amplify-cli/commit/b40867f148454d8d87a619d67e1df2e6a6f982dc))
+* **cli:** fixes issues for missing build or start command ([#3918](https://github.com/aws-amplify/amplify-cli/issues/3918)) ([25c53ce](https://github.com/aws-amplify/amplify-cli/commit/25c53ce81a74c3f706f60b0519eda0a4338edbf7)), closes [#3728](https://github.com/aws-amplify/amplify-cli/issues/3728) [#3806](https://github.com/aws-amplify/amplify-cli/issues/3806)
+
+
+
+
+
+## [2.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.1...amplify-e2e-tests@2.17.2) (2020-05-08)
+
+
+### Bug Fixes
+
+* add AttributeTypeEnum for connections on models with no codegen ([#4102](https://github.com/aws-amplify/amplify-cli/issues/4102)) ([4e92402](https://github.com/aws-amplify/amplify-cli/commit/4e92402e0b0fae30501972f3ad16203fc19ba287))
+* e2e init and prediction test failures ([#4195](https://github.com/aws-amplify/amplify-cli/issues/4195)) ([2ea6a42](https://github.com/aws-amplify/amplify-cli/commit/2ea6a42829086d0c6ab10acd77cbbd0fc9320938))
+* remove duplicate permissions from resources in same category ([#4091](https://github.com/aws-amplify/amplify-cli/issues/4091)) ([3f6036b](https://github.com/aws-amplify/amplify-cli/commit/3f6036b6b614a5e7a5f89e3ede289ffafba9fbb3))
+
+
+
+
+
+## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.0...amplify-e2e-tests@2.17.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* **amplify-e2e-tests:** add .NET template and remove ddb uuid ([#3958](https://github.com/aws-amplify/amplify-cli/issues/3958)) ([70b5edc](https://github.com/aws-amplify/amplify-cli/commit/70b5edc2b50b4e0ceb33956852cb5eb834a8016b))
+* **amplify-provider-awscloudformation:** check before fetching backend ([#3848](https://github.com/aws-amplify/amplify-cli/issues/3848)) ([39be355](https://github.com/aws-amplify/amplify-cli/commit/39be3552f7f408dad02c2701a01f170be9badbb7))
+* check for unavailable bucket ([#3972](https://github.com/aws-amplify/amplify-cli/issues/3972)) ([de9c4c4](https://github.com/aws-amplify/amplify-cli/commit/de9c4c461351352694d81d9e7b2f9044b1a9a2c4))
+* implement retries and CFN polls in e2e tests ([#4028](https://github.com/aws-amplify/amplify-cli/issues/4028)) ([b71391f](https://github.com/aws-amplify/amplify-cli/commit/b71391facdd0d4f301522f10fb7d722aad406ed6))
+* remove duplicate env vars in top level comment ([#3894](https://github.com/aws-amplify/amplify-cli/issues/3894)) fixes [#3744](https://github.com/aws-amplify/amplify-cli/issues/3744) ([d586863](https://github.com/aws-amplify/amplify-cli/commit/d586863aabcb1ad2fc4d8ee1bd0e693a4d86d0ea))
+* select us-east-2 in integ tests ([#3992](https://github.com/aws-amplify/amplify-cli/issues/3992)) ([ed48cf5](https://github.com/aws-amplify/amplify-cli/commit/ed48cf59a2e60cc25a78f83641ca8f3bc63bc68f))
+
+
+### Reverts
+
+* Revert "fix(amplify-provider-awscloudformation): check before fetching backend (#3848)" (#3968) ([4abd582](https://github.com/aws-amplify/amplify-cli/commit/4abd5828bb5138944b116476d8b9491597aecc88)), closes [#3848](https://github.com/aws-amplify/amplify-cli/issues/3848) [#3968](https://github.com/aws-amplify/amplify-cli/issues/3968)
+
+
+
+
+
 # [2.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.16.2...amplify-e2e-tests@2.17.0) (2020-04-06)
 
 

@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.15.6...amplify-category-auth@2.15.7) (2020-05-26)
+
+
+### Bug Fixes
+
+* deleted extra carriageReturn calls, fixed grammar in Auth dx ([#4237](https://github.com/aws-amplify/amplify-cli/issues/4237)) ([4322a32](https://github.com/aws-amplify/amplify-cli/commit/4322a326df8c5c0a89de5f5e8f46bcfd4e1ad770))
+
+
+
+
+
+## [2.15.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.15.5...amplify-category-auth@2.15.6) (2020-05-15)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** adding unique Id to Role name ([#4231](https://github.com/aws-amplify/amplify-cli/issues/4231)) ([21de1af](https://github.com/aws-amplify/amplify-cli/commit/21de1affd89142598a1f8022c387b3c04994b1e0))
+
+
+
+
+
+## [2.15.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.15.4...amplify-category-auth@2.15.5) (2020-05-08)
+
+
+### Bug Fixes
+
+* change auth method copy [#4184](https://github.com/aws-amplify/amplify-cli/issues/4184) ([#4198](https://github.com/aws-amplify/amplify-cli/issues/4198)) ([8097671](https://github.com/aws-amplify/amplify-cli/commit/809767143ebf7dd6868279407461d0657e83073a))
+* prevent naming conflicts with new env names ([#3875](https://github.com/aws-amplify/amplify-cli/issues/3875)) ([a7734ae](https://github.com/aws-amplify/amplify-cli/commit/a7734aedb8e846620874ae69e5c38da393dbbe30)), closes [#3854](https://github.com/aws-amplify/amplify-cli/issues/3854)
+
+
+
+
+
 ## [2.15.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.15.3...amplify-category-auth@2.15.4) (2020-04-06)
 
 

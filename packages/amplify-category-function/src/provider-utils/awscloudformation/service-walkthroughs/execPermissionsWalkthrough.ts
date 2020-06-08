@@ -5,6 +5,9 @@ import * as TransformPackage from 'graphql-transformer-core';
 import _ from 'lodash';
 import { topLevelCommentPrefix, topLevelCommentSuffix, envVarPrintoutPrefix } from '../../../constants';
 
+/**
+ * This whole file desperately needs to be refactored
+ */
 export async function askExecRolePermissionsQuestions(context, allDefaultValues, parameters, currentDefaults?) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
@@ -12,12 +15,12 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
   let categories = Object.keys(amplifyMeta);
   categories = categories.filter(category => category !== 'providers');
 
-  // retrieve api's appsynch resource name for conditional logic
+  // retrieve api's AppSync resource name for conditional logic
   // in blending appsync @model-backed dynamoDB tables into storage category flow
   const appsyncResourceName =
     'api' in amplifyMeta ? Object.keys(amplifyMeta.api).find(key => amplifyMeta.api[key].service === 'AppSync') : undefined;
 
-  // if there is api category appsynch resource and no storage category, add it back to selection
+  // if there is api category AppSync resource and no storage category, add it back to selection
   // since storage category is responsible for managing appsync @model-backed dynamoDB table permissions
   if (!categories.includes('storage') && appsyncResourceName !== undefined) {
     categories.push('storage');
@@ -124,20 +127,17 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
           };
 
           const crudPermissionAnswer = await inquirer.prompt([crudPermissionQuestion]);
-          if (!parameters.permissions[category]) {
-            parameters.permissions[category] = {};
-          }
 
-          parameters.permissions[category][resourceName] = crudPermissionAnswer.crudOptions;
+          const resourcePolicy: any = crudPermissionAnswer.crudOptions;
           // overload crudOptions when user selects graphql @model-backing DynamoDB table
           // as there is no actual storage category resource where getPermissionPolicies can derive service and provider
           if (resourceName.endsWith(appsyncTableSuffix)) {
-            parameters.permissions[category][resourceName].providerPlugin = 'awscloudformation';
-            parameters.permissions[category][resourceName].service = 'DynamoDB';
+            resourcePolicy.providerPlugin = 'awscloudformation';
+            resourcePolicy.service = 'DynamoDB';
             const dynamoDBTableARNComponents = constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
 
             // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
-            parameters.permissions[category][resourceName].customPolicyResource = [
+            resourcePolicy.customPolicyResource = [
               {
                 'Fn::Join': ['', dynamoDBTableARNComponents],
               },
@@ -147,8 +147,13 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
             ];
           }
 
-          const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, parameters.permissions[category]);
+          const { permissionPolicies, resourceAttributes } = await getPermissionPolicies(context, { [resourceName]: resourcePolicy });
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
+
+          if (!parameters.permissions[category]) {
+            parameters.permissions[category] = {};
+          }
+          parameters.permissions[category][resourceName] = resourcePolicy;
 
           // replace resource attributes for @model-backed dynamoDB tables
           resources = resources.concat(
@@ -187,6 +192,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
   const resourceProperties = [];
   const resourcePropertiesJSON = {};
   const envVars = new Set<string>();
+  allDefaultValues.dependsOn = []; // reset the dependsOn field for this resource because it will be re-populated based on the update selections
   resources.forEach(resource => {
     const { category, resourceName, attributes } = resource;
     /**
@@ -216,14 +222,10 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
       const refName = `${category}${resourceName}${attribute}`;
 
       resourceProperties.push(`"${envName}": {"Ref": "${refName}"}`);
-      resourcePropertiesJSON[`${envName}`] = { Ref: `${category}${resourceName}${attribute}` };
+      resourcePropertiesJSON[`${envName}`] = { Ref: refName };
 
       envVars.add(envName);
     });
-
-    if (!allDefaultValues.dependsOn) {
-      allDefaultValues.dependsOn = [];
-    }
 
     let resourceExists = false;
     allDefaultValues.dependsOn.forEach(amplifyResource => {

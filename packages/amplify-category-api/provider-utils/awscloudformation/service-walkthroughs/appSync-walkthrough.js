@@ -401,25 +401,28 @@ async function updateWalkthrough(context) {
       }
     });
   }
+  const updateChoices = [
+    {
+      name: 'Walkthrough all configurations',
+      value: 'all',
+    },
+    {
+      name: 'Update auth settings',
+      value: 'authUpdate',
+    },
+  ];
+  // check if DataStore is enabled for the entire API
+  if (project.config && project.config.ResolverConfig) {
+    updateChoices.push({ name: 'Disable DataStore for entire API', value: 'disableDatastore' });
+  } else {
+    updateChoices.push({ name: 'Enable DataStore for entire API', value: 'enableDatastore' });
+  }
 
   const updateOptionQuestion = {
     type: 'list',
     name: 'updateOption',
     message: 'Select from the options below',
-    choices: [
-      {
-        name: 'Walkthrough all configurations',
-        value: 'all',
-      },
-      {
-        name: 'Update auth settings',
-        value: 'authUpdate',
-      },
-      {
-        name: 'Enable DataStore for entire API',
-        value: 'enableDatastore',
-      },
-    ],
+    choices: updateChoices,
   };
 
   let { updateOption } = await inquirer.prompt([updateOptionQuestion]);
@@ -428,6 +431,9 @@ async function updateWalkthrough(context) {
     resolverConfig = {
       project: { ConflictHandler: 'AUTOMERGE', ConflictDetection: 'VERSION' },
     };
+  } else if (updateOption === 'disableDatastore') {
+    delete project.config.ResolverConfig;
+    await writeTransformerConfiguration(resourceDir, project.config);
   } else if (updateOption === 'authUpdate') {
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);

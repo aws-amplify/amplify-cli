@@ -1,21 +1,15 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from '../init';
-import {
-  addFunction,
-  updateFunction,
-  functionBuild,
-  addLambdaTrigger,
-  functionMockAssert,
-  functionCloudInvoke,
-} from '../categories/function';
-import { addSimpleDDB } from '../categories/storage';
-import { addKinesis } from '../categories/analytics';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, sleep, overrideFunctionSrc, getFunctionSrc } from '../utils';
-import { addApiWithSchema } from '../categories/api';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
+import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
+import { addSimpleDDB } from 'amplify-e2e-core';
+import { addKinesis } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
+import { addApiWithSchema } from 'amplify-e2e-core';
 
-import { appsyncGraphQLRequest } from '../utils/appsync';
-import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule } from '../utils/sdk-calls';
+import { appsyncGraphQLRequest } from 'amplify-e2e-core';
+import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule, getEventSourceMappings } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
+import { retry, readJsonFile } from 'amplify-e2e-core';
 
 describe('nodejs', () => {
   describe('amplify add function', () => {
@@ -64,28 +58,36 @@ describe('nodejs', () => {
         variables: null,
       });
 
-      // NOTE: the next graphQL request will not get logged unless we wait a bit
-      // trigger is not directly available right after cloudformation deploys???
-      // I am not sure whether this is an issue on CF side or not
-      await sleep(120 * 1000);
-
       const appsyncResource = Object.keys(meta.api).map(key => meta.api[key])[0];
-      let resp = (await appsyncGraphQLRequest(appsyncResource, createGraphQLPayload(Math.round(Math.random() * 1000), 'amplify'))) as {
-        data: { createTodo: { id: string; content: string } };
+
+      await retry(
+        () => getEventSourceMappings(functionName, region),
+        res => res.length > 0 && res[0].State === 'Enabled',
+      );
+
+      const fireGqlRequestAndCheckLogs: () => Promise<boolean> = async () => {
+        const resp = (await appsyncGraphQLRequest(appsyncResource, createGraphQLPayload(Math.round(Math.random() * 1000), 'amplify'))) as {
+          data: { createTodo: { id: string; content: string } };
+        };
+        const id = resp.data.createTodo.id;
+        if (!id) {
+          return false;
+        }
+        await retry(
+          () => getCloudWatchLogs(region, `/aws/lambda/${functionName}`),
+          logs => !!logs.find(logEntry => logEntry.message.includes(`"id":{"S":"${id}"},"content":{"S":"amplify"}`)),
+          {
+            stopOnError: false,
+            times: 2,
+          },
+        );
+        return true;
       };
 
-      expect(resp.data.createTodo.id).toBeDefined();
-
-      // sleep a bit to make sure lambda logs appear in cloudwatch
-      await sleep(120 * 1000);
-
-      const logs = await getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`);
-      // NOTE: this expects default Lambda DynamoDB trigger template to log dynamoDB json records
-      const todoId = resp.data.createTodo.id;
-      const dynamoDBNewImageEntry = logs.find(logEntry => logEntry.message.includes(`"id":{"S":"${todoId}"},"content":{"S":"amplify"}`));
-
-      // dynamoDB event(NewImage) log record found
-      expect(dynamoDBNewImageEntry).toBeDefined();
+      await retry(fireGqlRequestAndCheckLogs, res => res, {
+        stopOnError: false,
+        times: 2,
+      });
     });
 
     it('records put into kinesis stream should result in trigger called in minimal kinesis + trigger infra', async () => {
@@ -104,31 +106,41 @@ describe('nodejs', () => {
       const cloudFunction = await getFunction(functionName, region);
       expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
 
-      // NOTE: the next graphQL request will not get logged unless we wait a bit
-      // trigger is not directly available right after cloudformation deploys???
-      // I am not sure whether this is an issue on CF side or not
-      await sleep(120 * 1000); // 2 minutes
+      await retry(
+        () => getEventSourceMappings(functionName, region),
+        res => res.length > 0 && res[0].State === 'Enabled',
+      );
 
       const kinesisResource = Object.keys(meta.analytics).map(key => meta.analytics[key])[0];
-      const resp = await putKinesisRecords(
-        'integtest',
-        '0',
-        kinesisResource.output.kinesisStreamId,
-        meta.providers.awscloudformation.Region,
-      );
-      expect(resp.FailedRecordCount).toBe(0);
-      expect(resp.Records.length).toBeGreaterThan(0);
 
-      // sleep a bit to make sure lambda logs appear in cloudwatch
-      await sleep(120 * 1000); // 2 minutes
+      const fireKinesisRequestAndCheckLogs = async () => {
+        const resp = await putKinesisRecords(
+          'integtest',
+          '0',
+          kinesisResource.output.kinesisStreamId,
+          meta.providers.awscloudformation.Region,
+        );
+        if (!(resp.FailedRecordCount === 0 && resp.Records.length > 0)) {
+          return false;
+        }
 
-      let eventId = `${resp.Records[0].ShardId}:${resp.Records[0].SequenceNumber}`;
-      const logs = await getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`);
-      // NOTE: this expects default Lambda Kinesis trigger template to log kinesis records
-      const kinesisEntry = logs.find(logEntry => logEntry.message.includes(eventId));
+        let eventId = `${resp.Records[0].ShardId}:${resp.Records[0].SequenceNumber}`;
 
-      // dynamoDB event(NewImage) log record found
-      expect(kinesisEntry).toBeDefined();
+        await retry(
+          () => getCloudWatchLogs(meta.providers.awscloudformation.Region, `/aws/lambda/${functionName}`),
+          logs => !!logs.find(logEntry => logEntry.message.includes(eventId)),
+          {
+            stopOnError: false,
+            times: 2,
+          },
+        );
+        return true;
+      };
+
+      await retry(fireKinesisRequestAndCheckLogs, res => res, {
+        stopOnError: false,
+        times: 2,
+      });
     });
 
     it('should fail with approp message when adding lambda triggers to unexisting resources', async () => {
@@ -409,6 +421,37 @@ describe('nodejs', () => {
         'utf8',
       );
       expect(lambdaHandlerContents).toMatchSnapshot();
+    });
+
+    it('adding api and storage permissions should not add duplicates to CFN', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addApiWithSchema(projRoot, 'two-model-schema.graphql');
+
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      const ddbName = `ddbTable${random}`;
+
+      await addSimpleDDB(projRoot, { name: ddbName });
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['api', 'storage'],
+            resources: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            resourceChoices: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            operations: ['read'],
+          },
+        },
+        'nodejs',
+      );
+
+      const lambdaCFN = readJsonFile(
+        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
+      );
+      expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
     });
   });
 });

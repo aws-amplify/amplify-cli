@@ -19,7 +19,7 @@ function zipFile(sourceDir, destFilePath) {
       resolve(zipFilePath);
     });
 
-    archive.on('error', (err) => {
+    archive.on('error', err => {
       reject(err);
     });
     archive.pipe(output);
@@ -29,6 +29,10 @@ function zipFile(sourceDir, destFilePath) {
 }
 
 function run(command, projectDirectory) {
+  if (!command) {
+    throw new Error('Missing build command');
+  }
+
   return new Promise((resolve, reject) => {
     let args = command.split(/\s+/);
     const cmd = args[0];
@@ -36,7 +40,7 @@ function run(command, projectDirectory) {
     const execution = spawn(cmd, args, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
-    execution.on('exit', (code) => {
+    execution.on('exit', code => {
       if (code === 0) {
         resolve();
       } else if (!rejectFlag) {
@@ -45,7 +49,7 @@ function run(command, projectDirectory) {
       }
     });
 
-    execution.on('error', (err) => {
+    execution.on('error', err => {
       console.log(chalk.red('command execution teminated with error'));
       if (!rejectFlag) {
         rejectFlag = true;

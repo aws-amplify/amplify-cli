@@ -6,7 +6,7 @@ import { getDataLoader, AmplifyAppSyncSimulatorDataLoader } from './data-loader'
 import { AppSyncUnitResolver } from './resolvers';
 import { AppSyncSimulatorServer } from './server';
 export { addDataLoader, removeDataLoader } from './data-loader';
-import { PubSub } from 'graphql-subscriptions';
+import { PubSub, withFilter } from 'graphql-subscriptions';
 import { AmplifySimulatorFunction } from './resolvers/function';
 import { AppSyncPipelineResolver } from './resolvers/pipeline-resolver';
 import {
@@ -18,6 +18,7 @@ import {
   AmplifyAppSyncAPIConfig,
   AppSyncSimulatorMappingTemplate,
 } from './type-definition';
+import { filterSubscriptions } from './utils/graphql-runner/subscriptions-filter';
 export * from './type-definition';
 
 const DEFAULT_SCHEMA = `
@@ -42,7 +43,7 @@ export class AmplifyAppSyncSimulator {
     serverConfig: AppSyncSimulatorServerConfig = {
       port: 0,
       wsPort: 0,
-    }
+    },
   ) {
     this._serverConfig = serverConfig;
     this._pubsub = new PubSub();
@@ -84,17 +85,7 @@ export class AmplifyAppSyncSimulator {
 
       this.functions = (config.functions || []).reduce((map, fn) => {
         const { dataSourceName, requestMappingTemplateLocation, responseMappingTemplateLocation } = fn;
-        map.set(
-          fn.name,
-          new AmplifySimulatorFunction(
-            {
-              dataSourceName,
-              requestMappingTemplateLocation: requestMappingTemplateLocation,
-              responseMappingTemplateLocation: responseMappingTemplateLocation,
-            },
-            this
-          )
-        );
+        map.set(fn.name, new AmplifySimulatorFunction(fn, this));
         return map;
       }, new Map());
 
@@ -163,6 +154,9 @@ export class AmplifyAppSyncSimulator {
 
   get pubsub(): PubSub {
     return this._pubsub;
+  }
+  asyncIterator(trigger: string): AsyncIterator<any> {
+    return withFilter(() => this._pubsub.asyncIterator(trigger), filterSubscriptions)();
   }
 
   get url(): string {

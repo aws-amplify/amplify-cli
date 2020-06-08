@@ -164,7 +164,8 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
       batchSize: 100,
       startingPosition: 'LATEST',
       eventSourceArn: streamArnParamRef,
-      functionTemplateName: 'trigger-dynamodb.js',
+      functionTemplateType: 'dynamoDB',
+      functionTemplateName: 'DynamoDb.cs.ejs',
       triggerPolicies: [
         {
           Effect: 'Allow',

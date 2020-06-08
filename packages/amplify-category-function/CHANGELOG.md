@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.3...amplify-category-function@2.20.4) (2020-06-02)
+
+
+### Bug Fixes
+
+* remove permissions from meta files on func update ([#4287](https://github.com/aws-amplify/amplify-cli/issues/4287)) ([129ec94](https://github.com/aws-amplify/amplify-cli/commit/129ec941df39eb5aa600a89de195fe3eeef13c4f))
+
+
+
+
+
+## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.2...amplify-category-function@2.20.3) (2020-05-26)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.1...amplify-category-function@2.20.2) (2020-05-15)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** prevent overwriting of parameters ([#4188](https://github.com/aws-amplify/amplify-cli/issues/4188)) ([7fefd29](https://github.com/aws-amplify/amplify-cli/commit/7fefd2973f5daa807d98caff4f374bf5a6ec3d31)), closes [#4065](https://github.com/aws-amplify/amplify-cli/issues/4065)
+
+
+
+
+
+## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.0...amplify-category-function@2.20.1) (2020-05-08)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fixes update CloudwatchRule in existing functions ([#3920](https://github.com/aws-amplify/amplify-cli/issues/3920)) ([2cafcff](https://github.com/aws-amplify/amplify-cli/commit/2cafcff25938f68365bdfd7ce9d221798e6f9ff8))
+* remove duplicate permissions from resources in same category ([#4091](https://github.com/aws-amplify/amplify-cli/issues/4091)) ([3f6036b](https://github.com/aws-amplify/amplify-cli/commit/3f6036b6b614a5e7a5f89e3ede289ffafba9fbb3))
+
+
+
+
+
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.19.0...amplify-category-function@2.20.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* remove duplicate env vars in top level comment ([#3894](https://github.com/aws-amplify/amplify-cli/issues/3894)) fixes [#3744](https://github.com/aws-amplify/amplify-cli/issues/3744) ([d586863](https://github.com/aws-amplify/amplify-cli/commit/d586863aabcb1ad2fc4d8ee1bd0e693a4d86d0ea))
+
+
+### Features
+
+* **amplify-dotnet-function-runtime-provider:** added dotnet CRUD ([#3931](https://github.com/aws-amplify/amplify-cli/issues/3931)) ([f589366](https://github.com/aws-amplify/amplify-cli/commit/f5893668ddadfc5b72a250502be78356ad65f7f9))
+
+
+
+
+
 # [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.18.0...amplify-category-function@2.19.0) (2020-04-06)
 
 
