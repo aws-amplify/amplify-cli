@@ -170,7 +170,7 @@ const stringSplitAndTrim = (input: string): string[] => {
     .filter(str => str); // filter out empty elements
 };
 
-// validats that each string in input is a valid lambda layer ARN
+// validates that each string in input is a valid lambda layer ARN
 const lambdaLayerARNValidator = (input: string[]): true | string => {
   const invalidARNs = input.filter(arn => !arn.match(layerARNRegex));
   return invalidARNs.length === 0 ? true : `${invalidARNs.join(', ')} are not valid Lambda Layer ARNs`;

@@ -7,7 +7,7 @@ import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 import { ServiceName, functionParametersFileName, parametersFileName } from '../utils/constants';
-import { category as categoryName, category } from '../../../constants';
+import { category } from '../../../constants';
 import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformationHelpers';
 import { askExecRolePermissionsQuestions } from './execPermissionsWalkthrough';
 import { scheduleWalkthrough } from './scheduleWalkthrough';
@@ -83,7 +83,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const functionParameters: Partial<FunctionParameters> = { resourceName: lambdaToUpdate };
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, categoryName, functionParameters.resourceName);
+  const resourceDirPath = path.join(projectBackendDirPath, category, functionParameters.resourceName);
   const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
   const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
 
@@ -178,7 +178,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
 }
 
 export function migrate(context, projectPath, resourceName) {
-  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', categoryName, resourceName);
+  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
   const oldCfn = context.amplify.readJsonFile(cfnFilePath);
   const newCfn: any = {};
