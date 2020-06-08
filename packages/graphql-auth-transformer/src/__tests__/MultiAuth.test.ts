@@ -124,6 +124,14 @@ const getSchemaWithNonModelField = (authDirective: string) => {
 
     type Location {
       name: String
+      address: Address
+    }
+
+    type Address {
+      street: String
+      city: String
+      state: String
+      zip: String
     }
 
     enum Status {
@@ -429,6 +437,7 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
     const expectedDirectiveNames = [userPoolsDirectiveName, apiKeyDirectiveName];
 
     if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
@@ -440,6 +449,15 @@ describe('Type directive transformation tests', () => {
       }
 
       expect(expectedDireciveNameCount).toEqual(locationType.directives.length);
+
+      expectedDireciveNameCount = 0;
+
+      for (const expectedDirectiveName of expectedDirectiveNames) {
+        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expectedDireciveNameCount++;
+      }
+
+      expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
     }
   });
 
@@ -451,6 +469,7 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
     const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
 
     if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
@@ -463,6 +482,15 @@ describe('Type directive transformation tests', () => {
 
       expect(expectedDireciveNameCount).toEqual(locationType.directives.length);
 
+      expectedDireciveNameCount = 0;
+
+      for (const expectedDirectiveName of expectedDirectiveNames) {
+        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expectedDireciveNameCount++;
+      }
+
+      expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
+
       expect(out.rootStack.Resources.AuthRolePolicy01).toBeDefined();
 
       const locationPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
@@ -474,6 +502,16 @@ describe('Type directive transformation tests', () => {
           r['Fn::Sub'][1].typeName === 'Location',
       );
       expect(locationPolicy).toBeDefined();
+
+      const addressPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
+        r =>
+          r['Fn::Sub'] &&
+          r['Fn::Sub'].length &&
+          r['Fn::Sub'].length === 2 &&
+          r['Fn::Sub'][1].typeName &&
+          r['Fn::Sub'][1].typeName === 'Address',
+      );
+      expect(addressPolicy).toBeDefined();
     }
   });
 
@@ -485,8 +523,10 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
 
     expect(locationType.directives.length).toBe(0);
+    expect(addressType.directives.length).toBe(0);
 
     expect(out.rootStack.Resources.AuthRolePolicy01).toBeUndefined();
   });
@@ -499,8 +539,10 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
 
     expect(locationType.directives.length).toBe(0);
+    expect(addressType.directives.length).toBe(0);
 
     expect(out.rootStack.Resources.AuthRolePolicy01).toBeDefined();
 
@@ -513,6 +555,16 @@ describe('Type directive transformation tests', () => {
         r['Fn::Sub'][1].typeName === 'Location',
     );
     expect(locationPolicy).toBeDefined();
+
+    const addressPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
+      r =>
+        r['Fn::Sub'] &&
+        r['Fn::Sub'].length &&
+        r['Fn::Sub'].length === 2 &&
+        r['Fn::Sub'][1].typeName &&
+        r['Fn::Sub'][1].typeName === 'Address',
+    );
+    expect(addressPolicy).toBeDefined();
   });
 
   // Disabling until troubleshooting the changes

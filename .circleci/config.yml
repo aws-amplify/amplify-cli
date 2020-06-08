@@ -961,6 +961,8 @@ workflows:
             - graphql_e2e_tests
             - integration_test
             - amplify_console_integration_tests
+            - amplify_migration_tests_latest
+            - amplify_migration_tests_v4
             - plugin-amplify_e2e_tests
             - datastore-modegen-amplify_e2e_tests
             - interactions-amplify_e2e_tests
