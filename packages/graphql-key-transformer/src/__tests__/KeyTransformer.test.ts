@@ -1,6 +1,8 @@
-import { GraphQLTransform, InvalidDirectiveError } from 'graphql-transformer-core';
+import { GraphQLTransform, InvalidDirectiveError, EXTRA_DIRECTIVES_DOCUMENT, EXTRA_SCALARS_DOCUMENT } from 'graphql-transformer-core';
 import { KeyTransformer } from '../KeyTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { isNullableType, buildSchema, print } from 'graphql';
 
 test('Check KeyTransformer Resolver Code', () => {
   const validSchema = `
@@ -111,4 +113,89 @@ test('KeyTransformer should fail if a non-existing type field is defined as key 
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
+});
+
+test('KeyTransformer should generate queryField automatically', () => {
+  const validSchema = `
+    type Item @model
+        @key(fields: ["orderId", "status", "createdAt"])
+        @key(name: "ByStatus", fields: ["status", "createdAt"])
+    {
+        orderId: ID!
+        status: Status!
+        createdAt: AWSDateTime!
+        name: String!
+    }
+    enum Status {
+      DELIVERED IN_TRANSIT PENDING UNKNOWN
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const schema = buildSchema([print(EXTRA_DIRECTIVES_DOCUMENT), print(EXTRA_SCALARS_DOCUMENT), out.schema].join('\n'));
+  const queryType = schema.getQueryType();
+  const queryFields = queryType.getFields();
+  const queryItemByStatus = queryFields['queryItemsByStatus'];
+  expect(queryItemByStatus).toBeDefined();
+  const status = queryItemByStatus.args.find(arg => arg.name === 'status');
+  expect(isNullableType(status)).not.toBeTruthy();
+});
+
+test('KeyTransformer should generate query when queryField is set', () => {
+  const validSchema = `
+    type Item @model
+        @key(fields: ["orderId", "status", "createdAt"])
+        @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "myQuery")
+    {
+        orderId: ID!
+        status: Status!
+        createdAt: AWSDateTime!
+        name: String!
+    }
+    enum Status {
+      DELIVERED IN_TRANSIT PENDING UNKNOWN
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const schema = buildSchema([print(EXTRA_DIRECTIVES_DOCUMENT), print(EXTRA_SCALARS_DOCUMENT), out.schema].join('\n'));
+  const queryType = schema.getQueryType();
+  const queryFields = queryType.getFields();
+  const queryItemByStatus = queryFields['myQuery'];
+  expect(queryItemByStatus).toBeDefined();
+  const status = queryItemByStatus.args.find(arg => arg.name === 'status');
+  expect(isNullableType(status)).not.toBeTruthy();
+});
+
+test('KeyTransformer should not generate queryFeild automatically when generateQuery set to false', () => {
+  const validSchema = `
+    type Item @model
+        @key(fields: ["orderId", "status", "createdAt"])
+        @key(name: "ByStatus", fields: ["status", "createdAt"], generateQuery: false)
+    {
+        orderId: ID!
+        status: Status!
+        createdAt: AWSDateTime!
+        name: String!
+    }
+    enum Status {
+      DELIVERED IN_TRANSIT PENDING UNKNOWN
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const schema = buildSchema([print(EXTRA_DIRECTIVES_DOCUMENT), print(EXTRA_SCALARS_DOCUMENT), out.schema].join('\n'));
+  const queryType = schema.getQueryType();
+  const queryFields = queryType.getFields();
+  const queryItemByStatus = queryFields['queryItemsByStatus'];
+  expect(queryItemByStatus).not.toBeDefined();
 });

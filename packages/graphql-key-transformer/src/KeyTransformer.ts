@@ -1,4 +1,5 @@
 import { Transformer, gql, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
+
 import {
   obj,
   str,
@@ -39,6 +40,9 @@ import {
   graphqlName,
   toUpper,
   getDirectiveArgument,
+  KeyDirectiveArguments as KeyArguments,
+  shouldKeyDirectiveGenerateQuery as shouldGenerateQuery,
+  getKeyDirectiveQueryFieldName as getQueryFieldName,
 } from 'graphql-transformer-common';
 import { makeModelConnectionType } from 'graphql-dynamodb-transformer';
 import {
@@ -54,12 +58,6 @@ import {
 import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
-interface KeyArguments {
-  name?: string;
-  fields: string[];
-  queryField?: string;
-}
-
 export class KeyTransformer extends Transformer {
   constructor() {
     // TODO remove once prettier is upgraded
@@ -67,7 +65,7 @@ export class KeyTransformer extends Transformer {
     super(
       'KeyTransformer',
       gql`
-        directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
+        directive @key(name: String, fields: [String!]!, queryField: String, generateQuery: Boolean) repeatable on OBJECT
       `
     );
   }
@@ -184,10 +182,11 @@ export class KeyTransformer extends Transformer {
           deleteResolver.Properties.RequestMappingTemplate,
         ]);
       }
-      if (directiveArgs.queryField) {
+      if (shouldGenerateQuery(directiveArgs)) {
+        const queryFieldName = getQueryFieldName(definition, directiveArgs);
         const queryTypeName = ctx.getQueryTypeName();
-        const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, directiveArgs.queryField);
-        const queryResolver = makeQueryResolver(definition, directive, ctx);
+        const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, queryFieldName);
+        const queryResolver = makeQueryResolver(definition, directive, ctx, queryFieldName);
         ctx.mapResourceToStack(definition.name.value, queryResolverId);
         ctx.setResource(queryResolverId, queryResolver);
       }
@@ -307,7 +306,8 @@ export class KeyTransformer extends Transformer {
   // If this is a secondary key and a queryField has been provided, create the query field.
   private ensureQueryField = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     const args: KeyArguments = getDirectiveArguments(directive);
-    if (args.queryField && !this.isPrimaryKey(directive)) {
+    if (shouldGenerateQuery(args) && !this.isPrimaryKey(directive)) {
+      const queryFieldName = getQueryFieldName(definition, args);
       let queryType = ctx.getQuery();
       let queryArguments = [];
       if (args.fields.length > 2) {
@@ -320,7 +320,7 @@ export class KeyTransformer extends Transformer {
         queryArguments = addHashField(definition, args, queryArguments);
       }
       queryArguments.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
-      const queryField = makeConnectionField(args.queryField, definition.name.value, queryArguments);
+      const queryField = makeConnectionField(queryFieldName, definition.name.value, queryArguments);
       queryType = {
         ...queryType,
         fields: [...queryType.fields, queryField],
@@ -800,11 +800,10 @@ function condenseRangeKey(fields: string[]) {
   return fields.join(ModelResourceIDs.ModelCompositeKeySeparator());
 }
 
-function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) {
+function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext, fieldName) {
   const type = definition.name.value;
   const directiveArgs: KeyArguments = getDirectiveArguments(directive);
   const index = directiveArgs.name;
-  const fieldName = directiveArgs.queryField;
   const queryTypeName = ctx.getQueryTypeName();
   const requestVariable = 'QueryRequest';
   return new AppSync.Resolver({
@@ -865,7 +864,9 @@ function addHashField(
 ): InputValueDefinitionNode[] {
   let hashFieldName = args.fields[0];
   const hashField = definition.fields.find(field => field.name.value === hashFieldName);
-  const hashKey = makeInputValueDefinition(hashFieldName, makeNamedType(getBaseType(hashField.type)));
+  const hasFieldType = makeNamedType(getBaseType(hashField.type));
+  // Primary index does support scan operation in list but named query needs the hash key to be passed. Making it non-nullable field
+  const hashKey = makeInputValueDefinition(hashFieldName, args.name ? makeNonNullType(hasFieldType) : hasFieldType);
   return [hashKey, ...elems];
 }
 function addSimpleSortKey(
