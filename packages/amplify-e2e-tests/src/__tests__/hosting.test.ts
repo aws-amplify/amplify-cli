@@ -1,7 +1,7 @@
 import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
-import { addDEVHosting, addPRODHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
+import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
 import { deleteProjectDir, getProjectMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
