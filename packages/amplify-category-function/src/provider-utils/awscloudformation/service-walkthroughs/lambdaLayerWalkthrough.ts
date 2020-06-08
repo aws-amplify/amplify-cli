@@ -28,6 +28,7 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
   _.assign(parameters,{layerVersion : "1"});
   // add layer version to parameters
   _.assign(parameters, {layerVersionsMap: createVersionsMap(parameters,"1")});
+  _.assign(parameters,{build : true})
   return parameters;
 }
 
@@ -120,6 +121,13 @@ export async function updateLayerWalkthrough(
     templateParameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   }
   _.assign(templateParameters,{layerVersion : String(latestVersion)});
+
+  if(latestVersion === latestVersionPushed){
+    _.assign(templateParameters,{build : false});
+  }
+  else{
+    _.assign(templateParameters,{build: true});
+  }
   return templateParameters;
 }
 

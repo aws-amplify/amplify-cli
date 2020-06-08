@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import { provider, ServiceName, layerParametersFileName } from './constants';
 import { category as categoryName } from '../../../constants';
 import generateLayerCfnObj from './lambda-layer-cloudformation-template';
+import generatePermissionCfnObj from './lambda-layer-permission-template'
 import _ from 'lodash';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 
@@ -125,13 +126,24 @@ export function saveCFNParameters(
 }
 
 export function updateLayerCfnFile(context, parameters, layerDirPath) {
-  context.amplify.writeObjectAsJson(
-    path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
-    generateLayerCfnObj(parameters),
-    true,
-  );
+  if(parameters.build){
+    context.amplify.writeObjectAsJson(
+      path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
+      generateLayerCfnObj(parameters),
+      true,
+    );
+  }
+  else{
+    context.amplify.writeObjectAsJson(
+      path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
+      generatePermissionCfnObj(parameters),
+      true,
+    );
+
+  }
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName,'runtimes', parameters.runtimes);
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName,'versionsMap', parameters.layerVersionsMap);
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName,'build', parameters.build);
 }
 
 export function createLayerParametersFile(context,parameters,layerDirPath){
