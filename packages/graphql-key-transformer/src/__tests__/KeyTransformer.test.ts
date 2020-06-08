@@ -115,7 +115,7 @@ test('KeyTransformer should fail if a non-existing type field is defined as key 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
 });
 
-test('KeyTransformer should generate queryFeild automatically', () => {
+test('KeyTransformer should generate queryField automatically', () => {
   const validSchema = `
     type Item @model
         @key(fields: ["orderId", "status", "createdAt"])
