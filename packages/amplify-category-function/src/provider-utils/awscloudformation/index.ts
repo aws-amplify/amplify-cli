@@ -87,6 +87,9 @@ async function addFunctionResource(
       },
     });
 
+    // make sure the lambda layers array is initialized
+    funcParams = merge(funcParams, { lambdaLayers: [] });
+
     // populate the parameters for the resource
     // This will modify funcParams
     await serviceConfig.walkthroughs.createWalkthrough(context, funcParams);

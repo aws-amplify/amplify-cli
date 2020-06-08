@@ -1,5 +1,6 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
 import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
+import { addLayer, LayerOptions } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
@@ -453,6 +454,41 @@ describe('nodejs', () => {
       );
       expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
     });
+  });
+
+  describe('add function with layers', () => {
+    let projRoot: string;
+
+    beforeEach(async () => {
+      projRoot = await createNewProjectDir('functions');
+    });
+
+    afterEach(async () => {
+      await deleteProject(projRoot);
+      deleteProjectDir(projRoot);
+    });
+    it('can add project layers and external layers', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addLayer(projRoot);
+      const layerOptions: LayerOptions = {
+        select: ['test-layer'],
+        expectedListOptions: ['test-layer'],
+        versions: {
+          ['test-layer']: {
+            version: 1,
+            expectedVersionOptions: [3, 2, 1]
+          }
+        },
+        customArns: ['arn:aws:lambda:us-west-2:123456789012:layer:my-layer:2']
+      }
+      const functionName = 'myFunctionName';
+      await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'nodejs');
+
+      // since layer push doesn't work yet, just check that we put the right stuff in the CFN template
+      const cfnTemplateContents = fs.readFileSync(
+        path.join(projRoot, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`), 'utf8');
+      const templateObj = JSON.parse(cfnTemplateContents);
+      expect(templateObj.Resources.LambdaFunction.Properties.Layers).toMatchSnapshot();
   });
 });
 

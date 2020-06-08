@@ -34,7 +34,7 @@ export function addLayer(cwd: string, settings?: any) {
   const defaultSettings = {
     layerName: 'test-layer',
     runtimes: ['nodejs'],
-    permission: 'private',
+    permission: 'Only the current AWS account',
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
@@ -110,11 +110,7 @@ export function removeLayer(cwd: string) {
 }
 
 function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
-  let runtimeDisplayNames = [];
-  for (let i = 0; i < runtimes.length; ++i) {
-    runtimeDisplayNames[i] = getLayerRuntimeInfo(runtimes[i]).displayName;
-  }
-  return runtimeDisplayNames;
+  return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
 }
 
 function getLayerRuntimeInfo(runtime: LayerRuntimes) {
