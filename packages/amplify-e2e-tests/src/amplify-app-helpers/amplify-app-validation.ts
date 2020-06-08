@@ -11,7 +11,7 @@ function validateProject(projRoot: string, platform: string) {
       expect(fs.existsSync(path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'amplifyconfiguration.json'))).toBeTruthy();
       break;
     case 'ios':
-      expect(fs.existsSync(path.join(projRoot, 'amplifyxc.config'))).toBeTruthy();
+      expect(fs.existsSync(path.join(projRoot, 'amplifytools.xcconfig'))).toBeTruthy();
       expect(fs.existsSync(path.join(projRoot, 'amplifyconfiguration.json'))).toBeTruthy();
       expect(fs.existsSync(path.join(projRoot, 'awsconfiguration.json'))).toBeTruthy();
       break;

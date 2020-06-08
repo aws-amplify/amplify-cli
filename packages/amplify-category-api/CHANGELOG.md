@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.19.3...amplify-category-api@2.19.4) (2020-06-02)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.19.2...amplify-category-api@2.19.3) (2020-05-26)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** toggle datastore in update ([#4276](https://github.com/aws-amplify/amplify-cli/issues/4276)) ([c522f29](https://github.com/aws-amplify/amplify-cli/commit/c522f295304410aeb1d6f60aaba9b466d3304ee1)), closes [#4058](https://github.com/aws-amplify/amplify-cli/issues/4058)
+
+
+
+
+
+## [2.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.19.1...amplify-category-api@2.19.2) (2020-05-15)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.19.0...amplify-category-api@2.19.1) (2020-05-08)
+
+
+### Bug Fixes
+
+* incorrect type on graphql boilerplate schema ([#4070](https://github.com/aws-amplify/amplify-cli/issues/4070)) ([d96171a](https://github.com/aws-amplify/amplify-cli/commit/d96171a7461ecbb610c3cbcbcb05cdf5492dc8e5))
+
+
+
+
+
+# [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.18.0...amplify-category-api@2.19.0) (2020-04-23)
+
+
+### Features
+
+* **amplify-category-api:** allow minified CF stack templates ([#3520](https://github.com/aws-amplify/amplify-cli/issues/3520)) ([6da2a63](https://github.com/aws-amplify/amplify-cli/commit/6da2a634548fdf48deb4b1144c67d1e1515abb80)), closes [#2914](https://github.com/aws-amplify/amplify-cli/issues/2914)
+
+
+
+
+
 # [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.17.1...amplify-category-api@2.18.0) (2020-04-06)
 
 

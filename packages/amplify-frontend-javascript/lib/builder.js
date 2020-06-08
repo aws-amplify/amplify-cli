@@ -6,6 +6,11 @@ function run(context) {
   return new Promise((resolve, reject) => {
     const { projectConfig } = context.exeInfo;
     const buildCommand = projectConfig[constants.Label].config.BuildCommand;
+
+    if (!buildCommand) {
+      throw new Error('Missing build command');
+    }
+
     let args = buildCommand.split(/\s+/);
     const command = normalizeCommand(args[0]);
     args = args.slice(1);

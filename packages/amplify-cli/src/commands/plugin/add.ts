@@ -156,7 +156,7 @@ async function promptForPluginPath(): Promise<string> {
 
 async function addNewPluginPackage(context: Context, pluginDirPath: string) {
   try {
-    const addUserPluginResult = addUserPluginPackage(context.pluginPlatform, pluginDirPath.trim());
+    const addUserPluginResult = await addUserPluginPackage(context.pluginPlatform, pluginDirPath.trim());
     if (addUserPluginResult.isAdded) {
       context.print.success('Successfully added plugin package.');
       await confirmAndScan(context.pluginPlatform);

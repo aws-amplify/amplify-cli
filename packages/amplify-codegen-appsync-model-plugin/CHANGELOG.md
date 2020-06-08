@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.18.0...amplify-codegen-appsync-model-plugin@1.19.0) (2020-05-26)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** iOS add suport for auth ([#4329](https://github.com/aws-amplify/amplify-cli/issues/4329)) ([17ac344](https://github.com/aws-amplify/amplify-cli/commit/17ac344d7096470e698b26d68d8c586446190352))
+
+
+
+
+
+# [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.17.0...amplify-codegen-appsync-model-plugin@1.18.0) (2020-05-15)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** add support for keyName ([#4258](https://github.com/aws-amplify/amplify-cli/issues/4258)) ([024b825](https://github.com/aws-amplify/amplify-cli/commit/024b82517a313a203f5ca851137e723f22f32649))
+
+
+
+
+
+# [1.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.16.0...amplify-codegen-appsync-model-plugin@1.17.0) (2020-05-08)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** add non-model support - Java ([#3976](https://github.com/aws-amplify/amplify-cli/issues/3976)) ([0016135](https://github.com/aws-amplify/amplify-cli/commit/001613516f8a8f5425ddd6e918d1ea613d67d97f)), closes [#3586](https://github.com/aws-amplify/amplify-cli/issues/3586)
+
+
+
+
+
+# [1.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.15.0...amplify-codegen-appsync-model-plugin@1.16.0) (2020-04-23)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** update java tostring to include fields  ([#3773](https://github.com/aws-amplify/amplify-cli/issues/3773)) ([547cf94](https://github.com/aws-amplify/amplify-cli/commit/547cf942bf44a6e6776565b795e32553f94a6b90))
+
+
+
+
+
 # [1.15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.14.0...amplify-codegen-appsync-model-plugin@1.15.0) (2020-04-06)
 
 

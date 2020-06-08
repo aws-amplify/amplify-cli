@@ -17,6 +17,8 @@ import {
   makeModelSortDirectionEnumObject,
   SortKeyFieldInfoTypeName,
   CONDITIONS_MINIMUM_VERSION,
+  makeAttributeTypeEnum,
+  makeEnumFilterInputObjects,
 } from 'graphql-dynamodb-transformer';
 import {
   getBaseType,
@@ -41,6 +43,7 @@ const CONNECTION_STACK_NAME = 'ConnectionStack';
 interface RelationArguments {
   keyName?: string;
   fields: string[];
+  limit?: number;
 }
 
 function makeConnectionAttributeName(type: string, field?: string) {
@@ -610,6 +613,7 @@ export class ModelConnectionTransformer extends Transformer {
         args.fields,
         keySchema,
         index ? String(index.IndexName) : undefined,
+        args.limit,
       );
 
       ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver);
@@ -677,10 +681,25 @@ export class ModelConnectionTransformer extends Transformer {
       }
     }
 
+    // Create the Enum filters
+    const enumFilters = makeEnumFilterInputObjects(field, ctx, this.supportsConditions(ctx));
+    for (const filter of enumFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
     // Create the ModelXFilterInput
     const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx, this.supportsConditions(ctx));
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
+    }
+
+    if (this.supportsConditions(ctx)) {
+      const attributeTypeEnum = makeAttributeTypeEnum();
+      if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
+        ctx.addType(attributeTypeEnum);
+      }
     }
 
     // Create sort key condition inputs for valid sort key types

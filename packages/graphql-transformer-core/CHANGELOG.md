@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.18.1...graphql-transformer-core@6.18.2) (2020-06-02)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.18.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.18.0...graphql-transformer-core@6.18.1) (2020-05-26)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([f57f824](https://github.com/aws-amplify/amplify-cli/commit/f57f8242f18c79d48b751e29952e3cdd21409f98)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+
+
+
+
+
+# [6.18.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.17.1...graphql-transformer-core@6.18.0) (2020-05-15)
+
+
+### Features
+
+* support for overriding pipeline function templates in transformer ([#4196](https://github.com/aws-amplify/amplify-cli/issues/4196)) ([e1830ae](https://github.com/aws-amplify/amplify-cli/commit/e1830aeb31fef8f035cb0a992a150d37f78e07bb)), closes [#4192](https://github.com/aws-amplify/amplify-cli/issues/4192)
+
+
+
+
+
+## [6.17.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.17.0...graphql-transformer-core@6.17.1) (2020-05-08)
+
+
+### Bug Fixes
+
+* [#3438](https://github.com/aws-amplify/amplify-cli/issues/3438), many-to-many with conflict resolution generated wrong schema ([#4171](https://github.com/aws-amplify/amplify-cli/issues/4171)) ([9e8606c](https://github.com/aws-amplify/amplify-cli/commit/9e8606c4a300b5690839ec0869f7384aff189b1f))
+* use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+
+
+
+
+
+# [6.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.16.1...graphql-transformer-core@6.17.0) (2020-04-23)
+
+
+### Features
+
+* **amplify-category-api:** allow minified CF stack templates ([#3520](https://github.com/aws-amplify/amplify-cli/issues/3520)) ([6da2a63](https://github.com/aws-amplify/amplify-cli/commit/6da2a634548fdf48deb4b1144c67d1e1515abb80)), closes [#2914](https://github.com/aws-amplify/amplify-cli/issues/2914)
+
+
+
+
+
 ## [6.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.16.0...graphql-transformer-core@6.16.1) (2020-03-22)
 
 

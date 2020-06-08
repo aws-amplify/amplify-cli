@@ -8,8 +8,8 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
 } from 'graphql';
-import { GraphQLTransform } from 'graphql-transformer-core';
-import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
+import { GraphQLTransform, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
+import { ResolverResourceIDs, ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
 
@@ -572,7 +572,114 @@ test('Test ModelConnectionTransformer uses the default limit', () => {
   expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
 
   // Post.comments field
-  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 10) )');
+  expect(out.resolvers['Post.comments.req.vtl']).toContain(
+    `#set( $limit = $util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT}) )`,
+  );
+});
+
+test('Test ModelConnectionTransformer with keyField overrides the default limit', () => {
+  const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(limit: 50, fields: ["id"])
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
+
+  // Post.comments field
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
+});
+
+test('Test ModelConnectionTransformer with keyField uses the default limit', () => {
+  const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(fields: ["id"])
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
+
+  // Post.comments field
+  expect(out.resolvers['Post.comments.req.vtl']).toContain(
+    `#set( $limit = $util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT}) )`,
+  );
+});
+
+test('Connection on models with no codegen includes AttributeTypeEnum', () => {
+  const validSchema = `
+    type Post @model(queries: null, mutations: null, subscriptions: null) {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection
+    }
+    type Comment @model(queries: null, mutations: null, subscriptions: null) {
+        id: ID!
+        content: String
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.schema).toMatchSnapshot();
+});
+
+test('Connection on models with no codegen includes custom enum filters', () => {
+  const validSchema = `
+    type Cart @model(queries: null, mutations: null, subscriptions: null) {
+      id: ID!,
+      cartItems: [CartItem] @connection(name: "CartCartItem")
+    }
+    
+    type CartItem @model(queries: null, mutations: null, subscriptions: null) {
+      id: ID!
+      productType: PRODUCT_TYPE!
+      cart: Cart @connection(name: "CartCartItem")
+    }
+    
+    enum PRODUCT_TYPE {
+      UNIT
+      PACKAGE
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.schema).toMatchSnapshot();
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {

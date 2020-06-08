@@ -329,7 +329,7 @@ class App extends Component<{}, State> {
                     value={mode}
                     key={mode}
                     selected={mode === this.state.currentAuthMode}
-                  ></GraphiQL.SelectOption>
+                  />
                 ))}
               </GraphiQL.Select>
             </GraphiQL.Toolbar>

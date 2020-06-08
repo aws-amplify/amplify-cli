@@ -13,6 +13,7 @@ export function cfnJoin(valNode: [string, string[]], { params, conditions, resou
 
 export function cfnSub(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
   if (isString(valNode)) {
+    exports[valNode] = templateReplace(valNode, params);
     return processValue(valNode, {
       params,
       conditions,
@@ -47,6 +48,13 @@ export function cfnSub(valNode, { params, conditions, resources, exports }: Clou
     return template.replace(regExp, entry[1]);
   }, strTemplate);
   return result;
+}
+
+function templateReplace(template: string, args: any = {}) {
+  return template.replace(/\${(\w+)}/g, (a, v) => {
+    if (v in args) return args[v];
+    return a;
+  });
 }
 
 export function cfnGetAtt(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {

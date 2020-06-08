@@ -3,6 +3,8 @@ import {
   amplifyPublish,
   amplifyPush,
   removeHosting,
+  removeNonExistingHosting,
+  removeHostingEnabledInConsole,
   addCICDHostingWithoutFrontend,
   amplifyStatus,
   checkoutEnv,
@@ -10,7 +12,7 @@ import {
   deleteProject,
   addEnvironment,
 } from '../src/consoleHosting/consoleHosting';
-import { loadTypeFromTeamProviderInfo, createTestProject } from '../src/consoleHosting/utils';
+import { loadTypeFromTeamProviderInfo, createTestProject, cleanHostingLocally } from '../src/consoleHosting/utils';
 import { deleteProjectDir, getProfileName, npmInstall } from '../src/util';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -78,6 +80,14 @@ describe('amplify console add hosting', () => {
     await removeHosting(projRoot);
     await checkoutEnv(projRoot, ORIGINAL_ENV);
     await amplifyStatus(projRoot, 'Delete');
+  });
+
+  it('amplify remove hosting should print out correct error message when there is no local hosting', async () => {
+    await removeNonExistingHosting(projRoot);
+    await addManualHosting(projRoot);
+    await amplifyPush(projRoot);
+    cleanHostingLocally(projRoot, ORIGINAL_ENV);
+    await removeHostingEnabledInConsole(projRoot);
   });
 
   // CICD tests

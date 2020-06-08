@@ -33,6 +33,7 @@ import {
   isListType,
 } from 'graphql-transformer-common';
 import { TransformerContext } from 'graphql-transformer-core';
+import { getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
 
 const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith'];
 const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith'];
@@ -52,7 +53,7 @@ const ATTRIBUTE_TYPES = ['binary', 'binarySet', 'bool', 'list', 'map', 'number',
 export function getNonModelObjectArray(
   obj: ObjectTypeDefinitionNode,
   ctx: TransformerContext,
-  pMap: Map<string, ObjectTypeDefinitionNode>
+  pMap: Map<string, ObjectTypeDefinitionNode>,
 ): ObjectTypeDefinitionNode[] {
   // loop over all fields in the object, picking out all nonscalars that are not @model types
   for (const field of obj.fields) {
@@ -79,7 +80,7 @@ export function getNonModelObjectArray(
 export function makeNonModelInputObject(
   obj: ObjectTypeDefinitionNode,
   nonModelTypes: ObjectTypeDefinitionNode[],
-  ctx: TransformerContext
+  ctx: TransformerContext,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.NonModelInputObjectName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -125,11 +126,22 @@ export function makeNonModelInputObject(
 
 export function makeCreateInputObject(
   obj: ObjectTypeDefinitionNode,
+  directive: DirectiveNode,
   nonModelTypes: ObjectTypeDefinitionNode[],
   ctx: TransformerContext,
-  isSync: boolean = false
+  isSync: boolean = false,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelCreateInputObjectName(obj.name.value);
+  const createdAtField = getCreatedAtFieldName(directive);
+  const updatedAtField = getUpdatedAtFieldName(directive);
+
+  // List of fields that can be assigend in resolver if they are not passed in input
+  const autoGeneratableFieldsWithType: Record<string, string[]> = {
+    id: ['ID'],
+    [createdAtField]: ['AWSDateTime', 'String'],
+    [updatedAtField]: ['AWSDateTime', 'String'],
+  };
+
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
@@ -144,16 +156,14 @@ export function makeCreateInputObject(
     })
     .map((field: FieldDefinitionNode) => {
       let type: TypeNode;
-      if (field.name.value === 'id') {
+      const fieldName = field.name.value;
+      if (
+        Object.keys(autoGeneratableFieldsWithType).indexOf(fieldName) !== -1 &&
+        autoGeneratableFieldsWithType[fieldName].indexOf(unwrapNonNull(field.type).name.value) !== -1
+      ) {
         // ids are always optional. when provided the value is used.
         // when not provided the value is not used.
-        type = {
-          kind: Kind.NAMED_TYPE,
-          name: {
-            kind: Kind.NAME,
-            value: 'ID',
-          },
-        };
+        type = unwrapNonNull(field.type);
       } else {
         type = nonModelTypes.find(e => e.name.value === getBaseType(field.type))
           ? withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)))
@@ -192,7 +202,7 @@ export function makeUpdateInputObject(
   obj: ObjectTypeDefinitionNode,
   nonModelTypes: ObjectTypeDefinitionNode[],
   ctx: TransformerContext,
-  isSync: boolean = false
+  isSync: boolean = false,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelUpdateInputObjectName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -282,7 +292,7 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode, isSync: boo
 export function makeModelXFilterInputObject(
   obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
   ctx: TransformerContext,
-  supportsConditions: Boolean
+  supportsConditions: Boolean,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelFilterInputTypeName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -345,7 +355,7 @@ export function makeModelXFilterInputObject(
       // TODO: Service does not support new style descriptions so wait.
       // description: field.description,
       directives: [],
-    }
+    },
   );
 
   return {
@@ -367,7 +377,7 @@ export function makeModelXFilterInputObject(
 export function makeModelXConditionInputObject(
   obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
   ctx: TransformerContext,
-  supportsConditions: Boolean
+  supportsConditions: Boolean,
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelConditionInputTypeName(obj.name.value);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -430,7 +440,7 @@ export function makeModelXConditionInputObject(
       // TODO: Service does not support new style descriptions so wait.
       // description: field.description,
       directives: [],
-    }
+    },
   );
 
   return {
@@ -450,9 +460,9 @@ export function makeModelXConditionInputObject(
 }
 
 export function makeEnumFilterInputObjects(
-  obj: ObjectTypeDefinitionNode,
+  obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
   ctx: TransformerContext,
-  supportsConditions: Boolean
+  supportsConditions: Boolean,
 ): InputObjectTypeDefinitionNode[] {
   return obj.fields
     .filter((field: FieldDefinitionNode) => {
@@ -737,7 +747,7 @@ export function makeModelConnectionField(
   fieldName: string,
   returnTypeName: string,
   sortKeyInfo?: SortKeyFieldInfo,
-  directives?: DirectiveNode[]
+  directives?: DirectiveNode[],
 ): FieldDefinitionNode {
   const args = [
     makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),

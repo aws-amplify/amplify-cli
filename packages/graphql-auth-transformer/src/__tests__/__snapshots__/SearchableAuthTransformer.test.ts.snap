@@ -4,6 +4,8 @@ exports[`test auth logic is enabled for iam/apiKey auth rules in response es res
 "type Post @aws_api_key @aws_iam {
   id: ID!
   content: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
   secret: String @aws_iam
 }
 

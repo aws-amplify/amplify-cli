@@ -166,13 +166,14 @@ export class KeyTransformer extends Transformer {
       // and validate update operations to protect the integrity of composite sort keys.
       if (createResolver) {
         createResolver.Properties.RequestMappingTemplate = joinSnippets([
+          this.validateKeyArgumentSnippet(directive, 'create'),
           ensureCompositeKeySnippet(directive),
           createResolver.Properties.RequestMappingTemplate,
         ]);
       }
       if (updateResolver) {
         updateResolver.Properties.RequestMappingTemplate = joinSnippets([
-          this.validateKeyUpdateArgumentsSnippet(directive),
+          this.validateKeyArgumentSnippet(directive, 'update'),
           ensureCompositeKeySnippet(directive),
           updateResolver.Properties.RequestMappingTemplate,
         ]);
@@ -347,10 +348,12 @@ export class KeyTransformer extends Transformer {
   private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     if (this.isPrimaryKey(directive)) {
       const directiveArgs: KeyArguments = getDirectiveArguments(directive);
-      const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
-      if (createInput) {
-        ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
-      }
+
+      // There is no need to update the create Input as fields that can be in the index have to be non-nullable (which is enforece by
+      // @key directive). The @model transformer generates the createXInput where non-nullable fields  are
+      // also non-nullables in the input types as wekk. Only exception to this is when these fields can be automatically populated
+      // like id, createdAt and updatedAt, which will automatically get default value
+
       const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
       if (updateInput) {
         ctx.putType(replaceUpdateInput(definition, updateInput, directiveArgs.fields));
@@ -369,14 +372,14 @@ export class KeyTransformer extends Transformer {
     return printBlock(`Set the primary @key`)(compoundExpression(cmds));
   };
 
-  // When issuing an update mutation that changes one part of a composite sort key,
+  // When issuing an create/update mutation that creates/changes one part of a composite sort key,
   // you must supply the entire key so that the underlying composite key can be resaved
-  // in the update operation. We only need to update for composite sort keys on secondary indexes.
-  private validateKeyUpdateArgumentsSnippet = (directive: DirectiveNode): string => {
+  // in a create/update operation. We only need to update for composite sort keys on secondary indexes.
+  private validateKeyArgumentSnippet = (directive: DirectiveNode, keyOperation: 'create' | 'update'): string => {
     const directiveArgs: KeyArguments = getDirectiveArguments(directive);
     if (!this.isPrimaryKey(directive) && directiveArgs.fields.length > 2) {
       const sortKeyFields = directiveArgs.fields.slice(1);
-      return printBlock(`Validate update mutation for @key '${directiveArgs.name}'`)(
+      return printBlock(`Validate ${keyOperation} mutation for @key '${directiveArgs.name}'`)(
         compoundExpression([
           set(ref('hasSeenSomeKeyArg'), bool(false)),
           set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
@@ -387,8 +390,9 @@ export class KeyTransformer extends Transformer {
             iff(
               raw(`$hasSeenSomeKeyArg && !$ctx.args.input.containsKey("$keyFieldName")`),
               raw(
-                `$util.error("When updating any part of the composite sort key for @key '${directiveArgs.name}',` +
-                  ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`,
+                `$util.error("When ${keyOperation.replace(/.$/, 'ing')} any part of the composite sort key for @key '${
+                  directiveArgs.name
+                }',` + ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`,
               ),
             ),
           ]),
@@ -699,24 +703,6 @@ function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string
   });
 }
 
-// Key fields are non-nullable, non-key fields follow what their @model declaration makes.
-function replaceCreateInput(
-  definition: ObjectTypeDefinitionNode,
-  input: InputObjectTypeDefinitionNode,
-  keyFields: string[],
-): InputObjectTypeDefinitionNode {
-  return {
-    ...input,
-    fields: input.fields.reduce((acc, f) => {
-      // If the field is a key, make it non-null.
-      if (keyFields.find(k => k === f.name.value)) {
-        return [...acc, makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))))];
-      }
-      return [...acc, f];
-    }, []),
-  };
-}
-
 // Key fields are non-nullable, non-key fields are not non-nullable.
 function replaceUpdateInput(
   definition: ObjectTypeDefinitionNode,
@@ -820,7 +806,6 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
   const index = directiveArgs.name;
   const fieldName = directiveArgs.queryField;
   const queryTypeName = ctx.getQueryTypeName();
-  const defaultPageLimit = 10;
   const requestVariable = 'QueryRequest';
   return new AppSync.Resolver({
     ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -830,7 +815,7 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
     RequestMappingTemplate: print(
       compoundExpression([
         setQuerySnippet(definition, directive, ctx),
-        set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+        set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
         set(
           ref(requestVariable),
           obj({

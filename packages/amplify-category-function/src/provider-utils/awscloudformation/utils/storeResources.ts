@@ -78,7 +78,8 @@ export function createParametersFile(context, parameters, resourceName, paramete
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
   fs.ensureDirSync(resourceDirPath);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-  const jsonString = JSON.stringify(parameters, null, 4);
+  const currentParameters = fs.existsSync(parametersFilePath) ? context.amplify.readJsonFile(parametersFilePath) : {};
+  const jsonString = JSON.stringify({ ...currentParameters, ...parameters }, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 }
 

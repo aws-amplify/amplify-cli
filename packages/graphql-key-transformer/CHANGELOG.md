@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.17.1...graphql-key-transformer@2.18.0) (2020-06-02)
+
+
+### Features
+
+* **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([c0a4f88](https://github.com/aws-amplify/amplify-cli/commit/c0a4f8889fc363bb9c9d08ff822c591874777f7b))
+
+
+
+
+
+## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.17.0...graphql-key-transformer@2.17.1) (2020-05-26)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+# [2.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.16.0...graphql-key-transformer@2.17.0) (2020-05-15)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** add key validation in create ([#4146](https://github.com/aws-amplify/amplify-cli/issues/4146)) ([0e20424](https://github.com/aws-amplify/amplify-cli/commit/0e20424f78876a1e4d8d5e0c80e6f76bcef98f84)), closes [#1756](https://github.com/aws-amplify/amplify-cli/issues/1756)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+
+
+
+
+
+# [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.15.3...graphql-key-transformer@2.16.0) (2020-05-08)
+
+
+### Features
+
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+
+
+
+
+
+## [2.15.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.15.2...graphql-key-transformer@2.15.3) (2020-04-23)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 ## [2.15.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.15.1...graphql-key-transformer@2.15.2) (2020-03-22)
 
 **Note:** Version bump only for package graphql-key-transformer

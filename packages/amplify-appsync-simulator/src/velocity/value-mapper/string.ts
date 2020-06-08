@@ -18,6 +18,10 @@ export class JavaString {
     return this.value.endsWith(suffix.toString());
   }
 
+  equals(str) {
+    return this.value === str.toString();
+  }
+
   indexOf(val, fromIndex = 0) {
     return this.value.indexOf(val.toString(), fromIndex);
   }

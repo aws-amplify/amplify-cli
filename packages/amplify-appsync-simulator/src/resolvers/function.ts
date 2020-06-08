@@ -1,32 +1,27 @@
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorFunctionResolverConfig } from '../type-definition';
+import { VelocityTemplate } from '../velocity';
+import { AppSyncBaseResolver } from './base-resolver';
 
-export class AmplifySimulatorFunction {
-  constructor(private config: AppSyncSimulatorFunctionResolverConfig, private simulatorContext: AmplifyAppSyncSimulator) {
-    const { dataSourceName, requestMappingTemplateLocation, responseMappingTemplateLocation } = config;
-    if (!dataSourceName || !requestMappingTemplateLocation || !responseMappingTemplateLocation) {
-      throw new Error(`Invalid configuration parameter for function ${JSON.stringify(config)}`);
+export class AmplifySimulatorFunction extends AppSyncBaseResolver {
+  constructor(protected config: AppSyncSimulatorFunctionResolverConfig, simulatorContext: AmplifyAppSyncSimulator) {
+    super(config, simulatorContext);
+    const { dataSourceName } = config;
+    if (!dataSourceName) {
+      throw new Error(`Invalid configuration parameter for function ${JSON.stringify(config)}. Missing DataSource Name`);
     }
     const dataSource = simulatorContext.getDataLoader(dataSourceName);
-    const req = simulatorContext.getMappingTemplate(requestMappingTemplateLocation);
-    const resp = simulatorContext.getMappingTemplate(responseMappingTemplateLocation);
+
     if (!dataSource) {
       throw new Error(`Missing data source ${dataSourceName}`);
     }
-    if (!req) {
-      throw new Error(`Missing request mapping template ${requestMappingTemplateLocation}`);
-    }
-    if (!resp) {
-      throw new Error(`Missing request mapping template ${responseMappingTemplateLocation}`);
-    }
-    this.config = config;
   }
 
   async resolve(source, args, stash, prevResult, context, info): Promise<{ result: any; stash: any }> {
     let result = null;
     let error = null;
-    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);
-    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
+    const requestMappingTemplate = this.getRequestMappingTemplate();
+    const responseMappingTemplate = this.getResponseMappingTemplate();
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
 
     const requestTemplateResult = await requestMappingTemplate.render({ source, arguments: args, stash, prevResult }, context, info);

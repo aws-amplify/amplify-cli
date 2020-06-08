@@ -168,7 +168,7 @@ export async function askEventSourceQuestions(context: any) {
                 startingPosition: 'LATEST',
                 eventSourceArn: dynamoDBCategoryStorageStreamArnRef,
                 functionTemplateType: eventSourceTypeAnswer.eventSourceType,
-                functionTemplateName: 'trigger-dynamodb.js',
+                functionTemplateName: 'DynamoDb.cs.ejs',
                 triggerPolicies: [
                   {
                     Effect: 'Allow',

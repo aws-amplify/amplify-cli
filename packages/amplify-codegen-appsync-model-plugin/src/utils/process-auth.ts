@@ -1,4 +1,4 @@
-import { CodeGenDirectives } from '../visitors/appsync-visitor';
+import { CodeGenDirectives, CodeGenDirective } from '../visitors/appsync-visitor';
 export enum AuthProvider {
   apiKey = 'apiKey',
   iam = 'iam',
@@ -27,14 +27,15 @@ export enum AuthModelMutation {
 
 const DEFAULT_GROUP_CLAIM = 'cognito:groups';
 const DEFAULT_IDENTITY_CLAIM = 'username';
-const DEFAULT_OPERATIONS = [AuthModelOperation.create, AuthModelOperation.update, AuthModelOperation.delete];
+const DEFAULT_OPERATIONS = [AuthModelOperation.create, AuthModelOperation.update, AuthModelOperation.delete, AuthModelOperation.read];
 const DEFAULT_AUTH_PROVIDER = AuthProvider.userPools;
 const DEFAULT_OWNER_FIELD = 'owner';
+const DEFAULT_GROUPS_FIELD = 'groups';
 
 export type AuthRule = {
   allow: AuthStrategy;
   provider?: AuthProvider;
-  operations?: AuthModelOperation[] | AuthModelMutation[];
+  operations: (AuthModelOperation | AuthModelMutation)[];
   groupField?: string;
   ownerField?: string;
   groups?: string[];
@@ -44,7 +45,13 @@ export type AuthRule = {
   mutations?: AuthModelMutation[]; // deprecated
 };
 
-export function processAuthDirective(directives: CodeGenDirectives): CodeGenDirectives {
+export type AuthDirective = CodeGenDirective & {
+  arguments: {
+    rules: AuthRule[];
+  };
+};
+
+export function processAuthDirective(directives: CodeGenDirectives): AuthDirective[] {
   const authDirectives = directives.filter(d => d.name === 'auth');
 
   return authDirectives.map(d => {
@@ -70,6 +77,7 @@ export function processAuthDirective(directives: CodeGenDirectives): CodeGenDire
             groupClaim: DEFAULT_GROUP_CLAIM,
             provider: DEFAULT_AUTH_PROVIDER,
             ...rule,
+            groupField: rule.groups ? undefined : rule.groupField || DEFAULT_GROUPS_FIELD,
             operations,
           };
         }

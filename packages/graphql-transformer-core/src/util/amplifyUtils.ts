@@ -19,6 +19,7 @@ export interface ProjectOptions {
   rootStackFileName?: string;
   dryRun?: boolean;
   disableFunctionOverrides?: boolean;
+  disablePipelineFunctionOverrides?: boolean;
   disableResolverOverrides?: boolean;
   buildParameters?: Object;
   minify?: boolean;
@@ -195,8 +196,16 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
   // Override user defined functions.
   const userFunctions = userConfig.functions || {};
   const transformFunctions = transformOutput.functions;
+  const pipelineFunctions = transformOutput.pipelineFunctions;
+
+  // override functions
   for (const userFunction of Object.keys(userFunctions)) {
     transformFunctions[userFunction] = userConfig.functions[userFunction];
+  }
+
+  // override pipeline functions
+  for (const pipelineFunction of Object.keys(userConfig.pipelineFunctions)) {
+    pipelineFunctions[pipelineFunction] = userConfig.pipelineFunctions[pipelineFunction];
   }
 
   // Override user defined resolvers.

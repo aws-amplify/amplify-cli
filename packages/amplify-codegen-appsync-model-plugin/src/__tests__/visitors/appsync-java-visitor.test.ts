@@ -3,6 +3,7 @@ import { validateJava } from '../utils/validate-java';
 import { directives, scalars } from '../../scalars/supported-directives';
 import { AppSyncModelJavaVisitor } from '../../visitors/appsync-java-visitor';
 import { CodeGenGenerateEnum } from '../../visitors/appsync-visitor';
+import { JAVA_SCALAR_MAP } from '../../scalars';
 
 const buildSchemaWithDirectives = (schema: String): GraphQLSchema => {
   return buildSchema([schema, directives, scalars].join('\n'));
@@ -11,7 +12,11 @@ const buildSchemaWithDirectives = (schema: String): GraphQLSchema => {
 const getVisitor = (schema: string, selectedType?: string, generate: CodeGenGenerateEnum = CodeGenGenerateEnum.code) => {
   const ast = parse(schema);
   const builtSchema = buildSchemaWithDirectives(schema);
-  const visitor = new AppSyncModelJavaVisitor(builtSchema, { directives, target: 'android', generate }, { selectedType });
+  const visitor = new AppSyncModelJavaVisitor(
+    builtSchema,
+    { directives, target: 'android', generate, scalars: JAVA_SCALAR_MAP },
+    { selectedType },
+  );
   visit(ast, { leave: visitor });
   return visitor;
 };
@@ -154,6 +159,49 @@ describe('AppSyncModelVisitor', () => {
       }
     `;
     const visitor = getVisitor(schema, 'authorBook');
+    const generatedCode = visitor.generate();
+    expect(() => validateJava(generatedCode)).not.toThrow();
+    expect(generatedCode).toMatchSnapshot();
+  });
+  describe('Non model type', () => {
+    const schema = /* GraphQL */ `
+      type Landmark @model {
+        id: ID!
+        name: String!
+        rating: Int!
+        location: Location!
+        parking: Location
+      }
+      type Location {
+        lat: String!
+        lang: String!
+      }
+    `;
+    it('should generate class for non model types', () => {
+      const visitor = getVisitor(schema, 'Location');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+    it('should generate class for model types with non model fields', () => {
+      const visitor = getVisitor(schema, 'Landmark');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+  });
+
+  it('should generate Temporal type for AWSDate* scalars', () => {
+    const schema = /* GraphQL */ `
+      type TypeWithAWSDateScalars @model {
+        id: ID!
+        date: AWSDate
+        createdAt: AWSDateTime
+        time: AWSTime
+        timestamp: AWSTimestamp
+      }
+    `;
+    const visitor = getVisitor(schema, 'TypeWithAWSDateScalars');
     const generatedCode = visitor.generate();
     expect(() => validateJava(generatedCode)).not.toThrow();
     expect(generatedCode).toMatchSnapshot();

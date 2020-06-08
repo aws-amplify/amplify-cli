@@ -38,8 +38,8 @@ beforeAll(async () => {
     type Post @model {
         id: ID!
         title: String!
-        createdAt: String
-        updatedAt: String
+        createdAt: AWSDateTime
+        updatedAt: AWSDateTime
         comments: [Comment] @connection(name: "PostComments", keyField: "postId", limit:50)
         sortedComments: [SortedComment] @connection(name: "SortedPostComments", keyField: "postId", sortField: "when")
     }

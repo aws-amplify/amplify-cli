@@ -4,9 +4,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 } from 'uuid';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
-import { configureDDBDataSource, ensureDynamoDBTables } from '../../utils/ddb-utils';
+import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { invoke } from '../../utils/lambda/invoke';
 import { getFunctionDetails } from './lambda-helper';
+import { DynamoDB } from 'aws-sdk';
 
 export async function launchDDBLocal() {
   let dbPath;
@@ -20,17 +21,17 @@ export async function launchDDBLocal() {
     dbPath,
     port: null,
   });
-  const client = await dynamoEmulator.getClient(emulator);
+  const client: DynamoDB = await dynamoEmulator.getClient(emulator);
   logDebug(dbPath);
   return { emulator, dbPath, client };
 }
 
-export async function deploy(transformerOutput: any, client = null) {
+export async function deploy(transformerOutput: any, client?: DynamoDB) {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
   if (client) {
-    await ensureDynamoDBTables(client, config);
+    await createAndUpdateTable(client, config);
     config = configureDDBDataSource(config, client.config);
   }
   configureLambdaDataSource(config);
