@@ -1,7 +1,8 @@
+import { CloudFront } from 'aws-sdk';
 import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
-import { addDEVHosting, addPRODHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
+import { addPRODHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
 import { deleteProjectDir, getProjectMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -12,7 +13,7 @@ describe('amplify add hosting', () => {
   beforeAll(async () => {
     projRoot = await createReactTestProject();
     await initJSProjectWithProfile(projRoot, {});
-    await addDEVHosting(projRoot);
+    await addPRODHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
   });
 
@@ -31,10 +32,14 @@ describe('amplify add hosting', () => {
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
     const projectMeta = getProjectMeta(projRoot);
     expect(projectMeta.hosting).toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
+    expect(projectMeta.hosting.S3AndCloudFront).toBeDefined(); //CloudFrontDistributionID
+    expect(projectMeta.hosting.S3AndCloudFront.output.CloudFrontDistributionID).toBeDefined();
+
+    const cloudFrontDistribution = await getCloudFrontDistribution(projectMeta.hosting.S3AndCloudFront.output.CloudFrontDistributionID);
+    expect(cloudFrontDistribution.DistributionConfig.HttpVersion).toEqual('http2');
   });
 
-  it('publish successfuly', async () => {
+  it('publish successfully', async () => {
     let error;
     try {
       await amplifyPublishWithoutUpdate(projRoot);
@@ -57,3 +62,13 @@ describe('amplify add hosting', () => {
     resetBuildCommand(projRoot, currentBuildCommand);
   });
 });
+
+async function getCloudFrontDistribution(cloudFrontDistributionID: string) {
+  const cloudFrontClient = new CloudFront();
+  const getDistributionResult = await cloudFrontClient
+    .getDistribution({
+      Id: cloudFrontDistributionID,
+    })
+    .promise();
+  return getDistributionResult.Distribution;
+}
