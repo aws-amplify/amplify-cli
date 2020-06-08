@@ -73,7 +73,23 @@ beforeAll(async () => {
       createdAt: AWSDateTime!
       name: String!
     }
+    type KeylessBlog @model {
+      id: ID!
+      name: String!
+      createdAt: AWSDateTime!
+    }
+    type KeyedBlog @model @key(fields: ["id"]) {
+      id: ID!
+      name: String!
+      createdAt: AWSDateTime
+    }
+    type KeyedSortedBlog @model @key(fields: ["id", "createdAt"]) {
+      id: ID!
+      name: String!
+      createdAt: AWSDateTime!
+    }
   `;
+
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
@@ -108,7 +124,6 @@ beforeAll(async () => {
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
   console.log('Successfully created stack ' + STACK_NAME);
-  console.log(finishedStack);
   expect(finishedStack).toBeDefined();
   const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
   const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
@@ -442,6 +457,95 @@ test('Test @key directive supports auto Id and createdAt fields in create mutati
   expect(result.data.createModelWithIdAndCreatedAtAsKey.name).toEqual('John Doe');
 });
 
+test('Test sortDirection validation error for List on KeyedBlog type', async () => {
+  const result = await GRAPHQL_CLIENT.query(
+    `mutation CreateKeyedBlog($input: CreateKeyedBlogInput!) {
+        createKeyedBlog(input: $input) {
+            id
+            name
+        }
+    }`,
+    {
+      input: {
+        id: 'B1',
+        name: 'Blog #1',
+      },
+    },
+  );
+
+  expect(result.data).not.toBeNull();
+  expect(result.errors).toBeUndefined();
+
+  const listResult = await GRAPHQL_CLIENT.query(
+    `query ListKeyedBlogs {
+          listKeyedBlogs(sortDirection: ASC) {
+            items {
+              id
+              name
+            }
+          }
+        }`,
+  );
+
+  expect(listResult.data).not.toBeNull();
+  expect(listResult.data.listKeyedBlogs).toBeNull();
+  expect(listResult.errors).toBeDefined();
+  expect(listResult.errors.length).toEqual(1);
+  expect(listResult.errors[0].message).toEqual('sortDirection is not supported for List operations without a Sort key defined.');
+});
+
+test('Test sortDirection validation error for List on KeyedSortedBlog type', async () => {
+  const result = await GRAPHQL_CLIENT.query(
+    `mutation CreateKeyedSortedBlog($input: CreateKeyedSortedBlogInput!) {
+        createKeyedSortedBlog(input: $input) {
+            id
+            name
+        }
+    }`,
+    {
+      input: {
+        id: 'B1',
+        name: 'Blog #1',
+      },
+    },
+  );
+
+  expect(result.data).not.toBeNull();
+  expect(result.errors).toBeUndefined();
+
+  const listWithErrorResult = await GRAPHQL_CLIENT.query(
+    `query ListKeyedSortedBlogs {
+          listKeyedSortedBlogs(sortDirection: ASC) {
+            items {
+              id
+              name
+            }
+          }
+        }`,
+  );
+
+  expect(listWithErrorResult.data).not.toBeNull();
+  expect(listWithErrorResult.data.listKeyedSortedBlogs).toBeNull();
+  expect(listWithErrorResult.errors).toBeDefined();
+  expect(listWithErrorResult.errors.length).toEqual(1);
+  expect(listWithErrorResult.errors[0].message).toEqual("When providing argument 'sortDirection' you must also provide argument 'id'.");
+
+  const listResult = await GRAPHQL_CLIENT.query(
+    `query ListKeyedSortedBlogs {
+          listKeyedSortedBlogs(id: "B1", sortDirection: ASC) {
+            items {
+              id
+              name
+            }
+          }
+        }`,
+  );
+
+  expect(listResult.data).not.toBeNull();
+  expect(listResult.data.listKeyedSortedBlogs).not.toBeNull();
+  expect(listResult.errors).toBeUndefined;
+});
+
 async function createCustomer(email: string, addresslist: string[], username: string) {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateCustomer($input: CreateCustomerInput!) {
@@ -455,7 +559,6 @@ async function createCustomer(email: string, addresslist: string[], username: st
       input: { email, addresslist, username },
     },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -472,7 +575,6 @@ async function updateCustomer(email: string, addresslist: string[], username: st
       input: { email, addresslist, username },
     },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -489,7 +591,6 @@ async function getCustomer(email: string) {
       email,
     },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -506,7 +607,6 @@ async function createOrder(customerEmail: string, orderId: string, createdAt: st
       input: { customerEmail, orderId, createdAt },
     },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -523,7 +623,6 @@ async function updateOrder(customerEmail: string, createdAt: string, orderId: st
       input: { customerEmail, orderId, createdAt },
     },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -540,7 +639,6 @@ async function deleteOrder(customerEmail: string, createdAt: string) {
       input: { customerEmail, createdAt },
     },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -555,7 +653,6 @@ async function getOrder(customerEmail: string, createdAt: string) {
     }`,
     { customerEmail, createdAt },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -584,7 +681,6 @@ async function listOrders(customerEmail: string, createdAt: ModelStringKeyCondit
         }`,
     input,
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -603,8 +699,6 @@ async function createItem(orderId: string, status: string, name: string, created
       input,
     },
   );
-  console.log(`Running create: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -623,8 +717,6 @@ async function updateItem(orderId: string, status: string, createdAt: string, na
       input,
     },
   );
-  console.log(`Running create: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -643,8 +735,6 @@ async function deleteItem(orderId: string, status: string, createdAt: string) {
       input,
     },
   );
-  console.log(`Running delete: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -660,7 +750,6 @@ async function getItem(orderId: string, status: string, createdAt: string) {
     }`,
     { orderId, status, createdAt },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -703,7 +792,6 @@ async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyCond
     }`,
     { orderId, statusCreatedAt, limit, nextToken },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -723,7 +811,6 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
     }`,
     { status, createdAt, limit, nextToken },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -743,7 +830,6 @@ async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionIn
     }`,
     { createdAt, status, limit, nextToken },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -770,8 +856,6 @@ async function createShippingUpdate(input: CreateShippingInput) {
       input,
     },
   );
-  console.log(`Running create: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -795,8 +879,6 @@ async function listGSIShippingUpdate(orderId: string, itemId: object, sortDirect
         }`,
     input,
   );
-  console.log(`Running create: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -822,8 +904,6 @@ async function updateShippingUpdate(input: UpdateShippingInput) {
       input,
     },
   );
-  console.log(`Running update: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -843,7 +923,6 @@ async function getShippingUpdates(orderId: string) {
     }`,
     { orderId },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -863,6 +942,5 @@ async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
     }`,
     { orderId, name },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
