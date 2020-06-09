@@ -1,11 +1,18 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { LayerParameters, Permissions, layerMetadataFactory, OrgsLayer, AccountsLayer} from '../utils/layerParams';
+import { LayerParameters, Permissions, layerMetadataFactory, LayerMetadata } from '../utils/layerParams';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
-import { layerNameQuestion, layerPermissionsQuestion, layerAccountAccessQuestion, layerOrgAccessQuestion, createVersionsMap, layerVersionQuestion} from '../utils/layerHelpers';
+import {
+  layerNameQuestion,
+  layerPermissionsQuestion,
+  layerAccountAccessQuestion,
+  layerOrgAccessQuestion,
+  createVersionsMap,
+  layerVersionQuestion,
+  LayerInputParams,
+} from '../utils/layerHelpers';
 import { ServiceName, categoryName, layerParametersFileName } from '../utils/constants';
-import * as fs from 'fs-extra';
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
@@ -13,22 +20,23 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
   let runtimeReturn = await runtimeWalkthrough(context, parameters);
   parameters.runtimes = runtimeReturn.map(val => val.runtime);
 
-  _.assign(parameters, await inquirer.prompt(layerPermissionsQuestion(parameters.layerPermissions)));
+  let layerInputParameters: LayerInputParams = {};
+  _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion()));
 
-  for (let permissions of parameters.layerPermissions) {
-    switch (permissions) {
+  for (let permission of layerInputParameters.layerPermissions) {
+    switch (permission) {
       case Permissions.awsAccounts:
-        _.assign(parameters, await inquirer.prompt(layerAccountAccessQuestion()));
+        _.assign(layerInputParameters, await inquirer.prompt(layerAccountAccessQuestion()));
         break;
       case Permissions.awsOrg:
-        _.assign(parameters, await inquirer.prompt(layerOrgAccessQuestion()));
+        _.assign(layerInputParameters, await inquirer.prompt(layerOrgAccessQuestion()));
         break;
     }
   }
-  _.assign(parameters,{layerVersion : "1"});
+  _.assign(parameters, { layerVersion: '1' });
   // add layer version to parameters
-  _.assign(parameters, {layerVersionsMap: createVersionsMap(parameters,"1")});
-  _.assign(parameters,{build : true})
+  _.assign(parameters, { layerVersionsMap: createVersionsMap(layerInputParameters, '1') });
+  _.assign(parameters, { build: true });
   return parameters;
 }
 
@@ -53,93 +61,71 @@ export async function updateLayerWalkthrough(
     },
   ];
   const resourceAnswer = await inquirer.prompt(resourceQuestion);
-  _.assign(templateParameters ,{layerName : resourceAnswer.resourceName});
+  _.assign(templateParameters, { layerName: resourceAnswer.resourceName });
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, templateParameters.layerName);
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-  let currentParameters;
-  try {
-    currentParameters = context.amplify.readJsonFile(parametersFilePath);
-  } catch (e) {
-    currentParameters = {};
-  }
+  const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
 
   _.assign(templateParameters, currentParameters.parameters);
+
   // get the LayerObj
-
-  const layerData = layerMetadataFactory(_.pick(templateParameters,['runtimes','layerVersionsMap']));
+  const layerData = layerMetadataFactory(context, templateParameters.layerName);
   // runtime question
-  let islayerVersionChanged: boolean = true;
+  let islayerVersionChanged: boolean = false;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
-    let runtimeReturn = await runtimeWalkthrough(context, templateParameters as LayerParameters);
+    const runtimeReturn = await runtimeWalkthrough(context, templateParameters as LayerParameters);
     templateParameters.runtimes = runtimeReturn.map(val => val.runtime);
-  } else {
-    islayerVersionChanged = false;
+    islayerVersionChanged = true;
   }
-
   // get the latest version from #currentcloudbackend
-  let latestVersionPushed =  getLastestVersionPushed(context,templateParameters.layerName);
-  let latestVersion = layerData.listVersions().reduce((a,b)=>Math.max(a,b));
+  const layerDataPushed: LayerMetadata = layerMetadataFactory(context, templateParameters.layerName, true);
+  const latestVersionPushed = layerDataPushed !== undefined ? layerDataPushed.getLatestVersion() : 0;
+  let latestVersion = layerData.getLatestVersion();
 
   // get the latest accounts/orgsid
-  let layerPermissions = layerData.getVersion(latestVersion).permissions.map(permission => permission.type);
-  let defaultorgsId =  layerData.getVersion(latestVersion).permissions.filter(permission => permission.type === Permissions.awsOrg);
-  let defaultaccountsId = layerData.getVersion(latestVersion).permissions.filter(permission => permission.type === Permissions.awsAccounts);
-  let defaultaccounts : string[] = defaultaccountsId.length !== 0 ? (defaultaccountsId[0] as AccountsLayer).accounts : [];
-  let defaultorgs : string[] = defaultorgsId.length !== 0 ? (defaultorgsId[0] as OrgsLayer).orgs : [];
+  const defaultlayerPermissions = layerData.getVersion(latestVersion).permissions.map(permission => permission.type);
+  const defaultorgs = layerData.getVersion(latestVersion).listOrgAccess();
+  const defaultaccounts = layerData.getVersion(latestVersion).listAccoutAccess();
+
+  let layerInputParameters: LayerInputParams = {};
 
   if (await context.amplify.confirmPrompt.run('Do you want to adjust who can access the current & new layer version?', true)) {
-    _.assign(templateParameters,{layerPermissions : layerPermissions}); // assign permissions if layer is updated
-    _.assign(templateParameters, await inquirer.prompt(layerPermissionsQuestion(templateParameters.layerPermissions)));
-    // get the account/ordsID based on the permissions selected and pass defaults in the questions workflow
+    _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion(defaultlayerPermissions)));
 
-    for (let permissions of templateParameters.layerPermissions) {
-      switch (permissions) {
+    // get the account/orgsID based on the permissions selected and pass defaults in the questions workflow
+    for (let permission of layerInputParameters.layerPermissions) {
+      switch (permission) {
         case Permissions.awsAccounts:
-          _.assign(templateParameters, await inquirer.prompt(layerAccountAccessQuestion(defaultaccounts)));
+          _.assign(layerInputParameters, await inquirer.prompt(layerAccountAccessQuestion(defaultaccounts)));
           break;
         case Permissions.awsOrg:
-          _.assign(templateParameters, await inquirer.prompt(layerOrgAccessQuestion(defaultorgs)));
+          _.assign(layerInputParameters, await inquirer.prompt(layerOrgAccessQuestion(defaultorgs)));
           break;
       }
     }
   }
-  if(islayerVersionChanged){
-    if(latestVersion === latestVersionPushed){
+  if (islayerVersionChanged) {
+    if (latestVersion === latestVersionPushed) {
       latestVersion += 1;
     }
     // updating map for a new version
-    let map = createVersionsMap(templateParameters,String(latestVersion));
+    let map = createVersionsMap(layerInputParameters, String(latestVersion));
     templateParameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
-  }
-  else{
+  } else {
     //updating map for the selected version
     let versions = layerData.listVersions();
     const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
-    let map = createVersionsMap(templateParameters,String(versionAnswer.layerVersion));
+    let map = createVersionsMap(layerInputParameters, String(versionAnswer.layerVersion));
     templateParameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   }
-  _.assign(templateParameters,{layerVersion : String(latestVersion)});
+  _.assign(templateParameters, { layerVersion: String(latestVersion) });
 
-  if(latestVersion === latestVersionPushed){
-    _.assign(templateParameters,{build : false});
-  }
-  else{
-    _.assign(templateParameters,{build: true});
+  if (latestVersion === latestVersionPushed) {
+    _.assign(templateParameters, { build: false });
+  } else {
+    _.assign(templateParameters, { build: true });
   }
   return templateParameters;
-}
-
- function getLastestVersionPushed(context,layerName : string){
-  const projectBackendDirPath = context.amplify.pathManager.getCurrentCloudBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
-  if(!fs.existsSync(resourceDirPath)){
-    return 0;
-  }
-  const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-  let prevParameters =  context.amplify.readJsonFile(parametersFilePath);
-  const prevlayerData = layerMetadataFactory(prevParameters.parameters);
-  let latestVersionPushed = prevlayerData.listVersions().reduce((a,b)=> Math.max(a,b));
-  return latestVersionPushed;
 }

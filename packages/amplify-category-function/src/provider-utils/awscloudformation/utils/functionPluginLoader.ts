@@ -60,9 +60,9 @@ export async function runtimeWalkthrough(
   params: Partial<FunctionParameters> | Partial<LayerParameters>,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
   const { service } = params.providerContext;
-    //get the runtimes from template parameters
+  //get the runtimes from template parameters
   let runtimeLayer;
-  if(isLayerParameter(params)){
+  if (isLayerParameter(params)) {
     runtimeLayer = params.runtimes.map(runtime => runtime.name);
   }
   const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
@@ -104,7 +104,7 @@ async function _functionRuntimeWalkthroughHelper(
       selection: selections[i].value,
       contributionContext: {
         functionName: isLayerParameter(params) ? params.layerName : params.functionName,
-        resourceName: isLayerParameter(params) ? params.layerName : params.resourceName
+        resourceName: isLayerParameter(params) ? params.layerName : params.resourceName,
       },
     };
     const contribution = await plugins[i].contribute(contributionRequest);
@@ -173,7 +173,7 @@ async function getSelectionsFromContributors<T>(
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
-        default: defaultSelection(selectionOptions,selections),
+        default: defaultSelection(selectionOptions, selections),
       },
     ]);
     selection = answer.selection;
@@ -228,25 +228,23 @@ interface ListOption {
   value: string;
 }
 
-function isLayerParameter(params: Partial<LayerParameters> | Partial<FunctionParameters> ): params is Partial<LayerParameters> {
-  return ( ((params as Partial<LayerParameters>).runtimes !== undefined));
+function isLayerParameter(params: Partial<LayerParameters> | Partial<FunctionParameters>): params is Partial<LayerParameters> {
+  return (params as Partial<LayerParameters>).runtimes !== undefined;
 }
 
-function defaultSelection(selectionOptions : PluginSelectionOptions<FunctionRuntimeCondition>,selections){
-  if(selectionOptions.service === ServiceName.LambdaFunction){
-    if(selectionOptions.listOptionsField === 'runtimes'){
-      return 'nodejs'
-    }else{
+function defaultSelection(selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition>, selections) {
+  if (selectionOptions.service === ServiceName.LambdaFunction) {
+    if (selectionOptions.listOptionsField === 'runtimes') {
+      return 'nodejs';
+    } else {
       return undefined;
     }
-  }else{
-    if(selectionOptions.runtimeState !== undefined){
-      let prevruntime =  selections
-      .filter(selection => selectionOptions.runtimeState.includes(selection.name))
-      .forEach(selection => _.assign(selection, {checked: true}));
-      return prevruntime;
-    }
-    else{
+  } else {
+    if (selectionOptions.runtimeState !== undefined) {
+      return selections
+        .filter(selection => selectionOptions.runtimeState.includes(selection.name))
+        .forEach(selection => _.assign(selection, { checked: true }));
+    } else {
       return undefined;
     }
   }
