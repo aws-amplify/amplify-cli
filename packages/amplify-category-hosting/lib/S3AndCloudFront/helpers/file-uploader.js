@@ -34,7 +34,7 @@ async function run(context, distributionDirPath) {
   const spinner = new Ora('Uploading files...');
   try {
     spinner.start();
-    await sequential(uploadFileTasks);
+    await Promise.all(uploadFileTasks);
     spinner.succeed('Uploaded files successfully.');
   } catch (e) {
     spinner.fail('Error has occured during file upload.');
