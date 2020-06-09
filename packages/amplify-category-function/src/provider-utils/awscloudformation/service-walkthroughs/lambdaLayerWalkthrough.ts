@@ -40,47 +40,44 @@ export async function createLayerWalkthrough(context: any, parameters: Partial<L
   return parameters;
 }
 
-export async function updateLayerWalkthrough(
-  context: any,
-  templateParameters: Partial<LayerParameters>,
-): Promise<Partial<LayerParameters>> {
+export async function updateLayerWalkthrough(context: any, parameters: Partial<LayerParameters>): Promise<Partial<LayerParameters>> {
   const { allResources } = await context.amplify.getResourceStatus();
   const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
 
   if (resources.length === 0) {
-    context.print.error('No Lambda Layer resource to update. Please use "amplify add function" command to create a new Function');
+    context.print.error('No Lambda Layer resource to update. Please use "amplify add function" to create a new Layer');
     process.exit(0);
     return;
   }
   const resourceQuestion = [
     {
       name: 'resourceName',
-      message: 'Please select the Lambda Layer you want to update',
+      message: 'Select the Lambda Layer to update:',
       type: 'list',
       choices: resources,
     },
   ];
   const resourceAnswer = await inquirer.prompt(resourceQuestion);
-  _.assign(templateParameters, { layerName: resourceAnswer.resourceName });
+  _.assign(parameters, { layerName: resourceAnswer.resourceName });
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, categoryName, templateParameters.layerName);
+  const resourceDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
   const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
 
-  _.assign(templateParameters, currentParameters.parameters);
+  _.assign(parameters, currentParameters.parameters);
 
   // get the LayerObj
-  const layerData = layerMetadataFactory(context, templateParameters.layerName);
+  const layerData = layerMetadataFactory(context, parameters.layerName);
   // runtime question
   let islayerVersionChanged: boolean = false;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
-    const runtimeReturn = await runtimeWalkthrough(context, templateParameters as LayerParameters);
-    templateParameters.runtimes = runtimeReturn.map(val => val.runtime);
+    const runtimeReturn = await runtimeWalkthrough(context, parameters as LayerParameters);
+    parameters.runtimes = runtimeReturn.map(val => val.runtime);
     islayerVersionChanged = true;
   }
   // get the latest version from #currentcloudbackend
-  const layerDataPushed: LayerMetadata = layerMetadataFactory(context, templateParameters.layerName, true);
+  const layerDataPushed: LayerMetadata = layerMetadataFactory(context, parameters.layerName, true);
   const latestVersionPushed = layerDataPushed !== undefined ? layerDataPushed.getLatestVersion() : 0;
   let latestVersion = layerData.getLatestVersion();
 
@@ -112,20 +109,16 @@ export async function updateLayerWalkthrough(
     }
     // updating map for a new version
     let map = createVersionsMap(layerInputParameters, String(latestVersion));
-    templateParameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
+    parameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   } else {
     //updating map for the selected version
     let versions = layerData.listVersions();
     const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
     let map = createVersionsMap(layerInputParameters, String(versionAnswer.layerVersion));
-    templateParameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
+    parameters.layerVersionsMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   }
-  _.assign(templateParameters, { layerVersion: String(latestVersion) });
+  _.assign(parameters, { layerVersion: String(latestVersion) });
 
-  if (latestVersion === latestVersionPushed) {
-    _.assign(templateParameters, { build: false });
-  } else {
-    _.assign(templateParameters, { build: true });
-  }
-  return templateParameters;
+  _.assign(parameters, { build: latestVersion === latestVersionPushed });
+  return parameters;
 }

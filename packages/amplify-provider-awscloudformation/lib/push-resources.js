@@ -222,62 +222,60 @@ function packageResources(context, resources) {
 
   const packageResource = (context, resource) => {
     let s3Key;
-    return resource.service === 'LambdaFunction'
-      ? buildResource(context, resource)
-      : packageLayer(context, resource)
-          .then(result => {
-            // Upload zip file to S3
-            s3Key = `amplify-builds/${result.zipFilename}`;
-            return new S3(context).then(s3 => {
-              const s3Params = {
-                Body: fs.createReadStream(result.zipFilePath),
-                Key: s3Key,
-              };
-              return s3.uploadFile(s3Params);
-            });
-          })
-          .then(s3Bucket => {
-            // Update cfn template
-            const { category, resourceName } = resource;
-            const backEndDir = context.amplify.pathManager.getBackendDirPath();
-            const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+    return (resource.service === 'LambdaFunction' ? buildResource(context, resource) : packageLayer(context, resource))
+      .then(result => {
+        // Upload zip file to S3
+        s3Key = `amplify-builds/${result.zipFilename}`;
+        return new S3(context).then(s3 => {
+          const s3Params = {
+            Body: fs.createReadStream(result.zipFilePath),
+            Key: s3Key,
+          };
+          return s3.uploadFile(s3Params);
+        });
+      })
+      .then(s3Bucket => {
+        // Update cfn template
+        const { category, resourceName } = resource;
+        const backEndDir = context.amplify.pathManager.getBackendDirPath();
+        const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
 
-            const files = fs.readdirSync(resourceDir);
-            // Fetch all the Cloudformation templates for the resource (can be json or yml)
-            const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
+        const files = fs.readdirSync(resourceDir);
+        // Fetch all the Cloudformation templates for the resource (can be json or yml)
+        const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
 
-            if (cfnFiles.length !== 1) {
-              context.print.error('Only one CloudFormation template is allowed in the resource directory');
-              context.print.error(resourceDir);
-              throw new Error('Only one CloudFormation template is allowed in the resource directory');
-            }
+        if (cfnFiles.length !== 1) {
+          context.print.error('Only one CloudFormation template is allowed in the resource directory');
+          context.print.error(resourceDir);
+          throw new Error('Only one CloudFormation template is allowed in the resource directory');
+        }
 
-            const cfnFile = cfnFiles[0];
-            const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
+        const cfnFile = cfnFiles[0];
+        const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
 
-            const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
+        const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-            if (resources.service === 'LambdaFunction') {
-              if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-                cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-                  Bucket: s3Bucket,
-                  Key: s3Key,
-                };
-              } else {
-                cfnMeta.Resources.LambdaFunction.Properties.Code = {
-                  S3Bucket: s3Bucket,
-                  S3Key: s3Key,
-                };
-              }
-            } else {
-              cfnMeta.Resources.LambdaLayer.Properties.Content = {
-                S3Bucket: s3Bucket,
-                S3Key: s3Key,
-              };
-            }
-            const jsonString = JSON.stringify(cfnMeta, null, '\t');
-            fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
-          });
+        if (resources.service === 'LambdaFunction') {
+          if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+            cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+              Bucket: s3Bucket,
+              Key: s3Key,
+            };
+          } else {
+            cfnMeta.Resources.LambdaFunction.Properties.Code = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+          }
+        } else {
+          cfnMeta.Resources.LambdaLayer.Properties.Content = {
+            S3Bucket: s3Bucket,
+            S3Key: s3Key,
+          };
+        }
+        const jsonString = JSON.stringify(cfnMeta, null, '\t');
+        fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+      });
   };
 
   const promises = [];

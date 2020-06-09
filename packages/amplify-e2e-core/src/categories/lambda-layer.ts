@@ -4,7 +4,6 @@ import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath } from '.
 import { runtimeChoices } from './lambda-function';
 import { multiSelect } from '../utils/selectors';
 
-
 type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
 
 const permissionChoices = [
@@ -55,7 +54,7 @@ export function addLayer(cwd: string, settings?: any) {
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
-    chain = printFlow(chain,settings ,layerDirRegex , runtimeDisplayNames);
+    chain = printFlow(chain, settings, layerDirRegex, runtimeDisplayNames);
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -98,29 +97,28 @@ export function updateLayer(cwd: string, settings?: any) {
       .wait('Select which capability you want to update:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn() // Layer
-      .wait('Please select the Lambda Layer you want to update')
+      .wait('Select the Lambda Layer to update:')
       .sendCarriageReturn();
 
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
     //expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
-    if(settings.versionChanged){
+    if (settings.versionChanged) {
       chain.wait('Do you want to change the compatible runtimes?').sendLine('y');
       chain.wait('Select up to 5 compatible runtimes:');
       multiSelect(chain, runtimeDisplayNames, runtimeChoices);
-    }
-    else{
+    } else {
       chain.wait('Do you want to change the compatible runtimes?').sendLine('n');
     }
     chain.wait('Do you want to adjust who can access the current & new layer version? ').sendLine('y');
     chain.wait('Who should have permission to use this layer?');
     multiSelect(chain, settings.permission, permissionChoices);
-    if(!settings.versionChanged){
-      chain.wait('Select the version number to update for given Lambda Layer: ').sendCarriageReturn()
+    if (!settings.versionChanged) {
+      chain.wait('Select the version number to update for given Lambda Layer: ').sendCarriageReturn();
     }
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
-    chain = printFlow(chain,settings ,layerDirRegex , runtimeDisplayNames);
+    chain = printFlow(chain, settings, layerDirRegex, runtimeDisplayNames);
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -150,14 +148,14 @@ function getLayerRuntimeInfo(runtime: LayerRuntimes) {
     default:
       throw new Error(`Invalid runtime value: ${runtime}`);
   }
-};
+}
 
-function printFlow(chain : ExecutionContext , settings : any ,layerDirRegex , runtimeDisplayNames){
+function printFlow(chain: ExecutionContext, settings: any, layerDirRegex, runtimeDisplayNames) {
   chain
-  .wait('Lambda layer folders & files created:')
-  .wait(layerDirRegex)
-  .wait('Next steps:')
-  .wait('Move your libraries in the following folder:');
+    .wait('Lambda layer folders & files created:')
+    .wait(layerDirRegex)
+    .wait('Next steps:')
+    .wait('Move your libraries in the following folder:');
 
   for (let i = 0; i < settings.runtimes.length; ++i) {
     let layerRuntimeDirRegex = new RegExp(
@@ -175,6 +173,6 @@ function printFlow(chain : ExecutionContext , settings : any ,layerDirRegex , ru
     .wait('Include any files you want to share across runtimes in this folder:')
     .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
     .wait('"amplify push" builds all of your local backend resources and provisions them in the cloud')
-    .sendEof()
+    .sendEof();
   return chain;
 }

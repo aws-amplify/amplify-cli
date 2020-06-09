@@ -79,10 +79,10 @@ export const getLayerVersion = async (functionArn: string, region: string) => {
   return await service.getLayerVersionByArn({ Arn: functionArn }).promise();
 };
 
-export const listVersions = async(layerName: string , region: string) =>{
-  const service = new Lambda({region});
-  return await service.listLayerVersions({LayerName : layerName}).promise();
-}
+export const listVersions = async (layerName: string, region: string) => {
+  const service = new Lambda({ region });
+  return await service.listLayerVersions({ LayerName: layerName }).promise();
+};
 
 export const invokeFunction = async (functionName: string, payload: string, region: string) => {
   const service = new Lambda({ region });

@@ -61,9 +61,9 @@ export async function runtimeWalkthrough(
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
   const { service } = params.providerContext;
   //get the runtimes from template parameters
-  let runtimeLayer;
+  let runtimeLayers;
   if (isLayerParameter(params)) {
-    runtimeLayer = params.runtimes.map(runtime => runtime.name);
+    runtimeLayers = params.runtimes.map(runtime => runtime.name);
   }
   const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
     pluginType: 'functionRuntime',
@@ -75,7 +75,7 @@ export async function runtimeWalkthrough(
       service === ServiceName.LambdaLayer ? 'Select up to 5 compatible runtimes:' : 'Choose the runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
-    runtimeState: runtimeLayer,
+    runtimeState: runtimeLayers,
   };
   // runtime selections
   const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
@@ -237,7 +237,7 @@ function defaultSelection(selectionOptions: PluginSelectionOptions<FunctionRunti
     if (selectionOptions.listOptionsField === 'runtimes') {
       return 'nodejs';
     } else {
-      return undefined;
+      return 'hello-world';
     }
   } else {
     if (selectionOptions.runtimeState !== undefined) {

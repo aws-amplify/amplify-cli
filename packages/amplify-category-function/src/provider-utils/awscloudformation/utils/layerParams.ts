@@ -118,59 +118,39 @@ class LayerVersionState implements LayerVersionMetadata {
 
   listAccoutAccess(): string[] {
     let accounts: string[] = [];
-    if (!(this.permissions === undefined || this.permissions.length == 0)) {
-      this.permissions.forEach(permission => {
-        if (permission.type === Permissions.awsAccounts) {
-          accounts = permission.accounts;
-        }
-      });
-    }
+    this.permissions.forEach(permission => {
+      if (permission.type === Permissions.awsAccounts) {
+        accounts = permission.accounts;
+      }
+    });
     return accounts;
   }
 
   listOrgAccess(): string[] {
     let orgs: string[] = [];
-    if (!(this.permissions === undefined || this.permissions.length == 0)) {
-      this.permissions.forEach(permission => {
-        if (permission.type === Permissions.awsOrg) {
-          orgs = permission.orgs;
-        }
-      });
-    }
+    this.permissions.forEach(permission => {
+      if (permission.type === Permissions.awsOrg) {
+        orgs = permission.orgs;
+      }
+    });
     return orgs;
   }
 
   isPrivate(): boolean {
-    let retVal: boolean = false;
-    if (!(this.permissions === undefined || this.permissions.length == 0)) {
-      this.permissions.forEach(permission => {
-        if (permission.type === Permissions.private) {
-          retVal = true;
-        }
-      });
-    }
-    return retVal;
+    return !!this.permissions.map(perm => perm.type).find(type => type === Permissions.private);
   }
 
   isPublic(): boolean {
-    let retVal: boolean = false;
-    if (!(this.permissions === undefined || this.permissions.length == 0)) {
-      this.permissions.forEach(permission => {
-        if (permission.type === Permissions.public) {
-          retVal = true;
-        }
-      });
-    }
-    return retVal;
+    return !!this.permissions.map(perm => perm.type).find(type => type === Permissions.public);
   }
 }
 
 export const layerMetadataFactory: LayerMetadataFactory = (context: any, layerName: string, isPush: boolean = false): LayerMetadata => {
   let projectBackendDirPath;
-  if (!isPush) {
-    projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  } else {
+  if (isPush) {
     projectBackendDirPath = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+  } else {
+    projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   }
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
   if (!fs.existsSync(resourceDirPath)) {

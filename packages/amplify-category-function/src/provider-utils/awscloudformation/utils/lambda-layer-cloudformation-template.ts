@@ -92,14 +92,15 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   return cfnObj;
 }
 
-function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, flag: boolean) {
+function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, isContentUpdated: boolean) {
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
-    LayerVersionArn: createLayerversionArn(layerData, layerName, version, flag),
+    LayerVersionArn: createLayerversionArn(layerData, layerName, version, isContentUpdated),
   };
 
   const result = [];
-  if (layerData.getVersion(Number(version)).isPublic()) {
+  const versionPermission = layerData.getVersion(Number(version));
+  if (versionPermission.isPublic()) {
     result.push({
       name: `LambdaLayerPermission${Permissions.public}${version}`,
       policy: new Lambda.LayerVersionPermission({
@@ -108,7 +109,7 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
       }),
     });
   }
-  if (layerData.getVersion(Number(version)).isPrivate()) {
+  if (versionPermission.isPrivate()) {
     result.push({
       name: `LambdaLayerPermission${Permissions.private}${version}`,
       policy: new Lambda.LayerVersionPermission({
@@ -118,8 +119,8 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
     });
   }
 
-  const accountIds = layerData.getVersion(Number(version)).listAccoutAccess();
-  const orgIds = layerData.getVersion(Number(version)).listOrgAccess();
+  const accountIds = versionPermission.listAccoutAccess();
+  const orgIds = versionPermission.listOrgAccess();
 
   accountIds.forEach(acctId =>
     result.push({
@@ -148,9 +149,9 @@ function joinWithEnv(separator: string, stringToJoin: string) {
   return Fn.If('HasEnvironmentParameter', Fn.Join(separator, [stringToJoin, Fn.Ref('env')]), stringToJoin);
 }
 
-function createLayerversionArn(layerData, layerName, version, flag) {
+function createLayerversionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean) {
   //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
-  if (flag) {
+  if (isContentUpdated) {
     // if runtime/Content updated
     if (layerData.getLatestVersion() === Number(version)) {
       return Fn.Ref('LambdaLayer');
