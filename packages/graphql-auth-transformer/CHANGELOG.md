@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.18.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.17.0...graphql-auth-transformer@6.18.0-beta.0) (2020-06-09)
+
+
+### Bug Fixes
+
+* [#3910](https://github.com/aws-amplify/amplify-cli/issues/3910) - propagate non-model auth to nested types ([#4477](https://github.com/aws-amplify/amplify-cli/issues/4477)) ([493e631](https://github.com/aws-amplify/amplify-cli/commit/493e631b51643ab22e7497591464e882a1bba7df))
+
+
+### Features
+
+* **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([3d194f8](https://github.com/aws-amplify/amplify-cli/commit/3d194f805dcbd6325ddf78155c4327dbca3e7f4a))
+
+
+
+
+
 # [6.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.16.1...graphql-auth-transformer@6.17.0) (2020-06-02)
 
 

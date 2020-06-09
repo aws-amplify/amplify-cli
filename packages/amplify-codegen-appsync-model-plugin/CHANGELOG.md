@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.0...amplify-codegen-appsync-model-plugin@1.19.1-beta.0) (2020-06-09)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** Add delimiter in Android `toString` output ([#4463](https://github.com/aws-amplify/amplify-cli/issues/4463)) ([a0a3972](https://github.com/aws-amplify/amplify-cli/commit/a0a39727b477954c6c13ab519aa998addbe729a8))
+
+
+
+
+
 # [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.18.0...amplify-codegen-appsync-model-plugin@1.19.0) (2020-05-26)
 
 

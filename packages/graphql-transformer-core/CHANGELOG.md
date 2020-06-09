@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.19.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.18.2...graphql-transformer-core@6.19.0-beta.0) (2020-06-09)
+
+
+### Features
+
+* **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([3d194f8](https://github.com/aws-amplify/amplify-cli/commit/3d194f805dcbd6325ddf78155c4327dbca3e7f4a))
+
+
+
+
+
 ## [6.18.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.18.1...graphql-transformer-core@6.18.2) (2020-06-02)
 
 **Note:** Version bump only for package graphql-transformer-core

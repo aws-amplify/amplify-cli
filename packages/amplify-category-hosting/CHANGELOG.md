@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.3.1...amplify-category-hosting@2.3.2-beta.0) (2020-06-09)
+
+
+### Performance Improvements
+
+* **amplify-category-hosting:** http2 for cloudfront distconfig ([#3616](https://github.com/aws-amplify/amplify-cli/issues/3616)) ([b5de093](https://github.com/aws-amplify/amplify-cli/commit/b5de093cb0c387ac7f902498727af2c1111a77ca))
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.1.11...amplify-category-hosting@2.3.1) (2020-03-07)
 
 **Note:** Version bump only for package amplify-category-hosting

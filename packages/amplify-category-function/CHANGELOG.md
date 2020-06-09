@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.4...amplify-category-function@2.20.5-beta.0) (2020-06-09)
+
+
+### Bug Fixes
+
+* make Hello World the default choice for function templates ([#4466](https://github.com/aws-amplify/amplify-cli/issues/4466)) ([1c60b2b](https://github.com/aws-amplify/amplify-cli/commit/1c60b2ba617ccba625c1a6cf56840a9eedad4fb5))
+
+
+
+
+
 ## [2.20.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.3...amplify-category-function@2.20.4) (2020-06-02)
 
 

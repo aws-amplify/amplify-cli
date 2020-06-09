@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.21.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.20.2...amplify-util-mock@3.21.0-beta.0) (2020-06-09)
+
+
+### Features
+
+* **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([3d194f8](https://github.com/aws-amplify/amplify-cli/commit/3d194f805dcbd6325ddf78155c4327dbca3e7f4a))
+
+
+
+
+
 ## [3.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.20.1...amplify-util-mock@3.20.2) (2020-06-02)
 
 

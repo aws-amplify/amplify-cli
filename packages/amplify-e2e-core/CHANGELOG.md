@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.5...amplify-e2e-core@1.1.6-beta.0) (2020-06-09)
+
+
+### Bug Fixes
+
+* make Hello World the default choice for function templates ([#4466](https://github.com/aws-amplify/amplify-cli/issues/4466)) ([1c60b2b](https://github.com/aws-amplify/amplify-cli/commit/1c60b2ba617ccba625c1a6cf56840a9eedad4fb5))
+
+
+### Performance Improvements
+
+* **amplify-category-hosting:** http2 for cloudfront distconfig ([#3616](https://github.com/aws-amplify/amplify-cli/issues/3616)) ([b5de093](https://github.com/aws-amplify/amplify-cli/commit/b5de093cb0c387ac7f902498727af2c1111a77ca))
+
+
+
+
+
 ## [1.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.4...amplify-e2e-core@1.1.5) (2020-06-02)
 
 **Note:** Version bump only for package amplify-e2e-core

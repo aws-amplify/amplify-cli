@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.20.2...amplify-provider-awscloudformation@4.20.3-beta.0) (2020-06-09)
+
+
+### Bug Fixes
+
+* [#3096](https://github.com/aws-amplify/amplify-cli/issues/3096) - glob *template*.+(yaml|yml|json) files only as cfn template ([#4478](https://github.com/aws-amplify/amplify-cli/issues/4478)) ([8f4bab6](https://github.com/aws-amplify/amplify-cli/commit/8f4bab62bce68029a04b8d15c19746e4562f7596))
+
+
+
+
+
 ## [4.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.20.1...amplify-provider-awscloudformation@4.20.2) (2020-06-02)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

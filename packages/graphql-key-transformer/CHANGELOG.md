@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.19.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.18.0...graphql-key-transformer@2.19.0-beta.0) (2020-06-09)
+
+
+### Bug Fixes
+
+* sort direction argument for lists and queries ([#4459](https://github.com/aws-amplify/amplify-cli/issues/4459)) ([6be33e1](https://github.com/aws-amplify/amplify-cli/commit/6be33e16a8a8ba52cbf717d4e299d7321d9ad400))
+
+
+### Features
+
+* **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([3d194f8](https://github.com/aws-amplify/amplify-cli/commit/3d194f805dcbd6325ddf78155c4327dbca3e7f4a))
+
+
+
+
+
 # [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.17.1...graphql-key-transformer@2.18.0) (2020-06-02)
 
 
