@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "serviceName": "s3",
+    "permissions": {
+      "guest": ["READ"],
+      "groups": {
+        "myUserGroup": ["CREATE", "UPDATE"]
+      }
+    },
+    "bucketName": "something",
+    "lambdaTrigger": {
+      "mode": "new",
+      "name": "triggerName"
+    }
+  }
+}

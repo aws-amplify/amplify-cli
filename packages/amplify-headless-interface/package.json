@@ -1,0 +1,21 @@
+{
+  "name": "amplify-headless-interface",
+  "version": "1.0.0",
+  "description": "interfaces for amplify headless mode payloads",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "generateSchemas": "yarn ts-node ./scripts/generateSchemas.ts"
+  },
+  "keywords": [
+    "amplify",
+    "headless"
+  ],
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "typescript-json-schema":"^0.42.0",
+    "ts-node":"^8.10.2"
+  }
+}
