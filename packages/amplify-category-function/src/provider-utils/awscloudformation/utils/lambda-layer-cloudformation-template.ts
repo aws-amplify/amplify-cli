@@ -75,7 +75,7 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
       S3Key: Fn.Ref('s3Key'),
     },
     Description: 'Lambda Layer',
-    LayerName: joinWithEnv('-', parameters.layerName),
+    LayerName: parameters.layerName,
     LicenseInfo: 'MIT',
   });
   layer.deletionPolicy(POLICY_RETAIN);
@@ -159,7 +159,7 @@ function createLayerversionArn(layerData: LayerMetadata, layerName: string, vers
     }
   }
   return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}:${layerVersion}', {
-    layerName: joinWithEnv('-', layerName),
+    layerName: layerName,
     layerVersion: version,
   });
 }

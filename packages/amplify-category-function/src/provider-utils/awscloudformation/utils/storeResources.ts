@@ -125,19 +125,11 @@ export function saveCFNParameters(
 }
 
 export function updateLayerCfnFile(context, parameters, layerDirPath) {
-  if (parameters.build) {
-    context.amplify.writeObjectAsJson(
-      path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
-      generateLayerCfnObj(context, parameters),
-      true,
-    );
-  } else {
-    context.amplify.writeObjectAsJson(
-      path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
-      generatePermissionCfnObj(context, parameters),
-      true,
-    );
-  }
+  context.amplify.writeObjectAsJson(
+    path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
+    generateLayerCfnObj(context, parameters),
+    true,
+  );
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', parameters.runtimes);
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'versionsMap', parameters.layerVersionMap);
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', parameters.build);

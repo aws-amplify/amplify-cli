@@ -25,6 +25,7 @@ export const addLayersToFunctionWalkthrough = async (
 
   let askArnQuestion: boolean;
   ({ lambdaLayers, dependsOn, askArnQuestion } = await askLayerSelection(
+    context,
     context.amplify.getProjectMeta(),
     runtime.value,
     previousSelections,
