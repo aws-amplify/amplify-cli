@@ -152,7 +152,7 @@ function getLayerRuntimeInfo(runtime: LayerRuntimes) {
 
 function printFlow(chain: ExecutionContext, settings: any, layerDirRegex, runtimeDisplayNames) {
   chain
-    .wait('Lambda layer folders & files created:')
+    .wait('✅ Lambda layer folders & files created:')
     .wait(layerDirRegex)
     .wait('Next steps:')
     .wait('Move your libraries in the following folder:');
@@ -172,7 +172,7 @@ function printFlow(chain: ExecutionContext, settings: any, layerDirRegex, runtim
   chain
     .wait('Include any files you want to share across runtimes in this folder:')
     .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
-    .wait('"amplify push" builds all of your local backend resources and provisions them in the cloud')
+    .wait('"amplify push" - builds all of your local backend resources and provisions them in the cloud')
     .sendEof();
   return chain;
 }

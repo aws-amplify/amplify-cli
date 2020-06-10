@@ -148,7 +148,7 @@ export async function addLayerResource(
   createLayerCfnFile(context, parameters, layerDirPath);
 
   const { print } = context;
-  print.info('Lambda layer folders & files created:');
+  print.info('✅ Lambda layer folders & files created:');
   print.info(layerDirPath);
   print.info('');
   print.success('Next steps:');
@@ -161,8 +161,9 @@ export async function addLayerResource(
   print.info('');
   print.info('Include any files you want to share across runtimes in this folder:');
   print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info('');
   print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
-  print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+  print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
 }
 
 export async function updateResource(
@@ -215,7 +216,7 @@ export async function updateLayerResource(
   createLayerParametersFile(context, layerParams, layerDirPath);
   updateLayerCfnFile(context, parameters, layerDirPath);
   const { print } = context;
-  print.info('Lambda layer folders & files created:');
+  print.info('✅ Lambda layer folders & files created:');
   print.info(layerDirPath);
   print.info('');
   print.success('Next steps:');
@@ -228,8 +229,9 @@ export async function updateLayerResource(
   print.info('');
   print.info('Include any files you want to share across runtimes in this folder:');
   print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info('');
   print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
-  print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+  print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
 }
 
 export async function updateFunctionResource(context, category, service, parameters, resourceToUpdate) {

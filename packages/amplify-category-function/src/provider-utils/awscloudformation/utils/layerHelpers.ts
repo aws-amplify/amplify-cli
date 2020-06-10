@@ -52,7 +52,7 @@ export function layerPermissionsQuestion(params?: Permission[]) {
     {
       type: 'checkbox',
       name: 'layerPermissions',
-      message: 'Who should have permission to use this layer(By default only this AWS account will have access)?',
+      message: 'Who should have permission to use this layer? (By default only this AWS account will have access)',
       choices: [
         {
           name: 'Specific AWS accounts',
