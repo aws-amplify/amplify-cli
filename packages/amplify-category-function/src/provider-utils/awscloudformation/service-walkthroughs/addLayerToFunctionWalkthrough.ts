@@ -20,6 +20,9 @@ export const addLayersToFunctionWalkthrough = async (
 
   // ask initial confirmation
   if (!(await context.amplify.confirmPrompt.run(confirmationPrompt, false))) {
+    if (lambdaLayers.length === 0) {
+      context.print.info('No Lambda layers selected');
+    }
     return { lambdaLayers, dependsOn };
   }
 
