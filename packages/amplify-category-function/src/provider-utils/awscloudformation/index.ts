@@ -9,6 +9,9 @@ import {
   createLayerFolders,
   saveMutableState,
   saveCFNParameters,
+  createParametersFile,
+  updateLayerCfnFile,
+  createLayerParametersFile,
 } from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
@@ -49,7 +52,7 @@ export async function addResource(
   }
 }
 
-async function addFunctionResource(
+export async function addFunctionResource(
   context,
   category,
   service,
@@ -118,7 +121,7 @@ async function addFunctionResource(
   );
 }
 
-async function addLayerResource(
+export async function addLayerResource(
   context,
   category,
   service,
@@ -139,6 +142,9 @@ async function addLayerResource(
   await serviceConfig.walkthroughs.createWalkthrough(context, parameters);
 
   const layerDirPath = createLayerFolders(context, parameters);
+  const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
+  createLayerParametersFile(context, layerParams, layerDirPath);
+  createParametersFile(context, {}, parameters.layerName, 'parameters.json');
   createLayerCfnFile(context, parameters, layerDirPath);
 
   const { print } = context;
@@ -163,9 +169,70 @@ export async function updateResource(
   context,
   category,
   service,
-  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
+  parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
   resourceToUpdate?,
 ) {
+  // load the service config for this service
+  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
+  const BAD_SERVICE_ERR = `amplify-category-function is not configured to provide service type ${service}`;
+  if (!serviceConfig) {
+    throw BAD_SERVICE_ERR;
+  }
+  switch (service) {
+    case ServiceName.LambdaFunction:
+      return updateFunctionResource(context, category, service, parameters, resourceToUpdate);
+    case ServiceName.LambdaLayer:
+      return updateLayerResource(context, category, service, serviceConfig, parameters as LayerParameters);
+    default:
+      throw BAD_SERVICE_ERR;
+  }
+}
+
+export async function updateLayerResource(
+  context,
+  category,
+  service,
+  serviceConfig: ServiceConfig<LayerParameters>,
+  parameters?: Partial<LayerParameters>,
+): Promise<void> {
+  if (!serviceConfig) {
+    throw `amplify-category-function is not configured to provide service type ${service}`;
+  }
+
+  if (!parameters) {
+    parameters = {};
+    parameters.providerContext = {
+      provider: provider,
+      service: service,
+      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+    };
+  }
+  await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters);
+
+  // generate layer parameters file and CFn file for the updated layer
+  const layerDirPath = createLayerFolders(context, parameters); // update based
+  const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
+  createLayerParametersFile(context, layerParams, layerDirPath);
+  updateLayerCfnFile(context, parameters, layerDirPath);
+  const { print } = context;
+  print.info('Lambda layer folders & files created:');
+  print.info(layerDirPath);
+  print.info('');
+  print.success('Next steps:');
+  print.info('Move your libraries in the following folder:');
+
+  for (let runtime of parameters.runtimes) {
+    print.info(`[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}`);
+  }
+
+  print.info('');
+  print.info('Include any files you want to share across runtimes in this folder:');
+  print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
+  print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+}
+
+export async function updateFunctionResource(context, category, service, parameters, resourceToUpdate) {
   const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
@@ -184,7 +251,7 @@ export async function updateResource(
     }
     saveMutableState(context, parameters);
   } else {
-    parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, resourceToUpdate);
+    parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }

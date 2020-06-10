@@ -1,4 +1,4 @@
-import { chooseServiceMessage } from '../../provider-utils/awscloudformation/utils/constants';
+import { chooseServiceMessageAdd } from '../../provider-utils/awscloudformation/utils/constants';
 import { category as categoryName } from '../../constants';
 import { supportedServices } from '../../provider-utils/supported-services';
 
@@ -12,7 +12,7 @@ module.exports = {
     const { amplify } = context;
     const servicesMetadata = supportedServices;
     return amplify
-      .serviceSelectionPrompt(context, categoryName, servicesMetadata, chooseServiceMessage)
+      .serviceSelectionPrompt(context, categoryName, servicesMetadata, chooseServiceMessageAdd)
       .then(result => {
         options = {
           service: result.service,

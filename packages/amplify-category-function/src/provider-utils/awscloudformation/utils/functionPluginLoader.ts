@@ -13,6 +13,10 @@ import {
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
+import path from 'path';
+import glob from 'glob';
+import archiver from 'archiver';
+import fs from 'fs-extra';
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
@@ -60,6 +64,11 @@ export async function runtimeWalkthrough(
   params: Partial<FunctionParameters> | Partial<LayerParameters>,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
   const { service } = params.providerContext;
+  //get the runtimes from template parameters
+  let runtimeLayers;
+  if (isLayerParameter(params)) {
+    runtimeLayers = params.runtimes.map(runtime => runtime.name);
+  }
   const selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition> = {
     pluginType: 'functionRuntime',
     listOptionsField: 'runtimes',
@@ -70,7 +79,9 @@ export async function runtimeWalkthrough(
       service === ServiceName.LambdaLayer ? 'Select up to 5 compatible runtimes:' : 'Choose the runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
+    runtimeState: runtimeLayers,
   };
+  // runtime selections
   const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugins = [];
   for (let selection of selections) {
@@ -83,31 +94,11 @@ export async function runtimeWalkthrough(
     }
     plugins.push(plugin);
   }
-  if (service === ServiceName.LambdaFunction) {
-    return _functionRuntimeWalkthroughHelper(params, plugins[0], selections[0]);
-  } else if (service === ServiceName.LambdaLayer) {
-    return _layerRuntimeWalkthroughHelper(params, plugins, selections);
-  }
+  return _functionRuntimeWalkthroughHelper(params, plugins, selections);
 }
 
 async function _functionRuntimeWalkthroughHelper(
-  params: Partial<FunctionParameters>,
-  plugin,
-  selection,
-): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
-  const contributionRequest: RuntimeContributionRequest = {
-    selection: selection.value,
-    contributionContext: {
-      functionName: params.functionName,
-      resourceName: params.resourceName,
-    },
-  };
-  const contribution = await plugin.contribute(contributionRequest);
-  return [{ ...contribution, runtimePluginId: selection.pluginId }];
-}
-
-async function _layerRuntimeWalkthroughHelper(
-  params: Partial<LayerParameters>,
+  params: Partial<FunctionParameters> | Partial<LayerParameters>,
   plugins,
   selections,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
@@ -116,8 +107,8 @@ async function _layerRuntimeWalkthroughHelper(
     const contributionRequest: RuntimeContributionRequest = {
       selection: selections[i].value,
       contributionContext: {
-        functionName: params.layerName,
-        resourceName: params.layerName,
+        functionName: isLayerParameter(params) ? params.layerName : params.functionName,
+        resourceName: isLayerParameter(params) ? params.layerName : params.resourceName,
       },
     };
     const contribution = await plugins[i].contribute(contributionRequest);
@@ -186,7 +177,7 @@ async function getSelectionsFromContributors<T>(
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
-        default: selectionOptions.listOptionsField === 'runtimes' ? 'nodejs' : undefined,
+        default: defaultSelection(selectionOptions, selections),
       },
     ]);
     selection = answer.selection;
@@ -195,6 +186,7 @@ async function getSelectionsFromContributors<T>(
   if (!Array.isArray(selection)) {
     selection = [selection];
   }
+
   return selection.map(s => {
     return {
       value: s,
@@ -226,6 +218,7 @@ interface PluginSelectionOptions<T extends FunctionRuntimeCondition | FunctionTe
   notFoundMessage: string;
   selectionPrompt: string;
   service: string;
+  runtimeState?: string[];
 }
 
 interface PluginSelection {
@@ -237,4 +230,72 @@ interface PluginSelection {
 interface ListOption {
   name: string;
   value: string;
+}
+
+function isLayerParameter(params: Partial<LayerParameters> | Partial<FunctionParameters>): params is Partial<LayerParameters> {
+  return (params as Partial<LayerParameters>).runtimes !== undefined;
+}
+
+function defaultSelection(selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition>, selections) {
+  if (selectionOptions.service === ServiceName.LambdaFunction) {
+    if (selectionOptions.listOptionsField === 'runtimes') {
+      return 'nodejs';
+    } else {
+      return 'hello-world';
+    }
+  } else {
+    if (selectionOptions.runtimeState !== undefined) {
+      return selections
+        .filter(selection => selectionOptions.runtimeState.includes(selection.name))
+        .forEach(selection => _.assign(selection, { checked: true }));
+    } else {
+      return undefined;
+    }
+  }
+}
+
+export function packageLayer(context, resource) {
+  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
+  const zipFilename = 'latest-build.zip';
+
+  const distDir = path.join(resourcePath, 'dist');
+  if (!fs.existsSync(distDir)) {
+    fs.mkdirSync(distDir);
+  }
+  const destination = path.join(distDir, zipFilename);
+  const zip = archiver.create('zip');
+  const output = fs.createWriteStream(destination);
+  return new Promise((resolve, reject) => {
+    output.on('close', () => {
+      //check zip size is less than 250MB
+      if (validFilesize(destination)) {
+        const zipName = `${resource.resourceName}-build.zip`;
+        context.amplify.updateAmplifyMetaAfterPackage(resource, zipName);
+        resolve({ zipFilePath: destination, zipFilename: zipName });
+      } else {
+        reject(new Error('File size greater than 250MB'));
+      }
+    });
+    output.on('error', () => {
+      reject(new Error('Failed to zip code.'));
+    });
+
+    zip.pipe(output);
+    glob
+      .sync(resourcePath + '/*')
+      .filter(folder => fs.lstatSync(folder).isDirectory())
+      .filter(folder => path.basename(folder) !== 'dist')
+      .forEach(folder => zip.directory(folder, path.basename(folder)));
+    zip.finalize();
+  });
+}
+
+function validFilesize(path, maxSize = 250) {
+  try {
+    const { size } = fs.statSync(path);
+    const fileSize = Math.round(size / 1024 ** 2);
+    return fileSize < maxSize;
+  } catch (error) {
+    return new Error('error in calculating File size');
+  }
 }

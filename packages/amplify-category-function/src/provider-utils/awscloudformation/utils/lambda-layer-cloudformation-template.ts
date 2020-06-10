@@ -1,70 +1,58 @@
 import { Fn, DeletionPolicy } from 'cloudform';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
-import { Permissions } from './layerParams';
+import { Permission, LayerParameters, LayerPermission, layerMetadataFactory, LayerMetadata } from './layerParams';
 
-export default function generateLayerCfnObj(parameters) {
-  const POLICY_RETAIN = DeletionPolicy.Retain;
-
-  const layer = new Lambda.LayerVersion({
-    CompatibleRuntimes: parameters.runtimes.map(runtime => runtime.cloudTemplateValue),
-    Content: {
-      S3Bucket: Fn.Ref('deploymentBucketName'),
-      S3Key: Fn.Ref('s3Key'),
-    },
-    Description: parameters.description || '',
-    LayerName: parameters.layerName,
-    LicenseInfo: 'MIT',
-  });
-  layer.deletionPolicy(POLICY_RETAIN);
-  _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });
-
-  const layerVersionPermissionInput = {
-    Action: 'lambda:GetLayerPermission',
-    LayerVersionArn: Fn.Ref(layer.Properties.LayerName),
-  };
-  let layerVersionPermission;
-
-  if (parameters.layerPermissions === Permissions.awsOrg) {
-    if (!parameters.authorizedOrgId) {
-      throw 'AWS Organization ID is missing, failed to generate cloudformation.';
-    }
-
-    layerVersionPermission = new Lambda.LayerVersionPermission({
-      ...layerVersionPermissionInput,
-      Principal: '*',
-    });
-    layerVersionPermission.OganizationId = parameters.authorizedOrgId;
-  } else if (parameters.layerPermissions === Permissions.awsAccounts) {
-    if (!parameters.authorizedAccountIds || parameters.authorizedAccountIds.length <= 0) {
-      throw 'No AWS Account IDs present, failed to generate cloudformation.';
-    }
-
-    layerVersionPermission = new Lambda.LayerVersionPermission({
-      ...layerVersionPermissionInput,
-      Principal: parameters.authorizedAccountIds,
-    });
-  } else if (parameters.layerPermissions === Permissions.public) {
-    layerVersionPermission = new Lambda.LayerVersionPermission({
-      ...layerVersionPermissionInput,
-      Principal: '*',
-    });
-  }
-
+function generateLayerCfnObjBase() {
   const cfnObj = {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda Layer resource stack creation using Amplify CLI',
     Parameters: {
-      deploymentBucketName: {
+      layerVersion: {
         Type: 'String',
+        Default: '1',
       },
-      s3Key: {
+      env: {
         Type: 'String',
       },
     },
-    Resources: {
-      LambdaLayer: layer,
+    Resources: {},
+    Conditions: {
+      HasEnvironmentParameter: {
+        'Fn::Not': [
+          {
+            'Fn::Equals': [
+              {
+                Ref: 'env',
+              },
+              'NONE',
+            ],
+          },
+        ],
+      },
     },
+  };
+  return cfnObj;
+}
+
+/**
+ * generated CFN for Layerpermissions only when updating permisssions
+ */
+export function generatePermissionCfnObj(context: any, parameters: LayerParameters): object {
+  const cfnObj = generateLayerCfnObjBase();
+  const layerData = layerMetadataFactory(context, parameters.layerName);
+  Object.entries(parameters.layerVersionMap).forEach(([key]) => {
+    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
+    answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
+  });
+  return cfnObj;
+}
+
+/**
+ * generates CFN for Layer and Layer permissions when updating layerVersion
+ */
+export function generateLayerCfnObj(context, parameters: LayerParameters) {
+  const outputObj = {
     Outputs: {
       Arn: {
         Value: {
@@ -76,20 +64,102 @@ export default function generateLayerCfnObj(parameters) {
           Ref: 'AWS::Region',
         },
       },
-      Permission: {
-        Value: {
-          Ref: 'LambdaLayerPermission',
-        },
-      },
     },
   };
+  let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
+  const POLICY_RETAIN = DeletionPolicy.Retain;
+  const layer = new Lambda.LayerVersion({
+    CompatibleRuntimes: parameters.runtimes.map(runtime => runtime.cloudTemplateValue),
+    Content: {
+      S3Bucket: Fn.Ref('deploymentBucketName'),
+      S3Key: Fn.Ref('s3Key'),
+    },
+    Description: 'Lambda Layer',
+    LayerName: joinWithEnv('-', parameters.layerName),
+    LicenseInfo: 'MIT',
+  });
+  layer.deletionPolicy(POLICY_RETAIN);
+  _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });
 
-  if (layerVersionPermission) {
-    layerVersionPermission.deletionPolicy(POLICY_RETAIN);
-    layerVersionPermission.UpdateReplacePolicy = POLICY_RETAIN;
-    _.assign(layerVersionPermission, { UpdateReplacePolicy: POLICY_RETAIN });
+  cfnObj.Resources['LambdaLayer'] = layer;
 
-    cfnObj.Resources = { ...cfnObj.Resources, ...layerVersionPermission };
-  }
+  // parameters.laatestLayerVersion is defined
+  const layerData = layerMetadataFactory(context, parameters.layerName);
+  Object.entries(parameters.layerVersionMap).forEach(([key]) => {
+    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
+    answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
+  });
   return cfnObj;
+}
+
+function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, isContentUpdated: boolean) {
+  const layerVersionPermissionBase = {
+    Action: 'lambda:GetLayerVersion',
+    LayerVersionArn: createLayerversionArn(layerData, layerName, version, isContentUpdated),
+  };
+
+  const result = [];
+  const versionPermission = layerData.getVersion(Number(version));
+  if (versionPermission.isPublic()) {
+    result.push({
+      name: `LambdaLayerPermission${Permission.public}${version}`,
+      policy: new Lambda.LayerVersionPermission({
+        ...layerVersionPermissionBase,
+        Principal: '*',
+      }),
+    });
+    return result;
+  }
+  if (versionPermission.isPrivate()) {
+    result.push({
+      name: `LambdaLayerPermission${Permission.private}${version}`,
+      policy: new Lambda.LayerVersionPermission({
+        ...layerVersionPermissionBase,
+        Principal: Fn.Ref('AWS::AccountId'),
+      }),
+    });
+  }
+
+  const accountIds = versionPermission.listAccoutAccess();
+  const orgIds = versionPermission.listOrgAccess();
+
+  accountIds.forEach(acctId =>
+    result.push({
+      name: `LambdaLayerPermission${Permission.awsAccounts}${acctId}${version}`,
+      policy: new Lambda.LayerVersionPermission({
+        ...layerVersionPermissionBase,
+        Principal: acctId,
+      }),
+    }),
+  );
+
+  orgIds.forEach(orgId =>
+    result.push({
+      name: `LambdaLayerPermission${Permission.awsOrg}${orgId.replace('-', '')}${version}`,
+      policy: new Lambda.LayerVersionPermission({
+        ...layerVersionPermissionBase,
+        Principal: '*',
+        OrganizationId: orgId,
+      }),
+    }),
+  );
+  return result;
+}
+
+function joinWithEnv(separator: string, stringToJoin: string) {
+  return Fn.If('HasEnvironmentParameter', Fn.Join(separator, [stringToJoin, Fn.Ref('env')]), stringToJoin);
+}
+
+function createLayerversionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean) {
+  //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
+  if (isContentUpdated) {
+    // if runtime/Content updated
+    if (layerData.getLatestVersion() === Number(version)) {
+      return Fn.Ref('LambdaLayer');
+    }
+  }
+  return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}:${layerVersion}', {
+    layerName: joinWithEnv('-', layerName),
+    layerVersion: version,
+  });
 }

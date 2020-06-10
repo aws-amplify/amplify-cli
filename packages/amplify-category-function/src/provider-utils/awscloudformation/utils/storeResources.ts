@@ -1,9 +1,9 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { provider, ServiceName } from './constants';
+import { provider, ServiceName, layerParametersFileName } from './constants';
 import { category as categoryName } from '../../../constants';
-import generateLayerCfnObj from './lambda-layer-cloudformation-template';
+import { generateLayerCfnObj, generatePermissionCfnObj } from './lambda-layer-cloudformation-template';
 import _ from 'lodash';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 
@@ -86,13 +86,15 @@ export function createLayerFolders(context, parameters) {
 export function createLayerCfnFile(context, parameters, layerDirPath) {
   context.amplify.writeObjectAsJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
-    generateLayerCfnObj(parameters),
+    generateLayerCfnObj(context, parameters),
     true,
   );
   context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, {
     providerPlugin: parameters.providerContext.provider,
     service: parameters.providerContext.service,
     runtimes: parameters.runtimes,
+    versionsMap: parameters.layerVersionMap,
+    build: true,
   });
 }
 
@@ -122,7 +124,33 @@ export function saveCFNParameters(
   }
 }
 
-function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
+export function updateLayerCfnFile(context, parameters, layerDirPath) {
+  if (parameters.build) {
+    context.amplify.writeObjectAsJson(
+      path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
+      generateLayerCfnObj(context, parameters),
+      true,
+    );
+  } else {
+    context.amplify.writeObjectAsJson(
+      path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
+      generatePermissionCfnObj(context, parameters),
+      true,
+    );
+  }
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', parameters.runtimes);
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'versionsMap', parameters.layerVersionMap);
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', parameters.build);
+}
+
+export function createLayerParametersFile(context, parameters, layerDirPath) {
+  fs.ensureDirSync(layerDirPath);
+  const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
+  //const jsonString = JSON.stringify({ parameters }, null, 4);
+  context.amplify.writeObjectAsJson(parametersFilePath, { parameters }, true);
+}
+
+export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
   fs.ensureDirSync(resourceDirPath);

@@ -16,6 +16,9 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
+const ziparchiver = require('archiver');
+const glob = require('glob');
+const { packageLayer } = require('../../amplify-category-function/lib/provider-utils/awscloudformation/utils/functionPluginLoader');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -220,7 +223,7 @@ function packageResources(context, resources) {
 
   const packageResource = (context, resource) => {
     let s3Key;
-    return buildResource(context, resource)
+    return (resource.service === 'LambdaFunction' ? buildResource(context, resource) : packageLayer(context, resource))
       .then(result => {
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
@@ -253,18 +256,24 @@ function packageResources(context, resources) {
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-          cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-            Bucket: s3Bucket,
-            Key: s3Key,
-          };
+        if (resource.service === 'LambdaFunction') {
+          if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+            cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+              Bucket: s3Bucket,
+              Key: s3Key,
+            };
+          } else {
+            cfnMeta.Resources.LambdaFunction.Properties.Code = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+          }
         } else {
-          cfnMeta.Resources.LambdaFunction.Properties.Code = {
+          cfnMeta.Resources.LambdaLayer.Properties.Content = {
             S3Bucket: s3Bucket,
             S3Key: s3Key,
           };
         }
-
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
       });
