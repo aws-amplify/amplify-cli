@@ -4,7 +4,7 @@ import { category } from '../../..';
 import { ServiceName } from './constants';
 import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
 import enquirer from 'enquirer';
-import { stubLayerMetadataFactory } from './stubLayerMetadataFactory';
+import { layerMetadataFactory } from './layerParams';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 export const provideExistingARNsPrompt = 'Provide existing Lambda Layer ARNs';
@@ -22,6 +22,7 @@ const layerARNRegex = /^arn:[a-zA-Z0-9-]+:lambda:[a-zA-Z0-9-]+:\d{12}:layer:[a-z
  * @param previousSelections previous layers added to the function (used to populate default selections)
  */
 export const askLayerSelection = async (
+  context,
   amplifyMeta,
   runtimeValue: string,
   previousSelections: LambdaLayer[] = [],
@@ -63,8 +64,9 @@ export const askLayerSelection = async (
       type: 'list',
       name: 'versionSelection',
       message: versionSelectionPrompt(selection),
-      choices: stubLayerMetadataFactory(selection)
-        .versions.sort()
+      choices: layerMetadataFactory(context, selection)
+        .listVersions()
+        .sort()
         .reverse()
         .map(num => num.toString()),
       default: currentVersion,

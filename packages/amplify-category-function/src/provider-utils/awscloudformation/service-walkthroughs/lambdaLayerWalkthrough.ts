@@ -61,7 +61,7 @@ export async function updateLayerWalkthrough(
       choices: resources,
     },
   ];
-  if (resources.length == 1) {
+  if (resources.length === 1) {
     _.assign(parameters, { layerName: resources[0] });
   } else {
     const resourceAnswer = await inquirer.prompt(resourceQuestion);
@@ -82,8 +82,8 @@ export async function updateLayerWalkthrough(
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
     const runtimeReturn = await runtimeWalkthrough(context, parameters as LayerParameters);
     parameters.runtimes = runtimeReturn.map(val => val.runtime);
-    islayerVersionChanged = true;
   }
+  islayerVersionChanged = !_.isEqual(parameters.runtimes, layerData.runtimes);
   // get the latest version from #currentcloudbackend
   const layerDataPushed: LayerMetadata = layerMetadataFactory(context, parameters.layerName, true);
   const latestVersionPushed = layerDataPushed !== undefined ? layerDataPushed.getLatestVersion() : 0;
@@ -127,6 +127,6 @@ export async function updateLayerWalkthrough(
   }
   _.assign(parameters, { layerVersion: String(latestVersion) });
 
-  _.assign(parameters, { build: latestVersion !== latestVersionPushed });
+  _.assign(parameters, { build: true });
   return parameters;
 }
