@@ -29,7 +29,7 @@ export function layerNameQuestion(context: any) {
         input = input.trim();
         const meta = context.amplify.getProjectMeta();
         if (!/^[a-zA-Z0-9]{1,140}$/.test(input)) {
-          return 'Lambda Layer names are 1-140 alphanumeric characters long.';
+          return 'Lambda Layer names must be 1-140 alphanumeric characters.';
         } else if (meta.function && meta.function.hasOwnProperty(input)) {
           return `A Lambda Layer with the name ${input} already exists in this project.`;
         }
