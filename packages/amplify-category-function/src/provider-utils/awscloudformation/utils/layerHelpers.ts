@@ -131,25 +131,27 @@ export function createVersionsMap(parameters: LayerInputParams, version: string)
   let versionMap: Object = {};
   let permissionObj: Array<LayerPermission> = [];
 
-  parameters.layerPermissions.forEach(val => {
-    let obj: LayerPermission;
-    if (val === Permission.public) {
-      obj = {
-        type: Permission.public,
-      };
-    } else if (val === Permission.awsOrg) {
-      obj = {
-        type: Permission.awsOrg,
-        orgs: parameters.authorizedOrgId.split(','),
-      };
-    } else if (val === Permission.awsAccounts) {
-      obj = {
-        type: Permission.awsAccounts,
-        accounts: parameters.authorizedAccountIds.split(','),
-      };
-    }
-    permissionObj.push(obj);
-  });
+  if (parameters.layerPermissions !== undefined && parameters.layerPermissions.length > 0) {
+    parameters.layerPermissions.forEach(val => {
+      let obj: LayerPermission;
+      if (val === Permission.public) {
+        obj = {
+          type: Permission.public,
+        };
+      } else if (val === Permission.awsOrg) {
+        obj = {
+          type: Permission.awsOrg,
+          orgs: parameters.authorizedOrgId.split(','),
+        };
+      } else if (val === Permission.awsAccounts) {
+        obj = {
+          type: Permission.awsAccounts,
+          accounts: parameters.authorizedAccountIds.split(','),
+        };
+      }
+      permissionObj.push(obj);
+    });
+  }
   const privateObj: LayerPermission = {
     type: Permission.private,
   };
