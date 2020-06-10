@@ -1,9 +1,9 @@
 import uuid from 'uuid';
-import { Permissions, LayerPermission } from '../utils/layerParams';
+import { Permission, LayerPermission } from '../utils/layerParams';
 import _ from 'lodash';
 
 export interface LayerInputParams {
-  layerPermissions?: Permissions[];
+  layerPermissions?: Permission[];
   authorizedAccountIds?: string;
   authorizedOrgId?: string;
 }
@@ -47,7 +47,7 @@ export function layerNameQuestion(context: any) {
   ];
 }
 
-export function layerPermissionsQuestion(params?: Permissions[]) {
+export function layerPermissionsQuestion(params?: Permission[]) {
   return [
     {
       type: 'checkbox',
@@ -56,21 +56,21 @@ export function layerPermissionsQuestion(params?: Permissions[]) {
       choices: [
         {
           name: 'Specific AWS accounts',
-          value: Permissions.awsAccounts,
-          checked: _.includes(params, Permissions.awsAccounts),
+          value: Permission.awsAccounts,
+          checked: _.includes(params, Permission.awsAccounts),
         },
         {
           name: 'Specific AWS organization',
-          value: Permissions.awsOrg,
-          checked: _.includes(params, Permissions.awsOrg),
+          value: Permission.awsOrg,
+          checked: _.includes(params, Permission.awsOrg),
         },
         {
           name: 'Public (everyone on AWS can use this layer)',
-          value: Permissions.public,
-          checked: _.includes(params, Permissions.public),
+          value: Permission.public,
+          checked: _.includes(params, Permission.public),
         },
       ],
-      default: [Permissions.private],
+      default: [Permission.private],
     },
   ];
 }
@@ -133,25 +133,25 @@ export function createVersionsMap(parameters: LayerInputParams, version: string)
 
   parameters.layerPermissions.forEach(val => {
     let obj: LayerPermission;
-    if (val === Permissions.public) {
+    if (val === Permission.public) {
       obj = {
-        type: Permissions.public,
+        type: Permission.public,
       };
-    } else if (val === Permissions.awsOrg) {
+    } else if (val === Permission.awsOrg) {
       obj = {
-        type: Permissions.awsOrg,
+        type: Permission.awsOrg,
         orgs: parameters.authorizedOrgId.split(','),
       };
-    } else if (val === Permissions.awsAccounts) {
+    } else if (val === Permission.awsAccounts) {
       obj = {
-        type: Permissions.awsAccounts,
+        type: Permission.awsAccounts,
         accounts: parameters.authorizedAccountIds.split(','),
       };
     }
     permissionObj.push(obj);
   });
   const privateObj: LayerPermission = {
-    type: Permissions.private,
+    type: Permission.private,
   };
   permissionObj.push(privateObj);
   // add private as default in versionMap

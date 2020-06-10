@@ -4,15 +4,18 @@ import path from 'path';
 import { categoryName, layerParametersFileName } from '../utils/constants';
 import fs from 'fs-extra';
 
+export type LayerVersionData = {
+  version: LayerVersionMetadata;
+};
 export type LayerParameters = {
   layerName: string;
   runtimes: FunctionRuntime[];
   providerContext: ProviderContext;
-  layerVersionsMap?: Object;
+  layerVersionMap?: LayerVersionData;
   build: boolean;
 };
 
-export enum Permissions {
+export enum Permission {
   private = 'private',
   public = 'public',
   awsAccounts = 'awsAccounts',
@@ -40,20 +43,20 @@ export interface LayerVersionMetadata {
 export type LayerPermission = PrivateLayer | PublicLayer | AccountsLayer | OrgsLayer;
 
 export interface PrivateLayer {
-  type: Permissions.private;
+  type: Permission.private;
 }
 
 export interface PublicLayer {
-  type: Permissions.public;
+  type: Permission.public;
 }
 
 export interface AccountsLayer {
-  type: Permissions.awsAccounts;
+  type: Permission.awsAccounts;
   accounts: string[];
 }
 
 export interface OrgsLayer {
-  type: Permissions.awsOrg;
+  type: Permission.awsOrg;
   orgs: string[];
 }
 
@@ -63,7 +66,7 @@ class LayerState implements LayerMetadata {
   layerMetaData: LayerVersionMetadata;
   constructor(obj) {
     this.runtimes = obj.runtimes;
-    Object.entries(obj.layerVersionsMap).forEach(([key, value]) => {
+    Object.entries(obj.layerVersionMap).forEach(([key, value]) => {
       this.layerMetaData = new LayerVersionState(value);
       this.versionMap.set(Number(key), this.layerMetaData);
     });
@@ -86,29 +89,29 @@ class LayerVersionState implements LayerVersionMetadata {
   constructor(value) {
     this.permissions = [];
     value.forEach(permission => {
-      if (permission.type === Permissions.public) {
+      if (permission.type === Permission.public) {
         const permissionPublic: PublicLayer = {
-          type: Permissions.public,
+          type: Permission.public,
         };
         this.permissions.push(permissionPublic);
       }
-      if (permission.type === Permissions.private) {
+      if (permission.type === Permission.private) {
         const permissionPrivate: PrivateLayer = {
-          type: Permissions.private,
+          type: Permission.private,
         };
 
         this.permissions.push(permissionPrivate);
       }
-      if (permission.type === Permissions.awsOrg) {
+      if (permission.type === Permission.awsOrg) {
         const orgsPermissions: OrgsLayer = {
-          type: Permissions.awsOrg,
+          type: Permission.awsOrg,
           orgs: permission.orgs,
         };
         this.permissions.push(orgsPermissions);
       }
-      if (permission.type === Permissions.awsAccounts) {
+      if (permission.type === Permission.awsAccounts) {
         const accountsPermissions: AccountsLayer = {
-          type: Permissions.awsAccounts,
+          type: Permission.awsAccounts,
           accounts: permission.accounts,
         };
         this.permissions.push(accountsPermissions);
@@ -119,7 +122,7 @@ class LayerVersionState implements LayerVersionMetadata {
   listAccoutAccess(): string[] {
     let accounts: string[] = [];
     this.permissions.forEach(permission => {
-      if (permission.type === Permissions.awsAccounts) {
+      if (permission.type === Permission.awsAccounts) {
         accounts = permission.accounts;
       }
     });
@@ -129,7 +132,7 @@ class LayerVersionState implements LayerVersionMetadata {
   listOrgAccess(): string[] {
     let orgs: string[] = [];
     this.permissions.forEach(permission => {
-      if (permission.type === Permissions.awsOrg) {
+      if (permission.type === Permission.awsOrg) {
         orgs = permission.orgs;
       }
     });
@@ -137,11 +140,11 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 
   isPrivate(): boolean {
-    return !!this.permissions.map(perm => perm.type).find(type => type === Permissions.private);
+    return !!this.permissions.map(perm => perm.type).find(type => type === Permission.private);
   }
 
   isPublic(): boolean {
-    return !!this.permissions.map(perm => perm.type).find(type => type === Permissions.public);
+    return !!this.permissions.map(perm => perm.type).find(type => type === Permission.public);
   }
 }
 

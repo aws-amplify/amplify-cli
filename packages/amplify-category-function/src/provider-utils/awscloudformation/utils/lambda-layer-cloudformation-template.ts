@@ -1,7 +1,7 @@
 import { Fn, DeletionPolicy } from 'cloudform';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
-import { Permissions, LayerParameters, LayerPermission, layerMetadataFactory, LayerMetadata } from './layerParams';
+import { Permission, LayerParameters, LayerPermission, layerMetadataFactory, LayerMetadata } from './layerParams';
 
 function generateLayerCfnObjBase() {
   const cfnObj = {
@@ -41,7 +41,7 @@ function generateLayerCfnObjBase() {
 export function generatePermissionCfnObj(context: any, parameters: LayerParameters): object {
   const cfnObj = generateLayerCfnObjBase();
   const layerData = layerMetadataFactory(context, parameters.layerName);
-  Object.entries(parameters.layerVersionsMap).forEach(([key]) => {
+  Object.entries(parameters.layerVersionMap).forEach(([key]) => {
     const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   });
@@ -85,7 +85,7 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
 
   // parameters.laatestLayerVersion is defined
   const layerData = layerMetadataFactory(context, parameters.layerName);
-  Object.entries(parameters.layerVersionsMap).forEach(([key]) => {
+  Object.entries(parameters.layerVersionMap).forEach(([key]) => {
     const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   });
@@ -102,16 +102,17 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
   const versionPermission = layerData.getVersion(Number(version));
   if (versionPermission.isPublic()) {
     result.push({
-      name: `LambdaLayerPermission${Permissions.public}${version}`,
+      name: `LambdaLayerPermission${Permission.public}${version}`,
       policy: new Lambda.LayerVersionPermission({
         ...layerVersionPermissionBase,
         Principal: '*',
       }),
     });
+    return result;
   }
   if (versionPermission.isPrivate()) {
     result.push({
-      name: `LambdaLayerPermission${Permissions.private}${version}`,
+      name: `LambdaLayerPermission${Permission.private}${version}`,
       policy: new Lambda.LayerVersionPermission({
         ...layerVersionPermissionBase,
         Principal: Fn.Ref('AWS::AccountId'),
@@ -124,7 +125,7 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
 
   accountIds.forEach(acctId =>
     result.push({
-      name: `LambdaLayerPermission${Permissions.awsAccounts}${acctId}${version}`,
+      name: `LambdaLayerPermission${Permission.awsAccounts}${acctId}${version}`,
       policy: new Lambda.LayerVersionPermission({
         ...layerVersionPermissionBase,
         Principal: acctId,
@@ -134,7 +135,7 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
 
   orgIds.forEach(orgId =>
     result.push({
-      name: `LambdaLayerPermission${Permissions.awsOrg}${orgId.replace('-', '')}${version}`,
+      name: `LambdaLayerPermission${Permission.awsOrg}${orgId.replace('-', '')}${version}`,
       policy: new Lambda.LayerVersionPermission({
         ...layerVersionPermissionBase,
         Principal: '*',

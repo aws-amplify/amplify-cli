@@ -53,7 +53,7 @@ export async function createWalkthrough(
 /**
  * FIXME this function needs to be refactored so it doesn't have side-effects of writing to CFN files
  */
-export async function updateWalkthrough(context, parameters?:Partial<FunctionParameters>, lambdaToUpdate?: string) {
+export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const lambdaFuncResourceNames = ((await context.amplify.getResourceStatus()).allResources as any[])
     .filter(resource => resource.service === ServiceName.LambdaFunction)
     .map(resource => resource.resourceName);

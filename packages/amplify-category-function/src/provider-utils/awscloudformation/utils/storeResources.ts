@@ -93,7 +93,7 @@ export function createLayerCfnFile(context, parameters, layerDirPath) {
     providerPlugin: parameters.providerContext.provider,
     service: parameters.providerContext.service,
     runtimes: parameters.runtimes,
-    versionsMap: parameters.layerVersionsMap,
+    versionsMap: parameters.layerVersionMap,
     build: true,
   });
 }
@@ -139,15 +139,15 @@ export function updateLayerCfnFile(context, parameters, layerDirPath) {
     );
   }
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', parameters.runtimes);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'versionsMap', parameters.layerVersionsMap);
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'versionsMap', parameters.layerVersionMap);
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', parameters.build);
 }
 
 export function createLayerParametersFile(context, parameters, layerDirPath) {
   fs.ensureDirSync(layerDirPath);
   const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
-  const jsonString = JSON.stringify({ parameters }, null, 4);
-  fs.writeFileSync(parametersFilePath, jsonString, 'utf-8');
+  //const jsonString = JSON.stringify({ parameters }, null, 4);
+  context.amplify.writeObjectAsJson(parametersFilePath, { parameters }, true);
 }
 
 export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {

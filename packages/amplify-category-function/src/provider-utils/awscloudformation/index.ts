@@ -11,7 +11,7 @@ import {
   saveCFNParameters,
   createParametersFile,
   updateLayerCfnFile,
-  createLayerParametersFile
+  createLayerParametersFile,
 } from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
@@ -142,7 +142,7 @@ export async function addLayerResource(
   await serviceConfig.walkthroughs.createWalkthrough(context, parameters);
 
   const layerDirPath = createLayerFolders(context, parameters);
-  const layerParams = _.pick(parameters, ['runtimes', 'layerVersionsMap']);
+  const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
   createLayerParametersFile(context, layerParams, layerDirPath);
   createParametersFile(context, {}, parameters.layerName, 'parameters.json');
   createLayerCfnFile(context, parameters, layerDirPath);
@@ -207,11 +207,11 @@ export async function updateLayerResource(
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
   }
-  await serviceConfig.walkthroughs.updateWalkthrough(context, parameters);
+  await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters);
 
   // generate layer parameters file and CFn file for the updated layer
   const layerDirPath = createLayerFolders(context, parameters); // update based
-  const layerParams = _.pick(parameters, ['runtimes', 'layerVersionsMap']);
+  const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
   createLayerParametersFile(context, layerParams, layerDirPath);
   updateLayerCfnFile(context, parameters, layerDirPath);
   const { print } = context;
