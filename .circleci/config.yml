@@ -769,6 +769,13 @@ jobs:
           when: always
       - store_artifacts:
           path: ../uitest_android_results
+  api-data-access-patterns-modified-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-data-access-patterns-modified.test.ts
   hostingPROD-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -970,6 +977,7 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
+            - api-data-access-patterns-modified-amplify_e2e_tests
             - hostingPROD-amplify_e2e_tests
             - plugin-amplify_e2e_tests
             - datastore-modegen-amplify_e2e_tests
@@ -992,12 +1000,16 @@ workflows:
                 - release
                 - master
                 - beta
-      - hostingPROD-amplify_e2e_tests:
+      - api-data-access-patterns-modified-amplify_e2e_tests:
           filters: &ref_2
             branches:
               only:
                 - master
                 - split-test
+          requires:
+            - publish_to_local_registry
+      - hostingPROD-amplify_e2e_tests:
+          filters: *ref_2
           requires:
             - publish_to_local_registry
       - plugin-amplify_e2e_tests:
@@ -1012,6 +1024,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+            - api-data-access-patterns-modified-amplify_e2e_tests
       - hosting-amplify_e2e_tests:
           filters: *ref_2
           requires:
