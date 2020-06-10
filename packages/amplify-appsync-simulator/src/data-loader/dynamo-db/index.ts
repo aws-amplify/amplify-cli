@@ -152,14 +152,20 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       UpdateExpression: update.expression,
       ConditionExpression: condition.expression,
       ReturnValues: 'ALL_NEW',
-      ExpressionAttributeNames: {
-        ...(condition.expressionNames || {}),
-        ...update.expressionNames,
-      },
-      ExpressionAttributeValues: {
-        ...(condition.expressionValues || {}),
-        ...update.expressionValues,
-      },
+      ExpressionAttributeNames:
+        condition?.expressionNames || update.expressionNames
+          ? {
+              ...(condition.expressionNames || {}),
+              ...update.expressionNames,
+            }
+          : undefined,
+      ExpressionAttributeValues:
+        condition?.expressionValues || update.expressionValues
+          ? {
+              ...(condition.expressionValues || {}),
+              ...update.expressionValues,
+            }
+          : undefined,
     };
 
     const { Attributes: updated } = await this.client.updateItem(params).promise();
@@ -238,8 +244,9 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
                   ...item.key,
                   ...item.attributeValues,
                 },
-                ConditionExpression: (item.condition || {}).expression,
-                ExpressionAttributeValues: (item.condition || {}).expressionValues,
+                ConditionExpression: item.condition?.expression,
+                ExpressionAttributeValues: item.condition?.expressionValues,
+                ExpressionAttributeNames: item.condition?.expressionNames,
               },
             };
           case 'UpdateItem':
@@ -248,14 +255,21 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
                 TableName: item.table,
                 Key: item.key,
                 UpdateExpression: item.update.expression,
-                ConditionExpression: (item.condition || {}).expression,
-                ExpressionAttributeValues: {
-                  ...(item.update || {}).expressionValues,
-                  ...(item.condition || {}).expressionValues,
-                },
-                ExpressionAttributeNames: {
-                  ...(item.update || {}).expressionNames,
-                },
+                ConditionExpression: item.condition?.expression,
+                ExpressionAttributeValues:
+                  item.condition?.expressionValues || item.update.expressionValues
+                    ? {
+                        ...(item.update || {}).expressionValues,
+                        ...(item.condition || {}).expressionValues,
+                      }
+                    : undefined,
+                ExpressionAttributeNames:
+                  item.condition?.expressionNames || item.update.expressionNames
+                    ? {
+                        ...(item.update || {}).expressionNames,
+                        ...(item.condition || {}).expressionNames,
+                      }
+                    : undefined,
               },
             };
           case 'DeleteItem':
@@ -263,13 +277,9 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
               Delete: {
                 TableName: item.table,
                 Key: item.key,
-                ConditionExpression: (item.condition || {}).expression,
-                ExpressionAttributeValues: {
-                  ...(item.condition || {}).expressionValues,
-                },
-                ExpressionAttributeNames: {
-                  ...(item.condition || {}).expressionNames,
-                },
+                ConditionExpression: item.condition?.expression,
+                ExpressionAttributeValues: item.condition?.expressionValues,
+                ExpressionAttributeNames: item.condition?.expressionNames,
               },
             };
         }
