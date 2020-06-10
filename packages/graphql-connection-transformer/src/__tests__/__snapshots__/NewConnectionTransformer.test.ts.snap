@@ -149,8 +149,6 @@ type Query {
   syncUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelUserConnection
   getUser(id: ID!): User
   listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection
-  queryPostEditorsByPost(postID: ID!, editorID: ModelIDKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelPostEditorFilterInput, limit: Int, nextToken: String): ModelPostEditorConnection
-  queryPostEditorsByEditor(editorID: ID!, postID: ModelIDKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelPostEditorFilterInput, limit: Int, nextToken: String): ModelPostEditorConnection
 }
 
 input CreatePostInput {
@@ -429,8 +427,6 @@ type Query {
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
   getUser(id: ID!): User
   listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection
-  queryPostEditorsByPost(postID: ID!, editorID: ModelIDKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelPostEditorFilterInput, limit: Int, nextToken: String): ModelPostEditorConnection
-  queryPostEditorsByEditor(editorID: ID!, postID: ModelIDKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelPostEditorFilterInput, limit: Int, nextToken: String): ModelPostEditorConnection
 }
 
 input CreatePostInput {
@@ -536,11 +532,6 @@ input ModelUserConditionInput {
   not: ModelUserConditionInput
 }
 
-type ModelPostEditorConnection {
-  items: [PostEditor]
-  nextToken: String
-}
-
 input ModelIDKeyConditionInput {
   eq: ID
   le: ID
@@ -549,6 +540,11 @@ input ModelIDKeyConditionInput {
   gt: ID
   between: [ID]
   beginsWith: ID
+}
+
+type ModelPostEditorConnection {
+  items: [PostEditor]
+  nextToken: String
 }
 
 input ModelPostEditorFilterInput {
