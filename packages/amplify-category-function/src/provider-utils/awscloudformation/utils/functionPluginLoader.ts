@@ -13,7 +13,6 @@ import {
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
-
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */

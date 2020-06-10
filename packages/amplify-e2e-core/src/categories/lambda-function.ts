@@ -135,7 +135,7 @@ const coreFunction = (
     }
 
     // lambda layers question
-    chain.wait('Do you want to modify the layers this function can access?');
+    chain.wait('Do you want to configure Lambda layers for this function?');
     if (settings.layerOptions === undefined) {
       chain.sendLine('n');
     } else {

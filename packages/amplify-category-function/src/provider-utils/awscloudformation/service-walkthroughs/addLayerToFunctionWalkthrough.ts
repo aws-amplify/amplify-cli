@@ -2,7 +2,7 @@ import { FunctionParameters, FunctionRuntime, LambdaLayer, FunctionDependency } 
 import _ from 'lodash';
 import { askLayerSelection, askCustomArnQuestion, askLayerOrderQuestion } from '../utils/addLayerToFunctionUtils';
 
-const confirmationPrompt = 'Do you want to modify the layers this function can access?';
+const confirmationPrompt = 'Do you want to configure Lambda layers for this function?';
 
 /**
  * Performs the walkthrough to add layers to a function
@@ -19,7 +19,7 @@ export const addLayersToFunctionWalkthrough = async (
   let dependsOn: FunctionDependency[] = [];
 
   // ask initial confirmation
-  if (!(await context.amplify.confirmPrompt.run(confirmationPrompt))) {
+  if (!(await context.amplify.confirmPrompt.run(confirmationPrompt, false))) {
     return { lambdaLayers, dependsOn };
   }
 

@@ -146,6 +146,7 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
   return result;
 }
 
+//TODO will remove later
 function joinWithEnv(separator: string, stringToJoin: string) {
   return Fn.If('HasEnvironmentParameter', Fn.Join(separator, [stringToJoin, Fn.Ref('env')]), stringToJoin);
 }
