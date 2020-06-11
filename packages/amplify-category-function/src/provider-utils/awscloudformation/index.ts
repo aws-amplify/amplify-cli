@@ -152,13 +152,15 @@ export async function addLayerResource(
   print.info(layerDirPath);
   print.info('');
   print.success('Next steps:');
-  print.info('Move your libraries in the following folder:');
 
-  for (let runtime of parameters.runtimes) {
-    print.info(`[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}`);
+  if (parameters.runtimes.length !== 0) {
+    print.info('Move your libraries in the following folder:');
+    for (let runtime of parameters.runtimes) {
+      print.info(`[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}`);
+    }
+    print.info('');
   }
 
-  print.info('');
   print.info('Include any files you want to share across runtimes in this folder:');
   print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
   print.info('');
@@ -220,13 +222,15 @@ export async function updateLayerResource(
   print.info(layerDirPath);
   print.info('');
   print.success('Next steps:');
-  print.info('Move your libraries in the following folder:');
 
-  for (let runtime of parameters.runtimes) {
-    print.info(`[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}`);
+  if (parameters.runtimes.length !== 0) {
+    print.info('Move your libraries in the following folder:');
+    for (let runtime of parameters.runtimes) {
+      print.info(`[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}`);
+    }
+    print.info('');
   }
 
-  print.info('');
   print.info('Include any files you want to share across runtimes in this folder:');
   print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
   print.info('');

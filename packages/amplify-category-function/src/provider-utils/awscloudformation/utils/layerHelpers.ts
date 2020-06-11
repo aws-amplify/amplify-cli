@@ -52,7 +52,7 @@ export function layerPermissionsQuestion(params?: Permission[]) {
     {
       type: 'checkbox',
       name: 'layerPermissions',
-      message: 'Who should have permission to use this layer? (By default only this AWS account will have access)',
+      message: 'Who should have permission to use this layer? (Current AWS account always has access)',
       choices: [
         {
           name: 'Specific AWS accounts',
@@ -110,7 +110,7 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
       validate: input => {
         const orgIds = input.split(',');
         const set = new Set();
-        orgIds.forEach(orgId => {
+        for (let orgId of orgIds) {
           orgId = orgId.trim();
           if (!/^o-[a-zA-Z0-9]{10,32}$/.test(orgId)) {
             return 'The organization ID starts with "o-" followed by a 10-32 character-long alphanumeric string.';
@@ -119,7 +119,7 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
             return `Duplicate ID detected: ${orgId}`;
           }
           set.add(orgId);
-        });
+        }
         return true;
       },
       default: defaultorgs !== undefined ? defaultorgs.join(',') : [],

@@ -35,6 +35,10 @@ export const addLayersToFunctionWalkthrough = async (
     lambdaLayers = lambdaLayers.concat(await askCustomArnQuestion(lambdaLayers.length, previousSelections));
   }
 
+  if (lambdaLayers.length === 0) {
+    context.print.info('No Lambda layers selected');
+  }
+
   lambdaLayers = await askLayerOrderQuestion(lambdaLayers, previousSelections);
 
   return { lambdaLayers, dependsOn };
