@@ -35,8 +35,9 @@ function deleteAmplifyConfig(context) {
         const file = path.join(srcDirPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget]}`);
         if (fs.existsSync(file)) fs.removeSync(file);
       });
-
-      fs.removeSync(path.join(srcDirPath, generatedFileName));
+      if (generatedFileName !== '') {
+        fs.removeSync(path.join(srcDirPath, generatedFileName));
+      }
     });
   }
 }
