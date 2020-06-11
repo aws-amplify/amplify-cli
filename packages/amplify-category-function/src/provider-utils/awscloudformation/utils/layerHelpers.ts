@@ -96,7 +96,7 @@ export function layerAccountAccessQuestion(defaultaccounts?: string[]) {
         }
         return true;
       },
-      default: defaultaccounts !== undefined ? defaultaccounts.join(',') : [],
+      default: defaultaccounts !== undefined ? defaultaccounts.join(',') : '',
     },
   ];
 }
@@ -122,7 +122,7 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
         }
         return true;
       },
-      default: defaultorgs !== undefined ? defaultorgs.join(',') : [],
+      default: defaultorgs !== undefined ? defaultorgs.join(',') : '',
     },
   ];
 }

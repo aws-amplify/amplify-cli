@@ -17,7 +17,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'nodejs',
           cloudTemplateValue: 'nodejs12.x',
           defaultHandler: 'index.handler',
-          layerExecutablePath: 'src/nodejs/node_modules/',
+          layerExecutablePath: 'nodejs/node_modules/',
         },
       });
     },

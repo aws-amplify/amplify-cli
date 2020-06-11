@@ -16,7 +16,7 @@ export function packageLayer(context, resource) {
   const output = fs.createWriteStream(destination);
   return new Promise((resolve, reject) => {
     output.on('close', () => {
-      //check zip size is less than 250MB
+      // check zip size is less than 250MB
       if (validFilesize(destination)) {
         const zipName = `${resource.resourceName}-build.zip`;
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipName);
@@ -31,9 +31,8 @@ export function packageLayer(context, resource) {
 
     zip.pipe(output);
     glob
-      .sync(resourcePath + '/*')
+      .sync(resourcePath + '/lib/*')
       .filter(folder => fs.lstatSync(folder).isDirectory())
-      .filter(folder => path.basename(folder) !== 'dist')
       .forEach(folder => zip.directory(folder, path.basename(folder)));
     zip.finalize();
   });
