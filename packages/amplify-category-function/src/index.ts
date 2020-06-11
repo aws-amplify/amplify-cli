@@ -5,6 +5,7 @@ import { FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-fu
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
+import _ from 'lodash';
 
 export async function add(context, providerName, service, parameters) {
   const options = {
@@ -14,7 +15,7 @@ export async function add(context, providerName, service, parameters) {
   };
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
-    context.print.error('Provider not confgiured for this category');
+    context.print.error('Provider not configured for this category');
     return;
   }
   return providerController.addResource(context, category, service, options, parameters);
@@ -23,7 +24,7 @@ export async function add(context, providerName, service, parameters) {
 export async function update(context, providerName, service, parameters, resourceToUpdate) {
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
-    context.print.error('Provider not confgiured for this category');
+    context.print.error('Provider not configured for this category');
     return;
   }
   return providerController.updateResource(context, category, service, parameters, resourceToUpdate);
@@ -132,7 +133,17 @@ export async function getInvoker(context: any, params: InvokerParameters): Promi
 }
 
 export function isMockable(context: any, resourceName: string): IsMockableResponse {
-  const service = context.amplify.getProjectMeta()[category][resourceName].service;
+  const { service, dependsOn } = context.amplify.getProjectMeta()[category][resourceName];
+  const hasLayer = service === 'LambdaFunction' && dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
+  if (hasLayer) {
+    return {
+      isMockable: false,
+      reason:
+        'Mocking a function with layers is not supported. ' +
+        'To test in the cloud: run "amplify push" to deploy your function to the cloud ' +
+        'and then run "amplify console function" to test your function in the Lambda console.',
+    };
+  }
   return supportedServices[service].providerController.isMockable(service);
 }
 
