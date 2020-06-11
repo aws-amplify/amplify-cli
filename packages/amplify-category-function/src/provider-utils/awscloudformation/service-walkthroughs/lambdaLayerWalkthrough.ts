@@ -76,7 +76,7 @@ export async function updateLayerWalkthrough(
   _.assign(parameters, currentParameters.parameters);
 
   // get the LayerObj
-  const layerData = layerMetadataFactory(context, parameters.layerName);
+  const layerData = layerMetadataFactory(context.amplify.pathManager.getBackendDirPath(), parameters.layerName);
   // runtime question
   let islayerVersionChanged: boolean = false;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
@@ -85,7 +85,11 @@ export async function updateLayerWalkthrough(
   }
   islayerVersionChanged = !_.isEqual(parameters.runtimes, layerData.runtimes);
   // get the latest version from #currentcloudbackend
-  const layerDataPushed: LayerMetadata = layerMetadataFactory(context, parameters.layerName, true);
+  const layerDataPushed: LayerMetadata = layerMetadataFactory(
+    context.amplify.pathManager.getCurrentCloudBackendDirPath(),
+    parameters.layerName,
+    true,
+  );
   const latestVersionPushed = layerDataPushed !== undefined ? layerDataPushed.getLatestVersion() : 0;
   let latestVersion = layerData.getLatestVersion();
 
@@ -112,6 +116,10 @@ export async function updateLayerWalkthrough(
     }
   }
   if (islayerVersionChanged) {
+    context.print.info('');
+    context.print.warning(
+      'New Lambda layer version created. Any function that wants to use the latest layer version need to configure it by running - "amplify function update"',
+    );
     if (latestVersion === latestVersionPushed) {
       latestVersion += 1;
     }

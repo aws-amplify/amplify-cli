@@ -171,6 +171,17 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
   const cfnContent = context.amplify.readJsonFile(cfnFilePath);
 
+  // check for layer parameters if not added
+  functionParameters.dependsOn.forEach(val => {
+    const param: string = `${val.category}${val.resourceName}Arn`;
+    // apend the cloudwatch parameters if not present
+    if (cfnContent.Parameters[`${param}`] === undefined) {
+      cfnContent.Parameters[`${param}`] = {
+        Type: 'String',
+        Default: `${param}`,
+      };
+    }
+  });
   cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(functionParameters.lambdaLayers);
   context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
 

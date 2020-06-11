@@ -40,7 +40,7 @@ function generateLayerCfnObjBase() {
  */
 export function generatePermissionCfnObj(context: any, parameters: LayerParameters): object {
   const cfnObj = generateLayerCfnObjBase();
-  const layerData = layerMetadataFactory(context, parameters.layerName);
+  const layerData = layerMetadataFactory(context.amplify.pathManager.getBackendDirPath(), parameters.layerName);
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
     const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
@@ -84,7 +84,7 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   cfnObj.Resources['LambdaLayer'] = layer;
 
   // parameters.laatestLayerVersion is defined
-  const layerData = layerMetadataFactory(context, parameters.layerName);
+  const layerData = layerMetadataFactory(context.amplify.pathManager.getBackendDirPath(), parameters.layerName);
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
     const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
