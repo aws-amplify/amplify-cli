@@ -117,7 +117,9 @@ export async function updateLayerWalkthrough(
   }
   if (islayerVersionChanged) {
     context.print.info('');
-    context.print.warning('Please update your Lambda function depending on this layer using - amplify function update');
+    context.print.warning(
+      'New Lambda layer version created. Any function that wants to use the latest layer version need to configure it by running - "amplify function update"',
+    );
     if (latestVersion === latestVersionPushed) {
       latestVersion += 1;
     }

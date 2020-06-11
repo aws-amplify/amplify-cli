@@ -25,11 +25,11 @@ export enum Permission {
 export type LayerMetadataFactory = (projectBackendDirPath: string, layerName: string, isPush?: boolean) => LayerMetadata;
 
 export interface LayerMetadata {
-  runtimes?: FunctionRuntime[];
+  runtimes: FunctionRuntime[];
   layerMetaData?: LayerVersionMetadata;
-  getVersion?: (version: number) => LayerVersionMetadata;
+  getVersion: (version: number) => LayerVersionMetadata;
   listVersions: () => number[];
-  getLatestVersion?: () => number;
+  getLatestVersion: () => number;
 }
 
 export interface LayerVersionMetadata {
@@ -60,7 +60,7 @@ export interface OrgsLayer {
   orgs: string[];
 }
 
-export class LayerState implements LayerMetadata {
+class LayerState implements LayerMetadata {
   versionMap: Map<number, LayerVersionMetadata> = new Map();
   runtimes: FunctionRuntime[];
   layerMetaData: LayerVersionMetadata;
