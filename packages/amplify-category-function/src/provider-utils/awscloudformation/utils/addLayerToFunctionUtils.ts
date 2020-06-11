@@ -22,7 +22,7 @@ const layerARNRegex = /^arn:[a-zA-Z0-9-]+:lambda:[a-zA-Z0-9-]+:\d{12}:layer:[a-z
  * @param previousSelections previous layers added to the function (used to populate default selections)
  */
 export const askLayerSelection = async (
-  context,
+  backendDirPath,
   amplifyMeta,
   runtimeValue: string,
   previousSelections: LambdaLayer[] = [],
@@ -64,7 +64,7 @@ export const askLayerSelection = async (
       type: 'list',
       name: 'versionSelection',
       message: versionSelectionPrompt(selection),
-      choices: layerMetadataFactory(context, selection)
+      choices: layerMetadataFactory(backendDirPath, selection)
         .listVersions()
         .sort()
         .reverse()

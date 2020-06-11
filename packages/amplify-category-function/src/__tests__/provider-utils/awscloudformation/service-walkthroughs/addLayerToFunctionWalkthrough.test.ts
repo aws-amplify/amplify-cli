@@ -20,6 +20,9 @@ const getContextStubWith = (prompt: jest.Mock) => ({
       run: prompt,
     },
     getProjectMeta: () => {},
+    pathManager: {
+      getBackendDirPath: () => {},
+    },
   },
 });
 
@@ -124,7 +127,7 @@ describe('add layer to function walkthrough', () => {
   it('uses previous selections to populate default selections', async () => {
     await addLayersToFunctionWalkthrough(getContextStubWith(confirmPromptTrue_mock), runtimeStub, previousSelectionsStub);
 
-    expect(askLayerSelection_mock.mock.calls[0][2]).toStrictEqual(previousSelectionsStub);
+    expect(askLayerSelection_mock.mock.calls[0][3]).toStrictEqual(previousSelectionsStub);
     expect(askLayerOrderQuestion_mock.mock.calls[0][1]).toStrictEqual(previousSelectionsStub);
   });
 });

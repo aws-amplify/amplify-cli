@@ -22,14 +22,14 @@ export enum Permission {
   awsOrg = 'awsOrg',
 }
 
-export type LayerMetadataFactory = (context: any, layerName: string, isPush?: boolean) => LayerMetadata;
+export type LayerMetadataFactory = (projectBackendDirPath: string, layerName: string, isPush?: boolean) => LayerMetadata;
 
 export interface LayerMetadata {
-  runtimes: FunctionRuntime[];
-  layerMetaData: LayerVersionMetadata;
-  getVersion: (version: number) => LayerVersionMetadata;
+  runtimes?: FunctionRuntime[];
+  layerMetaData?: LayerVersionMetadata;
+  getVersion?: (version: number) => LayerVersionMetadata;
   listVersions: () => number[];
-  getLatestVersion: () => number;
+  getLatestVersion?: () => number;
 }
 
 export interface LayerVersionMetadata {
@@ -60,7 +60,7 @@ export interface OrgsLayer {
   orgs: string[];
 }
 
-class LayerState implements LayerMetadata {
+export class LayerState implements LayerMetadata {
   versionMap: Map<number, LayerVersionMetadata> = new Map();
   runtimes: FunctionRuntime[];
   layerMetaData: LayerVersionMetadata;
@@ -148,18 +148,16 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 }
 
-export const layerMetadataFactory: LayerMetadataFactory = (context: any, layerName: string, isPush: boolean = false): LayerMetadata => {
-  let projectBackendDirPath;
-  if (isPush) {
-    projectBackendDirPath = context.amplify.pathManager.getCurrentCloudBackendDirPath();
-  } else {
-    projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  }
+export const layerMetadataFactory: LayerMetadataFactory = (
+  projectBackendDirPath: string,
+  layerName: string,
+  isPush: boolean = false,
+): LayerMetadata => {
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
   if (!fs.existsSync(resourceDirPath)) {
     return undefined;
   }
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-  const obj = context.amplify.readJsonFile(parametersFilePath).parameters;
+  const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8')).parameters;
   return new LayerState(obj);
 };
