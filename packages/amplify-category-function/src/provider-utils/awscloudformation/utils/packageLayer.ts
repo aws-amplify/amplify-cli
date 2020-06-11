@@ -33,7 +33,6 @@ export function packageLayer(context, resource) {
     glob
       .sync(resourcePath + '/lib/*')
       .filter(folder => fs.lstatSync(folder).isDirectory())
-      .filter(folder => path.basename(folder) !== 'dist')
       .forEach(folder => zip.directory(folder, path.basename(folder)));
     zip.finalize();
   });
