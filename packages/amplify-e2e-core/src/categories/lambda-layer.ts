@@ -28,7 +28,7 @@ export function validateLayerDir(projRoot: string, layerName: string, layerExist
 export function addLayer(cwd: string, settings?: any) {
   const defaultSettings = {
     runtimes: ['nodejs'],
-    permission: [],
+    permissions: [],
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
@@ -45,7 +45,7 @@ export function addLayer(cwd: string, settings?: any) {
     chain.wait('Select up to 5 compatible runtimes:');
     multiSelect(chain, runtimeDisplayNames, runtimeChoices);
     chain.wait('Who should have permission to use this layer?');
-    multiSelect(chain, settings.permission, permissionChoices);
+    multiSelect(chain, settings.permissions, permissionChoices);
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
@@ -84,7 +84,7 @@ export function removeLayer(cwd: string) {
 export function updateLayer(cwd: string, settings?: any) {
   const defaultSettings = {
     runtimes: ['java'],
-    permission: permissionChoices[2],
+    permissions: [permissionChoices[2]],
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
@@ -109,7 +109,7 @@ export function updateLayer(cwd: string, settings?: any) {
       .wait('Do you want to adjust who can access the current & new layer version?')
       .sendLine('y')
       .wait('Who should have permission to use this layer?');
-    multiSelect(chain, settings.permission, permissionChoices);
+    multiSelect(chain, settings.permissions, permissionChoices);
 
     if (!settings.versionChanged) {
       chain.wait('Select the version number to update for given Lambda Layer:').sendCarriageReturn();
