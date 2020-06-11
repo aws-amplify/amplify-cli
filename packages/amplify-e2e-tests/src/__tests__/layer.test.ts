@@ -1,22 +1,41 @@
 import {
   addLayer,
+  amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-  removeLayer,
-  validateLayerDir,
-  updateLayer,
-  amplifyPushAuth,
-  getProjectMeta,
   getFunction,
   getLayerVersion,
+  getProjectMeta,
   listVersions,
+  removeLayer,
+  updateLayer,
+  validateLayerDir,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 
 describe('amplify add lambda layer', () => {
   let projRoot: string;
+
+  const validateMetadata = async function() {
+    const meta = getProjectMeta(projRoot);
+
+    const { Arn: Arn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const runtimes = Object.keys(meta.function).map(key => meta.function[key])[0].runtimes;
+    const runtimeValue = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
+    const layerVersions = Object.keys(meta.function).map(key => meta.function[key])[0].versionsMap;
+    const localVersions = Object.keys(layerVersions);
+
+    expect(Arn).toBeDefined();
+    expect(region).toBeDefined();
+    const data = await getLayerVersion(Arn, region);
+    const { LayerVersions: Versions } = await listVersions(`${settings.layerName}-integtest`, region);
+    const cloudVersions = Versions.map(version => version.Version);
+    expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
+    expect(data.LayerVersionArn).toEqual(Arn);
+    expect(data.CompatibleRuntimes).toEqual(runtimeValue);
+  };
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('layers');
@@ -28,7 +47,7 @@ describe('amplify add lambda layer', () => {
   });
 
   it('init a project and add simple layer', async () => {
-    const layerName = 'simple-layer';
+    const layerName = 'simplelayer';
     await initJSProjectWithProfile(projRoot, {});
     await addLayer(projRoot, { layerName });
     expect(validateLayerDir(projRoot, layerName, true)).toBeTruthy();
@@ -46,22 +65,7 @@ describe('amplify add lambda layer', () => {
     await addLayer(projRoot, settings);
     await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-
-    const { Arn: Arn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
-    const runtimes = Object.keys(meta.function).map(key => meta.function[key])[0].runtimes;
-    const runtimeValue = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
-    const layerVersions = Object.keys(meta.function).map(key => meta.function[key])[0].versionsMap;
-    const localVersions = Object.keys(layerVersions);
-
-    expect(Arn).toBeDefined();
-    expect(region).toBeDefined();
-    const data = await getLayerVersion(Arn, region);
-    const { LayerVersions: Versions } = await listVersions(`${settings.layerName}-integtest`, region);
-    const cloudVersions = Versions.map(version => version.Version);
-    expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
-    expect(data.LayerVersionArn).toEqual(Arn);
-    expect(data.CompatibleRuntimes).toEqual(runtimeValue);
+    await validateMetadata();
   });
 
   it('init a project and add/push and update/push updating version', async () => {
@@ -75,21 +79,6 @@ describe('amplify add lambda layer', () => {
     await amplifyPushAuth(projRoot);
     await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-
-    const { Arn: Arn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
-    const runtimes = Object.keys(meta.function).map(key => meta.function[key])[0].runtimes;
-    const runtimeValue = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
-    const layerVersions = Object.keys(meta.function).map(key => meta.function[key])[0].versionsMap;
-    const localVersions = Object.keys(layerVersions);
-
-    expect(Arn).toBeDefined();
-    expect(region).toBeDefined();
-    const data = await getLayerVersion(Arn, region);
-    const { LayerVersions: Versions } = await listVersions(`${settings.layerName}-integtest`, region);
-    const cloudVersions = Versions.map(version => version.Version);
-    expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
-    expect(data.LayerVersionArn).toEqual(Arn);
-    expect(data.CompatibleRuntimes).toEqual(runtimeValue);
+    await validateMetadata();
   });
 });

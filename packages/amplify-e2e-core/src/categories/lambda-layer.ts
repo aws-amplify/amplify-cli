@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath } from '../../src';
+import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '../../src';
 import { runtimeChoices } from './lambda-function';
 import { multiSelect } from '../utils/selectors';
 
@@ -28,11 +28,11 @@ export function validateLayerDir(projRoot: string, layerName: string, layerExist
 export function addLayer(cwd: string, settings?: any) {
   const defaultSettings = {
     runtimes: ['nodejs'],
-    permission: ['Only the current AWS account'],
+    permission: [],
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    let chain: ExecutionContext = spawn(getCLIPath(), ['add', 'function'], { cwd, stripColors: true })
+    const chain: ExecutionContext = spawn(getCLIPath(), ['add', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to add:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn() // Layer
@@ -49,7 +49,7 @@ export function addLayer(cwd: string, settings?: any) {
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
-    chain = printFlow(chain, settings, layerDirRegex, runtimeDisplayNames);
+    printFlow(chain, settings, layerDirRegex);
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -84,36 +84,40 @@ export function removeLayer(cwd: string) {
 export function updateLayer(cwd: string, settings?: any) {
   const defaultSettings = {
     runtimes: ['java'],
-    permission: ['Public (everyone on AWS can use this layer)'],
+    permission: permissionChoices[2],
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    let chain: ExecutionContext = spawn(getCLIPath(), ['update', 'function'], { cwd, stripColors: true })
+    const chain: ExecutionContext = spawn(getCLIPath(), ['update', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn() // Layer
       .wait('Select the Lambda Layer to update:')
-      .sendCarriageReturn();
+      .sendCarriageReturn()
+      .wait('Do you want to change the compatible runtimes?');
 
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
-    //expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
+    expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
     if (settings.versionChanged) {
-      chain.wait('Do you want to change the compatible runtimes?').sendLine('y');
-      chain.wait('Select up to 5 compatible runtimes:');
+      chain.sendLine('y').wait('Select up to 5 compatible runtimes:');
       multiSelect(chain, runtimeDisplayNames, runtimeChoices);
     } else {
-      chain.wait('Do you want to change the compatible runtimes?').sendLine('n');
+      chain.sendLine('n');
     }
-    chain.wait('Do you want to adjust who can access the current & new layer version? ').sendLine('y');
-    chain.wait('Who should have permission to use this layer?');
+
+    chain
+      .wait('Do you want to adjust who can access the current & new layer version?')
+      .sendLine('y')
+      .wait('Who should have permission to use this layer?');
     multiSelect(chain, settings.permission, permissionChoices);
+
     if (!settings.versionChanged) {
-      chain.wait('Select the version number to update for given Lambda Layer: ').sendCarriageReturn();
+      chain.wait('Select the version number to update for given Lambda Layer:').sendCarriageReturn();
     }
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
-    chain = printFlow(chain, settings, layerDirRegex, runtimeDisplayNames);
+    printFlow(chain, settings, layerDirRegex);
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -145,7 +149,7 @@ function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   }
 }
 
-function printFlow(chain: ExecutionContext, settings: any, layerDirRegex, runtimeDisplayNames) {
+function printFlow(chain: ExecutionContext, settings: any, layerDirRegex) {
   chain
     .wait('✅ Lambda layer folders & files created:')
     .wait(layerDirRegex)
@@ -153,9 +157,8 @@ function printFlow(chain: ExecutionContext, settings: any, layerDirRegex, runtim
     .wait('Move your libraries in the following folder:');
 
   for (let i = 0; i < settings.runtimes.length; ++i) {
-    let layerRuntimeDirRegex = new RegExp(
-      `\\[${runtimeDisplayNames[i]}\\]: ` + '.*/amplify/backend/function/' + settings.layerName + '/lib/' + settings.runtimes[i] + '/*',
-    );
+    const { displayName, path } = getLayerRuntimeInfo(settings.runtimes[i]);
+    const layerRuntimeDirRegex = new RegExp(`\\[${displayName}\\]: .*/amplify/backend/function/${settings.layerName}/${path}/`);
     chain.wait(layerRuntimeDirRegex);
   }
 
@@ -164,5 +167,4 @@ function printFlow(chain: ExecutionContext, settings: any, layerDirRegex, runtim
     .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
     .wait('"amplify push" - builds all of your local backend resources and provisions them in the cloud')
     .sendEof();
-  return chain;
 }
