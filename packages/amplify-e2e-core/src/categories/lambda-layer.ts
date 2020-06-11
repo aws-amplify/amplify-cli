@@ -6,12 +6,7 @@ import { multiSelect } from '../utils/selectors';
 
 type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
 
-const permissionChoices = [
-  'Only the current AWS account',
-  'Specific AWS accounts',
-  'Specific AWS organization',
-  'Public (everyone on AWS can use this layer)',
-];
+const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (everyone on AWS can use this layer)'];
 
 export function validateLayerDir(projRoot: string, layerName: string, layerExists: boolean, runtimes: LayerRuntimes[]): boolean {
   let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', layerName);
@@ -136,15 +131,15 @@ function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
 function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   switch (runtime) {
     case 'dotnetcore3.1':
-      return { displayName: '.NET Core 3.1', path: path.join('bin', runtime) };
+      return { displayName: '.NET Core 3.1', path: path.join('lib', runtime) };
     case 'go1.x':
-      return { displayName: 'Go', path: path.join('bin', runtime) };
+      return { displayName: 'Go', path: path.join('lib', runtime) };
     case 'java':
-      return { displayName: 'Java', path: path.join('bin', runtime, 'lib') };
+      return { displayName: 'Java', path: path.join('lib', runtime, 'lib') };
     case 'nodejs':
-      return { displayName: 'NodeJS', path: path.join('src', runtime, 'node_modules') };
+      return { displayName: 'NodeJS', path: path.join('lib', runtime, 'node_modules') };
     case 'python':
-      return { displayName: 'Python', path: path.join('src', runtime) };
+      return { displayName: 'Python', path: path.join('lib', runtime) };
     default:
       throw new Error(`Invalid runtime value: ${runtime}`);
   }
@@ -159,12 +154,7 @@ function printFlow(chain: ExecutionContext, settings: any, layerDirRegex, runtim
 
   for (let i = 0; i < settings.runtimes.length; ++i) {
     let layerRuntimeDirRegex = new RegExp(
-      `\\[${runtimeDisplayNames[i]}\\]: ` +
-        '.*/amplify/backend/function/' +
-        settings.layerName +
-        '/(?:src|bin)/' +
-        settings.runtimes[i] +
-        '/*',
+      `\\[${runtimeDisplayNames[i]}\\]: ` + '.*/amplify/backend/function/' + settings.layerName + '/lib/' + settings.runtimes[i] + '/*',
     );
     chain.wait(layerRuntimeDirRegex);
   }

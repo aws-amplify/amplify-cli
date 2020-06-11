@@ -11,10 +11,9 @@ import {
   getProjectMeta,
   getFunction,
   getLayerVersion,
-  listVersions
+  listVersions,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-
 
 describe('amplify add lambda layer', () => {
   let projRoot: string;
@@ -41,11 +40,11 @@ describe('amplify add lambda layer', () => {
     const [shortId] = uuid().split('-');
     const settings = {
       layerName: `testlayer${shortId}`,
-      versionChanged: true
+      versionChanged: true,
     };
     await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot,settings);
-    await updateLayer(projRoot,settings);
+    await addLayer(projRoot, settings);
+    await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
 
@@ -58,8 +57,8 @@ describe('amplify add lambda layer', () => {
     expect(Arn).toBeDefined();
     expect(region).toBeDefined();
     const data = await getLayerVersion(Arn, region);
-    const {LayerVersions : Versions} = await listVersions(`${settings.layerName}-integtest`,region);
-    const cloudVersions = Versions.map(version => version.Version)
+    const { LayerVersions: Versions } = await listVersions(`${settings.layerName}-integtest`, region);
+    const cloudVersions = Versions.map(version => version.Version);
     expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
     expect(data.LayerVersionArn).toEqual(Arn);
     expect(data.CompatibleRuntimes).toEqual(runtimeValue);
@@ -68,13 +67,13 @@ describe('amplify add lambda layer', () => {
   it('init a project and add/push and update/push updating version', async () => {
     const [shortId] = uuid().split('-');
     const settings = {
-      layerName: `testlayer${shortId}`, 
-      versionChanged: true
+      layerName: `testlayer${shortId}`,
+      versionChanged: true,
     };
     await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot,settings);
+    await addLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
-    await updateLayer(projRoot,settings);
+    await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
 
@@ -87,8 +86,8 @@ describe('amplify add lambda layer', () => {
     expect(Arn).toBeDefined();
     expect(region).toBeDefined();
     const data = await getLayerVersion(Arn, region);
-    const {LayerVersions : Versions} = await listVersions(`${settings.layerName}-integtest`,region);
-    const cloudVersions = Versions.map(version => version.Version)
+    const { LayerVersions: Versions } = await listVersions(`${settings.layerName}-integtest`, region);
+    const cloudVersions = Versions.map(version => version.Version);
     expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
     expect(data.LayerVersionArn).toEqual(Arn);
     expect(data.CompatibleRuntimes).toEqual(runtimeValue);
