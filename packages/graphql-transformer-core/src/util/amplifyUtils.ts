@@ -1,10 +1,11 @@
-const fs = require('fs-extra');
+import fs from 'fs-extra';
 import * as path from 'path';
+import glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
 import { DeploymentResources } from '../DeploymentResources';
 import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory } from './fileUtils';
+import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 import * as Sanity from './sanity-check';
 
@@ -313,8 +314,7 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
 
 export interface UploadOptions {
   directory: string;
-
-  upload(blob: { Key: string; Body: Buffer | string }): Promise<string>;
+  upload: FileHandler;
 }
 
 /**
@@ -322,19 +322,32 @@ export interface UploadOptions {
  * @param opts Deployment options.
  */
 export async function uploadDeployment(opts: UploadOptions) {
-  try {
-    if (!opts.directory) {
-      throw new Error(`You must provide a 'directory'`);
-    } else if (!fs.existsSync(opts.directory)) {
-      throw new Error(`Invalid 'directory': directory does not exist at ${opts.directory}`);
-    }
-    if (!opts.upload || typeof opts.upload !== 'function') {
-      throw new Error(`You must provide an 'upload' function`);
-    }
-    await walkDirPosix(opts.directory, opts.upload);
-  } catch (e) {
-    throw e;
+  if (!opts.directory) {
+    throw new Error(`You must provide a 'directory'`);
   }
+
+  if (!fs.existsSync(opts.directory)) {
+    throw new Error(`Invalid 'directory': directory does not exist at ${opts.directory}`);
+  }
+
+  if (!opts.upload || typeof opts.upload !== 'function') {
+    throw new Error(`You must provide an 'upload' function`);
+  }
+
+  const { directory, upload } = opts;
+
+  var fileNames = glob.sync('**/*', {
+    cwd: directory,
+    nodir: true,
+  });
+
+  const uploadPromises = fileNames.map(async fileName => {
+    const resourceContent = fs.createReadStream(path.join(directory, fileName));
+
+    await handleFile(upload, fileName, resourceContent);
+  });
+
+  await Promise.all(uploadPromises);
 }
 
 /**
@@ -472,8 +485,7 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
 
   // Get the template
   const cloudFormationTemplatePath = path.join(projectDirectory, CLOUDFORMATION_FILE_NAME);
-  const cloudFormationTemplateExists = await fs.exists(cloudFormationTemplatePath);
-  if (!cloudFormationTemplateExists) {
+  if (!fs.existsSync(cloudFormationTemplatePath)) {
     throw new Error(`Could not find cloudformation template at ${cloudFormationTemplatePath}`);
   }
   const cloudFormationTemplateStr = await fs.readFile(cloudFormationTemplatePath);
@@ -481,8 +493,7 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
 
   // Get the params
   const parametersFilePath = path.join(projectDirectory, 'parameters.json');
-  const parametersFileExists = await fs.exists(parametersFilePath);
-  if (!parametersFileExists) {
+  if (!fs.existsSync(parametersFilePath)) {
     throw new Error(`Could not find parameters.json at ${parametersFilePath}`);
   }
   const parametersFileStr = await fs.readFile(parametersFilePath);
