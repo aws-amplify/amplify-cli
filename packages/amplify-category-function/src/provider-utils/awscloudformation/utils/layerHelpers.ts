@@ -128,11 +128,12 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
 }
 
 export function createVersionsMap(parameters: LayerInputParams, version: string) {
-  let versionMap: Object = {};
+  const { layerPermissions } = parameters;
+  let versionMap: object = {};
   let permissionObj: Array<LayerPermission> = [];
 
-  if (parameters.layerPermissions !== undefined && parameters.layerPermissions.length > 0) {
-    parameters.layerPermissions.forEach(val => {
+  if (layerPermissions !== undefined && layerPermissions.length > 0) {
+    layerPermissions.forEach(val => {
       let obj: LayerPermission;
       if (val === Permission.public) {
         obj = {

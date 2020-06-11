@@ -18,7 +18,7 @@ import { v4 as uuid } from 'uuid';
 describe('amplify add lambda layer', () => {
   let projRoot: string;
 
-  const validateMetadata = async function() {
+  const validateMetadata = async function(layerName: string) {
     const meta = getProjectMeta(projRoot);
 
     const { Arn: Arn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
@@ -30,7 +30,7 @@ describe('amplify add lambda layer', () => {
     expect(Arn).toBeDefined();
     expect(region).toBeDefined();
     const data = await getLayerVersion(Arn, region);
-    const { LayerVersions: Versions } = await listVersions(`${settings.layerName}-integtest`, region);
+    const { LayerVersions: Versions } = await listVersions(layerName, region);
     const cloudVersions = Versions.map(version => version.Version);
     expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
     expect(data.LayerVersionArn).toEqual(Arn);
@@ -47,12 +47,17 @@ describe('amplify add lambda layer', () => {
   });
 
   it('init a project and add simple layer', async () => {
-    const layerName = 'simplelayer';
+    const [shortId] = uuid().split('-');
+    const settings = {
+      layerName: `simplelayer${shortId}`,
+    };
     await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot, { layerName });
-    expect(validateLayerDir(projRoot, layerName, true)).toBeTruthy();
+    await addLayer(projRoot, settings);
+    expect(validateLayerDir(projRoot, settings.layerName, true)).toBeTruthy();
+    await amplifyPushAuth(projRoot);
     await removeLayer(projRoot);
-    expect(validateLayerDir(projRoot, layerName, false)).toBeTruthy();
+    expect(validateLayerDir(projRoot, settings.layerName, false)).toBeTruthy();
+    await validateMetadata(settings.layerName);
   });
 
   it('init a project and add/update simple layer and push', async () => {
@@ -65,7 +70,7 @@ describe('amplify add lambda layer', () => {
     await addLayer(projRoot, settings);
     await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
-    await validateMetadata();
+    await validateMetadata(settings.layerName);
   });
 
   it('init a project and add/push and update/push updating version', async () => {
@@ -79,6 +84,6 @@ describe('amplify add lambda layer', () => {
     await amplifyPushAuth(projRoot);
     await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
-    await validateMetadata();
+    await validateMetadata(settings.layerName);
   });
 });
