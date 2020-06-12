@@ -249,7 +249,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       if (isModelType) {
         ofType = `.collection(of: ${this.getSwiftModelTypeName(field)})`;
       } else {
-        ofType = `.customType(${this.getSwiftModelTypeName(field)})`;
+        ofType = `.embeddedCollection(of: ${this.getSwiftModelTypeName(field)})`;
       }
     } else {
       if (isEnumType) {
@@ -257,7 +257,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       } else if (isModelType) {
         ofType = `.model(${typeName})`;
       } else if (isNonModelType) {
-        ofType = `.customType(${typeName})`;
+        ofType = `.embedded(type: ${typeName})`;
       } else {
         ofType = typeName;
       }
