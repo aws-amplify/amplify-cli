@@ -226,7 +226,7 @@ export async function updateLayerResource(
   if (parameters.runtimes.length !== 0) {
     print.info('Move your libraries in the following folder:');
     for (let runtime of parameters.runtimes) {
-      print.info(`[${runtime.name}]: ${layerDirPath}/${runtime.layerExecutablePath}`);
+      print.info(`[${runtime.name}]: ${layerDirPath}/lib/${runtime.layerExecutablePath}`);
     }
     print.info('');
   }

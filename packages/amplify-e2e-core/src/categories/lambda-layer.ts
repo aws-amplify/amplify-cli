@@ -83,7 +83,6 @@ export function removeLayer(cwd: string) {
 
 export function updateLayer(cwd: string, settings?: any) {
   const defaultSettings = {
-    runtimes: ['java'],
     permissions: [permissionChoices[2]],
   };
   settings = { ...defaultSettings, ...settings };
@@ -91,20 +90,19 @@ export function updateLayer(cwd: string, settings?: any) {
     const chain: ExecutionContext = spawn(getCLIPath(), ['update', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
       .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn() // Layer
-      .wait('Select the Lambda Layer to update:')
-      .sendCarriageReturn()
-      .wait('Do you want to change the compatible runtimes?');
-
+      .sendCarriageReturn(); // Layer
+    if (settings.numLayers > 1) {
+      chain.wait('Select the Lambda Layer to update:').sendCarriageReturn();
+    }
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
     expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
+    chain.wait('Do you want to change the compatible runtimes?');
     if (settings.versionChanged) {
       chain.sendLine('y').wait('Select up to 5 compatible runtimes:');
       multiSelect(chain, runtimeDisplayNames, runtimeChoices);
     } else {
       chain.sendLine('n');
     }
-
     chain
       .wait('Do you want to adjust who can access the current & new layer version?')
       .sendLine('y')
@@ -113,6 +111,12 @@ export function updateLayer(cwd: string, settings?: any) {
 
     if (!settings.versionChanged) {
       chain.wait('Select the version number to update for given Lambda Layer:').sendCarriageReturn();
+    } else {
+      chain
+        .wait('')
+        .wait(
+          'New Lambda layer version created. Any function that wants to use the latest layer version need to configure it by running - "amplify function update"',
+        );
     }
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
