@@ -828,7 +828,9 @@ describe('AppSyncSwiftVisitor', () => {
     `);
 
     const visitorLocationSchema = getVisitor(schema, 'Location', CodeGenGenerateEnum.metadata);
-    expect(visitorLocationSchema.generate()).toMatchInlineSnapshot(`
+    const generatedCode = visitorLocationSchema.generate()
+    console.log(generatedCode)
+    expect(generatedCode).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -847,8 +849,9 @@ describe('AppSyncSwiftVisitor', () => {
         public static let schema = defineSchema { model in
           let location = Location.keys
           
+          model.pluralName = "Locations"
+          
           model.fields(
-            .id(),
             .field(location.lat, is: .required, ofType: .string),
             .field(location.lang, is: .required, ofType: .string),
             .field(location.tags, is: .optional, ofType: .embeddedCollection(of: String.self))
