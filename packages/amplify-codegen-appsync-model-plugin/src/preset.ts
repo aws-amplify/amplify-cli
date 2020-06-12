@@ -83,7 +83,6 @@ const generateSwiftPreset = (
         selectedType: modelName,
       },
     });
-    // TODO: need to generate metadata for non models here
     if (model.kind !== Kind.ENUM_TYPE_DEFINITION) {
       config.push({
         ...options,
