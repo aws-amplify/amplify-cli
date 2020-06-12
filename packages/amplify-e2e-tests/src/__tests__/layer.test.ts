@@ -5,7 +5,6 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-  getFunction,
   getLayerVersion,
   getProjectMeta,
   listVersions,
@@ -63,19 +62,20 @@ describe('amplify add lambda layer', () => {
 
   it('init a project and add/update simple layer and push', async () => {
     const [shortId] = uuid().split('-');
+    const layerName = `testlayer${shortId}`;
     const settingsAdd = {
       runtimes: ['nodejs'],
-      layerName: `testlayer${shortId}`,
+      layerName: layerName,
     };
-    await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot, settingsAdd);
     const settingsUpdate = {
       runtimes: ['java'],
-      layerName: `testlayer${shortId}`,
+      layerName: layerName,
       versionChanged: true,
       numLayers: 1,
       isPushed: false,
     };
+    await initJSProjectWithProfile(projRoot, {});
+    await addLayer(projRoot, settingsAdd);
     await updateLayer(projRoot, settingsUpdate);
     await amplifyPushAuth(projRoot);
     await validateMetadata(settingsUpdate.layerName);
@@ -83,20 +83,21 @@ describe('amplify add lambda layer', () => {
 
   it('init a project and add/push and update/push updating version', async () => {
     const [shortId] = uuid().split('-');
+    const layerName = `testlayer${shortId}`;
     const settingsAdd = {
       runtimes: ['nodejs'],
-      layerName: `testlayer${shortId}`,
+      layerName: layerName,
     };
-    await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot, settingsAdd);
-    await amplifyPushAuth(projRoot);
     const settingsUpdate = {
       runtimes: ['java'],
-      layerName: `testlayer${shortId}`,
+      layerName: layerName,
       versionChanged: true,
       numLayers: 1,
       isPushed: false,
     };
+    await initJSProjectWithProfile(projRoot, {});
+    await addLayer(projRoot, settingsAdd);
+    await amplifyPushAuth(projRoot);
     await updateLayer(projRoot, settingsUpdate);
     await amplifyPushAuth(projRoot);
     await validateMetadata(settingsUpdate.layerName);

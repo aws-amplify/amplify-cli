@@ -172,9 +172,10 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const cfnContent = context.amplify.readJsonFile(cfnFilePath);
 
   // check for layer parameters if not added
-  functionParameters.lambdaLayers.forEach(val => {
-    if ((val as ProjectLayer).resourceName) {
-      const param: string = `function${(val as ProjectLayer).resourceName}Arn`;
+  functionParameters.lambdaLayers.forEach(layer => {
+    const resourceName = _.get(layer as ProjectLayer, ['resourceName'], null);
+    if (resourceName) {
+      const param: string = `function${resourceName}Arn`;
       if (cfnContent.Parameters[`${param}`] === undefined) {
         cfnContent.Parameters[`${param}`] = {
           Type: 'String',
