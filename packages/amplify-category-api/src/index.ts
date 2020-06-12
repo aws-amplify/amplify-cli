@@ -143,41 +143,39 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  await Promise.all(
-    Object.keys(resourceOpsMapping).map(async resourceName => {
-      try {
-        const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
-        if (providerController) {
-          const { policy, attributes } = await providerController.getPermissionPolicies(
-            context,
-            amplifyMeta[category][resourceName].service,
-            resourceName,
-            resourceOpsMapping[resourceName],
-          );
-          permissionPolicies.push(policy);
-          resourceAttributes.push({ resourceName, attributes, category });
-        } else {
-          context.print.error(`Provider not configured for ${category}: ${resourceName}`);
-        }
-      } catch (e) {
-        context.print.warning(`Could not get policies for ${category}: ${resourceName}`);
-        throw e;
+  Object.keys(resourceOpsMapping).forEach(resourceName => {
+    try {
+      const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
+      if (providerController) {
+        const { policy, attributes } = providerController.getPermissionPolicies(
+          context,
+          amplifyMeta[category][resourceName].service,
+          resourceName,
+          resourceOpsMapping[resourceName],
+        );
+        permissionPolicies.push(policy);
+        resourceAttributes.push({ resourceName, attributes, category });
+      } else {
+        context.print.error(`Provider not configured for ${category}: ${resourceName}`);
       }
     }),
   );
   return { permissionPolicies, resourceAttributes };
 }
 
-export async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
-    commandPath = path.join(commandPath, category);
-  } else {
-    commandPath = path.join(commandPath, category, context.input.command);
+async function executeAmplifyCommand(context) {
+  try {
+    let commandPath = path.normalize(path.join(__dirname, 'commands'));
+    if (context.input.command === 'help') {
+      commandPath = path.join(commandPath, category);
+    } else {
+      commandPath = path.join(commandPath, category, context.input.command);
+    }
+    const commandModule = require(commandPath);
+    await commandModule.run(context);
+  } catch (err) {
+    context.print.error(err.message);
   }
-
-  const commandModule = require(commandPath);
-  await commandModule.run(context);
 }
 
 export const executeAmplifyHeadlessCommand = async (context, headlessPayload: string) => {

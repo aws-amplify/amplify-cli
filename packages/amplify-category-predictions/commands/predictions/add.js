@@ -32,7 +32,7 @@ module.exports = {
         print.info('');
       })
       .catch(err => {
-        context.print.info(err.stack);
+        context.print.error(err.message);
         context.print.error('An error occurred when adding the predictions resource');
         context.usageData.emitError(err);
       }),
