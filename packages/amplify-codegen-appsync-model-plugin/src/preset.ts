@@ -83,7 +83,8 @@ const generateSwiftPreset = (
         selectedType: modelName,
       },
     });
-    if (model.kind !== Kind.ENUM_TYPE_DEFINITION && hasDirective('model')(model)) {
+    // TODO: need to generate metadata for non models here
+    if (model.kind !== Kind.ENUM_TYPE_DEFINITION) {
       config.push({
         ...options,
         filename: join(options.baseOutputDir, `${modelName}+Schema.swift`),
