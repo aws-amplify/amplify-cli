@@ -80,15 +80,12 @@ export function createLayerFolders(context, parameters) {
     fs.mkdirSync(moduleDirPath, { recursive: true });
     fs.writeFileSync(path.join(moduleDirPath, 'README.txt'), 'Replace this file with your layer files');
 
-    if (!runtime.layerDefaultFiles) {
-      continue;
-    }
-    for (let defaultFile of runtime.layerDefaultFiles) {
-      moduleDirPath = path.join(layerDirPath, 'lib', defaultFile.path);
-      if (!fs.pathExistsSync(moduleDirPath)) {
-        fs.mkdirSync(moduleDirPath);
+    if (runtime.layerDefaultFiles) {
+      for (let defaultFile of runtime.layerDefaultFiles) {
+        moduleDirPath = path.join(layerDirPath, 'lib', defaultFile.path);
+        fs.ensureDirSync(moduleDirPath);
+        fs.writeFileSync(path.join(moduleDirPath, defaultFile.filename), defaultFile.content);
       }
-      fs.writeFileSync(path.join(moduleDirPath, defaultFile.filename), defaultFile.content);
     }
   }
   return layerDirPath;
