@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const Ora = require('ora');
 const mime = require('mime-types');
-const sequential = require('promise-sequential');
 const fileScanner = require('./file-scanner');
 const constants = require('../../constants');
 
@@ -28,13 +27,13 @@ async function run(context, distributionDirPath) {
   }
 
   fileList.forEach(filePath => {
-    uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, cloudFrontS3CanonicalUserId));
+    uploadFileTasks.push(uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, cloudFrontS3CanonicalUserId));
   });
 
   const spinner = new Ora('Uploading files...');
   try {
     spinner.start();
-    await sequential(uploadFileTasks);
+    await Promise.all(uploadFileTasks);
     spinner.succeed('Uploaded files successfully.');
   } catch (e) {
     spinner.fail('Error has occured during file upload.');
