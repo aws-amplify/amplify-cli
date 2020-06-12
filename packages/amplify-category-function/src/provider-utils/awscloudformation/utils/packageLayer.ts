@@ -1,19 +1,39 @@
-import path from 'path';
-import glob from 'glob';
 import archiver from 'archiver';
 import fs from 'fs-extra';
+import glob from 'glob';
+import path from 'path';
+import _ from 'lodash';
+import { createLayerParametersFile } from './storeResources';
+import { hashElement } from 'folder-hash';
 
-export function packageLayer(context, resource) {
+export async function packageLayer(context, resource) {
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
+  const layerHash = await hashLayerDir(resourcePath);
+  const layerParameters = context.amplify.readJsonFile(path.join(resourcePath, 'layer-parameters.json'));
+  const versions = Object.keys(layerParameters.layerVersionMap).sort();
+  let latestVersion = versions.length; // versions start at 1, so versions[i] === String(i + 1)
+  const previousHash = _.get(layerParameters, ['layerVersionMap', `${latestVersion}`, 'hash'], null);
+
+  if (previousHash && previousHash !== layerHash.hash) {
+    ++latestVersion; // Content changes detected, bumping version
+    layerParameters.layerVersionMap[`${latestVersion}`] = {
+      permissions: [{ type: 'private' }],
+      hash: layerHash.hash,
+    };
+    createLayerParametersFile(context, layerParameters, resourcePath);
+  } else if (!previousHash) {
+    _.assign(layerParameters.layerVersionMap[`${latestVersion}`], { hash: layerHash.hash });
+    createLayerParametersFile(context, layerParameters, resourcePath);
+  }
+
   const zipFilename = 'latest-build.zip';
 
   const distDir = path.join(resourcePath, 'dist');
-  if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir);
-  }
+  fs.ensureDirSync(distDir);
   const destination = path.join(distDir, zipFilename);
   const zip = archiver.create('zip');
   const output = fs.createWriteStream(destination);
+
   return new Promise((resolve, reject) => {
     output.on('close', () => {
       // check zip size is less than 250MB
@@ -36,6 +56,22 @@ export function packageLayer(context, resource) {
       .forEach(folder => zip.directory(folder, path.basename(folder)));
     zip.finalize();
   });
+}
+
+export async function hashLayerDir(layerPath: string): Promise<any> {
+  const hashOptions = {
+    folders: { exclude: ['.*', 'dist'] },
+    files: { exclude: ['README.txt', 'layer-parameters.json', 'parameters.json', '*-awscloudformation-template.json'] },
+  };
+  let currentLayerDirHash: string;
+  await hashElement(layerPath, hashOptions)
+    .then(hash => {
+      currentLayerDirHash = hash;
+    })
+    .catch(error => {
+      throw new Error(`Hashing the layer directory ${path} failed`);
+    });
+  return currentLayerDirHash;
 }
 
 function validFilesize(path, maxSize = 250) {

@@ -6,6 +6,7 @@ export interface LayerInputParams {
   layerPermissions?: Permission[];
   authorizedAccountIds?: string;
   authorizedOrgId?: string;
+  hash?: string;
 }
 
 export function layerVersionQuestion(choices) {
@@ -13,7 +14,7 @@ export function layerVersionQuestion(choices) {
     {
       type: 'list',
       name: 'layerVersion',
-      message: 'Select the version number to update for given Lambda Layer: ',
+      message: 'Select the version number to update for given Lambda Layer:',
       choices: choices,
     },
   ];
@@ -129,6 +130,7 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
 
 export function createVersionsMap(parameters: LayerInputParams, version: string) {
   const { layerPermissions } = parameters;
+  const hash = _.get(parameters, 'hash', null);
   let versionMap: object = {};
   let permissionObj: Array<LayerPermission> = [];
 
@@ -158,6 +160,9 @@ export function createVersionsMap(parameters: LayerInputParams, version: string)
   };
   permissionObj.push(privateObj);
   // add private as default in versionMap
-  versionMap[version] = permissionObj;
+  versionMap[version] = { permissions: permissionObj };
+  if (hash) {
+    versionMap[version].hash = hash;
+  }
   return versionMap;
 }

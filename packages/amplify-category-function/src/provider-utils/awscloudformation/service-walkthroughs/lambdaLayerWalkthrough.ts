@@ -73,7 +73,7 @@ export async function updateLayerWalkthrough(
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
   const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
 
-  _.assign(parameters, currentParameters.parameters);
+  _.assign(parameters, currentParameters);
 
   // get the LayerObj
   const layerData = layerMetadataFactory(context.amplify.pathManager.getBackendDirPath(), parameters.layerName);
@@ -124,13 +124,17 @@ export async function updateLayerWalkthrough(
       latestVersion += 1;
     }
     // updating map for a new version
-    let map = createVersionsMap(layerInputParameters, String(latestVersion));
+    const map = createVersionsMap(layerInputParameters, String(latestVersion));
     parameters.layerVersionMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   } else {
-    //updating map for the selected version
-    let versions = layerData.listVersions();
+    // updating map for the selected version
+    const versions = layerData.listVersions();
     const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
-    let map = createVersionsMap(layerInputParameters, String(versionAnswer.layerVersion));
+    const selectedVersion = String(versionAnswer.layerVersion);
+    const map = createVersionsMap(
+      { ...layerInputParameters, ...{ hash: parameters.layerVersionMap[selectedVersion].hash } },
+      selectedVersion,
+    );
     parameters.layerVersionMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   }
   _.assign(parameters, { layerVersion: String(latestVersion) });

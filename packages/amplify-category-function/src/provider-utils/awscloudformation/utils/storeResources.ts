@@ -146,8 +146,7 @@ export function updateLayerCfnFile(context, parameters, layerDirPath) {
 export function createLayerParametersFile(context, parameters, layerDirPath) {
   fs.ensureDirSync(layerDirPath);
   const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
-  //const jsonString = JSON.stringify({ parameters }, null, 4);
-  context.amplify.writeObjectAsJson(parametersFilePath, { parameters }, true);
+  context.amplify.writeObjectAsJson(parametersFilePath, parameters, true);
 }
 
 export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {

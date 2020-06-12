@@ -1,12 +1,13 @@
-import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
+import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
+import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 import { categoryName, layerParametersFileName } from '../utils/constants';
-import fs from 'fs-extra';
 
 export type LayerVersionData = {
   version: LayerVersionMetadata;
 };
+
 export type LayerParameters = {
   layerName: string;
   runtimes: FunctionRuntime[];
@@ -66,9 +67,10 @@ class LayerState implements LayerMetadata {
   layerMetaData: LayerVersionMetadata;
   constructor(obj) {
     this.runtimes = obj.runtimes;
-    Object.entries(obj.layerVersionMap).forEach(([key, value]) => {
-      this.layerMetaData = new LayerVersionState(value);
-      this.versionMap.set(Number(key), this.layerMetaData);
+    Object.entries(obj.layerVersionMap).forEach(([versionNumber, versionData]) => {
+      const permissions = _.get(versionData, 'permissions', {});
+      this.layerMetaData = new LayerVersionState(permissions);
+      this.versionMap.set(Number(versionNumber), this.layerMetaData);
     });
   }
 
@@ -79,6 +81,7 @@ class LayerState implements LayerMetadata {
   listVersions(): number[] {
     return Array.from(this.versionMap.keys());
   }
+
   getLatestVersion(): number {
     return Array.from(this.versionMap.keys()).reduce((a, b) => Math.max(a, b));
   }
@@ -158,6 +161,6 @@ export const layerMetadataFactory: LayerMetadataFactory = (
     return undefined;
   }
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-  const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8')).parameters;
+  const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8'));
   return new LayerState(obj);
 };
