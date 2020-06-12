@@ -5,7 +5,6 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-  getFunction,
   getLayerVersion,
   getProjectMeta,
   listVersions,
@@ -50,6 +49,7 @@ describe('amplify add lambda layer', () => {
     const [shortId] = uuid().split('-');
     const settings = {
       layerName: `simplelayer${shortId}`,
+      runtimes: ['nodejs'],
     };
     await initJSProjectWithProfile(projRoot, {});
     await addLayer(projRoot, settings);
@@ -62,22 +62,55 @@ describe('amplify add lambda layer', () => {
 
   it('init a project and add/update simple layer and push', async () => {
     const [shortId] = uuid().split('-');
-    const settings = {
-      layerName: `testlayer${shortId}`,
+    const layerName = `testlayer${shortId}`;
+    const settingsAdd = {
+      runtimes: ['nodejs'],
+      layerName: layerName,
+    };
+    const settingsUpdate = {
+      runtimes: ['java'],
+      layerName: layerName,
       versionChanged: true,
+      numLayers: 1,
+      isPushed: false,
     };
     await initJSProjectWithProfile(projRoot, {});
-    await addLayer(projRoot, settings);
-    await updateLayer(projRoot, settings);
+    await addLayer(projRoot, settingsAdd);
+    await updateLayer(projRoot, settingsUpdate);
     await amplifyPushAuth(projRoot);
-    await validateMetadata(settings.layerName);
+    await validateMetadata(settingsUpdate.layerName);
   });
 
   it('init a project and add/push and update/push updating version', async () => {
     const [shortId] = uuid().split('-');
-    const settings = {
-      layerName: `testlayer${shortId}`,
+    const layerName = `testlayer${shortId}`;
+    const settingsAdd = {
+      runtimes: ['nodejs'],
+      layerName: layerName,
+    };
+    const settingsUpdate = {
+      runtimes: ['java'],
+      layerName: layerName,
       versionChanged: true,
+      numLayers: 1,
+      isPushed: false,
+    };
+    await initJSProjectWithProfile(projRoot, {});
+    await addLayer(projRoot, settingsAdd);
+    await amplifyPushAuth(projRoot);
+    await updateLayer(projRoot, settingsUpdate);
+    await amplifyPushAuth(projRoot);
+    await validateMetadata(settingsUpdate.layerName);
+  });
+
+  it('init a project and add/push and update/push without updating version', async () => {
+    const [shortId] = uuid().split('-');
+    const settings = {
+      runtimes: ['nodejs'],
+      layerName: `testlayer${shortId}`,
+      versionChanged: false,
+      numLayers: 1,
+      isPushed: false,
     };
     await initJSProjectWithProfile(projRoot, {});
     await addLayer(projRoot, settings);
