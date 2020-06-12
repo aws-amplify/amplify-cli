@@ -1243,7 +1243,7 @@ describe('AppSyncSwiftVisitor', () => {
             model.fields(
               .id(),
               .field(post.title, is: .required, ofType: .string),
-              .field(post.groups, is: .required, ofType: .embeddedCollectioon(of: String.self))
+              .field(post.groups, is: .required, ofType: .embeddedCollection(of: String.self))
             )
             }
         }"
