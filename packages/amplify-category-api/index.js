@@ -22,7 +22,7 @@ async function migrate(context, serviceName) {
             if (providerController) {
               if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
                 migrateResourcePromises.push(
-                  providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName)
+                  providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName),
                 );
               }
             }
@@ -149,7 +149,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName]
+          resourceOpsMapping[resourceName],
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });
@@ -165,15 +165,18 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 }
 
 async function executeAmplifyCommand(context) {
-  let commandPath = path.normalize(path.join(__dirname, 'commands'));
-  if (context.input.command === 'help') {
-    commandPath = path.join(commandPath, category);
-  } else {
-    commandPath = path.join(commandPath, category, context.input.command);
+  try {
+    let commandPath = path.normalize(path.join(__dirname, 'commands'));
+    if (context.input.command === 'help') {
+      commandPath = path.join(commandPath, category);
+    } else {
+      commandPath = path.join(commandPath, category, context.input.command);
+    }
+    const commandModule = require(commandPath);
+    await commandModule.run(context);
+  } catch (err) {
+    context.print.error(err.message);
   }
-
-  const commandModule = require(commandPath);
-  await commandModule.run(context);
 }
 
 async function handleAmplifyEvent(context, args) {

@@ -20,7 +20,7 @@ module.exports = {
         context.print.success(`Successfully updated resource ${resourceName} locally`);
       })
       .catch(err => {
-        context.print.info(err.stack);
+        context.print.error(err.message);
         context.print.error('An error occurred when updating predictions resource!');
       }),
 };
