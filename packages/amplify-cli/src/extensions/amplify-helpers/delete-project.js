@@ -25,7 +25,7 @@ async function deleteProject(context) {
         }
       }
     } catch (ex) {
-      spinner.fail(`Project delete failed ${ex.message}`);
+      spinner.fail('Project delete failed');
       throw ex;
     }
     spinner.succeed('Project deleted in the cloud');
