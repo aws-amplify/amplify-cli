@@ -465,44 +465,6 @@ describe('nodejs', () => {
       expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
     });
   });
-
-  describe('add function with layers', () => {
-    let projRoot: string;
-
-    beforeEach(async () => {
-      projRoot = await createNewProjectDir('functions');
-    });
-
-    afterEach(async () => {
-      await deleteProject(projRoot);
-      deleteProjectDir(projRoot);
-    });
-    it('can add project layers and external layers', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      await addLayer(projRoot);
-      const layerOptions: LayerOptions = {
-        select: ['test-layer'],
-        expectedListOptions: ['test-layer'],
-        versions: {
-          ['test-layer']: {
-            version: 1,
-            expectedVersionOptions: [1],
-          },
-        },
-        customArns: ['arn:aws:lambda:us-west-2:123456789012:layer:my-layer:2'],
-      };
-      const functionName = 'myFunctionName';
-      await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'nodejs');
-
-      // since layer push doesn't work yet, just check that we put the right stuff in the CFN template
-      const cfnTemplateContents = fs.readFileSync(
-        path.join(projRoot, 'amplify', 'backend', 'function', functionName, `${functionName}-cloudformation-template.json`),
-        'utf8',
-      );
-      const templateObj = JSON.parse(cfnTemplateContents);
-      expect(templateObj.Resources.LambdaFunction.Properties.Layers).toMatchSnapshot();
-    });
-  });
 });
 
 describe('go function tests', () => {
@@ -877,67 +839,5 @@ describe.only('add function with layers for runtime nodeJS', () => {
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
     expect(JSON.parse(JSON.parse(response.Payload).body)).toEqual(helloWorldSuccessOutput);
-  });
-});
-
-describe.skip('add function with layers for runtime python', () => {
-  let projRoot: string;
-  const helloWorldSuccessOutput = 'Hello from Lambda!';
-  const random = Math.floor(Math.random() * 10000);
-  let functionName: string;
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
-    await initJSProjectWithProfile(projRoot, {});
-    const settings = {
-      layerName: `testlayer${random}`,
-      runtimes: ['python'],
-    };
-    await addLayer(projRoot, settings);
-    // create index.js
-    overrideLayerCodePython(
-      projRoot,
-      settings.layerName,
-      `
-      testString = "Hello from Lambda!"
-    `,
-      `index.py`,
-    );
-    const layerOptions: LayerOptions = {
-      select: [`${settings.layerName}`],
-      expectedListOptions: [`${settings.layerName}`],
-      versions: {
-        [`${settings.layerName}`]: {
-          version: 1,
-          expectedVersionOptions: [1],
-        },
-      },
-    };
-    functionName = `testfunction${random}`;
-    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'python');
-    overrideFunctionSrcPython(
-      projRoot,
-      functionName,
-      ` import index
-      exports.handler = async (event) => {
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify(index.testString),
-        };
-        return response;
-      };
-    `,
-    );
-  });
-
-  afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
-  });
-  it('can add project layers and external layers for python', async () => {
-    //await amplifyPushAuth(projRoot);
-    //const payload = '{}';
-    //const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload : payload });
-    //expect(JSON.parse(JSON.parse(response.Payload).body)).toEqual(helloWorldSuccessOutput);
   });
 });
