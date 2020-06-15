@@ -26,13 +26,6 @@ export type AppSyncModelCodeGenPresetConfig = {
   target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript';
 };
 
-const hasDirective = (directiveName: string) => (typeObj: TypeDefinitionNode): boolean => {
-  if (typeObj && typeObj.directives && typeObj.directives.length) {
-    return typeObj.directives.find(d => d.name.value === directiveName) !== undefined;
-  }
-  return false;
-};
-
 const generateJavaPreset = (
   options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
   models: TypeDefinitionNode[],
