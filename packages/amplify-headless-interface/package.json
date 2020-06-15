@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "generateSchemas": "yarn ts-node ./scripts/generateSchemas.ts"
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "generateSchemas": "ts-node ./scripts/generateSchemas.ts"
   },
   "keywords": [
     "amplify",
@@ -15,7 +15,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
-    "typescript-json-schema":"^0.42.0",
-    "ts-node":"^8.10.2"
+    "typescript-json-schema":"~0.42.0",
+    "ts-node":"^8.10.2",
+    "rimraf":"^3.0.2"
   }
 }

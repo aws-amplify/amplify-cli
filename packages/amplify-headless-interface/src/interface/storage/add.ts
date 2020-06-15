@@ -3,7 +3,7 @@
  */
 export interface AddStorageRequest {
   version: 1;
-  serviceConfiguration: S3ServiceConfiguration | DynamoDBServiceConfiguration;
+  serviceConfiguration: S3ServiceConfiguration;
 }
 
 /**
@@ -33,14 +33,14 @@ export interface S3ServiceConfiguration {
  */
 export interface S3Permissions {
   /**
+   * Permissions for authenticated users
+   */
+  auth: CrudOperations[];
+
+  /**
    * Permissions for unauthenticated users
    */
   guest?: CrudOperations[];
-
-  /**
-   * Permissions for authenticated users
-   */
-  auth?: CrudOperations[];
 
   /**
    * Permissions for Cognito user groups
@@ -64,14 +64,6 @@ export interface PermissionGroups {
 export interface LambdaTriggerConfig {
   mode: 'new' | 'existing';
   name: string;
-}
-
-/**
- * Placeholder definition for DynamoDB config
- */
-export interface DynamoDBServiceConfiguration {
-  serviceName: 'dynamoDB';
-  placeholder: string;
 }
 
 export enum CrudOperations {

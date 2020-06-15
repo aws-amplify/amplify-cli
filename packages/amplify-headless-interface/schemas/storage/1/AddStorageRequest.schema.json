@@ -7,14 +7,7 @@
       "enum": [1]
     },
     "serviceConfiguration": {
-      "anyOf": [
-        {
-          "$ref": "#/definitions/S3ServiceConfiguration"
-        },
-        {
-          "$ref": "#/definitions/DynamoDBServiceConfiguration"
-        }
-      ]
+      "$ref": "#/definitions/S3ServiceConfiguration"
     }
   },
   "required": ["serviceConfiguration", "version"],
@@ -47,16 +40,16 @@
       "description": "Permissions that should be applied to the bucket",
       "type": "object",
       "properties": {
-        "guest": {
-          "description": "Permissions for unauthenticated users",
+        "auth": {
+          "description": "Permissions for authenticated users",
           "type": "array",
           "items": {
             "enum": ["CREATE", "DELETE", "READ", "UPDATE"],
             "type": "string"
           }
         },
-        "auth": {
-          "description": "Permissions for authenticated users",
+        "guest": {
+          "description": "Permissions for unauthenticated users",
           "type": "array",
           "items": {
             "enum": ["CREATE", "DELETE", "READ", "UPDATE"],
@@ -67,7 +60,8 @@
           "$ref": "#/definitions/PermissionGroups",
           "description": "Permissions for Cognito user groups"
         }
-      }
+      },
+      "required": ["auth"]
     },
     "PermissionGroups": {
       "description": "Permissions for Cognito user groups",
@@ -93,20 +87,6 @@
         }
       },
       "required": ["mode", "name"]
-    },
-    "DynamoDBServiceConfiguration": {
-      "description": "Placeholder definition for DynamoDB config",
-      "type": "object",
-      "properties": {
-        "serviceName": {
-          "type": "string",
-          "enum": ["dynamoDB"]
-        },
-        "placeholder": {
-          "type": "string"
-        }
-      },
-      "required": ["placeholder", "serviceName"]
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#"

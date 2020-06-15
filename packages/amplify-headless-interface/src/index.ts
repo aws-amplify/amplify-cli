@@ -1,3 +1,3 @@
-export * from './interface/addApi';
-export * from './interface/addAuth';
-export * from './interface/addStorage';
+export * from './interface/api/add';
+export * from './interface/auth/add';
+export * from './interface/storage/add';

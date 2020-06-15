@@ -10,15 +10,18 @@ const schemaFilesRoot = './schemas';
 const typeDefs: TypeDef[] = [
   {
     typeName: 'AddAuthRequest',
-    relativeSourcePaths: ['addAuth.ts'],
+    category: 'auth',
+    relativeSourcePaths: [path.join('auth', 'add.ts')],
   },
   {
     typeName: 'AddApiRequest',
-    relativeSourcePaths: ['addApi.ts'],
+    category: 'api',
+    relativeSourcePaths: [path.join('api', 'add.ts')],
   },
   {
     typeName: 'AddStorageRequest',
-    relativeSourcePaths: ['addStorage.ts'],
+    category: 'storage',
+    relativeSourcePaths: [path.join('storage', 'add.ts')],
   },
 ];
 
@@ -35,7 +38,7 @@ typeDefs.forEach(typeDef => {
   const files = typeDef.relativeSourcePaths.map(p => path.resolve(path.join(typesSourceRoot, p)));
   const typeSchema = buildGenerator(getProgramFromFiles(files), settings)!.getSchemaForSymbol(typeDef.typeName);
   const version = (typeSchema.properties!.version as Definition).enum![0] as number;
-  const schemaFilePath = path.resolve(path.join(schemaFilesRoot, version.toString(), schemaFileName(typeDef.typeName)));
+  const schemaFilePath = path.resolve(path.join(schemaFilesRoot, typeDef.category, version.toString(), schemaFileName(typeDef.typeName)));
   if (!force && fs.existsSync(schemaFilePath)) {
     console.error(
       `Schema version ${version} already exists for type ${typeDef.typeName}.\nThe interface version must be bumped after any changes.\nUse the ${forceFlag} flag to overwrite existing versions`,
@@ -46,4 +49,9 @@ typeDefs.forEach(typeDef => {
   fs.writeFileSync(schemaFilePath, JSON.stringify(typeSchema, undefined, 2));
 });
 
-type TypeDef = { typeName: string; relativeSourcePaths: string[] };
+// Interface types are expected to be exported as "typeName" in the file
+type TypeDef = {
+  typeName: string;
+  relativeSourcePaths: string[];
+  category: string;
+};

@@ -1,6 +1,6 @@
 export interface AddApiRequest {
   version: 1;
-  serviceConfiguration: AppSyncServiceConfiguration | APIGatewayServiceConfiguration;
+  serviceConfiguration: AppSyncServiceConfiguration;
 }
 
 export interface AppSyncServiceConfiguration {
@@ -19,8 +19,15 @@ export interface AppSyncServiceConfiguration {
    */
   additionalAuthTypes?: AppSyncAuthType[];
   conflictResolution?: {
-    resolutionStrategy: 'OPTIMISTIC_CONCURRENCY' | 'LAMBDA' | 'AUTOMERGE' | 'NONE';
+    resolutionStrategy: ResolutionStrategy;
   };
+}
+
+export enum ResolutionStrategy {
+  OPTIMISTIC_CONCURRENCY = 'OPTIMISTIC_CONCURRENCY',
+  LAMBDA = 'LAMBDA',
+  AUTOMERGE = 'AUTOMERGE',
+  NONE = 'NONE',
 }
 
 export type AppSyncAuthType =
@@ -51,8 +58,4 @@ export interface AppSyncOpenIDConnectAuthType {
   openIDClientID: string;
   openIDAuthTTL?: string;
   openIDIatTTL?: string;
-}
-
-export interface APIGatewayServiceConfiguration {
-  serviceName: 'apiGateway';
 }

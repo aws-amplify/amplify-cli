@@ -6,14 +6,7 @@
       "enum": [1]
     },
     "serviceConfiguration": {
-      "anyOf": [
-        {
-          "$ref": "#/definitions/AppSyncServiceConfiguration"
-        },
-        {
-          "$ref": "#/definitions/APIGatewayServiceConfiguration"
-        }
-      ]
+      "$ref": "#/definitions/AppSyncServiceConfiguration"
     }
   },
   "required": ["serviceConfiguration", "version"],
@@ -73,8 +66,7 @@
           "type": "object",
           "properties": {
             "resolutionStrategy": {
-              "enum": ["AUTOMERGE", "LAMBDA", "NONE", "OPTIMISTIC_CONCURRENCY"],
-              "type": "string"
+              "$ref": "#/definitions/ResolutionStrategy"
             }
           },
           "required": ["resolutionStrategy"]
@@ -146,15 +138,9 @@
       },
       "required": ["mode", "openIDClientID", "openIDIssueURL", "openIDProviderName"]
     },
-    "APIGatewayServiceConfiguration": {
-      "type": "object",
-      "properties": {
-        "serviceName": {
-          "type": "string",
-          "enum": ["apiGateway"]
-        }
-      },
-      "required": ["serviceName"]
+    "ResolutionStrategy": {
+      "enum": ["AUTOMERGE", "LAMBDA", "NONE", "OPTIMISTIC_CONCURRENCY"],
+      "type": "string"
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#"

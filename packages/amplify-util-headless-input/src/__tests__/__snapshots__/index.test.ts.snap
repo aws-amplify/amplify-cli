@@ -9,6 +9,11 @@ Object {
       "name": "triggerName",
     },
     "permissions": Object {
+      "auth": Array [
+        "READ",
+        "CREATE",
+        "UPDATE",
+      ],
       "groups": Object {
         "myUserGroup": Array [
           "CREATE",
