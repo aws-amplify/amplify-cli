@@ -27,7 +27,6 @@ export function validateLayerDir(projRoot: string, layerName: string, layerExist
 
 export function addLayer(cwd: string, settings?: any) {
   const defaultSettings = {
-    runtimes: ['nodejs'],
     permissions: [],
   };
   settings = { ...defaultSettings, ...settings };
@@ -118,7 +117,6 @@ export function updateLayer(cwd: string, settings?: any) {
           'New Lambda layer version created. Any function that wants to use the latest layer version need to configure it by running - "amplify function update"',
         );
     }
-
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
     printFlow(chain, settings, layerDirRegex);

@@ -37,11 +37,22 @@ export function getFunctionSrc(root: string, name: string): Buffer {
   return fs.readFileSync(indexPath);
 }
 
-export function ovverrideLayerCode(root: string, name: string, code: string) {
-  // write package,json file
-  let packageJsonfilePath = path.join(root, `amplify/backend/function/${name}/lib/nodejs/package.json`);
-  fs.writeFileSync(packageJsonfilePath, code);
-  // write index.js file for layer
-  let indexfilePath = path.join(root, `amplify/backend/function/${name}/lib/nodejs.node_modules/${name}/index.js`);
-  fs.writeFileSync(indexfilePath, code);
+//overriding code for node
+export function overrideLayerCode(root: string, name: string, code: string, fileName: string) {
+  const dirPath = path.join(root, `amplify/backend/function/${name}/lib/nodejs/node_modules/${name}`);
+  fs.ensureDirSync(dirPath);
+  const filePath = path.join(dirPath, `${fileName}`);
+  fs.writeFileSync(filePath, code);
 }
+
+// // overriding code for python
+// export function overrideFunctionSrcPython(root: string, name: string, code: string) {
+//   let indexPath = path.join(root, `amplify/backend/function/${name}/src/index.py`);
+//   fs.writeFileSync(indexPath, code);
+// }
+// export function overrideLayerCodePython(root: string, name: string, code: string , fileName: string) {
+//   const dirPath = path.join(root, `amplify/backend/function/${name}/lib/python/lib/python3.8/site-packages/`);
+//   fs.ensureDirSync(dirPath)
+//   const filePath = path.join(dirPath, `${fileName}`);
+//   fs.writeFileSync(filePath, code);
+// }
