@@ -820,7 +820,7 @@ describe('AppSyncSwiftVisitor', () => {
       import Amplify
       import Foundation
 
-      public struct Location: Embedded {
+      public struct Location: Embeddable {
         var lat: String
         var lang: String
         var tags: [String]?

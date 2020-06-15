@@ -95,7 +95,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       const structBlock: SwiftDeclarationBlock = new SwiftDeclarationBlock()
         .withName(this.getModelName(obj))
         .access('public')
-        .withProtocols(['Embedded']);
+        .withProtocols(['Embeddable']);
       Object.values(obj.fields).forEach(field => {
         const fieldType = this.getNativeType(field);
         structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'DEFAULT', {
