@@ -51,7 +51,7 @@ export async function packageLayer(context, resource) {
 
     zip.pipe(output);
     glob
-      .sync(resourcePath + '/lib/*')
+      .sync(resourcePath + '/!(dist)')
       .filter(folder => fs.lstatSync(folder).isDirectory())
       .forEach(folder => zip.directory(folder, path.basename(folder)));
     zip.finalize();
