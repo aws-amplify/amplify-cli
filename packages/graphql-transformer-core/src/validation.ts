@@ -131,7 +131,8 @@ export const validateModelSchema = (doc: DocumentNode) => {
   const queryOperation = schemaDef ? schemaDef.operationTypes.find(o => o.operation === 'query') : undefined;
   const queryName = queryOperation ? queryOperation.type.name.value : 'Query';
   const existingQueryType = doc.definitions.find(
-    d => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName
+    d =>
+      d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION && (d as any).name && (d as any).name.value === queryName,
   );
 
   if (!existingQueryType) {

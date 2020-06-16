@@ -63,7 +63,7 @@
     "@typescript-eslint/parser": "^2.16.0",
     "@types/js-yaml":"^3.12.3",
     "cmd-shim": "^3.0.3",
-    "codecov": "^3.6.1",
+    "codecov": "^3.7.0",
     "commitizen": "^3.1.2",
     "copyfiles": "^2.2.0",
     "cz-conventional-changelog": "^3.0.2",

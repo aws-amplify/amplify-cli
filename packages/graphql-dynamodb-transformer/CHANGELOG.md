@@ -3,118 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.19.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.19.1...graphql-dynamodb-transformer@6.19.2) (2020-06-11)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+## [6.19.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.19.0...graphql-dynamodb-transformer@6.19.1) (2020-06-10)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+# [6.19.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.18.1...graphql-dynamodb-transformer@6.19.0) (2020-06-02)
+
+### Bug Fixes
+
+- add custom enum filter to connection filter ([#4269](https://github.com/aws-amplify/amplify-cli/issues/4269)) ([a29d427](https://github.com/aws-amplify/amplify-cli/commit/a29d427dc23f82f04d4e7b79402dd9642591e759))
+
+### Features
+
+- **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([c0a4f88](https://github.com/aws-amplify/amplify-cli/commit/c0a4f8889fc363bb9c9d08ff822c591874777f7b))
+
 ## [6.18.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.18.0...graphql-dynamodb-transformer@6.18.1) (2020-05-26)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
 
-
-
-
-
 # [6.18.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.17.0...graphql-dynamodb-transformer@6.18.0) (2020-05-15)
-
 
 ### Features
 
-* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
-
-
-
-
+- **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
 
 # [6.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.16.1...graphql-dynamodb-transformer@6.17.0) (2020-05-08)
 
-
 ### Bug Fixes
 
-* **graphql-dynamodb-transformer:** fixes long IAM roleNames ([#4010](https://github.com/aws-amplify/amplify-cli/issues/4010)) ([041e97a](https://github.com/aws-amplify/amplify-cli/commit/041e97a182a13711d74c27fd5229c7b4d6fb237f))
-* [#3438](https://github.com/aws-amplify/amplify-cli/issues/3438), many-to-many with conflict resolution generated wrong schema ([#4171](https://github.com/aws-amplify/amplify-cli/issues/4171)) ([9e8606c](https://github.com/aws-amplify/amplify-cli/commit/9e8606c4a300b5690839ec0869f7384aff189b1f))
-* github partial rename for sync query constant ([#4125](https://github.com/aws-amplify/amplify-cli/issues/4125)) ([506c48a](https://github.com/aws-amplify/amplify-cli/commit/506c48aabdc2825935f006b025cea59583c21572))
-
+- **graphql-dynamodb-transformer:** fixes long IAM roleNames ([#4010](https://github.com/aws-amplify/amplify-cli/issues/4010)) ([041e97a](https://github.com/aws-amplify/amplify-cli/commit/041e97a182a13711d74c27fd5229c7b4d6fb237f))
+- [#3438](https://github.com/aws-amplify/amplify-cli/issues/3438), many-to-many with conflict resolution generated wrong schema ([#4171](https://github.com/aws-amplify/amplify-cli/issues/4171)) ([9e8606c](https://github.com/aws-amplify/amplify-cli/commit/9e8606c4a300b5690839ec0869f7384aff189b1f))
+- github partial rename for sync query constant ([#4125](https://github.com/aws-amplify/amplify-cli/issues/4125)) ([506c48a](https://github.com/aws-amplify/amplify-cli/commit/506c48aabdc2825935f006b025cea59583c21572))
 
 ### Features
 
-* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
-
-
-
-
+- **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
 
 ## [6.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.16.0...graphql-dynamodb-transformer@6.16.1) (2020-04-23)
 
-
 ### Bug Fixes
 
-* **graphql-dynamodb-transformer:** fix [#3141](https://github.com/aws-amplify/amplify-cli/issues/3141) add attribute type enum for queries ([#3930](https://github.com/aws-amplify/amplify-cli/issues/3930)) ([1a151b3](https://github.com/aws-amplify/amplify-cli/commit/1a151b3b98c70d3b3adbccc90e619c34378785ed))
-
-
-
-
+- **graphql-dynamodb-transformer:** fix [#3141](https://github.com/aws-amplify/amplify-cli/issues/3141) add attribute type enum for queries ([#3930](https://github.com/aws-amplify/amplify-cli/issues/3930)) ([1a151b3](https://github.com/aws-amplify/amplify-cli/commit/1a151b3b98c70d3b3adbccc90e619c34378785ed))
 
 # [6.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.15.1...graphql-dynamodb-transformer@6.16.0) (2020-03-22)
 
-
 ### Features
 
-* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
-
-
-
-
+- **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
 
 ## [6.15.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.13.4...graphql-dynamodb-transformer@6.15.1) (2020-03-07)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
 
-
-
-
-
 ## [6.14.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.13.6-beta.0...graphql-dynamodb-transformer@6.14.1) (2020-03-05)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
 
-
-
-
-
 ## [6.13.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.13.3...graphql-dynamodb-transformer@6.13.4) (2020-02-18)
-
 
 ### Bug Fixes
 
-* **graphql-dynamodb-transformer:** prevent doble escape of nextToken ([#3452](https://github.com/aws-amplify/amplify-cli/issues/3452)) ([b6decfd](https://github.com/aws-amplify/amplify-cli/commit/b6decfddf232ed8a1d8b3e51ad881bc083b45114)), closes [#3411](https://github.com/aws-amplify/amplify-cli/issues/3411)
-
-
-
-
+- **graphql-dynamodb-transformer:** prevent doble escape of nextToken ([#3452](https://github.com/aws-amplify/amplify-cli/issues/3452)) ([b6decfd](https://github.com/aws-amplify/amplify-cli/commit/b6decfddf232ed8a1d8b3e51ad881bc083b45114)), closes [#3411](https://github.com/aws-amplify/amplify-cli/issues/3411)
 
 ## [6.13.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.13.2...graphql-dynamodb-transformer@6.13.3) (2020-02-13)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
 
-
-
-
-
 ## [6.13.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.13.1...graphql-dynamodb-transformer@6.13.2) (2020-02-07)
-
 
 ### Bug Fixes
 
-* sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
-
-
-
-
+- sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
 
 ## [6.13.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.13.0...graphql-dynamodb-transformer@6.13.1) (2020-01-24)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
-
-
-
-
 
 # [6.13.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@5.18.0...graphql-dynamodb-transformer@6.13.0) (2020-01-23)
 
