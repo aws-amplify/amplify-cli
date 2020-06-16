@@ -1,0 +1,186 @@
+{
+    "type": "object",
+    "properties": {
+        "version": {
+            "type": "number",
+            "enum": [
+                1
+            ]
+        },
+        "serviceConfiguration": {
+            "$ref": "#/definitions/AppSyncServiceConfiguration"
+        }
+    },
+    "required": [
+        "serviceConfiguration",
+        "version"
+    ],
+    "definitions": {
+        "AppSyncServiceConfiguration": {
+            "type": "object",
+            "properties": {
+                "serviceName": {
+                    "type": "string",
+                    "enum": [
+                        "appSync"
+                    ]
+                },
+                "apiName": {
+                    "type": "string"
+                },
+                "transformSchema": {
+                    "description": "The annotated GraphQL schema that defines the AppSync API",
+                    "type": "string"
+                },
+                "defaultAuthType": {
+                    "description": "The auth type that will be used by default",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/AppSyncAPIKeyAuthType"
+                        },
+                        {
+                            "$ref": "#/definitions/AppSyncAWSIAMAuthType"
+                        },
+                        {
+                            "$ref": "#/definitions/AppSyncCognitoUserPoolsAuthType"
+                        },
+                        {
+                            "$ref": "#/definitions/AppSyncOpenIDConnectAuthType"
+                        }
+                    ]
+                },
+                "additionalAuthTypes": {
+                    "description": "Additional methods of authenticating API requests",
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/AppSyncAPIKeyAuthType"
+                            },
+                            {
+                                "$ref": "#/definitions/AppSyncAWSIAMAuthType"
+                            },
+                            {
+                                "$ref": "#/definitions/AppSyncCognitoUserPoolsAuthType"
+                            },
+                            {
+                                "$ref": "#/definitions/AppSyncOpenIDConnectAuthType"
+                            }
+                        ]
+                    }
+                },
+                "conflictResolution": {
+                    "type": "object",
+                    "properties": {
+                        "resolutionStrategy": {
+                            "$ref": "#/definitions/ResolutionStrategy"
+                        }
+                    },
+                    "required": [
+                        "resolutionStrategy"
+                    ]
+                }
+            },
+            "required": [
+                "apiName",
+                "defaultAuthType",
+                "serviceName",
+                "transformSchema"
+            ]
+        },
+        "AppSyncAPIKeyAuthType": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "API_KEY"
+                    ]
+                },
+                "expirationTime": {
+                    "type": "number"
+                },
+                "keyDescription": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "mode"
+            ]
+        },
+        "AppSyncAWSIAMAuthType": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "AWS_IAM"
+                    ]
+                }
+            },
+            "required": [
+                "mode"
+            ]
+        },
+        "AppSyncCognitoUserPoolsAuthType": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "AMAZON_COGNITO_USER_POOLS"
+                    ]
+                },
+                "cognitoUserPoolId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "cognitoUserPoolId",
+                "mode"
+            ]
+        },
+        "AppSyncOpenIDConnectAuthType": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "OPENID_CONNECT"
+                    ]
+                },
+                "openIDProviderName": {
+                    "type": "string"
+                },
+                "openIDIssueURL": {
+                    "type": "string"
+                },
+                "openIDClientID": {
+                    "type": "string"
+                },
+                "openIDAuthTTL": {
+                    "type": "string"
+                },
+                "openIDIatTTL": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "mode",
+                "openIDClientID",
+                "openIDIssueURL",
+                "openIDProviderName"
+            ]
+        },
+        "ResolutionStrategy": {
+            "enum": [
+                "AUTOMERGE",
+                "LAMBDA",
+                "NONE",
+                "OPTIMISTIC_CONCURRENCY"
+            ],
+            "type": "string"
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}
