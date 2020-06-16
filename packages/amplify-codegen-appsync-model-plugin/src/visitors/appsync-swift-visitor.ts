@@ -95,7 +95,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       const structBlock: SwiftDeclarationBlock = new SwiftDeclarationBlock()
         .withName(this.getModelName(obj))
         .access('public')
-        .withProtocols(['Codable']);
+        .withProtocols(['Embeddable']);
       Object.values(obj.fields).forEach(field => {
         const fieldType = this.getNativeType(field);
         structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'DEFAULT', {
@@ -121,6 +121,16 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
         this.generateCodingKeys(this.getModelName(model), model, schemaDeclarations),
           this.generateModelSchema(this.getModelName(model), model, schemaDeclarations);
+
+        result.push(schemaDeclarations.string);
+      });
+
+    Object.values(this.getSelectedNonModels())
+      .forEach(model => {
+        const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getNonModelName(model));
+
+        this.generateCodingKeys(this.getNonModelName(model), model, schemaDeclarations),
+          this.generateModelSchema(this.getNonModelName(model), model, schemaDeclarations);
 
         result.push(schemaDeclarations.string);
       });
@@ -249,7 +259,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       if (isModelType) {
         ofType = `.collection(of: ${this.getSwiftModelTypeName(field)})`;
       } else {
-        ofType = `.customType(${this.getSwiftModelTypeName(field)})`;
+        ofType = `.embeddedCollection(of: ${this.getSwiftModelTypeName(field)})`;
       }
     } else {
       if (isEnumType) {
@@ -257,7 +267,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       } else if (isModelType) {
         ofType = `.model(${typeName})`;
       } else if (isNonModelType) {
-        ofType = `.customType(${typeName})`;
+        ofType = `.embedded(type: ${typeName})`;
       } else {
         ofType = typeName;
       }
@@ -269,19 +279,17 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   private getSwiftModelTypeName(field: CodeGenField) {
     if (this.isEnumType(field)) {
-      const name = this.getEnumName(field.type);
-      return field.isList ? `[${name}].self` : `${name}.self`;
+      return `${this.getEnumName(field.type)}.self`;
     }
     if (this.isModelType(field)) {
       return `${this.getModelName(this.modelMap[field.type])}.self`;
     }
     if (this.isNonModelType(field)) {
-      const name = this.getNonModelName(this.nonModelMap[field.type]);
-      return field.isList ? `[${name}].self` : `${name}.self`;
+      return `${this.getNonModelName(this.nonModelMap[field.type])}.self`;
     }
     if (field.type in schemaTypeMap) {
       if (field.isList) {
-        return `[${this.getNativeType(field)}].self`;
+       return `${this.getNativeType(field)}.self`;
       }
       return schemaTypeMap[field.type];
     }
