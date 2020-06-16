@@ -127,7 +127,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
     Object.values(this.getSelectedNonModels())
       .forEach(model => {
-        const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getModelName(model));
+        const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getNonModelName(model));
 
         this.generateCodingKeys(this.getNonModelName(model), model, schemaDeclarations),
           this.generateModelSchema(this.getNonModelName(model), model, schemaDeclarations);
