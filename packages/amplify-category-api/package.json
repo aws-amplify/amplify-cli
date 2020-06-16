@@ -9,8 +9,10 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest",
     "test-ci": "jest --ci -i"
   },

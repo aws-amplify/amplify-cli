@@ -5,7 +5,7 @@ module.exports = {
   name: subcommand,
   run: async context => {
     const { amplify } = context;
-    const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
+    const servicesMetadata = require('../../provider-utils/supported-services').default;
     return amplify
       .serviceSelectionPrompt(context, category, servicesMetadata)
       .then(result => {

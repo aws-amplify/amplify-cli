@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const uuid = require('uuid');
 const path = require('path');
 const open = require('open');
+const { rootAssetDir } = require('../index');
 const TransformPackage = require('graphql-transformer-core');
 
 const category = 'api';
@@ -14,6 +15,7 @@ const providerName = 'awscloudformation';
 const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
 const defaultStackName = 'CustomResources.json';
+const graphqlSchemaDir = path.join(rootAssetDir, 'graphql-schemas');
 
 const {
   collectDirectivesByTypeNames,
@@ -147,7 +149,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   await writeResolverConfig(resolverConfig, resourceDir);
 
   // Write the default custom resources stack out to disk.
-  const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
+  const defaultCustomResourcesStack = fs.readFileSync(path.join(rootAssetDir, 'cloudformation-templates', 'defaultCustomResources.json'));
   fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
 
   if (schemaFileAnswer[inputs[2].key]) {
@@ -191,12 +193,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     };
     const typeNameAnswer = await inquirer.prompt(typeNameQuestion);
 
-    // fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
-    const schemaDir = `${__dirname}/../appsync-schemas`;
-
     const copyJobs = [
       {
-        dir: schemaDir,
+        dir: graphqlSchemaDir,
         template: 'basic-schema.graphql.ejs',
         target: targetSchemaFilePath,
       },
@@ -247,7 +246,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   ];
 
   const { templateSelection, editSchemaChoice } = await inquirer.prompt(templateQuestions);
-  const schemaFilePath = `${__dirname}/../appsync-schemas/${templateSelection}`;
+  const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
   const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
 
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
@@ -306,7 +305,7 @@ async function updateTransformerConfigVersion(resourceDir) {
 
 async function createSyncFunction(context) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
+  const assetDir = path.normalize(path.join(rootAssetDir, 'sync-conflict-handler'));
   const [shortId] = uuid().split('-');
 
   const functionName = `syncConflictHandler${shortId}`;
@@ -318,18 +317,18 @@ async function createSyncFunction(context) {
 
   const copyJobs = [
     {
-      dir: pluginDir,
-      template: '../sync-conflict-handler-assets/sync-conflict-handler-index.js.ejs',
+      dir: assetDir,
+      template: 'sync-conflict-handler-index.js.ejs',
       target: `${targetDir}/function/${functionName}/src/index.js`,
     },
     {
-      dir: pluginDir,
-      template: '../sync-conflict-handler-assets/sync-conflict-handler-package.json.ejs',
+      dir: assetDir,
+      template: 'sync-conflict-handler-package.json.ejs',
       target: `${targetDir}/function/${functionName}/src/package.json`,
     },
     {
-      dir: pluginDir,
-      template: '../sync-conflict-handler-assets/sync-conflict-handler-template.json.ejs',
+      dir: assetDir,
+      template: 'sync-conflict-handler-template.json.ejs',
       target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
     },
   ];

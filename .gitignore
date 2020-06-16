@@ -24,6 +24,7 @@ packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
 packages/amplify-category-function/lib
+packages/amplify-category-api/lib
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-console-integration-tests/console-integration-reports
 packages/amplify-migration-tests/amplify-migration-reports
