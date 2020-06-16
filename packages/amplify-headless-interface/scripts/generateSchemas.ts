@@ -46,7 +46,7 @@ typeDefs.forEach(typeDef => {
     process.exit(1);
   }
   fs.ensureFileSync(schemaFilePath);
-  fs.writeFileSync(schemaFilePath, JSON.stringify(typeSchema, undefined, 2));
+  fs.writeFileSync(schemaFilePath, JSON.stringify(typeSchema, undefined, 4));
 });
 
 // Interface types are expected to be exported as "typeName" in the file
