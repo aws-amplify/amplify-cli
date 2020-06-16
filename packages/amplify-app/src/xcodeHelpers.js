@@ -180,7 +180,10 @@ async function addAmplifyFiles() {
         }
 
         // adding resources (i.e. files that are added to the app bundle)
-        project.addPbxGroup([], 'Resources', 'Resources', '"<group>"');
+        const resourcesGroup = project.pbxGroupByName('Resources');
+        if (!resourcesGroup) {
+          project.addPbxGroup([], 'Resources');
+        }
         const amplifyConfigFile = 'amplifyconfiguration.json';
         const awsConfigFile = 'awsconfiguration.json';
         if (!groupHasFile(amplifyConfigGroup, amplifyConfigFile)) {
@@ -188,7 +191,6 @@ async function addAmplifyFiles() {
           project.addResourceFile(awsConfigFile, null, amplifyConfigGroup.uuid);
           hasGeneratedFiles = true;
         }
-        project.removePbxGroup('Resources');
 
         // add schema.graphql
         if (!groupHasFile(amplifyConfigGroup, 'schema.graphql')) {
