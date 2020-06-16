@@ -130,7 +130,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
         const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getModelName(model));
 
         this.generateCodingKeys(this.getNonModelName(model), model, schemaDeclarations),
-          this.generateModelSchema(this.getModelName(model), model, schemaDeclarations);
+          this.generateModelSchema(this.getNonModelName(model), model, schemaDeclarations);
 
         result.push(schemaDeclarations.string);
       });
