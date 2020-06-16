@@ -31,10 +31,12 @@ export interface LayerMetadata {
   getVersion: (version: number) => LayerVersionMetadata;
   listVersions: () => number[];
   getLatestVersion: () => number;
+  getHash: (version: number) => string;
 }
 
 export interface LayerVersionMetadata {
   permissions: LayerPermission[];
+  hash?: string;
   listAccoutAccess: () => string[];
   listOrgAccess: () => string[];
   isPrivate: () => boolean;
@@ -84,6 +86,10 @@ class LayerState implements LayerMetadata {
 
   getLatestVersion(): number {
     return Array.from(this.versionMap.keys()).reduce((a, b) => Math.max(a, b));
+  }
+
+  getHash(version: number): string {
+    return this.getVersion(version).hash;
   }
 }
 

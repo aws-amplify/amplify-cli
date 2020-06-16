@@ -1,18 +1,18 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { LayerParameters, Permission, layerMetadataFactory, LayerMetadata } from '../utils/layerParams';
+import { layerMetadataFactory, LayerMetadata, LayerParameters, Permission } from '../utils/layerParams';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import {
-  layerNameQuestion,
-  layerPermissionsQuestion,
-  layerAccountAccessQuestion,
-  layerOrgAccessQuestion,
   createVersionsMap,
-  layerVersionQuestion,
+  layerAccountAccessQuestion,
   LayerInputParams,
+  layerNameQuestion,
+  layerOrgAccessQuestion,
+  layerPermissionsQuestion,
+  layerVersionQuestion,
 } from '../utils/layerHelpers';
-import { ServiceName, categoryName, layerParametersFileName } from '../utils/constants';
+import { categoryName, layerParametersFileName, ServiceName } from '../utils/constants';
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));

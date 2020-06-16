@@ -1,4 +1,4 @@
-import { Fn, DeletionPolicy } from 'cloudform';
+import { Fn, DeletionPolicy, Refs, ResourceTag } from 'cloudform';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
 import { Permission, LayerParameters, LayerPermission, layerMetadataFactory, LayerMetadata } from './layerParams';
@@ -18,18 +18,7 @@ function generateLayerCfnObjBase() {
     },
     Resources: {},
     Conditions: {
-      HasEnvironmentParameter: {
-        'Fn::Not': [
-          {
-            'Fn::Equals': [
-              {
-                Ref: 'env',
-              },
-              'NONE',
-            ],
-          },
-        ],
-      },
+      HasEnvironmentParameter: Fn.Not(Fn.Equals(Fn.Ref('env'), 'NONE')),
     },
   };
   return cfnObj;
@@ -55,15 +44,9 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   const outputObj = {
     Outputs: {
       Arn: {
-        Value: {
-          Ref: 'LambdaLayer',
-        },
+        Value: Fn.Ref('LambdaLayer'),
       },
-      Region: {
-        Value: {
-          Ref: 'AWS::Region',
-        },
-      },
+      Region: { Value: Refs.Region },
     },
   };
   let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
@@ -83,7 +66,7 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
 
   cfnObj.Resources['LambdaLayer'] = layer;
 
-  // parameters.laatestLayerVersion is defined
+  // parameters.latestLayerVersion is defined
   const layerData = layerMetadataFactory(context.amplify.pathManager.getBackendDirPath(), parameters.layerName);
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
     const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
@@ -115,7 +98,7 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
       name: `LambdaLayerPermission${Permission.private}${version}`,
       policy: new Lambda.LayerVersionPermission({
         ...layerVersionPermissionBase,
-        Principal: Fn.Ref('AWS::AccountId'),
+        Principal: Refs.AccountId,
       }),
     });
   }

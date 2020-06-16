@@ -3,26 +3,28 @@ import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
 import _ from 'lodash';
-import { createLayerParametersFile } from './storeResources';
 import { hashElement } from 'folder-hash';
+import { createLayerParametersFile } from './storeResources';
+import { layerMetadataFactory } from './layerParams';
 
 export async function packageLayer(context, resource) {
-  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-  const layerHash = await hashLayerDir(resourcePath);
+  const backendPath = context.amplify.pathManager.getBackendDirPath();
+  const resourcePath = path.join(backendPath, resource.category, resource.resourceName);
+  const layerData = layerMetadataFactory(backendPath, resource.resourceName);
+  let latestVersion: number = layerData.getLatestVersion();
+  const curLayerHash = await hashLayerDir(resourcePath);
+  const previousHash = layerData.getHash(latestVersion);
   const layerParameters = context.amplify.readJsonFile(path.join(resourcePath, 'layer-parameters.json'));
-  const versions = Object.keys(layerParameters.layerVersionMap).sort();
-  let latestVersion = versions.length; // versions start at 1, so versions[i] === String(i + 1)
-  const previousHash = _.get(layerParameters, ['layerVersionMap', `${latestVersion}`, 'hash'], null);
 
-  if (previousHash && previousHash !== layerHash.hash) {
+  if (previousHash && previousHash !== curLayerHash.hash) {
     ++latestVersion; // Content changes detected, bumping version
     layerParameters.layerVersionMap[`${latestVersion}`] = {
       permissions: [{ type: 'private' }],
-      hash: layerHash.hash,
+      hash: curLayerHash.hash,
     };
     createLayerParametersFile(context, layerParameters, resourcePath);
   } else if (!previousHash) {
-    _.assign(layerParameters.layerVersionMap[`${latestVersion}`], { hash: layerHash.hash });
+    _.assign(layerParameters.layerVersionMap[`${latestVersion}`], { hash: curLayerHash.hash });
     createLayerParametersFile(context, layerParameters, resourcePath);
   }
 
