@@ -759,7 +759,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
   });
 });
 
-describe.only('add function with layers for runtime nodeJS', () => {
+describe('add function with layers for runtime nodeJS', () => {
   let projRoot: string;
   const helloWorldSuccessOutput = 'Hello from Lambda!';
   const random = Math.floor(Math.random() * 10000);
@@ -839,5 +839,51 @@ describe.only('add function with layers for runtime nodeJS', () => {
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
     expect(JSON.parse(JSON.parse(response.Payload).body)).toEqual(helloWorldSuccessOutput);
+  });
+});
+
+describe.only('add function with layers for runtime python', () => {
+  let projRoot: string;
+  const helloWorldSuccessOutput = 'Hello from Lambda!';
+  const random = Math.floor(Math.random() * 10000);
+  let functionName: string;
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('functions');
+    await initJSProjectWithProfile(projRoot, {});
+    const settings = {
+      layerName: `testlayer${random}`,
+      versionChanged: true,
+      runtimes: ['python'],
+    };
+    await addLayer(projRoot, settings);
+    // create index.js
+    const layerCodePath = `${__dirname}/../../../amplify-e2e-tests/layerdata/python/testfunc.py`;
+    overrideLayerCodePython(projRoot, settings.layerName, layerCodePath);
+    const layerOptions: LayerOptions = {
+      select: [`${settings.layerName}`],
+      expectedListOptions: [`${settings.layerName}`],
+      versions: {
+        [`${settings.layerName}`]: {
+          version: 1,
+          expectedVersionOptions: [1],
+        },
+      },
+    };
+    functionName = `testfunction${random}`;
+    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'python');
+    const functionCodePath = `${__dirname}/../../../amplify-e2e-tests/layerdata/python/index.py`;
+    overrideFunctionSrcPython(projRoot, functionName, functionCodePath);
+  });
+
+  afterEach(async () => {
+    // await deleteProject(projRoot);
+    // deleteProjectDir(projRoot);
+  });
+  it('can add project layers and external layers for python', async () => {
+    await amplifyPushAuth(projRoot);
+    const payload = '{}';
+    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
+    expect(JSON.parse(JSON.parse(response.Payload).message)).toEqual(helloWorldSuccessOutput);
   });
 });

@@ -45,14 +45,19 @@ export function overrideLayerCode(root: string, name: string, code: string, file
   fs.writeFileSync(filePath, code);
 }
 
-// // overriding code for python
-// export function overrideFunctionSrcPython(root: string, name: string, code: string) {
-//   let indexPath = path.join(root, `amplify/backend/function/${name}/src/index.py`);
-//   fs.writeFileSync(indexPath, code);
-// }
-// export function overrideLayerCodePython(root: string, name: string, code: string , fileName: string) {
-//   const dirPath = path.join(root, `amplify/backend/function/${name}/lib/python/lib/python3.8/site-packages/`);
-//   fs.ensureDirSync(dirPath)
-//   const filePath = path.join(dirPath, `${fileName}`);
-//   fs.writeFileSync(filePath, code);
-// }
+// overriding code for python
+export function overrideFunctionSrcPython(root: string, name: string, source: string) {
+  const destFilePath = path.join(root, `amplify/backend/function/${name}/src/index.py`);
+  fs.copyFile(source, destFilePath, err => {
+    if (err) throw new Error('Problem in copying file in Tests');
+  });
+}
+
+export function overrideLayerCodePython(root: string, name: string, source: string, fileName: string) {
+  const dirPath = path.join(root, `amplify/backend/function/${name}/lib/python/lib/python3.8/site-packages/`);
+  fs.ensureDirSync(dirPath);
+  const destfilePath = path.join(dirPath, `testfunc.py`);
+  fs.copyFile(source, destfilePath, err => {
+    if (err) throw new Error('Problem in copying file in Tests');
+  });
+}
