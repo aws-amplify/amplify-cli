@@ -1,7 +1,7 @@
 import { Fn, DeletionPolicy, Refs } from 'cloudform';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
-import { Permission, LayerParameters, LayerPermission, layerMetadataFactory, LayerMetadata } from './layerParams';
+import { Permission, LayerParameters, getLayerMetadataFactory, LayerMetadata } from './layerParams';
 
 function generateLayerCfnObjBase() {
   const cfnObj = {
@@ -29,7 +29,7 @@ function generateLayerCfnObjBase() {
  */
 export function generatePermissionCfnObj(context: any, parameters: LayerParameters): object {
   const cfnObj = generateLayerCfnObjBase();
-  const layerData = layerMetadataFactory(context.amplify.pathManager.getBackendDirPath(), parameters.layerName);
+  const layerData = getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath())(parameters.layerName);
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
     const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
@@ -67,7 +67,7 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   cfnObj.Resources['LambdaLayer'] = layer;
 
   // parameters.latestLayerVersion is defined
-  const layerData = layerMetadataFactory(context.amplify.pathManager.getBackendDirPath(), parameters.layerName);
+  const layerData = getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath())(parameters.layerName);
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
     const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));

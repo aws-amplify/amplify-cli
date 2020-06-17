@@ -1,6 +1,7 @@
 import { FunctionParameters, FunctionRuntime, LambdaLayer, FunctionDependency } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 import { askLayerSelection, askCustomArnQuestion, askLayerOrderQuestion } from '../utils/addLayerToFunctionUtils';
+import { getLayerMetadataFactory } from '../utils/layerParams';
 
 const confirmationPrompt = 'Do you want to configure Lambda layers for this function?';
 
@@ -25,7 +26,7 @@ export const addLayersToFunctionWalkthrough = async (
 
   let askArnQuestion: boolean;
   ({ lambdaLayers, dependsOn, askArnQuestion } = await askLayerSelection(
-    context.amplify.pathManager.getBackendDirPath(),
+    getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath()),
     context.amplify.getProjectMeta(),
     runtime.value,
     previousSelections,
