@@ -13,6 +13,8 @@ import {
   overrideLayerCode,
   overrideFunctionSrcPython,
   overrideLayerCodePython,
+  overrideFunctionSrcJava,
+  overrideLayerCodeJava,
 } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
 
@@ -842,7 +844,7 @@ describe('add function with layers for runtime nodeJS', () => {
   });
 });
 
-describe.only('add function with layers for runtime python', () => {
+describe('add function with layers for runtime python', () => {
   let projRoot: string;
   const helloWorldSuccessOutput = 'Hello from Lambda!';
   const random = Math.floor(Math.random() * 10000);
@@ -877,13 +879,62 @@ describe.only('add function with layers for runtime python', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
   it('can add project layers and external layers for python', async () => {
     await amplifyPushAuth(projRoot);
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
-    expect(JSON.parse(JSON.parse(response.Payload).message)).toEqual(helloWorldSuccessOutput);
+    expect(JSON.parse(response.Payload).message).toEqual(helloWorldSuccessOutput);
+  });
+});
+
+describe.skip('add function with layers for runtime Java', () => {
+  const helloWorldSuccessOutput = '{"greetings":"Hello John Doe!"}';
+  let projRoot: string;
+  const random = Math.floor(Math.random() * 10000);
+  let functionName: string;
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('functions');
+    await initJSProjectWithProfile(projRoot, {});
+    const settings = {
+      layerName: `testlayer${random}`,
+      versionChanged: true,
+      runtimes: ['java'],
+    };
+    await addLayer(projRoot, settings);
+    // create index.js
+    const layerOptions: LayerOptions = {
+      select: [`${settings.layerName}`],
+      expectedListOptions: [`${settings.layerName}`],
+      versions: {
+        [`${settings.layerName}`]: {
+          version: 1,
+          expectedVersionOptions: [1],
+        },
+      },
+    };
+    functionName = `testfunction${random}`;
+    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'python');
+    // 1) change build.gradle file
+    const functionCodePath = `${__dirname}/../../../amplify-e2e-tests/layerdata/java/build.gradle`;
+    overrideFunctionSrcJava(projRoot, functionName, functionCodePath);
+    // to generate jar files
+    await functionBuild(projRoot, {});
+    // 2) copy jar files to layer Dir
+    overrideLayerCodeJava(projRoot, settings.layerName);
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+  it('add java hello world function and layer and invoke in the cloud', async () => {
+    const payload = '{"firstName":"John","lastName" : "Doe"}';
+    await amplifyPushAuth(projRoot);
+    const response = await functionCloudInvoke(projRoot, { functionName, payload });
+    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
   });
 });

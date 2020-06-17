@@ -61,3 +61,19 @@ export function overrideLayerCodePython(root: string, name: string, source: stri
     if (err) throw new Error('Problem in copying file in Tests');
   });
 }
+
+export function overridefunctionSrcJava(root: string, name: string, source: string) {
+  const destFilePath = path.join(root, `amplify/backend/function/${name}/build.gradle`);
+  fs.copyFile(source, destFilePath, err => {
+    if (err) throw new Error('Problem in copying file in Tests');
+  });
+}
+
+export function ovverrideLayerCodeJava(root: string, layerName: string, functionName: string) {
+  const destDir = path.join(root, `amplify/backend/function/${layerName}/lib/java/lib`);
+  const srcDir = path.join(root, `amplify/backend/function/${functionName}/build/java/lib`);
+
+  fs.copy(srcDir, destDir, err => {
+    if (err) throw new Error('Problem in copying file in Tests');
+  });
+}
