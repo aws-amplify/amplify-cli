@@ -5,12 +5,12 @@ import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
 import { createLayerParametersFile } from './storeResources';
-import { layerMetadataFactory } from './layerParams';
+import { getLayerMetadataFactory } from './layerParams';
 
 export async function packageLayer(context, resource) {
   const backendPath = context.amplify.pathManager.getBackendDirPath();
   const resourcePath = path.join(backendPath, resource.category, resource.resourceName);
-  const layerData = layerMetadataFactory(backendPath, resource.resourceName);
+  const layerData = getLayerMetadataFactory(backendPath)(resource.resourceName);
   let latestVersion: number = layerData.getLatestVersion();
   const curLayerHash = await hashLayerDir(resourcePath);
   const previousHash = layerData.getHash(latestVersion);
