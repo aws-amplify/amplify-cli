@@ -2,7 +2,6 @@ const aws = require('./aws.js');
 const _ = require('lodash');
 const providerName = require('../../lib/constants').ProviderName;
 const configurationManager = require('../../lib/configuration-manager');
-
 class S3 {
   constructor(context, options = {}) {
     return (async () => {
@@ -168,14 +167,24 @@ class S3 {
   }
 
   ifBucketExists(bucketName) {
-    return this.s3
-      .headBucket({
-        Bucket: bucketName,
-      })
-      .promise()
-      .then(result => {
-        return result !== undefined;
-      });
+    return new Promise((resolve, reject) => {
+      this.s3.headBucket(
+        {
+          Bucket: bucketName,
+        },
+        (err, data) => {
+          if (err.statusCode === 404) {
+            resolve(false);
+            return;
+          }
+          if (data !== null) {
+            resolve(true);
+            return;
+          }
+          reject(err.message);
+        },
+      );
+    });
   }
 }
 
