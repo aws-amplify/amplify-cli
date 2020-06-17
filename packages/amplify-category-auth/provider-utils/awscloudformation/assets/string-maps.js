@@ -515,7 +515,7 @@ const capabilities = [
   },
   {
     name: 'Email Domain Filtering (deny list)',
-    value: 'emailDenylist',
+    value: 'emailDenyList',
     triggers: {
       PreSignup: ['email-filter-deny-list'],
     },
