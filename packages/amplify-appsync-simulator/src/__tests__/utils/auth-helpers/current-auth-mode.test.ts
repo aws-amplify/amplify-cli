@@ -132,7 +132,7 @@ describe('getAuthorizationMode', () => {
       ]);
     });
 
-    it('should throw error when the JWT token has a issuer which is other then the whitelist', () => {
+    it('should throw error when the JWT token has a issuer which is other then the allow list', () => {
       isValidOIDCTokenMock.mockReturnValue(false);
       expect(() => getAuthorizationMode({}, APPSYNC_CONFIG)).toThrow('UnauthorizedException: Invalid JWT token');
     });

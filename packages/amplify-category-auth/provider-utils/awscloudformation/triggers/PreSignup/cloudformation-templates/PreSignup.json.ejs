@@ -2,11 +2,11 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
-        "DOMAINBLACKLIST": {
+        "DOMAINDENYLIST": {
           "Type": "String",
           "Default": ""
         },
-        "DOMAINWHITELIST": {
+        "DOMAINALLOWLIST": {
           "Type": "String",
           "Default": ""
         },
@@ -102,11 +102,11 @@
                     "REGION": { 
                         "Ref": "AWS::Region"
                     },
-                    "DOMAINWHITELIST": {
-                        "Ref": "DOMAINWHITELIST"
+                    "DOMAINALLOWLIST": {
+                        "Ref": "DOMAINALLOWLIST"
                     },
-                    "DOMAINBLACKLIST": {
-                        "Ref": "DOMAINBLACKLIST"
+                    "DOMAINDENYLIST": {
+                        "Ref": "DOMAINDENYLIST"
                     }
                 }
             },

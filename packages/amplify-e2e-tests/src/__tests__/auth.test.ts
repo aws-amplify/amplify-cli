@@ -247,15 +247,15 @@ describe('amplify updating auth...', () => {
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
-    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist,custom');
+    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-deny-list,custom');
 
     await updateAuthWithoutCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
     expect(updatedDirContents.includes('custom.js')).toBeFalsy();
-    expect(updatedDirContents.includes('email-filter-blacklist.js')).toBeTruthy();
-    expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist');
+    expect(updatedDirContents.includes('email-filter-deny-list.js')).toBeTruthy();
+    expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-deny-list');
   });
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
