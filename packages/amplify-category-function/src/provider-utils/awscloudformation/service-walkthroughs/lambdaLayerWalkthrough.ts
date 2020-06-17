@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { LayerParameters, Permission, layerMetadataFactory, LayerMetadata } from '../utils/layerParams';
+import { LayerParameters, Permission, LayerMetadata, getLayerMetadataFactory } from '../utils/layerParams';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import {
   layerNameQuestion,
@@ -76,7 +76,7 @@ export async function updateLayerWalkthrough(
   _.assign(parameters, currentParameters.parameters);
 
   // get the LayerObj
-  const layerData = layerMetadataFactory(context.amplify.pathManager.getBackendDirPath(), parameters.layerName);
+  const layerData: LayerMetadata = getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath())(parameters.layerName);
   // runtime question
   let islayerVersionChanged: boolean = false;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
@@ -85,10 +85,8 @@ export async function updateLayerWalkthrough(
   }
   islayerVersionChanged = !_.isEqual(parameters.runtimes, layerData.runtimes);
   // get the latest version from #currentcloudbackend
-  const layerDataPushed: LayerMetadata = layerMetadataFactory(
-    context.amplify.pathManager.getCurrentCloudBackendDirPath(),
+  const layerDataPushed: LayerMetadata = getLayerMetadataFactory(context.amplify.pathManager.getCurrentCloudBackendDirPath())(
     parameters.layerName,
-    true,
   );
   const latestVersionPushed = layerDataPushed !== undefined ? layerDataPushed.getLatestVersion() : 0;
   let latestVersion = layerData.getLatestVersion();

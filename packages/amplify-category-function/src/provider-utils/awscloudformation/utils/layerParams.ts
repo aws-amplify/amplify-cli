@@ -22,7 +22,7 @@ export enum Permission {
   awsOrg = 'awsOrg',
 }
 
-export type LayerMetadataFactory = (projectBackendDirPath: string, layerName: string, isPush?: boolean) => LayerMetadata;
+export type LayerMetadataFactory = (layerName: string) => LayerMetadata;
 
 export interface LayerMetadata {
   runtimes: FunctionRuntime[];
@@ -148,16 +148,14 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 }
 
-export const layerMetadataFactory: LayerMetadataFactory = (
-  projectBackendDirPath: string,
-  layerName: string,
-  isPush: boolean = false,
-): LayerMetadata => {
-  const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
-  if (!fs.existsSync(resourceDirPath)) {
-    return undefined;
-  }
-  const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-  const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8')).parameters;
-  return new LayerState(obj);
+export const getLayerMetadataFactory = (projectBackendDirPath: string): LayerMetadataFactory => {
+  return layerName => {
+    const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
+    if (!fs.existsSync(resourceDirPath)) {
+      return undefined;
+    }
+    const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
+    const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8')).parameters;
+    return new LayerState(obj);
+  };
 };
