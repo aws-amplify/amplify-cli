@@ -18,7 +18,7 @@ module.exports = {
       return await context.amplify.pushResources(context);
     } catch (e) {
       if (e.name !== 'InvalidDirectiveError') {
-        context.print.error(`An error occured during the push operation: ${e.message}`);
+        context.print.error(`An error occurred during the push operation: ${e.message}`);
       }
       process.exit(1);
     }

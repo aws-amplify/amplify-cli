@@ -163,7 +163,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
     })
     .catch(err => {
       if (!isCLIMigration) {
-        spinner.fail('An error occured when migrating the API project.');
+        spinner.fail('An error occurred when migrating the API project.');
       }
       throw err;
     });
