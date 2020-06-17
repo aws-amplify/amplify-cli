@@ -20,7 +20,7 @@ describe('executeAmplifyCommand: ', () => {
     });
 
     it('executeAmplifyCommand should fail to add a service and print an error message', async () => {
-      await executeAmplifyCommandForPlugin(mockContext, mockPluginModule);
+      await (executeAmplifyCommandForPlugin as any)(mockContext, mockPluginModule);
       expect(mockExecuteAmplifyCommand).toReturnWith(
         new Error(
           "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify",
