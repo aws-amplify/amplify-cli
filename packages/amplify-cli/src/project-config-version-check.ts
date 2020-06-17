@@ -137,7 +137,7 @@ Lambda might retire it completely at any time by disabling invocation. \
 Deprecated runtimes aren't eligible for security updates or technical support. \
 Before retiring a runtime, Lambda sends additional notifications to affected customers.`;
     context.print.warning(warningMessage);
-    context.print.info('You will need to manually update the NodeJS runtime in the template files and push the udpates to the cloud.');
+    context.print.info('You will need to manually update the NodeJS runtime in the template files and push the updates to the cloud.');
   }
 
   return answer.confirmUpdateNodeVersion;

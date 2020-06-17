@@ -136,7 +136,7 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
   } catch (e) {
     spinner.fail('There was an error migrating your project.');
     rollback(amplifyDirPath, backupAmplifyDirPath);
-    context.print.info('migration operations are rolledback.');
+    context.print.info('migration operations are rolled back.');
     throw e;
   } finally {
     cleanUp(backupAmplifyDirPath);

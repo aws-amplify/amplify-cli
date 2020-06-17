@@ -78,7 +78,7 @@ const addTrigger = async triggerOptions => {
     roleName: functionName,
     skipEdit,
   });
-  context.print.success('Succesfully added the Lambda function locally');
+  context.print.success('Successfully added the Lambda function locally');
   if (values && values.length > 0) {
     for (let v = 0; v < values.length; v += 1) {
       await copyFunctions(key, values[v], category, context, targetPath);
@@ -166,7 +166,7 @@ const updateTrigger = async triggerOptions => {
 
       await cleanFunctions(key, values, category, context, targetPath);
     }
-    context.print.success('Succesfully updated the Lambda function locally');
+    context.print.success('Successfully updated the Lambda function locally');
     return null;
   } catch (e) {
     throw new Error('Unable to update lambda function');

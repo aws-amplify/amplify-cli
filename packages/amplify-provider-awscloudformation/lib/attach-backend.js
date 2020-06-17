@@ -23,7 +23,7 @@ async function run(context) {
 
   const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
-    const message = 'Permssions to access Amplify service is required.';
+    const message = 'Permissions to access Amplify service is required.';
     context.print.error(message);
     throw new Error(message);
   }

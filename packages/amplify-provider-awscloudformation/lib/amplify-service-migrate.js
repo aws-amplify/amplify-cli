@@ -46,7 +46,7 @@ async function run(context) {
 
   const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
   if (!hasPermission) {
-    const message = 'Permssions to access Amplify service is required.';
+    const message = 'Permissions to access Amplify service is required.';
     context.print.error(message);
     throw new Error(message);
   }
@@ -101,7 +101,7 @@ async function run(context) {
       };
       const { backendEnvironment } = await amplifyClient.getBackendEnvironment(getEnvParams).promise();
       if (StackName !== backendEnvironment.stackName) {
-        const message = `Stack name mistmatch for the backend environment ${envName}. Local: ${StackName}, Amplify: ${backendEnvironment.stackName}`;
+        const message = `Stack name mismatch for the backend environment ${envName}. Local: ${StackName}, Amplify: ${backendEnvironment.stackName}`;
         context.print.error(message);
         throw new Error(message);
       }
