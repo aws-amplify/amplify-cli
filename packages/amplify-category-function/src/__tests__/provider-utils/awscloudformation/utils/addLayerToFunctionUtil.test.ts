@@ -9,7 +9,7 @@ import enquirer from 'enquirer';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import { LambdaLayer, FunctionDependency } from 'amplify-function-plugin-interface';
 import { category } from '../../../../constants';
-import { layerMetadataFactory } from '../../../../provider-utils/awscloudformation/utils/layerParams';
+import { LayerMetadataFactory } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
 jest.mock('inquirer');
 jest.mock('enquirer', () => ({ prompt: jest.fn() }));
@@ -17,7 +17,10 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/layerParams');
 
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
-const layerMetadataFactory_mock = layerMetadataFactory as jest.Mocked<typeof layerMetadataFactory>;
+const layerMetadataFactory_stub: LayerMetadataFactory = () =>
+  ({
+    listVersions: () => [1, 2, 3],
+  } as any);
 
 const runtimeValue = 'lolcode';
 
@@ -46,14 +49,14 @@ const previousSelectionsStub: LambdaLayer[] = [
   },
 ];
 
-describe.skip('layer selection question', () => {
+describe('layer selection question', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('returns empty and prompts for arns when no layers available', async () => {
     const amplifyMetaStub = {};
-    const result = await askLayerSelection(backendDirPath, amplifyMetaStub, runtimeValue);
+    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue);
     expect(result.lambdaLayers).toStrictEqual([]);
     expect(result.dependsOn).toStrictEqual([]);
     expect(result.askArnQuestion).toBe(true);
@@ -64,11 +67,7 @@ describe.skip('layer selection question', () => {
       layerSelections: [],
     }));
 
-    (layerMetadataFactory_mock(backendDirPath, layerName).listVersions as any).mockImplementation(() => ({
-      versions: [1, 2, 3],
-    }));
-
-    const result = await askLayerSelection(backendDirPath, amplifyMetaStub, runtimeValue, previousSelectionsStub);
+    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
     expect((inquirer_mock.prompt.mock.calls[0][0] as CheckboxQuestion).choices[1].checked).toBe(true);
   });
 
@@ -77,11 +76,7 @@ describe.skip('layer selection question', () => {
       layerSelections: [provideExistingARNsPrompt],
     }));
 
-    (layerMetadataFactory_mock(backendDirPath, layerName).listVersions as any).mockImplementation(() => ({
-      versions: [1, 2, 3],
-    }));
-
-    const result = await askLayerSelection(backendDirPath, amplifyMetaStub, runtimeValue);
+    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue);
     expect(result.askArnQuestion).toBe(true);
   });
 
@@ -93,11 +88,7 @@ describe.skip('layer selection question', () => {
       versionSelection: 2,
     }));
 
-    (layerMetadataFactory_mock(backendDirPath, layerName).listVersions as any).mockImplementation(() => ({
-      versions: [1, 2, 3],
-    }));
-
-    await askLayerSelection(backendDirPath, amplifyMetaStub, runtimeValue, previousSelectionsStub);
+    await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
     expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('2');
   });
 
@@ -109,11 +100,7 @@ describe.skip('layer selection question', () => {
       versionSelection: 2,
     }));
 
-    (layerMetadataFactory_mock(backendDirPath, layerName).listVersions as any).mockImplementation(() => ({
-      versions: [1, 2, 3],
-    }));
-
-    const result = await askLayerSelection(backendDirPath, amplifyMetaStub, runtimeValue);
+    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue);
     const expectedLambdaLayers: LambdaLayer[] = [
       {
         type: 'ProjectLayer',
@@ -134,7 +121,7 @@ describe.skip('layer selection question', () => {
   });
 });
 
-describe.skip('custom arn question', () => {
+describe('custom arn question', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
