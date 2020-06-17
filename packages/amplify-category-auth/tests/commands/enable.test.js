@@ -25,6 +25,22 @@ describe('auth enable: ', () => {
     expect(add.run).toBeDefined();
   });
 
+  /*
+  describe('case: amplify not initialized', () => {
+    beforeEach(() => {
+      mockGetProjectDetails.mockReturnValue({
+        projectConfig: {},
+        amplifyMeta: {}
+      });
+    });
+
+    it('enable method should detect non existent amplify project and return after printing error text', async () => {
+      await add.run(mockContext);
+      expect(mockContext.print.error).toBeCalledWith("You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify");
+    });
+  });
+  */
+
   describe('case: auth already enabled', () => {
     beforeEach(() => {
       mockGetProjectDetails.mockReturnValue({

@@ -55,18 +55,14 @@ async function console(context) {
 }
 
 async function executeAmplifyCommand(context) {
-  try {
-    let commandPath = path.normalize(path.join(__dirname, 'commands'));
-    if (context.input.command === 'help') {
-      commandPath = path.join(commandPath, category);
-    } else {
-      commandPath = path.join(commandPath, category, context.input.command);
-    }
-    const commandModule = require(commandPath);
-    await commandModule.run(context);
-  } catch (err) {
-    context.print.error(err.message);
+  let commandPath = path.normalize(path.join(__dirname, 'commands'));
+  if (context.input.command === 'help') {
+    commandPath = path.join(commandPath, category);
+  } else {
+    commandPath = path.join(commandPath, category, context.input.command);
   }
+  const commandModule = require(commandPath);
+  await commandModule.run(context);
 }
 
 async function handleAmplifyEvent(context, args) {

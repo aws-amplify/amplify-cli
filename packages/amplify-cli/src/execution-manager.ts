@@ -140,6 +140,14 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
   return result;
 }
 
+export async function executeAmplifyCommandForPlugin(context: Context, plugin: any) {
+  try {
+    await plugin.executeAmplifyCommand(context);
+  } catch (err) {
+    context.print.error(err.message);
+  }
+}
+
 async function executePluginModuleCommand(context: Context, plugin: PluginInfo) {
   const { commands, commandAliases } = plugin.manifest;
   if (!commands!.includes(context.input.command!)) {
@@ -155,7 +163,8 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo) 
       typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function'
     ) {
       attachContextExtensions(context, plugin);
-      await pluginModule.executeAmplifyCommand(context);
+
+      executeAmplifyCommandForPlugin(context, pluginModule);
     } else {
       // if the module does not have the executeAmplifyCommand method,
       // fall back to the old approach by scanning the command folder and locate the command file

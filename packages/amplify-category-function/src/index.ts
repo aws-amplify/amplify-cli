@@ -131,19 +131,14 @@ export async function getInvoker(context: any, params: InvokerParameters): Promi
 }
 
 export async function executeAmplifyCommand(context) {
-  try {
-    let commandPath = path.normalize(path.join(__dirname, 'commands'));
-    if (context.input.command === 'help') {
-      commandPath = path.join(commandPath, category);
-    } else {
-      commandPath = path.join(commandPath, category, context.input.command);
-    }
-
-    const commandModule = require(commandPath);
-    await commandModule.run(context);
-  } catch (err) {
-    context.print.error(err.message);
+  let commandPath = path.normalize(path.join(__dirname, 'commands'));
+  if (context.input.command === 'help') {
+    commandPath = path.join(commandPath, category);
+  } else {
+    commandPath = path.join(commandPath, category, context.input.command);
   }
+  const commandModule = require(commandPath);
+  await commandModule.run(context);
 }
 
 export async function handleAmplifyEvent(context, args) {
