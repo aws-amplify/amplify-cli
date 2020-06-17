@@ -50,7 +50,7 @@ function run(command, projectDirectory) {
     });
 
     execution.on('error', err => {
-      console.log(chalk.red('command execution teminated with error'));
+      console.log(chalk.red('command execution terminated with error'));
       if (!rejectFlag) {
         rejectFlag = true;
         reject(err);

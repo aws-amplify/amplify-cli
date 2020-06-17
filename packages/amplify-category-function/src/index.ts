@@ -13,7 +13,7 @@ export async function add(context, providerName, service, parameters) {
   };
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
-    context.print.error('Provider not confgiured for this category');
+    context.print.error('Provider not configured for this category');
     return;
   }
   return providerController.addResource(context, category, service, options, parameters);
@@ -22,7 +22,7 @@ export async function add(context, providerName, service, parameters) {
 export async function update(context, providerName, service, parameters, resourceToUpdate) {
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
-    context.print.error('Provider not confgiured for this category');
+    context.print.error('Provider not configured for this category');
     return;
   }
   return providerController.updateResource(context, category, service, parameters, resourceToUpdate);

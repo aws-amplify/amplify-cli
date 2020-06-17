@@ -465,7 +465,7 @@ export class KeyTransformer extends Transformer {
       if (!fieldMap.has(fieldName)) {
         const checkedKeyName = directiveArgs.name ? directiveArgs.name : '<unnamed>';
         throw new InvalidDirectiveError(
-          `You cannot specify a non-existant field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`,
+          `You cannot specify a nonexistent field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`,
         );
       } else {
         const existingField = fieldMap.get(fieldName);
