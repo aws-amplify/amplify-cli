@@ -171,7 +171,7 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
 
   switch (settings.triggerType + (settings.eventSource || '')) {
     case 'DynamoDBAppSync':
-      return settings.expectFailure ? res.wait('No AppSync resources have been configured in API category.') : res;
+      return settings.expectFailure ? res.wait('No AppSync resources have been configured in the API category.') : res;
     case 'DynamoDBDynamoDB':
       return settings.expectFailure
         ? res.wait('There are no DynamoDB resources configured in your project currently')

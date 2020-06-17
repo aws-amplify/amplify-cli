@@ -92,8 +92,7 @@ Only explicitly added plugins are active.');
 
 function displayPluginDirectoriesLearnMore(context: Context) {
   context.print.info('');
-  context.print.green('The directories contained this list are searched for \
-plugins during a plugin scan.');
+  context.print.green('A plugin scan searches this directory list for plugins.');
   context.print.green('You can add or remove from this list to change the \
 scan behavior, and consequently its outcome.');
   context.print.green('There are three well-known directories that the CLI \
@@ -186,7 +185,7 @@ async function configurePrefixes(context: Context, pluginPlatform: PluginPlatfor
       context.print.warning('You have removed all prefixes for plugin dir name matching!');
       context.print.info(
         'All the packages inside the plugin directories will be checked \
-during a plugin scan, this can significantly increase the scan time.',
+during a plugin scan. This can significantly increase the scan time.',
       );
     }
   } else if (actionAnswer.action === LEARNMORE) {
