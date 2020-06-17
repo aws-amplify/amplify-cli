@@ -69,7 +69,7 @@ export function overridefunctionSrcJava(root: string, name: string, source: stri
   });
 }
 
-export function ovverrideLayerCodeJava(root: string, layerName: string, functionName: string) {
+export function overrideLayerCodeJava(root: string, layerName: string, functionName: string) {
   const destDir = path.join(root, `amplify/backend/function/${layerName}/lib/java/lib`);
   const srcDir = path.join(root, `amplify/backend/function/${functionName}/build/java/lib`);
 

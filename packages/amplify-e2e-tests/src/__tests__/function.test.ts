@@ -786,24 +786,7 @@ describe('add function with layers for runtime nodeJS', () => {
     `,
       `index.js`,
     );
-    //create package.json
-    overrideLayerCode(
-      projRoot,
-      settings.layerName,
-      `
-      {
-        "name": "nodejs",
-        "version": "1.0.0",
-        "description": " ",
-        "main": "index.js",
-        "dependencies": {},
-        "devDependencies": {},
-        "author": " ",
-        "license": "ISC"
-      }
-    `,
-      `package.json`,
-    );
+
     const layerOptions: LayerOptions = {
       select: [`${settings.layerName}`],
       expectedListOptions: [`${settings.layerName}`],
