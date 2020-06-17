@@ -3,7 +3,7 @@ import { executeAmplifyCommandForPlugin } from '../../lib/execution-manager';
 
 describe('executeAmplifyCommand: ', () => {
   const mockExecuteAmplifyCommand = jest.fn();
-  const mockContext = jest.fn();
+  const mockContext = {};
 
   const mockPluginModule = {
     executeAmplifyCommand: mockExecuteAmplifyCommand,
