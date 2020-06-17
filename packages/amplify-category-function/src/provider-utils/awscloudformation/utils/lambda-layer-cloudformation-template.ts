@@ -41,6 +41,7 @@ export function generatePermissionCfnObj(context: any, parameters: LayerParamete
  * generates CFN for Layer and Layer permissions when updating layerVersion
  */
 export function generateLayerCfnObj(context, parameters: LayerParameters) {
+  const layerData = getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath())(parameters.layerName);
   const outputObj = {
     Outputs: {
       Arn: {
@@ -51,13 +52,14 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   };
   let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
   const POLICY_RETAIN = DeletionPolicy.Retain;
+  const latestVersion = layerData.getLatestVersion();
   const layer = new Lambda.LayerVersion({
     CompatibleRuntimes: parameters.runtimes.map(runtime => runtime.cloudTemplateValue),
     Content: {
       S3Bucket: Fn.Ref('deploymentBucketName'),
       S3Key: Fn.Ref('s3Key'),
     },
-    Description: 'Lambda Layer',
+    Description: `Lambda Layer ${latestVersion}`,
     LayerName: parameters.layerName,
     LicenseInfo: 'MIT',
   });
@@ -65,9 +67,6 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });
 
   cfnObj.Resources['LambdaLayer'] = layer;
-
-  // parameters.latestLayerVersion is defined
-  const layerData = getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath())(parameters.layerName);
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
     const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
@@ -127,11 +126,6 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
     }),
   );
   return result;
-}
-
-//TODO will remove later
-function joinWithEnv(separator: string, stringToJoin: string) {
-  return Fn.If('HasEnvironmentParameter', Fn.Join(separator, [stringToJoin, Fn.Ref('env')]), stringToJoin);
 }
 
 function createLayerversionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean) {

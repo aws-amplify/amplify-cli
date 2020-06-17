@@ -145,7 +145,7 @@ export async function addLayerResource(
   const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
   createLayerParametersFile(context, layerParams, layerDirPath);
   createParametersFile(context, {}, parameters.layerName, 'parameters.json');
-  createLayerCfnFile(context, parameters, layerDirPath);
+  createLayerCfnFile(context, parameters as LayerParameters, layerDirPath);
 
   const { print } = context;
   print.info('✅ Lambda layer folders & files created:');
@@ -210,13 +210,13 @@ export async function updateLayerResource(
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
   }
-  await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters);
+  parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters);
 
   // generate layer parameters file and CFn file for the updated layer
   const layerDirPath = createLayerFolders(context, parameters); // update based
   const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
   createLayerParametersFile(context, layerParams, layerDirPath);
-  updateLayerCfnFile(context, parameters, layerDirPath);
+  updateLayerCfnFile(context, parameters as LayerParameters, layerDirPath);
   const { print } = context;
   print.info('✅ Lambda layer folders & files created:');
   print.info(layerDirPath);

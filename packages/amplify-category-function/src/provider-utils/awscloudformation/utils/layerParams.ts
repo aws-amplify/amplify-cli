@@ -70,8 +70,7 @@ class LayerState implements LayerMetadata {
   constructor(obj) {
     this.runtimes = obj.runtimes;
     Object.entries(obj.layerVersionMap).forEach(([versionNumber, versionData]) => {
-      const permissions = _.get(versionData, 'permissions', {});
-      this.layerMetaData = new LayerVersionState(permissions);
+      this.layerMetaData = new LayerVersionState(versionData);
       this.versionMap.set(Number(versionNumber), this.layerMetaData);
     });
   }
@@ -95,9 +94,11 @@ class LayerState implements LayerMetadata {
 
 class LayerVersionState implements LayerVersionMetadata {
   permissions: LayerPermission[];
-  constructor(value) {
+  hash: string;
+  constructor(versionData) {
     this.permissions = [];
-    value.forEach(permission => {
+    this.hash = versionData.hash;
+    versionData.permissions.forEach(permission => {
       if (permission.type === Permission.public) {
         const permissionPublic: PublicLayer = {
           type: Permission.public,
@@ -164,7 +165,7 @@ export const getLayerMetadataFactory = (projectBackendDirPath: string): LayerMet
       return undefined;
     }
     const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-    const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8')).parameters;
+    const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8'));
     return new LayerState(obj);
   };
 };

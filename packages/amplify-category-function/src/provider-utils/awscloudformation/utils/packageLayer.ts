@@ -4,8 +4,8 @@ import glob from 'glob';
 import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
-import { createLayerParametersFile } from './storeResources';
 import { getLayerMetadataFactory } from './layerParams';
+import { createLayerParametersFile, updateLayerCfnFile } from './storeResources';
 
 export async function packageLayer(context, resource) {
   const backendPath = context.amplify.pathManager.getBackendDirPath();
@@ -23,6 +23,9 @@ export async function packageLayer(context, resource) {
       hash: curLayerHash.hash,
     };
     createLayerParametersFile(context, layerParameters, resourcePath);
+    layerParameters.layerName = resource.resourceName;
+    layerParameters.build = true;
+    updateLayerCfnFile(context, layerParameters, resourcePath);
   } else if (!previousHash) {
     _.assign(layerParameters.layerVersionMap[`${latestVersion}`], { hash: curLayerHash.hash });
     createLayerParametersFile(context, layerParameters, resourcePath);
