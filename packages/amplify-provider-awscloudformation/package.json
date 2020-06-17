@@ -40,6 +40,7 @@
     "graphql-predictions-transformer": "2.3.9",
     "graphql-transformer-core": "6.19.1",
     "graphql-versioned-transformer": "4.15.9",
+    "ignore": "^5.1.8",
     "import-from": "^3.0.0",
     "import-global": "^0.1.0",
     "ini": "^1.3.5",
