@@ -173,14 +173,16 @@ class S3 {
           Bucket: bucketName,
         },
         (err, data) => {
-          if (err.statusCode === 404) {
-            resolve(false);
-            return;
-          }
           if (data !== null) {
             resolve(true);
             return;
+          } else {
+            if (err.statusCode === 404) {
+              resolve(false);
+              return;
+            }
           }
+
           reject(err.message);
         },
       );
