@@ -3,67 +3,118 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.15.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.9...amplify-codegen@2.15.10) (2020-06-10)
-
-**Note:** Version bump only for package amplify-codegen
-
 ## [2.15.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.8...amplify-codegen@2.15.9) (2020-05-26)
 
 **Note:** Version bump only for package amplify-codegen
+
+
+
+
 
 ## [2.15.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.7...amplify-codegen@2.15.8) (2020-05-15)
 
 **Note:** Version bump only for package amplify-codegen
 
+
+
+
+
 ## [2.15.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.6...amplify-codegen@2.15.7) (2020-05-08)
+
 
 ### Bug Fixes
 
-- **amplify-codegen:** use ResDir directory to compute modelgen output ([#4145](https://github.com/aws-amplify/amplify-cli/issues/4145)) ([06a7ec5](https://github.com/aws-amplify/amplify-cli/commit/06a7ec5ede3b311e2ac0d2f86ee393bc04ef3eb5)), closes [#3993](https://github.com/aws-amplify/amplify-cli/issues/3993)
+* **amplify-codegen:** use ResDir directory to compute modelgen output ([#4145](https://github.com/aws-amplify/amplify-cli/issues/4145)) ([06a7ec5](https://github.com/aws-amplify/amplify-cli/commit/06a7ec5ede3b311e2ac0d2f86ee393bc04ef3eb5)), closes [#3993](https://github.com/aws-amplify/amplify-cli/issues/3993)
+
+
+
+
 
 ## [2.15.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.5...amplify-codegen@2.15.6) (2020-04-23)
 
 **Note:** Version bump only for package amplify-codegen
 
+
+
+
+
 ## [2.15.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.4...amplify-codegen@2.15.5) (2020-04-06)
 
 **Note:** Version bump only for package amplify-codegen
+
+
+
+
 
 ## [2.15.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.3...amplify-codegen@2.15.4) (2020-03-26)
 
 **Note:** Version bump only for package amplify-codegen
 
+
+
+
+
 ## [2.15.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.2...amplify-codegen@2.15.3) (2020-03-22)
 
 **Note:** Version bump only for package amplify-codegen
+
+
+
+
 
 ## [2.15.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.1...amplify-codegen@2.15.2) (2020-03-10)
 
 **Note:** Version bump only for package amplify-codegen
 
+
+
+
+
 ## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.13.3...amplify-codegen@2.15.1) (2020-03-07)
 
 **Note:** Version bump only for package amplify-codegen
+
+
+
+
 
 ## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.13.5-beta.0...amplify-codegen@2.14.1) (2020-03-05)
 
 **Note:** Version bump only for package amplify-codegen
 
+
+
+
+
 ## [2.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.13.2...amplify-codegen@2.13.3) (2020-02-13)
+
 
 ### Bug Fixes
 
-- **amplify-codegen:** support appsync scalars in modelgen ([#3424](https://github.com/aws-amplify/amplify-cli/issues/3424)) ([a6eba85](https://github.com/aws-amplify/amplify-cli/commit/a6eba858f2ed31192a1214a22a3180dd243c80c7)), closes [#3296](https://github.com/aws-amplify/amplify-cli/issues/3296)
+* **amplify-codegen:** support appsync scalars in modelgen ([#3424](https://github.com/aws-amplify/amplify-cli/issues/3424)) ([a6eba85](https://github.com/aws-amplify/amplify-cli/commit/a6eba858f2ed31192a1214a22a3180dd243c80c7)), closes [#3296](https://github.com/aws-amplify/amplify-cli/issues/3296)
+
+
+
+
 
 ## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.13.1...amplify-codegen@2.13.2) (2020-02-07)
 
+
 ### Bug Fixes
 
-- e2e tests, tsconfigs, [@deprecated](https://github.com/deprecated) directive for codegen: ([#3338](https://github.com/aws-amplify/amplify-cli/issues/3338)) ([2ed7715](https://github.com/aws-amplify/amplify-cli/commit/2ed77151dd6367ac9547f78fe600e7913a3d37b2))
+* e2e tests, tsconfigs, [@deprecated](https://github.com/deprecated) directive for codegen: ([#3338](https://github.com/aws-amplify/amplify-cli/issues/3338)) ([2ed7715](https://github.com/aws-amplify/amplify-cli/commit/2ed77151dd6367ac9547f78fe600e7913a3d37b2))
+
+
+
+
 
 ## [2.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.13.0...amplify-codegen@2.13.1) (2020-01-24)
 
 **Note:** Version bump only for package amplify-codegen
+
+
+
+
 
 # [2.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.29.0...amplify-codegen@2.13.0) (2020-01-23)
 

@@ -677,23 +677,15 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateToStringMethod(model: CodeGenModel, declarationBlock: JavaDeclarationBlock): void {
-    const fields = this.getNonConnectedField(model).map(field => {
-      const fieldName = this.getFieldName(field);
-      const fieldGetterName = this.getFieldGetterName(field);
-
-      return '"' + fieldName + '=" + String.valueOf(' + fieldGetterName + '())';
-    });
-
     const body = [
       'return new StringBuilder()',
       `.append("${this.getModelName(model)} {")`,
-      fields
-        .map((field, index) => {
-          let fieldDelimiter = '';
-          if (fields.length - index - 1 !== 0) {
-            fieldDelimiter = ' + ", "';
-          }
-          return '.append(' + field + fieldDelimiter + ')';
+      this.getNonConnectedField(model)
+        .map(field => {
+          const fieldName = this.getFieldName(field);
+          const fieldGetterName = this.getFieldGetterName(field);
+
+          return '.append("' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
         })
         .join('\n'),
       '.append("}")',

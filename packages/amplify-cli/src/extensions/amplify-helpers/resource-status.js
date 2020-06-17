@@ -225,14 +225,9 @@ async function getResourceStatus(category, resourceName, providerName, filteredR
     const backendConfigFilePath = pathManager.getBackendConfigFilePath();
     amplifyMeta = readJsonFile(backendConfigFilePath);
   } else {
-    const error = new Error(
-      "You are not working inside a valid Amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project, or 'amplify pull' to pull down an existing project.",
+    throw new Error(
+      "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify",
     );
-
-    error.name = 'NotInitialized';
-    error.stack = undefined;
-
-    throw error;
   }
 
   let resourcesToBeCreated = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);

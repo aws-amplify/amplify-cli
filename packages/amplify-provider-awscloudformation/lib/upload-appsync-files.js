@@ -108,7 +108,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
         if (personalParams.CreateAPIKey !== undefined && personalParams.APIKeyExpirationEpoch !== undefined) {
           context.print.warning(
             'APIKeyExpirationEpoch and CreateAPIKey parameters should not used together because it can cause ' +
-              'unwanted behavior. In the future APIKeyExpirationEpoch will be removed, use CreateAPIKey instead.',
+              'unwanted behavior. In the future APIKeyExpirationEpoch will be removed, use CreateAPIKey instead.'
           );
         }
 
@@ -122,7 +122,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
 
             context.print.warning(
               "APIKeyExpirationEpoch parameter's -1 value is deprecated to disable " +
-                'the API Key creation. In the future CreateAPIKey parameter replaces this behavior.',
+                'the API Key creation. In the future CreateAPIKey parameter replaces this behavior.'
             );
           } else {
             currentParameters.CreateAPIKey = 1;
@@ -225,12 +225,9 @@ async function hashDirectory(directory) {
     },
   };
 
-  const hashResult = await hashElement(directory, options);
-
-  return hashResult.hash;
+  return hashElement(directory, options).then(result => result.hash);
 }
 
 module.exports = {
   uploadAppSyncFiles,
-  hashDirectory,
 };

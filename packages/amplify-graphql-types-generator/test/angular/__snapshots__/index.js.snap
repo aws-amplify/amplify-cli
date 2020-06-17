@@ -7,7 +7,7 @@ exports[`Angular code generation #generateSource() should generate correct list 
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 // The episodes in the Star Wars trilogy
 export enum Episode {
@@ -87,7 +87,7 @@ exports[`Angular code generation #generateSource() should generate fragmented qu
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type HeroAndFriendsNamesQuery = {
   __typename: \\"Character\\";
@@ -177,7 +177,7 @@ exports[`Angular code generation #generateSource() should generate mutation oper
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 // The episodes in the Star Wars trilogy
 export enum Episode {
@@ -247,7 +247,7 @@ exports[`Angular code generation #generateSource() should generate queries retur
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
   __typename: \\"QueryObject\\";
@@ -279,7 +279,7 @@ exports[`Angular code generation #generateSource() should generate query operati
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type HeroAndDetailsQuery = {
   __typename: \\"Character\\";
@@ -325,7 +325,7 @@ exports[`Angular code generation #generateSource() should generate simple nested
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 // The episodes in the Star Wars trilogy
 export enum Episode {
@@ -393,7 +393,7 @@ exports[`Angular code generation #generateSource() should generate simple nested
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type StarshipCoordsQuery = {
   __typename: \\"Starship\\";
@@ -425,7 +425,7 @@ exports[`Angular code generation #generateSource() should generate simple query 
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 @Injectable({
   providedIn: \\"root\\"
@@ -455,7 +455,7 @@ exports[`Angular code generation #generateSource() should generate simple query 
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type HeroNameQuery = {
   __typename: \\"Character\\";
@@ -488,7 +488,7 @@ exports[`Angular code generation #generateSource() should generate simple query 
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 // The episodes in the Star Wars trilogy
 export enum Episode {
@@ -534,7 +534,7 @@ exports[`Angular code generation #generateSource() should handle comments in enu
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export enum EnumCommentTestCase {
   first = \\"first\\", // This is a single-line comment
@@ -573,7 +573,7 @@ exports[`Angular code generation #generateSource() should handle interfaces at r
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
   __typename: \\"InterfaceTestCase\\";
@@ -611,7 +611,7 @@ exports[`Angular code generation #generateSource() should handle multi-line comm
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
   __typename: \\"CommentTest\\";
@@ -645,7 +645,7 @@ exports[`Angular code generation #generateSource() should handle single line com
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
   __typename: \\"CommentTest\\";
@@ -678,7 +678,7 @@ exports[`Angular code generation #generateSource() should handle unions at root 
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
   __typename: \\"PartialA\\" | \\"PartialB\\";
@@ -714,7 +714,7 @@ exports[`Angular code generation #generateSource() should have __typename value 
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type HeroNameQuery = {
   __typename: \\"Character\\";
@@ -759,7 +759,7 @@ exports[`Angular code generation #generateSource() should have __typename value 
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type DroidNameQuery = {
   __typename: \\"Droid\\";
@@ -798,7 +798,7 @@ exports[`Angular code generation #generateSource() should have the correct __typ
 import { Injectable } from \\"@angular/core\\";
 import API, { graphqlOperation } from \\"@aws-amplify/api\\";
 import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
-import { Observable } from \\"zen-observable-ts\\";
+import * as Observable from \\"zen-observable\\";
 
 export type FindHumanQuery = {
   __typename: \\"Human\\";

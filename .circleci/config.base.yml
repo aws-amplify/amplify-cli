@@ -727,8 +727,6 @@ workflows:
             - integration_test
             - amplify_e2e_tests
             - amplify_console_integration_tests
-            - amplify_migration_tests_latest
-            - amplify_migration_tests_v4
           filters:
             branches:
               only:

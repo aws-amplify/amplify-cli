@@ -147,15 +147,6 @@ function backup(amplifyDirPath, projectPath) {
   const backupAmplifyDirName = `${constants.AmplifyCLIDirName}-${makeId(5)}`;
   const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
-  if (fs.existsSync(backupAmplifyDirPath)) {
-    const error = new Error(`Backup folder at ${backupAmplifyDirPath} already exists, remove the folder and retry the operation.`);
-
-    error.name = 'BackupFolderAlreadyExist';
-    error.stack = null;
-
-    throw error;
-  }
-
   fs.copySync(amplifyDirPath, backupAmplifyDirPath);
 
   return backupAmplifyDirPath;

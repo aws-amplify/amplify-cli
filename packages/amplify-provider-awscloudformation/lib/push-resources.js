@@ -1,7 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
-const glob = require('glob');
 const ora = require('ora');
 const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
@@ -18,13 +17,12 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const ziparchiver = require('archiver');
+const glob = require('glob');
 const { packageLayer } = require('amplify-category-function');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 const optionalBuildDirectoryName = 'build';
-const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
-const parametersJson = 'parameters.json';
 
 async function run(context, resourceDefinition) {
   try {
@@ -204,10 +202,9 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
     const { category, resourceName } = resourcesToBeUpdated[i];
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
-      cwd: resourceDir,
-      ignore: [parametersJson],
-    });
+    const files = fs.readdirSync(resourceDir);
+    // Fetch all the Cloudformation templates for the resource (can be json or yml)
+    const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && file.indexOf('.') !== 0);
     for (let j = 0; j < cfnFiles.length; j += 1) {
       const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
       try {
@@ -244,10 +241,9 @@ function packageResources(context, resources) {
         const backEndDir = context.amplify.pathManager.getBackendDirPath();
         const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
 
-        const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
-          cwd: resourceDir,
-          ignore: [parametersJson],
-        });
+        const files = fs.readdirSync(resourceDir);
+        // Fetch all the Cloudformation templates for the resource (can be json or yml)
+        const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
 
         if (cfnFiles.length !== 1) {
           context.print.error('Only one CloudFormation template is allowed in the resource directory');
@@ -345,10 +341,8 @@ function getCfnFiles(context, category, resourceName) {
    * Otherwise falls back to the default behavior.
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
-      cwd: resourceBuildDir,
-      ignore: [parametersJson],
-    });
+    const files = fs.readdirSync(resourceBuildDir);
+    const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
 
     if (cfnFiles.length > 0) {
       return {
@@ -357,10 +351,8 @@ function getCfnFiles(context, category, resourceName) {
       };
     }
   }
-  const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
-    cwd: resourceDir,
-    ignore: [parametersJson],
-  });
+  const files = fs.readdirSync(resourceDir);
+  const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
   return {
     resourceDir,
     cfnFiles,

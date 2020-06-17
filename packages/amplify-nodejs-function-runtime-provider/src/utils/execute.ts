@@ -37,7 +37,7 @@ export function invokeFunction(options: InvokeOptions) {
       },
       fail(error: any) {
         returned = true;
-        reject(error);
+        reject(_.assign({}, error));
       },
       awsRequestId: 'LAMBDA_INVOKE',
       logStreamName: 'LAMBDA_INVOKE',
@@ -93,15 +93,7 @@ process.on('message', async options => {
     const result = await invokeFunction(JSON.parse(options));
     process.send!(JSON.stringify({ result, error: null }));
   } catch (error) {
-    process.send!(
-      JSON.stringify({
-        result: null,
-        error: {
-          type: 'Lambda:Unhandled',
-          message: error.message,
-        },
-      }),
-    );
+    process.send!(JSON.stringify({ result: null, error }));
   }
   process.exit(1);
 });

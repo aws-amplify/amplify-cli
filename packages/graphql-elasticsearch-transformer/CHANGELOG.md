@@ -3,77 +3,116 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.7.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.3...graphql-elasticsearch-transformer@4.7.4) (2020-06-11)
-
-**Note:** Version bump only for package graphql-elasticsearch-transformer
-
-## [4.7.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.2...graphql-elasticsearch-transformer@4.7.3) (2020-06-10)
-
-**Note:** Version bump only for package graphql-elasticsearch-transformer
-
-## [4.7.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.1...graphql-elasticsearch-transformer@4.7.2) (2020-06-02)
-
-**Note:** Version bump only for package graphql-elasticsearch-transformer
-
 ## [4.7.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.0...graphql-elasticsearch-transformer@4.7.1) (2020-05-26)
+
 
 ### Bug Fixes
 
-- **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([f57f824](https://github.com/aws-amplify/amplify-cli/commit/f57f8242f18c79d48b751e29952e3cdd21409f98)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+* **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([f57f824](https://github.com/aws-amplify/amplify-cli/commit/f57f8242f18c79d48b751e29952e3cdd21409f98)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+
+
+
+
 
 # [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.6.0...graphql-elasticsearch-transformer@4.7.0) (2020-05-15)
 
+
 ### Features
 
-- **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+
+
+
+
 
 # [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.5.3...graphql-elasticsearch-transformer@4.6.0) (2020-05-08)
 
+
 ### Bug Fixes
 
-- use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+* use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+
 
 ### Features
 
-- **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+
+
+
+
 
 ## [4.5.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.5.2...graphql-elasticsearch-transformer@4.5.3) (2020-04-23)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
 
+
+
+
+
 ## [4.5.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.5.1...graphql-elasticsearch-transformer@4.5.2) (2020-03-22)
+
 
 ### Bug Fixes
 
-- **graphql-elasticsearch-transformer:** fix duplicate records in es lambda ([#3712](https://github.com/aws-amplify/amplify-cli/issues/3712)) ([dd9f7e0](https://github.com/aws-amplify/amplify-cli/commit/dd9f7e0031a0dc68a9027de02f60bbe69d315c3d)), closes [#3602](https://github.com/aws-amplify/amplify-cli/issues/3602) [#3705](https://github.com/aws-amplify/amplify-cli/issues/3705)
+* **graphql-elasticsearch-transformer:** fix duplicate records in es lambda ([#3712](https://github.com/aws-amplify/amplify-cli/issues/3712)) ([dd9f7e0](https://github.com/aws-amplify/amplify-cli/commit/dd9f7e0031a0dc68a9027de02f60bbe69d315c3d)), closes [#3602](https://github.com/aws-amplify/amplify-cli/issues/3602) [#3705](https://github.com/aws-amplify/amplify-cli/issues/3705)
+
+
+
+
 
 ## [4.5.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.4...graphql-elasticsearch-transformer@4.5.1) (2020-03-07)
 
+
 ### Bug Fixes
 
-- **graphql-elasticsearch-transformer:** use ddb keys as main id in es ([#3391](https://github.com/aws-amplify/amplify-cli/issues/3391)) ([9aae9a6](https://github.com/aws-amplify/amplify-cli/commit/9aae9a6681c5ff744d908b5292a5b00faa14de4d)), closes [#3359](https://github.com/aws-amplify/amplify-cli/issues/3359)
+* **graphql-elasticsearch-transformer:** use ddb keys as main id in es ([#3391](https://github.com/aws-amplify/amplify-cli/issues/3391)) ([9aae9a6](https://github.com/aws-amplify/amplify-cli/commit/9aae9a6681c5ff744d908b5292a5b00faa14de4d)), closes [#3359](https://github.com/aws-amplify/amplify-cli/issues/3359)
+
+
+
+
 
 ## [4.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.6-beta.0...graphql-elasticsearch-transformer@4.4.1) (2020-03-05)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
 
+
+
+
+
 ## [4.3.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.3...graphql-elasticsearch-transformer@4.3.4) (2020-02-18)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
 
 ## [4.3.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.2...graphql-elasticsearch-transformer@4.3.3) (2020-02-13)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
 
+
+
+
+
 ## [4.3.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.1...graphql-elasticsearch-transformer@4.3.2) (2020-02-07)
+
 
 ### Bug Fixes
 
-- sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
+* sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
+
+
+
+
 
 ## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.3.0...graphql-elasticsearch-transformer@4.3.1) (2020-01-24)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
 
 # [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.30.0...graphql-elasticsearch-transformer@4.3.0) (2020-01-23)
 

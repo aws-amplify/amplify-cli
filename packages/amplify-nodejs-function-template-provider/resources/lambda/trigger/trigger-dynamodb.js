@@ -1,4 +1,4 @@
-exports.handler = event => {
+exports.handler = function(event, context) {
   //eslint-disable-line
   console.log(JSON.stringify(event, null, 2));
   event.Records.forEach(record => {
@@ -6,5 +6,5 @@ exports.handler = event => {
     console.log(record.eventName);
     console.log('DynamoDB Record: %j', record.dynamodb);
   });
-  return Promise.resolve('Successfully processed DynamoDB record');
+  context.done(null, 'Successfully processed DynamoDB record'); // SUCCESS with message
 };

@@ -3,47 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.0...graphql-transformer-common@4.17.1) (2020-06-11)
-
-### Reverts
-
-- add query automatically for named keys ([#4513](https://github.com/aws-amplify/amplify-cli/issues/4513)) ([6d3123b](https://github.com/aws-amplify/amplify-cli/commit/6d3123bfe3ba412d3b1af076e550e6733c988c8f))
-
-# [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.16.0...graphql-transformer-common@4.17.0) (2020-06-10)
-
-### Features
-
-- **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([3d194f8](https://github.com/aws-amplify/amplify-cli/commit/3d194f805dcbd6325ddf78155c4327dbca3e7f4a))
-
-# [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.15.0...graphql-transformer-common@4.16.0) (2020-06-02)
-
-### Features
-
-- **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([c0a4f88](https://github.com/aws-amplify/amplify-cli/commit/c0a4f8889fc363bb9c9d08ff822c591874777f7b))
-
 # [4.15.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.14.0...graphql-transformer-common@4.15.0) (2020-05-08)
 
+
 ### Features
 
-- **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+
+
+
+
 
 # [4.14.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.13.3...graphql-transformer-common@4.14.0) (2020-03-22)
 
+
 ### Features
 
-- **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+
+
+
+
 
 ## [4.13.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.13.2...graphql-transformer-common@4.13.3) (2020-02-13)
 
 **Note:** Version bump only for package graphql-transformer-common
 
+
+
+
+
 ## [4.13.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.13.1...graphql-transformer-common@4.13.2) (2020-02-07)
 
 **Note:** Version bump only for package graphql-transformer-common
 
+
+
+
+
 ## [4.13.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.13.0...graphql-transformer-common@4.13.1) (2020-01-24)
 
 **Note:** Version bump only for package graphql-transformer-common
+
+
+
+
 
 # [4.13.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.32.0...graphql-transformer-common@4.13.0) (2020-01-23)
 

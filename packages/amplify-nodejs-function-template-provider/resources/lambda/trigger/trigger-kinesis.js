@@ -1,4 +1,4 @@
-exports.handler = event => {
+exports.handler = (event, context, callback) => {
   // insert code to be executed by your lambda trigger
   console.log(JSON.stringify(event, null, 2));
   let res = '';
@@ -13,5 +13,5 @@ exports.handler = event => {
     res += 'Kinesis records not present in event';
   }
 
-  return Promise.resolve(res);
+  context.done(null, res); // SUCCESS with message
 };

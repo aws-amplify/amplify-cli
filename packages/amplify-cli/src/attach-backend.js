@@ -68,16 +68,6 @@ function backupAmplifyFolder(context) {
   const amplifyDirPath = context.amplify.pathManager.getAmplifyDirPath(projectPath);
   if (fs.existsSync(amplifyDirPath)) {
     const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
-
-    if (fs.existsSync(backupAmplifyDirPath)) {
-      const error = new Error(`Backup folder at ${backupAmplifyDirPath} already exists, remove the folder and retry the operation.`);
-
-      error.name = 'BackupFolderAlreadyExist';
-      error.stack = null;
-
-      throw error;
-    }
-
     fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
   }
 }

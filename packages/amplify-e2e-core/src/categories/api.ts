@@ -1,7 +1,8 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
-import { selectRuntime, selectTemplate } from './lambda-function';
+import { nodeJSTemplateChoices, selectRuntime } from './lambda-function';
+import { singleSelect } from '../utils/selectors';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
@@ -262,7 +263,7 @@ export function addRestApi(cwd: string, settings: any) {
         const templateName = settings.isCrud
           ? 'CRUD function for DynamoDB (Integration with API Gateway)'
           : 'Serverless ExpressJS function (Integration with API Gateway)';
-        selectTemplate(chain, templateName, 'nodejs');
+        singleSelect(chain.wait('Choose the function template that you want to use'), templateName, nodeJSTemplateChoices);
 
         if (settings.isCrud) {
           chain

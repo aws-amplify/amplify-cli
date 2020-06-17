@@ -92,10 +92,10 @@ public final class Landmark implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"Landmark {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
-      .append(\\"rating=\\" + String.valueOf(getRating()) + \\", \\")
-      .append(\\"location=\\" + String.valueOf(getLocation()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
+      .append(\\"rating=\\" + String.valueOf(getRating()))
+      .append(\\"location=\\" + String.valueOf(getLocation()))
       .append(\\"parking=\\" + String.valueOf(getParking()))
       .append(\\"}\\")
       .toString();
@@ -456,8 +456,8 @@ public final class SimpleModel implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"SimpleModel {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
       .append(\\"bar=\\" + String.valueOf(getBar()))
       .append(\\"}\\")
       .toString();
@@ -650,8 +650,8 @@ public final class SimpleModel implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"SimpleModel {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
       .append(\\"bar=\\" + String.valueOf(getBar()))
       .append(\\"}\\")
       .toString();
@@ -844,8 +844,8 @@ public final class SimpleModel implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"SimpleModel {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"name=\\" + String.valueOf(getName()))
       .append(\\"bar=\\" + String.valueOf(getBar()))
       .append(\\"}\\")
       .toString();
@@ -1067,11 +1067,11 @@ public final class task implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"task {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"title=\\" + String.valueOf(getTitle()) + \\", \\")
-      .append(\\"done=\\" + String.valueOf(getDone()) + \\", \\")
-      .append(\\"todo=\\" + String.valueOf(getTodo()) + \\", \\")
-      .append(\\"time=\\" + String.valueOf(getTime()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"title=\\" + String.valueOf(getTitle()))
+      .append(\\"done=\\" + String.valueOf(getDone()))
+      .append(\\"todo=\\" + String.valueOf(getTodo()))
+      .append(\\"time=\\" + String.valueOf(getTime()))
       .append(\\"createdOn=\\" + String.valueOf(getCreatedOn()))
       .append(\\"}\\")
       .toString();
@@ -1367,12 +1367,12 @@ public final class Todo implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"Todo {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"title=\\" + String.valueOf(getTitle()) + \\", \\")
-      .append(\\"done=\\" + String.valueOf(getDone()) + \\", \\")
-      .append(\\"description=\\" + String.valueOf(getDescription()) + \\", \\")
-      .append(\\"due_date=\\" + String.valueOf(getDueDate()) + \\", \\")
-      .append(\\"version=\\" + String.valueOf(getVersion()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"title=\\" + String.valueOf(getTitle()))
+      .append(\\"done=\\" + String.valueOf(getDone()))
+      .append(\\"description=\\" + String.valueOf(getDescription()))
+      .append(\\"due_date=\\" + String.valueOf(getDueDate()))
+      .append(\\"version=\\" + String.valueOf(getVersion()))
       .append(\\"value=\\" + String.valueOf(getValue()))
       .append(\\"}\\")
       .toString();
@@ -1667,10 +1667,10 @@ public final class TypeWithAWSDateScalars implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"TypeWithAWSDateScalars {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"date=\\" + String.valueOf(getDate()) + \\", \\")
-      .append(\\"createdAt=\\" + String.valueOf(getCreatedAt()) + \\", \\")
-      .append(\\"time=\\" + String.valueOf(getTime()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"date=\\" + String.valueOf(getDate()))
+      .append(\\"createdAt=\\" + String.valueOf(getCreatedAt()))
+      .append(\\"time=\\" + String.valueOf(getTime()))
       .append(\\"timestamp=\\" + String.valueOf(getTimestamp()))
       .append(\\"}\\")
       .toString();
@@ -1928,10 +1928,10 @@ public final class authorBook implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"authorBook {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"author_id=\\" + String.valueOf(getAuthorId()) + \\", \\")
-      .append(\\"book_id=\\" + String.valueOf(getBookId()) + \\", \\")
-      .append(\\"author=\\" + String.valueOf(getAuthor()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"author_id=\\" + String.valueOf(getAuthorId()))
+      .append(\\"book_id=\\" + String.valueOf(getBookId()))
+      .append(\\"author=\\" + String.valueOf(getAuthor()))
       .append(\\"book=\\" + String.valueOf(getBook()))
       .append(\\"}\\")
       .toString();
@@ -2159,7 +2159,7 @@ public final class snake_case implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"snake_case {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
       .append(\\"name=\\" + String.valueOf(getName()))
       .append(\\"}\\")
       .toString();
@@ -2326,7 +2326,7 @@ public final class SnakeCaseField implements Model {
    public String toString() {
     return new StringBuilder()
       .append(\\"SnakeCaseField {\\")
-      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"id=\\" + String.valueOf(getId()))
       .append(\\"first_name=\\" + String.valueOf(getFirstName()))
       .append(\\"}\\")
       .toString();

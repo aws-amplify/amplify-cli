@@ -15,8 +15,8 @@ const { PredictionsTransformer } = require('graphql-predictions-transformer');
 const { KeyTransformer } = require('graphql-key-transformer');
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
+const { hashElement } = require('folder-hash');
 const { print } = require('graphql');
-const { hashDirectory } = require('./upload-appsync-files');
 
 const {
   collectDirectivesByTypeNames,
@@ -465,6 +465,17 @@ function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
   return projectBucket;
+}
+
+async function hashDirectory(directory) {
+  const options = {
+    encoding: 'hex',
+    folders: {
+      exclude: ['build'],
+    },
+  };
+
+  return hashElement(directory, options).then(result => result.hash);
 }
 
 async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {

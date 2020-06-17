@@ -26,7 +26,7 @@ export function generateSource(context: LegacyCompilerContext) {
   generator.printOnNewline(`import API, { graphqlOperation } from '@aws-amplify/api';`);
   generator.printOnNewline(`import { GraphQLResult } from "@aws-amplify/api/lib/types";`);
 
-  generator.printOnNewline(`import { Observable } from 'zen-observable-ts';`);
+  generator.printOnNewline(`import * as Observable from 'zen-observable';`);
   generator.printNewline();
 
   generateTypes(generator, context);

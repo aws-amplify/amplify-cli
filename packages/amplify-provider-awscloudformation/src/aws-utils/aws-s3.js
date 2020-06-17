@@ -19,32 +19,18 @@ class S3 {
   }
 
   uploadFile(s3Params) {
-    // envName and bucket does not change during execution, cache them into a class level
-    // field.
-    if (this.uploadState === undefined) {
-      const projectDetails = this.context.amplify.getProjectDetails();
-      const { envName } = this.context.amplify.getEnvInfo();
-      const projectBucket = projectDetails.amplifyMeta.providers
-        ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
-        : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    const projectDetails = this.context.amplify.getProjectDetails();
+    const { envName } = this.context.amplify.getEnvInfo();
+    const projectBucket = projectDetails.amplifyMeta.providers
+      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
+      : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    s3Params.Bucket = projectBucket;
 
-      this.uploadState = {
-        envName,
-        s3Params: {
-          Bucket: projectBucket,
-        },
-      };
-    }
+    return this.putFile(s3Params).then(() => projectBucket);
+  }
 
-    const augmentedS3Params = {
-      ...s3Params,
-      ...this.uploadState.s3Params,
-    };
-
-    return this.s3
-      .putObject(augmentedS3Params)
-      .promise()
-      .then(() => this.uploadState.s3Params.Bucket);
+  putFile(s3Params) {
+    return this.s3.putObject(s3Params).promise();
   }
 
   getFile(s3Params, envName = this.context.amplify.getEnvInfo().envName) {
@@ -169,12 +155,14 @@ class S3 {
 
   ifBucketExists(bucketName) {
     return this.s3
-      .headBucket({
-        Bucket: bucketName,
-      })
+      .listBuckets({})
       .promise()
       .then(result => {
-        return result !== undefined;
+        const index = result.Buckets.findIndex(bucket => bucket.Name === bucketName);
+        if (index !== -1) {
+          return true;
+        }
+        return false;
       });
   }
 }

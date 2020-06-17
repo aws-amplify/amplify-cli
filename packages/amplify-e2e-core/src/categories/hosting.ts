@@ -3,7 +3,7 @@ import path from 'path';
 import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '../../src';
 import { spawnSync } from 'child_process';
 
-export function addDEVHosting(cwd: string) {
+export function addHosting(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
@@ -16,27 +16,6 @@ export function addDEVHosting(cwd: string) {
       .wait('index doc for the website')
       .sendCarriageReturn()
       .wait('error doc for the website')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
-export function addPRODHosting(cwd: string) {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
-      .wait('Select the plugin module to execute')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Select the environment setup:')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('hosting bucket name')
       .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {

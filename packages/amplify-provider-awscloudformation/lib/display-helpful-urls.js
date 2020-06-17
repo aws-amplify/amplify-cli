@@ -5,7 +5,6 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
   showPinpointURL(context, resourcesToBeCreated);
   showGraphQLURL(context, resourcesToBeCreated);
-  showRestAPIURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
   showRekognitionURLS(context, resourcesToBeCreated);
@@ -65,24 +64,6 @@ function showGraphQLURL(context, resourcesToBeCreated) {
           chalk`GraphQL API is configured to use API_KEY authentication, but API Key deployment is disabled, don't forget to create one.`,
         );
       }
-    }
-  }
-}
-
-function showRestAPIURL(context, resourcesToBeCreated) {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'API Gateway');
-
-  if (resources.length > 0) {
-    const resource = resources[0];
-    const { category, resourceName } = resource;
-    const amplifyMeta = context.amplify.getProjectMeta();
-    if (!amplifyMeta[category][resourceName].output) {
-      return;
-    }
-    const { RootUrl } = amplifyMeta[category][resourceName].output;
-
-    if (RootUrl) {
-      context.print.info(chalk`REST API endpoint: {blue.underline ${RootUrl}}`);
     }
   }
 }
