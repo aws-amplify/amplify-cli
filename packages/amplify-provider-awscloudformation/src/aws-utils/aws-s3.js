@@ -76,7 +76,7 @@ class S3 {
           .promise()
           .then(() => this.s3.waitFor('bucketExists', params).promise())
           .then(() => {
-            this.context.print.success('S3 bucket sucessfully created');
+            this.context.print.success('S3 bucket successfully created');
             return bucketName;
           });
       }
