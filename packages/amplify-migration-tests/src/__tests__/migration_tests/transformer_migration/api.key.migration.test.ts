@@ -5,7 +5,7 @@ import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 describe('amplify key force push', () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('api-searchable-cli-migration');
+    projRoot = await createNewProjectDir('api-key-cli-migration');
   });
 
   afterEach(async () => {
