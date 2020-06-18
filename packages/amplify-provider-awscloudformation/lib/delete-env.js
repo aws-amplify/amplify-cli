@@ -1,5 +1,4 @@
 const Cloudformation = require('../src/aws-utils/aws-cfn');
-const fs = require('fs-extra');
 const S3 = require('../src/aws-utils/aws-s3');
 const { loadConfigurationForEnv } = require('./configuration-manager');
 const { deleteEnv } = require('./amplify-service-manager');
@@ -17,7 +16,8 @@ async function run(context, envName, deleteS3) {
     if (await s3.ifBucketExists(projectBucket)) {
       const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
       const tempDir = path.join(amplifyDir, envName, '.temp');
-      const storageBucket = await getStorageMetaDatafromBackend(context, envName, s3, tempDir);
+      const storageBucket = await getStorageBucket(context, envName, s3, tempDir);
+      fs.removeSync(tempDir);
       if (storageBucket) await s3.deleteS3Bucket(storageBucket);
       await s3.deleteS3Bucket(projectBucket);
     } else {
@@ -28,21 +28,15 @@ async function run(context, envName, deleteS3) {
   await deleteEnv(context, envName, awsConfig);
 }
 
-async function getStorageBucket(context, unZippedDir) {
+async function getStorageBucket(context, envName, s3) {
+  const sourceZipFile = await downloadZip(s3, tempDir, S3BackendZipFileName, envName);
+  const unZippedDir = await extractZip(tempDir, sourceZipFile);
   const amplifyMeta = context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
   const storage = amplifyMeta['storage'] || {};
   const s3Storage = Object.keys(storage).filter(r => storage[r].service === 'S3');
   if (!s3Storage.length) return;
   const fStorageName = s3Storage[0];
   return storage[fStorageName].output.BucketName;
-}
-
-async function getStorageMetaDatafromBackend(context, envName, s3, tempDir) {
-  const sourceZipFile = await downloadZip(s3, tempDir, S3BackendZipFileName, envName);
-  const unZippedDir = await extractZip(tempDir, sourceZipFile);
-  const storageBucket = await getStorageBucket(context, unZippedDir);
-  fs.removeSync(tempDir);
-  return storageBucket;
 }
 
 module.exports = {
