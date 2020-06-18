@@ -7,6 +7,7 @@ import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
 import _ from 'lodash';
 export { packageLayer } from './provider-utils/awscloudformation/utils/packageLayer';
+export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 
 export async function add(context, providerName, service, parameters) {
   const options = {

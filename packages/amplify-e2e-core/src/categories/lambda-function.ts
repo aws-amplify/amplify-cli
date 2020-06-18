@@ -55,10 +55,9 @@ const coreFunction = (
         .sendLine(settings.name || '');
 
       selectRuntime(chain, runtime);
-
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
-        singleSelect(chain.wait('Choose the function template that you want to use'), settings.functionTemplate, templateChoices);
+        selectTemplate(chain, settings.functionTemplate, templateChoices);
       }
     } else {
       chain
@@ -234,6 +233,14 @@ export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   singleSelect(chain, runtimeName, runtimeChoices);
 };
 
+const selectTemplate = (chain: any, functionTemplate: string, templateChoices: string[]) => {
+  chain.wait('Choose the function template that you want to use');
+  // reset cursor to top of list because Hello World is default but it throws off offset calculations
+  moveUp(chain, templateChoices.indexOf('Hello World'));
+
+  singleSelect(chain, functionTemplate, templateChoices);
+};
+
 export interface LayerOptions {
   select: string[]; // list options to select
   expectedListOptions: string[]; // the expeted list of all layers
@@ -264,7 +271,7 @@ const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => 
   }
   // not going to attempt to automate the reorder thingy. For e2e tests we can just create the lambda layers in the order we want them
   const totalLength = hasCustomArns ? options.customArns.length : 0 + options.select.length;
-  if (totalLength > 0) {
+  if (totalLength > 1) {
     chain.wait('Modify the layer order');
     chain.sendCarriageReturn();
   }
