@@ -1,25 +1,9 @@
 const fs = require('fs-extra');
 const path = require('path');
 const constants = require('../lib/constants');
-const { EOL } = require('os');
 const frontConfigCreator = require('../lib/frontend-config-creator');
-
-const graphqlConfigFileContent = `\
-projects:${EOL}\
-  graphQLResource:${EOL}\
-    schemaPath: graphql/schema.json${EOL}\
-    includes:${EOL}\
-      - src/graphql/**/*.js${EOL}\
-    excludes:${EOL}\
-      - ./amplify/**${EOL}\
-    extensions:${EOL}\
-      amplify:${EOL}\
-        codeGenTarget: javascript${EOL}\
-        generatedFileName: ''${EOL}\
-        docsFilePath: graphql${EOL}\
-extensions:${EOL}\
-  amplify:${EOL}\
-    version: 3`;
+const gqlConfig = require('graphql-config');
+const _ = require('lodash');
 
 describe('test config creator', () => {
   const dir = './testsourceproj';
@@ -32,21 +16,34 @@ describe('test config creator', () => {
     amplify: {},
   };
 
-  const graphqlConfigFilePath = path.join(dir, '.graphqlconfig.yml');
   const awsConfigFilePath = path.join(dir, constants.awsConfigFilename);
   const amplifyConfigFilePath = path.join(dir, constants.amplifyConfigFilename);
-  const schemaFile = path.join(dir, 'graphql', 'schema.json');
+  const files = constants.fileNames.map(filename => path.join(dir, 'graphql', `${filename}.${constants.FILE_EXTENSION_MAP['javascript']}`));
 
-  it('should not delete folder', () => {
-    fs.ensureDirSync(path.join(dir, 'graphql'));
-    fs.writeFileSync(graphqlConfigFilePath, graphqlConfigFileContent);
-    fs.writeFileSync(awsConfigFilePath, '');
-    fs.writeFileSync(amplifyConfigFilePath, '');
-    fs.writeFile(schemaFile, '');
+  it('should not attempt deleted generatedfile name if empty', () => {
+    fs.removeSync = jest.fn();
+    fs.existsSync = jest.fn().mockReturnValue(true);
+    gqlConfig.getGraphQLConfig = jest.fn().mockReturnValue({
+      config: {
+        projects: {
+          graphQLResource: {
+            extensions: {
+              amplify: {
+                codeGenTarget: 'javascript',
+                generatedFileName: '',
+                docsFilePath: 'graphql',
+              },
+            },
+          },
+        },
+      },
+    });
+
     frontConfigCreator.deleteAmplifyConfig(mockContext);
-    expect(fs.existsSync()).toBeFalsy();
-    expect(fs.existsSync()).toBeFalsy();
-    expect(fs.existsSync(dir)).toBeTruthy();
-    fs.removeSync(dir);
+    const removeSyncCalls = _.flatten(fs.removeSync.mock.calls);
+    [awsConfigFilePath, amplifyConfigFilePath, ...files].forEach(file => {
+      expect(removeSyncCalls).toContain(file);
+    });
+    expect(removeSyncCalls.includes(path.join(dir, ''))).toBeFalsy();
   });
 });
