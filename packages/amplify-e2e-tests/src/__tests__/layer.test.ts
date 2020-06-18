@@ -68,7 +68,7 @@ describe('amplify add lambda layer', () => {
       layerName: layerName,
     };
     const settingsUpdate = {
-      runtimes: ['java'],
+      runtimes: ['python'],
       layerName: layerName,
       versionChanged: true,
       numLayers: 1,
@@ -89,7 +89,7 @@ describe('amplify add lambda layer', () => {
       layerName: layerName,
     };
     const settingsUpdate = {
-      runtimes: ['java'],
+      runtimes: ['python'],
       layerName: layerName,
       versionChanged: true,
       numLayers: 1,
