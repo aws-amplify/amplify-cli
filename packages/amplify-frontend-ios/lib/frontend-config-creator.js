@@ -4,17 +4,6 @@ const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
 const amplifyConfigHelper = require('./amplify-config-helper');
 
-const FILE_EXTENSION_MAP = {
-  javascript: 'js',
-  graphql: 'graphql',
-  flow: 'js',
-  typescript: 'ts',
-  angular: 'graphql',
-  swift: 'graphql',
-};
-
-const fileNames = ['queries', 'mutations', 'subscriptions'];
-
 function deleteAmplifyConfig(context) {
   const srcDirPath = getSrcDir(context);
   // delete aws configuration and amplify configuration
@@ -31,8 +20,8 @@ function deleteAmplifyConfig(context) {
     const { projects } = gqlConfig.config;
     Object.keys(projects).forEach(project => {
       const { codeGenTarget, docsFilePath, generatedFileName } = projects[project].extensions.amplify;
-      fileNames.forEach(filename => {
-        const file = path.join(srcDirPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget]}`);
+      constants.fileNames.forEach(filename => {
+        const file = path.join(srcDirPath, docsFilePath, `${filename}.${constants.FILE_EXTENSION_MAP[codeGenTarget]}`);
         if (fs.existsSync(file)) fs.removeSync(file);
       });
       if (generatedFileName.trim() !== '') {
