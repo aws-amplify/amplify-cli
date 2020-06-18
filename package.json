@@ -23,6 +23,7 @@
     "split-e2e-tests":"yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "publish:master": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --yes",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --yes",
+    "publish:iosCodegenWorkshop": "lerna publish prerelease --conventional-commits --yes --exact --dist-tag=iosCodegenWorkshop --preid=iosCodegenWorkshop --message 'chore(release): Publish [ci skip]'",
     "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]'",
     "postpublish:release": "git fetch . release:master && git push origin master",
     "publish-to-verdaccio": "lerna publish --yes --force-publish --no-git-tag-version --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --conventional-prerelease --preid=verdaccio",

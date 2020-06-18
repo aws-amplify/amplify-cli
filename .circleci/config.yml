@@ -909,89 +909,91 @@ workflows:
       - mock_e2e_tests:
           requires:
             - build
-      - graphql_e2e_tests:
-          filters:
-            branches:
-              only:
-                - master
-                - graphql_e2e_testing
-          requires:
-            - build
-            - mock_e2e_tests
-      - integration_test:
-          filters:
-            branches:
-              only:
-                - master
-                - beta
-          requires:
-            - build
-            - mock_e2e_tests
-      - publish_to_local_registry:
-          filters:
-            branches:
-              only:
-                - master
-                - beta
-                - split-test
-          requires:
-            - build
-      - amplify_migration_tests_latest:
-          filters:
-            branches:
-              only:
-                - master
-                - split-test
-          requires:
-            - build
-      - amplify_migration_tests_v4:
-          filters:
-            branches:
-              only:
-                - master
-                - split-test
-          requires:
-            - build
-      - amplify_console_integration_tests:
-          filters:
-            branches:
-              only:
-                - beta
-          requires:
-            - build
-            - publish_to_local_registry
+      # - graphql_e2e_tests:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - graphql_e2e_testing
+      #     requires:
+      #       - build
+      #       - mock_e2e_tests
+      # - integration_test:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - beta
+      #     requires:
+      #       - build
+      #       - mock_e2e_tests
+      # - publish_to_local_registry:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - beta
+      #           - split-test
+      #     requires:
+      #       - build
+      # - amplify_migration_tests_latest:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - split-test
+      #     requires:
+      #       - build
+      # - amplify_migration_tests_v4:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - split-test
+      #     requires:
+      #       - build
+      # - amplify_console_integration_tests:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - beta
+      #     requires:
+      #       - build
+      #       - publish_to_local_registry
       - deploy:
           requires:
             - build
             - test
             - mock_e2e_tests
-            - graphql_e2e_tests
-            - integration_test
-            - amplify_console_integration_tests
-            - amplify_migration_tests_latest
-            - amplify_migration_tests_v4
-            - hostingPROD-amplify_e2e_tests
-            - plugin-amplify_e2e_tests
-            - datastore-modegen-amplify_e2e_tests
-            - interactions-amplify_e2e_tests
-            - hosting-amplify_e2e_tests
-            - init-amplify_e2e_tests
-            - amplify-app-amplify_e2e_tests
-            - analytics-amplify_e2e_tests
-            - predictions-amplify_e2e_tests
-            - delete-amplify_e2e_tests
-            - storage-amplify_e2e_tests
-            - migration-api-key-migration-amplify_e2e_tests
-            - migration-api-connection-migration-amplify_e2e_tests
-            - api-amplify_e2e_tests
-            - auth-amplify_e2e_tests
-            - function-amplify_e2e_tests
+            # - integration_test
+            # - datastore-modegen-amplify_e2e_tests
+            # - graphql_e2e_tests
+            # - amplify_console_integration_tests
+            # - amplify_migration_tests_latest
+            # - amplify_migration_tests_v4
+            # - hostingPROD-amplify_e2e_tests
+            # - plugin-amplify_e2e_tests
+            # - datastore-modegen-amplify_e2e_tests
+            # - interactions-amplify_e2e_tests
+            # - hosting-amplify_e2e_tests
+            # - init-amplify_e2e_tests
+            # - amplify-app-amplify_e2e_tests
+            # - analytics-amplify_e2e_tests
+            # - predictions-amplify_e2e_tests
+            # - delete-amplify_e2e_tests
+            # - storage-amplify_e2e_tests
+            # - migration-api-key-migration-amplify_e2e_tests
+            # - migration-api-connection-migration-amplify_e2e_tests
+            # - api-amplify_e2e_tests
+            # - auth-amplify_e2e_tests
+            # - function-amplify_e2e_tests
           filters:
             branches:
               only:
-                - release
-                - master
-                - beta
+                # - release
+                # - master
+                # - beta
+                - iosCodegenWorkshop
       - hostingPROD-amplify_e2e_tests:
           filters: &ref_2
             branches:
