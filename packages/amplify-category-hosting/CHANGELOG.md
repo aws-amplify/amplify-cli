@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.3.2...amplify-category-hosting@2.3.3-beta.0) (2020-06-18)
+
+
+### Bug Fixes
+
+* [#4549](https://github.com/aws-amplify/amplify-cli/issues/4549) [#4550](https://github.com/aws-amplify/amplify-cli/issues/4550) init and folder exist checks ([#4553](https://github.com/aws-amplify/amplify-cli/issues/4553)) ([543d531](https://github.com/aws-amplify/amplify-cli/commit/543d5312823783db7794ad574d03d0ca3991c8b5))
+* occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([eaf08e0](https://github.com/aws-amplify/amplify-cli/commit/eaf08e00841830e9654fea61ce901f2cb478eebe))
+
+
+
+
+
 ## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.3.1...amplify-category-hosting@2.3.2) (2020-06-10)
 
 

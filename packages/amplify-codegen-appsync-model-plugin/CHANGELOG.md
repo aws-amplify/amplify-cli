@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.1...amplify-codegen-appsync-model-plugin@1.19.2-beta.0) (2020-06-18)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:**  Support Embeddable Types for iOS  ([#4545](https://github.com/aws-amplify/amplify-cli/issues/4545)) ([7d4652b](https://github.com/aws-amplify/amplify-cli/commit/7d4652be017c660379832702c6ec8eb7005d9989))
+
+
+
+
+
 ## [1.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.0...amplify-codegen-appsync-model-plugin@1.19.1) (2020-06-10)
 
 

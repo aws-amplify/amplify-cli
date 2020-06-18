@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.3...amplify-e2e-tests@2.18.4-beta.0) (2020-06-18)
+
+
+### Bug Fixes
+
+* change scope of hashed files for AppSync ([#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)) ([10fa9da](https://github.com/aws-amplify/amplify-cli/commit/10fa9da646f4de755e2dc92cd4bb2a6319425d72)), closes [#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)
+
+
+
+
+
 ## [2.18.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.2...amplify-e2e-tests@2.18.3) (2020-06-11)
 
 **Note:** Version bump only for package amplify-e2e-tests

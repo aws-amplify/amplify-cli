@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.8-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.7...amplify-category-notifications@2.15.8-beta.0) (2020-06-18)
+
+
+### Bug Fixes
+
+* occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([eaf08e0](https://github.com/aws-amplify/amplify-cli/commit/eaf08e00841830e9654fea61ce901f2cb478eebe))
+
+
+
+
+
 ## [2.15.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.6...amplify-category-notifications@2.15.7) (2020-05-26)
 
 **Note:** Version bump only for package amplify-category-notifications
