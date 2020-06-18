@@ -7,7 +7,7 @@
     "pluginId": "amplify-go-function-runtime-provider",
     "conditions": {
       "provider": "awscloudformation",
-      "services": ["LambdaFunction", "LambdaLayer"]
+      "services": ["LambdaFunction"]
     },
     "runtimes": [
       {

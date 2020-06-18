@@ -41,7 +41,7 @@ export function addLayer(cwd: string, settings?: any) {
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
     expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
 
-    chain.wait('Select up to 5 compatible runtimes:');
+    chain.wait('Select up to 2 compatible runtimes:');
     multiSelect(chain, runtimeDisplayNames, runtimeChoices);
     chain.wait('Who should have permission to use this layer?');
     multiSelect(chain, settings.permissions, permissionChoices);
@@ -97,7 +97,7 @@ export function updateLayer(cwd: string, settings?: any) {
     expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
     chain.wait('Do you want to change the compatible runtimes?');
     if (settings.versionChanged) {
-      chain.sendLine('y').wait('Select up to 5 compatible runtimes:');
+      chain.sendLine('y').wait('Select up to 2 compatible runtimes:');
       multiSelect(chain, runtimeDisplayNames, runtimeChoices);
     } else {
       chain.sendLine('n');
