@@ -17,7 +17,7 @@ async function run(context, envName, deleteS3) {
     if (await s3.ifBucketExists(projectBucket)) {
       const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
       const tempDir = path.join(amplifyDir, envName, '.temp');
-      const storageBucket = await getBucketfromBackend(context, envName, s3, tempDir);
+      const storageBucket = await getStorageMetaDatafromBackend(context, envName, s3, tempDir);
       if (storageBucket) await s3.deleteS3Bucket(storageBucket);
       await s3.deleteS3Bucket(projectBucket);
     } else {
@@ -37,7 +37,7 @@ async function getStorageBucket(context, unZippedDir) {
   return storage[fStorageName].output.BucketName;
 }
 
-async function getBucketfromBackend(context, envName, s3, tempDir) {
+async function getStorageMetaDatafromBackend(context, envName, s3, tempDir) {
   const sourceZipFile = await downloadZip(s3, tempDir, S3BackendZipFileName, envName);
   const unZippedDir = await extractZip(tempDir, sourceZipFile);
   const storageBucket = await getStorageBucket(context, unZippedDir);
