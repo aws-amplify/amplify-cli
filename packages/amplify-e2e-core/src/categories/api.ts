@@ -7,6 +7,20 @@ function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
 }
 
+export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
+      .wait('GraphQL schema compiled successfully.')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addApiWithoutSchema(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
