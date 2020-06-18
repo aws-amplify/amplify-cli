@@ -162,7 +162,7 @@ export async function addLayerResource(
   }
 
   print.info('Include any files you want to share across runtimes in this folder:');
-  print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info(`amplify/backend/function/${parameters.layerName}/opt`);
   print.info('');
   print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
   print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
@@ -232,7 +232,7 @@ export async function updateLayerResource(
   }
 
   print.info('Include any files you want to share across runtimes in this folder:');
-  print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info(`amplify/backend/function/${parameters.layerName}/opt`);
   print.info('');
   print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
   print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');

@@ -14,7 +14,7 @@ export function layerVersionQuestion(choices) {
     {
       type: 'list',
       name: 'layerVersion',
-      message: 'Select the version number to update for given Lambda Layer:',
+      message: 'Select the layer version to update:',
       choices: choices,
     },
   ];

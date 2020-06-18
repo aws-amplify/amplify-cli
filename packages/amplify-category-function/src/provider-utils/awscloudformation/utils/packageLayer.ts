@@ -27,7 +27,7 @@ export async function packageLayer(context, resource) {
     layerParameters.build = true;
     updateLayerCfnFile(context, layerParameters, resourcePath);
   } else if (!previousHash) {
-    _.assign(layerParameters.layerVersionMap[`${latestVersion}`], { hash: curLayerHash.hash });
+    layerParameters.layerVersionMap[`${latestVersion}`].hash = curLayerHash;
     createLayerParametersFile(context, layerParameters, resourcePath);
   }
 
@@ -54,9 +54,10 @@ export async function packageLayer(context, resource) {
       reject(new Error('Failed to zip code.'));
     });
 
+    const libPath = path.join(resourcePath, 'lib', '*');
+    const optPath = path.join(resourcePath, 'opt');
     zip.pipe(output);
-    glob
-      .sync(resourcePath + '/!(dist)')
+    [...glob.sync(optPath), ...glob.sync(libPath)]
       .filter(folder => fs.lstatSync(folder).isDirectory())
       .forEach(folder => zip.directory(folder, path.basename(folder)));
     zip.finalize();
@@ -68,15 +69,9 @@ export async function hashLayerDir(layerPath: string): Promise<any> {
     folders: { exclude: ['.*', 'dist'] },
     files: { exclude: ['README.txt', 'layer-parameters.json', 'parameters.json', '*-awscloudformation-template.json'] },
   };
-  let currentLayerDirHash: string;
-  await hashElement(layerPath, hashOptions)
-    .then(hash => {
-      currentLayerDirHash = hash;
-    })
-    .catch(error => {
-      throw new Error(`Hashing the layer directory ${path} failed`);
-    });
-  return currentLayerDirHash;
+  return await hashElement(layerPath, hashOptions).catch(error => {
+    throw new Error(`Hashing the layer directory failed: ${path}`);
+  });
 }
 
 function validFilesize(path, maxSize = 250) {
@@ -85,6 +80,6 @@ function validFilesize(path, maxSize = 250) {
     const fileSize = Math.round(size / 1024 ** 2);
     return fileSize < maxSize;
   } catch (error) {
-    return new Error('error in calculating File size');
+    return new Error(`Calculating file size failed: ${path}`);
   }
 }

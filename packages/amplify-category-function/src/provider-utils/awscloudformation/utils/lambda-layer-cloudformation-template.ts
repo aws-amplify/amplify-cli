@@ -59,7 +59,7 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
       S3Bucket: Fn.Ref('deploymentBucketName'),
       S3Key: Fn.Ref('s3Key'),
     },
-    Description: `Lambda Layer ${latestVersion}`,
+    Description: `Lambda Layer version ${latestVersion}`,
     LayerName: parameters.layerName,
     LicenseInfo: 'MIT',
   });
