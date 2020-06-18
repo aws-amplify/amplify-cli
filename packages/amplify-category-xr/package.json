@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-xr",
-  "version": "2.3.7",
+  "version": "2.3.8-iosCodegenWorkshop.0",
   "description": "amplify-cli xr plugin",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "test-ci": "jest --ci -i"
   },
   "dependencies": {
-    "amplify-category-auth": "2.15.7",
+    "amplify-category-auth": "2.15.8-iosCodegenWorkshop.0",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.19.2-iosCodegenWorkshop.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.19.1...graphql-transformer-core@6.19.2-iosCodegenWorkshop.0) (2020-06-18)
+
+
+### Bug Fixes
+
+* occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([eaf08e0](https://github.com/aws-amplify/amplify-cli/commit/eaf08e00841830e9654fea61ce901f2cb478eebe))
+
+
+### Performance Improvements
+
+* optimize appsync file upload and bucket exist check ([#4533](https://github.com/aws-amplify/amplify-cli/issues/4533)) ([f45d32b](https://github.com/aws-amplify/amplify-cli/commit/f45d32bc0805f498a6171b2fd3455445863d9c04))
+
+
+
+
+
 ## [6.19.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.19.0...graphql-transformer-core@6.19.1) (2020-06-11)
 
 

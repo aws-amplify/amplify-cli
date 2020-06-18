@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.13-iosCodegenWorkshop.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.3.12...amplify-category-predictions@2.3.13-iosCodegenWorkshop.0) (2020-06-18)
+
+
+### Bug Fixes
+
+* occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([eaf08e0](https://github.com/aws-amplify/amplify-cli/commit/eaf08e00841830e9654fea61ce901f2cb478eebe))
+
+
+
+
+
 ## [2.3.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.3.11...amplify-category-predictions@2.3.12) (2020-06-11)
 
 **Note:** Version bump only for package amplify-category-predictions

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.2-iosCodegenWorkshop.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.1...graphql-connection-transformer@4.18.2-iosCodegenWorkshop.0) (2020-06-18)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
 ## [4.18.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.0...graphql-connection-transformer@4.18.1) (2020-06-11)
 
 

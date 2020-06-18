@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.10-iosCodegenWorkshop.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.9...amplify-console-integration-tests@1.2.10-iosCodegenWorkshop.0) (2020-06-18)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [1.2.9](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.8...amplify-console-integration-tests@1.2.9) (2020-06-11)
 
 **Note:** Version bump only for package amplify-console-integration-tests

@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "1.2.0",
+  "version": "1.2.1-iosCodegenWorkshop.0",
   "description": ".NET Core templates supplied by the Amplify Team",
   "repository": {
     "type": "git",

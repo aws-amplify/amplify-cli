@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-hosting",
-  "version": "2.3.2",
+  "version": "2.3.3-iosCodegenWorkshop.0",
   "description": "amplify-cli hosting plugin",
   "repository": {
     "type": "git",
