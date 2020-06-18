@@ -1,0 +1,5 @@
+type Todo @model @key(name: "byDescription", fields: ["description"]) {
+  id: ID!
+  name: String!
+  description: String
+}
