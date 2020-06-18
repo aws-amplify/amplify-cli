@@ -21,7 +21,7 @@ describe('amplify key force push', () => {
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     // gql-compile and force push with codebase cli
-    await apiGqlCompile(projRoot, false);
-    await amplifyPushForce(projRoot, false);
+    await apiGqlCompile(projRoot, true);
+    await amplifyPushForce(projRoot, true);
   });
 });
