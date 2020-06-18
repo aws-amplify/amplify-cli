@@ -76,7 +76,7 @@ export async function updateLayerWalkthrough(
   _.assign(parameters, currentParameters);
 
   // get the LayerObj
-  const layerData: LayerMetadata = getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath())(parameters.layerName);
+  const layerData: LayerMetadata = getLayerMetadataFactory(context)(parameters.layerName);
   // runtime question
   let islayerVersionChanged: boolean = false;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
@@ -85,9 +85,7 @@ export async function updateLayerWalkthrough(
   }
   islayerVersionChanged = !_.isEqual(parameters.runtimes, layerData.runtimes);
   // get the latest version from #currentcloudbackend
-  const layerDataPushed: LayerMetadata = getLayerMetadataFactory(context.amplify.pathManager.getCurrentCloudBackendDirPath())(
-    parameters.layerName,
-  );
+  const layerDataPushed: LayerMetadata = getLayerMetadataFactory(context)(parameters.layerName);
   const latestVersionPushed = layerDataPushed !== undefined ? layerDataPushed.getLatestVersion() : 0;
   let latestVersion = layerData.getLatestVersion();
 
@@ -129,10 +127,7 @@ export async function updateLayerWalkthrough(
     const versions = layerData.listVersions();
     const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
     const selectedVersion = String(versionAnswer.layerVersion);
-    const map = createVersionsMap(
-      { ...layerInputParameters, ...{ hash: parameters.layerVersionMap[selectedVersion].hash } },
-      selectedVersion,
-    );
+    const map = createVersionsMap(layerInputParameters, selectedVersion, parameters.layerVersionMap[selectedVersion].hash);
     parameters.layerVersionMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   }
   _.assign(parameters, { layerVersion: String(latestVersion) });

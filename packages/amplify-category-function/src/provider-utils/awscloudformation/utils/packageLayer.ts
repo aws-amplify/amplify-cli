@@ -8,9 +8,8 @@ import { getLayerMetadataFactory } from './layerParams';
 import { createLayerParametersFile, updateLayerCfnFile } from './storeResources';
 
 export async function packageLayer(context, resource) {
-  const backendPath = context.amplify.pathManager.getBackendDirPath();
-  const resourcePath = path.join(backendPath, resource.category, resource.resourceName);
-  const layerData = getLayerMetadataFactory(backendPath)(resource.resourceName);
+  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
+  const layerData = getLayerMetadataFactory(context)(resource.resourceName);
   let latestVersion: number = layerData.getLatestVersion();
   const curLayerHash = await hashLayerDir(resourcePath);
   const previousHash = layerData.getHash(latestVersion);

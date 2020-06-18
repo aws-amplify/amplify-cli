@@ -6,7 +6,6 @@ export interface LayerInputParams {
   layerPermissions?: Permission[];
   authorizedAccountIds?: string;
   authorizedOrgId?: string;
-  hash?: string;
 }
 
 export function layerVersionQuestion(choices) {
@@ -128,9 +127,8 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
   ];
 }
 
-export function createVersionsMap(parameters: LayerInputParams, version: string) {
+export function createVersionsMap(parameters: LayerInputParams, version: string, hash?: string) {
   const { layerPermissions } = parameters;
-  const hash = _.get(parameters, 'hash', null);
   let versionMap: object = {};
   let permissionObj: Array<LayerPermission> = [];
 

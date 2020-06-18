@@ -26,7 +26,7 @@ export const addLayersToFunctionWalkthrough = async (
 
   let askArnQuestion: boolean;
   ({ lambdaLayers, dependsOn, askArnQuestion } = await askLayerSelection(
-    getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath()),
+    getLayerMetadataFactory(context),
     context.amplify.getProjectMeta(),
     runtime.value,
     previousSelections,

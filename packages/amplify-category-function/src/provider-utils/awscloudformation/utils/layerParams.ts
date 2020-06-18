@@ -158,14 +158,15 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 }
 
-export const getLayerMetadataFactory = (projectBackendDirPath: string): LayerMetadataFactory => {
+export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
   return layerName => {
+    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
     const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
     if (!fs.existsSync(resourceDirPath)) {
       return undefined;
     }
     const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-    const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8'));
+    const obj = context.amplify.readJsonFile(parametersFilePath);
     return new LayerState(obj);
   };
 };
