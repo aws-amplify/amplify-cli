@@ -88,7 +88,7 @@ export const specifiedRules: Readonly<ValidationRule[]> = [
   UniqueInputFieldNames,
 ];
 
-const EXTRA_SCALARS_DOCUMENT = parse(`
+export const EXTRA_SCALARS_DOCUMENT = parse(`
 scalar AWSDate
 scalar AWSTime
 scalar AWSDateTime
