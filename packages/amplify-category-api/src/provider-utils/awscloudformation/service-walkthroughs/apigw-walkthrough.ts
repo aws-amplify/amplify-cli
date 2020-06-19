@@ -406,6 +406,7 @@ async function askReadWrite(userType, context, privacy) {
 
 async function askPaths(context, answers, currentPath) {
   // const existingLambdaArns = true;
+
   const existingFunctions = functionsExist(context);
 
   const choices = [
@@ -438,33 +439,55 @@ async function askPaths(context, answers, currentPath) {
     defaultFunctionType = currentPath.lambdaArn ? 'arn' : 'projectFunction';
   }
 
-  const questions = [
-    {
-      name: 'name',
-      type: 'input',
-      message: 'Provide a path (e.g., /book/{isbn}):',
-      default: currentPath ? currentPath.name : '/items',
-      validate: value => validatePathName(value, answers.paths),
-    },
-    {
+  const paths = [...answers.paths];
+
+  let addAnotherPath;
+  do {
+    let pathName;
+    let isPathValid;
+    do {
+      const pathAnswer = await inquirer.prompt({
+        name: 'name',
+        type: 'input',
+        message: 'Provide a path (e.g., /book/{isbn}):',
+        default: currentPath ? currentPath.name : '/items',
+        validate: value => validatePathName(value),
+      });
+      pathName = pathAnswer.name;
+
+      const overlapCheckResult = checkForPathOverlap(pathName, paths);
+      if (overlapCheckResult === false) {
+        // The path provided by the user is valid, and doesn't overlap with any other endpoints that they've stood up with API Gateway.
+        isPathValid = true;
+      } else {
+        // The path provided by the user overlaps with another endpoint that they've stood up with API Gateway.
+        // Ask them if they're okay with this. If they are, then we'll consider their provided path to be valid.
+        const higherOrderPath = overlapCheckResult.higherOrderPath;
+        const lowerOrderPath = overlapCheckResult.lowerOrderPath;
+        isPathValid = (
+          await inquirer.prompt({
+            name: 'isOverlappingPathOK',
+            type: 'confirm',
+            message: `This path ${lowerOrderPath} is overlapping with ${higherOrderPath}. ${higherOrderPath} is going to catch all requests from ${lowerOrderPath}. Are you sure you want to continue?`,
+            default: false,
+          })
+        ).isOverlappingPathOK;
+      }
+    } while (!isPathValid);
+
+    const lambdaAnswer = await inquirer.prompt({
       name: 'functionType',
       type: 'list',
       message: 'Choose a Lambda source',
       choices,
       default: defaultFunctionType,
-    },
-  ];
+    });
 
-  let addAnotherPath;
-  const paths = [...answers.paths];
-
-  do {
-    const answer = await inquirer.prompt(questions);
     // TODO: add path validation like awsmobile-cli does
-    let path = { name: answer.name };
+    let path = { name: pathName };
     let lambda;
     do {
-      lambda = await askLambdaSource(context, answer.functionType, answer.name, currentPath);
+      lambda = await askLambdaSource(context, lambdaAnswer.functionType, path.name, currentPath);
     } while (!lambda);
     const privacy = await askPrivacy(context, answers, currentPath);
     path = { ...path, ...lambda, privacy };
@@ -487,6 +510,92 @@ async function askPaths(context, answers, currentPath) {
   const { dependsOn, functionArns } = await findDependsOn(paths, context);
 
   return { paths, dependsOn, functionArns };
+}
+
+// validatePathName checks that the provided path name is of a valid path structure.
+// Examples of valid path structures: /book, /book/{isbn}, /book/{isbn}/page/{pageNum}
+function validatePathName(name) {
+  // "Whitelist" the path /
+  if (name === '/') {
+    return true;
+  }
+
+  if (name.length === 0) {
+    return 'The path must not be empty';
+  }
+
+  if (name.charAt(name.length - 1) === '/') {
+    return 'The path must not end with /';
+  }
+
+  if (name.charAt(0) !== '/') {
+    return 'The path must begin with / e.g. /items';
+  }
+
+  // Matches parameterized paths such as /book/{isbn}/page/{pageNum}
+  // This regex also catches the above conditions, but those are left in to provide clearer error messages.
+  if (!/^(?:\/(?:[a-zA-Z0-9\-]+|{[a-zA-Z0-9\-]+}))+$/.test(name)) {
+    return 'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.';
+  }
+
+  return true;
+}
+
+// checkForPathOverlap checks to see if the provided path name eclipses or overlaps any other paths in the provided list of paths.
+//
+// checkForPathOverlap returns false if the provided path name does not overlap with any of the other provided paths.
+// checkForPathOverlap returns an object with the following structure if the provided path name does overlap with any of the provided paths:
+// {
+//   higherOrderPath: string,
+//   lowerOrderPath: string,
+// }
+//
+// checkForPathOverlap assumes that all provided paths have previously been run through validatePathName().
+function checkForPathOverlap(name, paths) {
+  // Split name into an array of its components.
+  const split = name
+    .split('/')
+    .filter(sub => sub !== ''); // Because name starts with a /, this filters out the first empty element
+
+  // Sort paths so that the prefix paths of name are checked with shorter paths first.
+  paths.sort();
+
+  // Check if any prefix of this path matches an existing path.
+  //
+  // Convert parameters to: '{}'. When evaluating whether paths overlap, we're only concerned about the placement of parameters in those
+  // paths --- not what the parameters are named.
+  //
+  // Ex: paths /book/{isbn} and /book/{publication-year} overlap. We aren't concerned with the fact that the parameters in those two routes
+  // are named "isbn" and "publication-year"; we're concerned about the fact that the subpaths after /book in both paths are parameters.
+  let subpath = '';
+  let overlappingPath = '';
+  const subMatch = split.some(sub => {
+    // If the current subpath is a parameter, convert it to: '{}'.
+    sub = sub.replace(/{[a-zA-Z0-9\-]+}/g, '{}');
+    subpath = `${subpath}/${sub}`;
+    // Explicitly check for the path / since it overlaps with any other valid path.
+    // If the path isn't /, replace all of its parameters with '{}' when checking for overlap in find().
+    overlappingPath = paths.map(path => path.name).find(name => name === '/' || name.replace(/{[a-zA-Z0-9\-]+}/g, '{}') === subpath);
+    return overlappingPath !== undefined;
+  });
+  if (subMatch) {
+    // To determine which of the overlapping paths is the higher order path, count the number of occurrences of '/' in both paths.
+    const nameSlashCount = name.split('/').length - 1;
+    const overlappingPathSlashCount = overlappingPath.split('/').length - 1;
+    if (nameSlashCount < overlappingPathSlashCount) {
+      return {
+        higherOrderPath: name,
+        lowerOrderPath: overlappingPath,
+      };
+    }
+    return {
+      higherOrderPath: overlappingPath,
+      lowerOrderPath: name,
+    };
+  }
+
+  // This path doesn't overlap with any of the other provided paths.
+  return false;
 }
 
 async function findDependsOn(paths, context) {

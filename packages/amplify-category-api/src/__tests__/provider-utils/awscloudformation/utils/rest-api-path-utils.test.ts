@@ -1,10 +1,15 @@
 import { validatePathName, formatCFNPathParamsForExpressJs } from '../../../../provider-utils/awscloudformation/utils/rest-api-path-utils';
 
-const stubOtherPaths = [{ name: '/other/path' }, { name: '/sub/path' }];
+const walkthrough = rewire('../awscloudformation/service-walkthroughs/apigw-walkthrough.js');
+
+const validatePathName = walkthrough.__get__('validatePathName');
+const checkForPathOverlap = walkthrough.__get__('checkForPathOverlap');
+const stubOtherPaths = [{ name: '/other/path' }, { name: '/sub/path' }, { name: '/path/{with}/{params}' }];
 
 test('validatePathName_validPath', () => {
   expect(validatePathName('/some/path', stubOtherPaths)).toBe(true);
   expect(validatePathName('/path/{with}/{params}', stubOtherPaths)).toBe(true);
+  expect(validatePathName('/', stubOtherPaths)).toBe(true);
 });
 
 test('validatePath_empty', () => {
@@ -30,17 +35,39 @@ test('validatePathName_invalidCharacters', () => {
   expect(validatePathName('/invalid/{param', stubOtherPaths)).toStrictEqual(errorMessage);
 });
 
-test('validatePathName_subPathMatch', () => {
-  expect(validatePathName('/sub/path/match', stubOtherPaths)).toStrictEqual('An existing path already matches this sub-path: /sub/path');
+test('checkForPathOverlap_subPathMatch', () => {
+  expect(checkForPathOverlap('/sub/path/match', stubOtherPaths)).toEqual({
+    higherOrderPath: '/sub/path',
+    lowerOrderPath: '/sub/path/match',
+  });
 });
 
-test('validatePathName_pathMatch', () => {
-  expect(validatePathName(stubOtherPaths[0].name, stubOtherPaths)).toStrictEqual(
-    'An existing path already matches this sub-path: /other/path',
-  );
+test('checkForPathOverlap_subPathParamsMatch', () => {
+  expect(checkForPathOverlap('/path/{with-different}/{params}', stubOtherPaths)).toEqual({
+    higherOrderPath: '/path/{with}/{params}',
+    lowerOrderPath: '/path/{with-different}/{params}',
+  });
+});
+
+test('checkForPathOverlap_subPathParamsNoMatch', () => {
+  expect(checkForPathOverlap('/path/{with-non-ovelapping-params}', stubOtherPaths)).toEqual(false);
+  expect(checkForPathOverlap('/path/{with}/non-overlapping-params', stubOtherPaths)).toEqual(false);
+  expect(checkForPathOverlap('/path/{with}/non/overlapping/params', stubOtherPaths)).toEqual(false);
+});
+
+test('checkForPathOverlap_pathMatch', () => {
+  expect(checkForPathOverlap(stubOtherPaths[0].name, stubOtherPaths)).toEqual({
+    higherOrderPath: stubOtherPaths[0].name,
+    lowerOrderPath: stubOtherPaths[0].name,
+  });
 });
 
 test('formatCFNPathParamsForExpressJs', () => {
+  // setup
+  const formatCFNPathParamsForExpressJs = walkthrough.__get__('formatCFNPathParamsForExpressJs');
+
+  // test
+  expect(formatCFNPathParamsForExpressJs('/')).toStrictEqual('/');
   expect(formatCFNPathParamsForExpressJs('/path')).toStrictEqual('/path');
   expect(formatCFNPathParamsForExpressJs('/path/{param}')).toStrictEqual('/path/:param');
   expect(formatCFNPathParamsForExpressJs('/path/{param}/suffix')).toStrictEqual('/path/:param/suffix');
