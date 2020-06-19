@@ -1,11 +1,11 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '../../src';
-import { runtimeChoices } from './lambda-function';
 import { multiSelect } from '../utils/selectors';
 
 type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
 
+const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (everyone on AWS can use this layer)'];
 
 export function validateLayerDir(projRoot: string, layerName: string, layerExists: boolean, runtimes: LayerRuntimes[]): boolean {
@@ -42,7 +42,7 @@ export function addLayer(cwd: string, settings?: any) {
     expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
 
     chain.wait('Select up to 2 compatible runtimes:');
-    multiSelect(chain, runtimeDisplayNames, runtimeChoices);
+    multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
     chain.wait('Who should have permission to use this layer?');
     multiSelect(chain, settings.permissions, permissionChoices);
 
@@ -98,7 +98,7 @@ export function updateLayer(cwd: string, settings?: any) {
     chain.wait('Do you want to change the compatible runtimes?');
     if (settings.versionChanged) {
       chain.sendLine('y').wait('Select up to 2 compatible runtimes:');
-      multiSelect(chain, runtimeDisplayNames, runtimeChoices);
+      multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
     } else {
       chain.sendLine('n');
     }
@@ -145,7 +145,7 @@ function getLayerRuntimeInfo(runtime: LayerRuntimes) {
     case 'nodejs':
       return { displayName: 'NodeJS', path: path.join('lib', runtime, 'node_modules') };
     case 'python':
-      return { displayName: 'Python', path: path.join('lib', runtime) };
+      return { displayName: 'Python', path: path.join('lib', runtime, 'lib', 'python3.8', 'site-packages') };
     default:
       throw new Error(`Invalid runtime value: ${runtime}`);
   }
@@ -160,7 +160,7 @@ function printFlow(chain: ExecutionContext, settings: any, layerDirRegex) {
 
   for (let i = 0; i < settings.runtimes.length; ++i) {
     const { displayName, path } = getLayerRuntimeInfo(settings.runtimes[i]);
-    const layerRuntimeDirRegex = new RegExp(`\\[${displayName}\\]: .*/amplify/backend/function/${settings.layerName}/${path}/`);
+    const layerRuntimeDirRegex = new RegExp(`\\[${displayName}\\]: .*/amplify/backend/function/${settings.layerName}/${path}`);
     chain.wait(layerRuntimeDirRegex);
   }
 
