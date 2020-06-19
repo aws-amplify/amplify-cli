@@ -84,10 +84,9 @@ export async function updateLayerWalkthrough(
     parameters.runtimes = runtimeReturn.map(val => val.runtime);
   }
   islayerVersionChanged = !_.isEqual(parameters.runtimes, layerData.runtimes);
-  // get the latest version from #currentcloudbackend
-  const layerDataPushed: LayerMetadata = getLayerMetadataFactory(context)(parameters.layerName);
-  const latestVersionPushed = layerDataPushed !== undefined ? layerDataPushed.getLatestVersion() : 0;
+
   let latestVersion = layerData.getLatestVersion();
+  const latestVersionPushed = layerData.getHash(latestVersion) !== undefined ? latestVersion : 0;
 
   // get the latest accounts/orgsid
   const defaultlayerPermissions = layerData.getVersion(latestVersion).permissions.map(permission => permission.type);

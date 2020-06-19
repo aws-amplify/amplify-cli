@@ -1,5 +1,6 @@
 import {
   addLayer,
+  addOptData,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
@@ -53,11 +54,13 @@ describe('amplify add lambda layer', () => {
     };
     await initJSProjectWithProfile(projRoot, {});
     await addLayer(projRoot, settings);
-    expect(validateLayerDir(projRoot, settings.layerName, true)).toBeTruthy();
+    expect(validateLayerDir(projRoot, settings.layerName, true)).toBe(true);
     await amplifyPushAuth(projRoot);
-    await removeLayer(projRoot);
-    expect(validateLayerDir(projRoot, settings.layerName, false)).toBeTruthy();
+    addOptData(projRoot, settings.layerName);
+    await amplifyPushAuth(projRoot);
     await validateMetadata(settings.layerName);
+    await removeLayer(projRoot);
+    expect(validateLayerDir(projRoot, settings.layerName, false)).toBe(true);
   });
 
   it('init a project and add/update simple layer and push', async () => {

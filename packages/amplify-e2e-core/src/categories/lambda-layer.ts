@@ -95,7 +95,7 @@ export function updateLayer(cwd: string, settings?: any) {
       chain.wait('Select the Lambda Layer to update:').sendCarriageReturn();
     }
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
-    expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
+    expect(settings.runtimes.length === runtimeDisplayNames.length).toBe(true);
     chain.wait('Do you want to change the compatible runtimes?');
     if (settings.versionChanged) {
       chain.sendLine('y').wait('Select up to 5 compatible runtimes:');
@@ -110,7 +110,7 @@ export function updateLayer(cwd: string, settings?: any) {
     multiSelect(chain, settings.permissions, permissionChoices);
 
     if (!settings.versionChanged) {
-      chain.wait('Select the version number to update for given Lambda Layer:').sendCarriageReturn();
+      chain.wait('Select the layer version to update:').sendCarriageReturn();
     } else {
       chain
         .wait('')
@@ -171,4 +171,8 @@ function printFlow(chain: ExecutionContext, settings: any, layerDirRegex) {
     .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
     .wait('"amplify push" - builds all of your local backend resources and provisions them in the cloud')
     .sendEof();
+}
+
+export function addOptData(projRoot: string, layerName: string): void {
+  fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
 }
