@@ -28,6 +28,9 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, o
       try {
         const { add } = require('amplify-category-auth');
         await add(context);
+        context.print.warning(
+          'If a user part of a user pool group, you will need to run amplify update storage to enable IAM group policies for CRUD operations',
+        );
       } catch (e) {
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
         break;
