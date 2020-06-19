@@ -1,12 +1,13 @@
-import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
+import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
+import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 import { categoryName, layerParametersFileName } from '../utils/constants';
-import fs from 'fs-extra';
 
 export type LayerVersionData = {
   version: LayerVersionMetadata;
 };
+
 export type LayerParameters = {
   layerName: string;
   runtimes: FunctionRuntime[];
@@ -30,10 +31,12 @@ export interface LayerMetadata {
   getVersion: (version: number) => LayerVersionMetadata;
   listVersions: () => number[];
   getLatestVersion: () => number;
+  getHash: (version: number) => string;
 }
 
 export interface LayerVersionMetadata {
   permissions: LayerPermission[];
+  hash?: string;
   listAccoutAccess: () => string[];
   listOrgAccess: () => string[];
   isPrivate: () => boolean;
@@ -66,9 +69,9 @@ class LayerState implements LayerMetadata {
   layerMetaData: LayerVersionMetadata;
   constructor(obj) {
     this.runtimes = obj.runtimes;
-    Object.entries(obj.layerVersionMap).forEach(([key, value]) => {
-      this.layerMetaData = new LayerVersionState(value);
-      this.versionMap.set(Number(key), this.layerMetaData);
+    Object.entries(obj.layerVersionMap).forEach(([versionNumber, versionData]) => {
+      this.layerMetaData = new LayerVersionState(versionData);
+      this.versionMap.set(Number(versionNumber), this.layerMetaData);
     });
   }
 
@@ -79,16 +82,23 @@ class LayerState implements LayerMetadata {
   listVersions(): number[] {
     return Array.from(this.versionMap.keys());
   }
+
   getLatestVersion(): number {
     return Array.from(this.versionMap.keys()).reduce((a, b) => Math.max(a, b));
+  }
+
+  getHash(version: number): string {
+    return this.getVersion(version).hash;
   }
 }
 
 class LayerVersionState implements LayerVersionMetadata {
   permissions: LayerPermission[];
-  constructor(value) {
+  hash: string;
+  constructor(versionData) {
     this.permissions = [];
-    value.forEach(permission => {
+    this.hash = versionData.hash;
+    versionData.permissions.forEach(permission => {
       if (permission.type === Permission.public) {
         const permissionPublic: PublicLayer = {
           type: Permission.public,
@@ -148,14 +158,15 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 }
 
-export const getLayerMetadataFactory = (projectBackendDirPath: string): LayerMetadataFactory => {
+export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
   return layerName => {
+    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
     const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
     if (!fs.existsSync(resourceDirPath)) {
       return undefined;
     }
     const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-    const obj = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8')).parameters;
+    const obj = context.amplify.readJsonFile(parametersFilePath);
     return new LayerState(obj);
   };
 };

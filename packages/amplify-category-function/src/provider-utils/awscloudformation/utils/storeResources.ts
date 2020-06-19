@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import { provider, ServiceName, layerParametersFileName } from './constants';
 import { category as categoryName } from '../../../constants';
 import { generateLayerCfnObj, generatePermissionCfnObj } from './lambda-layer-cloudformation-template';
+import { LayerParameters } from './layerParams';
 import _ from 'lodash';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 
@@ -91,7 +92,7 @@ export function createLayerFolders(context, parameters) {
   return layerDirPath;
 }
 
-export function createLayerCfnFile(context, parameters, layerDirPath) {
+export function createLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
   context.amplify.writeObjectAsJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
     generateLayerCfnObj(context, parameters),
@@ -132,7 +133,7 @@ export function saveCFNParameters(
   }
 }
 
-export function updateLayerCfnFile(context, parameters, layerDirPath) {
+export function updateLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
   context.amplify.writeObjectAsJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
     generateLayerCfnObj(context, parameters),
@@ -143,11 +144,10 @@ export function updateLayerCfnFile(context, parameters, layerDirPath) {
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', parameters.build);
 }
 
-export function createLayerParametersFile(context, parameters, layerDirPath) {
+export function createLayerParametersFile(context, parameters, layerDirPath: string) {
   fs.ensureDirSync(layerDirPath);
   const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
-  //const jsonString = JSON.stringify({ parameters }, null, 4);
-  context.amplify.writeObjectAsJson(parametersFilePath, { parameters }, true);
+  context.amplify.writeObjectAsJson(parametersFilePath, parameters, true);
 }
 
 export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {

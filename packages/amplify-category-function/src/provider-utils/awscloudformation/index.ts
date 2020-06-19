@@ -145,7 +145,7 @@ export async function addLayerResource(
   const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
   createLayerParametersFile(context, layerParams, layerDirPath);
   createParametersFile(context, {}, parameters.layerName, 'parameters.json');
-  createLayerCfnFile(context, parameters, layerDirPath);
+  createLayerCfnFile(context, parameters as LayerParameters, layerDirPath);
 
   const { print } = context;
   print.info('✅ Lambda layer folders & files created:');
@@ -162,7 +162,7 @@ export async function addLayerResource(
   }
 
   print.info('Include any files you want to share across runtimes in this folder:');
-  print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info(`amplify/backend/function/${parameters.layerName}/opt`);
   print.info('');
   print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
   print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
@@ -210,13 +210,13 @@ export async function updateLayerResource(
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
   }
-  await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters);
+  parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters);
 
   // generate layer parameters file and CFn file for the updated layer
   const layerDirPath = createLayerFolders(context, parameters); // update based
   const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
   createLayerParametersFile(context, layerParams, layerDirPath);
-  updateLayerCfnFile(context, parameters, layerDirPath);
+  updateLayerCfnFile(context, parameters as LayerParameters, layerDirPath);
   const { print } = context;
   print.info('✅ Lambda layer folders & files created:');
   print.info(layerDirPath);
@@ -232,7 +232,7 @@ export async function updateLayerResource(
   }
 
   print.info('Include any files you want to share across runtimes in this folder:');
-  print.info(`amplify/backend/function/${parameters.layerName}/opt/data`);
+  print.info(`amplify/backend/function/${parameters.layerName}/opt`);
   print.info('');
   print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
   print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');

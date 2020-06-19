@@ -1,18 +1,18 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { LayerParameters, Permission, LayerMetadata, getLayerMetadataFactory } from '../utils/layerParams';
+import { getLayerMetadataFactory, LayerMetadata, LayerParameters, Permission } from '../utils/layerParams';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import {
-  layerNameQuestion,
-  layerPermissionsQuestion,
-  layerAccountAccessQuestion,
-  layerOrgAccessQuestion,
   createVersionsMap,
-  layerVersionQuestion,
+  layerAccountAccessQuestion,
   LayerInputParams,
+  layerNameQuestion,
+  layerOrgAccessQuestion,
+  layerPermissionsQuestion,
+  layerVersionQuestion,
 } from '../utils/layerHelpers';
-import { ServiceName, categoryName, layerParametersFileName } from '../utils/constants';
+import { categoryName, layerParametersFileName, ServiceName } from '../utils/constants';
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
@@ -73,10 +73,10 @@ export async function updateLayerWalkthrough(
   const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
   const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
 
-  _.assign(parameters, currentParameters.parameters);
+  _.assign(parameters, currentParameters);
 
   // get the LayerObj
-  const layerData: LayerMetadata = getLayerMetadataFactory(context.amplify.pathManager.getBackendDirPath())(parameters.layerName);
+  const layerData: LayerMetadata = getLayerMetadataFactory(context)(parameters.layerName);
   // runtime question
   let islayerVersionChanged: boolean = false;
   if (await context.amplify.confirmPrompt.run('Do you want to change the compatible runtimes?', false)) {
@@ -84,12 +84,9 @@ export async function updateLayerWalkthrough(
     parameters.runtimes = runtimeReturn.map(val => val.runtime);
   }
   islayerVersionChanged = !_.isEqual(parameters.runtimes, layerData.runtimes);
-  // get the latest version from #currentcloudbackend
-  const layerDataPushed: LayerMetadata = getLayerMetadataFactory(context.amplify.pathManager.getCurrentCloudBackendDirPath())(
-    parameters.layerName,
-  );
-  const latestVersionPushed = layerDataPushed !== undefined ? layerDataPushed.getLatestVersion() : 0;
+
   let latestVersion = layerData.getLatestVersion();
+  const latestVersionPushed = layerData.getHash(latestVersion) !== undefined ? latestVersion : 0;
 
   // get the latest accounts/orgsid
   const defaultlayerPermissions = layerData.getVersion(latestVersion).permissions.map(permission => permission.type);
@@ -122,13 +119,14 @@ export async function updateLayerWalkthrough(
       latestVersion += 1;
     }
     // updating map for a new version
-    let map = createVersionsMap(layerInputParameters, String(latestVersion));
+    const map = createVersionsMap(layerInputParameters, String(latestVersion));
     parameters.layerVersionMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   } else {
-    //updating map for the selected version
-    let versions = layerData.listVersions();
+    // updating map for the selected version
+    const versions = layerData.listVersions();
     const versionAnswer = await inquirer.prompt(layerVersionQuestion(versions));
-    let map = createVersionsMap(layerInputParameters, String(versionAnswer.layerVersion));
+    const selectedVersion = String(versionAnswer.layerVersion);
+    const map = createVersionsMap(layerInputParameters, selectedVersion, parameters.layerVersionMap[selectedVersion].hash);
     parameters.layerVersionMap[Object.keys(map)[0]] = map[Object.keys(map)[0]];
   }
   _.assign(parameters, { layerVersion: String(latestVersion) });
