@@ -26,7 +26,7 @@ export async function packageLayer(context, resource) {
     layerParameters.build = true;
     updateLayerCfnFile(context, layerParameters, resourcePath);
   } else if (!previousHash) {
-    layerParameters.layerVersionMap[`${latestVersion}`].hash = curLayerHash;
+    layerParameters.layerVersionMap[`${latestVersion}`].hash = curLayerHash.hash;
     createLayerParametersFile(context, layerParameters, resourcePath);
   }
 
