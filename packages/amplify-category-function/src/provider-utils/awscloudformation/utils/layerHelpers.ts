@@ -66,6 +66,7 @@ export function layerPermissionsQuestion(params?: Permission[]) {
         },
         {
           name: 'Public (everyone on AWS can use this layer)',
+          short: 'Public',
           value: Permission.public,
           checked: _.includes(params, Permission.public),
         },
@@ -123,6 +124,29 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
         return true;
       },
       default: defaultorgs !== undefined ? defaultorgs.join(',') : '',
+    },
+  ];
+}
+
+export function prevPermsQuestion(layerName: string) {
+  return [
+    {
+      type: 'list',
+      name: 'usePrevPerms',
+      message: `Content changes in Lambda layer ${layerName} detected. What permissions do you want to grant to this new layer version?`,
+      choices: [
+        {
+          name: 'The same permission as the latest layer version',
+          short: 'Previous version permissions',
+          value: 'previous',
+        },
+        {
+          name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
+          short: 'Private',
+          value: 'default',
+        },
+      ],
+      default: 0,
     },
   ];
 }

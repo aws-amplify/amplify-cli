@@ -1,28 +1,38 @@
 import archiver from 'archiver';
 import fs from 'fs-extra';
 import glob from 'glob';
+import { prompt } from 'inquirer';
 import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
+import { prevPermsQuestion } from './layerHelpers';
 import { getLayerMetadataFactory } from './layerParams';
 import { createLayerParametersFile, updateLayerCfnFile } from './storeResources';
 
 export async function packageLayer(context, resource) {
-  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-  const layerData = getLayerMetadataFactory(context)(resource.resourceName);
+  const layerName = resource.resourceName;
+  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
+  const layerData = getLayerMetadataFactory(context)(layerName);
   let latestVersion: number = layerData.getLatestVersion();
   const curLayerHash = await hashLayerDir(resourcePath);
   const previousHash = layerData.getHash(latestVersion);
   const layerParameters = context.amplify.readJsonFile(path.join(resourcePath, 'layer-parameters.json'));
 
   if (previousHash && previousHash !== curLayerHash.hash) {
+    const prevPermissions = layerData.getVersion(latestVersion).permissions;
+    const defaultPermissions = [{ type: 'private' }];
+    let usePrevPermissions = true;
+    if (!_.isEqual(prevPermissions, defaultPermissions)) {
+      const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
+      usePrevPermissions = usePrevPerms === 'previous';
+    }
     ++latestVersion; // Content changes detected, bumping version
     layerParameters.layerVersionMap[`${latestVersion}`] = {
-      permissions: [{ type: 'private' }],
+      permissions: usePrevPermissions ? prevPermissions : defaultPermissions,
       hash: curLayerHash.hash,
     };
     createLayerParametersFile(context, layerParameters, resourcePath);
-    layerParameters.layerName = resource.resourceName;
+    layerParameters.layerName = layerName;
     layerParameters.build = true;
     updateLayerCfnFile(context, layerParameters, resourcePath);
   } else if (!previousHash) {
@@ -42,7 +52,7 @@ export async function packageLayer(context, resource) {
     output.on('close', () => {
       // check zip size is less than 250MB
       if (validFilesize(destination)) {
-        const zipName = `${resource.resourceName}-build.zip`;
+        const zipName = `${layerName}-build.zip`;
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipName);
         resolve({ zipFilePath: destination, zipFilename: zipName });
       } else {
