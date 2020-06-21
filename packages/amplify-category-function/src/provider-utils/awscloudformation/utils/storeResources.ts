@@ -73,23 +73,25 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
 export function createLayerFolders(context, parameters) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const layerDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
-  fs.mkdirSync(path.join(layerDirPath, 'opt'), { recursive: true });
-
-  let moduleDirPath;
+  fs.ensureDirSync(path.join(layerDirPath, 'opt'));
   for (let runtime of parameters.runtimes) {
-    moduleDirPath = path.join(layerDirPath, 'lib', runtime.layerExecutablePath);
-    fs.mkdirSync(moduleDirPath, { recursive: true });
-    fs.writeFileSync(path.join(moduleDirPath, 'README.txt'), 'Replace this file with your layer files');
+    ensureLayerRuntimeFolder(layerDirPath, runtime);
+  }
+  return layerDirPath;
+}
 
+// Default files are only created if the path does not exist
+function ensureLayerRuntimeFolder(layerDirPath: string, runtime) {
+  const runtimeDirPath = path.join(layerDirPath, 'lib', runtime.layerExecutablePath);
+  if (!fs.pathExistsSync(runtimeDirPath)) {
+    fs.ensureDirSync(runtimeDirPath);
+    fs.writeFileSync(path.join(runtimeDirPath, 'README.txt'), 'Replace this file with your layer files');
     if (runtime.layerDefaultFiles) {
       for (let defaultFile of runtime.layerDefaultFiles) {
-        moduleDirPath = path.join(layerDirPath, 'lib', defaultFile.path);
-        fs.ensureDirSync(moduleDirPath);
-        fs.writeFileSync(path.join(moduleDirPath, defaultFile.filename), defaultFile.content);
+        fs.writeFileSync(path.join(layerDirPath, 'lib', defaultFile.path, defaultFile.filename), defaultFile.content);
       }
     }
   }
-  return layerDirPath;
 }
 
 export function createLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
