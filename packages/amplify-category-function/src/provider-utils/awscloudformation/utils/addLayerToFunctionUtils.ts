@@ -66,8 +66,6 @@ export const askLayerSelection = async (
       message: versionSelectionPrompt(selection),
       choices: layerMetadataFactory(selection)
         .listVersions()
-        .sort()
-        .reverse()
         .map(num => num.toString()),
       default: currentVersion,
       filter: numStr => parseInt(numStr, 10),

@@ -19,7 +19,7 @@ const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
 const layerMetadataFactory_stub: LayerMetadataFactory = () =>
   ({
-    listVersions: () => [1, 2, 3],
+    listVersions: () => [3, 2, 1],
   } as any);
 
 const runtimeValue = 'lolcode';
