@@ -6,42 +6,14 @@ import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
 import { prevPermsQuestion } from './layerHelpers';
-import { getLayerMetadataFactory } from './layerParams';
+import { getLayerMetadataFactory, LayerPermission, Permission, PrivateLayer } from './layerParams';
 import { createLayerParametersFile, updateLayerCfnFile } from './storeResources';
 
 export async function packageLayer(context, resource) {
   const layerName = resource.resourceName;
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
-  const layerData = getLayerMetadataFactory(context)(layerName);
-  let latestVersion: number = layerData.getLatestVersion();
-  const curLayerHash = await hashLayerDir(resourcePath);
-  const previousHash = layerData.getHash(latestVersion);
-  const layerParameters = context.amplify.readJsonFile(path.join(resourcePath, 'layer-parameters.json'));
-
-  if (previousHash && previousHash !== curLayerHash.hash) {
-    const prevPermissions = layerData.getVersion(latestVersion).permissions;
-    const defaultPermissions = [{ type: 'private' }];
-    let usePrevPermissions = true;
-    if (!_.isEqual(prevPermissions, defaultPermissions)) {
-      const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
-      usePrevPermissions = usePrevPerms === 'previous';
-    }
-    ++latestVersion; // Content changes detected, bumping version
-    layerParameters.layerVersionMap[`${latestVersion}`] = {
-      permissions: usePrevPermissions ? prevPermissions : defaultPermissions,
-      hash: curLayerHash.hash,
-    };
-    createLayerParametersFile(context, layerParameters, resourcePath);
-    layerParameters.layerName = layerName;
-    layerParameters.build = true;
-    updateLayerCfnFile(context, layerParameters, resourcePath);
-  } else if (!previousHash) {
-    layerParameters.layerVersionMap[`${latestVersion}`].hash = curLayerHash.hash;
-    createLayerParametersFile(context, layerParameters, resourcePath);
-  }
-
+  await ensureLayerVersion(context, resourcePath, layerName);
   const zipFilename = 'latest-build.zip';
-
   const distDir = path.join(resourcePath, 'dist');
   fs.ensureDirSync(distDir);
   const destination = path.join(distDir, zipFilename);
@@ -73,7 +45,45 @@ export async function packageLayer(context, resource) {
   });
 }
 
-export async function hashLayerDir(layerPath: string): Promise<any> {
+// Check hash results for content changes, bump version if so
+async function ensureLayerVersion(context: any, layerPath: string, layerName: string) {
+  const layerData = getLayerMetadataFactory(context)(layerName);
+  let latestVersion: number = layerData.getLatestVersion();
+  const { hash: currentHash } = await hashLayerDir(layerPath);
+  const previousHash = layerData.getHash(latestVersion);
+  const layerParameters = context.amplify.readJsonFile(path.join(layerPath, 'layer-parameters.json'));
+
+  if (previousHash && previousHash !== currentHash) {
+    const prevPermissions = layerData.getVersion(latestVersion).permissions;
+    ++latestVersion; // Content changes detected, bumping version
+    layerParameters.layerVersionMap[`${latestVersion}`] = {
+      permissions: await getNewVersionPermissions(layerName, prevPermissions),
+      hash: currentHash,
+    };
+    createLayerParametersFile(context, layerParameters, layerPath);
+    layerParameters.layerName = layerName;
+    layerParameters.build = true;
+    updateLayerCfnFile(context, layerParameters, layerPath);
+  } else if (!previousHash) {
+    layerParameters.layerVersionMap[`${latestVersion}`].hash = currentHash;
+    createLayerParametersFile(context, layerParameters, layerPath);
+  }
+}
+
+async function getNewVersionPermissions(
+  layerName: string,
+  prevPermissions: Partial<LayerPermission>[],
+): Promise<Partial<LayerPermission>[]> {
+  const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
+  let usePrevPermissions = true;
+  if (!_.isEqual(prevPermissions, defaultPermissions)) {
+    const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
+    usePrevPermissions = usePrevPerms === 'previous';
+  }
+  return new Promise(resolve => (usePrevPermissions ? prevPermissions : defaultPermissions));
+}
+
+async function hashLayerDir(layerPath: string): Promise<any> {
   const hashOptions = {
     folders: { exclude: ['.*', 'dist'] },
     files: { exclude: ['README.txt', 'layer-parameters.json', 'parameters.json', '*-awscloudformation-template.json'] },

@@ -74,9 +74,7 @@ export function createLayerFolders(context, parameters) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const layerDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
   fs.ensureDirSync(path.join(layerDirPath, 'opt'));
-  for (let runtime of parameters.runtimes) {
-    ensureLayerRuntimeFolder(layerDirPath, runtime);
-  }
+  parameters.runtimes.forEach(runtime => ensureLayerRuntimeFolder(layerDirPath, runtime));
   return layerDirPath;
 }
 
@@ -86,11 +84,9 @@ function ensureLayerRuntimeFolder(layerDirPath: string, runtime) {
   if (!fs.pathExistsSync(runtimeDirPath)) {
     fs.ensureDirSync(runtimeDirPath);
     fs.writeFileSync(path.join(runtimeDirPath, 'README.txt'), 'Replace this file with your layer files');
-    if (runtime.layerDefaultFiles) {
-      for (let defaultFile of runtime.layerDefaultFiles) {
-        fs.writeFileSync(path.join(layerDirPath, 'lib', defaultFile.path, defaultFile.filename), defaultFile.content);
-      }
-    }
+    (runtime.layerDefaultFiles || []).forEach(defaultFile =>
+      fs.writeFileSync(path.join(layerDirPath, 'lib', defaultFile.path, defaultFile.filename), defaultFile.content),
+    );
   }
 }
 
