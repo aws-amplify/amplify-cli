@@ -20,7 +20,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           layerExecutablePath: path.join('nodejs', 'node_modules'),
           layerDefaultFiles: [
             {
-              path: 'nodejs/',
+              path: 'nodejs',
               filename: 'package.json',
               content: JSON.stringify({
                 name: 'nodejs',

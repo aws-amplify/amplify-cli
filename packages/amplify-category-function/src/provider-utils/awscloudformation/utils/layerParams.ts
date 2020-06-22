@@ -80,7 +80,7 @@ class LayerState implements LayerMetadata {
   }
 
   listVersions(): number[] {
-    return Array.from(this.versionMap.keys());
+    return Array.from(this.versionMap.keys()).sort((a, b) => Number(b) - Number(a));
   }
 
   getLatestVersion(): number {
