@@ -8,8 +8,6 @@ const S3 = require('../src/aws-utils/aws-s3');
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const providerName = require('./constants').ProviderName;
 const { hashElement } = require('folder-hash');
-const glob = require('glob');
-const ignore = require('ignore');
 
 const PARAM_FILE_NAME = 'parameters.json';
 const CF_FILE_NAME = 'cloudformation-template.json';
@@ -220,30 +218,11 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
  * should return the same hash.
  */
 async function hashDirectory(directory) {
-  const wellknownExtensions = ['graphql', 'json', 'vtl', 'yaml', 'yml'];
-
-  const allExtensions = wellknownExtensions.join('|');
-  const globPattern = `**/*.+(${allExtensions})`;
-
-  const defaultIgnoreList = ['.DS_Store'];
-
-  const ignoreList = [
-    ...defaultIgnoreList,
-    'build/parameters.json', // We must exclude this file as it is updated with the hash of the files
-  ];
-
-  const files = glob.sync(globPattern, {
-    cwd: directory,
-    nodir: true,
-  });
-
-  const filteredFiles = ignore()
-    .add(ignoreList)
-    .filter(files);
-
   const options = {
     encoding: 'hex',
-    files: filteredFiles,
+    folders: {
+      exclude: ['build'],
+    },
   };
 
   const hashResult = await hashElement(directory, options);

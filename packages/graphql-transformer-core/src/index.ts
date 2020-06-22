@@ -27,7 +27,7 @@ import {
   ResolverConfig,
   SyncConfig,
 } from './util/transformConfig';
-import { EXTRA_DIRECTIVES_DOCUMENT, EXTRA_SCALARS_DOCUMENT } from './validation';
+import { EXTRA_DIRECTIVES_DOCUMENT } from './validation';
 export * from './errors';
 export * from './util';
 
@@ -63,6 +63,4 @@ export {
   ResolverConfig,
   SyncConfig,
   DeploymentResources,
-  EXTRA_SCALARS_DOCUMENT,
-  EXTRA_DIRECTIVES_DOCUMENT,
 };
