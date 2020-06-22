@@ -28,7 +28,7 @@ async function run(context, envName, deleteS3) {
   await deleteEnv(context, envName, awsConfig);
 }
 
-async function getStorageBucket(context, envName, s3) {
+async function getStorageBucket(context, envName, s3, tempDir) {
   const sourceZipFile = await downloadZip(s3, tempDir, S3BackendZipFileName, envName);
   const unZippedDir = await extractZip(tempDir, sourceZipFile);
   const amplifyMeta = context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
