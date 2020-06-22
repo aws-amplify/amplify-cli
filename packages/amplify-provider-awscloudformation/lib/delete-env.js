@@ -14,7 +14,10 @@ async function run(context, envName, deleteS3) {
     const projectDetails = context.amplify.getProjectDetails();
     const projectBucket = projectDetails.teamProviderInfo[envName][ProviderName].DeploymentBucketName;
     if (await s3.ifBucketExists(projectBucket)) {
-      const storageBucket = await getStorageBucket(context, envName, s3);
+      const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
+      const tempDir = path.join(amplifyDir, envName, '.temp');
+      const storageBucket = await getStorageBucket(context, envName, s3, tempDir);
+      fs.removeSync(tempDir);
       if (storageBucket) await s3.deleteS3Bucket(storageBucket);
       await s3.deleteS3Bucket(projectBucket);
     } else {
@@ -26,8 +29,6 @@ async function run(context, envName, deleteS3) {
 }
 
 async function getStorageBucket(context, envName, s3) {
-  const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
-  const tempDir = path.join(amplifyDir, envName, '.temp');
   const sourceZipFile = await downloadZip(s3, tempDir, S3BackendZipFileName, envName);
   const unZippedDir = await extractZip(tempDir, sourceZipFile);
   const amplifyMeta = context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
