@@ -80,7 +80,7 @@ async function getNewVersionPermissions(
     const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
     usePrevPermissions = usePrevPerms === 'previous';
   }
-  return new Promise(resolve => (usePrevPermissions ? prevPermissions : defaultPermissions));
+  return usePrevPermissions ? prevPermissions : defaultPermissions;
 }
 
 async function hashLayerDir(layerPath: string): Promise<any> {
