@@ -11,7 +11,7 @@ export async function newPlugin(cwd: string): Promise<string> {
       .sendLine('')
       .wait('What Amplify CLI events do you want the plugin to handle')
       .sendLine('a') //will select "Learn more"
-      .wait('The Amplify CLI aims to provide a flexible and loosely-coupled pluggable platform for the plugins.')
+      .wait('The Amplify CLI aims to provide a flexible and loosely-coupled pluggable platforms for the plugins.')
       .wait('What Amplify CLI events do you want the plugin to handle')
       .sendLine('')
       .run((err: Error) => {
