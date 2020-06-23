@@ -14,7 +14,7 @@ module.exports = {
           LambdaLayer:
             'When you delete a layer version, you can no longer configure functions to use it.\nHowever, any function that already uses the layer version continues to have access to it.',
         },
-        serviceSuffix: { LambdaFunction: '(function)', LambdaLayer: '(layer)' },
+        serviceSuffix: { Lambda: '(function)', LambdaLayer: '(layer)' },
       })
       .catch(err => {
         context.print.info(err.stack);

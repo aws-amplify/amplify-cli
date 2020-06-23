@@ -335,7 +335,7 @@ describe('amplify add api (REST)', () => {
         lastPushTimeStamp,
         lastPushDirHash,
       } = meta.function[key];
-      expect(service).toBe('LambdaFunction');
+      expect(service).toBe('Lambda');
       expect(build).toBeTruthy();
       expect(lastBuildTimeStamp).toBeDefined();
       expect(lastPackageTimeStamp).toBeDefined();

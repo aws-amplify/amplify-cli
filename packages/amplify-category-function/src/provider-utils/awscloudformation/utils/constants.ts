@@ -10,7 +10,7 @@ export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
 
 export const enum ServiceName {
-  LambdaFunction = 'LambdaFunction',
+  LambdaFunction = 'Lambda',
   LambdaLayer = 'LambdaLayer',
 }
 
