@@ -6,6 +6,7 @@ export * from './configure/';
 export * from './init/';
 export * from './utils/';
 export * from './categories';
+export * from './utils/sdk-calls';
 
 declare global {
   namespace NodeJS {
