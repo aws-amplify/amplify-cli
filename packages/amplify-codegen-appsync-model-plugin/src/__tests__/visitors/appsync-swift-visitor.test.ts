@@ -696,19 +696,19 @@ describe('AppSyncSwiftVisitor', () => {
           
           model.fields(
             .id(),
-            .field(objectWithNativeTypes.intArr, is: .optional, ofType: .customType([Int].self)),
-            .field(objectWithNativeTypes.strArr, is: .optional, ofType: .customType([String].self)),
-            .field(objectWithNativeTypes.floatArr, is: .optional, ofType: .customType([Double].self)),
-            .field(objectWithNativeTypes.boolArr, is: .optional, ofType: .customType([Bool].self)),
-            .field(objectWithNativeTypes.dateArr, is: .optional, ofType: .customType([Temporal.Date].self)),
-            .field(objectWithNativeTypes.enumArr, is: .optional, ofType: .customType([EnumType].self))
+            .field(objectWithNativeTypes.intArr, is: .optional, ofType: .embeddedCollection(of: Int.self)),
+            .field(objectWithNativeTypes.strArr, is: .optional, ofType: .embeddedCollection(of: String.self)),
+            .field(objectWithNativeTypes.floatArr, is: .optional, ofType: .embeddedCollection(of: Double.self)),
+            .field(objectWithNativeTypes.boolArr, is: .optional, ofType: .embeddedCollection(of: Bool.self)),
+            .field(objectWithNativeTypes.dateArr, is: .optional, ofType: .embeddedCollection(of: Temporal.Date.self)),
+            .field(objectWithNativeTypes.enumArr, is: .optional, ofType: .embeddedCollection(of: EnumType.self))
           )
           }
       }"
     `);
   });
 
-  it('should support using non model types in models', () => {
+  it('should support using embedded types in models', () => {
     const schema = /* GraphQL */ `
       type Attraction @model {
         id: ID!
@@ -792,11 +792,11 @@ describe('AppSyncSwiftVisitor', () => {
           model.fields(
             .id(),
             .field(attraction.name, is: .required, ofType: .string),
-            .field(attraction.location, is: .required, ofType: .customType(Location.self)),
-            .field(attraction.nearByLocations, is: .optional, ofType: .customType([Location].self)),
+            .field(attraction.location, is: .required, ofType: .embedded(type: Location.self)),
+            .field(attraction.nearByLocations, is: .optional, ofType: .embeddedCollection(of: Location.self)),
             .field(attraction.status, is: .required, ofType: .enum(type: Status.self)),
-            .field(attraction.statusHistory, is: .optional, ofType: .customType([Status].self)),
-            .field(attraction.tags, is: .optional, ofType: .customType([String].self))
+            .field(attraction.statusHistory, is: .optional, ofType: .embeddedCollection(of: Status.self)),
+            .field(attraction.tags, is: .optional, ofType: .embeddedCollection(of: String.self))
           )
           }
       }"
@@ -820,10 +820,41 @@ describe('AppSyncSwiftVisitor', () => {
       import Amplify
       import Foundation
 
-      public struct Location: Codable {
+      public struct Location: Embeddable {
         var lat: String
         var lang: String
         var tags: [String]?
+      }"
+    `);
+
+    const visitorLocationSchema = getVisitor(schema, 'Location', CodeGenGenerateEnum.metadata);
+    expect(visitorLocationSchema.generate()).toMatchInlineSnapshot(`
+      "// swiftlint:disable all
+      import Amplify
+      import Foundation
+
+      extension Location {
+        // MARK: - CodingKeys 
+         public enum CodingKeys: String, ModelKey {
+          case lat
+          case lang
+          case tags
+        }
+        
+        public static let keys = CodingKeys.self
+        //  MARK: - ModelSchema 
+        
+        public static let schema = defineSchema { model in
+          let location = Location.keys
+          
+          model.pluralName = \\"Locations\\"
+          
+          model.fields(
+            .field(location.lat, is: .required, ofType: .string),
+            .field(location.lang, is: .required, ofType: .string),
+            .field(location.tags, is: .optional, ofType: .embeddedCollection(of: String.self))
+          )
+          }
       }"
     `);
 
@@ -1213,7 +1244,7 @@ describe('AppSyncSwiftVisitor', () => {
             model.fields(
               .id(),
               .field(post.title, is: .required, ofType: .string),
-              .field(post.groups, is: .required, ofType: .customType([String].self))
+              .field(post.groups, is: .required, ofType: .embeddedCollection(of: String.self))
             )
             }
         }"

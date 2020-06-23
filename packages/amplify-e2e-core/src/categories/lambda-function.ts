@@ -23,7 +23,7 @@ const goTemplateChoices = ['Hello World'];
 
 const javaTemplateChoices = ['Hello World'];
 
-export const nodeJSTemplateChoices = [
+const nodeJSTemplateChoices = [
   'CRUD function for DynamoDB (Integration with API Gateway)',
   'Hello World',
   'Lambda trigger',
@@ -57,7 +57,7 @@ const coreFunction = (
       selectRuntime(chain, runtime);
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
-        selectTemplate(chain, settings.functionTemplate, templateChoices);
+        selectTemplate(chain, settings.functionTemplate, runtime);
       }
     } else {
       chain
@@ -193,7 +193,7 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
 
   switch (settings.triggerType + (settings.eventSource || '')) {
     case 'DynamoDBAppSync':
-      return settings.expectFailure ? res.wait('No AppSync resources have been configured in API category.') : res;
+      return settings.expectFailure ? res.wait('No AppSync resources have been configured in the API category.') : res;
     case 'DynamoDBDynamoDB':
       return settings.expectFailure
         ? res.wait('There are no DynamoDB resources configured in your project currently')
@@ -233,8 +233,10 @@ export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   singleSelect(chain, runtimeName, runtimeChoices);
 };
 
-const selectTemplate = (chain: any, functionTemplate: string, templateChoices: string[]) => {
+export const selectTemplate = (chain: any, functionTemplate: string, runtime: FunctionRuntimes) => {
+  const templateChoices = getTemplateChoices(runtime);
   chain.wait('Choose the function template that you want to use');
+
   // reset cursor to top of list because Hello World is default but it throws off offset calculations
   moveUp(chain, templateChoices.indexOf('Hello World'));
 

@@ -162,7 +162,7 @@ async function promptForEventSubscription(context: Context): Promise<string[]> {
 function displayAmplifyEventsLearnMore(context: Context) {
   const indentationStr = createIndentation(INDENTATIONSPACE);
   context.print.green('The Amplify CLI aims to provide a flexible and loosely-coupled \
-pluggable platforms for the plugins.');
+pluggable platform for the plugins.');
   context.print.green('To make this possible, \
 the platform broadcasts events for plugins to handle.');
   context.print.green('If a plugin subscribes to an event, its event handler is \
@@ -177,18 +177,18 @@ execution of the amplify init command.`);
 complete execution of the amplify init command.`);
   context.print.red(AmplifyEvent.PrePush);
   context.print.green(`${indentationStr}${AmplifyEvent.PrePush} handler is invoked prior to the \
-executionof the amplify push command.`);
+execution of the amplify push command.`);
   context.print.red(AmplifyEvent.PostPush);
   context.print.green(`${indentationStr}${AmplifyEvent.PostPush} handler is invoked on the \
 complete execution of the amplify push command.`);
   context.print.red(AmplifyEvent.PrePull);
   context.print.green(`${indentationStr}${AmplifyEvent.PrePull} handler is invoked prior to the \
-executionof the amplify pull command.`);
+execution of the amplify pull command.`);
   context.print.red(AmplifyEvent.PostPull);
   context.print.green(`${indentationStr}${AmplifyEvent.PostPull} handler is invoked on the \
 complete execution of the amplify pull command.`);
-  context.print.warning('This feature is currently under actively development, \
-events might be added or removed in future releases');
+  context.print.warning('This feature is currently under active development, \
+events might be added or removed in future releases.');
 }
 
 function updatePackageJson(pluginDirPath: string, pluginName: string): void {

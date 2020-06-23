@@ -769,6 +769,13 @@ jobs:
           when: always
       - store_artifacts:
           path: ../uitest_android_results
+  hostingPROD-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/hostingPROD.test.ts
   layer-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -968,6 +975,9 @@ workflows:
             - graphql_e2e_tests
             - integration_test
             - amplify_console_integration_tests
+            - amplify_migration_tests_latest
+            - amplify_migration_tests_v4
+            - hostingPROD-amplify_e2e_tests
             - layer-amplify_e2e_tests
             - plugin-amplify_e2e_tests
             - datastore-modegen-amplify_e2e_tests
@@ -990,12 +1000,16 @@ workflows:
                 - release
                 - master
                 - beta
-      - layer-amplify_e2e_tests:
+      - hostingPROD-amplify_e2e_tests:
           filters: &ref_2
             branches:
               only:
                 - master
                 - split-test
+          requires:
+            - publish_to_local_registry
+      - layer-amplify_e2e_tests:
+          filters: *ref_2
           requires:
             - publish_to_local_registry
       - plugin-amplify_e2e_tests:
@@ -1010,6 +1024,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+            - hostingPROD-amplify_e2e_tests
       - hosting-amplify_e2e_tests:
           filters: *ref_2
           requires:

@@ -136,7 +136,7 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
   } catch (e) {
     spinner.fail('There was an error migrating your project.');
     rollback(amplifyDirPath, backupAmplifyDirPath);
-    context.print.info('migration operations are rolledback.');
+    context.print.info('migration operations are rolled back.');
     throw e;
   } finally {
     cleanUp(backupAmplifyDirPath);
@@ -146,6 +146,15 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
 function backup(amplifyDirPath, projectPath) {
   const backupAmplifyDirName = `${constants.AmplifyCLIDirName}-${makeId(5)}`;
   const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
+
+  if (fs.existsSync(backupAmplifyDirPath)) {
+    const error = new Error(`Backup folder at ${backupAmplifyDirPath} already exists, remove the folder and retry the operation.`);
+
+    error.name = 'BackupFolderAlreadyExist';
+    error.stack = null;
+
+    throw error;
+  }
 
   fs.copySync(amplifyDirPath, backupAmplifyDirPath);
 

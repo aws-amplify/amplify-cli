@@ -67,7 +67,7 @@ class CloudFormation {
             clearInterval(self.pollForEvents);
           }
           if (completeErr) {
-            context.print.error('An error occurred when  creating the CloudFormation stack');
+            context.print.error('An error occurred when creating the CloudFormation stack');
             this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
           }
           resolve(waitForStackdata);

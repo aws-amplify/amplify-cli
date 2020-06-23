@@ -20,6 +20,22 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
   });
 }
 
+export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean = false) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendLine('y')
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function amplifyPushWithoutCodegen(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })

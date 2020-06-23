@@ -50,9 +50,7 @@ function getAmplifyDirPath(projectPath) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, amplifyCLIConstants.AmplifyCLIDirName));
   }
-  throw new Error(
-    "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
-  );
+  throw createNotInitializedError();
 }
 
 // ///////////////////level 1
@@ -75,9 +73,7 @@ function getAmplifyRcFilePath(projectPath) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, '.amplifyrc'));
   }
-  throw new Error(
-    "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
-  );
+  throw createNotInitializedError();
 }
 
 function getGitIgnoreFilePath(projectPath) {
@@ -87,9 +83,7 @@ function getGitIgnoreFilePath(projectPath) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, '.gitignore'));
   }
-  throw new Error(
-    "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify"
-  );
+  throw createNotInitializedError();
 }
 
 // ///////////////////level 2
@@ -124,6 +118,17 @@ function getAmplifyMetaFilePath(projectPath) {
 
 function getCurrentAmplifyMetaFilePath(projectPath) {
   return path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));
+}
+
+function createNotInitializedError() {
+  const error = new Error(
+    "You are not working inside a valid Amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project, or 'amplify pull' to pull down an existing project.",
+  );
+
+  error.name = 'NotInitialized';
+  error.stack = undefined;
+
+  return error;
 }
 
 module.exports = {
