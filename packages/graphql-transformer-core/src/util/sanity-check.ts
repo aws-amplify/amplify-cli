@@ -22,7 +22,7 @@ interface Diff {
 export async function check(
   currentCloudBackendDir: string,
   buildDirectory: string,
-  rootStackName: string = 'cloudformation-template.json'
+  rootStackName: string = 'cloudformation-template.json',
 ) {
   const cloudBackendDirectoryExists = await fs.exists(currentCloudBackendDir);
   const buildDirectoryExists = await fs.exists(buildDirectory);
@@ -77,7 +77,7 @@ export function cantEditKeySchema(diff: Diff) {
     throw new InvalidMigrationError(
       `Attempting to edit the key schema of the ${tableName} table in the ${stackName} stack. `,
       'Adding a primary @key directive to an existing @model. ',
-      'Remove the @key directive or provide a name e.g @key(name: "ByStatus", fields: ["status"]).'
+      'Remove the @key directive or provide a name e.g @key(name: "ByStatus", fields: ["status"]).',
     );
   }
 }
@@ -103,7 +103,7 @@ export function cantAddLSILater(diff: Diff) {
       `Attempting to add a local secondary index to the ${tableName} table in the ${stackName} stack. ` +
         'Local secondary indexes must be created when the table is created.',
       "Adding a @key directive where the first field in 'fields' is the same as the first field in the 'fields' of the primary @key.",
-      "Change the first field in 'fields' such that a global secondary index is created or delete and recreate the model."
+      "Change the first field in 'fields' such that a global secondary index is created or delete and recreate the model.",
     );
   }
 }
@@ -122,7 +122,7 @@ export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
       'The key schema of a global secondary index cannot be changed after being deployed.',
       'If using @key, first add a new @key, run `amplify push`, ' +
         'and then remove the old @key. If using @connection, first remove the @connection, run `amplify push`, ' +
-        'and then add the new @connection with the new configuration.'
+        'and then add the new @connection with the new configuration.',
     );
   }
   if (
@@ -142,7 +142,7 @@ export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
     const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
     // We must look at this inner diff or else we could confuse a situation
     // where the user adds a GSI to the beginning of the GlobalSecondaryIndexes list in CFN.
-    // We re-key the indexes list so we can determine if a change occured to an index that
+    // We re-key the indexes list so we can determine if a change occurred to an index that
     // already exists.
     for (const innerDiff of innerDiffs) {
       // path: ["AGSI","KeySchema",0,"AttributeName"]
@@ -176,7 +176,7 @@ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: Diffable
       'You may only change one global secondary index in a single CloudFormation stack update. ',
       'If using @key, change one @key at a time. ' +
         'If using @connection, add the new @connection, run `amplify push`, ' +
-        'and then remove the new @connection with the new configuration.'
+        'and then remove the new @connection with the new configuration.',
     );
   }
   if (
@@ -236,7 +236,7 @@ export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
     const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
     // We must look at this inner diff or else we could confuse a situation
     // where the user adds a LSI to the beginning of the LocalSecondaryIndex list in CFN.
-    // We re-key the indexes list so we can determine if a change occured to an index that
+    // We re-key the indexes list so we can determine if a change occurred to an index that
     // already exists.
     for (const innerDiff of innerDiffs) {
       // path: ["AGSI","KeySchema",0,"AttributeName"]
@@ -248,7 +248,7 @@ export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
           `Attempting to edit the local secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
           'The key schema of a local secondary index cannot be changed after being deployed.',
           'When enabling new access patterns you should: 1. Add a new @key 2. run amplify push ' +
-            '3. Verify the new access pattern and remove the old @key.'
+            '3. Verify the new access pattern and remove the old @key.',
         );
       }
     }
@@ -265,7 +265,7 @@ export function cantHaveMoreThan200Resources(diffs: Diff[], currentBuild: Diffab
         'CloudFormation templates may contain at most 200 resources.',
         'If the stack is a custom stack, break the stack up into multiple files in stacks/. ' +
           'If the stack was generated, you have hit a limit and can use the StackMapping argument in ' +
-          `${TRANSFORM_CONFIG_FILE_NAME} to fine tune how resources are assigned to stacks.`
+          `${TRANSFORM_CONFIG_FILE_NAME} to fine tune how resources are assigned to stacks.`,
       );
     }
   }
@@ -279,7 +279,7 @@ function keyBy(objects: any[], attr: string) {
       ...acc,
       [obj[attr]]: obj,
     }),
-    {}
+    {},
   );
 }
 

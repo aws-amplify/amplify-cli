@@ -1,11 +1,24 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
-import { nodeJSTemplateChoices, selectRuntime } from './lambda-function';
-import { singleSelect } from '../utils/selectors';
+import { selectRuntime, selectTemplate } from './lambda-function';
 
 function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
+}
+
+export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
+      .wait('GraphQL schema compiled successfully.')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
 }
 
 export function addApiWithoutSchema(cwd: string) {
@@ -263,7 +276,7 @@ export function addRestApi(cwd: string, settings: any) {
         const templateName = settings.isCrud
           ? 'CRUD function for DynamoDB (Integration with API Gateway)'
           : 'Serverless ExpressJS function (Integration with API Gateway)';
-        singleSelect(chain.wait('Choose the function template that you want to use'), templateName, nodeJSTemplateChoices);
+        selectTemplate(chain, templateName, 'nodejs');
 
         if (settings.isCrud) {
           chain

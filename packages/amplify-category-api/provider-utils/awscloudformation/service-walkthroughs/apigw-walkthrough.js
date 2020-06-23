@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const pathLib = require('path');
 const fs = require('fs-extra');
+import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 
 const category = 'api';
 const serviceName = 'API Gateway';
@@ -588,7 +589,7 @@ function functionsExist(context) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === 'LambdaFunction') {
+    if (functionResources[resourceName].service === FunctionServiceName.LambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
   });
@@ -634,7 +635,8 @@ function newLambdaFunction(context, path) {
       },
     },
   };
-  return add(context, 'awscloudformation', 'LambdaFunction', params).then(resourceName => {
+
+  return add(context, 'awscloudformation', ServiceName.FunctionServiceName, params).then(resourceName => {
     context.print.success('Succesfully added the Lambda function locally');
     return { lambdaFunction: resourceName };
   });
@@ -650,7 +652,7 @@ async function askLambdaFromProject(context, currentPath) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === 'LambdaFunction') {
+    if (functionResources[resourceName].service === FunctionServiceName.LambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
   });

@@ -11,7 +11,7 @@ async function ensureAuth(context) {
     await attachPolicy(context, policy);
     spinner.succeed('Successfully set the IAM policy');
   } catch (e) {
-    spinner.fail('Error occured during IAM policy setup.');
+    spinner.fail('Error occurred during IAM policy setup.');
     throw e;
   }
   await checkAuth(context);

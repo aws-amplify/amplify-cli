@@ -27,7 +27,8 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
-    'prettier'
+    'prettier',
+    'spellcheck',
   ],
   settings: {
     'import/parsers': {
@@ -41,6 +42,31 @@ module.exports = {
     },
   },
   rules: {
+    "spellcheck/spell-checker": [1,
+      {
+        "comments": false,
+        "strings": true,
+        "identifiers": false,
+        "lang": "en_US",
+        "skipWords": [
+            "dict",
+            "aff",
+            "hunspellchecker",
+            "hunspell",
+            "utils",
+            "aws",
+            "sdk",
+        ],
+        "skipIfMatch": [
+            "http://[^s]*",
+            "^[-\\w]+\/[-\\w\\.]+$" //For MIME Types
+        ],
+        "skipWordIfMatch": [
+            "^foobar.*$" // words that begin with foobar will not be checked
+        ],
+        "minLength": 3
+     }
+    ],
     // Existing rules
     'comma-dangle': 'off', // https://eslint.org/docs/rules/comma-dangle
     'function-paren-newline': 'off', // https://eslint.org/docs/rules/function-paren-newline
@@ -217,6 +243,8 @@ module.exports = {
 
     // Ignore output directories of typescript project until move to tsc and fixing src locations
     '/packages/amplify-appsync-simulator/lib',
+    '/packages/amplify-category-function/lib',
+    '/packages/amplify-*-function-*/lib',
     '/packages/amplify-cli/lib',
     '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
