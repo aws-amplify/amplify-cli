@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const pathLib = require('path');
 const fs = require('fs-extra');
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const category = 'api';
 const serviceName = 'API Gateway';

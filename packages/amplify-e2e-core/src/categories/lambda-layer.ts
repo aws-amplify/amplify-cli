@@ -43,7 +43,7 @@ export function addLayer(cwd: string, settings?: any) {
 
     chain.wait('Select up to 2 compatible runtimes:');
     multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
-    chain.wait('Who should have permission to use this layer?');
+    chain.wait('The current AWS account will always have access to this layer.');
     multiSelect(chain, settings.permissions, permissionChoices);
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
@@ -105,7 +105,7 @@ export function updateLayer(cwd: string, settings?: any) {
     chain
       .wait('Do you want to adjust who can access the current & new layer version?')
       .sendLine('y')
-      .wait('Who should have permission to use this layer?');
+      .wait('The current AWS account will always have access to this layer.');
     multiSelect(chain, settings.permissions, permissionChoices);
 
     if (!settings.versionChanged) {
