@@ -20,7 +20,7 @@ const fs = require('fs-extra');
 const askForFrontend = require('../walkthrough/questions/selectFrontend');
 const askForFramework = require('../walkthrough/questions/selectFramework');
 
-const frontends = ['android', 'ios', 'javascript'];
+const frontends = ['android', 'ios', 'javascript', 'flutter'];
 const frameworks = ['angular', 'ember', 'ionic', 'react', 'react-native', 'vue', 'none'];
 
 async function add(context, apiId = null) {
@@ -39,7 +39,7 @@ async function add(context, apiId = null) {
   const schemaPath = ['schema.graphql', 'schema.json'].map(p => path.join(process.cwd(), p)).find(p => fs.existsSync(p));
   if (withoutInit && !schemaPath) {
     throw Error(
-      `Please download schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`
+      `Please download schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`,
     );
   }
   // Grab the frontend

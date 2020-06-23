@@ -35,6 +35,7 @@ export class AmplifyToolkit {
   private _pushResources: any;
   private _storeCurrentCloudBackend: any;
   private _readJsonFile: any;
+  private _readJsonFromDart: any;
   private _removeEnvFromCloud: any;
   private _removeResource: any;
   private _sharedQuestions: any;
@@ -70,6 +71,7 @@ export class AmplifyToolkit {
   private _getTriggerEnvInputs: any;
   private _getUserPoolGroupList: any;
   private _forceRemoveResource: any;
+  private _writeJsonToDart: any;
   private _writeObjectAsJson: any;
   private _hashDir: any;
   private _leaveBreadcrumbs: any;
@@ -228,6 +230,11 @@ export class AmplifyToolkit {
   get readJsonFile(): any {
     this._readJsonFile = this._readJsonFile || require(path.join(this._amplifyHelpersDirPath, 'read-json-file')).readJsonFile;
     return this._readJsonFile;
+  }
+  get readJsonFromDart(): any {
+    this._readJsonFromDart =
+      this._readJsonFromDart || require(path.join(this._amplifyHelpersDirPath, 'read-json-from-dart')).readJsonFromDart;
+    return this._readJsonFromDart;
   }
   get removeEnvFromCloud(): any {
     this._removeEnvFromCloud =
@@ -410,6 +417,11 @@ export class AmplifyToolkit {
     this._writeObjectAsJson =
       this._writeObjectAsJson || require(path.join(this._amplifyHelpersDirPath, 'write-object-as-json')).writeObjectAsJson;
     return this._writeObjectAsJson;
+  }
+
+  get writeJsonToDart(): any {
+    this._writeJsonToDart = this._writeJsonToDart || require(path.join(this._amplifyHelpersDirPath, 'write-json-to-dart')).writeJsonToDart;
+    return this._writeJsonToDart;
   }
 
   get hashDir(): any {
