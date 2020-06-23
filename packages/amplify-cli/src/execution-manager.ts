@@ -18,6 +18,9 @@ import {
 } from './domain/amplify-event';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 
+const ERROR_NOT_AMPLIFY_PROJECT =
+  "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify";
+
 export async function executeCommand(context: Context) {
   const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform, context.input.plugin!, context.input.command!);
 
@@ -145,7 +148,11 @@ export async function executeAmplifyCommandForPlugin(context: Context, plugin: a
   try {
     await plugin.executeAmplifyCommand(context);
   } catch (err) {
-    context.print.error(err.message);
+    if (err.message === ERROR_NOT_AMPLIFY_PROJECT) {
+      context.print.error(err.message);
+    } else {
+      context.print.info(err.stack);
+    }
   }
 }
 
