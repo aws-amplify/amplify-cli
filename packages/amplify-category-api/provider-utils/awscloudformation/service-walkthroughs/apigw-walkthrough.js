@@ -636,7 +636,7 @@ function newLambdaFunction(context, path) {
     },
   };
 
-  return add(context, 'awscloudformation', ServiceName.FunctionServiceName, params).then(resourceName => {
+  return add(context, 'awscloudformation', FunctionServiceName.LambdaFunction, params).then(resourceName => {
     context.print.success('Succesfully added the Lambda function locally');
     return { lambdaFunction: resourceName };
   });
