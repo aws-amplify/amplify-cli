@@ -33,6 +33,7 @@ export async function check(
     cantAddLSILater,
     cantEditGSIKeySchema,
     cantEditLSIKeySchema,
+    cantRemoveLSILater,
     cantAddAndRemoveGSIAtSameTime,
   ];
   // Project rules run on the full set of diffs, the current build, and the next build.
@@ -249,6 +250,29 @@ export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
           'The key schema of a local secondary index cannot be changed after being deployed.',
           'When enabling new access patterns you should: 1. Add a new @key 2. run amplify push ' +
             '3. Verify the new access pattern and remove the old @key.',
+        );
+      }
+    }
+  }
+}
+
+export function cantRemoveLSILater(diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) {
+  if (diff.kind === 'D' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') {
+    // Run logic to check that an LSI is being removed in favor of creating a GSI
+    const pathToTable = diff.path.slice(0, 5);
+    const oldTable = get(currentBuild, pathToTable);
+    const newTable = get(nextBuild, pathToTable);
+    const innerDiffs = getDiffs(oldTable, newTable);
+
+    for (const innerDiff of innerDiffs) {
+      if (innerDiff === 'D' && innerDiff.path.length === 1 && innerDiff.path[0] === 'LocalSecondaryIndexes') {
+        const tableName = diff.path[3];
+        const indexName = innerDiff.lhs[0].indexName;
+        const stackName = basename(diff.path[1], '.json');
+        throw new InvalidMigrationError(
+          `Attempting to remove the local secondary index ${indexName} on the ${tableName} table in the ${stackName} stack.`,
+          'A local secondary index cannot be removed once after being deployed.',
+          'In order to remove the local secondary index you would need to either delete or rename the table.',
         );
       }
     }

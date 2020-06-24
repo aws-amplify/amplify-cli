@@ -1,4 +1,4 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, InvalidDirectiveError } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, Kind, InputObjectTypeDefinitionNode } from 'graphql';
@@ -437,4 +437,55 @@ test('Test that connection type is generated for custom query when queries is se
   ) as ObjectTypeDefinitionNode;
 
   expect(modelContentCategoryConnection).toBeDefined();
+});
+
+test('KeyTransformer should generate a global secondary index when a key is unlocked.', () => {
+  const validSchema = `
+    type Post @model
+      @key(name:"byDateIndex" fields: ["id", "createdAt"], queryField: "byCreatedAt", lock: false) {
+        id: ID!
+        name: String
+        createdAt: AWSDateTime!
+        updatedAt: AWSDateTime!
+      }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.stacks.Post.Resources.PostTable.Properties.GlobalSecondaryIndexes).toBeDefined();
+  const cfnGSI = out.stacks.Post.Resources.PostTable.Properties.GlobalSecondaryIndexes[0];
+  expect(cfnGSI.IndexName).toEqual('byDateIndex');
+  expect(cfnGSI.KeySchema).toBeDefined();
+  expect(cfnGSI.KeySchema).toEqual(
+    expect.arrayContaining([
+      { AttributeName: 'id', KeyType: 'HASH' },
+      { AttributeName: 'createdAt', KeyType: 'RANGE' },
+    ]),
+  );
+});
+
+test('Test that a locked @key with different keyschema than the primary will fail', () => {
+  expect.assertions(2);
+  const invalidSchema = `
+    type Post @model
+    @key(name: "badIndex", fields: ["id","createdAt"], queryField: "badIndexQuery", lock: true) {
+      id: ID
+      name: String
+      createdAt: AWSDateTime!
+      updatedAt: AWSDateTime!
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  try {
+    transformer.transform(invalidSchema);
+  } catch (err) {
+    expect(err).toBeInstanceOf(InvalidDirectiveError);
+    expect(err).toHaveProperty('message', 'The locked key does has more fields defined than the primary key.');
+  }
 });

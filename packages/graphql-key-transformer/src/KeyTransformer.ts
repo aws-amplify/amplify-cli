@@ -59,6 +59,7 @@ interface KeyArguments {
   name?: string;
   fields: string[];
   queryField?: string;
+  lock?: boolean;
 }
 
 export class KeyTransformer extends Transformer {
@@ -68,7 +69,7 @@ export class KeyTransformer extends Transformer {
     super(
       'KeyTransformer',
       gql`
-        directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
+        directive @key(name: String, fields: [String!]!, queryField: String, lock: Boolean) repeatable on OBJECT
       `
     );
   }
@@ -536,7 +537,7 @@ export class KeyTransformer extends Transformer {
     const tableLogicalID = ModelResourceIDs.ModelTableResourceID(definition.name.value);
     const tableResource = ctx.getResource(tableLogicalID);
     const primaryKeyDirective = getPrimaryKey(definition);
-    const primaryPartitionKeyName = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields[0] : 'id';
+    const primaryPartitionKey = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields : ['id'];
     if (!tableResource) {
       throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
     } else {
@@ -547,8 +548,18 @@ export class KeyTransformer extends Transformer {
           ProjectionType: 'ALL',
         }),
       };
-      if (primaryPartitionKeyName === ks[0].AttributeName) {
+      if (args.lock) {
         // This is an LSI.
+        // Validate that the attribute being used is the same as the primary
+        if (primaryPartitionKey[0] !== ks[0].AttributeName) {
+          throw new InvalidDirectiveError(
+            `A locked key ${ks[0].AttributeName} must use the same hash as the primary key: ${primaryPartitionKey[0]}`,
+          );
+        }
+        // Validate that the primary key also has a range length if the KeySchema has a range key
+        if (primaryPartitionKey.length < 2 && ks.length > 1) {
+          throw new InvalidDirectiveError(`The locked key does has more fields defined than the primary key.`);
+        }
         // Add the new secondary index and update the table's attribute definitions.
         tableResource.Properties.LocalSecondaryIndexes = append(
           tableResource.Properties.LocalSecondaryIndexes,
