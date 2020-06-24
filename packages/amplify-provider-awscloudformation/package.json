@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "amplify-category-auth": "2.15.8",
+    "amplify-category-function": "2.20.7",
     "amplify-category-predictions": "2.3.13",
     "amplify-codegen": "2.15.11",
     "archiver": "^3.1.1",

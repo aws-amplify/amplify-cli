@@ -1,5 +1,4 @@
 import { category as categoryName } from '../../../constants';
-import { ServiceName } from './constants';
 
 export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults) {
   const currentResources = [];
@@ -178,9 +177,9 @@ export function constructCloudWatchEventComponent(cfnFilePath: string, cfnConten
       State: 'ENABLED',
       Targets: [
         {
-          Arn: { 'Fn::GetAtt': [ServiceName.LambdaFunction, 'Arn'] },
+          Arn: { 'Fn::GetAtt': ['LambdaFunction', 'Arn'] },
           Id: {
-            Ref: ServiceName.LambdaFunction,
+            Ref: 'LambdaFunction',
           },
         },
       ],
@@ -191,7 +190,7 @@ export function constructCloudWatchEventComponent(cfnFilePath: string, cfnConten
     Type: 'AWS::Lambda::Permission',
     Properties: {
       FunctionName: {
-        Ref: ServiceName.LambdaFunction,
+        Ref: 'LambdaFunction',
       },
       Action: 'lambda:InvokeFunction',
       Principal: 'events.amazonaws.com',
