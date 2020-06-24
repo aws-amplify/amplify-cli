@@ -2,7 +2,7 @@ import { FunctionParameters } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './awscloudformation/utils/layerParams';
 
 export interface SupportedServices {
-  LambdaFunction: ServiceConfig<FunctionParameters>;
+  Lambda: ServiceConfig<FunctionParameters>;
   LambdaLayer: ServiceConfig<LayerParameters>;
 }
 

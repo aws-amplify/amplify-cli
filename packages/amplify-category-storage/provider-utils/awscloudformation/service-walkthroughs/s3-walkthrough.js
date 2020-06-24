@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
 const uuid = require('uuid');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -734,7 +735,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
     // Update amplify-meta and backend-config
 
     const backendConfigs = {
-      service: 'LambdaFunction',
+      service: FunctionServiceName.LambdaFunction,
       providerPlugin: 'awscloudformation',
       build: true,
     };
@@ -970,7 +971,9 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
 
 async function getLambdaFunctions(context) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaResources = allResources.filter(resource => resource.service === 'LambdaFunction').map(resource => resource.resourceName);
+  const lambdaResources = allResources
+    .filter(resource => resource.service === FunctionServiceName.LambdaFunction)
+    .map(resource => resource.resourceName);
 
   return lambdaResources;
 }

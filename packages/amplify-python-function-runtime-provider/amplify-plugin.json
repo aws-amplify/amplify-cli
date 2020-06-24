@@ -7,7 +7,7 @@
     "pluginId": "amplify-python-function-runtime-provider",
     "conditions": {
       "provider": "awscloudformation",
-      "services": ["LambdaFunction", "LambdaLayer"]
+      "services": ["Lambda", "LambdaLayer"]
     },
     "runtimes": [
       {

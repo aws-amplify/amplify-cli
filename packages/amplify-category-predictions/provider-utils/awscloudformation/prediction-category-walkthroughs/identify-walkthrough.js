@@ -9,6 +9,7 @@ import {
   removeTextractPolicies,
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
+import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 
 const inquirer = require('inquirer');
 const path = require('path');
@@ -624,7 +625,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
   // Update amplify-meta and backend-config
 
   const backendConfigs = {
-    service: 'LambdaFunction',
+    service: FunctionServiceName.LambdaFunction,
     providerPlugin: 'awscloudformation',
     build: true,
   };

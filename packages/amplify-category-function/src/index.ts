@@ -7,6 +7,7 @@ import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
 import _ from 'lodash';
 export { packageLayer } from './provider-utils/awscloudformation/utils/packageLayer';
+import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 
 export async function add(context, providerName, service, parameters) {
@@ -136,7 +137,8 @@ export async function getInvoker(context: any, params: InvokerParameters): Promi
 
 export function isMockable(context: any, resourceName: string): IsMockableResponse {
   const { service, dependsOn } = context.amplify.getProjectMeta()[category][resourceName];
-  const hasLayer = service === 'LambdaFunction' && dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
+  const hasLayer =
+    service === ServiceName.LambdaFunction && dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
   if (hasLayer) {
     return {
       isMockable: false,

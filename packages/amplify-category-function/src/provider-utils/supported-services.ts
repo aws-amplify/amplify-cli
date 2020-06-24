@@ -6,7 +6,7 @@ import { getIAMPolicies } from './awscloudformation/utils/cloudformationHelpers'
 import { askExecRolePermissionsQuestions } from './awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 
 export const supportedServices: SupportedServices = {
-  LambdaFunction: {
+  Lambda: {
     alias: 'Lambda function (serverless function)',
     walkthroughs: {
       createWalkthrough: createWalkthrough,
