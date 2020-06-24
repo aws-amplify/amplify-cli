@@ -140,8 +140,8 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
       cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement = functionParameters.categoryPolicies;
     }
 
-    cfnContent.Resources[ServiceName.LambdaFunction].Properties.Environment.Variables = getNewCFNEnvVariables(
-      cfnContent.Resources[ServiceName.LambdaFunction].Properties.Environment.Variables,
+    cfnContent.Resources.LambdaFunction.Properties.Environment.Variables = getNewCFNEnvVariables(
+      cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
       currentParameters,
       functionParameters.environmentMap,
       functionParameters.mutableParametersState,
@@ -184,9 +184,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
       }
     }
   });
-  cfnContent.Resources[ServiceName.LambdaFunction].Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(
-    functionParameters.lambdaLayers,
-  );
+  cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(functionParameters.lambdaLayers);
   context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
 
   return functionParameters;
@@ -221,9 +219,9 @@ export function migrate(context, projectPath, resourceName) {
   };
 
   // Add if condition for resource name change
-  const oldFunctionName = newCfn.Resources[ServiceName.LambdaFunction].Properties.FunctionName;
+  const oldFunctionName = newCfn.Resources.LambdaFunction.Properties.FunctionName;
 
-  newCfn.Resources[ServiceName.LambdaFunction].Properties.FunctionName = {
+  newCfn.Resources.LambdaFunction.Properties.FunctionName = {
     'Fn::If': [
       'ShouldNotCreateEnvResources',
       oldFunctionName,
@@ -242,7 +240,7 @@ export function migrate(context, projectPath, resourceName) {
     ],
   };
 
-  newCfn.Resources[ServiceName.LambdaFunction].Properties.Environment = { Variables: { ENV: { Ref: 'env' } } };
+  newCfn.Resources.LambdaFunction.Properties.Environment = { Variables: { ENV: { Ref: 'env' } } };
 
   const oldRoleName = newCfn.Resources.LambdaExecutionRole.Properties.RoleName;
 
