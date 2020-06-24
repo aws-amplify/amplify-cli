@@ -22,7 +22,7 @@ module.exports = {
   name: subcommand,
   run: async context => {
     const { amplify } = context;
-    const servicesMetadata = require('../../provider-utils/supported-datasources').default;
+    const servicesMetadata = require('../../provider-utils/supported-datasources').supportedDatasources;
     let resourceName;
     let datasource;
     let databaseName;

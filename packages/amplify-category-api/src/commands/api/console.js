@@ -5,7 +5,7 @@ module.exports = {
   name: subcommand,
   run: async context => {
     const { amplify } = context;
-    const servicesMetadata = require('../../provider-utils/supported-services').default;
+    const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
     return amplify
       .serviceSelectionPrompt(context, category, servicesMetadata)
       .then(result => {

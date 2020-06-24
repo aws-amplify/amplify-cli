@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-const serviceMetadataFor = service => require('../supported-services').default[service];
-const datasourceMetadataFor = datasource => require('../supported-datasources').default[datasource];
+const serviceMetadataFor = service => require('../supported-services').supportedServices[service];
+const datasourceMetadataFor = datasource => require('../supported-datasources').supportedDatasources[datasource];
 const getServiceWalkthrough = walkthroughFilename => require(`./service-walkthroughs/${walkthroughFilename}`)['serviceWalkthrough'];
 
 const parametersFileName = 'api-params.json';

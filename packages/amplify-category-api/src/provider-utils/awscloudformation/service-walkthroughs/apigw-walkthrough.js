@@ -6,7 +6,7 @@ const category = 'api';
 const serviceName = 'API Gateway';
 const parametersFileName = 'api-params.json';
 const cfnParametersFilename = 'parameters.json';
-const { rootAssetDir } = require('../index');
+const { rootAssetDir } = require('..');
 const uuid = require('uuid');
 
 async function serviceWalkthrough(context, defaultValuesFilename) {
