@@ -1,7 +1,7 @@
 import { CloudFront } from 'aws-sdk';
 import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
-import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, deleteS3Bucket } from 'amplify-e2e-core';
 import { addPRODHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
 import { deleteProjectDir, getProjectMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
@@ -18,15 +18,20 @@ describe('amplify add hosting', () => {
   });
 
   afterAll(async () => {
+    const projectMeta = getProjectMeta(projRoot);
+    const hostingBucket = projectMeta?.hosting?.S3AndCloudFront?.output?.HostingBucketName;
+    const region = projectMeta?.hosting?.S3AndCloudFront?.output?.Region;
+
     await removeHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
+
+    if (hostingBucket) {
+      // Once the Hosting bucket is removed automatically we should get rid of this.
+      await deleteS3Bucket(hostingBucket, region);
+    }
     await deleteProject(projRoot, true);
     deleteProjectDir(projRoot);
   });
-
-  beforeEach(async () => {});
-
-  afterEach(async () => {});
 
   it('push creates correct amplify artifacts', async () => {
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
