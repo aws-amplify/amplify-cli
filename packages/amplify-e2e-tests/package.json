@@ -27,6 +27,7 @@
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.19.2",
+    "lodash": "^4.17.15",
     "rimraf": "^3.0.0"
   },
   "devDependencies": {
