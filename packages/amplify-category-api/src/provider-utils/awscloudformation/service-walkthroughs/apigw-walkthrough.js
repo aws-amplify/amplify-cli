@@ -6,6 +6,7 @@ const category = 'api';
 const serviceName = 'API Gateway';
 const parametersFileName = 'api-params.json';
 const cfnParametersFilename = 'parameters.json';
+const { rootAssetDir } = require('..');
 const uuid = require('uuid');
 
 async function serviceWalkthrough(context, defaultValuesFilename) {
@@ -717,11 +718,10 @@ async function migrate(context, projectPath, resourceName) {
     context.print.error(`Error reading api-params.json file for ${resourceName} resource`);
     throw e;
   }
-  const pluginDir = `${__dirname}/../`;
   const copyJobs = [
     {
-      dir: pluginDir,
-      template: 'cloudformation-templates/apigw-cloudformation-template-default.json.ejs',
+      dir: path.join(rootAssetDir, 'cloudformation-templates'),
+      template: 'apigw-cloudformation-template-default.json.ejs',
       target: `${targetDir}/${category}/${resourceName}/${resourceName}-cloudformation-template.json`,
     },
   ];

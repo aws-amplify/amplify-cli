@@ -22,7 +22,7 @@ async function migrate(context, serviceName) {
             if (providerController) {
               if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
                 migrateResourcePromises.push(
-                  providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName)
+                  providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName),
                 );
               }
             }
@@ -149,7 +149,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName]
+          resourceOpsMapping[resourceName],
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });

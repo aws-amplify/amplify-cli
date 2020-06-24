@@ -7,7 +7,7 @@ module.exports = {
   name: subcommand,
   run: async context => {
     const { amplify } = context;
-    const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
+    const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
     return amplify
       .serviceSelectionPrompt(context, category, servicesMetadata)
       .then(result => {
@@ -30,7 +30,7 @@ module.exports = {
         print.success('Some next steps:');
         print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
         print.info(
-          '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+          '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
         );
         print.info('');
       })
