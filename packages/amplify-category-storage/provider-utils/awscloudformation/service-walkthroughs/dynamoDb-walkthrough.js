@@ -674,7 +674,7 @@ async function addTrigger(context, resourceName, triggerList) {
           Ref: `storage${resourceName}StreamArn`,
         },
         FunctionName: {
-          'Fn::GetAtt': ['LambdaFunction', 'Arn'],
+          'Fn::GetAtt': [FunctionServiceName.LambdaFunction, 'Arn'],
         },
         StartingPosition: 'LATEST',
       },

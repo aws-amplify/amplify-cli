@@ -38,7 +38,7 @@
         }
     },
     "Resources": {
-        "LambdaFunction": {
+        "Lambda": {
           "Type": "AWS::Lambda::Function",
           "Metadata": {
             "aws:asset:path": "./src",
@@ -128,7 +128,7 @@
                             "Action":["logs:CreateLogGroup",
                             "logs:CreateLogStream",
                             "logs:PutLogEvents"],
-                            "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
+                            "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "Lambda"}} ]}
                         }<% if (props.functionTemplate.parameters && props.functionTemplate.parameters.database && props.functionTemplate.parameters.database.resourceName) { %>,
                         {
                             "Effect": "Allow",
@@ -203,7 +203,7 @@
                 "EventSourceArn": <%- JSON.stringify(props.triggerEventSourceMappings[i].eventSourceArn) %>,
                 "FunctionName": {
                     "Fn::GetAtt": [
-                        "LambdaFunction",
+                        "Lambda",
                         "Arn"
                     ]
                 },
@@ -222,9 +222,9 @@
                 },
                 "State": "ENABLED",
                 "Targets": [{
-                    "Arn": { "Fn::GetAtt": ["LambdaFunction", "Arn"] },
+                    "Arn": { "Fn::GetAtt": ["Lambda", "Arn"] },
                     "Id":{
-                        "Ref" : "LambdaFunction"
+                        "Ref" : "Lambda"
                     }
                 }]
             }
@@ -233,7 +233,7 @@
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": {
-                    "Ref": "LambdaFunction"
+                    "Ref": "Lambda"
                     },
                 "Action": "lambda:InvokeFunction",
                 "Principal": "events.amazonaws.com",
@@ -245,11 +245,11 @@
     "Outputs": {
         "Name": {
             "Value": {
-                "Ref": "LambdaFunction"
+                "Ref": "Lambda"
             }
         },
         "Arn": {
-            "Value": {"Fn::GetAtt": ["LambdaFunction", "Arn"]}
+            "Value": {"Fn::GetAtt": ["Lambda", "Arn"]}
         },
         "Region": {
             "Value": {
