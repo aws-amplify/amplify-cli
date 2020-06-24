@@ -1,6 +1,6 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush, amplifyPushUpdate } from 'amplify-e2e-core';
 import { addFunction, updateFunction } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
 
 import { invokeFunction } from 'amplify-e2e-core';
@@ -16,6 +16,26 @@ describe('amplify function migration', () => {
     deleteProjectDir(projRoot);
   });
 
+  it('add function and api and update function with whitespace', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    const random = Math.floor(Math.random() * 10000);
+    const fnName = `integtestfn${random}`;
+    await addFunction(
+      projRoot,
+      {
+        name: fnName,
+        functionTemplate: 'Hello World',
+      },
+      'nodejs',
+    );
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await amplifyPush(projRoot, true);
+    let functionSrc = getFunctionSrc(projRoot, fnName).toString();
+    functionSrc += '\n';
+    overrideFunctionSrc(projRoot, fnName, functionSrc);
+    // push with codebase
+    await amplifyPushUpdate(projRoot, undefined, true);
+  });
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
     await initJSProjectWithProfile(projRoot, {});
 
