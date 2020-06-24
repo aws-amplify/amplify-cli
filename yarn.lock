@@ -19611,7 +19611,7 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript-json-schema@^0.42.0:
+typescript-json-schema@~0.42.0:
   version "0.42.0"
   resolved "https://registry.npmjs.org/typescript-json-schema/-/typescript-json-schema-0.42.0.tgz#695f212a72d91d47c0605371dc697597b7817c1b"
   integrity sha512-9WO+lVmlph7Ecb7lPd9tU84XFUQh44kpAf3cWe/Ym4G5EKw/SS6XGpi1DZDthvxqkIdNSDlWi7FhKfxuIV/3yw==

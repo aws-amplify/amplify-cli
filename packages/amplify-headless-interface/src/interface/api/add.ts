@@ -4,7 +4,7 @@ export interface AddApiRequest {
 }
 
 export interface AppSyncServiceConfiguration {
-  serviceName: 'appSync';
+  serviceName: 'AppSync';
   apiName: string;
   /**
    * The annotated GraphQL schema that defines the AppSync API
@@ -18,17 +18,42 @@ export interface AppSyncServiceConfiguration {
    * Additional methods of authenticating API requests
    */
   additionalAuthTypes?: AppSyncAuthType[];
-  conflictResolution?: {
-    resolutionStrategy: ResolutionStrategy;
-  };
+  conflictResolution?: ConflictResolution;
 }
 
-export enum ResolutionStrategy {
-  OPTIMISTIC_CONCURRENCY = 'OPTIMISTIC_CONCURRENCY',
-  LAMBDA = 'LAMBDA',
-  AUTOMERGE = 'AUTOMERGE',
-  NONE = 'NONE',
+export interface ConflictResolution {
+  defaultResolutionStrategy?: ResolutionStrategy;
+  perModelResolutionStrategy?: PerModelResolutionstrategy[];
 }
+
+export interface PerModelResolutionstrategy {
+  resolutionStrategy: ResolutionStrategy;
+  entityName: string;
+}
+
+export interface PredefinedResolutionStrategy {
+  type: 'OPTIMISTIC_CONCURRENCY' | 'AUTOMERGE' | 'NONE';
+}
+
+export interface LambdaResolutionStrategy {
+  type: 'LAMBDA';
+  resolver: LambdaConflictResolver;
+}
+
+export type LambdaConflictResolver = NewLambdaConflictResolver | ExistingLambdaConflictResolver;
+
+export interface NewLambdaConflictResolver {
+  type: 'NEW';
+}
+
+export interface ExistingLambdaConflictResolver {
+  type: 'EXISTING';
+  name: string;
+  region?: string;
+  arn?: string;
+}
+
+export type ResolutionStrategy = PredefinedResolutionStrategy | LambdaResolutionStrategy;
 
 export type AppSyncAuthType =
   | AppSyncAPIKeyAuthType
@@ -54,7 +79,7 @@ export interface AppSyncCognitoUserPoolsAuthType {
 export interface AppSyncOpenIDConnectAuthType {
   mode: 'OPENID_CONNECT';
   openIDProviderName: string;
-  openIDIssueURL: string;
+  openIDIssuerURL: string;
   openIDClientID: string;
   openIDAuthTTL?: string;
   openIDIatTTL?: string;

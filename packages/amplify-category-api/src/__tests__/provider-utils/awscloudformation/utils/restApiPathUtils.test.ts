@@ -1,8 +1,5 @@
-const rewire = require('rewire');
+import { validatePathName, formatCFNPathParamsForExpressJs } from '../../../../provider-utils/awscloudformation/utils/restApiPathUtils';
 
-const walkthrough = rewire('../awscloudformation/service-walkthroughs/apigw-walkthrough.js');
-
-const validatePathName = walkthrough.__get__('validatePathName');
 const stubOtherPaths = [{ name: '/other/path' }, { name: '/sub/path' }];
 
 test('validatePathName_validPath', () => {
@@ -44,10 +41,6 @@ test('validatePathName_pathMatch', () => {
 });
 
 test('formatCFNPathParamsForExpressJs', () => {
-  // setup
-  const formatCFNPathParamsForExpressJs = walkthrough.__get__('formatCFNPathParamsForExpressJs');
-
-  // test
   expect(formatCFNPathParamsForExpressJs('/path')).toStrictEqual('/path');
   expect(formatCFNPathParamsForExpressJs('/path/{param}')).toStrictEqual('/path/:param');
   expect(formatCFNPathParamsForExpressJs('/path/{param}/suffix')).toStrictEqual('/path/:param/suffix');

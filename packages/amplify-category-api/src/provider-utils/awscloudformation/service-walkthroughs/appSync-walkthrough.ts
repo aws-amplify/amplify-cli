@@ -1,28 +1,23 @@
-const syncAssets = require('../sync-conflict-handler-assets/syncAssets');
-const inquirer = require('inquirer');
-const fs = require('fs-extra');
-const uuid = require('uuid');
-const path = require('path');
-const open = require('open');
-const { rootAssetDir } = require('../index');
-const TransformPackage = require('graphql-transformer-core');
-
-const category = 'api';
-const serviceName = 'AppSync';
-const parametersFileName = 'parameters.json';
-const schemaFileName = 'schema.graphql';
-const providerName = 'awscloudformation';
-const resolversDirName = 'resolvers';
-const stacksDirName = 'stacks';
-const defaultStackName = 'CustomResources.json';
-const graphqlSchemaDir = path.join(rootAssetDir, 'graphql-schemas');
-
-const {
+import { ListQuestion, CheckboxQuestion, ListChoiceOptions } from 'inquirer';
+import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
+import inquirer from 'inquirer';
+import fs from 'fs-extra';
+import uuid from 'uuid';
+import path from 'path';
+import open from 'open';
+import { rootAssetDir, parametersFileName } from '../awsConstants';
+import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
   writeTransformerConfiguration,
-  TRANSFORM_CURRENT_VERSION,
-} = TransformPackage;
+  readProjectConfiguration,
+} from 'graphql-transformer-core';
+import { category } from '../../../categoryConstants';
+import { writeResolverConfig } from '../CfnApiArtifactHandler';
+
+const serviceName = 'AppSync';
+const providerName = 'awscloudformation';
+const graphqlSchemaDir = path.join(rootAssetDir, 'graphql-schemas');
 
 const authProviderChoices = [
   {
@@ -43,7 +38,7 @@ const authProviderChoices = [
   },
 ];
 
-function openConsole(context) {
+export const openConsole = context => {
   const amplifyMeta = context.amplify.getProjectMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
   let appSyncMeta;
@@ -62,9 +57,9 @@ function openConsole(context) {
   } else {
     context.print.error('AppSync API is not pushed in the cloud.');
   }
-}
+};
 
-async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+export const serviceWalkthrough = async (context, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);
   let authConfig;
   let defaultAuthType;
@@ -109,8 +104,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ask additonal questions
 
-  ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
-  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType));
+  ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
+  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType));
   await checkForCognitoUserPools(context, parameters, authConfig);
 
   // Ask schema file question
@@ -128,30 +123,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   const schemaFileAnswer = await inquirer.prompt(schemaFileQuestion);
 
-  const backendDir = amplify.pathManager.getBackendDirPath();
-
-  const resourceDir = `${backendDir}/${category}/${resourceAnswers[inputs[0].key]}`;
-
-  // Ensure the project directory exists and create the stacks & resolvers directories.
-  fs.ensureDirSync(resourceDir);
-  const resolverDirectoryPath = path.join(resourceDir, resolversDirName);
-  if (!fs.existsSync(resolverDirectoryPath)) {
-    fs.mkdirSync(resolverDirectoryPath);
-  }
-  const stacksDirectoryPath = path.join(resourceDir, stacksDirName);
-  if (!fs.existsSync(stacksDirectoryPath)) {
-    fs.mkdirSync(stacksDirectoryPath);
-  }
-
-  // During API add, make sure we're creating a transform.conf.json file with the latest version the CLI supports.
-  await updateTransformerConfigVersion(resourceDir);
-
-  await writeResolverConfig(resolverConfig, resourceDir);
-
-  // Write the default custom resources stack out to disk.
-  const defaultCustomResourcesStack = fs.readFileSync(path.join(rootAssetDir, 'cloudformation-templates', 'defaultCustomResources.json'));
-  fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
-
   if (schemaFileAnswer[inputs[2].key]) {
     // User has an annotated schema file
 
@@ -162,193 +133,27 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       validate: amplify.inputValidation(inputs[3]),
     };
     const { schemaFilePath } = await inquirer.prompt(filePathQuestion);
-
-    fs.copyFileSync(schemaFilePath, `${resourceDir}/${schemaFileName}`);
-
-    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-      resourceDir,
-      parameters,
-      authConfig,
-    });
-
-    return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
+    const schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
+    return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true, resolverConfig, schemaContent };
   }
 
-  // The user doesn't have an annotated schema file
+  // Schema template selection
+  const templateSelectionQuestion = {
+    type: inputs[4].type,
+    name: inputs[4].key,
+    message: inputs[4].question,
+    choices: inputs[4].options.filter(templateSchemaFilter(authConfig)),
+    validate: amplify.inputValidation(inputs[4]),
+  };
 
-  if (!(await amplify.confirmPrompt.run('Do you want a guided schema creation?'))) {
-    // Copy the most basic schema onto the users resource dir and transform that
-
-    const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
-    const typeNameQuestion = {
-      type: 'input',
-      name: 'typeName',
-      message: 'Provide a custom type name',
-      default: 'MyType',
-      validate: amplify.inputValidation({
-        operator: 'regex',
-        value: '^[a-zA-Z0-9]+$',
-        onErrorMsg: 'Resource name should be alphanumeric',
-      }),
-    };
-    const typeNameAnswer = await inquirer.prompt(typeNameQuestion);
-
-    const copyJobs = [
-      {
-        dir: graphqlSchemaDir,
-        template: 'basic-schema.graphql.ejs',
-        target: targetSchemaFilePath,
-      },
-    ];
-
-    // copy over the ejs file
-    await context.amplify.copyBatch(context, copyJobs, typeNameAnswer);
-
-    context.print.info('Creating a base schema for you...');
-
-    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-      resourceDir,
-      parameters,
-      authConfig,
-    });
-
-    return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
-  }
-
-  // Guided creation of the transform schema
-  const authTypes = getAuthTypes(authConfig);
-  const cognitoNotEnabled = !authTypes.includes('AMAZON_COGNITO_USER_POOLS');
-
-  let templateSchemaChoices = inputs[4].options;
-
-  if (cognitoNotEnabled) {
-    templateSchemaChoices = templateSchemaChoices.filter(schema => schema.value !== 'single-object-auth-schema.graphql');
-  }
-
-  const templateQuestions = [
-    {
-      type: inputs[4].type,
-      name: inputs[4].key,
-      message: inputs[4].question,
-      choices: templateSchemaChoices,
-      validate: amplify.inputValidation(inputs[4]),
-    },
-    {
-      type: inputs[5].type,
-      name: inputs[5].key,
-      message: inputs[5].question,
-      validate: amplify.inputValidation(inputs[5]),
-      default: () => {
-        const defaultValue = allDefaultValues[inputs[5].key];
-        return defaultValue;
-      },
-    },
-  ];
-
-  const { templateSelection, editSchemaChoice } = await inquirer.prompt(templateQuestions);
+  const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
+  const schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
 
-  fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
+  return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true, resolverConfig, schemaContent };
+};
 
-  if (editSchemaChoice) {
-    return context.amplify.openEditor(context, targetSchemaFilePath).then(async () => {
-      let notCompiled = true;
-      while (notCompiled) {
-        try {
-          await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-            resourceDir,
-            parameters,
-            authConfig,
-          });
-        } catch (e) {
-          context.print.error('Failed compiling GraphQL schema:');
-          context.print.info(e.message);
-          const continueQuestion = {
-            type: 'input',
-            name: 'pressKey',
-            message: `Correct the errors in schema.graphql and press Enter to re-compile.\n\nPath to schema.graphql:\n${targetSchemaFilePath}`,
-          };
-          await inquirer.prompt(continueQuestion);
-          continue;
-        }
-        notCompiled = false;
-      }
-
-      return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
-    });
-  }
-
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-    resourceDir,
-    parameters,
-    authConfig,
-  });
-
-  return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
-}
-// write to the transformer conf if the resolverConfig is valid
-async function writeResolverConfig(resolverConfig, resourceDir) {
-  if (resolverConfig && (resolverConfig.project || resolverConfig.models)) {
-    const localTransformerConfig = await readTransformerConfiguration(resourceDir);
-    localTransformerConfig.ResolverConfig = resolverConfig;
-    await writeTransformerConfiguration(resourceDir, localTransformerConfig);
-  }
-}
-
-async function updateTransformerConfigVersion(resourceDir) {
-  const localTransformerConfig = await readTransformerConfiguration(resourceDir);
-  localTransformerConfig.Version = TRANSFORM_CURRENT_VERSION;
-  localTransformerConfig.ElasticsearchWarning = true;
-  await writeTransformerConfiguration(resourceDir, localTransformerConfig);
-}
-
-async function createSyncFunction(context) {
-  const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const assetDir = path.normalize(path.join(rootAssetDir, 'sync-conflict-handler'));
-  const [shortId] = uuid().split('-');
-
-  const functionName = `syncConflictHandler${shortId}`;
-
-  const functionProps = {
-    functionName: `${functionName}`,
-    roleName: `${functionName}LambdaRole`,
-  };
-
-  const copyJobs = [
-    {
-      dir: assetDir,
-      template: 'sync-conflict-handler-index.js.ejs',
-      target: `${targetDir}/function/${functionName}/src/index.js`,
-    },
-    {
-      dir: assetDir,
-      template: 'sync-conflict-handler-package.json.ejs',
-      target: `${targetDir}/function/${functionName}/src/package.json`,
-    },
-    {
-      dir: assetDir,
-      template: 'sync-conflict-handler-template.json.ejs',
-      target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
-    },
-  ];
-
-  // copy over the files
-  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
-
-  const backendConfigs = {
-    service: 'Lambda',
-    providerPlugin: 'awscloudformation',
-    build: true,
-  };
-
-  await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
-  context.print.success(`Successfully added ${functionName} function locally`);
-
-  return functionName + '-${env}';
-}
-
-async function updateWalkthrough(context) {
+export const updateWalkthrough = async context => {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
@@ -387,7 +192,7 @@ async function updateWalkthrough(context) {
 
   // Get models
 
-  const project = await TransformPackage.readProjectConfiguration(resourceDir);
+  const project = await readProjectConfiguration(resourceDir);
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
@@ -434,12 +239,12 @@ async function updateWalkthrough(context) {
     delete project.config.ResolverConfig;
     await writeTransformerConfiguration(resourceDir, project.config);
   } else if (updateOption === 'authUpdate') {
-    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
-    authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
+    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
+    authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
     await checkForCognitoUserPools(context, parameters, authConfig);
   } else if (updateOption === 'all') {
-    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
-    ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
+    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
+    ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes));
     await checkForCognitoUserPools(context, parameters, authConfig);
   }
 
@@ -476,9 +281,9 @@ async function updateWalkthrough(context) {
     parameters,
     authConfig,
   });
-}
+};
 
-async function askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes) {
+async function askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes?) {
   let resolverConfig;
 
   const advancedSettingsQuestion = {
@@ -500,22 +305,22 @@ async function askAdditionalQuestions(context, parameters, authConfig, defaultAu
   const advancedSettingsAnswer = await inquirer.prompt([advancedSettingsQuestion]);
 
   if (advancedSettingsAnswer.advancedSettings) {
-    authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
-    resolverConfig = await askResolverConflictQuestion(context, parameters, modelTypes);
+    authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
+    resolverConfig = await askResolverConflictQuestion(context, modelTypes);
   }
 
   return { authConfig, resolverConfig };
 }
 
-async function askResolverConflictQuestion(context, parameters, modelTypes) {
-  let resolverConfig = {};
+async function askResolverConflictQuestion(context, modelTypes?) {
+  let resolverConfig: any = {};
 
   if (await context.prompt.confirm('Configure conflict detection?')) {
     const askConflictResolutionStrategy = async msg => {
       let conflictResolutionStrategy;
 
       do {
-        const conflictResolutionQuestion = {
+        const conflictResolutionQuestion: ListQuestion = {
           type: 'list',
           name: 'conflictResolutionStrategy',
           message: msg,
@@ -540,20 +345,22 @@ async function askResolverConflictQuestion(context, parameters, modelTypes) {
           ],
         };
         if (conflictResolutionStrategy === 'Learn More') {
-          conflictResolutionQuestion.prefix = syncAssets.getDataStoreLearnMore();
+          conflictResolutionQuestion.prefix = dataStoreLearnMore;
         }
         ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
       } while (conflictResolutionStrategy === 'Learn More');
 
-      let syncConfig = {
+      let syncConfig: any = {
         ConflictHandler: conflictResolutionStrategy,
         ConflictDetection: 'VERSION',
       };
 
       if (conflictResolutionStrategy === 'LAMBDA') {
-        const lambdaFunctionName = await askSyncFunctionQuestion(context);
-        syncConfig.LambdaConflictHandler = {};
-        syncConfig.LambdaConflictHandler.name = lambdaFunctionName;
+        const { newFunction, lambdaFunctionName } = await askSyncFunctionQuestion(context);
+        syncConfig.LambdaConflictHandler = {
+          name: lambdaFunctionName,
+          new: newFunction,
+        };
       }
 
       return syncConfig;
@@ -609,10 +416,9 @@ async function askSyncFunctionQuestion(context) {
   const { syncLambdaAnswer } = await inquirer.prompt([syncLambdaQuestion]);
 
   let lambdaFunctionName;
+  const newFunction = syncLambdaAnswer === 'NEW';
 
-  if (syncLambdaAnswer === 'NEW') {
-    lambdaFunctionName = await createSyncFunction(context);
-  } else {
+  if (!newFunction) {
     const syncLambdaNameQuestion = {
       type: 'input',
       name: 'lambdaFunctionName',
@@ -622,9 +428,9 @@ async function askSyncFunctionQuestion(context) {
     ({ lambdaFunctionName } = await inquirer.prompt([syncLambdaNameQuestion]));
   }
 
-  return lambdaFunctionName;
+  return { newFunction, lambdaFunctionName };
 }
-async function askDefaultAuthQuestion(context, parameters) {
+async function askDefaultAuthQuestion(context) {
   const defaultAuthTypeQuestion = {
     type: 'list',
     name: 'defaultAuthType',
@@ -634,7 +440,7 @@ async function askDefaultAuthQuestion(context, parameters) {
 
   const { defaultAuthType } = await inquirer.prompt([defaultAuthTypeQuestion]);
 
-  const authConfig = {
+  const authConfig: any = {
     additionalAuthenticationProviders: [],
   };
 
@@ -646,12 +452,12 @@ async function askDefaultAuthQuestion(context, parameters) {
   return { authConfig, defaultAuthType };
 }
 
-async function askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType) {
+async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
   if (await context.prompt.confirm('Configure additional auth types?')) {
     // Get additional auth configured
     const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
 
-    const additionalProvidersQuestion = {
+    const additionalProvidersQuestion: CheckboxQuestion = {
       type: 'checkbox',
       name: 'authType',
       message: 'Choose the additional authorization types you want to configure for the API',
@@ -896,14 +702,14 @@ function checkIfAuthExists(context) {
   return authResourceName;
 }
 
-async function migrate(context) {
+export const migrate = async context => {
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     forceCompile: true,
     migrate: true,
   });
-}
+};
 
-function getIAMPolicies(resourceName, crudOptions) {
+export const getIAMPolicies = (resourceName, crudOptions) => {
   let policy = {};
   const actions = [];
 
@@ -952,9 +758,15 @@ function getIAMPolicies(resourceName, crudOptions) {
   const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
 
   return { policy, attributes };
-}
+};
 
-function getAuthTypes(authConfig) {
+const templateSchemaFilter = authConfig => {
+  const authIncludesCognito = getAuthTypes(authConfig).includes('AMAZON_COGNITO_USER_POOLS');
+  return (templateOption: ListChoiceOptions): boolean =>
+    authIncludesCognito || templateOption.value !== 'single-object-auth-schema.graphql';
+};
+
+const getAuthTypes = authConfig => {
   const additionalAuthTypes = (authConfig.additionalAuthenticationProviders || [])
     .map(provider => provider.authenticationType)
     .filter(t => !!t);
@@ -962,12 +774,4 @@ function getAuthTypes(authConfig) {
   const uniqueAuthTypes = new Set([...additionalAuthTypes, authConfig.defaultAuthentication.authenticationType]);
 
   return [...uniqueAuthTypes.keys()];
-}
-
-module.exports = {
-  serviceWalkthrough,
-  updateWalkthrough,
-  openConsole,
-  migrate,
-  getIAMPolicies,
 };

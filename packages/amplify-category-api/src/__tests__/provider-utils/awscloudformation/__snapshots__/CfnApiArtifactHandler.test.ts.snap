@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`create artifacts creates the transform.conf.json file 1`] = `
+Array [
+  "backendDirPath/api/testApiName",
+  Object {
+    "ElasticsearchWarning": true,
+    "Version": undefined,
+  },
+]
+`;

@@ -1,16 +1,16 @@
-const { run } = require('./commands/api/console');
-const fs = require('fs-extra');
-const path = require('path');
+import { run } from './commands/api/console';
+import fs from 'fs-extra';
+import path from 'path';
 
 const category = 'api';
 
 const categories = 'categories';
 
-async function console(context) {
+export async function console(context) {
   await run(context);
 }
 
-async function migrate(context, serviceName) {
+export async function migrate(context, serviceName) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
   Object.keys(amplifyMeta).forEach(categoryName => {
@@ -40,7 +40,7 @@ async function migrate(context, serviceName) {
   await Promise.all(migrateResourcePromises);
 }
 
-async function initEnv(context) {
+export async function initEnv(context) {
   const datasource = 'Aurora Serverless';
   const service = 'service';
   const rdsInit = 'rdsInit';
@@ -135,7 +135,7 @@ async function initEnv(context) {
     });
 }
 
-async function getPermissionPolicies(context, resourceOpsMapping) {
+export async function getPermissionPolicies(context, resourceOpsMapping) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   const permissionPolicies = [];
@@ -164,7 +164,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   return { permissionPolicies, resourceAttributes };
 }
 
-async function executeAmplifyCommand(context) {
+export async function executeAmplifyCommand(context) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
     commandPath = path.join(commandPath, category);
@@ -176,16 +176,7 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-async function handleAmplifyEvent(context, args) {
+export async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }
-
-module.exports = {
-  console,
-  migrate,
-  initEnv,
-  getPermissionPolicies,
-  executeAmplifyCommand,
-  handleAmplifyEvent,
-};

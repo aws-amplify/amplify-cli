@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf ./lib && rm tsconfig.tsbuildinfo",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest"
   },
   "keywords": [

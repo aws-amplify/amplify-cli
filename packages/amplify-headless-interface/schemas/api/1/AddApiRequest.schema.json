@@ -22,7 +22,7 @@
                 "serviceName": {
                     "type": "string",
                     "enum": [
-                        "appSync"
+                        "AppSync"
                     ]
                 },
                 "apiName": {
@@ -70,15 +70,7 @@
                     }
                 },
                 "conflictResolution": {
-                    "type": "object",
-                    "properties": {
-                        "resolutionStrategy": {
-                            "$ref": "#/definitions/ResolutionStrategy"
-                        }
-                    },
-                    "required": [
-                        "resolutionStrategy"
-                    ]
+                    "$ref": "#/definitions/ConflictResolution"
                 }
             },
             "required": [
@@ -152,7 +144,7 @@
                 "openIDProviderName": {
                     "type": "string"
                 },
-                "openIDIssueURL": {
+                "openIDIssuerURL": {
                     "type": "string"
                 },
                 "openIDClientID": {
@@ -168,18 +160,100 @@
             "required": [
                 "mode",
                 "openIDClientID",
-                "openIDIssueURL",
+                "openIDIssuerURL",
                 "openIDProviderName"
             ]
         },
-        "ResolutionStrategy": {
-            "enum": [
-                "AUTOMERGE",
-                "LAMBDA",
-                "NONE",
-                "OPTIMISTIC_CONCURRENCY"
-            ],
-            "type": "string"
+        "ConflictResolution": {
+            "type": "object",
+            "properties": {
+                "defaultResolutionStrategy": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/PredefinedResolutionStrategy"
+                        },
+                        {
+                            "$ref": "#/definitions/LambdaResolutionStrategy"
+                        }
+                    ]
+                },
+                "perModelResolutionStrategy": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PerModelResolutionstrategy"
+                    }
+                }
+            }
+        },
+        "PredefinedResolutionStrategy": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "AUTOMERGE",
+                        "NONE",
+                        "OPTIMISTIC_CONCURRENCY"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "LambdaResolutionStrategy": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "LAMBDA"
+                    ]
+                },
+                "lambdaFunction": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "region": {
+                            "type": "string"
+                        },
+                        "arn": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "name"
+                    ]
+                }
+            },
+            "required": [
+                "lambdaFunction",
+                "type"
+            ]
+        },
+        "PerModelResolutionstrategy": {
+            "type": "object",
+            "properties": {
+                "resolutionStrategy": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/PredefinedResolutionStrategy"
+                        },
+                        {
+                            "$ref": "#/definitions/LambdaResolutionStrategy"
+                        }
+                    ]
+                },
+                "entityName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "entityName",
+                "resolutionStrategy"
+            ]
         }
     },
     "$schema": "http://json-schema.org/draft-07/schema#"

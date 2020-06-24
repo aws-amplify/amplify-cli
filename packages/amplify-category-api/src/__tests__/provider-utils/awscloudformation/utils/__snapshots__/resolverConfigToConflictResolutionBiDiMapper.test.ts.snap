@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`transform ConflictResolution to ResolverConfig maps properties correctly 1`] = `
+Object {
+  "models": Object {
+    "MyType": Object {
+      "ConflictDetection": "VERSION",
+      "ConflictHandler": "LAMBDA",
+      "LambdaConflictHandler": Object {
+        "lambdaArn": undefined,
+        "name": "someLambdaName",
+        "region": undefined,
+      },
+    },
+  },
+  "project": Object {
+    "ConflictDetection": "VERSION",
+    "ConflictHandler": "AUTOMERGE",
+  },
+}
+`;
+
+exports[`transform ConflictResolution to ResolverConfig throws when trying to convert new lambda resolution strategy 1`] = `"Tried to convert LambdaResolutionStrategy \\"NEW\\" to SyncConfig. New resources must be generated prior to this conversion and then replaced with a LambdaResolutionStrategy of type \\"EXISTING\\""`;
+
+exports[`transform ResolverConfig to ConflictResolution maps properties correctly 1`] = `
+Object {
+  "defaultResolutionStrategy": Object {
+    "type": "AUTOMERGE",
+  },
+  "perModelResolutionStrategy": Array [
+    Object {
+      "entityName": "MyType",
+      "resolutionStrategy": Object {
+        "resolver": Object {
+          "arn": undefined,
+          "name": "myLambdaConflictHandler",
+          "region": undefined,
+          "type": "EXISTING",
+        },
+        "type": "LAMBDA",
+      },
+    },
+  ],
+}
+`;
