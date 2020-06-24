@@ -23,6 +23,11 @@ export const checkIfBucketExists = async (bucketName: string, region: string) =>
   return await service.headBucket({ Bucket: bucketName }).promise();
 };
 
+export const deleteS3Bucket = async (bucketName: string, region: string) => {
+  const service = new S3({ region });
+  return await service.deleteBucket({ Bucket: bucketName }).promise();
+};
+
 export const getUserPool = async (userpoolId, region) => {
   config.update({ region });
   let res;
