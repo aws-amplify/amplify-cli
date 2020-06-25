@@ -60,7 +60,6 @@ async function add(context) {
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
-      context.telemetry.emitError(err);
     });
 }
 
@@ -262,7 +261,6 @@ async function console(context) {
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error trying to open the auth web console.');
-      throw err;
     });
 }
 

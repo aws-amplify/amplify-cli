@@ -30,14 +30,13 @@ module.exports = {
         print.success('Some next steps:');
         print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
         print.info(
-          '"amplify publish" builds all your local backend and front-end resources (if you have hosting category added) and provisions them in the cloud',
+          '"amplify publish" builds all your local backend and front-end resources (if you have hosting category added) and provisions them in the cloud'
         );
         print.info('');
       })
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the analytics resource');
-        context.telemetry.emitError(err);
       });
   },
 };

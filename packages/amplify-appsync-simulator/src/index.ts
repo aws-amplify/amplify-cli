@@ -52,7 +52,6 @@ export class AmplifyAppSyncSimulator {
     } catch (e) {
       console.log('Could not start AppSync mock endpoint');
       console.log(e);
-      throw e;
     }
   }
 

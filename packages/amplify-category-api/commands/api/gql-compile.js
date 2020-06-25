@@ -13,7 +13,6 @@ module.exports = {
       });
     } catch (err) {
       context.print.error(err.toString());
-      context.telemetry.emitError(err);
     }
   },
 };

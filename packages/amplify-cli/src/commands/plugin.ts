@@ -17,7 +17,6 @@ export async function run(context: Context) {
     .catch(err => {
       context.print.error(`Error executing command amplify plugin ${subCommand}`);
       context.print.error(err.message || err.stack || JSON.stringify(err));
-      context.telemetry.emitError(err);
       process.exit(1);
     });
 }

@@ -22,6 +22,5 @@ module.exports = {
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('An error occurred when updating predictions resource!');
-        context.telemetry.emitError(err);
       }),
 };

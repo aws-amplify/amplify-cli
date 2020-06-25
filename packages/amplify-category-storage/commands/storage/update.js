@@ -22,7 +22,6 @@ module.exports = {
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('An error occurred when updating the storage resource');
-        context.telemetry.emitError(err);
       });
   },
 };

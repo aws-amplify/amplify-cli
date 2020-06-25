@@ -21,7 +21,6 @@ module.exports = {
     return amplify.removeResource(context, category, resourceName).catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error removing the auth resource');
-      context.telemetry.emitError(err);
     });
   },
 };

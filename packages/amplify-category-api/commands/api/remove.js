@@ -23,7 +23,6 @@ module.exports = {
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('There was an error removing the api resource');
-        context.telemetry.emitError(err);
       });
   },
 };

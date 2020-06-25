@@ -21,7 +21,6 @@ module.exports = {
       } catch (err) {
         context.print.info(err.stack);
         context.print.error('There was an error removing the hosting resource');
-        context.telemetry.emitError(err);
       }
     } else {
       process.exit(1);
