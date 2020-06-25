@@ -431,8 +431,13 @@ function isInHeadlessMode(context) {
 
 function getHeadlessParams(context) {
   const { inputParams } = context.exeInfo;
-  const { categories = {} } = inputParams;
-  return categories.auth || {};
+  try {
+    // If the input given is a string validate it using JSON parse
+    const { categories = {} } = (typeof inputParams === 'string') ? JSON.parse(inputParams) : inputParams;
+    return categories.auth || {};
+  } catch (err) {
+    throw new Error(`Could not load input params: ${err}`);
+  }
 }
 
 function getOAuthProviderKeys(currentEnvSpecificValues, resourceParams) {
