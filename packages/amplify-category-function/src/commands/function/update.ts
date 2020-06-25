@@ -22,6 +22,7 @@ module.exports = {
       .then(() => context.print.success('Successfully updated resource'))
       .catch(err => {
         context.print.error(err.stack);
+        context.telemetry.emitError(err);
       });
   },
 };

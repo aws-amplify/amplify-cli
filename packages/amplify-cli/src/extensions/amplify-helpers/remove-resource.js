@@ -69,6 +69,7 @@ async function removeResource(context, category, resourceName) {
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('An error occurred when removing the resources from the local directory');
+      context.telemetry.emitError(err);
     });
 }
 
