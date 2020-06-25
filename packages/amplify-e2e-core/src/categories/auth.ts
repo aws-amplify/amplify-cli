@@ -1,7 +1,7 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getEnvVars } from '../../src';
 import { KEY_UP_ARROW } from '../utils';
 
-export function addAuthWithDefault(cwd: string, settings: any) {
+export function addAuthWithDefault(cwd: string, settings: any = {}) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication')

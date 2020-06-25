@@ -6,36 +6,47 @@ import fs from 'fs-extra';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 
+const tempPassword = 'tempPassword';
+
 //setupUser will add user to a cognito group and make its status to be "CONFIRMED",
 //if groupName is specified, add the user to the group.
 export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string) {
-  const cognitoClient = getConfiguredCognitoClient();
-  await cognitoClient
-    .adminCreateUser({
-      UserPoolId: userPoolId,
-      Username: username,
-      MessageAction: 'SUPPRESS',
-    })
-    .promise();
-
-  await cognitoClient
-    .adminSetUserPassword({
-      UserPoolId: userPoolId,
-      Username: username,
-      Password: password,
-      Permanent: true,
-    })
-    .promise();
-
-  if (groupName) {
+    const cognitoClient = getConfiguredCognitoClient();
     await cognitoClient
-      .adminAddUserToGroup({
-        UserPoolId: userPoolId,
+        .adminCreateUser({
+            UserPoolId: userPoolId,
+            UserAttributes: [{ Name: 'email', Value: "username@amazon.com" }],
+            Username: username,
+            MessageAction: 'SUPPRESS',
+            TemporaryPassword: tempPassword,
+        })
+        .promise();
+
+//   await cognitoClient
+//     .adminSetUserPassword({
+//       UserPoolId: userPoolId,
+//       Username: username,
+//       Password: password,
+//       Permanent: true,
+//     })
+//     .promise();
+
+    const authDetails = new AuthenticationDetails({
         Username: username,
-        GroupName: groupName,
-      })
-      .promise();
-  }
+        Password: tempPassword,
+    });
+    const user = Amplify.Auth.createCognitoUser(username);
+    await authenticateUser(user, authDetails, password);
+
+    if (groupName) {
+        await cognitoClient
+        .adminAddUserToGroup({
+            UserPoolId: userPoolId,
+            Username: username,
+            GroupName: groupName,
+        })
+        .promise();
+    }
 }
 
 export async function addUserToGroup(

@@ -38,10 +38,10 @@ export async function runTest(projectDir: string, testModule: any) {
 
   await updateAuthAddUserGroups(projectDir, [GROUPNAME]);
   await amplifyPush(projectDir);
+  const awsconfig = configureAmplify(projectDir);
 
   const userPoolId = getUserPoolId(projectDir);
   await setupUser(userPoolId, USERNAME, PASSWORD, GROUPNAME);
-  const awsconfig = configureAmplify(projectDir);
   const user = await signInUser(USERNAME, PASSWORD);
   const appSyncClient = getConfiguredAppsyncClientCognitoAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, user);
 
