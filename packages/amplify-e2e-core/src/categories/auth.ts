@@ -1,6 +1,7 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getEnvVars } from '../../src';
+import { KEY_UP_ARROW } from '../utils';
 
-export function addAuthWithDefault(cwd: string, settings: any) {
+export function addAuthWithDefault(cwd: string, settings: any = {}) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication')
@@ -914,5 +915,79 @@ export function addAuthWithMaxOptions(cwd: string, settings: any) {
           reject(err);
         }
       });
+  });
+}
+
+//add default auth with pre token generation trigger
+export function addAuthWithPreTokenGenerationTrigger(projectDir: string) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'auth'], { cwd: projectDir, stripColors: true })
+      .wait('Do you want to use the default authentication and security configuration')
+      .sendCarriageReturn()
+      .wait('How do you want users to be able to sign in')
+      .sendCarriageReturn()
+      .wait('Do you want to configure advanced settings')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('What attributes are required for signing up?')
+      .sendCarriageReturn()
+      .wait('Do you want to enable any of the following capabilities')
+      .send(KEY_UP_ARROW) //Override ID Token Claims
+      .send(' ')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your alter-claims function now')
+      .send('n')
+      .sendCarriageReturn()
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]) {
+  if (groupNames.length == 0) {
+    return;
+  }
+
+  return new Promise((resolve, reject) => {
+    let chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true })
+      .wait('What do you want to do?')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Provide a name for your user pool group')
+      .send(groupNames[0])
+      .sendCarriageReturn();
+
+    if (groupNames.length > 1) {
+      let index = 1;
+      while (index < groupNames.length) {
+        chain
+          .wait('Do you want to add another User Pool Group')
+          .sendLine('y')
+          .wait('Provide a name for your user pool group')
+          .send(groupNames[index++]);
+      }
+    }
+
+    chain
+      .wait('Do you want to add another User Pool Group')
+      .sendCarriageReturn()
+      .wait('Sort the user pool groups in order of preference')
+      .sendCarriageReturn()
+      .wait('"amplify publish" will build all your local backend and frontend resources');
+
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }

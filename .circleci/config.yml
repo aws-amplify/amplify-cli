@@ -769,6 +769,104 @@ jobs:
           when: always
       - store_artifacts:
           path: ../uitest_android_results
+  api-data-access-patterns-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-data-access-patterns.test.ts
+  api-directive-auth-1-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-auth-1.test.ts
+  api-directive-auth-2-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-auth-2.test.ts
+  api-directive-auth-3-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-auth-3.test.ts
+  api-directive-auth-4-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-auth-4.test.ts
+  api-directive-auth-5-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-auth-5.test.ts
+  api-directive-auth-6-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-auth-6.test.ts
+  api-directive-connection-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-connection.test.ts
+  api-directive-function-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-function.test.ts
+  api-directive-key-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-key.test.ts
+  api-directive-model-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-model.test.ts
+  api-directive-predictions-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-predictions.test.ts
+  api-directive-searchable-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-searchable.test.ts
+  api-directive-versioned-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api-directive-versioned.test.ts
   hostingPROD-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -891,6 +989,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
     jobs:
       - build
       - publish_to_local_registry:
@@ -914,6 +1013,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - graphql_e2e_testing
           requires:
             - build
@@ -923,6 +1023,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - beta
           requires:
             - build
@@ -932,6 +1033,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - beta
                 - split-test
           requires:
@@ -941,6 +1043,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - build
@@ -949,6 +1052,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - build
@@ -970,6 +1074,20 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
+            - api-data-access-patterns-amplify_e2e_tests
+            - api-directive-auth-1-amplify_e2e_tests
+            - api-directive-auth-2-amplify_e2e_tests
+            - api-directive-auth-3-amplify_e2e_tests
+            - api-directive-auth-4-amplify_e2e_tests
+            - api-directive-auth-5-amplify_e2e_tests
+            - api-directive-auth-6-amplify_e2e_tests
+            - api-directive-connection-amplify_e2e_tests
+            - api-directive-function-amplify_e2e_tests
+            - api-directive-key-amplify_e2e_tests
+            - api-directive-model-amplify_e2e_tests
+            - api-directive-predictions-amplify_e2e_tests
+            - api-directive-searchable-amplify_e2e_tests
+            - api-directive-versioned-amplify_e2e_tests
             - hostingPROD-amplify_e2e_tests
             - plugin-amplify_e2e_tests
             - datastore-modegen-amplify_e2e_tests
@@ -991,27 +1109,99 @@ workflows:
               only:
                 - release
                 - master
+                - schematests
                 - beta
-      - hostingPROD-amplify_e2e_tests:
+      - api-data-access-patterns-amplify_e2e_tests:
           filters: &ref_2
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - publish_to_local_registry
+      - api-directive-auth-1-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+      - api-directive-auth-2-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+      - api-directive-auth-3-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+      - api-directive-auth-4-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-data-access-patterns-amplify_e2e_tests
+      - api-directive-auth-5-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-auth-1-amplify_e2e_tests
+      - api-directive-auth-6-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-auth-2-amplify_e2e_tests
+      - api-directive-connection-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-auth-3-amplify_e2e_tests
+      - api-directive-function-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-auth-4-amplify_e2e_tests
+      - api-directive-key-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-auth-5-amplify_e2e_tests
+      - api-directive-model-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-auth-6-amplify_e2e_tests
+      - api-directive-predictions-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-connection-amplify_e2e_tests
+      - api-directive-searchable-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-function-amplify_e2e_tests
+      - api-directive-versioned-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-key-amplify_e2e_tests
+      - hostingPROD-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - api-directive-model-amplify_e2e_tests
       - plugin-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+            - api-directive-predictions-amplify_e2e_tests
       - datastore-modegen-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+            - api-directive-searchable-amplify_e2e_tests
       - interactions-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+            - api-directive-versioned-amplify_e2e_tests
       - hosting-amplify_e2e_tests:
           filters: *ref_2
           requires:
