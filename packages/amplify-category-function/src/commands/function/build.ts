@@ -11,6 +11,7 @@ module.exports = {
     return amplify.buildResources(context, categoryName, resourceName).catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error building the function resources');
+      context.telemetry.emitError(err);
     });
   },
 };

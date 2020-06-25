@@ -2,7 +2,6 @@ version: 2.1
 machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
-
 defaults: &defaults
   working_directory: ~/repo
   docker:

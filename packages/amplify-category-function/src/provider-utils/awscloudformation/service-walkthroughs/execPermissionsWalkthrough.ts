@@ -185,6 +185,7 @@ export async function askExecRolePermissionsQuestions(context, allDefaultValues,
     } catch (e) {
       context.print.warning(`Policies cannot be added for ${category}`);
       context.print.info(e.stack);
+      context.telemetry.emitError(e);
     }
   }
 
