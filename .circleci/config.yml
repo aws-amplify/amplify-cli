@@ -9,7 +9,7 @@ defaults:
     - image: 'circleci/node:10.18'
   resource_class: large
 jobs:
-  build:
+  build: 
     working_directory: ~/repo
     docker: *ref_0
     resource_class: large
@@ -989,6 +989,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
     jobs:
       - build
       - publish_to_local_registry:
@@ -1012,6 +1013,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - graphql_e2e_testing
           requires:
             - build
@@ -1021,6 +1023,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - beta
           requires:
             - build
@@ -1030,6 +1033,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - beta
                 - split-test
           requires:
@@ -1039,6 +1043,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - build
@@ -1047,6 +1052,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - build
@@ -1103,12 +1109,14 @@ workflows:
               only:
                 - release
                 - master
+                - schematests
                 - beta
       - api-data-access-patterns-amplify_e2e_tests:
           filters: &ref_2
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - publish_to_local_registry

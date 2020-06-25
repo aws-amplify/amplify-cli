@@ -641,6 +641,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
     jobs:
       - build
       - publish_to_local_registry:
@@ -664,6 +665,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - graphql_e2e_testing
           requires:
             - build
@@ -673,6 +675,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - beta
           requires:
             - build
@@ -682,6 +685,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - beta
                 - split-test
           requires:
@@ -691,6 +695,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - publish_to_local_registry
@@ -699,6 +704,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - build
@@ -707,6 +713,7 @@ workflows:
             branches:
               only:
                 - master
+                - schematests
                 - split-test
           requires:
             - build
@@ -734,12 +741,14 @@ workflows:
               only:
                 - release
                 - master
+                - schematests
                 - beta
       # - integration_test_js:
       #     filters:
       #       branches:
       #         only:
       #           - master
+      #           - schematests
       #     requires:
       #       - build
       #       - test
@@ -749,6 +758,7 @@ workflows:
       #       branches:
       #         only:
       #           - master
+      #           - schematests
       #     requires:
       #       - build
       #       - test
