@@ -16,6 +16,7 @@ import {
   AmplifyPrePullEventData,
   AmplifyPostPullEventData,
 } from './domain/amplify-event';
+import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 
 export async function executeCommand(context: Context) {
   const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform, context.input.plugin!, context.input.command!);
@@ -140,64 +141,94 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
   return result;
 }
 
-async function executePluginModuleCommand(context: Context, plugin: PluginInfo) {
+async function executePluginModuleCommand(context: Context, plugin: PluginInfo): Promise<void> {
   const { commands, commandAliases } = plugin.manifest;
   if (!commands!.includes(context.input.command!)) {
     context.input.command = commandAliases![context.input.command!];
   }
 
-  if (fs.existsSync(plugin.packageLocation)) {
-    await raisePreEvent(context);
-
-    const pluginModule = require(plugin.packageLocation);
-    if (
-      pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) &&
-      typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function'
-    ) {
-      attachContextExtensions(context, plugin);
-      await pluginModule.executeAmplifyCommand(context);
-    } else {
-      // if the module does not have the executeAmplifyCommand method,
-      // fall back to the old approach by scanning the command folder and locate the command file
-      let commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command!));
-      if (context.input.subCommands && context.input.subCommands.length > 0) {
-        commandFilepath = path.join(commandFilepath, ...context.input.subCommands!);
-      }
-
-      let commandModule;
-
-      try {
-        commandModule = require(commandFilepath);
-      } catch (e) {
-        // do nothing
-      }
-
-      if (!commandModule) {
-        commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name));
-        try {
-          commandModule = require(commandFilepath);
-        } catch (e) {
-          // do nothing
-        }
-      }
-
-      if (commandModule) {
-        attachContextExtensions(context, plugin);
-        await commandModule.run(context);
-      } else {
-        const { showAllHelp } = require('./extensions/amplify-helpers/show-all-help');
-        showAllHelp(context);
-      }
-    }
-
-    await raisePostEvent(context);
-  } else {
+  if (!fs.existsSync(plugin.packageLocation)) {
     await scan();
     context.print.error('The Amplify CLI plugin platform detected an error.');
     context.print.info('It has performed a fresh scan.');
     context.print.info('Please execute your command again.');
+    return;
   }
+
+  let commandName = constants.ExecuteAmplifyCommand;
+  let fallbackFn = legacyCommandExecutor;
+
+  if (isHeadlessCommand(context)) {
+    commandName = constants.ExecuteAmplifyHeadlessCommand;
+    fallbackFn = () => context.print.error(`Headless mode is not implemented for ${plugin.packageName}`);
+  }
+
+  return executionHandler(context, plugin)
+    .forCommand(commandName)
+    .withFallback(fallbackFn)
+    .run();
 }
+
+const executionHandler = (context: Context, plugin: PluginInfo) => ({
+  forCommand: (commandName: string) => ({
+    withFallback: (fallbackFn: (context: Context, plugin: PluginInfo) => Promise<void>) => ({
+      run: async (): Promise<void> => {
+        const handler = getHandler(require(plugin.packageLocation), commandName);
+        await raisePreEvent(context);
+        if (!handler) {
+          await fallbackFn(context, plugin);
+        } else {
+          attachContextExtensions(context, plugin);
+          await handler(context);
+        }
+        await raisePostEvent(context);
+      },
+    }),
+  }),
+});
+
+const getHandler = (pluginModule: any, handlerName: string): ((context: Context) => Promise<void>) | undefined => {
+  if (pluginModule.hasOwnProperty(handlerName) && typeof pluginModule[handlerName] === 'function') {
+    if (handlerName === constants.ExecuteAmplifyHeadlessCommand) {
+      return async context => pluginModule[handlerName](context, await readHeadlessPayload());
+    } else {
+      return pluginModule[handlerName];
+    }
+  }
+};
+
+// old plugin execution approach of scanning the command folder and locating the command file
+const legacyCommandExecutor = async (context: Context, plugin: PluginInfo) => {
+  let commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command!));
+  if (context.input.subCommands && context.input.subCommands.length > 0) {
+    commandFilepath = path.join(commandFilepath, ...context.input.subCommands!);
+  }
+
+  let commandModule;
+
+  try {
+    commandModule = require(commandFilepath);
+  } catch (e) {
+    // do nothing
+  }
+
+  if (!commandModule) {
+    commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name));
+    try {
+      commandModule = require(commandFilepath);
+    } catch (e) {
+      // do nothing
+    }
+  }
+
+  if (commandModule) {
+    attachContextExtensions(context, plugin);
+    await commandModule.run(context);
+  } else {
+    const { showAllHelp } = require('./extensions/amplify-helpers/show-all-help');
+    showAllHelp(context);
+  }
+};
 
 async function raisePreEvent(context: Context) {
   if (context.input.plugin === constants.CORE) {

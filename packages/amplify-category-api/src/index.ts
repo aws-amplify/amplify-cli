@@ -1,6 +1,8 @@
 import { run } from './commands/api/console';
 import fs from 'fs-extra';
 import path from 'path';
+import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
+import { validateAddApiRequest } from 'amplify-util-headless-input';
 
 const category = 'api';
 
@@ -175,6 +177,16 @@ export async function executeAmplifyCommand(context) {
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
+
+export const executeAmplifyHeadlessCommand = async (context, headlessPayload: string) => {
+  switch (context.input.command) {
+    case 'add':
+      await getCfnApiArtifactHandler(context).createArtifacts(await validateAddApiRequest(headlessPayload));
+      break;
+    default:
+      context.print.error(`Headless mode for ${context.input.command} api is not implemented yet`);
+  }
+};
 
 export async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
