@@ -13,6 +13,7 @@
   ],
   "references": [
     {"path": "../amplify-headless-interface"},
-    {"path": "../graphql-transformer-core"}
+    {"path": "../graphql-transformer-core"},
+    {"path": "../amplify-util-headless-input"},
   ]
 }
