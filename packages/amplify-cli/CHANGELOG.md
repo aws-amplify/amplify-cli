@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.22.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.4...@aws-amplify/cli@4.22.0-beta.0) (2020-06-25)
+
+
+### Features
+
+* change `amplify delete` prompt default value from yes to no ([#4580](https://github.com/aws-amplify/amplify-cli/issues/4580)) ([0bdbb77](https://github.com/aws-amplify/amplify-cli/commit/0bdbb775915f84efb863821cfa9b1b0f048a0f95)), closes [#4579](https://github.com/aws-amplify/amplify-cli/issues/4579)
+
+
+
+
+
 ## [4.21.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.3...@aws-amplify/cli@4.21.4) (2020-06-18)
 
 

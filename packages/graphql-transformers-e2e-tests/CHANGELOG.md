@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.2...graphql-transformers-e2e-tests@6.18.3-beta.0) (2020-06-25)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
 ## [6.18.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.1...graphql-transformers-e2e-tests@6.18.2) (2020-06-18)
 
 

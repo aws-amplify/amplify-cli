@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.21.0...amplify-provider-awscloudformation@4.21.1-beta.0) (2020-06-25)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** add missing require ([#4647](https://github.com/aws-amplify/amplify-cli/issues/4647)) ([17d70f1](https://github.com/aws-amplify/amplify-cli/commit/17d70f1c998c30c1fe0b61722c7e59b5e48b1041)), closes [#4398](https://github.com/aws-amplify/amplify-cli/issues/4398)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
 # [4.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.20.4...amplify-provider-awscloudformation@4.21.0) (2020-06-18)
 
 
