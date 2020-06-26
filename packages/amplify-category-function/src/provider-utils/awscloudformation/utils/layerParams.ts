@@ -16,6 +16,11 @@ export type LayerParameters = {
   build: boolean;
 };
 
+export interface StoredLayerParameters {
+  runtimes: Pick<FunctionRuntime, 'value' | 'layerExecutablePath' | 'cloudTemplateValue'>[];
+  layerVersionMap?: Record<number, Pick<LayerVersionMetadata, 'permissions' | 'hash'>>;
+}
+
 export enum Permission {
   private = 'private',
   public = 'public',

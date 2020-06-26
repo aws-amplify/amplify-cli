@@ -6,7 +6,7 @@ import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
 import _ from 'lodash';
-export { packageLayer } from './provider-utils/awscloudformation/utils/packageLayer';
+export { packageLayer, hashLayerDir } from './provider-utils/awscloudformation/utils/packageLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 
@@ -94,10 +94,10 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
 
 export async function initEnv(context) {
   const { amplify } = context;
-  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus('function');
+  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(category);
 
   resourcesToBeDeleted.forEach(authResource => {
-    amplify.removeResourceParameters(context, 'function', authResource.resourceName);
+    amplify.removeResourceParameters(context, category, authResource.resourceName);
   });
 
   const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
@@ -105,8 +105,8 @@ export async function initEnv(context) {
   const functionTasks = tasks.map(functionResource => {
     const { resourceName } = functionResource;
     return async () => {
-      const config = await updateConfigOnEnvInit(context, 'function', resourceName);
-      context.amplify.saveEnvResourceParameters(context, 'function', resourceName, config);
+      const config = await updateConfigOnEnvInit(context, resourceName);
+      context.amplify.saveEnvResourceParameters(context, category, resourceName, config);
     };
   });
 

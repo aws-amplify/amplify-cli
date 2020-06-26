@@ -8,8 +8,9 @@ const { getEnvInfo } = require('./get-env-info');
 const _ = require('lodash');
 const { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } = require('./get-cloud-init-status');
 const { readJsonFile } = require('./read-json-file');
+const { ServiceName: FunctionServiceName, hashLayerDir } = require('amplify-category-function');
 
-async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
+async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, isLambdaLayer = false) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
   if (!lastPushTimeStamp) {
     return false;
@@ -23,8 +24,10 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     return false;
   }
 
-  const localDirHash = await getHashForResourceDir(localBackendDir);
-  const cloudDirHash = await getHashForResourceDir(cloudBackendDir);
+  const hashingFunc = isLambdaLayer ? hashLayerDir : getHashForResourceDir;
+
+  const localDirHash = await hashingFunc(localBackendDir);
+  const cloudDirHash = await hashingFunc(cloudBackendDir);
 
   return localDirHash !== cloudDirHash;
 }
@@ -177,10 +180,12 @@ async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category
     await asyncForEach(Object.keys(categoryItem), async resource => {
       if (currentamplifyMeta[categoryName]) {
         if (currentamplifyMeta[categoryName][resource] !== undefined && amplifyMeta[categoryName][resource] !== undefined) {
+          const isLambdaLayer = amplifyMeta[categoryName][resource].service === FunctionServiceName.LambdaLayer;
           const backendModified = await isBackendDirModifiedSinceLastPush(
             resource,
             categoryName,
             currentamplifyMeta[categoryName][resource].lastPushTimeStamp,
+            isLambdaLayer,
           );
 
           if (backendModified) {
