@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import _ from 'lodash';
 import path from 'path';
 import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '../../src';
 import { multiSelect } from '../utils/selectors';
@@ -23,6 +24,16 @@ export function validateLayerDir(projRoot: string, layerName: string, layerExist
   } else {
     return !fs.pathExistsSync(layerDir);
   }
+}
+
+export function validatePushedVersion(projRoot: string, layerName: string, version: number, permissions: Permission[]): boolean {
+  const layerParametersPath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'layer-parameters.json');
+  if (fs.existsSync(layerParametersPath)) {
+    const layerParameters = fs.readJsonSync(layerParametersPath);
+    let storedPermissions = layerParameters.layerVersionMap[`${version}`].permissions;
+    return _.difference(permissions, storedPermissions) === _.difference(storedPermissions, permissions);
+  }
+  return false;
 }
 
 export function addLayer(cwd: string, settings?: any) {
@@ -173,4 +184,17 @@ function printFlow(chain: ExecutionContext, settings: any, layerDirRegex) {
 
 export function addOptData(projRoot: string, layerName: string): void {
   fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
+}
+
+enum PermissionName {
+  awsAccounts = 'awsAccounts',
+  awsOrg = 'awsOrg',
+  private = 'private',
+  public = 'public',
+}
+
+interface Permission {
+  type: PermissionName;
+  accounts?: string[];
+  orgs?: string[];
 }
