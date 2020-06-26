@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath } from '../../src';
+import { nspawn as spawn, getCLIPath, KEY_DOWN_ARROW } from '../../src';
 
 const defaultSettings = {
   name: '\r',
@@ -12,9 +12,23 @@ const defaultSettings = {
   startCmd: '\r',
   useProfile: '\r',
   profileName: '\r',
-  region: 'us-east-2',
+  region: process.env.CLI_REGION,
   local: false,
 };
+
+const amplifyRegions = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-2',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-central-1',
+  'ap-northeast-1',
+  'ap-northeast-2',
+  'ap-southeast-1',
+  'ap-southeast-2',
+  'ap-south-1',
+];
 
 export function initJSProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
@@ -115,8 +129,11 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
 
 export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region?: string }) {
   const s = { ...defaultSettings, ...settings };
+  let regionIndex = amplifyRegions.indexOf(s.region);
+  regionIndex = (regionIndex === -1)? 0: regionIndex;
+
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -144,8 +161,14 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
       .wait('secretAccessKey')
       .sendLine(s.secretAccessKey)
       .resumeRecording()
-      .wait('region')
-      .sendLine(s.region)
+      .wait('region');
+
+      while(regionIndex > 0){
+        chain.send(KEY_DOWN_ARROW);
+        regionIndex--;
+      }
+
+      chain.sendCarriageReturn()
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
