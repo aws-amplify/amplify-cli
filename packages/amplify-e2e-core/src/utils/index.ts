@@ -15,6 +15,7 @@ export * from './sdk-calls';
 export * from './selectors';
 export * from './sleep';
 export * from './transformConfig';
+export * from './envVars';
 
 // run dotenv config to update env variable
 config();
@@ -23,8 +24,8 @@ export function deleteProjectDir(root: string) {
   return rimraf.sync(root);
 }
 
-export function getEnvVars(): { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string } {
-  return { ...process.env } as { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string };
+export function deleteAmplifyDir(root: string) {
+  return rimraf.sync(path.join(root, 'amplify'));
 }
 
 export function overrideFunctionSrc(root: string, name: string, code: string) {

@@ -6,7 +6,16 @@ import {
   createBackendEnvironment,
   deleteConsoleApp,
 } from '../src/pullAndInit/amplifyConsoleOperations';
-
+import {
+  createNewProjectDir,
+  initJSProjectWithProfile,
+  addAuthWithDefaultSocial,
+  amplifyPushAuth,
+  deleteProject,
+  deleteAmplifyDir,
+  deleteProjectDir,
+  getSocialProviders,
+} from 'amplify-e2e-core';
 import { headlessInit } from '../src/pullAndInit/initProject';
 import { headlessPull } from '../src/pullAndInit/pullProject';
 import { headlessDelete } from '../src/pullAndInit/deleteProject';
@@ -151,5 +160,58 @@ describe('amplify console build', () => {
     await headlessDelete(clonedProjectDirPath);
     await deleteConsoleApp(appIdB, amplifyClient);
     util.deleteProjectDir(clonedProjectDirPath);
+  });
+
+  it('test headless pull with authConfig', async () => {
+    const envName = 'dev';
+    const providersParam = {
+      awscloudformation: {
+        configLevel: 'project',
+        useProfile: true,
+        profileName: util.getProfileName(),
+      },
+    };
+    const {
+      FACEBOOK_APP_ID,
+      FACEBOOK_APP_SECRET,
+      GOOGLE_APP_ID,
+      GOOGLE_APP_SECRET,
+      AMAZON_APP_ID,
+      AMAZON_APP_SECRET,
+    } = getSocialProviders();
+    const projRoot = await createNewProjectDir('consoleauth');
+    await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
+    await addAuthWithDefaultSocial(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    let teamInfo = getTeamProviderInfo(projRoot);
+    expect(teamInfo).toBeDefined();
+    let appId = teamInfo[envName].awscloudformation.AmplifyAppId;
+    expect(appId).toBeDefined();
+    expect(teamInfo.categories.auth).toBeDefined();
+    let authTeamInfo = Object.keys(teamInfo.categories.auth).map(key => teamInfo.categories.auth[key])[0];
+    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+
+    deleteAmplifyDir(projRoot);
+
+    await headlessPull(projRoot, { envName, appId }, providersParam, {
+      facebookAppIdUserPool: FACEBOOK_APP_ID,
+      facebookAppSecretUserPool: FACEBOOK_APP_SECRET,
+      googleAppIdUserPool: GOOGLE_APP_ID,
+      googleAppSecretUserPool: GOOGLE_APP_SECRET,
+      amazonAppIdUserPool: AMAZON_APP_ID,
+      amazonAppSecretUserPool: AMAZON_APP_SECRET,
+    });
+
+    teamInfo = getTeamProviderInfo(projRoot);
+    expect(teamInfo).toBeDefined();
+    appId = teamInfo[envName].awscloudformation.AmplifyAppId;
+    expect(appId).toBeDefined();
+    expect(teamInfo.categories.auth).toBeDefined();
+    authTeamInfo = Object.keys(teamInfo.categories.auth).map(key => teamInfo.categories.auth[key])[0];
+    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+
+    // delete project
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 });
