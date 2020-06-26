@@ -149,7 +149,11 @@ function splitTests(
         });
         workflow.jobs = [...workflow.jobs, ...jobs];
       });
-      const filteredJobs = replaceWorkflowDependency(removeWorkflowJob(workflow.jobs, jobName), jobName, Object.keys(newJobs));
+
+      const lastJobBatch = Object.values(jobByRegion)
+        .map(regionJobs => getLastBatchJobs(Object.keys(regionJobs), concurrency))
+        .reduce((acc, val) => acc.concat(val), []);
+      const filteredJobs = replaceWorkflowDependency(removeWorkflowJob(workflow.jobs, jobName), jobName, lastJobBatch);
       workflow.jobs = filteredJobs;
     }
     output.workflows = workflows;
@@ -175,6 +179,17 @@ function removeWorkflowJob(jobs: WorkflowJob[], jobName: string): WorkflowJob[] 
       return name !== jobName;
     }
   });
+}
+
+/**
+ *
+ * @param jobs array of job names
+ * @param concurrency number of concurrent jobs
+ */
+function getLastBatchJobs(jobs: string[], concurrency: number): string[] {
+  const lastBatchJobLength = Math.min(concurrency, jobs.length);
+  const lastBatchJobNames = jobs.slice(jobs.length - lastBatchJobLength);
+  return lastBatchJobNames;
 }
 
 /**
@@ -225,7 +240,13 @@ function saveConfig(config: CircleCIConfig): void {
 }
 function main(): void {
   const config = loadConfig();
-  const splitConfig = splitTests(config, 'amplify_e2e_tests', 'build_test_deploy', join(process.cwd(), 'packages', 'amplify-e2e-tests'), 4);
+  const splitConfig = splitTests(
+    config,
+    'amplify_e2e_tests',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-e2e-tests'),
+    CONCURRENCY,
+  );
   saveConfig(splitConfig);
 }
 main();
