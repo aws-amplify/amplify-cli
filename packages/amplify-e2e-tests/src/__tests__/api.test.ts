@@ -351,7 +351,8 @@ describe('amplify add api (REST)', () => {
   });
 
   it('init a project, add a DDB, then add a crud rest api', async () => {
-    const DDB_NAME = 'ddb';
+    const randomId = await global.getRandomId();
+    const DDB_NAME = `ddb${randomId}`;
     await initJSProjectWithProfile(projRoot, {});
     await addSimpleDDB(projRoot, { name: DDB_NAME });
     await addRestApi(projRoot, { isCrud: true });
