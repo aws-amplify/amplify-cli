@@ -134,7 +134,7 @@ export function prevPermsQuestion(layerName: string) {
     {
       type: 'list',
       name: 'usePrevPerms',
-      message: `Content changes in Lambda layer ${layerName} detected. What permissions do you want to grant to this new layer version?`,
+      message: 'What permissions do you want to grant to this new layer version?',
       choices: [
         {
           name: 'The same permission as the latest layer version',

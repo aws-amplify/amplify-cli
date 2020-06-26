@@ -2,6 +2,7 @@ import {
   addLayer,
   addOptData,
   amplifyPushAuth,
+  amplifyPushLayer,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -12,6 +13,7 @@ import {
   removeLayer,
   updateLayer,
   validateLayerDir,
+  validatePushedVersion,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 
@@ -120,6 +122,27 @@ describe('amplify add lambda layer', () => {
     await amplifyPushAuth(projRoot);
     await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
+    await validateMetadata(settings.layerName);
+  });
+
+  it('init a project, add/push layer, change layer content, push layer using previous permissions', async () => {
+    const [shortId] = uuid().split('-');
+    const settings = {
+      runtimes: ['nodejs'],
+      layerName: `testlayer${shortId}`,
+      permissions: ['Public (everyone on AWS can use this layer)'],
+      versionChanged: false,
+      numLayers: 1,
+      isPushed: false,
+    };
+    const expectedPerms = [{ type: 'private' }, { type: 'public' }];
+    await initJSProjectWithProfile(projRoot, {});
+    await addLayer(projRoot, settings);
+    await amplifyPushAuth(projRoot);
+    validatePushedVersion(projRoot, settings.layerName, 1, expectedPerms);
+    addOptData(projRoot, settings.layerName);
+    await amplifyPushLayer(projRoot);
+    validatePushedVersion(projRoot, settings.layerName, 2, expectedPerms);
     await validateMetadata(settings.layerName);
   });
 });
