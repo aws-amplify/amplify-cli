@@ -139,12 +139,12 @@ export function prevPermsQuestion(layerName: string) {
         {
           name: 'The same permission as the latest layer version',
           short: 'Previous version permissions',
-          value: 'previous',
+          value: true,
         },
         {
           name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
           short: 'Private',
-          value: 'default',
+          value: false,
         },
       ],
       default: 0,

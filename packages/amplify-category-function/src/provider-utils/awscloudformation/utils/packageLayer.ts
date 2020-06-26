@@ -64,8 +64,10 @@ async function ensureLayerVersion(context: any, layerPath: string, layerName: st
   if (previousHash && previousHash !== currentHash) {
     const prevPermissions = layerData.getVersion(latestVersion).permissions;
     ++latestVersion; // Content changes detected, bumping version
+    context.print.success(`Content changes in Lambda layer ${layerName} detected. Layer version bumped to ${latestVersion}`);
+    context.print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
     layerParameters.layerVersionMap[`${latestVersion}`] = {
-      permissions: await getNewVersionPermissions(context.print, layerName, prevPermissions),
+      permissions: await getNewVersionPermissions(context, layerName, prevPermissions),
       hash: currentHash,
     };
     createLayerParametersFile(context, layerParameters, layerPath);
@@ -79,17 +81,19 @@ async function ensureLayerVersion(context: any, layerPath: string, layerName: st
 }
 
 async function getNewVersionPermissions(
-  print: any,
+  context: any,
   layerName: string,
   prevPermissions: Partial<LayerPermission>[],
 ): Promise<Partial<LayerPermission>[]> {
   const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
   let usePrevPermissions = true;
   if (!_.isEqual(prevPermissions, defaultPermissions)) {
-    print.success(`Content changes in Lambda layer ${layerName} detected:`);
-    print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
-    const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
-    usePrevPermissions = usePrevPerms === 'previous';
+    if (_.get(context, ['parameters', 'options', 'yes'], false)) {
+      context.print.info('--yes flag detected. Using same permissions as previous layer version');
+    } else {
+      const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
+      usePrevPermissions = usePrevPerms;
+    }
   }
   return usePrevPermissions ? prevPermissions : defaultPermissions;
 }
