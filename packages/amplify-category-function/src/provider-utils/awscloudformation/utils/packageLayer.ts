@@ -5,6 +5,7 @@ import { prompt } from 'inquirer';
 import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
+import { FunctionDependency } from 'amplify-function-plugin-interface';
 import { ServiceName } from './constants';
 import { prevPermsQuestion } from './layerHelpers';
 import { getLayerMetadataFactory, LayerPermission, Permission, PrivateLayer } from './layerParams';
@@ -115,7 +116,7 @@ function validFilesize(path, maxSize = 250) {
 
 interface Resource {
   service: ServiceName;
-  dependsOn?: object[];
+  dependsOn?: FunctionDependency[];
   resourceName: string;
   category: string;
 }

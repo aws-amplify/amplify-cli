@@ -152,19 +152,6 @@ export function prevPermsQuestion(layerName: string) {
   ];
 }
 
-export function layerDependencyUpdateQuestion(layerNames: string[]) {
-  return [
-    {
-      type: 'confirm',
-      name: 'useNewLayerVersions',
-      message: `You've updated Lambda layers: ${layerNames.join(
-        ', ',
-      )}\nDo you want functions using the layers to upgrade to the latest version?`,
-      default: false,
-    },
-  ];
-}
-
 export function createVersionsMap(parameters: LayerInputParams, version: string, hash?: string) {
   const { layerPermissions } = parameters;
   let versionMap: object = {};
