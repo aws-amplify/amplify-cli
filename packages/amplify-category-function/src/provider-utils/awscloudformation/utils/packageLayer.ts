@@ -10,14 +10,14 @@ import { prevPermsQuestion } from './layerHelpers';
 import { getLayerMetadataFactory, LayerPermission, Permission, PrivateLayer } from './layerParams';
 import { createLayerParametersFile, updateLayerCfnFile } from './storeResources';
 
-export async function finalizeLayer(context, resource: Resource) {
+export async function packageLayer(context, resource: Resource) {
   const layerName = resource.resourceName;
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
   await ensureLayerVersion(context, resourcePath, layerName);
-  return packageLayer(context, resource);
+  return zipLayer(context, resource);
 }
 
-async function packageLayer(context, resource: Resource) {
+async function zipLayer(context, resource: Resource) {
   const layerName = resource.resourceName;
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
   const zipFilename = 'latest-build.zip';
