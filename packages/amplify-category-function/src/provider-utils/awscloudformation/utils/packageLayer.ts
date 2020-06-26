@@ -69,7 +69,7 @@ async function ensureLayerVersion(context: any, layerPath: string, layerName: st
     const prevPermissions = layerData.getVersion(latestVersion).permissions;
     ++latestVersion; // Content changes detected, bumping version
     layerParameters.layerVersionMap[latestVersion] = {
-      permissions: await getNewVersionPermissions(layerName, prevPermissions),
+      permissions: await getNewVersionPermissions(context.print, layerName, prevPermissions),
       hash: currentHash,
     };
     updateLayerArtifacts(context, layerParameters, { amplifyMeta: false });
