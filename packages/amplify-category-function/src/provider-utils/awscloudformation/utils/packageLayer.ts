@@ -5,14 +5,22 @@ import { prompt } from 'inquirer';
 import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
+import { FunctionDependency } from 'amplify-function-plugin-interface';
+import { ServiceName } from './constants';
 import { prevPermsQuestion } from './layerHelpers';
 import { getLayerMetadataFactory, LayerPermission, Permission, PrivateLayer } from './layerParams';
 import { createLayerParametersFile, updateLayerCfnFile } from './storeResources';
 
-export async function packageLayer(context, resource) {
+export async function packageLayer(context, resource: Resource) {
   const layerName = resource.resourceName;
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
   await ensureLayerVersion(context, resourcePath, layerName);
+  return zipLayer(context, resource);
+}
+
+async function zipLayer(context, resource: Resource) {
+  const layerName = resource.resourceName;
+  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
   const zipFilename = 'latest-build.zip';
   const distDir = path.join(resourcePath, 'dist');
   fs.ensureDirSync(distDir);
@@ -57,7 +65,7 @@ async function ensureLayerVersion(context: any, layerPath: string, layerName: st
     const prevPermissions = layerData.getVersion(latestVersion).permissions;
     ++latestVersion; // Content changes detected, bumping version
     layerParameters.layerVersionMap[`${latestVersion}`] = {
-      permissions: await getNewVersionPermissions(layerName, prevPermissions),
+      permissions: await getNewVersionPermissions(context.print, layerName, prevPermissions),
       hash: currentHash,
     };
     createLayerParametersFile(context, layerParameters, layerPath);
@@ -71,12 +79,15 @@ async function ensureLayerVersion(context: any, layerPath: string, layerName: st
 }
 
 async function getNewVersionPermissions(
+  print: any,
   layerName: string,
   prevPermissions: Partial<LayerPermission>[],
 ): Promise<Partial<LayerPermission>[]> {
   const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
   let usePrevPermissions = true;
   if (!_.isEqual(prevPermissions, defaultPermissions)) {
+    print.success(`Content changes in Lambda layer ${layerName} detected:`);
+    print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
     const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
     usePrevPermissions = usePrevPerms === 'previous';
   }
@@ -101,4 +112,11 @@ function validFilesize(path, maxSize = 250) {
   } catch (error) {
     return new Error(`Calculating file size failed: ${path}`);
   }
+}
+
+interface Resource {
+  service: ServiceName;
+  dependsOn?: FunctionDependency[];
+  resourceName: string;
+  category: string;
 }

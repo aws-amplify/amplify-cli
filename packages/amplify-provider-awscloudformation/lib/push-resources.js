@@ -284,8 +284,8 @@ function packageResources(context, resources) {
   };
 
   const promises = [];
-  for (let i = 0; i < resources.length; i += 1) {
-    promises.push(packageResource(context, resources[i]));
+  for (let resource of resources) {
+    promises.push(packageResource(context, resource));
   }
 
   return Promise.all(promises);
