@@ -64,7 +64,7 @@ async function ensureLayerVersion(context: any, layerPath: string, layerName: st
   if (previousHash && previousHash !== currentHash) {
     const prevPermissions = layerData.getVersion(latestVersion).permissions;
     ++latestVersion; // Content changes detected, bumping version
-    context.print.success(`Content changes in Lambda layer ${layerName} detected. Layer version bumped to ${latestVersion}`);
+    context.print.success(`Content changes in Lambda layer ${layerName} detected. Layer version increased to ${latestVersion}`);
     context.print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
     layerParameters.layerVersionMap[`${latestVersion}`] = {
       permissions: await getNewVersionPermissions(context, layerName, prevPermissions),
@@ -88,9 +88,7 @@ async function getNewVersionPermissions(
   const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
   let usePrevPermissions = true;
   if (!_.isEqual(prevPermissions, defaultPermissions)) {
-    if (_.get(context, ['parameters', 'options', 'yes'], false)) {
-      context.print.info('--yes flag detected. Using same permissions as previous layer version');
-    } else {
+    if (!_.get(context, ['parameters', 'options', 'yes'], false)) {
       const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
       usePrevPermissions = usePrevPerms;
     }
