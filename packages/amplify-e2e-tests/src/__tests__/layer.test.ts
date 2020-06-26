@@ -2,6 +2,7 @@ import {
   addLayer,
   addOptData,
   amplifyPushAuth,
+  amplifyPushLayer,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -120,6 +121,24 @@ describe('amplify add lambda layer', () => {
     await amplifyPushAuth(projRoot);
     await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
+    await validateMetadata(settings.layerName);
+  });
+
+  it('init a project, add/push layer, change layer content, push layer using previous permissions', async () => {
+    const [shortId] = uuid().split('-');
+    const settings = {
+      runtimes: ['nodejs'],
+      layerName: `testlayer${shortId}`,
+      permissions: ['Public (everyone on AWS can use this layer)'],
+      versionChanged: false,
+      numLayers: 1,
+      isPushed: false,
+    };
+    await initJSProjectWithProfile(projRoot, {});
+    await addLayer(projRoot, settings);
+    await amplifyPushAuth(projRoot);
+    addOptData(projRoot, settings.layerName);
+    await amplifyPushLayer(projRoot);
     await validateMetadata(settings.layerName);
   });
 });

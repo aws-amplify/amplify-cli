@@ -6,7 +6,7 @@ import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
 import _ from 'lodash';
-export { packageLayer } from './provider-utils/awscloudformation/utils/packageLayer';
+export { finalizeLayer } from './provider-utils/awscloudformation/utils/finalizeLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 

@@ -134,7 +134,7 @@ export function prevPermsQuestion(layerName: string) {
     {
       type: 'list',
       name: 'usePrevPerms',
-      message: `Content changes in Lambda layer ${layerName} detected. What permissions do you want to grant to this new layer version?`,
+      message: 'What permissions do you want to grant to this new layer version?',
       choices: [
         {
           name: 'The same permission as the latest layer version',
@@ -148,6 +148,19 @@ export function prevPermsQuestion(layerName: string) {
         },
       ],
       default: 0,
+    },
+  ];
+}
+
+export function layerDependencyUpdateQuestion(layerNames: string[]) {
+  return [
+    {
+      type: 'confirm',
+      name: 'useNewLayerVersions',
+      message: `You've updated Lambda layers: ${layerNames.join(
+        ', ',
+      )}\nDo you want functions using the layers to upgrade to the latest version?`,
+      default: false,
     },
   ];
 }

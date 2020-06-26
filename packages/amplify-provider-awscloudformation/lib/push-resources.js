@@ -18,7 +18,7 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const ziparchiver = require('archiver');
-const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
+const { finalizeLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -226,7 +226,7 @@ function packageResources(context, resources) {
 
   const packageResource = (context, resource) => {
     let s3Key;
-    return (resource.service === FunctionServiceName.LambdaFunction ? buildResource(context, resource) : packageLayer(context, resource))
+    return (resource.service === FunctionServiceName.LambdaFunction ? buildResource(context, resource) : finalizeLayer(context, resource))
       .then(result => {
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
@@ -284,8 +284,8 @@ function packageResources(context, resources) {
   };
 
   const promises = [];
-  for (let i = 0; i < resources.length; i += 1) {
-    promises.push(packageResource(context, resources[i]));
+  for (let resource of resources) {
+    promises.push(packageResource(context, resource));
   }
 
   return Promise.all(promises);
