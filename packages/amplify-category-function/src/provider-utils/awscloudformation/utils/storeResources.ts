@@ -1,16 +1,15 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { provider, ServiceName, layerParametersFileName } from './constants';
+import { provider, ServiceName, layerParametersFileName, parametersFileName, functionParametersFileName } from './constants';
 import { category as categoryName } from '../../../constants';
-import { generateLayerCfnObj, generatePermissionCfnObj } from './lambda-layer-cloudformation-template';
-import { LayerParameters } from './layerParams';
+import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
+import { LayerParameters, StoredLayerParameters } from './layerParams';
 import _ from 'lodash';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
-
 export function createFunctionResources(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
   context.amplify.updateamplifyMetaAfterResourceAdd(
     categoryName,
@@ -25,7 +24,65 @@ export function createFunctionResources(context: any, parameters: FunctionParame
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
 
-export function copyTemplateFiles(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
+export const createLayerArtifacts = (context, parameters: LayerParameters): string => {
+  const layerDirPath = ensureLayerFolders(context, parameters);
+  createLayerParametersFile(context, parameters, layerDirPath);
+  createParametersFile(context, {}, parameters.layerName, 'parameters.json');
+  createLayerCfnFile(context, parameters, layerDirPath);
+  addLayerToAmplifyMeta(context, parameters);
+  return layerDirPath;
+};
+
+// updates the layer resources and returns the resource directory
+const defaultOpts = {
+  layerParams: true,
+  cfnFile: true,
+  amplifyMeta: true,
+};
+export const updateLayerArtifacts = (context, parameters: LayerParameters, options: Partial<typeof defaultOpts> = {}): string => {
+  options = _.assign(defaultOpts, options);
+  const layerDirPath = ensureLayerFolders(context, parameters);
+  if (options.layerParams) {
+    createLayerParametersFile(context, parameters, layerDirPath);
+  }
+  if (options.cfnFile) {
+    updateLayerCfnFile(context, parameters, layerDirPath);
+  }
+  if (options.amplifyMeta) {
+    updateLayerInAmplifyMeta(context, parameters);
+  }
+  return layerDirPath;
+};
+
+// ideally function update should be refactored so this function does not need to be exported
+export function saveMutableState(
+  context,
+  parameters: Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers'>> | FunctionTriggerParameters,
+) {
+  createParametersFile(context, buildParametersFileObj(parameters), parameters.resourceName, functionParametersFileName);
+}
+
+// ideally function update should be refactored so this function does not need to be exported
+export function saveCFNParameters(
+  context,
+  parameters: Partial<Pick<FunctionParameters, 'cloudwatchRule' | 'resourceName'>> | FunctionTriggerParameters,
+) {
+  if ('trigger' in parameters) {
+    const params = {
+      modules: parameters.modules.join(),
+      resourceName: parameters.resourceName,
+    };
+    createParametersFile(context, params, parameters.resourceName, parametersFileName);
+  }
+  if ('cloudwatchRule' in parameters) {
+    const params = {
+      CloudWatchRule: parameters.cloudwatchRule,
+    };
+    createParametersFile(context, params, parameters.resourceName, parametersFileName);
+  }
+}
+
+function copyTemplateFiles(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
   // copy function template files
   const destDir = context.amplify.pathManager.getBackendDirPath();
   const copyJobs = parameters.functionTemplate.sourceFiles.map(file => {
@@ -70,7 +127,7 @@ export function copyTemplateFiles(context: any, parameters: FunctionParameters |
   context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, false);
 }
 
-export function createLayerFolders(context, parameters) {
+function ensureLayerFolders(context, parameters) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const layerDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
   fs.ensureDirSync(path.join(layerDirPath, 'opt'));
@@ -90,72 +147,60 @@ function ensureLayerRuntimeFolder(layerDirPath: string, runtime) {
   }
 }
 
-export function createLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
+function createLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
   context.amplify.writeObjectAsJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
     generateLayerCfnObj(context, parameters),
     true,
   );
-  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, {
-    providerPlugin: parameters.providerContext.provider,
-    service: parameters.providerContext.service,
-    runtimes: parameters.runtimes,
-    versionsMap: parameters.layerVersionMap,
-    build: true,
-  });
 }
 
-export function saveMutableState(
-  context,
-  parameters: Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers'>> | FunctionTriggerParameters,
-) {
-  createParametersFile(context, buildParametersFileObj(parameters), parameters.resourceName);
-}
-
-export function saveCFNParameters(
-  context,
-  parameters: Partial<Pick<FunctionParameters, 'cloudwatchRule' | 'resourceName'>> | FunctionTriggerParameters,
-) {
-  if ('trigger' in parameters) {
-    const params = {
-      modules: parameters.modules.join(),
-      resourceName: parameters.resourceName,
-    };
-    createParametersFile(context, params, parameters.resourceName, 'parameters.json');
-  }
-  if ('cloudwatchRule' in parameters) {
-    const params = {
-      CloudWatchRule: parameters.cloudwatchRule,
-    };
-    createParametersFile(context, params, parameters.resourceName, 'parameters.json');
-  }
-}
-
-export function updateLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
+function updateLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
   context.amplify.writeObjectAsJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
     generateLayerCfnObj(context, parameters),
     true,
   );
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', parameters.runtimes);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'versionsMap', parameters.layerVersionMap);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', parameters.build);
 }
 
-export function createLayerParametersFile(context, parameters, layerDirPath: string) {
+const addLayerToAmplifyMeta = (context, parameters: LayerParameters) =>
+  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, layerParamsToAmplifyMetaParams(parameters));
+
+const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
+  const metaParams = layerParamsToAmplifyMetaParams(parameters);
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', metaParams.runtimes);
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'layerVersionMap', metaParams.layerVersionMap);
+  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', metaParams.build);
+};
+
+const createLayerParametersFile = (context, parameters: LayerParameters, layerDirPath: string) => {
   fs.ensureDirSync(layerDirPath);
   const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
-  context.amplify.writeObjectAsJson(parametersFilePath, parameters, true);
-}
+  context.amplify.writeObjectAsJson(parametersFilePath, layerParamsToStoredParams(parameters), true);
+};
 
-export function createParametersFile(context, parameters, resourceName, parametersFileName = 'function-parameters.json') {
+const layerParamsToAmplifyMetaParams = (
+  parameters: LayerParameters,
+): StoredLayerParameters & { providerPlugin: string; service: string; build: boolean } => {
+  return _.assign(layerParamsToStoredParams(parameters), {
+    providerPlugin: parameters.providerContext.provider,
+    service: parameters.providerContext.service,
+    build: parameters.build,
+  });
+};
+
+const layerParamsToStoredParams = (parameters: LayerParameters): StoredLayerParameters => ({
+  runtimes: (parameters.runtimes || []).map(runtime => _.pick(runtime, 'value', 'layerExecutablePath', 'cloudTemplateValue')),
+  layerVersionMap: parameters.layerVersionMap,
+});
+
+function createParametersFile(context, parameters, resourceName, parametersFileName) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
   fs.ensureDirSync(resourceDirPath);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   const currentParameters = fs.existsSync(parametersFilePath) ? context.amplify.readJsonFile(parametersFilePath) : {};
-  const jsonString = JSON.stringify({ ...currentParameters, ...parameters }, null, 4);
-  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+  context.amplify.writeObjectAsJson(parametersFilePath, { ...currentParameters, ...parameters }, true);
 }
 
 function buildParametersFileObj(

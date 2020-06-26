@@ -26,7 +26,7 @@ describe('amplify add lambda layer', () => {
     const { Arn: Arn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
     const runtimes = Object.keys(meta.function).map(key => meta.function[key])[0].runtimes;
     const runtimeValue = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
-    const layerVersions = Object.keys(meta.function).map(key => meta.function[key])[0].versionsMap;
+    const layerVersions = Object.keys(meta.function).map(key => meta.function[key])[0].layerVersionMap;
     const localVersions = Object.keys(layerVersions);
 
     expect(Arn).toBeDefined();
