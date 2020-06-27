@@ -1,6 +1,7 @@
 import uuid from 'uuid';
 import { Permission, LayerPermission } from '../utils/layerParams';
 import _ from 'lodash';
+import { ListQuestion } from 'inquirer';
 
 export interface LayerInputParams {
   layerPermissions?: Permission[];
@@ -8,13 +9,13 @@ export interface LayerInputParams {
   authorizedOrgId?: string;
 }
 
-export function layerVersionQuestion(choices) {
+export function layerVersionQuestion(versions: number[]) {
   return [
     {
       type: 'list',
       name: 'layerVersion',
       message: 'Select the layer version to update:',
-      choices: choices,
+      choices: versions,
     },
   ];
 }
@@ -129,7 +130,7 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
   ];
 }
 
-export function prevPermsQuestion(layerName: string) {
+export function prevPermsQuestion(layerName: string): ListQuestion[] {
   return [
     {
       type: 'list',
@@ -139,12 +140,12 @@ export function prevPermsQuestion(layerName: string) {
         {
           name: 'The same permission as the latest layer version',
           short: 'Previous version permissions',
-          value: 'previous',
+          value: true,
         },
         {
           name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
           short: 'Private',
-          value: 'default',
+          value: false,
         },
       ],
       default: 0,
@@ -152,9 +153,8 @@ export function prevPermsQuestion(layerName: string) {
   ];
 }
 
-export function createVersionsMap(parameters: LayerInputParams, version: string, hash?: string) {
+export function layerInputParamsToLayerPermissionArray(parameters: LayerInputParams): LayerPermission[] {
   const { layerPermissions } = parameters;
-  let versionMap: object = {};
   let permissionObj: Array<LayerPermission> = [];
 
   if (layerPermissions !== undefined && layerPermissions.length > 0) {
@@ -181,11 +181,6 @@ export function createVersionsMap(parameters: LayerInputParams, version: string,
   const privateObj: LayerPermission = {
     type: Permission.private,
   };
-  permissionObj.push(privateObj);
-  // add private as default in versionMap
-  versionMap[version] = { permissions: permissionObj };
-  if (hash) {
-    versionMap[version].hash = hash;
-  }
-  return versionMap;
+  permissionObj.push(privateObj); // layer is always accessible by the aws account of the owner
+  return permissionObj;
 }

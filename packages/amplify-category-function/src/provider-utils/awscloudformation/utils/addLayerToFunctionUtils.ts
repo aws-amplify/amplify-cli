@@ -60,13 +60,13 @@ export const askLayerSelection = async (
   for (let selection of layerSelections) {
     const currentSelectionDefaults = filterProjectLayers(previousSelections).find(sel => sel.resourceName === selection);
     const currentVersion = currentSelectionDefaults ? currentSelectionDefaults.version.toString() : undefined;
+    const layerState = layerMetadataFactory(selection);
+    await layerState.syncVersions(); // make sure we are reflecting the latest changes;
     const layerVersionPrompt: ListQuestion = {
       type: 'list',
       name: 'versionSelection',
       message: versionSelectionPrompt(selection),
-      choices: layerMetadataFactory(selection)
-        .listVersions()
-        .map(num => num.toString()),
+      choices: layerState.listVersions().map(num => num.toString()),
       default: currentVersion,
       filter: numStr => parseInt(numStr, 10),
     };

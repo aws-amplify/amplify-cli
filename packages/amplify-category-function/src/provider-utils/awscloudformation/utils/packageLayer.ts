@@ -6,17 +6,14 @@ import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
 import { FunctionDependency } from 'amplify-function-plugin-interface';
-import { ServiceName } from './constants';
+import { ServiceName, provider } from './constants';
 import { prevPermsQuestion } from './layerHelpers';
-import { getLayerMetadataFactory, LayerPermission, Permission, PrivateLayer, LayerParameters } from './layerParams';
+import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata } from './layerParams';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
-import { layerParametersFileName } from './constants';
 
 export async function packageLayer(context, resource: Resource) {
-  const layerName = resource.resourceName;
-  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
-  await ensureLayerVersion(context, resourcePath, layerName);
+  await ensureLayerVersion(context, resource.resourceName);
   return zipLayer(context, resource);
 }
 
@@ -56,43 +53,46 @@ async function zipLayer(context, resource: Resource) {
 }
 
 // Check hash results for content changes, bump version if so
-async function ensureLayerVersion(context: any, layerPath: string, layerName: string) {
-  const layerData = getLayerMetadataFactory(context)(layerName);
-  let latestVersion: number = layerData.getLatestVersion();
-  const currentHash = await hashLayerDir(layerPath);
-  const previousHash = layerData.getHash(latestVersion);
-  const layerParameters = context.amplify.readJsonFile(path.join(layerPath, layerParametersFileName)) as LayerParameters;
-  layerParameters.layerName = layerName;
-  layerParameters.build = true;
-
-  if (previousHash && previousHash !== currentHash) {
-    const prevPermissions = layerData.getVersion(latestVersion).permissions;
-    ++latestVersion; // Content changes detected, bumping version
-    layerParameters.layerVersionMap[latestVersion] = {
-      permissions: await getNewVersionPermissions(context.print, layerName, prevPermissions),
-      hash: currentHash,
-    };
-    updateLayerArtifacts(context, layerParameters, { amplifyMeta: false });
-  } else if (!previousHash) {
-    layerParameters.layerVersionMap[latestVersion].hash = currentHash;
-    updateLayerArtifacts(context, layerParameters, { cfnFile: false, amplifyMeta: false });
+async function ensureLayerVersion(context: any, layerName: string) {
+  const layerState = getLayerMetadataFactory(context)(layerName);
+  const isNewVersion = await layerState.syncVersions();
+  if (isNewVersion) {
+    const latestVersion = layerState.getLatestVersion();
+    context.print.success(`Content changes in Lambda layer ${layerName} detected. Layer version increased to ${latestVersion}`);
+    context.print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
+    await setNewVersionPermissions(context, layerName, layerState);
   }
+  await layerState.setNewVersionHash(); // "finialize" the latest layer version
+  const storedParams = layerState.toStoredLayerParameters();
+  const additionalLayerParams = {
+    layerName,
+    build: true,
+    providerContext: {
+      provider,
+      service: ServiceName.LambdaLayer,
+      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+    },
+  };
+  const layerParameters: LayerParameters = { ...storedParams, ...additionalLayerParams };
+  updateLayerArtifacts(context, layerParameters, { cfnFile: isNewVersion });
 }
 
-async function getNewVersionPermissions(
-  print: any,
-  layerName: string,
-  prevPermissions: Partial<LayerPermission>[],
-): Promise<Partial<LayerPermission>[]> {
+async function setNewVersionPermissions(context: any, layerName: string, layerState: LayerMetadata) {
   const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
   let usePrevPermissions = true;
-  if (!_.isEqual(prevPermissions, defaultPermissions)) {
-    print.success(`Content changes in Lambda layer ${layerName} detected:`);
-    print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
-    const { usePrevPerms } = await prompt(prevPermsQuestion(layerName));
-    usePrevPermissions = usePrevPerms === 'previous';
+  const latestVersion = layerState.getLatestVersion();
+  const latestVersionState = layerState.getVersion(latestVersion);
+  const hasNonDefaultPerms =
+    latestVersionState.isPublic() || latestVersionState.listAccoutAccess().length > 0 || latestVersionState.listOrgAccess().length > 0;
+  const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
+  if (yesFlagSet) {
+    context.print.warning(`Permissions from previous layer version carried forward to new version by default`);
+  } else if (hasNonDefaultPerms) {
+    usePrevPermissions = (await prompt(prevPermsQuestion(layerName))).usePrevPerms;
   }
-  return usePrevPermissions ? prevPermissions : defaultPermissions;
+  if (!usePrevPermissions) {
+    layerState.setPermissionsForVersion(latestVersion, defaultPermissions);
+  }
 }
 
 export const hashLayerDir = async (layerPath: string): Promise<string> => {
