@@ -340,6 +340,7 @@ async function updateResource(context, category, serviceResult) {
 async function updateConfigOnEnvInit(context, category, service) {
   const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`).Cognito;
   const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = srvcMetaData;
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
 
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
   // previously selected answers
@@ -366,7 +367,7 @@ async function updateConfigOnEnvInit(context, category, service) {
       });
 
       if (missingParams.length) {
-        throw new Error(`auth headless init is missing the following inputParams ${missingParams.join(', ')}`);
+        throw new Error(`auth headless ${isPulling ? 'pull' : 'init'} is missing the following inputParams ${missingParams.join(', ')}`);
       }
     }
     if (resourceParams.hostedUIProviderMeta) {
@@ -433,7 +434,7 @@ function getHeadlessParams(context) {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse
-    const { categories = {} } = (typeof inputParams === 'string') ? JSON.parse(inputParams) : inputParams;
+    const { categories = {} } = typeof inputParams === 'string' ? JSON.parse(inputParams) : inputParams;
     return categories.auth || {};
   } catch (err) {
     throw new Error(`Could not load input params: ${err}`);

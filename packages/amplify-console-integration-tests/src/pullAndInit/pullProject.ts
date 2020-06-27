@@ -1,7 +1,12 @@
 import * as util from '../util';
 import { nspawn as spawn } from 'amplify-e2e-core';
 
-export function headlessPull(projectRootDirPath: string, amplifyParam: Object, providersParam: Object, authConfig?: Object): Promise<void> {
+export function headlessPull(
+  projectRootDirPath: string,
+  amplifyParam: Object,
+  providersParam: Object,
+  categoryConfig?: Object,
+): Promise<void> {
   const pullCommand: string[] = [
     'pull',
     '--amplify',
@@ -11,7 +16,7 @@ export function headlessPull(projectRootDirPath: string, amplifyParam: Object, p
     '--no-override',
     '--yes',
   ];
-  if (authConfig) pullCommand.push(`--categories ${JSON.stringify(authConfig)}`);
+  if (categoryConfig) pullCommand.push(...['--categories', JSON.stringify(categoryConfig)]);
   return new Promise((resolve, reject) => {
     spawn(util.getCLIPath(), pullCommand, { cwd: projectRootDirPath, stripColors: true }).run((err: Error) => {
       if (!err) {
