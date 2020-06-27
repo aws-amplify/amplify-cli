@@ -78,13 +78,14 @@ export function layerPermissionsQuestion(params?: Permission[]) {
   ];
 }
 
-export function layerAccountAccessQuestion(defaultaccounts?: string[]) {
+export function layerAccountAccessQuestion(defaultAccountIds?: string[]) {
+  const hasDefaults = defaultAccountIds && defaultAccountIds.length > 0;
   return [
     {
       type: 'input',
       name: 'authorizedAccountIds',
       message: 'Provide a list of comma-separated AWS account IDs:',
-      validate: input => {
+      validate: (input: string) => {
         const accounts = input.split(',');
         const set = new Set();
         for (let accountID of accounts) {
@@ -99,12 +100,13 @@ export function layerAccountAccessQuestion(defaultaccounts?: string[]) {
         }
         return true;
       },
-      default: defaultaccounts !== undefined ? defaultaccounts.join(',') : '',
+      default: hasDefaults ? defaultAccountIds.join(',') : undefined,
     },
   ];
 }
 
-export function layerOrgAccessQuestion(defaultorgs?: string[]) {
+export function layerOrgAccessQuestion(defaultOrgs?: string[]) {
+  const hasDefaults = defaultOrgs && defaultOrgs.length > 0;
   return [
     {
       type: 'input',
@@ -125,7 +127,7 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
         }
         return true;
       },
-      default: defaultorgs !== undefined ? defaultorgs.join(',') : '',
+      default: hasDefaults ? defaultOrgs.join(',') : undefined,
     },
   ];
 }

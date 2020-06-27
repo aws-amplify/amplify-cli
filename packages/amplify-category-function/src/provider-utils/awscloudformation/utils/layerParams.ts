@@ -4,7 +4,7 @@ import path from 'path';
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 import { categoryName, layerParametersFileName } from '../utils/constants';
 import { category } from '../../../constants';
-import { hashLayerDir } from './packageLayer';
+import { hashLayerVersionContents } from './packageLayer';
 
 export type LayerVersionMap = Record<number, Pick<LayerVersionMetadata, 'permissions' | 'hash'>>;
 
@@ -139,15 +139,10 @@ class LayerState implements LayerMetadata {
   }
 
   updateCompatibleRuntimes(runtimes: LayerRuntime[]) {
-    let isModified = runtimes.length !== this.runtimes.length;
-    const existingRuntimeVals = this.runtimes.map(runtime => runtime.value);
-    const newRuntimeVals = runtimes.map(runtime => runtime.value);
-    // check that the arrays are different
-    isModified =
-      isModified ||
-      existingRuntimeVals.findIndex(val => !newRuntimeVals.includes(val)) !== -1 ||
-      newRuntimeVals.findIndex(val => !existingRuntimeVals.includes(val)) !== -1;
-    if (isModified) {
+    const existingRuntimeVals = this.runtimes.map(runtime => runtime.value).sort();
+    const newRuntimeVals = runtimes.map(runtime => runtime.value).sort();
+    const areRuntimesSame = _.isEqual(existingRuntimeVals, newRuntimeVals);
+    if (!areRuntimesSame) {
       this.updateRuntimes(runtimes);
       if (this.isLatestVersionFinalized()) {
         this.addNewLayerVersion();
@@ -170,7 +165,7 @@ class LayerState implements LayerMetadata {
 
   private hashLayer() {
     const layerPath = path.join(this.context.amplify.pathManager.getBackendDirPath(), category, this.layerName);
-    return hashLayerDir(layerPath);
+    return hashLayerVersionContents(layerPath);
   }
 
   private updateRuntimes(runtimes: LayerRuntime[]) {

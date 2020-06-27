@@ -11,6 +11,7 @@ import { prevPermsQuestion } from './layerHelpers';
 import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata } from './layerParams';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
+import globby from 'globby';
 
 export async function packageLayer(context, resource: Resource) {
   await ensureLayerVersion(context, resource.resourceName);
@@ -95,7 +96,18 @@ async function setNewVersionPermissions(context: any, layerName: string, layerSt
   }
 }
 
-export const hashLayerDir = async (layerPath: string): Promise<string> => {
+// hashes all of the layer contents as well as the files in the layer path (CFN, parameters, etc)
+export const hashLayerResource = async (layerPath: string): Promise<string> => {
+  return (await globby(['*'], { cwd: layerPath }))
+    .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'utf8'))
+    .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
+    .update(await hashLayerVersionContents(layerPath))
+    .digest('base64');
+};
+
+// hashes just the content that will be zipped into the layer version.
+// for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
+export const hashLayerVersionContents = async (layerPath: string): Promise<string> => {
   const nodePath = path.join(layerPath, 'lib', 'nodejs');
   const nodeHashOptions = {
     files: {
