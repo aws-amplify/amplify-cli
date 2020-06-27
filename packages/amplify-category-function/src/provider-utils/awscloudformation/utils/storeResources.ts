@@ -173,7 +173,7 @@ const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', metaParams.build);
 };
 
-const createLayerParametersFile = (context, parameters: LayerParameters, layerDirPath: string) => {
+const createLayerParametersFile = (context, parameters: LayerParameters | StoredLayerParameters, layerDirPath: string) => {
   fs.ensureDirSync(layerDirPath);
   const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
   context.amplify.writeObjectAsJson(parametersFilePath, layerParamsToStoredParams(parameters), true);
@@ -189,8 +189,8 @@ const layerParamsToAmplifyMetaParams = (
   });
 };
 
-const layerParamsToStoredParams = (parameters: LayerParameters): StoredLayerParameters => ({
-  runtimes: (parameters.runtimes || []).map(runtime => _.pick(runtime, 'value', 'layerExecutablePath', 'cloudTemplateValue')),
+const layerParamsToStoredParams = (parameters: LayerParameters | StoredLayerParameters): StoredLayerParameters => ({
+  runtimes: (parameters.runtimes || []).map(runtime => _.pick(runtime, 'value', 'name', 'layerExecutablePath', 'cloudTemplateValue')),
   layerVersionMap: parameters.layerVersionMap,
 });
 

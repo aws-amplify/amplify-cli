@@ -1,6 +1,7 @@
 import uuid from 'uuid';
 import { Permission, LayerPermission } from '../utils/layerParams';
 import _ from 'lodash';
+import { ListQuestion } from 'inquirer';
 
 export interface LayerInputParams {
   layerPermissions?: Permission[];
@@ -8,13 +9,13 @@ export interface LayerInputParams {
   authorizedOrgId?: string;
 }
 
-export function layerVersionQuestion(choices) {
+export function layerVersionQuestion(versions: number[]) {
   return [
     {
       type: 'list',
       name: 'layerVersion',
       message: 'Select the layer version to update:',
-      choices: choices,
+      choices: versions,
     },
   ];
 }
@@ -77,13 +78,14 @@ export function layerPermissionsQuestion(params?: Permission[]) {
   ];
 }
 
-export function layerAccountAccessQuestion(defaultaccounts?: string[]) {
+export function layerAccountAccessQuestion(defaultAccountIds?: string[]) {
+  const hasDefaults = defaultAccountIds && defaultAccountIds.length > 0;
   return [
     {
       type: 'input',
       name: 'authorizedAccountIds',
       message: 'Provide a list of comma-separated AWS account IDs:',
-      validate: input => {
+      validate: (input: string) => {
         const accounts = input.split(',');
         const set = new Set();
         for (let accountID of accounts) {
@@ -98,12 +100,13 @@ export function layerAccountAccessQuestion(defaultaccounts?: string[]) {
         }
         return true;
       },
-      default: defaultaccounts !== undefined ? defaultaccounts.join(',') : '',
+      default: hasDefaults ? defaultAccountIds.join(',') : undefined,
     },
   ];
 }
 
-export function layerOrgAccessQuestion(defaultorgs?: string[]) {
+export function layerOrgAccessQuestion(defaultOrgs?: string[]) {
+  const hasDefaults = defaultOrgs && defaultOrgs.length > 0;
   return [
     {
       type: 'input',
@@ -124,12 +127,12 @@ export function layerOrgAccessQuestion(defaultorgs?: string[]) {
         }
         return true;
       },
-      default: defaultorgs !== undefined ? defaultorgs.join(',') : '',
+      default: hasDefaults ? defaultOrgs.join(',') : undefined,
     },
   ];
 }
 
-export function prevPermsQuestion(layerName: string) {
+export function prevPermsQuestion(layerName: string): ListQuestion[] {
   return [
     {
       type: 'list',
@@ -139,12 +142,12 @@ export function prevPermsQuestion(layerName: string) {
         {
           name: 'The same permission as the latest layer version',
           short: 'Previous version permissions',
-          value: 'previous',
+          value: true,
         },
         {
           name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
           short: 'Private',
-          value: 'default',
+          value: false,
         },
       ],
       default: 0,
@@ -152,9 +155,8 @@ export function prevPermsQuestion(layerName: string) {
   ];
 }
 
-export function createVersionsMap(parameters: LayerInputParams, version: string, hash?: string) {
+export function layerInputParamsToLayerPermissionArray(parameters: LayerInputParams): LayerPermission[] {
   const { layerPermissions } = parameters;
-  let versionMap: object = {};
   let permissionObj: Array<LayerPermission> = [];
 
   if (layerPermissions !== undefined && layerPermissions.length > 0) {
@@ -181,11 +183,6 @@ export function createVersionsMap(parameters: LayerInputParams, version: string,
   const privateObj: LayerPermission = {
     type: Permission.private,
   };
-  permissionObj.push(privateObj);
-  // add private as default in versionMap
-  versionMap[version] = { permissions: permissionObj };
-  if (hash) {
-    versionMap[version].hash = hash;
-  }
-  return versionMap;
+  permissionObj.push(privateObj); // layer is always accessible by the aws account of the owner
+  return permissionObj;
 }

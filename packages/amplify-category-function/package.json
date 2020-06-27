@@ -26,6 +26,7 @@
     "fs-extra": "^8.1.0",
     "folder-hash":"^3.3.2",
     "graphql-transformer-core": "6.19.2",
+    "globby":"^11.0.1",
     "inquirer": "^7.0.3",
     "inquirer-datepicker": "^1.1.0",
     "enquirer": "^2.3.5",

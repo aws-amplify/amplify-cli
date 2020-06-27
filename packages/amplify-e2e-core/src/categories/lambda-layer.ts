@@ -59,7 +59,7 @@ export function addLayer(cwd: string, settings?: any) {
 
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
 
-    printFlow(chain, settings, layerDirRegex);
+    waitForLayerSuccessPrintout(chain, settings, layerDirRegex);
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -92,10 +92,6 @@ export function removeLayer(cwd: string) {
 }
 
 export function updateLayer(cwd: string, settings?: any) {
-  const defaultSettings = {
-    permissions: [permissionChoices[2]],
-  };
-  settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(), ['update', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
@@ -106,7 +102,7 @@ export function updateLayer(cwd: string, settings?: any) {
     }
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
     expect(settings.runtimes.length === runtimeDisplayNames.length).toBe(true);
-    chain.wait('Do you want to change the compatible runtimes?');
+    chain.wait('Do you want to update the compatible runtimes?');
     if (settings.versionChanged) {
       chain.sendLine('y').wait('Select up to 2 compatible runtimes:');
       multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
@@ -114,23 +110,15 @@ export function updateLayer(cwd: string, settings?: any) {
       chain.sendLine('n');
     }
     chain
-      .wait('Do you want to adjust who can access the current & new layer version?')
+      .wait('Do you want to adjust layer version permissions?')
       .sendLine('y')
+      .wait('Select the layer version to update')
+      .sendCarriageReturn() // assumes updating the latest version
       .wait('The current AWS account will always have access to this layer.');
     multiSelect(chain, settings.permissions, permissionChoices);
 
-    if (!settings.versionChanged) {
-      chain.wait('Select the layer version to update:').sendCarriageReturn();
-    } else {
-      chain
-        .wait('')
-        .wait(
-          'New Lambda layer version created. Any function that wants to use the latest layer version need to configure it by running - "amplify function update"',
-        );
-    }
     const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
-
-    printFlow(chain, settings, layerDirRegex);
+    waitForLayerSuccessPrintout(chain, settings, layerDirRegex);
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -162,7 +150,7 @@ function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   }
 }
 
-function printFlow(chain: ExecutionContext, settings: any, layerDirRegex) {
+function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, layerDirRegex) {
   chain
     .wait('✅ Lambda layer folders & files created:')
     .wait(layerDirRegex)

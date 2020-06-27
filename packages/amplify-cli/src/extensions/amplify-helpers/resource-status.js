@@ -8,7 +8,7 @@ const { getEnvInfo } = require('./get-env-info');
 const _ = require('lodash');
 const { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } = require('./get-cloud-init-status');
 const { readJsonFile } = require('./read-json-file');
-const { ServiceName: FunctionServiceName, hashLayerDir } = require('amplify-category-function');
+const { ServiceName: FunctionServiceName, hashLayerResource } = require('amplify-category-function');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, isLambdaLayer = false) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -24,7 +24,7 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     return false;
   }
 
-  const hashingFunc = isLambdaLayer ? hashLayerDir : getHashForResourceDir;
+  const hashingFunc = isLambdaLayer ? hashLayerResource : getHashForResourceDir;
 
   const localDirHash = await hashingFunc(localBackendDir);
   const cloudDirHash = await hashingFunc(cloudBackendDir);
