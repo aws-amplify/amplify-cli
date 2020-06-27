@@ -19,7 +19,7 @@ import {
   getAmplifyDirPath,
 } from 'amplify-e2e-core';
 import { headlessInit } from '../src/pullAndInit/initProject';
-import { headlessPull } from '../src/pullAndInit/pullProject';
+import { headlessPull, authConfigPull } from '../src/pullAndInit/pullProject';
 import { headlessDelete } from '../src/pullAndInit/deleteProject';
 import {
   removeFilesForTeam,
@@ -224,6 +224,42 @@ describe('amplify app console tests', () => {
         loginwithamazonAppSecretUserPool: AMAZON_APP_SECRET,
       },
     });
+
+    teamInfo = getTeamProviderInfo(projRoot);
+    expect(teamInfo).toBeDefined();
+    appId = teamInfo[envName].awscloudformation.AmplifyAppId;
+    expect(appId).toBeDefined();
+    expect(teamInfo[envName].categories.auth).toBeDefined();
+    authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
+    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+  });
+
+  it('test pull with auth config', async () => {
+    const envName = 'dev';
+    const providersParam = {
+      awscloudformation: {
+        configLevel: 'project',
+        useProfile: true,
+        profileName: util.getProfileName(),
+      },
+    };
+    await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
+    await addAuthWithDefaultSocial(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    let teamInfo = getTeamProviderInfo(projRoot);
+    expect(teamInfo).toBeDefined();
+    let appId = teamInfo[envName].awscloudformation.AmplifyAppId;
+    AmplifyAppID = appId;
+    stackName = teamInfo[envName].awscloudformation.StackName;
+    expect(stackName).toBeDefined();
+    expect(appId).toBeDefined();
+    expect(teamInfo[envName].categories.auth).toBeDefined();
+    let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
+    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+
+    deleteAmplifyDir(projRoot);
+
+    await authConfigPull(projRoot, { appId, envName });
 
     teamInfo = getTeamProviderInfo(projRoot);
     expect(teamInfo).toBeDefined();

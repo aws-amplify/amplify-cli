@@ -24,7 +24,6 @@ async function attachBackend(context, inputParams) {
       removeFolderStructure(context);
       restoreOriginalAmplifyFolder(context);
       context.print.error('Failed to pull the backend.');
-      context.print.info(util.inspect(e));
       context.telemetry.emitError(e);
     });
 }
