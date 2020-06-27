@@ -22,19 +22,18 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
             {
               path: 'nodejs',
               filename: 'package.json',
-              content: JSON.stringify({
-                name: 'nodejs',
-                version: '1.0.0',
-                description: '',
-                main: 'index.js',
-                dependencies: {},
-                devDependencies: {},
-                scripts: {
-                  test: 'echo "Error: no test specified" && exit 1',
+              content: JSON.stringify(
+                {
+                  // this really needs to be moved to a resource file
+                  version: '1.0.0',
+                  description: '',
+                  main: 'index.js',
+                  dependencies: {},
+                  devDependencies: {},
                 },
-                author: '',
-                license: 'ISC',
-              }),
+                undefined,
+                2,
+              ),
             },
           ],
         },

@@ -9470,6 +9470,15 @@ folder-hash@^3.3.0:
     graceful-fs "~4.2.0"
     minimatch "~3.0.4"
 
+folder-hash@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.npmjs.org/folder-hash/-/folder-hash-3.3.2.tgz#30c5ee2638ab25074ed2916bde75019c7f11965a"
+  integrity sha512-uxh7WEwwgNCALdyqdiyKi35Ahy9wQcZGb5IXKFig9/tsfByHMsHuQOgeiYyY0gNYF/rYB2kSZJ7BJjMb67PxMA==
+  dependencies:
+    debug "^4.1.1"
+    graceful-fs "~4.2.0"
+    minimatch "~3.0.4"
+
 follow-redirects@1.5.10:
   version "1.5.10"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.5.10.tgz#7b7a9f9aea2fdff36786a94ff643ed07f4ff5e2a"

@@ -5,13 +5,10 @@ import { ServiceName, provider } from './utils/constants';
 import { category as categoryName } from '../../constants';
 import {
   createFunctionResources,
-  createLayerCfnFile,
-  createLayerFolders,
   saveMutableState,
   saveCFNParameters,
-  createParametersFile,
-  updateLayerCfnFile,
-  createLayerParametersFile,
+  createLayerArtifacts,
+  updateLayerArtifacts,
 } from './utils/storeResources';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
@@ -44,9 +41,9 @@ export async function addResource(
   }
   switch (service) {
     case ServiceName.LambdaFunction:
-      return addFunctionResource(context, category, service, serviceConfig, options, parameters);
+      return addFunctionResource(context, category, service, serviceConfig, parameters);
     case ServiceName.LambdaLayer:
-      return addLayerResource(context, category, service, serviceConfig, options, parameters as LayerParameters);
+      return addLayerResource(context, service, serviceConfig, parameters as LayerParameters);
     default:
       throw BAD_SERVICE_ERR;
   }
@@ -57,7 +54,6 @@ export async function addFunctionResource(
   category,
   service,
   serviceConfig: ServiceConfig<FunctionParameters>,
-  options,
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
 ): Promise<void> {
   // Go through the walkthrough if the parameters are incomplete function parameters
@@ -123,10 +119,8 @@ export async function addFunctionResource(
 
 export async function addLayerResource(
   context,
-  category,
   service,
   serviceConfig: ServiceConfig<LayerParameters>,
-  options,
   parameters?: Partial<LayerParameters>,
 ): Promise<void> {
   if (parameters === undefined) {
@@ -139,13 +133,9 @@ export async function addLayerResource(
     projectName: context.amplify.getProjectDetails().projectConfig.projectName,
   };
 
-  await serviceConfig.walkthroughs.createWalkthrough(context, parameters);
+  const completeParams = (await serviceConfig.walkthroughs.createWalkthrough(context, parameters)) as LayerParameters;
 
-  const layerDirPath = createLayerFolders(context, parameters);
-  const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
-  createLayerParametersFile(context, layerParams, layerDirPath);
-  createParametersFile(context, {}, parameters.layerName, 'parameters.json');
-  createLayerCfnFile(context, parameters as LayerParameters, layerDirPath);
+  const layerDirPath = createLayerArtifacts(context, completeParams);
 
   const { print } = context;
   print.info('✅ Lambda layer folders & files created:');
@@ -185,7 +175,7 @@ export async function updateResource(
     case ServiceName.LambdaFunction:
       return updateFunctionResource(context, category, service, parameters, resourceToUpdate);
     case ServiceName.LambdaLayer:
-      return updateLayerResource(context, category, service, serviceConfig, parameters as LayerParameters);
+      return updateLayerResource(context, service, serviceConfig, parameters as LayerParameters);
     default:
       throw BAD_SERVICE_ERR;
   }
@@ -193,7 +183,6 @@ export async function updateResource(
 
 export async function updateLayerResource(
   context,
-  category,
   service,
   serviceConfig: ServiceConfig<LayerParameters>,
   parameters?: Partial<LayerParameters>,
@@ -210,13 +199,11 @@ export async function updateLayerResource(
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
   }
-  parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters);
+  const completeParams = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as LayerParameters;
 
-  // generate layer parameters file and CFn file for the updated layer
-  const layerDirPath = createLayerFolders(context, parameters); // update based
-  const layerParams = _.pick(parameters, ['runtimes', 'layerVersionMap']);
-  createLayerParametersFile(context, layerParams, layerDirPath);
-  updateLayerCfnFile(context, parameters as LayerParameters, layerDirPath);
+  // write out updated resources
+  const layerDirPath = updateLayerArtifacts(context, completeParams);
+
   const { print } = context;
   print.info('✅ Lambda layer folders & files created:');
   print.info(layerDirPath);
@@ -329,7 +316,7 @@ function getHeadlessParams(context, service) {
     : {};
 }
 
-export async function updateConfigOnEnvInit(context, category, service) {
+export async function updateConfigOnEnvInit(context, service) {
   const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
   const functionParametersPath = `${context.amplify.pathManager.getBackendDirPath()}/function/${service}/function-parameters.json`;
