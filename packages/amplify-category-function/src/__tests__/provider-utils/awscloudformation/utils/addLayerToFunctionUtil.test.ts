@@ -20,6 +20,7 @@ const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
 const layerMetadataFactory_stub: LayerMetadataFactory = () =>
   ({
     listVersions: () => [3, 2, 1],
+    syncVersions: async () => true,
   } as any);
 
 const runtimeValue = 'lolcode';
