@@ -309,17 +309,22 @@ function isInHeadlessMode(context) {
   return context.exeInfo.inputParams.yes;
 }
 
-function getHeadlessParams(context, service) {
+function getHeadlessParams(context, resourceName) {
   const { inputParams = {} } = context.exeInfo;
   return inputParams.categories && inputParams.categories.function && Array.isArray(inputParams.categories.function)
-    ? inputParams.categories.function.find(i => i.resourceName === service) || {}
+    ? inputParams.categories.function.find(i => i.resourceName === resourceName) || {}
     : {};
 }
 
-export async function updateConfigOnEnvInit(context, service) {
+export async function updateConfigOnEnvInit(context: any, resourceName: string, service: ServiceName) {
   const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
-  const functionParametersPath = `${context.amplify.pathManager.getBackendDirPath()}/function/${service}/function-parameters.json`;
+  const functionParametersPath = path.join(
+    context.amplify.pathManager.getBackendDirPath(),
+    categoryName,
+    resourceName,
+    'function-parameters.json',
+  );
   let resourceParams: any = {};
   const functionParametersExists = fs.existsSync(functionParametersPath);
   if (functionParametersExists) {
@@ -329,7 +334,7 @@ export async function updateConfigOnEnvInit(context, service) {
 
   // headless mode
   if (isInHeadlessMode(context)) {
-    const functionParams = getHeadlessParams(context, service);
+    const functionParams = getHeadlessParams(context, resourceName);
     return functionParams;
   }
 

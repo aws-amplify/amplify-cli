@@ -103,9 +103,9 @@ export async function initEnv(context) {
   const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   const functionTasks = tasks.map(functionResource => {
-    const { resourceName } = functionResource;
+    const { resourceName, service } = functionResource;
     return async () => {
-      const config = await updateConfigOnEnvInit(context, resourceName);
+      const config = await updateConfigOnEnvInit(context, resourceName, service);
       context.amplify.saveEnvResourceParameters(context, category, resourceName, config);
     };
   });
