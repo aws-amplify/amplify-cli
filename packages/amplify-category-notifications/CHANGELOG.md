@@ -13,6 +13,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package amplify-category-notifications
 
+### Bug Fixes
+
+- occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([eaf08e0](https://github.com/aws-amplify/amplify-cli/commit/eaf08e00841830e9654fea61ce901f2cb478eebe))
+
+## [2.15.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.6...amplify-category-notifications@2.15.7) (2020-05-26)
+
+**Note:** Version bump only for package amplify-category-notifications
+
 ## [2.15.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.5...amplify-category-notifications@2.15.6) (2020-05-15)
 
 **Note:** Version bump only for package amplify-category-notifications

@@ -15,6 +15,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [1.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.0.1...amplify-nodejs-function-template-provider@1.0.2) (2020-05-08)
 
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+## [1.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.0.2...amplify-nodejs-function-template-provider@1.0.3) (2020-06-10)
+
+### Bug Fixes
+
+- remove deprecated use of context.done() and context.succeed() ([#4206](https://github.com/aws-amplify/amplify-cli/issues/4206)) ([7dac5ea](https://github.com/aws-amplify/amplify-cli/commit/7dac5eac1c47818451da274573436cfbb4b9eadb))
+
+## [1.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.0.1...amplify-nodejs-function-template-provider@1.0.2) (2020-05-08)
+
 ### Bug Fixes
 
 - point editor to correct nodejs trigger template file ([#3990](https://github.com/aws-amplify/amplify-cli/issues/3990)) ([16a2b4f](https://github.com/aws-amplify/amplify-cli/commit/16a2b4f50a85372f733eef129e43b154a993b136))

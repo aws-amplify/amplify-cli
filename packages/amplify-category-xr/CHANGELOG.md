@@ -11,6 +11,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package amplify-category-xr
 
+## [2.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.3.6...amplify-category-xr@2.3.7) (2020-05-26)
+
+**Note:** Version bump only for package amplify-category-xr
+
 ## [2.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.3.5...amplify-category-xr@2.3.6) (2020-05-15)
 
 **Note:** Version bump only for package amplify-category-xr

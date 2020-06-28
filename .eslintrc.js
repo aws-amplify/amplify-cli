@@ -91,7 +91,6 @@ module.exports = {
     'no-loop-func': 'off',
     'no-self-assign': 'off',
     'no-shadow': 'off',
-    'no-undef': 'off',
     'no-unneeded-ternary': 'off',
     'no-unreachable': 'off',
     'no-unused-expressions': 'off',

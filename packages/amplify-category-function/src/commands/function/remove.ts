@@ -19,6 +19,7 @@ module.exports = {
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('An error occurred when removing the function resource');
+        context.telemetry.emitError(err);
       });
   },
 };

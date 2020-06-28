@@ -3,7 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.4...amplify-e2e-tests@2.18.5) (2020-06-25)
+
+### Reverts
+
+- Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
 ## [2.18.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.3...amplify-e2e-tests@2.18.4) (2020-06-18)
+
+### Bug Fixes
+
+- change scope of hashed files for AppSync ([#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)) ([10fa9da](https://github.com/aws-amplify/amplify-cli/commit/10fa9da646f4de755e2dc92cd4bb2a6319425d72)), closes [#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)
+
+## [2.18.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.2...amplify-e2e-tests@2.18.3) (2020-06-11)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+## [2.18.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.1...amplify-e2e-tests@2.18.2) (2020-06-10)
+
+### Performance Improvements
+
+- **amplify-category-hosting:** http2 for cloudfront distconfig ([#3616](https://github.com/aws-amplify/amplify-cli/issues/3616)) ([b5de093](https://github.com/aws-amplify/amplify-cli/commit/b5de093cb0c387ac7f902498727af2c1111a77ca))
+
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.0...amplify-e2e-tests@2.18.1) (2020-06-02)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.3...amplify-e2e-tests@2.18.0) (2020-05-26)
 
 ### Bug Fixes
 

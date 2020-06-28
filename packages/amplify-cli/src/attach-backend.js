@@ -24,7 +24,7 @@ async function attachBackend(context, inputParams) {
       restoreOriginalAmplifyFolder(context);
       context.print.error('Failed to pull the backend.');
       context.print.info(util.inspect(e));
-      process.exit(1);
+      context.telemetry.emitError(e);
     });
 }
 

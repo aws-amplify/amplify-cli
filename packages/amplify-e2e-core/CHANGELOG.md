@@ -3,7 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.8...amplify-e2e-core@1.1.9) (2020-06-25)
+
+**Note:** Version bump only for package amplify-e2e-core
+
 ## [1.1.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.7...amplify-e2e-core@1.1.8) (2020-06-18)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+## [1.1.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.6...amplify-e2e-core@1.1.7) (2020-06-11)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+## [1.1.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.5...amplify-e2e-core@1.1.6) (2020-06-10)
+
+### Bug Fixes
+
+- make Hello World the default choice for function templates ([#4466](https://github.com/aws-amplify/amplify-cli/issues/4466)) ([1c60b2b](https://github.com/aws-amplify/amplify-cli/commit/1c60b2ba617ccba625c1a6cf56840a9eedad4fb5))
+
+### Performance Improvements
+
+- **amplify-category-hosting:** http2 for cloudfront distconfig ([#3616](https://github.com/aws-amplify/amplify-cli/issues/3616)) ([b5de093](https://github.com/aws-amplify/amplify-cli/commit/b5de093cb0c387ac7f902498727af2c1111a77ca))
+
+## [1.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.4...amplify-e2e-core@1.1.5) (2020-06-02)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+## [1.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.3...amplify-e2e-core@1.1.4) (2020-05-26)
+
+### Bug Fixes
+
+- deleted extra carriageReturn calls, fixed grammar in Auth dx ([#4237](https://github.com/aws-amplify/amplify-cli/issues/4237)) ([4322a32](https://github.com/aws-amplify/amplify-cli/commit/4322a326df8c5c0a89de5f5e8f46bcfd4e1ad770))
+- **amplify-category-api:** toggle datastore in update ([#4276](https://github.com/aws-amplify/amplify-cli/issues/4276)) ([c522f29](https://github.com/aws-amplify/amplify-cli/commit/c522f295304410aeb1d6f60aaba9b466d3304ee1)), closes [#4058](https://github.com/aws-amplify/amplify-cli/issues/4058)
 
 **Note:** Version bump only for package amplify-e2e-core
 

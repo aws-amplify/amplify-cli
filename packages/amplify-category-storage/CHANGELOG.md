@@ -11,6 +11,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package amplify-category-storage
 
+## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.4.5...amplify-category-storage@2.4.6) (2020-05-26)
+
+**Note:** Version bump only for package amplify-category-storage
+
 ## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.4.4...amplify-category-storage@2.4.5) (2020-05-15)
 
 **Note:** Version bump only for package amplify-category-storage

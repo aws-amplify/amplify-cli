@@ -3,7 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.3...amplify-app@2.17.4) (2020-06-25)
+
+**Note:** Version bump only for package amplify-app
+
 ## [2.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.2...amplify-app@2.17.3) (2020-06-18)
+
+### Bug Fixes
+
+- do not remove resources group ([#4571](https://github.com/aws-amplify/amplify-cli/issues/4571)) ([3ad26bb](https://github.com/aws-amplify/amplify-cli/commit/3ad26bb2a0d7beabfcfbf84d394705477682ec56)), closes [#4518](https://github.com/aws-amplify/amplify-cli/issues/4518)
+
+## [2.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.1...amplify-app@2.17.2) (2020-06-11)
+
+**Note:** Version bump only for package amplify-app
+
+## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.0...amplify-app@2.17.1) (2020-05-26)
 
 ### Bug Fixes
 

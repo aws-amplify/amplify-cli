@@ -9,6 +9,8 @@ import {
   getAmplifyConfigIOSPath,
   getAWSConfigAndroidPath,
   getAmplifyConfigAndroidPath,
+  bucketNotExists,
+  deleteS3Bucket,
 } from 'amplify-e2e-core';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/add-env';
 import { addApiWithoutSchema } from 'amplify-e2e-core';
@@ -90,7 +92,7 @@ describe('amplify delete', () => {
     const meta = amplifyMeta.providers.awscloudformation;
     const bucketName = meta.DeploymentBucketName;
     expect(await bucketExists(bucketName)).toBeTruthy();
-    await deleteBucket(bucketName);
+    await deleteS3Bucket(bucketName);
     await deleteProject(projRoot);
   });
 });

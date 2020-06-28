@@ -17,6 +17,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package amplify-codegen
 
+### Bug Fixes
+
+- [#4549](https://github.com/aws-amplify/amplify-cli/issues/4549) [#4550](https://github.com/aws-amplify/amplify-cli/issues/4550) init and folder exist checks ([#4553](https://github.com/aws-amplify/amplify-cli/issues/4553)) ([543d531](https://github.com/aws-amplify/amplify-cli/commit/543d5312823783db7794ad574d03d0ca3991c8b5))
+
+## [2.15.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.9...amplify-codegen@2.15.10) (2020-06-10)
+
+**Note:** Version bump only for package amplify-codegen
+
+## [2.15.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.8...amplify-codegen@2.15.9) (2020-05-26)
+
+**Note:** Version bump only for package amplify-codegen
+
 ## [2.15.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.7...amplify-codegen@2.15.8) (2020-05-15)
 
 **Note:** Version bump only for package amplify-codegen

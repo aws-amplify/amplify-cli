@@ -228,6 +228,7 @@ async function remove(context) {
     })
     .catch(err => {
       context.print.info(err.stack);
+      context.telemetry.emitError(err);
     });
 }
 

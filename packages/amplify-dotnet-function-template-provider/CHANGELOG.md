@@ -9,6 +9,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.1.0...amplify-dotnet-function-template-provider@1.2.0) (2020-05-08)
 
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
+
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.1.0...amplify-dotnet-function-template-provider@1.2.0) (2020-05-08)
+
 ### Bug Fixes
 
 - **amplify-dotnet-function-template-provider:** ddb/kinesis templates ([#4044](https://github.com/aws-amplify/amplify-cli/issues/4044)) ([9301cb5](https://github.com/aws-amplify/amplify-cli/commit/9301cb573218ff091e8a7b347bb3c3f0e4ff6471))

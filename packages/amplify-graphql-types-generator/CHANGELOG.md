@@ -13,6 +13,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package amplify-graphql-types-generator
 
+### Bug Fixes
+
+- **amplify-graphql-types-generator:** use zen-observable-ts ([#4415](https://github.com/aws-amplify/amplify-cli/issues/4415)) ([4e49e0c](https://github.com/aws-amplify/amplify-cli/commit/4e49e0cb7c8d389a41cc3e78d5a8f021afb4f691))
+
+## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.3.3...amplify-graphql-types-generator@2.3.4) (2020-05-15)
+
+**Note:** Version bump only for package amplify-graphql-types-generator
+
 ## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.3.2...amplify-graphql-types-generator@2.3.3) (2020-04-23)
 
 ### Bug Fixes

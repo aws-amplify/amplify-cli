@@ -20,7 +20,7 @@ export function addAuthWithDefault(cwd: string, settings: any) {
   });
 }
 
-export function removeAuthWithDefault(cwd: string, settings: any) {
+export function removeAuthWithDefault(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')

@@ -15,6 +15,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
+- **amplify-appsync-simulator:** adds equals method to JavaString class ([#4316](https://github.com/aws-amplify/amplify-cli/issues/4316)) ([4c0c692](https://github.com/aws-amplify/amplify-cli/commit/4c0c692fa6cab2e8461f20099581ff8d7d7504f8))
+- **amplify-appsync-simulator:** after pipeline template mapping ([#4303](https://github.com/aws-amplify/amplify-cli/issues/4303)) ([72d4039](https://github.com/aws-amplify/amplify-cli/commit/72d403937b8ab5a298d35910c061e0c10c5c43ce))
+- **amplify-appsync-simulator:** replace "extend" with "\_.defaultsDeep" ([#4285](https://github.com/aws-amplify/amplify-cli/issues/4285)) ([a74c2f8](https://github.com/aws-amplify/amplify-cli/commit/a74c2f80864adae0cbabce1df342a40b762ba5a7))
+
+## [1.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.1...amplify-appsync-simulator@1.20.2) (2020-05-15)
+
+### Bug Fixes
+
 - **amplify-appsync-simulator:** support inline resolver templates ([56fdd00](https://github.com/aws-amplify/amplify-cli/commit/56fdd0057a6ecfbd320f2a3f8b0858959bbe750e)), closes [#3834](https://github.com/aws-amplify/amplify-cli/issues/3834)
 - **amplify-appsync-simulator:** support more than 1 operation in query ([#4189](https://github.com/aws-amplify/amplify-cli/issues/4189)) ([4794c8f](https://github.com/aws-amplify/amplify-cli/commit/4794c8fef04b15deaff13f4a77be774ca91bbecb)), closes [#4181](https://github.com/aws-amplify/amplify-cli/issues/4181)
 

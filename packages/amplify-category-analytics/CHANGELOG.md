@@ -11,6 +11,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package amplify-category-analytics
 
+## [2.16.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.16.5...amplify-category-analytics@2.16.6) (2020-05-26)
+
+**Note:** Version bump only for package amplify-category-analytics
+
 ## [2.16.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.16.4...amplify-category-analytics@2.16.5) (2020-05-15)
 
 **Note:** Version bump only for package amplify-category-analytics

@@ -12,6 +12,7 @@ import {
   Kinesis,
   CloudFormation,
 } from 'aws-sdk';
+import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
@@ -21,6 +22,63 @@ export const getDDBTable = async (tableName: string, region: string) => {
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
   const service = new S3({ region });
   return await service.headBucket({ Bucket: bucketName }).promise();
+};
+
+export const bucketNotExists = async (bucket: string) => {
+  const s3 = new S3();
+  const params = {
+    Bucket: bucket,
+    $waiter: { maxAttempts: 10, delay: 30 },
+  };
+  try {
+    await s3.waitFor('bucketNotExists', params).promise();
+    return true;
+  } catch (error) {
+    if (error.statusCode === 200) {
+      return false;
+    }
+    throw error;
+  }
+};
+
+export const deleteS3Bucket = async (bucket: string) => {
+  const s3 = new S3();
+  let continuationToken = null;
+  const objectKey = [];
+  let truncated = false;
+  do {
+    const results = await s3
+      .listObjectsV2({
+        Bucket: bucket,
+        ContinuationToken: continuationToken,
+      })
+      .promise();
+    results.Contents.forEach(r => {
+      objectKey.push({ Key: r.Key });
+    });
+
+    continuationToken = results.NextContinuationToken;
+    truncated = results.IsTruncated;
+  } while (truncated);
+  const chunkedResult = _.chunk(objectKey, 1000);
+  const deleteReq = chunkedResult
+    .map(r => {
+      return {
+        Bucket: bucket,
+        Delete: {
+          Objects: r,
+          Quiet: true,
+        },
+      };
+    })
+    .map(delParams => s3.deleteObjects(delParams).promise());
+  await Promise.all(deleteReq);
+  await s3
+    .deleteBucket({
+      Bucket: bucket,
+    })
+    .promise();
+  await bucketNotExists(bucket);
 };
 
 export const getUserPool = async (userpoolId, region) => {

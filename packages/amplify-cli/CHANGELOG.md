@@ -3,7 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.22.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.4...@aws-amplify/cli@4.22.0) (2020-06-25)
+
+### Features
+
+- change `amplify delete` prompt default value from yes to no ([#4580](https://github.com/aws-amplify/amplify-cli/issues/4580)) ([0bdbb77](https://github.com/aws-amplify/amplify-cli/commit/0bdbb775915f84efb863821cfa9b1b0f048a0f95)), closes [#4579](https://github.com/aws-amplify/amplify-cli/issues/4579)
+
 ## [4.21.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.3...@aws-amplify/cli@4.21.4) (2020-06-18)
+
+### Bug Fixes
+
+- [#4549](https://github.com/aws-amplify/amplify-cli/issues/4549) [#4550](https://github.com/aws-amplify/amplify-cli/issues/4550) init and folder exist checks ([#4553](https://github.com/aws-amplify/amplify-cli/issues/4553)) ([543d531](https://github.com/aws-amplify/amplify-cli/commit/543d5312823783db7794ad574d03d0ca3991c8b5))
+- occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([eaf08e0](https://github.com/aws-amplify/amplify-cli/commit/eaf08e00841830e9654fea61ce901f2cb478eebe))
+
+## [4.21.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.2...@aws-amplify/cli@4.21.3) (2020-06-11)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+## [4.21.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.1...@aws-amplify/cli@4.21.2) (2020-06-10)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+## [4.21.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.0...@aws-amplify/cli@4.21.1) (2020-06-02)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+# [4.21.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.20.0...@aws-amplify/cli@4.21.0) (2020-05-26)
 
 ### Bug Fixes
 

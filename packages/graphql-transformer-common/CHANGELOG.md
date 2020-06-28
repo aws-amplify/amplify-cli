@@ -3,7 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.2...graphql-transformer-common@4.17.3) (2020-06-25)
+
+### Reverts
+
+- Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
 ## [4.17.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.1...graphql-transformer-common@4.17.2) (2020-06-18)
+
+### Bug Fixes
+
+- change scope of hashed files for AppSync ([#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)) ([10fa9da](https://github.com/aws-amplify/amplify-cli/commit/10fa9da646f4de755e2dc92cd4bb2a6319425d72)), closes [#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)
+
+## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.0...graphql-transformer-common@4.17.1) (2020-06-11)
+
+### Reverts
+
+- add query automatically for named keys ([#4513](https://github.com/aws-amplify/amplify-cli/issues/4513)) ([6d3123b](https://github.com/aws-amplify/amplify-cli/commit/6d3123bfe3ba412d3b1af076e550e6733c988c8f))
+
+# [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.16.0...graphql-transformer-common@4.17.0) (2020-06-10)
+
+### Features
+
+- **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([3d194f8](https://github.com/aws-amplify/amplify-cli/commit/3d194f805dcbd6325ddf78155c4327dbca3e7f4a))
+
+# [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.15.0...graphql-transformer-common@4.16.0) (2020-06-02)
+
+### Features
+
+- **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([c0a4f88](https://github.com/aws-amplify/amplify-cli/commit/c0a4f8889fc363bb9c9d08ff822c591874777f7b))
+
+# [4.15.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.14.0...graphql-transformer-common@4.15.0) (2020-05-08)
 
 ### Bug Fixes
 

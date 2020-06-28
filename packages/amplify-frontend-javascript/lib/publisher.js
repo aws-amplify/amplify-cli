@@ -9,6 +9,7 @@ async function run(context) {
   const { projectPath } = context.amplify.getEnvInfo();
   const distributionDirName = projectConfig[constants.Label].config.DistributionDir;
   const distributionDirPath = path.join(projectPath, distributionDirName);
+  let enabledHostingServices = [];
 
   if (amplifyMeta[hostingCategory] || Object.keys(amplifyMeta[hostingCategory]).length > 0) {
     enabledHostingServices = Object.keys(amplifyMeta[hostingCategory]);
