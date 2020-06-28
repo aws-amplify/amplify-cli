@@ -4079,6 +4079,23 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+amplify-category-function@2.20.7:
+  version "2.20.7"
+  resolved "https://registry.npmjs.org/amplify-category-function/-/amplify-category-function-2.20.7.tgz#c4ef5bd2cbb70f39f7c3a7292aac9bd23450657c"
+  integrity sha512-QPChYLhzOWTftR/lzVBM/mnS1XcVz+UYX+uh3VGh1I1tIlhdBImWJG5IsfJRQOJ1umFQictPHRORd0MWcr2oIg==
+  dependencies:
+    amplify-category-storage "2.4.7"
+    amplify-function-plugin-interface "1.3.1"
+    fs-extra "^8.1.0"
+    graphql-transformer-core "6.19.2"
+    inquirer "^7.0.3"
+    inquirer-datepicker "^1.1.0"
+    jstreemap "^1.28.2"
+    lodash "^4.17.15"
+    mime-types "^2.1.26"
+    promise-sequential "^1.1.1"
+    uuid "^3.4.0"
+
 ansi-align@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/ansi-align/-/ansi-align-3.0.0.tgz#b536b371cf687caaef236c18d3e21fe3797467cb"
@@ -10303,6 +10320,17 @@ graphql-transformer-common@4.13.1:
     graphql-mapping-template "4.13.1"
     md5 "^2.2.1"
 
+graphql-transformer-common@4.17.2:
+  version "4.17.2"
+  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.17.2.tgz#7de47fc669d89822c6d28c0b5a836f62827ffe5e"
+  integrity sha512-rLDWRQjZ6ZGK3CL/GQIriBQOQonRBC1yV549ckt3KVvnk9nikriVXdgnenuZPdmmr5XFlkAPJNx3z0xDZD8B5Q==
+  dependencies:
+    change-case "^4.1.1"
+    graphql "^14.5.8"
+    graphql-mapping-template "4.13.4"
+    md5 "^2.2.1"
+    pluralize "^8.0.0"
+
 graphql-transformer-core@6.13.1:
   version "6.13.1"
   resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-6.13.1.tgz#083203889192ada1bdbe399cc92e10fd70f3307d"
@@ -10313,6 +10341,18 @@ graphql-transformer-core@6.13.1:
     fs-extra "^8.1.0"
     graphql "^14.5.8"
     graphql-transformer-common "4.13.1"
+
+graphql-transformer-core@6.19.2:
+  version "6.19.2"
+  resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-6.19.2.tgz#37cd41c8dc706153f665babff46af82a12df9fbe"
+  integrity sha512-pvL5ZDKIjqBh7N2uNHBfWnOCyU2W5Oz9WbY7OYu3hgtscqWRE2heIQDOqWVKfdDn6y2dcTxFhumOUoTRQBqXUw==
+  dependencies:
+    cloudform-types "^4.2.0"
+    deep-diff "^1.0.2"
+    fs-extra "^8.1.0"
+    glob "^7.1.6"
+    graphql "^14.5.8"
+    graphql-transformer-common "4.17.2"
 
 graphql-type-json@^0.3.1:
   version "0.3.1"
@@ -14452,6 +14492,16 @@ no-case@^3.0.3:
     lower-case "^2.0.1"
     tslib "^1.10.0"
 
+nock@^12.0.3:
+  version "12.0.3"
+  resolved "https://registry.npmjs.org/nock/-/nock-12.0.3.tgz#83f25076dbc4c9aa82b5cdf54c9604c7a778d1c9"
+  integrity sha512-QNb/j8kbFnKCiyqi9C5DD0jH/FubFGj5rt9NQFONXwQm3IPB0CULECg/eS3AU1KgZb/6SwUa4/DTRKhVxkGABw==
+  dependencies:
+    debug "^4.1.0"
+    json-stringify-safe "^5.0.1"
+    lodash "^4.17.13"
+    propagate "^2.0.0"
+
 node-abi@^2.7.0:
   version "2.18.0"
   resolved "https://registry.npmjs.org/node-abi/-/node-abi-2.18.0.tgz#1f5486cfd7d38bd4f5392fa44a4ad4d9a0dffbf4"
@@ -16608,6 +16658,11 @@ prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
     loose-envify "^1.4.0"
     object-assign "^4.1.1"
     react-is "^16.8.1"
+
+propagate@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/propagate/-/propagate-2.0.1.tgz#40cdedab18085c792334e64f0ac17256d38f9a45"
+  integrity sha512-vGrhOavPSTz4QVNuBNdcNXePNdNMaO1xj9yBeH1ScQPjk/rhg9sSlCXPhMkFuaNNW/syTvYqsnbIJxMBfRbbag==
 
 proto-list@~1.2.1:
   version "1.2.4"

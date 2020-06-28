@@ -256,5 +256,8 @@ module.exports = {
     '/packages/graphql-mapping-template/lib',
     '/packages/graphql-*-transformer/lib',
     '/packages/graphql-transformer-*/lib',
+
+    // Ignore CHANGELOG.md files
+    '/packages/*/CHANGELOG.md'
   ]
 };

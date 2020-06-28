@@ -7,31 +7,44 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package amplify-frontend-ios
 
+
+
+
+
 ## [2.13.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.4...amplify-frontend-ios@2.13.5) (2020-06-11)
 
+
 ### Bug Fixes
 
-- do not delete if generated filename is empty ([#4528](https://github.com/aws-amplify/amplify-cli/issues/4528)) ([1d1b104](https://github.com/aws-amplify/amplify-cli/commit/1d1b104e23b5cdbb451556bc76e4d111ae1c99b6))
+* do not delete if generated filename is empty ([#4528](https://github.com/aws-amplify/amplify-cli/issues/4528)) ([1d1b104](https://github.com/aws-amplify/amplify-cli/commit/1d1b104e23b5cdbb451556bc76e4d111ae1c99b6))
+
+
+
+
 
 ## [2.13.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.2...amplify-frontend-ios@2.13.4) (2020-05-26)
 
 **Note:** Version bump only for package amplify-frontend-ios
 
-### Bug Fixes
 
-- do not delete if generated filename is empty ([#4528](https://github.com/aws-amplify/amplify-cli/issues/4528)) ([1d1b104](https://github.com/aws-amplify/amplify-cli/commit/1d1b104e23b5cdbb451556bc76e4d111ae1c99b6))
 
-## [2.13.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.2...amplify-frontend-ios@2.13.4) (2020-05-26)
 
-**Note:** Version bump only for package amplify-frontend-ios
 
 ## [2.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.1...amplify-frontend-ios@2.13.2) (2020-02-07)
 
 **Note:** Version bump only for package amplify-frontend-ios
 
+
+
+
+
 ## [2.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.0...amplify-frontend-ios@2.13.1) (2020-01-24)
 
 **Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
 
 # [2.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@1.32.0...amplify-frontend-ios@2.13.0) (2020-01-23)
 

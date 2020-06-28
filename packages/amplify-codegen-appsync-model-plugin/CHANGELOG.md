@@ -5,91 +5,137 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [1.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.1...amplify-codegen-appsync-model-plugin@1.19.2) (2020-06-18)
 
+
 ### Bug Fixes
 
-- **amplify-codegen-appsync-model-plugin:** Support Embeddable Types for iOS ([#4545](https://github.com/aws-amplify/amplify-cli/issues/4545)) ([7d4652b](https://github.com/aws-amplify/amplify-cli/commit/7d4652be017c660379832702c6ec8eb7005d9989))
+* **amplify-codegen-appsync-model-plugin:**  Support Embeddable Types for iOS  ([#4545](https://github.com/aws-amplify/amplify-cli/issues/4545)) ([7d4652b](https://github.com/aws-amplify/amplify-cli/commit/7d4652be017c660379832702c6ec8eb7005d9989))
+
+
+
+
 
 ## [1.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.0...amplify-codegen-appsync-model-plugin@1.19.1) (2020-06-10)
 
+
 ### Bug Fixes
 
-- **amplify-codegen-appsync-model-plugin:** Add delimiter in Android `toString` output ([#4463](https://github.com/aws-amplify/amplify-cli/issues/4463)) ([a0a3972](https://github.com/aws-amplify/amplify-cli/commit/a0a39727b477954c6c13ab519aa998addbe729a8))
+* **amplify-codegen-appsync-model-plugin:** Add delimiter in Android `toString` output ([#4463](https://github.com/aws-amplify/amplify-cli/issues/4463)) ([a0a3972](https://github.com/aws-amplify/amplify-cli/commit/a0a39727b477954c6c13ab519aa998addbe729a8))
+
+
+
+
 
 # [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.18.0...amplify-codegen-appsync-model-plugin@1.19.0) (2020-05-26)
 
-### Features
-
-- **amplify-codegen-appsync-model-plugin:** iOS add suport for auth ([#4329](https://github.com/aws-amplify/amplify-cli/issues/4329)) ([17ac344](https://github.com/aws-amplify/amplify-cli/commit/17ac344d7096470e698b26d68d8c586446190352))
-
-### Bug Fixes
-
-- **amplify-codegen-appsync-model-plugin:** Support Embeddable Types for iOS ([#4545](https://github.com/aws-amplify/amplify-cli/issues/4545)) ([7d4652b](https://github.com/aws-amplify/amplify-cli/commit/7d4652be017c660379832702c6ec8eb7005d9989))
-
-## [1.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.0...amplify-codegen-appsync-model-plugin@1.19.1) (2020-06-10)
-
-### Bug Fixes
-
-- **amplify-codegen-appsync-model-plugin:** Add delimiter in Android `toString` output ([#4463](https://github.com/aws-amplify/amplify-cli/issues/4463)) ([a0a3972](https://github.com/aws-amplify/amplify-cli/commit/a0a39727b477954c6c13ab519aa998addbe729a8))
-
-# [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.18.0...amplify-codegen-appsync-model-plugin@1.19.0) (2020-05-26)
 
 ### Features
 
-- **amplify-codegen-appsync-model-plugin:** iOS add suport for auth ([#4329](https://github.com/aws-amplify/amplify-cli/issues/4329)) ([17ac344](https://github.com/aws-amplify/amplify-cli/commit/17ac344d7096470e698b26d68d8c586446190352))
+* **amplify-codegen-appsync-model-plugin:** iOS add suport for auth ([#4329](https://github.com/aws-amplify/amplify-cli/issues/4329)) ([17ac344](https://github.com/aws-amplify/amplify-cli/commit/17ac344d7096470e698b26d68d8c586446190352))
+
+
+
+
 
 # [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.17.0...amplify-codegen-appsync-model-plugin@1.18.0) (2020-05-15)
 
+
 ### Features
 
-- **amplify-codegen-appsync-model-plugin:** add support for keyName ([#4258](https://github.com/aws-amplify/amplify-cli/issues/4258)) ([024b825](https://github.com/aws-amplify/amplify-cli/commit/024b82517a313a203f5ca851137e723f22f32649))
+* **amplify-codegen-appsync-model-plugin:** add support for keyName ([#4258](https://github.com/aws-amplify/amplify-cli/issues/4258)) ([024b825](https://github.com/aws-amplify/amplify-cli/commit/024b82517a313a203f5ca851137e723f22f32649))
+
+
+
+
 
 # [1.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.16.0...amplify-codegen-appsync-model-plugin@1.17.0) (2020-05-08)
 
+
 ### Features
 
-- **amplify-codegen-appsync-model-plugin:** add non-model support - Java ([#3976](https://github.com/aws-amplify/amplify-cli/issues/3976)) ([0016135](https://github.com/aws-amplify/amplify-cli/commit/001613516f8a8f5425ddd6e918d1ea613d67d97f)), closes [#3586](https://github.com/aws-amplify/amplify-cli/issues/3586)
+* **amplify-codegen-appsync-model-plugin:** add non-model support - Java ([#3976](https://github.com/aws-amplify/amplify-cli/issues/3976)) ([0016135](https://github.com/aws-amplify/amplify-cli/commit/001613516f8a8f5425ddd6e918d1ea613d67d97f)), closes [#3586](https://github.com/aws-amplify/amplify-cli/issues/3586)
+
+
+
+
 
 # [1.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.15.0...amplify-codegen-appsync-model-plugin@1.16.0) (2020-04-23)
 
+
 ### Features
 
-- **amplify-codegen-appsync-model-plugin:** update java tostring to include fields ([#3773](https://github.com/aws-amplify/amplify-cli/issues/3773)) ([547cf94](https://github.com/aws-amplify/amplify-cli/commit/547cf942bf44a6e6776565b795e32553f94a6b90))
+* **amplify-codegen-appsync-model-plugin:** update java tostring to include fields  ([#3773](https://github.com/aws-amplify/amplify-cli/issues/3773)) ([547cf94](https://github.com/aws-amplify/amplify-cli/commit/547cf942bf44a6e6776565b795e32553f94a6b90))
+
+
+
+
 
 # [1.15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.14.0...amplify-codegen-appsync-model-plugin@1.15.0) (2020-04-06)
 
+
 ### Features
 
-- **amplify-codegen-appsync-model-plugin:** support [@connection](https://github.com/connection) with fields in modelgen ([#3680](https://github.com/aws-amplify/amplify-cli/issues/3680)) ([088d46f](https://github.com/aws-amplify/amplify-cli/commit/088d46f2d67dcbb7e3bd213f8d869f2c87b2df5d)), closes [#3225](https://github.com/aws-amplify/amplify-cli/issues/3225)
+* **amplify-codegen-appsync-model-plugin:** support [@connection](https://github.com/connection) with fields in modelgen ([#3680](https://github.com/aws-amplify/amplify-cli/issues/3680)) ([088d46f](https://github.com/aws-amplify/amplify-cli/commit/088d46f2d67dcbb7e3bd213f8d869f2c87b2df5d)), closes [#3225](https://github.com/aws-amplify/amplify-cli/issues/3225)
+
+
+
+
 
 # [1.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.5...amplify-codegen-appsync-model-plugin@1.14.0) (2020-03-26)
 
+
 ### Features
 
-- **amplify-codegen-appsync-model-plugin:** support types sans model ([3dad60a](https://github.com/aws-amplify/amplify-cli/commit/3dad60addc82c574776462d553ff068511271ab8))
+* **amplify-codegen-appsync-model-plugin:** support types sans model ([3dad60a](https://github.com/aws-amplify/amplify-cli/commit/3dad60addc82c574776462d553ff068511271ab8))
+
+
+
+
 
 ## [1.13.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.4...amplify-codegen-appsync-model-plugin@1.13.5) (2020-03-22)
 
 **Note:** Version bump only for package amplify-codegen-appsync-model-plugin
 
+
+
+
+
 ## [1.13.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.3...amplify-codegen-appsync-model-plugin@1.13.4) (2020-03-10)
+
 
 ### Bug Fixes
 
-- **amplify-codegen:** use Java Long for AWSTimestamp ([#3615](https://github.com/aws-amplify/amplify-cli/issues/3615)) ([051b2fb](https://github.com/aws-amplify/amplify-cli/commit/051b2fb4de7266d950af8a51170f30b43d0d9b50)), closes [#3593](https://github.com/aws-amplify/amplify-cli/issues/3593)
+* **amplify-codegen:** use Java Long for AWSTimestamp ([#3615](https://github.com/aws-amplify/amplify-cli/issues/3615)) ([051b2fb](https://github.com/aws-amplify/amplify-cli/commit/051b2fb4de7266d950af8a51170f30b43d0d9b50)), closes [#3593](https://github.com/aws-amplify/amplify-cli/issues/3593)
+
+
+
+
 
 ## [1.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.2...amplify-codegen-appsync-model-plugin@1.13.3) (2020-02-13)
 
 **Note:** Version bump only for package amplify-codegen-appsync-model-plugin
 
+
+
+
+
 ## [1.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.1...amplify-codegen-appsync-model-plugin@1.13.2) (2020-02-07)
 
 **Note:** Version bump only for package amplify-codegen-appsync-model-plugin
 
+
+
+
+
 ## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.13.0...amplify-codegen-appsync-model-plugin@1.13.1) (2020-01-24)
+
 
 ### Bug Fixes
 
-- **amplify-codegen-appsync-model-plugin:** fix typo in swift model gen ([#3256](https://github.com/aws-amplify/amplify-cli/issues/3256)) ([c5109ba](https://github.com/aws-amplify/amplify-cli/commit/c5109baf5f9b47e91ab19bc5f5c7a0e4e3089adf))
+* **amplify-codegen-appsync-model-plugin:** fix typo in swift model gen ([#3256](https://github.com/aws-amplify/amplify-cli/issues/3256)) ([c5109ba](https://github.com/aws-amplify/amplify-cli/commit/c5109baf5f9b47e91ab19bc5f5c7a0e4e3089adf))
+
+
+
+
 
 # 1.13.0 (2020-01-23)
 
