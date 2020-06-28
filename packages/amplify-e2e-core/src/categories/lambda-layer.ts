@@ -56,10 +56,8 @@ export function addLayer(cwd: string, settings?: any) {
     multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
     chain.wait('The current AWS account will always have access to this layer.');
     multiSelect(chain, settings.permissions, permissionChoices);
+    waitForLayerSuccessPrintout(chain, settings, 'created');
 
-    const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
-
-    waitForLayerSuccessPrintout(chain, settings, layerDirRegex);
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -117,8 +115,7 @@ export function updateLayer(cwd: string, settings?: any) {
       .wait('The current AWS account will always have access to this layer.');
     multiSelect(chain, settings.permissions, permissionChoices);
 
-    const layerDirRegex = new RegExp('.*/amplify/backend/function/' + settings.layerName);
-    waitForLayerSuccessPrintout(chain, settings, layerDirRegex);
+    waitForLayerSuccessPrintout(chain, settings, 'updated');
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -150,17 +147,17 @@ function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   }
 }
 
-function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, layerDirRegex) {
+function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, action: string) {
   chain
-    .wait('✅ Lambda layer folders & files created:')
-    .wait(layerDirRegex)
+    .wait(`✅ Lambda layer folders & files ${action}:`)
+    .wait(path.join('amplify', 'backend', 'function', settings.layerName))
     .wait('Next steps:')
     .wait('Move your libraries in the following folder:');
 
   for (let i = 0; i < settings.runtimes.length; ++i) {
     const { displayName, path } = getLayerRuntimeInfo(settings.runtimes[i]);
-    const layerRuntimeDirRegex = new RegExp(`\\[${displayName}\\]: .*/amplify/backend/function/${settings.layerName}/${path}`);
-    chain.wait(layerRuntimeDirRegex);
+    const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.layerName}/${path}`;
+    chain.wait(layerRuntimeDir);
   }
 
   chain
