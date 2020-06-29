@@ -57,9 +57,16 @@ export const updateLayerArtifacts = (context, parameters: LayerParameters, optio
 // ideally function update should be refactored so this function does not need to be exported
 export function saveMutableState(
   context,
-  parameters: Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers'>> | FunctionTriggerParameters,
+  parameters:
+    | Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName'>>
+    | FunctionTriggerParameters,
 ) {
-  createParametersFile(context, buildParametersFileObj(parameters), parameters.resourceName, functionParametersFileName);
+  createParametersFile(
+    context,
+    buildParametersFileObj(parameters),
+    parameters.resourceName || parameters.functionName,
+    functionParametersFileName,
+  );
 }
 
 // ideally function update should be refactored so this function does not need to be exported
