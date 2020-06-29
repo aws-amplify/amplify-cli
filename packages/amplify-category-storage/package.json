@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "amplify-category-auth": "2.15.8",
-    "amplify-category-function": "2.20.7",
+    "amplify-category-function": "2.20.8",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",
     "lodash": "^4.17.15",
