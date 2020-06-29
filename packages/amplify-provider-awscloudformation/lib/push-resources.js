@@ -225,7 +225,7 @@ function packageResources(context, resources) {
 
   const packageResource = (context, resource) => {
     let s3Key;
-    return (resource.service === FunctionServiceName.LambdaFunction ? buildResource(context, resource) : packageLayer(context, resource))
+    return (resource.service === FunctionServiceName.LambdaLayer ? packageLayer(context, resource) : buildResource(context, resource))
       .then(result => {
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
@@ -259,7 +259,12 @@ function packageResources(context, resources) {
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        if (resource.service === FunctionServiceName.LambdaFunction) {
+        if (resource.service === FunctionServiceName.LambdaLayer) {
+          cfnMeta.Resources.LambdaLayer.Properties.Content = {
+            S3Bucket: s3Bucket,
+            S3Key: s3Key,
+          };
+        } else {
           if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
             cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
               Bucket: s3Bucket,
@@ -271,11 +276,6 @@ function packageResources(context, resources) {
               S3Key: s3Key,
             };
           }
-        } else {
-          cfnMeta.Resources.LambdaLayer.Properties.Content = {
-            S3Bucket: s3Bucket,
-            S3Key: s3Key,
-          };
         }
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
