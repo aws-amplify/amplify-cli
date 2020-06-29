@@ -287,9 +287,11 @@ export function addRestApi(cwd: string, settings: any) {
         }
 
         chain
-          .wait('Do you want to access other resources created in this project from your Lambda function')
+          .wait('Do you want to access other resources in this project from your Lambda function')
           .sendLine('n')
           .wait('Do you want to invoke this function on a recurring schedule?')
+          .sendLine('n')
+          .wait('Do you want to configure Lambda layers for this function?')
           .sendLine('n')
           .wait('Do you want to edit the local lambda function now')
           .sendLine('n');
