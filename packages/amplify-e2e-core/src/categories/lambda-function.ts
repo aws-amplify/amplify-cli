@@ -61,7 +61,7 @@ const coreFunction = (
       }
     } else {
       chain
-        .wait('Please select from one of the below mentioned services:')
+        .wait('Select which capability you want to update:')
         .sendCarriageReturn() // lambda function
         .wait('Select the Lambda Function you want to update')
         .sendCarriageReturn(); // assumes only one function configured in the project
