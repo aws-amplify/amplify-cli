@@ -135,27 +135,8 @@ export async function addLayerResource(
 
   const completeParams = (await serviceConfig.walkthroughs.createWalkthrough(context, parameters)) as LayerParameters;
 
-  const layerDirPath = createLayerArtifacts(context, completeParams);
-
-  const { print } = context;
-  print.info('✅ Lambda layer folders & files created:');
-  print.info(layerDirPath);
-  print.info('');
-  print.success('Next steps:');
-
-  if (parameters.runtimes.length !== 0) {
-    print.info('Move your libraries in the following folder:');
-    for (let runtime of parameters.runtimes) {
-      print.info(`[${runtime.name}]: ${layerDirPath}/lib/${runtime.layerExecutablePath}`);
-    }
-    print.info('');
-  }
-
-  print.info('Include any files you want to share across runtimes in this folder:');
-  print.info(`amplify/backend/function/${parameters.layerName}/opt`);
-  print.info('');
-  print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
-  print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
+  createLayerArtifacts(context, completeParams);
+  printLayerSuccessMessages(context, completeParams, 'created');
 }
 
 export async function updateResource(
@@ -202,27 +183,8 @@ export async function updateLayerResource(
   const completeParams = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as LayerParameters;
 
   // write out updated resources
-  const layerDirPath = updateLayerArtifacts(context, completeParams);
-
-  const { print } = context;
-  print.info('✅ Lambda layer folders & files created:');
-  print.info(layerDirPath);
-  print.info('');
-  print.success('Next steps:');
-
-  if (parameters.runtimes.length !== 0) {
-    print.info('Move your libraries in the following folder:');
-    for (let runtime of parameters.runtimes) {
-      print.info(`[${runtime.name}]: ${layerDirPath}/lib/${runtime.layerExecutablePath}`);
-    }
-    print.info('');
-  }
-
-  print.info('Include any files you want to share across runtimes in this folder:');
-  print.info(`amplify/backend/function/${parameters.layerName}/opt`);
-  print.info('');
-  print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
-  print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
+  updateLayerArtifacts(context, completeParams);
+  printLayerSuccessMessages(context, completeParams, 'updated');
 }
 
 export async function updateFunctionResource(context, category, service, parameters, resourceToUpdate) {
@@ -259,6 +221,31 @@ export async function updateFunctionResource(context, category, service, paramet
   }
 
   return parameters.resourceName;
+}
+
+function printLayerSuccessMessages(context: any, parameters: LayerParameters, action: string): void {
+  const { print } = context;
+  const { layerName } = parameters;
+  const relativeDirPath = path.join('amplify', 'backend', 'function', layerName);
+  print.info(`✅ Lambda layer folders & files ${action}:`);
+  print.info(relativeDirPath);
+  print.info('');
+  print.success('Next steps:');
+
+  if (parameters.runtimes.length !== 0) {
+    print.info('Move your libraries in the following folder:');
+    for (let runtime of parameters.runtimes) {
+      let runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
+      print.info(`[${runtime.name}]: ${runtimePath}`);
+    }
+    print.info('');
+  }
+
+  print.info('Include any files you want to share across runtimes in this folder:');
+  print.info(path.join(relativeDirPath, 'opt'));
+  print.info('');
+  print.info('"amplify function update <function-name>" - configure a function with this Lambda layer');
+  print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
 }
 
 async function openEditor(context, category: string, resourceName: string, template: Partial<FunctionTemplate>, displayName = 'local') {
