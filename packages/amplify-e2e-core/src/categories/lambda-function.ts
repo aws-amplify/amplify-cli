@@ -73,6 +73,7 @@ const coreFunction = (
 
     if (settings.expectFailure) {
       runChain(chain, resolve, reject);
+      return;
     }
 
     // other permissions flow
