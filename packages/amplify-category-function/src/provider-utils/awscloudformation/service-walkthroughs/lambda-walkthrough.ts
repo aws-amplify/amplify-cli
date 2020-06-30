@@ -111,6 +111,8 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     const dependsOnParams = { env: { Type: 'String' } };
 
     Object.keys(functionParameters.environmentMap)
+      .filter(key => key !== 'ENV')
+      .filter(key => key !== 'REGION')
       .filter(resourceProperty => 'Ref' in functionParameters.environmentMap[resourceProperty])
       .forEach(resourceProperty => {
         dependsOnParams[functionParameters.environmentMap[resourceProperty].Ref] = {
