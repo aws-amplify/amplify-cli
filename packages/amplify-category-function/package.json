@@ -13,7 +13,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf ./lib",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest"
   },
   "keywords": [

@@ -80,7 +80,18 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     lambdaToUpdate = (await inquirer.prompt(resourceQuestion)).resourceName as string;
   }
 
-  const functionParameters: Partial<FunctionParameters> = { resourceName: lambdaToUpdate };
+  // initialize function parameters for update
+  const functionParameters: Partial<FunctionParameters> = {
+    resourceName: lambdaToUpdate,
+    environmentMap: {
+      ENV: {
+        Ref: 'env',
+      },
+      REGION: {
+        Ref: 'AWS::Region',
+      },
+    },
+  };
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, category, functionParameters.resourceName);
@@ -148,7 +159,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     );
 
     context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
-    tryUpdateTopLevelComment(resourceDirPath, functionParameters.topLevelComment);
+    tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
   }
   // ask scheduling Lambda questions and merge in results
   const cfnParameters = context.amplify.readJsonFile(path.join(resourceDirPath, parametersFileName), undefined, false) || {};
