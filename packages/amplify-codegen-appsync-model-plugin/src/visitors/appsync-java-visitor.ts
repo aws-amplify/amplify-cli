@@ -13,6 +13,8 @@ import { JAVA_TYPE_IMPORT_MAP } from '../scalars';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 import { CodeGenConnectionType } from '../utils/process-connections';
+import { AuthDirective, AuthStrategy } from '../utils/process-auth';
+import { printWarning } from '../utils/warn';
 
 export class AppSyncModelJavaVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
@@ -737,13 +739,18 @@ export class AppSyncModelJavaVisitor<
     const annotations: string[] = model.directives.map(directive => {
       switch (directive.name) {
         case 'model':
-          return `ModelConfig(pluralName = "${this.pluralizeModelName(model)}")`;
-          break;
+          const modelArgs: string[] = [];
+          const authRules = this.generateAuthRules(model);
+          modelArgs.push(`pluralName = "${this.pluralizeModelName(model)}"`);
+          if (authRules.length) {
+            modelArgs.push(`authRules = ${authRules}`);
+          }
+          return `ModelConfig(${modelArgs.join(', ')})`;
         case 'key':
-          const args: string[] = [];
-          args.push(`name = "${directive.arguments.name}"`);
-          args.push(`fields = {${(directive.arguments.fields as string[]).map((f: string) => `"${f}"`).join(',')}}`);
-          return `Index(${args.join(', ')})`;
+          const keyArgs: string[] = [];
+          keyArgs.push(`name = "${directive.arguments.name}"`);
+          keyArgs.push(`fields = {${(directive.arguments.fields as string[]).map((f: string) => `"${f}"`).join(',')}}`);
+          return `Index(${keyArgs.join(', ')})`;
 
         default:
           break;
@@ -751,6 +758,45 @@ export class AppSyncModelJavaVisitor<
       return '';
     });
     return ['SuppressWarnings("all")', ...annotations].filter(annotation => annotation);
+  }
+
+  protected generateAuthRules(model: CodeGenModel): string {
+    const authDirectives: AuthDirective[] = (model.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+    const rules: string[] = [];
+    authDirectives.forEach(directive => {
+      directive.arguments?.rules.forEach(rule => {
+        const authRule = [];
+        switch (rule.allow) {
+          case AuthStrategy.owner:
+            authRule.push('allow = AuthStrategy.OWNER');
+            authRule.push(`ownerField = "${rule.ownerField}"`);
+            if (rule.identityClaim) {
+              authRule.push(`identityClaim = "${rule.identityClaim}"`);
+            }
+            break;
+          case AuthStrategy.groups:
+            authRule.push('allow = AuthStrategy.GROUPS');
+            if (rule.groupClaim) {
+              authRule.push(`groupClaim = "${rule.groupClaim}"`);
+            }
+            if (rule.groups) {
+              authRule.push(`groups = { ${rule.groups?.map(group => `"${group}"`).join(', ')} }`);
+            } else {
+              authRule.push(`groupsField = "${rule.groupField}"`);
+            }
+            break;
+          default:
+            printWarning(`Model ${model.name} has auth with authStrategy ${rule.allow} of which is not yet supported in DataStore.`);
+            return;
+        }
+        authRule.push(`operations = { ${rule.operations?.map(op => `ModelOperation.${op.toUpperCase()}`).join(', ')} }`);
+        rules.push(`@AuthRule(${authRule.join(', ')})`);
+      });
+    });
+    if (rules.length) {
+      return ['{', `${indentMultiline(rules.join(',\n'))}`, '}'].join('\n');
+    }
+    return '';
   }
 
   protected generateFieldAnnotations(field: CodeGenField): string[] {
