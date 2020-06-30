@@ -32,7 +32,7 @@ export async function addResource(
   service,
   options,
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
-): Promise<void> {
+): Promise<string> {
   // load the service config for this service
   const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
   const BAD_SERVICE_ERR = new Error(`amplify-category-function is not configured to provide service type ${service}`);
@@ -55,7 +55,7 @@ export async function addFunctionResource(
   service,
   serviceConfig: ServiceConfig<FunctionParameters>,
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters,
-): Promise<void> {
+): Promise<string> {
   // Go through the walkthrough if the parameters are incomplete function parameters
   let completeParams: FunctionParameters | FunctionTriggerParameters;
   if (!parameters || (!isComplete(parameters) && !('trigger' in parameters))) {
@@ -115,6 +115,7 @@ export async function addFunctionResource(
   print.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
+  return completeParams.functionName;
 }
 
 export async function addLayerResource(
@@ -122,7 +123,7 @@ export async function addLayerResource(
   service,
   serviceConfig: ServiceConfig<LayerParameters>,
   parameters: Partial<LayerParameters> = {},
-): Promise<void> {
+): Promise<string> {
   parameters.providerContext = {
     provider: provider,
     service: service,
@@ -133,6 +134,7 @@ export async function addLayerResource(
 
   createLayerArtifacts(context, completeParams);
   printLayerSuccessMessages(context, completeParams, 'created');
+  return completeParams.layerName;
 }
 
 export async function updateResource(
