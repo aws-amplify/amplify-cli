@@ -51,7 +51,7 @@ export async function createWalkthrough(
   return templateParameters;
 }
 /**
- * FIXME this function needs to be refactored so it doesn't have side-effects of writing to CFN files
+ * TODO this function needs to be refactored so it doesn't have side-effects of writing to CFN files
  */
 export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const lambdaFuncResourceNames = ((await context.amplify.getResourceStatus()).allResources as any[])
@@ -59,20 +59,20 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     .map(resource => resource.resourceName);
 
   if (lambdaFuncResourceNames.length === 0) {
-    context.print.error('No Lambda Functions resource to update. Please use "amplify add function" command to create a new Function.');
+    context.print.error('No Lambda function resource to update. Use "amplify add function" to create a new function.');
     return;
   }
 
   if (lambdaToUpdate) {
     if (!lambdaFuncResourceNames.includes(lambdaToUpdate)) {
-      context.print.error(`No Lambda Function named ${lambdaToUpdate} exists in the project.`);
+      context.print.error(`No Lambda function named ${lambdaToUpdate} exists in the project.`);
       return;
     }
   } else {
     const resourceQuestion = [
       {
         name: 'resourceName',
-        message: 'Select the Lambda Function you want to update',
+        message: 'Select the Lambda function you want to update',
         type: 'list',
         choices: lambdaFuncResourceNames,
       },

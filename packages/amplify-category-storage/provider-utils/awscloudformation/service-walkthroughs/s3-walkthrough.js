@@ -659,9 +659,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
       lambdaResources = lambdaResources.filter(lambdaResource => lambdaResource !== triggerFunction);
     }
     if (lambdaResources.length === 0) {
-      throw new Error(
-        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project.",
-      );
+      throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
     }
 
     const triggerOptionQuestion = {

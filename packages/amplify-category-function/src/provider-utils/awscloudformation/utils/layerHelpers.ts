@@ -30,9 +30,9 @@ export function layerNameQuestion(context: any) {
         input = input.trim();
         const meta = context.amplify.getProjectMeta();
         if (!/^[a-zA-Z0-9]{1,140}$/.test(input)) {
-          return 'Lambda Layer names must be 1-140 alphanumeric characters.';
+          return 'Lambda layer names must be 1-140 alphanumeric characters.';
         } else if (meta.function && meta.function.hasOwnProperty(input)) {
-          return `A Lambda Layer with the name ${input} already exists in this project.`;
+          return `A Lambda layer with the name ${input} already exists in this project.`;
         }
         return true;
       },
@@ -67,7 +67,7 @@ export function layerPermissionsQuestion(params?: Permission[]) {
           checked: _.includes(params, Permission.awsOrg),
         },
         {
-          name: 'Public (everyone on AWS can use this layer)',
+          name: 'Public (Anyone on AWS can use this layer)',
           short: 'Public',
           value: Permission.public,
           checked: _.includes(params, Permission.public),
@@ -132,11 +132,11 @@ export function layerOrgAccessQuestion(defaultOrgs?: string[]) {
   ];
 }
 
-export function prevPermsQuestion(layerName: string): ListQuestion[] {
+export function previousPermissionsQuestion(layerName: string): ListQuestion[] {
   return [
     {
       type: 'list',
-      name: 'usePrevPerms',
+      name: 'usePreviousPermissions',
       message: 'What permissions do you want to grant to this new layer version?',
       choices: [
         {

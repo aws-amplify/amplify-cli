@@ -241,7 +241,7 @@ export const askExecRolePermissionsQuestions = async (context, currentPermission
     dependsOn,
     topLevelComment: `${topLevelCommentPrefix}${envVarStringList}${topLevelCommentSuffix}`,
     environmentMap,
-    mutableParametersState: { permissions: permissions },
+    mutableParametersState: { permissions },
     categoryPolicies,
   };
 };

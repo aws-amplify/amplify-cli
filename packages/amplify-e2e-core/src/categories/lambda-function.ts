@@ -63,7 +63,7 @@ const coreFunction = (
       chain
         .wait('Select which capability you want to update:')
         .sendCarriageReturn() // lambda function
-        .wait('Select the Lambda Function you want to update')
+        .wait('Select the Lambda function you want to update')
         .sendCarriageReturn(); // assumes only one function configured in the project
     }
 
@@ -252,11 +252,11 @@ export interface LayerOptions {
 }
 
 const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => {
-  const prependedListOptions = ['Provide existing Lambda Layer ARNs', ...options.expectedListOptions];
+  const prependedListOptions = ['Provide existing Lambda layer ARNs', ...options.expectedListOptions];
   const amendedSelection = [...options.select];
   const hasCustomArns = options.customArns && options.customArns.length > 0;
   if (hasCustomArns) {
-    amendedSelection.unshift('Provide existing Lambda Layer ARNs');
+    amendedSelection.unshift('Provide existing Lambda layer ARNs');
   }
   chain.wait('Provide existing layers');
   multiSelect(chain, amendedSelection, prependedListOptions);
@@ -269,7 +269,7 @@ const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => 
     );
   });
   if (hasCustomArns) {
-    chain.wait('existing Lambda Layer ARNs (comma-separated)');
+    chain.wait('existing Lambda layer ARNs (comma-separated)');
     chain.sendLine(options.customArns.join(', '));
   }
   // not going to attempt to automate the reorder thingy. For e2e tests we can just create the lambda layers in the order we want them

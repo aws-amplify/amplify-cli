@@ -1,4 +1,4 @@
-import { getCLIPath, KEY_DOWN_ARROW, nspawn as spawn } from '../../src';
+import { getCLIPath, KEY_DOWN_ARROW, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
@@ -84,7 +84,7 @@ export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean 
 }
 
 // this function expects a single layer's content to be modified
-export function amplifyPushLayer(cwd: string, usePrevPerms: boolean = true, testingWithLatestCodebase: boolean = false) {
+export function amplifyPushLayer(cwd: string, usePreviousPermissions: boolean = true, testingWithLatestCodebase: boolean = false) {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -93,7 +93,7 @@ export function amplifyPushLayer(cwd: string, usePrevPerms: boolean = true, test
       .wait('Note: You need to run "amplify update function" to configure your functions with the latest layer version.')
       .wait('What permissions do you want to grant to this new layer version?');
 
-    if (usePrevPerms) {
+    if (usePreviousPermissions) {
       chain.sendCarriageReturn();
     } else {
       chain.send(KEY_DOWN_ARROW).sendCarriageReturn();

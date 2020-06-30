@@ -119,7 +119,7 @@ describe('amplify add lambda layer', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
-    settings.permissions = ['Public (everyone on AWS can use this layer)'];
+    settings.permissions = ['Public (Anyone on AWS can use this layer)'];
     await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
     await validateMetadata(settings.layerName);
@@ -130,7 +130,7 @@ describe('amplify add lambda layer', () => {
     const settings = {
       runtimes: ['nodejs'],
       layerName: `testlayer${shortId}`,
-      permissions: ['Public (everyone on AWS can use this layer)'],
+      permissions: ['Public (Anyone on AWS can use this layer)'],
       versionChanged: false,
       numLayers: 1,
       isPushed: false,

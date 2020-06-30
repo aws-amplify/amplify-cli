@@ -7,7 +7,7 @@ import { multiSelect } from '../utils/selectors';
 type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
 
 const layerRuntimeChoices = ['NodeJS', 'Python'];
-const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (everyone on AWS can use this layer)'];
+const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
 
 export function validateLayerDir(projRoot: string, layerName: string, layerExists: boolean, runtimes: LayerRuntimes[]): boolean {
   let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', layerName);
@@ -96,7 +96,7 @@ export function updateLayer(cwd: string, settings?: any) {
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn(); // Layer
     if (settings.numLayers > 1) {
-      chain.wait('Select the Lambda Layer to update:').sendCarriageReturn();
+      chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
     expect(settings.runtimes.length === runtimeDisplayNames.length).toBe(true);
@@ -152,7 +152,7 @@ function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, act
     .wait(`✅ Lambda layer folders & files ${action}:`)
     .wait(path.join('amplify', 'backend', 'function', settings.layerName))
     .wait('Next steps:')
-    .wait('Move your libraries in the following folder:');
+    .wait('Move your libraries to the following folder:');
 
   for (let i = 0; i < settings.runtimes.length; ++i) {
     const { displayName, path } = getLayerRuntimeInfo(settings.runtimes[i]);

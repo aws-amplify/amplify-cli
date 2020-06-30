@@ -37,7 +37,7 @@ export const addLayersToFunctionWalkthrough = async (
   }
 
   if (lambdaLayers.length === 0) {
-    context.print.info('No Lambda layers selected');
+    context.print.info('No Lambda layers were selected');
   }
 
   lambdaLayers = await askLayerOrderQuestion(lambdaLayers, previousSelections);

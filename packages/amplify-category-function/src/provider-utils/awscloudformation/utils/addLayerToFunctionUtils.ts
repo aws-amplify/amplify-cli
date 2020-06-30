@@ -7,9 +7,9 @@ import enquirer from 'enquirer';
 import { LayerMetadataFactory } from './layerParams';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
-export const provideExistingARNsPrompt = 'Provide existing Lambda Layer ARNs';
+export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
 const versionSelectionPrompt = (layerName: string) => `Select a version for ${layerName}:`;
-const ARNEntryPrompt = (remainingLayers: number) => `Enter up to ${remainingLayers} existing Lambda Layer ARNs (comma-separated):`;
+const ARNEntryPrompt = (remainingLayers: number) => `Enter up to ${remainingLayers} existing Lambda layer ARNs (comma-separated):`;
 const layerOrderPrompt = 'Modify the layer order (Layers with conflicting files will overwrite contents of layers earlier in the list):';
 const layerARNRegex = /^arn:[a-zA-Z0-9-]+:lambda:[a-zA-Z0-9-]+:\d{12}:layer:[a-zA-Z0-9-_]+:\d+$/;
 
@@ -173,5 +173,5 @@ const stringSplitAndTrim = (input: string): string[] => {
 // validates that each string in input is a valid lambda layer ARN
 const lambdaLayerARNValidator = (input: string[]): true | string => {
   const invalidARNs = input.filter(arn => !arn.match(layerARNRegex));
-  return invalidARNs.length === 0 ? true : `${invalidARNs.join(', ')} are not valid Lambda Layer ARNs`;
+  return invalidARNs.length === 0 ? true : `${invalidARNs.join(', ')} are not valid Lambda layer ARNs`;
 };
