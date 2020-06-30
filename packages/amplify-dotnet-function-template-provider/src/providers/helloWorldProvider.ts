@@ -1,11 +1,11 @@
-import { FunctionTemplateParameters, ContributionRequest } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters, TemplateContributionRequest } from 'amplify-function-plugin-interface';
 import { commonFiles, templateRoot } from '../utils/constants';
 import { getDstMap } from '../utils/destFileMapper';
 import path from 'path';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 
-export async function provideHelloWorld(request: ContributionRequest): Promise<FunctionTemplateParameters> {
+export async function provideHelloWorld(request: TemplateContributionRequest): Promise<FunctionTemplateParameters> {
   const files = [
     ...commonFiles,
     'HelloWorld/aws-lambda-tools-defaults.json.ejs',

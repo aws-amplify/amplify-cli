@@ -14,6 +14,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'go1.x',
           cloudTemplateValue: 'go1.x',
           defaultHandler: 'main',
+          layerExecutablePath: 'go1.x',
         },
       });
     },

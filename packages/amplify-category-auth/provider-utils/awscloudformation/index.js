@@ -7,6 +7,7 @@ const uuid = require('uuid');
 const { existsSync } = require('fs');
 const { copySync } = require('fs-extra');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 let serviceMetadata;
 
@@ -795,7 +796,7 @@ async function createAdminAuthFunction(context, authResourceName, functionName, 
   if (operation === 'add') {
     // add amplify-meta and backend-config
     const backendConfigs = {
-      service: 'Lambda',
+      service: FunctionServiceName.LambdaFunction,
       providerPlugin: 'awscloudformation',
       build: true,
       dependsOn,

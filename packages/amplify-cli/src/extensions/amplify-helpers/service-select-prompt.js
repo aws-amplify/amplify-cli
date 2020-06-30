@@ -22,9 +22,8 @@ function filterServicesByEnabledProviders(context, enabledProviders, supportedSe
 }
 
 function serviceQuestionWalkthrough(context, supportedServices, category, customQuestion = null) {
-
   const options = [];
-  for (let i = 0; i < supportedServices.length; i += 1) {
+  for (let i = 0; i < supportedServices.length; ++i) {
     const optionName = supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
     options.push({
       name: optionName,

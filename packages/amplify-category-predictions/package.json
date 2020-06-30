@@ -17,6 +17,7 @@
   "dependencies": {
     "amplify-category-auth": "2.15.8",
     "amplify-provider-awscloudformation": "4.21.1",
+    "amplify-category-function": "2.20.8",
     "aws-sdk": "^2.608.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
