@@ -8,10 +8,15 @@ import { getPath } from './getPath';
 export function init(context: Context) {
   const configPath = getPath(context);
   if (fs.existsSync(configPath)) {
-    Config.Instance.setValues(fs.readFileSync(configPath));
-  } else {
-    write(context, Config.Instance);
+    try {
+      const savedConfig = JSON.parse(fs.readFileSync(configPath, { encoding: 'utf-8' }));
+      Config.Instance.setValues(savedConfig);
+      return getConfig();
+    } catch (ex) {
+      context.print.warning('Corrupted Config generating new config');
+    }
   }
+  write(context, Config.Instance);
   return getConfig();
 }
 
