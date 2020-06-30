@@ -2,8 +2,8 @@ import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs-extra';
 import uuid from 'uuid';
-import { rootAssetDir } from '../awsConstants';
-import { validatePathName, formatCFNPathParamsForExpressJs } from '../utils/restApiPathUtils';
+import { rootAssetDir } from '../aws-constants';
+import { validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
 
 const category = 'api';
 const serviceName = 'API Gateway';

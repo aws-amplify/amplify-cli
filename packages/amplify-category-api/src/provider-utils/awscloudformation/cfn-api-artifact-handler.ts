@@ -1,12 +1,12 @@
-import { ApiArtifactHandler } from '../ApiArtifactHandler';
+import { ApiArtifactHandler } from '../api-artifact-handler';
 import { AddApiRequest, ConflictResolution, AppSyncServiceConfiguration, ResolutionStrategy } from 'amplify-headless-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { category } from '../../categoryConstants';
-import { rootAssetDir, provider } from './awsConstants';
+import { category } from '../../category-constants';
+import { rootAssetDir, provider } from './aws-constants';
 import { readTransformerConfiguration, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
-import { conflictResolutionToResolverConfig } from './utils/resolverConfigToConflictResolutionBiDiMapper';
-import { appSyncAuthTypeToAuthConfig } from './utils/authConfigToAppSyncAuthTypeBiDiMapper';
+import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import uuid from 'uuid';
 import _ from 'lodash';
 

@@ -1,7 +1,7 @@
 import { AddApiRequest } from 'amplify-headless-interface';
 import _ from 'lodash';
-import { resolverConfigToConflictResolution } from './resolverConfigToConflictResolutionBiDiMapper';
-import { authConfigToAppSyncAuthType } from './authConfigToAppSyncAuthTypeBiDiMapper';
+import { resolverConfigToConflictResolution } from './resolver-config-to-conflict-resolution-bi-di-mapper';
+import { authConfigToAppSyncAuthType } from './auth-config-to-app-sync-auth-type-bi-di-mapper';
 
 // Temporary conversion function between the existing output of the appSync service walkthrough and the new AddApiRequest interface
 // Long-term, the service walkthrough should be refactored to directly return an object conforming to the interface

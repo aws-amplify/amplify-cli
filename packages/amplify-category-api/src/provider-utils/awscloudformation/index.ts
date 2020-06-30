@@ -1,10 +1,10 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { serviceWalkthroughResultToAddApiRequest } from './utils/serviceWalkthroughResultToAddApiRequest';
-import { getCfnApiArtifactHandler } from './CfnApiArtifactHandler';
-import { serviceMetadataFor, getServiceWalkthrough, datasourceMetadataFor } from './utils/dynamicImports';
-import { parametersFileName } from './awsConstants';
-import { legacyAddResource, copyCfnTemplate } from './legacyAddResource';
+import { serviceWalkthroughResultToAddApiRequest } from './utils/service-walkthrough-result-to-add-api-request';
+import { getCfnApiArtifactHandler } from './cfn-api-artifact-handler';
+import { serviceMetadataFor, getServiceWalkthrough, datasourceMetadataFor } from './utils/dynamic-imports';
+import { parametersFileName } from './aws-constants';
+import { legacyAddResource, copyCfnTemplate } from './legacy-add-resource';
 
 export async function console(context, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);

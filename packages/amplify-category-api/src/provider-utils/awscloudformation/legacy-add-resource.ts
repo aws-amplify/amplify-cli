@@ -1,7 +1,7 @@
-import { serviceMetadataFor } from './utils/dynamicImports';
+import { serviceMetadataFor } from './utils/dynamic-imports';
 import fs from 'fs-extra';
 import path from 'path';
-import { parametersFileName, cfnParametersFilename, rootAssetDir } from './awsConstants';
+import { parametersFileName, cfnParametersFilename, rootAssetDir } from './aws-constants';
 
 // this is the old logic for generating resources in the project directory
 // it is still used for adding REST APIs

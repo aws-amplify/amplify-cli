@@ -2,18 +2,12 @@ import { ListQuestion, CheckboxQuestion, ListChoiceOptions } from 'inquirer';
 import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
-import uuid from 'uuid';
 import path from 'path';
 import open from 'open';
-import { rootAssetDir, parametersFileName } from '../awsConstants';
-import {
-  collectDirectivesByTypeNames,
-  readTransformerConfiguration,
-  writeTransformerConfiguration,
-  readProjectConfiguration,
-} from 'graphql-transformer-core';
-import { category } from '../../../categoryConstants';
-import { writeResolverConfig } from '../CfnApiArtifactHandler';
+import { rootAssetDir, cfnParametersFilename } from '../aws-constants';
+import { collectDirectivesByTypeNames, writeTransformerConfiguration, readProjectConfiguration } from 'graphql-transformer-core';
+import { category } from '../../../category-constants';
+import { writeResolverConfig } from '../cfn-api-artifact-handler';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -180,7 +174,7 @@ export const updateWalkthrough = async context => {
     return;
   }
 
-  const parametersFilePath = path.join(resourceDir, parametersFileName);
+  const parametersFilePath = path.join(resourceDir, cfnParametersFilename);
   let parameters = {};
 
   try {
