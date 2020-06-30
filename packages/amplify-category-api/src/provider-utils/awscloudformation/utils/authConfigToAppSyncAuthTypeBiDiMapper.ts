@@ -6,35 +6,46 @@ import {
 } from 'amplify-headless-interface';
 import _ from 'lodash';
 
+/**
+ * Converts the authConfig object that is returned by the AppSync walkthrough into the AppSyncAuthType defined by the AddApiRequest
+ *
+ * Used when transforming the walkthrough result into an AddApiRequest
+ */
 export const authConfigToAppSyncAuthType = (authConfig: any = {}): AppSyncAuthType => {
   return _.get(authConfigToAppSyncAuthTypeMap, authConfig.authenticationType, () => undefined)(authConfig);
 };
 
+/**
+ * Converts an AppSyncAuthType object into the authConfig object that gets written to amplify-meta
+ *
+ * This conversion is necessary to ensure we are storing the authConfig in the same way as older projects
+ * @param authType
+ */
 export const appSyncAuthTypeToAuthConfig = (authType?: AppSyncAuthType) => {
   if (!authType) return undefined;
   return _.get(appSyncAuthTypeToAuthConfigMap, authType.mode, () => undefined)(authType);
 };
 
-const authConfigToAppSyncAuthTypeMap: Record<string, (oldAuthObj: any) => AppSyncAuthType> = {
-  API_KEY: oldAuthObj => ({
+const authConfigToAppSyncAuthTypeMap: Record<string, (authConfig: any) => AppSyncAuthType> = {
+  API_KEY: authConfig => ({
     mode: 'API_KEY',
-    expirationTime: oldAuthObj.apiKeyConfig.apiKeyExpirationDays,
-    keyDescription: oldAuthObj.apiKeyConfig.description,
+    expirationTime: authConfig.apiKeyConfig.apiKeyExpirationDays,
+    keyDescription: authConfig.apiKeyConfig.description,
   }),
   AWS_IAM: () => ({
     mode: 'AWS_IAM',
   }),
-  AMAZON_COGNITO_USER_POOLS: oldAuthObj => ({
+  AMAZON_COGNITO_USER_POOLS: authConfig => ({
     mode: 'AMAZON_COGNITO_USER_POOLS',
-    cognitoUserPoolId: oldAuthObj.userPoolConfig.userPoolId,
+    cognitoUserPoolId: authConfig.userPoolConfig.userPoolId,
   }),
-  OPENID_CONNECT: oldAuthObj => ({
+  OPENID_CONNECT: authConfig => ({
     mode: 'OPENID_CONNECT',
-    openIDProviderName: oldAuthObj.openIDConnectConfig.name,
-    openIDIssuerURL: oldAuthObj.openIDConnectConfig.issuerUrl,
-    openIDClientID: oldAuthObj.openIDConnectConfig.clientId,
-    openIDAuthTTL: oldAuthObj.openIDConnectConfig.authTTL,
-    openIDIatTTL: oldAuthObj.openIDConnectConfig.iatTTL,
+    openIDProviderName: authConfig.openIDConnectConfig.name,
+    openIDIssuerURL: authConfig.openIDConnectConfig.issuerUrl,
+    openIDClientID: authConfig.openIDConnectConfig.clientId,
+    openIDAuthTTL: authConfig.openIDConnectConfig.authTTL,
+    openIDIatTTL: authConfig.openIDConnectConfig.iatTTL,
   }),
 };
 
