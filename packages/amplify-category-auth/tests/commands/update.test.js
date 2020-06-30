@@ -34,7 +34,7 @@ describe('auth update: ', () => {
       info: jest.fn(),
       error: jest.fn(),
     },
-    telemetry: {
+    usageData: {
       emitError: jest.fn(),
     },
   };

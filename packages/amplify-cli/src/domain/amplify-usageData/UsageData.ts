@@ -3,18 +3,18 @@ import { Input } from '../input';
 import https from 'https';
 import { UrlWithStringQuery } from 'url';
 import redactInput from './identifiable-input-regex';
-import { TelemetryPayload } from './TelemetryPayload';
-import { getUrl } from './getTelemetryUrl';
-import { ITelemetry } from './ITelemetry';
+import { UsageDataPayload } from './UsageDataPayload';
+import { getUrl } from './getUsageDataUrl';
+import { IUsageData } from './IUsageData';
 
-export class Telemetry implements ITelemetry {
+export class UsageData implements IUsageData {
   sessionUuid: String;
   installationUuid: String = '';
   version: String = '';
   input: Input;
   url: UrlWithStringQuery;
   requestTimeout: number = 100;
-  private static instance: Telemetry;
+  private static instance: UsageData;
 
   private constructor() {
     this.sessionUuid = uuid.v4();
@@ -28,9 +28,9 @@ export class Telemetry implements ITelemetry {
     this.input = redactInput(input, true);
   }
 
-  static get Instance(): ITelemetry {
-    if (!Telemetry.instance) Telemetry.instance = new Telemetry();
-    return Telemetry.instance;
+  static get Instance(): IUsageData {
+    if (!UsageData.instance) UsageData.instance = new UsageData();
+    return UsageData.instance;
   }
 
   emitError(error: Error | null): Promise<void> {
@@ -47,11 +47,11 @@ export class Telemetry implements ITelemetry {
   }
 
   async emit(error: Error | null, state: String): Promise<void> {
-    const payload = new TelemetryPayload(this.sessionUuid, this.installationUuid, this.version, this.input, error, state);
+    const payload = new UsageDataPayload(this.sessionUuid, this.installationUuid, this.version, this.input, error, state);
     return this.send(payload);
   }
 
-  async send(payload: TelemetryPayload) {
+  async send(payload: UsageDataPayload) {
     return new Promise<void>((resolve, _) => {
       const data = JSON.stringify(payload);
       const req = https.request({

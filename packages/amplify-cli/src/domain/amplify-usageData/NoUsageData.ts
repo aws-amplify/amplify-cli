@@ -1,6 +1,6 @@
-import { ITelemetry } from './ITelemetry';
+import { IUsageData } from './IUsageData';
 
-export class NoTelemetry implements ITelemetry {
+export class NoUsageData implements IUsageData {
   emitError(error: Error): Promise<void> {
     return Promise.resolve();
   }
@@ -15,9 +15,9 @@ export class NoTelemetry implements ITelemetry {
   }
   init(installationUuid: String, version: String, input: any): void {}
 
-  private static instance: NoTelemetry;
-  static get Instance(): ITelemetry {
-    if (!NoTelemetry.instance) NoTelemetry.instance = new NoTelemetry();
-    return NoTelemetry.instance;
+  private static instance: NoUsageData;
+  static get Instance(): IUsageData {
+    if (!NoUsageData.instance) NoUsageData.instance = new NoUsageData();
+    return NoUsageData.instance;
   }
 }

@@ -2,15 +2,15 @@ import url from 'url';
 import nock from 'nock';
 import uuid from 'uuid';
 
-import { Telemetry } from '../domain/amplify-telemetry/Telemetry';
-import { getUrl } from '../domain/amplify-telemetry/getTelemetryUrl';
+import { UsageData } from '../domain/amplify-usageData/UsageData';
+import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { Input } from '../domain/input';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';
 const originalUrl = `${baseOriginalUrl}${pathToUrl}`;
 
-describe('test telemetry', () => {
+describe('test usageData', () => {
   beforeAll(() => {
     process.env = Object.assign(process.env, { AMPLIFY_CLI_BETA_USAGE_TRACKING_URL: originalUrl });
   });
@@ -26,15 +26,15 @@ describe('test telemetry', () => {
   });
 
   it('test instance', () => {
-    const a = Telemetry.Instance;
-    const b = Telemetry.Instance;
+    const a = UsageData.Instance;
+    const b = UsageData.Instance;
     a.init(uuid.v4(), '', new Input([]));
     b.init(uuid.v4(), '', new Input([]));
     expect(a).toEqual(b);
   });
 });
 
-describe('test telemetry calls', () => {
+describe('test usageData calls', () => {
   beforeAll(() => {
     process.env = Object.assign(process.env, { AMPLIFY_CLI_BETA_USAGE_TRACKING_URL: originalUrl });
   });
@@ -50,12 +50,12 @@ describe('test telemetry calls', () => {
   }).persist();
   it('test https with 503', async () => {
     scope.post(pathToUrl, () => true).reply(503, 'Service Unavailable');
-    await checkTelemetry();
+    await checkUsageData();
   });
 
   it('test https with 400', async () => {
     scope.post(pathToUrl, () => true).reply(400, 'Bad Request');
-    await checkTelemetry();
+    await checkUsageData();
   });
 
   it('test https with 302 redirect', async () => {
@@ -66,28 +66,28 @@ describe('test telemetry calls', () => {
       })
       .post('/metrics')
       .reply(400, 'Bad Request');
-    await checkTelemetry();
+    await checkUsageData();
   });
 
   it('test https with 200 long randomstring', async () => {
     scope.post(pathToUrl, () => true).reply(200, '1234567890'.repeat(14));
-    await checkTelemetry();
+    await checkUsageData();
   });
 
   it('test delay', async () => {
     scope.post(pathToUrl, () => true).delay(10000);
-    await checkTelemetry();
+    await checkUsageData();
   });
 });
 
-async function checkTelemetry() {
-  const abortResponse = await Telemetry.Instance.emitAbort();
+async function checkUsageData() {
+  const abortResponse = await UsageData.Instance.emitAbort();
   expect(abortResponse).toBeUndefined();
-  const errorResponse = await Telemetry.Instance.emitError(new Error('something went wrong'));
+  const errorResponse = await UsageData.Instance.emitError(new Error('something went wrong'));
   expect(errorResponse).toBeUndefined();
 
-  const successResponse = await Telemetry.Instance.emitSuccess();
+  const successResponse = await UsageData.Instance.emitSuccess();
   expect(successResponse).toBeUndefined();
-  const invokeResponse = await Telemetry.Instance.emitInvoke();
+  const invokeResponse = await UsageData.Instance.emitInvoke();
   expect(invokeResponse).toBeUndefined();
 }
