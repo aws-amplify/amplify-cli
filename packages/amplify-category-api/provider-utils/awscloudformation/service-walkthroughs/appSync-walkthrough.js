@@ -5,6 +5,7 @@ const uuid = require('uuid');
 const path = require('path');
 const open = require('open');
 const TransformPackage = require('graphql-transformer-core');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -338,7 +339,7 @@ async function createSyncFunction(context) {
   await context.amplify.copyBatch(context, copyJobs, functionProps, true);
 
   const backendConfigs = {
-    service: 'Lambda',
+    service: FunctionServiceName.LambdaFunction,
     providerPlugin: 'awscloudformation',
     build: true,
   };
