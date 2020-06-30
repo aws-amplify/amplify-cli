@@ -52,8 +52,8 @@ export async function templateWalkthrough(context: any, params: Partial<Function
 }
 
 /**
- * Selects a single runtime for a Lambda Function
- * Selects one or more runtimes for a Lambda Layer
+ * Selects a single runtime for a Lambda function
+ * Selects one or more runtimes for a Lambda layer
  */
 export async function runtimeWalkthrough(
   context: any,

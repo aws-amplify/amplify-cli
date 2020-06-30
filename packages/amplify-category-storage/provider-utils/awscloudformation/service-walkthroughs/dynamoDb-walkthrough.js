@@ -193,7 +193,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   print.info('');
   print.info('To learn more about primary keys, see:');
   print.info(
-    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
+    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
   );
   print.info('');
   // Ask for primary key
@@ -281,7 +281,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   );
   print.info('To learn more about indexes, see:');
   print.info(
-    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
+    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
   );
   print.info('');
 
@@ -547,9 +547,7 @@ async function addTrigger(context, resourceName, triggerList) {
     }
 
     if (lambdaResources.length === 0) {
-      throw new Error(
-        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project.",
-      );
+      throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
     }
 
     const triggerOptionQuestion = {

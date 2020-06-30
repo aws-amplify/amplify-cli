@@ -46,7 +46,7 @@ export interface LayerMetadata {
 export interface LayerVersionMetadata {
   permissions: LayerPermission[];
   hash?: string;
-  listAccoutAccess: () => string[];
+  listAccountAccess: () => string[];
   listOrgAccess: () => string[];
   isPrivate: () => boolean;
   isPublic: () => boolean;
@@ -99,7 +99,8 @@ class LayerState implements LayerMetadata {
   }
 
   getLatestVersion(): number {
-    return Array.from(this.versionMap.keys()).reduce((a, b) => Math.max(a, b));
+    const versions = this.listVersions();
+    return versions.length > 0 ? versions[0] : undefined;
   }
 
   getHash(version: number): string {
@@ -194,56 +195,40 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 
   setPermissions(permissions: LayerPermission[]) {
-    this.permissions = [];
-    permissions.forEach(permission => {
-      if (permission.type === Permission.public) {
-        const permissionPublic: PublicLayer = {
-          type: Permission.public,
-        };
-        this.permissions.push(permissionPublic);
-      }
-      if (permission.type === Permission.private) {
-        const permissionPrivate: PrivateLayer = {
-          type: Permission.private,
-        };
-
-        this.permissions.push(permissionPrivate);
-      }
-      if (permission.type === Permission.awsOrg) {
-        const orgsPermissions: OrgsLayer = {
-          type: Permission.awsOrg,
-          orgs: permission.orgs,
-        };
-        this.permissions.push(orgsPermissions);
-      }
-      if (permission.type === Permission.awsAccounts) {
-        const accountsPermissions: AccountsLayer = {
-          type: Permission.awsAccounts,
-          accounts: permission.accounts,
-        };
-        this.permissions.push(accountsPermissions);
+    this.permissions = permissions.map(permission => {
+      switch (permission.type) {
+        case Permission.public:
+          return {
+            type: Permission.public,
+          } as PublicLayer;
+        case Permission.private:
+          return {
+            type: Permission.private,
+          };
+        case Permission.awsOrg:
+          return {
+            type: Permission.awsOrg,
+            orgs: permission.orgs,
+          };
+        case Permission.awsAccounts:
+          return {
+            type: Permission.awsAccounts,
+            accounts: permission.accounts,
+          };
       }
     });
   }
 
-  listAccoutAccess(): string[] {
-    let accounts: string[] = [];
-    this.permissions.forEach(permission => {
-      if (permission.type === Permission.awsAccounts) {
-        accounts = permission.accounts;
-      }
-    });
-    return accounts;
+  listAccountAccess(): string[] {
+    const permissionIsAccount = (permission: LayerPermission): permission is AccountsLayer => permission.type === Permission.awsAccounts;
+    const accountPermissions = this.permissions.find(permissionIsAccount);
+    return accountPermissions ? accountPermissions.accounts : [];
   }
 
   listOrgAccess(): string[] {
-    let orgs: string[] = [];
-    this.permissions.forEach(permission => {
-      if (permission.type === Permission.awsOrg) {
-        orgs = permission.orgs;
-      }
-    });
-    return orgs;
+    const permissionIsOrg = (permission: LayerPermission): permission is OrgsLayer => permission.type === Permission.awsOrg;
+    const orgPermissions = this.permissions.find(permissionIsOrg);
+    return orgPermissions ? orgPermissions.orgs : [];
   }
 
   isPrivate(): boolean {

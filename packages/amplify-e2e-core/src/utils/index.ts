@@ -28,52 +28,46 @@ export function getEnvVars(): { ACCESS_KEY_ID: string; SECRET_ACCESS_KEY: string
 }
 
 export function overrideFunctionSrc(root: string, name: string, code: string) {
-  let indexPath = path.join(root, `amplify/backend/function/${name}/src/index.js`);
+  let indexPath = path.join(getPathToFunction(root, name), 'src', 'index.js');
   fs.writeFileSync(indexPath, code);
 }
 
 export function getFunctionSrc(root: string, name: string): Buffer {
-  let indexPath = path.join(root, `amplify/backend/function/${name}/src/index.js`);
+  let indexPath = path.join(getPathToFunction(root, name), 'src', 'index.js');
   return fs.readFileSync(indexPath);
 }
 
 //overriding code for node
 export function overrideLayerCode(root: string, name: string, code: string, fileName: string) {
-  const dirPath = path.join(root, `amplify/backend/function/${name}/lib/nodejs/node_modules/${name}`);
+  const dirPath = path.join(getPathToFunction(root, name), 'lib', 'nodejs', 'node_modules', name);
   fs.ensureDirSync(dirPath);
-  const filePath = path.join(dirPath, `${fileName}`);
+  const filePath = path.join(dirPath, fileName);
   fs.writeFileSync(filePath, code);
 }
 
 // overriding code for python
 export function overrideFunctionSrcPython(root: string, name: string, source: string) {
-  const destFilePath = path.join(root, `amplify/backend/function/${name}/src/index.py`);
-  fs.copyFile(source, destFilePath, err => {
-    if (err) throw new Error('Problem in copying file in Tests');
-  });
+  const destFilePath = path.join(getPathToFunction(root, name), 'src', 'index.py');
+  fs.copyFileSync(source, destFilePath);
 }
 
-export function overrideLayerCodePython(root: string, name: string, source: string, fileName: string) {
-  const dirPath = path.join(root, `amplify/backend/function/${name}/lib/python/lib/python3.8/site-packages/`);
+export function overrideLayerCodePython(root: string, name: string, source: string) {
+  const dirPath = path.join(getPathToFunction(root, name), 'lib', 'python', 'lib', 'python3.8', 'site-packages');
   fs.ensureDirSync(dirPath);
-  const destfilePath = path.join(dirPath, `testfunc.py`);
-  fs.copyFile(source, destfilePath, err => {
-    if (err) throw new Error('Problem in copying file in Tests');
-  });
+  const destfilePath = path.join(dirPath, 'testfunc.py');
+  fs.copyFileSync(source, destfilePath);
 }
 
 export function overridefunctionSrcJava(root: string, name: string, source: string) {
-  const destFilePath = path.join(root, `amplify/backend/function/${name}/build.gradle`);
-  fs.copyFile(source, destFilePath, err => {
-    if (err) throw new Error('Problem in copying file in Tests');
-  });
+  const destFilePath = path.join(getPathToFunction(root, name), 'build.gradle');
+  fs.copyFileSync(source, destFilePath);
 }
 
 export function overrideLayerCodeJava(root: string, layerName: string, functionName: string) {
-  const destDir = path.join(root, `amplify/backend/function/${layerName}/lib/java/lib`);
-  const srcDir = path.join(root, `amplify/backend/function/${functionName}/build/java/lib`);
+  const destDir = path.join(getPathToFunction(root, layerName), 'lib', 'java', 'lib');
+  const srcDir = path.join(getPathToFunction(root, layerName), 'build', 'java', 'lib');
 
-  fs.copy(srcDir, destDir, err => {
-    if (err) throw new Error('Problem in copying file in Tests');
-  });
+  fs.copySync(srcDir, destDir);
 }
+
+const getPathToFunction = (root: string, funcName: string) => path.join(root, 'amplify', 'backend', 'function', funcName);

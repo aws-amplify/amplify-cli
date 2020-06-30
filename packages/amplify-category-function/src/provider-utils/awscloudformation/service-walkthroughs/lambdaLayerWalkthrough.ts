@@ -51,13 +51,13 @@ export async function updateLayerWalkthrough(
   const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
 
   if (resources.length === 0) {
-    context.print.error('No Lambda Layer resource to update. Please use "amplify add function" to create a new Layer');
+    context.print.error('No Lambda layer resource to update. Please use "amplify add function" to create a new Layer');
     process.exit(0);
   }
   const resourceQuestion: InputQuestion = [
     {
       name: 'resourceName',
-      message: 'Select the Lambda Layer to update:',
+      message: 'Select the Lambda layer to update:',
       type: 'list',
       choices: resources,
     },
@@ -88,7 +88,7 @@ export async function updateLayerWalkthrough(
     // load defaults
     const defaultLayerPermissions = layerState.getVersion(selectedVersion).permissions.map(permission => permission.type);
     const defaultOrgs = layerState.getVersion(selectedVersion).listOrgAccess();
-    const defaultAccounts = layerState.getVersion(selectedVersion).listAccoutAccess();
+    const defaultAccounts = layerState.getVersion(selectedVersion).listAccountAccess();
 
     // select permission strategy
     _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions)));

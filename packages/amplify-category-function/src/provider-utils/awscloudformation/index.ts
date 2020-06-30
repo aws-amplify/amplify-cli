@@ -1,7 +1,7 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './utils/layerParams';
 import { supportedServices } from '../supported-services';
-import { ServiceName, provider } from './utils/constants';
+import { ServiceName, provider, parametersFileName } from './utils/constants';
 import { category as categoryName } from '../../constants';
 import {
   createFunctionResources,
@@ -35,7 +35,7 @@ export async function addResource(
 ): Promise<void> {
   // load the service config for this service
   const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
-  const BAD_SERVICE_ERR = `amplify-category-function is not configured to provide service type ${service}`;
+  const BAD_SERVICE_ERR = new Error(`amplify-category-function is not configured to provide service type ${service}`);
   if (!serviceConfig) {
     throw BAD_SERVICE_ERR;
   }
@@ -121,12 +121,8 @@ export async function addLayerResource(
   context,
   service,
   serviceConfig: ServiceConfig<LayerParameters>,
-  parameters?: Partial<LayerParameters>,
+  parameters: Partial<LayerParameters> = {},
 ): Promise<void> {
-  if (parameters === undefined) {
-    parameters = {};
-  }
-
   parameters.providerContext = {
     provider: provider,
     service: service,
@@ -148,7 +144,7 @@ export async function updateResource(
 ) {
   // load the service config for this service
   const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
-  const BAD_SERVICE_ERR = `amplify-category-function is not configured to provide service type ${service}`;
+  const BAD_SERVICE_ERR = new Error(`amplify-category-function is not configured to provide service type ${service}`);
   if (!serviceConfig) {
     throw BAD_SERVICE_ERR;
   }
@@ -194,7 +190,12 @@ export async function updateFunctionResource(context, category, service, paramet
   }
 
   if (parameters && 'trigger' in parameters) {
-    const parametersFilePath = `${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`;
+    const parametersFilePath = path.join(
+      context.amplify.pathManager.getBackendDirPath(),
+      categoryName,
+      resourceToUpdate,
+      parametersFileName,
+    );
     let previousParameters;
 
     if (fs.existsSync(parametersFilePath)) {
@@ -233,7 +234,7 @@ function printLayerSuccessMessages(context: any, parameters: LayerParameters, ac
   print.success('Next steps:');
 
   if (parameters.runtimes.length !== 0) {
-    print.info('Move your libraries in the following folder:');
+    print.info('Move your libraries to the following folder:');
     for (let runtime of parameters.runtimes) {
       let runtimePath = path.join(relativeDirPath, 'lib', runtime.layerExecutablePath);
       print.info(`[${runtime.name}]: ${runtimePath}`);
@@ -258,7 +259,7 @@ async function openEditor(context, category: string, resourceName: string, templ
       if (template.defaultEditorFile) {
         targetFile = template.defaultEditorFile;
       } else if (template.sourceFiles && template.sourceFiles.length > 0) {
-        let srcFile = template.sourceFiles[0];
+        const srcFile = template.sourceFiles[0];
         targetFile = _.get(template, ['destMap', srcFile], srcFile);
       }
     }
@@ -269,7 +270,6 @@ async function openEditor(context, category: string, resourceName: string, templ
   }
 }
 
-// TODO refactor this to not depend on supported-service.json
 export function migrateResource(context, projectPath, service, resourceName) {
   const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
 
@@ -367,6 +367,6 @@ export function openConsole(context, service: ServiceName) {
 export function isMockable(service: ServiceName): IsMockableResponse {
   return {
     isMockable: service === ServiceName.LambdaFunction,
-    reason: 'Lambda Layers cannot be mocked locally', // this will only be shown when isMockable is false
+    reason: 'Lambda layers cannot be mocked locally', // this will only be shown when isMockable is false
   };
 }

@@ -6,7 +6,7 @@ import { Permission, LayerParameters, getLayerMetadataFactory, LayerMetadata } f
 function generateLayerCfnObjBase() {
   const cfnObj = {
     AWSTemplateFormatVersion: '2010-09-09',
-    Description: 'Lambda Layer resource stack creation using Amplify CLI',
+    Description: 'Lambda layer resource stack creation using Amplify CLI',
     Parameters: {
       layerVersion: {
         Type: 'String',
@@ -46,9 +46,8 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
       S3Bucket: Fn.Ref('deploymentBucketName'),
       S3Key: Fn.Ref('s3Key'),
     },
-    Description: `Lambda Layer version ${latestVersion}`,
+    Description: `Lambda layer version ${latestVersion}`,
     LayerName: parameters.layerName,
-    LicenseInfo: 'MIT',
   });
   layer.deletionPolicy(POLICY_RETAIN);
   _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });
@@ -89,7 +88,7 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
     });
   }
 
-  const accountIds = versionPermission.listAccoutAccess();
+  const accountIds = versionPermission.listAccountAccess();
   const orgIds = versionPermission.listOrgAccess();
 
   accountIds.forEach(acctId =>

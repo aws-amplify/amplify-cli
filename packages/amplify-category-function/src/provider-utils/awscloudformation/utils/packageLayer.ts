@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { hashElement } from 'folder-hash';
 import { FunctionDependency } from 'amplify-function-plugin-interface';
 import { ServiceName, provider } from './constants';
-import { prevPermsQuestion } from './layerHelpers';
+import { previousPermissionsQuestion } from './layerHelpers';
 import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata } from './layerParams';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
@@ -84,12 +84,12 @@ async function setNewVersionPermissions(context: any, layerName: string, layerSt
   const latestVersion = layerState.getLatestVersion();
   const latestVersionState = layerState.getVersion(latestVersion);
   const hasNonDefaultPerms =
-    latestVersionState.isPublic() || latestVersionState.listAccoutAccess().length > 0 || latestVersionState.listOrgAccess().length > 0;
+    latestVersionState.isPublic() || latestVersionState.listAccountAccess().length > 0 || latestVersionState.listOrgAccess().length > 0;
   const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
   if (yesFlagSet) {
     context.print.warning(`Permissions from previous layer version carried forward to new version by default`);
   } else if (hasNonDefaultPerms) {
-    usePrevPermissions = (await prompt(prevPermsQuestion(layerName))).usePrevPerms;
+    usePrevPermissions = (await prompt(previousPermissionsQuestion(layerName))).usePreviousPermissions;
   }
   if (!usePrevPermissions) {
     layerState.setPermissionsForVersion(latestVersion, defaultPermissions);
