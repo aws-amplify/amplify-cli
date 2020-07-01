@@ -367,7 +367,7 @@ async function updateConfigOnEnvInit(context, category, service) {
       });
 
       if (missingParams.length) {
-        throw new Error(`auth headless init is missing the following inputParams ${missingParams.join(', ')}`);
+        throw new Error(`auth headless is missing the following inputParams ${missingParams.join(', ')}`);
       }
     }
     if (resourceParams.hostedUIProviderMeta) {
@@ -432,8 +432,13 @@ function isInHeadlessMode(context) {
 
 function getHeadlessParams(context) {
   const { inputParams } = context.exeInfo;
-  const { categories = {} } = inputParams;
-  return categories.auth || {};
+  try {
+    // If the input given is a string validate it using JSON parse
+    const { categories = {} } = typeof inputParams === 'string' ? JSON.parse(inputParams) : inputParams;
+    return categories.auth || {};
+  } catch (err) {
+    throw new Error(`Failed to parse auth headless parameters: ${err}`);
+  }
 }
 
 function getOAuthProviderKeys(currentEnvSpecificValues, resourceParams) {
