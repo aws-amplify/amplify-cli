@@ -8,6 +8,11 @@
   },
   "exclude": [
     "coverage",
-    "lib"
+    "lib",
+    "src/__tests__"
+  ],
+  "references": [
+    {"path": "../amplify-headless-interface"},
+    {"path": "../graphql-transformer-core"}
   ]
 }

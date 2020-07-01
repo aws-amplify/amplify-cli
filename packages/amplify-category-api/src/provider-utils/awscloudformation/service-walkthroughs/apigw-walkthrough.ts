@@ -1,18 +1,19 @@
-const inquirer = require('inquirer');
-const pathLib = require('path');
-const fs = require('fs-extra');
+import inquirer from 'inquirer';
+import path from 'path';
+import fs from 'fs-extra';
+import uuid from 'uuid';
+import { rootAssetDir } from '../aws-constants';
+import { validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
 
 const category = 'api';
 const serviceName = 'API Gateway';
 const parametersFileName = 'api-params.json';
 const cfnParametersFilename = 'parameters.json';
-const { rootAssetDir } = require('..');
-const uuid = require('uuid');
 
-async function serviceWalkthrough(context, defaultValuesFilename) {
+export async function serviceWalkthrough(context, defaultValuesFilename) {
   const { amplify } = context;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = require(defaultValuesSrc);
+  const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
 
   let answers = {
@@ -25,11 +26,11 @@ async function serviceWalkthrough(context, defaultValuesFilename) {
   return pathFlow(context, answers);
 }
 
-async function updateWalkthrough(context, defaultValuesFilename) {
+export async function updateWalkthrough(context, defaultValuesFilename) {
   const { amplify } = context;
   const { allResources } = await context.amplify.getResourceStatus();
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = require(defaultValuesSrc);
+  const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
   const resources = allResources.filter(resource => resource.service === serviceName).map(resource => resource.resourceName);
 
@@ -40,7 +41,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
     return;
   }
 
-  let answers = {
+  let answers: any = {
     paths: [],
   };
 
@@ -73,8 +74,8 @@ async function updateWalkthrough(context, defaultValuesFilename) {
   }
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = pathLib.join(projectBackendDirPath, category, updateApi.resourceName);
-  const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
+  const resourceDirPath = path.join(projectBackendDirPath, category, updateApi.resourceName as string);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   let parameters;
   try {
     parameters = context.amplify.readJsonFile(parametersFilePath);
@@ -134,14 +135,15 @@ async function updateWalkthrough(context, defaultValuesFilename) {
   return updatedResult;
 }
 
-async function pathFlow(context, answers, currentPath) {
+async function pathFlow(context, answers, currentPath?) {
   const pathsAnswer = await askPaths(context, answers, currentPath);
   answers = { ...answers, paths: pathsAnswer.paths, functionArns: pathsAnswer.functionArns };
   const { dependsOn } = pathsAnswer;
 
-  const privacy = {};
-  privacy.auth = pathsAnswer.paths.filter(path => path.privacy.auth && path.privacy.auth.length > 0).length;
-  privacy.unauth = pathsAnswer.paths.filter(path => path.privacy.unauth && path.privacy.unauth.length > 0).length;
+  const privacy = {
+    auth: pathsAnswer.paths.filter(path => path.privacy.auth && path.privacy.auth.length > 0).length,
+    unauth: pathsAnswer.paths.filter(path => path.privacy.unauth && path.privacy.unauth.length > 0).length,
+  };
 
   answers = { ...answers, privacy, dependsOn };
 
@@ -165,7 +167,7 @@ async function pathFlow(context, answers, currentPath) {
 async function askApiNames(context, defaults) {
   const { amplify } = context;
   // TODO: Check if default name is already taken
-  const answer = await inquirer.prompt([
+  const answer: { apiName?: string; resourceName: string } = await inquirer.prompt([
     {
       name: 'resourceName',
       type: 'input',
@@ -204,8 +206,8 @@ async function askPrivacy(context, answers, currentPath) {
 
     let permissionSelected = 'Auth/Guest Users';
     let allowUnauthenticatedIdentities = false;
-    const privacy = {};
-    const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+    const privacy: any = {};
+    const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
 
     if (userPoolGroupList.length > 0) {
       do {
@@ -486,39 +488,6 @@ async function askPaths(context, answers, currentPath) {
   return { paths, dependsOn, functionArns };
 }
 
-function validatePathName(name, paths) {
-  if (name.length === 0) {
-    return 'The path must not be empty';
-  }
-
-  if (name.charAt(name.length - 1) === '/') {
-    return 'The path must not end with /';
-  }
-
-  if (name.charAt(0) !== '/') {
-    return 'The path must begin with / e.g. /items';
-  }
-
-  // Matches parameterized paths such as /book/{isbn}/page/{pageNum}
-  // This regex also catches the above conditions, but those are left in to provide clearer error messages.
-  if (!/^(?:\/(?:[a-zA-Z0-9\-]+|{[a-zA-Z0-9\-]+}))+$/.test(name)) {
-    return 'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.';
-  }
-
-  const split = name.split('/').filter(sub => sub !== ''); // because name starts with a /, this filters out the first empty element
-  // Check if any prefix of this path matches an existing path
-  let subpath = '';
-  const subMatch = split.some(sub => {
-    subpath = `${subpath}/${sub}`;
-    return paths.map(path => path.name).find(name => name === subpath) !== undefined;
-  });
-  if (subMatch) {
-    return `An existing path already matches this sub-path: ${subpath}`;
-  }
-
-  return true;
-}
-
 async function findDependsOn(paths, context) {
   // go thru all paths and add lambdaFunctions to dependsOn and functionArns uniquely
   const dependsOn = [];
@@ -614,10 +583,10 @@ async function askLambdaSource(context, functionType, path, currentPath) {
   }
 }
 
-function newLambdaFunction(context, path) {
+async function newLambdaFunction(context, path) {
   let add;
   try {
-    ({ add } = require('amplify-category-function'));
+    ({ add } = await import('amplify-category-function'));
   } catch (e) {
     throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
   }
@@ -639,12 +608,6 @@ function newLambdaFunction(context, path) {
     context.print.success('Successfully added the Lambda function locally');
     return { lambdaFunction: resourceName };
   });
-}
-
-// Convert a CloudFormation parameterized path to an ExpressJS parameterized path
-// /library/{libraryId}/book/{isbn} => /library/:libraryId/book/:isbn
-function formatCFNPathParamsForExpressJs(path) {
-  return path.replace(/{([a-zA-Z0-9\-]+)}/g, ':$1');
 }
 
 async function askLambdaFromProject(context, currentPath) {
@@ -705,12 +668,12 @@ async function askLambdaArn(context, currentPath) {
   };
 }
 
-async function migrate(context, projectPath, resourceName) {
+export async function migrate(context, projectPath, resourceName) {
   const { amplify } = context;
 
   const targetDir = amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = pathLib.join(targetDir, category, resourceName);
-  const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
+  const resourceDirPath = path.join(targetDir, category, resourceName);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   let parameters;
   try {
     parameters = amplify.readJsonFile(parametersFilePath);
@@ -739,7 +702,7 @@ async function migrate(context, projectPath, resourceName) {
     },
   };
 
-  const cfnParametersFilePath = pathLib.join(resourceDirPath, cfnParametersFilename);
+  const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
   const jsonString = JSON.stringify(cfnParameters, null, 4);
   fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
 }
@@ -771,7 +734,7 @@ function convertToCRUD(privacy) {
   return privacy;
 }
 
-function getIAMPolicies(resourceName, crudOptions) {
+export function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
@@ -821,10 +784,3 @@ function getIAMPolicies(resourceName, crudOptions) {
 
   return { policy, attributes };
 }
-
-module.exports = {
-  serviceWalkthrough,
-  updateWalkthrough,
-  migrate,
-  getIAMPolicies,
-};
