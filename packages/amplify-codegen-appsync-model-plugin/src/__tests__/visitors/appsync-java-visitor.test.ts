@@ -163,6 +163,135 @@ describe('AppSyncModelVisitor', () => {
     expect(() => validateJava(generatedCode)).not.toThrow();
     expect(generatedCode).toMatchSnapshot();
   });
+
+  describe('Model with Auth', () => {
+    it('should generate models with owner auth', () => {
+      const schema = /* GraphQL */ `
+        type simpleOwnerAuth @model @auth(rules: [{ allow: owner }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'simpleOwnerAuth');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate models with owner auth allowing others to read', () => {
+      const schema = /* GraphQL */ `
+        type allowRead @model @auth(rules: [{ allow: owner, operations: [create, delete, update] }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'allowRead');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate models with static groups', () => {
+      const schema = /* GraphQL */ `
+        type staticGroups @model @auth(rules: [{ allow: groups, groups: ["Admin"] }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'staticGroups');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate models with dynamic groups', () => {
+      const schema = /* GraphQL */ `
+        type dynamicGroups @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'dynamicGroups');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate models with public authorization', () => {
+      const schema = /* GraphQL */ `
+        type publicType @model @auth(rules: [{ allow: public }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'publicType');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate models with private authorization', () => {
+      const schema = /* GraphQL */ `
+        type privateType @model @auth(rules: [{ allow: private }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'privateType');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate models with private authorization and field auth', () => {
+      const schema = /* GraphQL */ `
+        type privateType @model @auth(rules: [{ allow: private }]) {
+          id: ID!
+          name: String
+          bar: String @auth(rules: [{ allow: private, operations: [create, update] }])
+        }
+      `;
+      const visitor = getVisitor(schema, 'privateType');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate models with custom claims', () => {
+      const schema = /* GraphQL */ `
+        type customClaim @model @auth(rules: [{ allow: owner, identityClaim: "user_id" }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'customClaim');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate models with custom group claims', () => {
+      const schema = /* GraphQL */ `
+        type customClaim @model @auth(rules: [{ allow: groups, groups: ["Moderator"], groupClaim: "user_groups" }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'customClaim');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+  });
+
   describe('Non model type', () => {
     const schema = /* GraphQL */ `
       type Landmark @model {

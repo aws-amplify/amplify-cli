@@ -1,5 +1,1771 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`AppSyncModelVisitor Model with Auth should generate models with custom claims 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the customClaim type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"customClaims\\", authRules = {
+  @AuthRule(allow = AuthStrategy.OWNER, ownerField = \\"owner\\", identityClaim = \\"user_id\\", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
+})
+public final class customClaim implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private customClaim(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      customClaim customClaim = (customClaim) obj;
+      return ObjectsCompat.equals(getId(), customClaim.getId()) &&
+              ObjectsCompat.equals(getName(), customClaim.getName()) &&
+              ObjectsCompat.equals(getBar(), customClaim.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"customClaim {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static customClaim justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new customClaim(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    customClaim build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public customClaim build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new customClaim(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Model with Auth should generate models with custom group claims 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the customClaim type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"customClaims\\", authRules = {
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = \\"user_groups\\", groups = { \\"Moderator\\" }, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
+})
+public final class customClaim implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private customClaim(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      customClaim customClaim = (customClaim) obj;
+      return ObjectsCompat.equals(getId(), customClaim.getId()) &&
+              ObjectsCompat.equals(getName(), customClaim.getName()) &&
+              ObjectsCompat.equals(getBar(), customClaim.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"customClaim {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static customClaim justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new customClaim(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    customClaim build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public customClaim build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new customClaim(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Model with Auth should generate models with dynamic groups 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the dynamicGroups type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"dynamicGroups\\", authRules = {
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = \\"cognito:groups\\", groupsField = \\"groups\\", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
+})
+public final class dynamicGroups implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private dynamicGroups(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      dynamicGroups dynamicGroups = (dynamicGroups) obj;
+      return ObjectsCompat.equals(getId(), dynamicGroups.getId()) &&
+              ObjectsCompat.equals(getName(), dynamicGroups.getName()) &&
+              ObjectsCompat.equals(getBar(), dynamicGroups.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"dynamicGroups {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static dynamicGroups justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new dynamicGroups(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    dynamicGroups build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public dynamicGroups build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new dynamicGroups(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Model with Auth should generate models with owner auth 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the simpleOwnerAuth type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"simpleOwnerAuths\\", authRules = {
+  @AuthRule(allow = AuthStrategy.OWNER, ownerField = \\"owner\\", identityClaim = \\"cognito:username\\", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
+})
+public final class simpleOwnerAuth implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private simpleOwnerAuth(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      simpleOwnerAuth simpleOwnerAuth = (simpleOwnerAuth) obj;
+      return ObjectsCompat.equals(getId(), simpleOwnerAuth.getId()) &&
+              ObjectsCompat.equals(getName(), simpleOwnerAuth.getName()) &&
+              ObjectsCompat.equals(getBar(), simpleOwnerAuth.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"simpleOwnerAuth {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static simpleOwnerAuth justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new simpleOwnerAuth(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    simpleOwnerAuth build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public simpleOwnerAuth build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new simpleOwnerAuth(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Model with Auth should generate models with owner auth allowing others to read 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the allowRead type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"allowReads\\", authRules = {
+  @AuthRule(allow = AuthStrategy.OWNER, ownerField = \\"owner\\", identityClaim = \\"cognito:username\\", operations = { ModelOperation.CREATE, ModelOperation.DELETE, ModelOperation.UPDATE })
+})
+public final class allowRead implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private allowRead(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      allowRead allowRead = (allowRead) obj;
+      return ObjectsCompat.equals(getId(), allowRead.getId()) &&
+              ObjectsCompat.equals(getName(), allowRead.getName()) &&
+              ObjectsCompat.equals(getBar(), allowRead.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"allowRead {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static allowRead justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new allowRead(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    allowRead build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public allowRead build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new allowRead(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Model with Auth should generate models with private authorization 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the privateType type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"privateTypes\\", authRules = {
+  @AuthRule(allow = AuthStrategy.PRIVATE)
+})
+public final class privateType implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private privateType(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      privateType privateType = (privateType) obj;
+      return ObjectsCompat.equals(getId(), privateType.getId()) &&
+              ObjectsCompat.equals(getName(), privateType.getName()) &&
+              ObjectsCompat.equals(getBar(), privateType.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"privateType {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static privateType justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new privateType(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    privateType build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public privateType build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new privateType(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Model with Auth should generate models with private authorization and field auth 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the privateType type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"privateTypes\\", authRules = {
+  @AuthRule(allow = AuthStrategy.PRIVATE)
+})
+public final class privateType implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\", authRules = {
+    @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.UPDATE })
+  }) String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private privateType(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      privateType privateType = (privateType) obj;
+      return ObjectsCompat.equals(getId(), privateType.getId()) &&
+              ObjectsCompat.equals(getName(), privateType.getName()) &&
+              ObjectsCompat.equals(getBar(), privateType.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"privateType {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static privateType justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new privateType(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    privateType build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public privateType build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new privateType(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Model with Auth should generate models with public authorization 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the publicType type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"publicTypes\\", authRules = {
+  @AuthRule(allow = AuthStrategy.PUBLIC)
+})
+public final class publicType implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private publicType(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      publicType publicType = (publicType) obj;
+      return ObjectsCompat.equals(getId(), publicType.getId()) &&
+              ObjectsCompat.equals(getName(), publicType.getName()) &&
+              ObjectsCompat.equals(getBar(), publicType.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"publicType {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static publicType justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new publicType(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    publicType build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public publicType build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new publicType(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor Model with Auth should generate models with static groups 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the staticGroups type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"staticGroups\\", authRules = {
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = \\"cognito:groups\\", groups = { \\"Admin\\" }, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
+})
+public final class staticGroups implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField NAME = field(\\"name\\");
+  public static final QueryField BAR = field(\\"bar\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String name;
+  private final @ModelField(targetType=\\"String\\") String bar;
+  public String getId() {
+      return id;
+  }
+  
+  public String getName() {
+      return name;
+  }
+  
+  public String getBar() {
+      return bar;
+  }
+  
+  private staticGroups(String id, String name, String bar) {
+    this.id = id;
+    this.name = name;
+    this.bar = bar;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      staticGroups staticGroups = (staticGroups) obj;
+      return ObjectsCompat.equals(getId(), staticGroups.getId()) &&
+              ObjectsCompat.equals(getName(), staticGroups.getName()) &&
+              ObjectsCompat.equals(getBar(), staticGroups.getBar());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getName())
+      .append(getBar())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"staticGroups {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
+      .append(\\"bar=\\" + String.valueOf(getBar()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static staticGroups justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new staticGroups(
+      id,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      name,
+      bar);
+  }
+  public interface BuildStep {
+    staticGroups build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep name(String name);
+    BuildStep bar(String bar);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String name;
+    private String bar;
+    @Override
+     public staticGroups build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new staticGroups(
+          id,
+          name,
+          bar);
+    }
+    
+    @Override
+     public BuildStep name(String name) {
+        this.name = name;
+        return this;
+    }
+    
+    @Override
+     public BuildStep bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String name, String bar) {
+      super.id(id);
+      super.name(name)
+        .bar(bar);
+    }
+    
+    @Override
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
+    }
+    
+    @Override
+     public CopyOfBuilder bar(String bar) {
+      return (CopyOfBuilder) super.bar(bar);
+    }
+  }
+  
+}
+"
+`;
+
 exports[`AppSyncModelVisitor Non model type should generate class for model types with non model fields 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
