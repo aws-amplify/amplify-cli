@@ -931,6 +931,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - master
                 - beta
                 - split-test
@@ -940,6 +941,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - master
                 - split-test
           requires:
@@ -948,6 +950,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - master
                 - split-test
           requires:
@@ -989,6 +992,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - release
                 - master
                 - beta
