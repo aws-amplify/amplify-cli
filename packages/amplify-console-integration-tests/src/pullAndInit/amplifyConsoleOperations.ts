@@ -1,4 +1,4 @@
-import { Amplify } from 'aws-sdk';
+import { Amplify, CloudFormation } from 'aws-sdk';
 import moment from 'moment';
 
 import { getConfigFromProfile } from '../profile-helper';
@@ -6,6 +6,11 @@ import { getConfigFromProfile } from '../profile-helper';
 export function getConfiguredAmplifyClient() {
   const config = getConfigFromProfile();
   return new Amplify(config);
+}
+
+export function getConfiguredCFNClient() {
+  const config = getConfigFromProfile();
+  return new CloudFormation(config);
 }
 
 //delete all existing amplify console projects
@@ -17,6 +22,11 @@ export async function deleteAllAmplifyProjects(amplifyClient?: any) {
   do {
     token = await PaginatedDeleteProjects(amplifyClient, token);
   } while (token);
+}
+
+export async function deleteAmplifyStack(stackName: string, cfnClient?: any) {
+  if (!cfnClient) cfnClient = getConfiguredCFNClient();
+  await cfnClient.deleteStack({ StackName: stackName }).promise();
 }
 
 async function PaginatedDeleteProjects(amplifyClient: any, token?: any) {
