@@ -1024,12 +1024,12 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-            - layer-amplify_e2e_tests
+            - hostingPROD-amplify_e2e_tests
       - hosting-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-            - hostingPROD-amplify_e2e_tests
+            - layer-amplify_e2e_tests
       - init-amplify_e2e_tests:
           filters: *ref_2
           requires:

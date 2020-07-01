@@ -36,13 +36,13 @@ export function validatePushedVersion(projRoot: string, layerName: string, versi
   return false;
 }
 
-export function addLayer(cwd: string, settings?: any) {
+export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false) {
   const defaultSettings = {
     permissions: [],
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    const chain: ExecutionContext = spawn(getCLIPath(), ['add', 'function'], { cwd, stripColors: true })
+    const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to add:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn() // Layer
