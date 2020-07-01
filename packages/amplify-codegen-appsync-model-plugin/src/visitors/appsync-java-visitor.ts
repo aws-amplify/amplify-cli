@@ -740,7 +740,8 @@ export class AppSyncModelJavaVisitor<
       switch (directive.name) {
         case 'model':
           const modelArgs: string[] = [];
-          const authRules = this.generateAuthRules(model);
+          const authDirectives: AuthDirective[] = (model.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+          const authRules = this.generateAuthRules(authDirectives);
           modelArgs.push(`pluralName = "${this.pluralizeModelName(model)}"`);
           if (authRules.length) {
             modelArgs.push(`authRules = ${authRules}`);
@@ -760,36 +761,46 @@ export class AppSyncModelJavaVisitor<
     return ['SuppressWarnings("all")', ...annotations].filter(annotation => annotation);
   }
 
-  protected generateAuthRules(model: CodeGenModel): string {
-    const authDirectives: AuthDirective[] = (model.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+  protected generateAuthRules(authDirectives: AuthDirective[]): string {
     const rules: string[] = [];
     authDirectives.forEach(directive => {
       directive.arguments?.rules.forEach(rule => {
         const authRule = [];
-        switch (rule.allow) {
-          case AuthStrategy.owner:
-            authRule.push('allow = AuthStrategy.OWNER');
+        if (rule.allow === AuthStrategy.groups) {
+          authRule.push('allow = AuthStrategy.GROUPS');
+          if (rule.groupClaim) {
+            authRule.push(`groupClaim = "${rule.groupClaim}"`);
+          }
+          if (rule.groups) {
+            authRule.push(`groups = { ${rule.groups?.map(group => `"${group}"`).join(', ')} }`);
+          } else {
+            authRule.push(`groupsField = "${rule.groupField}"`);
+          }
+        } else {
+          switch (rule.allow) {
+            case AuthStrategy.owner:
+              authRule.push('allow = AuthStrategy.OWNER');
+              break;
+            case AuthStrategy.private:
+              authRule.push('allow = AuthStrategy.PRIVATE');
+              break;
+            case AuthStrategy.public:
+              authRule.push('allow = AuthStrategy.PUBLIC');
+              break;
+            default:
+              printWarning(`Model has auth with authStrategy ${rule.allow} of which is not yet supported in DataStore.`);
+              return;
+          }
+          if (rule.ownerField) {
             authRule.push(`ownerField = "${rule.ownerField}"`);
-            if (rule.identityClaim) {
-              authRule.push(`identityClaim = "${rule.identityClaim}"`);
-            }
-            break;
-          case AuthStrategy.groups:
-            authRule.push('allow = AuthStrategy.GROUPS');
-            if (rule.groupClaim) {
-              authRule.push(`groupClaim = "${rule.groupClaim}"`);
-            }
-            if (rule.groups) {
-              authRule.push(`groups = { ${rule.groups?.map(group => `"${group}"`).join(', ')} }`);
-            } else {
-              authRule.push(`groupsField = "${rule.groupField}"`);
-            }
-            break;
-          default:
-            printWarning(`Model ${model.name} has auth with authStrategy ${rule.allow} of which is not yet supported in DataStore.`);
-            return;
+          }
+          if (rule.identityClaim) {
+            authRule.push(`identityClaim = "${rule.identityClaim}"`);
+          }
         }
-        authRule.push(`operations = { ${rule.operations?.map(op => `ModelOperation.${op.toUpperCase()}`).join(', ')} }`);
+        if (rule.operations) {
+          authRule.push(`operations = { ${rule.operations?.map(op => `ModelOperation.${op.toUpperCase()}`).join(', ')} }`);
+        }
         rules.push(`@AuthRule(${authRule.join(', ')})`);
       });
     });
@@ -807,7 +818,13 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateModelFieldAnnotation(field: CodeGenField): string {
-    const annotationArgs: string[] = [`targetType="${field.type}"`, !field.isNullable ? 'isRequired = true' : ''].filter(arg => arg);
+    const authDirectives: AuthDirective[] = (field.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+    const authRules = this.generateAuthRules(authDirectives);
+    const annotationArgs: string[] = [
+      `targetType="${field.type}"`,
+      !field.isNullable ? 'isRequired = true' : '',
+      authRules.length ? `authRules = ${authRules}` : '',
+    ].filter(arg => arg);
 
     return `ModelField${annotationArgs.length ? `(${annotationArgs.join(', ')})` : ''}`;
   }
