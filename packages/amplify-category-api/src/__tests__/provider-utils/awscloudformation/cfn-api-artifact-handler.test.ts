@@ -1,11 +1,11 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { ApiArtifactHandler } from '../../../provider-utils/ApiArtifactHandler';
-import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformation/CfnApiArtifactHandler';
+import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
+import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { AddApiRequest } from 'amplify-headless-interface/src';
-import { category } from '../../../categoryConstants';
+import { category } from '../../../category-constants';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
-import { rootAssetDir } from '../../../provider-utils/awscloudformation/awsConstants';
+import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
 
 jest.mock('fs-extra');
 
@@ -14,7 +14,7 @@ jest.mock('graphql-transformer-core', () => ({
   writeTransformerConfiguration: jest.fn(),
 }));
 
-const fs_mock = fs as jest.Mocked<typeof fs>;
+const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
 const writeTransformerConfiguration_mock = writeTransformerConfiguration as jest.MockedFunction<typeof writeTransformerConfiguration>;
 const backendDirPathStub = 'backendDirPath';
 

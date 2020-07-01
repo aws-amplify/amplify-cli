@@ -1,7 +1,7 @@
 import {
   authConfigToAppSyncAuthType,
   appSyncAuthTypeToAuthConfig,
-} from '../../../../provider-utils/awscloudformation/utils/authConfigToAppSyncAuthTypeBiDiMapper';
+} from '../../../../provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import {
   AppSyncAPIKeyAuthType,
   AppSyncAWSIAMAuthType,

@@ -1,4 +1,4 @@
-import { validatePathName, formatCFNPathParamsForExpressJs } from '../../../../provider-utils/awscloudformation/utils/restApiPathUtils';
+import { validatePathName, formatCFNPathParamsForExpressJs } from '../../../../provider-utils/awscloudformation/utils/rest-api-path-utils';
 
 const stubOtherPaths = [{ name: '/other/path' }, { name: '/sub/path' }];
 

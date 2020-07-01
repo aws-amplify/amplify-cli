@@ -1,10 +1,10 @@
-import { serviceWalkthroughResultToAddApiRequest } from '../../../../provider-utils/awscloudformation/utils/serviceWalkthroughResultToAddApiRequest';
+import { serviceWalkthroughResultToAddApiRequest } from '../../../../provider-utils/awscloudformation/utils/service-walkthrough-result-to-add-api-request';
 import { AppSyncAuthType, ConflictResolution } from 'amplify-headless-interface/src';
 
-jest.mock('../../../../provider-utils/awscloudformation/utils/authConfigToAppSyncAuthTypeBiDiMapper', () => ({
+jest.mock('../../../../provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper', () => ({
   authConfigToAppSyncAuthType: jest.fn((): AppSyncAuthType => ({ mode: 'AWS_IAM' })),
 }));
-jest.mock('../../../../provider-utils/awscloudformation/utils/resolverConfigToConflictResolutionBiDiMapper', () => ({
+jest.mock('../../../../provider-utils/awscloudformation/utils/resolver-config-to-conflict-resolution-bi-di-mapper', () => ({
   resolverConfigToConflictResolution: jest.fn((): ConflictResolution => ({})),
 }));
 
