@@ -913,6 +913,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - master
                 - graphql_e2e_testing
           requires:
@@ -922,6 +923,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - master
                 - beta
           requires:
@@ -931,6 +933,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - master
                 - beta
                 - split-test
@@ -940,6 +943,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - master
                 - split-test
           requires:
@@ -948,6 +952,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - master
                 - split-test
           requires:
@@ -989,6 +994,7 @@ workflows:
           filters:
             branches:
               only:
+                - headless-staging
                 - release
                 - master
                 - beta
@@ -996,6 +1002,7 @@ workflows:
           filters: &ref_2
             branches:
               only:
+                - headless-staging
                 - master
                 - split-test
           requires:
