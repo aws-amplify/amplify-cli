@@ -21,11 +21,18 @@ function getProjectDetails() {
     teamProviderInfo = readJsonFile(teamProviderFilePath);
   }
 
+  let tags;
+  const tagsFilePath = pathManager.getTagsConfigFilePath();
+  if (fs.existsSync(tagsFilePath)) {
+    tags = tagsFilePath;
+  }
+
   return {
     projectConfig,
     amplifyMeta,
     localEnvInfo,
     teamProviderInfo,
+    tags,
   };
 }
 

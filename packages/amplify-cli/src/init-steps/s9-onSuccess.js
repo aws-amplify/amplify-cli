@@ -57,6 +57,7 @@ async function run(context) {
 function generateLocalRuntimeFiles(context) {
   generateLocalEnvInfoFile(context);
   generateAmplifyMetaFile(context);
+  generateLocalTagsFile(context);
 }
 
 function generateLocalEnvInfoFile(context) {
@@ -64,6 +65,14 @@ function generateLocalEnvInfoFile(context) {
   const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
   const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
   fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+}
+
+function generateLocalTagsFile(context) {
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  const tagsArr = context.exeInfo.tags;
+  const tagsFilePath = context.amplify.pathManager.getTagsConfigFilePath(projectPath);
+  const jsonString = JSON.stringify(tagsArr, null, 4);
+  fs.writeFileSync(tagsFilePath, jsonString, 'utf-8');
 }
 
 function generateAmplifyMetaFile(context) {
