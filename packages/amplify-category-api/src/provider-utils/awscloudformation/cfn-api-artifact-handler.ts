@@ -1,5 +1,5 @@
 import { ApiArtifactHandler } from '../api-artifact-handler';
-import { AddApiRequest, ConflictResolution, AppSyncServiceConfiguration, ResolutionStrategy } from 'amplify-headless-interface';
+import { AddApiRequest, ConflictResolution, AppSyncServiceConfiguration, ResolutionStrategy, UpdateApiRequest } from 'amplify-headless-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import { category } from '../../category-constants';
@@ -25,7 +25,7 @@ const defaultCfnParameters = (apiName: string) => ({
   DynamoDBEnableServerSideEncryption: false,
 });
 class CfnApiArtifactHandler implements ApiArtifactHandler {
-  private context: any;
+  private readonly context: any;
 
   constructor(context) {
     this.context = context;
@@ -33,8 +33,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   createArtifacts = async (request: AddApiRequest): Promise<string> => {
     const serviceConfig = request.serviceConfiguration;
-    const backendDir = this.context.amplify.pathManager.getBackendDirPath();
-    const resourceDir = path.join(backendDir, category, serviceConfig.apiName);
+    const resourceDir = this.getResourceDir(serviceConfig.apiName);
 
     // Ensure the project directory exists and create the stacks & resolvers directories.
     fs.ensureDirSync(resourceDir);
@@ -61,7 +60,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     );
 
     // write the template buffer to the project folder
-    fs.writeFileSync(path.join(resourceDir, schemaFileName), serviceConfig.transformSchema);
+    this.writeSchema(resourceDir, serviceConfig.transformSchema);
 
     const authConfig = this.extractAuthConfig(serviceConfig);
 
@@ -74,6 +73,42 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig));
     return serviceConfig.apiName;
   };
+
+  updateArtifacts = async (request: UpdateApiRequest): Promise<string> => {
+    const updates = request.serviceModification;
+    const apiName = this.getExistingApiName();
+    const resourceDir = this.getResourceDir(apiName);
+    if (!apiName) {
+      throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`)
+    }
+    if (updates.transformSchema) {
+      this.writeSchema(resourceDir, updates.transformSchema);
+    }
+    if (updates.conflictResolution) {
+      updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
+      await writeResolverConfig(updates.conflictResolution, resourceDir);
+    }
+    if (updates.defaultAuthType) {
+
+    }
+    if (updates.additionalAuthTypes) {
+
+    }
+    return apiName;
+  }
+
+  private getExistingApiName = (): string | undefined => {
+    const entry = Object.entries(this.context.amplify.getProjectMeta().api || {}).find(([, value]) => (value as any).service === 'AppSync');
+    if (entry) {
+      return entry[0];
+    }
+  }
+
+  private writeSchema = (resourceDir: string, schema: string) => {
+    fs.writeFileSync(path.join(resourceDir, schemaFileName), schema);
+  }
+
+  private getResourceDir = (apiName: string) => path.join(this.context.amplify.pathManager.getBackendDirPath(), category, apiName);
 
   private createAmplifyMeta = authConfig => ({
     service: 'AppSync',
