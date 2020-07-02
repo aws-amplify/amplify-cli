@@ -8,6 +8,7 @@ import {
   LOADER_IMPORT_PACKAGES,
   CONNECTION_RELATIONSHIP_IMPORTS,
   NON_MODEL_CLASS_IMPORT_PACKAGES,
+  AUTH_IMPORT_PACKAGES,
 } from '../configs/java-config';
 import { JAVA_TYPE_IMPORT_MAP } from '../scalars';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
@@ -740,10 +741,11 @@ export class AppSyncModelJavaVisitor<
       switch (directive.name) {
         case 'model':
           const modelArgs: string[] = [];
-          const authDirectives: AuthDirective[] = (model.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+          const authDirectives: AuthDirective[] = model.directives.filter(d => d.name === 'auth') as AuthDirective[];
           const authRules = this.generateAuthRules(authDirectives);
           modelArgs.push(`pluralName = "${this.pluralizeModelName(model)}"`);
           if (authRules.length) {
+            AUTH_IMPORT_PACKAGES.forEach(authPackage => this.additionalPackages.add(authPackage));
             modelArgs.push(`authRules = ${authRules}`);
           }
           return `ModelConfig(${modelArgs.join(', ')})`;
@@ -766,37 +768,49 @@ export class AppSyncModelJavaVisitor<
     authDirectives.forEach(directive => {
       directive.arguments?.rules.forEach(rule => {
         const authRule = [];
-        if (rule.allow === AuthStrategy.groups) {
-          authRule.push('allow = AuthStrategy.GROUPS');
-          if (rule.groupClaim) {
-            authRule.push(`groupClaim = "${rule.groupClaim}"`);
-          }
-          if (rule.groups) {
-            authRule.push(`groups = { ${rule.groups?.map(group => `"${group}"`).join(', ')} }`);
-          } else {
-            authRule.push(`groupsField = "${rule.groupField}"`);
-          }
-        } else {
-          switch (rule.allow) {
-            case AuthStrategy.owner:
-              authRule.push('allow = AuthStrategy.OWNER');
-              break;
-            case AuthStrategy.private:
-              authRule.push('allow = AuthStrategy.PRIVATE');
-              break;
-            case AuthStrategy.public:
-              authRule.push('allow = AuthStrategy.PUBLIC');
-              break;
-            default:
-              printWarning(`Model has auth with authStrategy ${rule.allow} of which is not yet supported in DataStore.`);
-              return;
-          }
-          if (rule.ownerField) {
-            authRule.push(`ownerField = "${rule.ownerField}"`);
-          }
-          if (rule.identityClaim) {
-            authRule.push(`identityClaim = "${rule.identityClaim}"`);
-          }
+        switch (rule.allow) {
+          case AuthStrategy.owner:
+            authRule.push('allow = AuthStrategy.OWNER');
+            if (rule.ownerField) {
+              authRule.push(`ownerField = "${rule.ownerField}"`);
+            }
+            if (rule.identityClaim) {
+              authRule.push(`identityClaim = "${rule.identityClaim}"`);
+            }
+            break;
+          case AuthStrategy.private:
+            authRule.push('allow = AuthStrategy.PRIVATE');
+            if (rule.ownerField) {
+              authRule.push(`ownerField = "${rule.ownerField}"`);
+            }
+            if (rule.identityClaim) {
+              authRule.push(`identityClaim = "${rule.identityClaim}"`);
+            }
+            break;
+          case AuthStrategy.public:
+            authRule.push('allow = AuthStrategy.PUBLIC');
+            if (rule.ownerField) {
+              authRule.push(`ownerField = "${rule.ownerField}"`);
+            }
+            if (rule.identityClaim) {
+              authRule.push(`identityClaim = "${rule.identityClaim}"`);
+            }
+            break;
+          case AuthStrategy.groups:
+            authRule.push('allow = AuthStrategy.GROUPS');
+            if (rule.groupClaim) {
+              authRule.push(`groupClaim = "${rule.groupClaim}"`);
+            }
+            if (rule.groups) {
+              authRule.push(`groups = { ${rule.groups?.map(group => `"${group}"`).join(', ')} }`);
+            }
+            if (rule.groupField) {
+              authRule.push(`groupsField = "${rule.groupField}"`);
+            }
+            break;
+          default:
+            printWarning(`Model has auth with authStrategy ${rule.allow} of which is not yet supported`);
+            return;
         }
         if (rule.operations) {
           authRule.push(`operations = { ${rule.operations?.map(op => `ModelOperation.${op.toUpperCase()}`).join(', ')} }`);
@@ -818,13 +832,17 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateModelFieldAnnotation(field: CodeGenField): string {
-    const authDirectives: AuthDirective[] = (field.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+    const authDirectives: AuthDirective[] = field.directives.filter(d => d.name === 'auth') as AuthDirective[];
     const authRules = this.generateAuthRules(authDirectives);
     const annotationArgs: string[] = [
       `targetType="${field.type}"`,
       !field.isNullable ? 'isRequired = true' : '',
       authRules.length ? `authRules = ${authRules}` : '',
     ].filter(arg => arg);
+
+    if (authRules.length) {
+      AUTH_IMPORT_PACKAGES.forEach(authPackage => this.additionalPackages.add(authPackage));
+    }
 
     return `ModelField${annotationArgs.length ? `(${annotationArgs.join(', ')})` : ''}`;
   }

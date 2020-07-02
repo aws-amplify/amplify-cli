@@ -1,8 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with custom claims 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with custom claims 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -196,9 +199,12 @@ public final class customClaim implements Model {
 "
 `;
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with custom group claims 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with custom group claims 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -392,9 +398,12 @@ public final class customClaim implements Model {
 "
 `;
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with dynamic groups 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with dynamic groups 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -588,9 +597,12 @@ public final class dynamicGroups implements Model {
 "
 `;
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with owner auth 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with owner auth 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -784,9 +796,12 @@ public final class simpleOwnerAuth implements Model {
 "
 `;
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with owner auth allowing others to read 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with owner auth allowing others to read 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -980,9 +995,12 @@ public final class allowRead implements Model {
 "
 `;
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with private authorization 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with private authorization 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -1176,9 +1194,12 @@ public final class privateType implements Model {
 "
 `;
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with private authorization and field auth 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with private authorization and field auth 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -1374,9 +1395,12 @@ public final class privateType implements Model {
 "
 `;
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with public authorization 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with public authorization 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -1570,9 +1594,12 @@ public final class publicType implements Model {
 "
 `;
 
-exports[`AppSyncModelVisitor Model with Auth should generate models with static groups 1`] = `
+exports[`AppSyncModelVisitor Model with Auth should generate class with static groups 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
+import com.amplifyframework.core.model.AuthStrategy;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;

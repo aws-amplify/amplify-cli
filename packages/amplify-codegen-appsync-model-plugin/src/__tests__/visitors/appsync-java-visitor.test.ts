@@ -165,7 +165,7 @@ describe('AppSyncModelVisitor', () => {
   });
 
   describe('Model with Auth', () => {
-    it('should generate models with owner auth', () => {
+    it('should generate class with owner auth', () => {
       const schema = /* GraphQL */ `
         type simpleOwnerAuth @model @auth(rules: [{ allow: owner }]) {
           id: ID!
@@ -179,7 +179,7 @@ describe('AppSyncModelVisitor', () => {
       expect(generatedCode).toMatchSnapshot();
     });
 
-    it('should generate models with owner auth allowing others to read', () => {
+    it('should generate class with owner auth allowing others to read', () => {
       const schema = /* GraphQL */ `
         type allowRead @model @auth(rules: [{ allow: owner, operations: [create, delete, update] }]) {
           id: ID!
@@ -193,7 +193,7 @@ describe('AppSyncModelVisitor', () => {
       expect(generatedCode).toMatchSnapshot();
     });
 
-    it('should generate models with static groups', () => {
+    it('should generate class with static groups', () => {
       const schema = /* GraphQL */ `
         type staticGroups @model @auth(rules: [{ allow: groups, groups: ["Admin"] }]) {
           id: ID!
@@ -207,7 +207,7 @@ describe('AppSyncModelVisitor', () => {
       expect(generatedCode).toMatchSnapshot();
     });
 
-    it('should generate models with dynamic groups', () => {
+    it('should generate class with dynamic groups', () => {
       const schema = /* GraphQL */ `
         type dynamicGroups @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
           id: ID!
@@ -221,7 +221,7 @@ describe('AppSyncModelVisitor', () => {
       expect(generatedCode).toMatchSnapshot();
     });
 
-    it('should generate models with public authorization', () => {
+    it('should generate class with public authorization', () => {
       const schema = /* GraphQL */ `
         type publicType @model @auth(rules: [{ allow: public }]) {
           id: ID!
@@ -235,7 +235,7 @@ describe('AppSyncModelVisitor', () => {
       expect(generatedCode).toMatchSnapshot();
     });
 
-    it('should generate models with private authorization', () => {
+    it('should generate class with private authorization', () => {
       const schema = /* GraphQL */ `
         type privateType @model @auth(rules: [{ allow: private }]) {
           id: ID!
@@ -249,7 +249,7 @@ describe('AppSyncModelVisitor', () => {
       expect(generatedCode).toMatchSnapshot();
     });
 
-    it('should generate models with private authorization and field auth', () => {
+    it('should generate class with private authorization and field auth', () => {
       const schema = /* GraphQL */ `
         type privateType @model @auth(rules: [{ allow: private }]) {
           id: ID!
@@ -263,7 +263,7 @@ describe('AppSyncModelVisitor', () => {
       expect(generatedCode).toMatchSnapshot();
     });
 
-    it('should generate models with custom claims', () => {
+    it('should generate class with custom claims', () => {
       const schema = /* GraphQL */ `
         type customClaim @model @auth(rules: [{ allow: owner, identityClaim: "user_id" }]) {
           id: ID!
@@ -277,7 +277,7 @@ describe('AppSyncModelVisitor', () => {
       expect(generatedCode).toMatchSnapshot();
     });
 
-    it('should generate models with custom group claims', () => {
+    it('should generate class with custom group claims', () => {
       const schema = /* GraphQL */ `
         type customClaim @model @auth(rules: [{ allow: groups, groups: ["Moderator"], groupClaim: "user_groups" }]) {
           id: ID!
