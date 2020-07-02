@@ -17,7 +17,11 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
+<<<<<<< HEAD
 const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
+=======
+const { isValidJSON, isWithinLimit, checkDuplicates } = require('../../amplify-cli/src/extensions/amplify-helpers/tags-validation');
+>>>>>>> feat: complete functionality for tag support
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -40,6 +44,7 @@ async function run(context, resourceDefinition) {
     let projectDetails = context.amplify.getProjectDetails();
 
     validateCfnTemplates(context, resources);
+    validateTags(context);
 
     await packageResources(context, resources);
 
@@ -216,6 +221,20 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
         throw err;
       }
     }
+  }
+}
+
+function validateTags(context) {
+  const projectDetails = context.amplify.getProjectDetails();
+  const tagsJsonPath = projectDetails.tags;
+
+  try {
+    isValidJSON(tagsJsonPath);
+    isWithinLimit(tagsJsonPath);
+    checkDuplicates(tagsJsonPath);
+  } catch (err) {
+    context.print.error(`Invalid tags.json file: ${err.message}`);
+    throw err;
   }
 }
 
@@ -459,12 +478,17 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
         }
 
         if (resourceDetails.providerMetadata) {
+          // Getting the path to tags from the project details
+          // We can assume that the JSON file is already validated and ready to be parsed with no issues
+          const tagsJsonPath = projectDetails.tags;
+
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
           nestedStack.Resources[resourceKey] = {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
               TemplateURL: templateURL,
               Parameters: parameters,
+              Tags: JSON.parse(fs.readFileSync(tagsJsonPath, 'utf-8')),
             },
           };
         }
