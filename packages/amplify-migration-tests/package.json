@@ -29,7 +29,7 @@
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.19.3",
     "rimraf": "^3.0.0",
-    "uuid": "8.2.0"
+    "uuid": "^8.2.0"
   },
   "jest": {
     "verbose": false,
