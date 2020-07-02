@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, addLayer, invokeFunction, updateFunction, updateLayer } from 'amplify-e2e-core';
+import { addFunction, addLayer, invokeFunction, updateFunction, updateLayer, validateLayerMetadata } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
 
@@ -97,7 +97,6 @@ describe('amplify function migration', () => {
       runtimes: ['nodejs'],
     };
     await addLayer(projRoot, layerSettings, true);
-
     await updateFunction(
       projRoot,
       {
@@ -111,7 +110,8 @@ describe('amplify function migration', () => {
       },
       'nodejs',
     );
-
     await amplifyPushAuth(projRoot, true);
+    const meta = getProjectMeta(projRoot);
+    await validateLayerMetadata(layerName, meta);
   });
 });

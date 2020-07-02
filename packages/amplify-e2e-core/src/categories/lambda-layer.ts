@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
 import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '../../src';
+import { getLayerVersion, listVersions } from '../utils/sdk-calls';
 import { multiSelect } from '../utils/selectors';
 
 type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
@@ -9,21 +10,17 @@ type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
 const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
 
-export function validateLayerDir(projRoot: string, layerName: string, layerExists: boolean, runtimes: LayerRuntimes[]): boolean {
+export function validateLayerDir(projRoot: string, layerName: string, runtimes: LayerRuntimes[]): boolean {
   let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', layerName);
-  if (layerExists) {
-    let validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
-    if (runtimes && runtimes.length) {
-      for (let runtime of runtimes) {
-        if (!fs.pathExistsSync(path.join(layerDir, getLayerRuntimeInfo(runtime).path))) {
-          return false;
-        }
+  let validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
+  if (runtimes && runtimes.length) {
+    for (let runtime of runtimes) {
+      if (!fs.pathExistsSync(path.join(layerDir, getLayerRuntimeInfo(runtime).path))) {
+        return false;
       }
     }
-    return validDir;
-  } else {
-    return !fs.pathExistsSync(layerDir);
   }
+  return validDir;
 }
 
 export function validatePushedVersion(projRoot: string, layerName: string, version: number, permissions: Permission[]): boolean {
@@ -34,6 +31,22 @@ export function validatePushedVersion(projRoot: string, layerName: string, versi
     return _.difference(permissions, storedPermissions) === _.difference(storedPermissions, permissions);
   }
   return false;
+}
+
+export async function validateLayerMetadata(layerName: string, meta: any) {
+  const { Arn: arn, Region: region } = meta.function[layerName].output;
+  const runtimes = meta.function[layerName].runtimes;
+  const runtimeValues = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
+  const localVersions = Object.keys(meta.function[layerName].layerVersionMap);
+
+  expect(arn).toBeDefined();
+  expect(region).toBeDefined();
+  const data = await getLayerVersion(arn, region);
+  const { LayerVersions: Versions } = await listVersions(layerName, region);
+  const cloudVersions = Versions.map(version => version.Version);
+  expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
+  expect(data.LayerVersionArn).toEqual(arn);
+  expect(data.CompatibleRuntimes).toEqual(runtimeValues);
 }
 
 export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false) {
@@ -50,7 +63,7 @@ export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase:
       .sendLine(settings.layerName);
 
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
-    expect(settings.runtimes.length === runtimeDisplayNames.length).toBeTruthy();
+    expect(settings.runtimes.length === runtimeDisplayNames.length).toBe(true);
 
     chain.wait('Select up to 2 compatible runtimes:');
     multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
