@@ -3,9 +3,6 @@
 exports[`AppSyncModelVisitor Model with Auth should generate class with custom claims 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +10,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
@@ -202,9 +202,6 @@ public final class customClaim implements Model {
 exports[`AppSyncModelVisitor Model with Auth should generate class with custom group claims 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -212,7 +209,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
@@ -401,9 +401,6 @@ public final class customClaim implements Model {
 exports[`AppSyncModelVisitor Model with Auth should generate class with dynamic groups 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -411,7 +408,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
@@ -600,9 +600,6 @@ public final class dynamicGroups implements Model {
 exports[`AppSyncModelVisitor Model with Auth should generate class with owner auth 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -610,7 +607,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
@@ -799,9 +799,6 @@ public final class simpleOwnerAuth implements Model {
 exports[`AppSyncModelVisitor Model with Auth should generate class with owner auth allowing others to read 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -809,7 +806,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
@@ -998,9 +998,6 @@ public final class allowRead implements Model {
 exports[`AppSyncModelVisitor Model with Auth should generate class with private authorization 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -1008,7 +1005,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
@@ -1197,9 +1197,6 @@ public final class privateType implements Model {
 exports[`AppSyncModelVisitor Model with Auth should generate class with private authorization and field auth 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -1207,7 +1204,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
@@ -1398,9 +1398,6 @@ public final class privateType implements Model {
 exports[`AppSyncModelVisitor Model with Auth should generate class with public authorization 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -1408,7 +1405,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
@@ -1597,9 +1597,6 @@ public final class publicType implements Model {
 exports[`AppSyncModelVisitor Model with Auth should generate class with static groups 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.AuthStrategy;
-import com.amplifyframework.core.model.ModelOperation;
-import com.amplifyframework.core.model.annotations.AuthRule;
 
 import java.util.List;
 import java.util.UUID;
@@ -1607,7 +1604,10 @@ import java.util.Objects;
 
 import androidx.core.util.ObjectsCompat;
 
+import com.amplifyframework.core.model.AuthStrategy;
 import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.ModelOperation;
+import com.amplifyframework.core.model.annotations.AuthRule;
 import com.amplifyframework.core.model.annotations.Index;
 import com.amplifyframework.core.model.annotations.ModelConfig;
 import com.amplifyframework.core.model.annotations.ModelField;
