@@ -10,7 +10,7 @@ module.exports = {
     return amplify.removeResource(context, category, resourceName).catch(err => {
       context.print.info(err.stack);
       context.print.error('An error occurred when removing the analytics resource');
-      context.telemetry.emitError(err);
+      context.usageData.emitError(err);
     });
   },
 };

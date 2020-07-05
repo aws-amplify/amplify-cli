@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
-import { constructContext, persistContext, attachTelemetry } from './context-manager';
+import { constructContext, persistContext, attachUsageData } from './context-manager';
 import { print } from './context-extensions';
 import { executeCommand } from './execution-manager';
 import { Context } from './domain/context';
@@ -53,13 +53,13 @@ export async function run() {
     rewireDeprecatedCommands(input);
     const context = constructContext(pluginPlatform, input);
 
-    await attachTelemetry(context);
+    await attachUsageData(context);
     errorHandler = boundErrorHandler.bind(context);
     process.on('SIGINT', sigIntHandler.bind(context));
     await checkProjectConfigVersion(context);
-    context.telemetry.emitInvoke();
+    context.usageData.emitInvoke();
     await executeCommand(context);
-    context.telemetry.emitSuccess();
+    context.usageData.emitSuccess();
     persistContext(context);
     // no command supplied defaults to help, give update notification at end of execution
     if (input.command === 'help') {
@@ -81,10 +81,10 @@ export async function run() {
 }
 
 function boundErrorHandler(this: Context, e: Error) {
-  this.telemetry.emitError(e);
+  this.usageData.emitError(e);
 }
 function sigIntHandler(this: Context, e: any) {
-  this.telemetry.emitAbort();
+  this.usageData.emitAbort();
 }
 
 // entry from library call
@@ -111,12 +111,12 @@ export async function execute(input: Input): Promise<number> {
     }
 
     const context = await constructContext(pluginPlatform, input);
-    await attachTelemetry(context);
+    await attachUsageData(context);
     errorHandler = boundErrorHandler.bind(context);
     process.on('SIGINT', sigIntHandler.bind(context));
-    context.telemetry.emitInvoke();
+    context.usageData.emitInvoke();
     await executeCommand(context);
-    context.telemetry.emitSuccess();
+    context.usageData.emitSuccess();
     persistContext(context);
     return 0;
   } catch (e) {
