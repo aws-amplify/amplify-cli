@@ -83,7 +83,7 @@ module.exports = {
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the auth resource');
-        context.telemetry.emitError(err);
+        context.usageData.emitError(err);
       });
   },
 };

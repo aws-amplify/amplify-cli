@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import { init } from '../app-config';
 import { Context } from '../domain/context';
 import { Input } from '../domain/input';
-describe('test telemetry', () => {
+describe('test usageData', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });

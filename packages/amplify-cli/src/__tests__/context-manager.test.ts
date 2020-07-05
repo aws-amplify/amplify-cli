@@ -1,21 +1,20 @@
 import { Input } from '../domain/input';
 import { PluginPlatform } from '../domain/plugin-platform';
 import * as appConfig from '../app-config';
-import { constructContext, attachTelemetry } from '../context-manager';
+import { constructContext, attachUsageData } from '../context-manager';
 import { Context } from '../domain/context';
 import { PluginInfo } from '../domain/plugin-info';
 import { PluginManifest } from '../domain/plugin-manifest';
-import * as Telemetry from '../domain/amplify-telemetry';
-import { init } from '../app-config';
+import * as UsageData from '../domain/amplify-usageData';
 
-jest.mock('../domain/amplify-telemetry/', () => {
+jest.mock('../domain/amplify-usageData/', () => {
   return {
-    Telemetry: {
+    UsageData: {
       Instance: {
         init: jest.fn(),
       },
     },
-    NoTelemetry: {
+    NoUsageData: {
       Instance: {
         init: jest.fn(),
       },
@@ -24,7 +23,7 @@ jest.mock('../domain/amplify-telemetry/', () => {
 });
 jest.mock('../app-config');
 
-describe('test attachTelemetry', () => {
+describe('test attachUsageData', () => {
   const version = 'latestversion';
   const mockContext: Context = jest.genMockFromModule('../domain/context');
 
@@ -59,8 +58,8 @@ describe('test attachTelemetry', () => {
     };
     const mockedInit = appConfig.init as jest.Mock;
     mockedInit.mockReturnValue(returnValue);
-    attachTelemetry(mockContext);
-    expect(Telemetry.Telemetry.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
+    attachUsageData(mockContext);
+    expect(UsageData.UsageData.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
   });
 
   it('test with usage data enabled', () => {
@@ -73,7 +72,7 @@ describe('test attachTelemetry', () => {
     };
     const mockedInit = appConfig.init as jest.Mock;
     mockedInit.mockReturnValue(returnValue);
-    attachTelemetry(mockContext);
-    expect(Telemetry.NoTelemetry.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
+    attachUsageData(mockContext);
+    expect(UsageData.NoUsageData.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
   });
 });

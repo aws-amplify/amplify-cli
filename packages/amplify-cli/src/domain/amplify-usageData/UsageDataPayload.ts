@@ -2,7 +2,7 @@ import os from 'os';
 import { Input } from '../input';
 import { getLatestPayloadVersion } from './VersionManager';
 
-export class TelemetryPayload {
+export class UsageDataPayload {
   sessionUuid: String;
   installationUuid: String;
   amplifyCliVersion: String;
