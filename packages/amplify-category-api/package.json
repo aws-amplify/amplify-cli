@@ -19,6 +19,7 @@
   "dependencies": {
     "amplify-category-auth": "2.15.8",
     "amplify-category-function": "2.20.7",
+    "amplify-util-headless-input": "1.0.0",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
