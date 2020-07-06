@@ -155,49 +155,41 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo):
     return;
   }
 
+  const handler = await getHandler(plugin, context);
+  attachContextExtensions(context, plugin);
+  await raisePreEvent(context);
+  try {
+    await handler();
+  } catch (err) {
+    context.print.error('Command execution failed. Underlying error was:');
+    context.print.error(err.message);
+  }
+  await raisePostEvent(context);
+}
+
+const getHandler = async (pluginInfo: PluginInfo, context: any): Promise<() => Promise<void>> => {
+  const pluginModule = await import(pluginInfo.packageLocation);
   let commandName = constants.ExecuteAmplifyCommand;
-  let fallbackFn = legacyCommandExecutor;
+  let fallbackFn = () => legacyCommandExecutor(context, pluginInfo);
 
   if (isHeadlessCommand(context)) {
     commandName = constants.ExecuteAmplifyHeadlessCommand;
-    fallbackFn = () => context.print.error(`Headless mode is not implemented for ${plugin.packageName}`);
+    fallbackFn = () => context.print.error(`Headless mode is not implemented for ${pluginInfo.packageName}`);
   }
 
-  return executionHandler(context, plugin)
-    .forCommand(commandName)
-    .withFallback(fallbackFn)
-    .run();
-}
-
-const executionHandler = (context: Context, plugin: PluginInfo) => ({
-  forCommand: (commandName: string) => ({
-    withFallback: (fallbackFn: (context: Context, plugin: PluginInfo) => Promise<void>) => ({
-      run: async (): Promise<void> => {
-        const handler = getHandler(require(plugin.packageLocation), commandName);
-        await raisePreEvent(context);
-        if (!handler) {
-          await fallbackFn(context, plugin);
-        } else {
-          attachContextExtensions(context, plugin);
-          await handler(context);
-        }
-        await raisePostEvent(context);
-      },
-    }),
-  }),
-});
-
-const getHandler = (pluginModule: any, handlerName: string): ((context: Context) => Promise<void>) | undefined => {
-  if (pluginModule.hasOwnProperty(handlerName) && typeof pluginModule[handlerName] === 'function') {
-    if (handlerName === constants.ExecuteAmplifyHeadlessCommand) {
-      return async context => pluginModule[handlerName](context, await readHeadlessPayload());
+  if (pluginModule.hasOwnProperty(commandName) && typeof pluginModule[commandName] === 'function') {
+    if (commandName === constants.ExecuteAmplifyHeadlessCommand) {
+      return async () => pluginModule[commandName](context, await readHeadlessPayload());
     } else {
-      return pluginModule[handlerName];
+      return () => pluginModule[commandName](context);
     }
+  } else {
+    return fallbackFn;
   }
 };
 
 // old plugin execution approach of scanning the command folder and locating the command file
+// TODO check if this is used anywhere and remove if not
 const legacyCommandExecutor = async (context: Context, plugin: PluginInfo) => {
   let commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command!));
   if (context.input.subCommands && context.input.subCommands.length > 0) {
