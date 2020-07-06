@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
-const { updateBackendConfigAfterResourceAdd, updateBackendConfigDependsOn } = require('./update-backend-config');
+const { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } = require('./update-backend-config');
 const { readJsonFile } = require('./read-json-file');
 
 function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
@@ -111,7 +111,7 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
   }
   const updatedMeta = updateAwsMetaFile(amplifyMetaFilePath, category, resourceName, attribute, value, currentTimestamp);
   if (['dependsOn', 'service'].includes(attribute)) {
-    updateBackendConfigDependsOn(category, resourceName, attribute, value);
+    updateBackendConfigAfterResourceUpdate(category, resourceName, attribute, value);
   }
 
   return updatedMeta;

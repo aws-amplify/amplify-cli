@@ -5,9 +5,11 @@ import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
 import { rootAssetDir, cfnParametersFilename } from '../aws-constants';
-import { collectDirectivesByTypeNames, writeTransformerConfiguration, readProjectConfiguration } from 'graphql-transformer-core';
+import { collectDirectivesByTypeNames, writeTransformerConfiguration, readProjectConfiguration, ConflictHandlerType } from 'graphql-transformer-core';
 import { category } from '../../../category-constants';
-import { writeResolverConfig } from '../cfn-api-artifact-handler';
+import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
+import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
+import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -147,13 +149,12 @@ export const serviceWalkthrough = async (context, defaultValuesFilename, service
   return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true, resolverConfig, schemaContent };
 };
 
-export const updateWalkthrough = async context => {
+export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
   let authConfig;
   let defaultAuthType;
-  let resolverConfig;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
 
   // There can only be one appsync resource
@@ -171,7 +172,6 @@ export const updateWalkthrough = async context => {
   } else {
     context.print.error('No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.');
     process.exit(0);
-    return;
   }
 
   const parametersFilePath = path.join(resourceDir, cfnParametersFilename);
@@ -187,6 +187,7 @@ export const updateWalkthrough = async context => {
   // Get models
 
   const project = await readProjectConfiguration(resourceDir);
+  let resolverConfig = project.config.ResolverConfig;
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
@@ -227,11 +228,10 @@ export const updateWalkthrough = async context => {
 
   if (updateOption === 'enableDatastore') {
     resolverConfig = {
-      project: { ConflictHandler: 'AUTOMERGE', ConflictDetection: 'VERSION' },
+      project: { ConflictHandler: ConflictHandlerType.AUTOMERGE, ConflictDetection: 'VERSION' },
     };
   } else if (updateOption === 'disableDatastore') {
-    delete project.config.ResolverConfig;
-    await writeTransformerConfiguration(resourceDir, project.config);
+    resolverConfig = {};
   } else if (updateOption === 'authUpdate') {
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
     authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
@@ -242,39 +242,15 @@ export const updateWalkthrough = async context => {
     await checkForCognitoUserPools(context, parameters, authConfig);
   }
 
-  if (authConfig) {
-    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
-
-    if (amplifyMeta[category][resourceName].output.securityType) {
-      delete amplifyMeta[category][resourceName].output.securityType;
+  return {
+    version: 1,
+    serviceModification: {
+      serviceName: 'AppSync',
+      defaultAuthType: authConfigToAppSyncAuthType(authConfig ? authConfig.defaultAuthentication : undefined),
+      additionalAuthTypes: (authConfig ? authConfig.additionalAuthenticationProviders || [] : []).map(authConfigToAppSyncAuthType),
+      conflictResolution: resolverConfigToConflictResolution(resolverConfig)
     }
-
-    amplifyMeta[category][resourceName].output.authConfig = authConfig;
-    let jsonString = JSON.stringify(amplifyMeta, null, 4);
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
-
-    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
-    const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
-
-    if (backendConfig[category][resourceName].output.securityType) {
-      delete backendConfig[category][resourceName].output.securityType;
-    }
-
-    backendConfig[category][resourceName].output.authConfig = authConfig;
-    jsonString = JSON.stringify(backendConfig, null, 4);
-    fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
   }
-
-  if (resolverConfig) {
-    await writeResolverConfig(resolverConfig, resourceDir);
-  }
-
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-    resourceDir,
-    parameters,
-    authConfig,
-  });
 };
 
 async function askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes?) {

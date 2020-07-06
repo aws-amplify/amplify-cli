@@ -3,6 +3,7 @@ import { getCfnApiArtifactHandler } from './cfn-api-artifact-handler';
 import { serviceMetadataFor, getServiceWalkthrough, datasourceMetadataFor } from './utils/dynamic-imports';
 import { legacyAddResource } from './legacy-add-resource';
 import { legacyUpdateResource } from './legacy-update-resource';
+import { UpdateApiRequest } from 'amplify-headless-interface';
 
 export async function console(context, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
@@ -19,10 +20,10 @@ export async function console(context, service) {
 
 export async function addResource(context, category, service, options) {
   const serviceMetadata = await serviceMetadataFor(service);
-  const { serviceWalkthroughFilename } = serviceMetadata;
+  const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 
-  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, undefined, serviceMetadata);
+  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
   switch (service) {
     case 'AppSync':
       return serviceWalkthroughPromise
@@ -44,12 +45,11 @@ export async function updateResource(context, category, service) {
     process.exit(0);
   }
 
-  const updateWalkthroughPromise: Promise<any> = updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  const updateWalkthroughPromise: Promise<UpdateApiRequest> = updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 
   switch (service) {
     case 'AppSync':
       return updateWalkthroughPromise
-        .then(updateWalkthroughResultToUpdateApiRequest)
         .then(getCfnApiArtifactHandler(context).updateArtifacts);
     default:
       return legacyUpdateResource(updateWalkthroughPromise, context, category, service);

@@ -74,7 +74,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     return serviceConfig.apiName;
   };
 
-  updateArtifacts = async (request: UpdateApiRequest): Promise<string> => {
+  updateArtifacts = async (request: UpdateApiRequest): Promise<void> => {
     const updates = request.serviceModification;
     const apiName = this.getExistingApiName();
     const resourceDir = this.getResourceDir(apiName);
@@ -88,20 +88,37 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
       await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
+    const authConfig = this.getExistingAuthConfig();
     if (updates.defaultAuthType) {
-
+      authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
     }
     if (updates.additionalAuthTypes) {
-
+      authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
-    return apiName;
+    await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
+      resourceDir,
+      parameters: defaultCfnParameters(apiName),
+      authConfig,
+    });
+
+    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', {authConfig});
+    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', {authConfig});
+  }
+
+  private getExistingAuthConfig = () => {
+    const entry = this.getApiAmplifyMetaEntry()[1] as any;
+    return entry.output ? entry.output.authConfig : {};
   }
 
   private getExistingApiName = (): string | undefined => {
-    const entry = Object.entries(this.context.amplify.getProjectMeta().api || {}).find(([, value]) => (value as any).service === 'AppSync');
+    const entry = this.getApiAmplifyMetaEntry()
     if (entry) {
       return entry[0];
     }
+  }
+
+  private getApiAmplifyMetaEntry = () => {
+    return Object.entries(this.context.amplify.getProjectMeta().api || {}).find(([, value]) => (value as any).service === 'AppSync');
   }
 
   private writeSchema = (resourceDir: string, schema: string) => {
@@ -204,9 +221,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
  * write to the transformer conf if the resolverConfig is valid
  */
 export const writeResolverConfig = async (conflictResolution: ConflictResolution, resourceDir) => {
-  if (conflictResolution && (conflictResolution.defaultResolutionStrategy || conflictResolution.perModelResolutionStrategy)) {
-    const localTransformerConfig = await readTransformerConfiguration(resourceDir);
-    localTransformerConfig.ResolverConfig = conflictResolutionToResolverConfig(conflictResolution);
-    await writeTransformerConfiguration(resourceDir, localTransformerConfig);
-  }
+  const localTransformerConfig = await readTransformerConfiguration(resourceDir);
+  localTransformerConfig.ResolverConfig = conflictResolutionToResolverConfig(conflictResolution);
+  await writeTransformerConfiguration(resourceDir, localTransformerConfig);
 };
