@@ -26,7 +26,11 @@ export async function deleteAllAmplifyProjects(amplifyClient?: any) {
 
 export async function deleteAmplifyStack(stackName: string, cfnClient?: any) {
   if (!cfnClient) cfnClient = getConfiguredCFNClient();
-  await cfnClient.deleteStack({ StackName: stackName }).promise();
+  try {
+    await cfnClient.deleteStack({ StackName: stackName }).promise();
+  } catch (err) {
+    // do nothing
+  }
 }
 
 async function PaginatedDeleteProjects(amplifyClient: any, token?: any) {

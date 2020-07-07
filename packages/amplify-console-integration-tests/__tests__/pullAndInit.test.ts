@@ -21,6 +21,7 @@ import {
 import { headlessInit } from '../src/pullAndInit/initProject';
 import { headlessPull, authConfigPull } from '../src/pullAndInit/pullProject';
 import { headlessDelete } from '../src/pullAndInit/deleteProject';
+import { getConfigFromProfile } from '../src/profile-helper';
 import {
   removeFilesForTeam,
   removeFilesForThirdParty,
@@ -177,7 +178,7 @@ describe('amplify app console tests', () => {
       deleteAmplifyStack(stackName);
       deleteConsoleApp(AmplifyAppID);
     } else {
-      await deleteProject(projRoot);
+      await deleteProject(projRoot, getConfigFromProfile());
     }
     deleteProjectDir(projRoot);
   });
@@ -236,13 +237,6 @@ describe('amplify app console tests', () => {
 
   it('test pull with auth config', async () => {
     const envName = 'dev';
-    const providersParam = {
-      awscloudformation: {
-        configLevel: 'project',
-        useProfile: true,
-        profileName: util.getProfileName(),
-      },
-    };
     await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
