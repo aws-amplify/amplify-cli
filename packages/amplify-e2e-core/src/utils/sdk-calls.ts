@@ -12,6 +12,7 @@ import {
   Kinesis,
   CloudFormation,
 } from 'aws-sdk';
+import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
@@ -23,9 +24,61 @@ export const checkIfBucketExists = async (bucketName: string, region: string) =>
   return await service.headBucket({ Bucket: bucketName }).promise();
 };
 
-export const deleteS3Bucket = async (bucketName: string, region: string) => {
-  const service = new S3({ region });
-  return await service.deleteBucket({ Bucket: bucketName }).promise();
+export const bucketNotExists = async (bucket: string) => {
+  const s3 = new S3();
+  const params = {
+    Bucket: bucket,
+    $waiter: { maxAttempts: 10, delay: 30 },
+  };
+  try {
+    await s3.waitFor('bucketNotExists', params).promise();
+    return true;
+  } catch (error) {
+    if (error.statusCode === 200) {
+      return false;
+    }
+    throw error;
+  }
+};
+
+export const deleteS3Bucket = async (bucket: string) => {
+  const s3 = new S3();
+  let continuationToken = null;
+  const objectKey = [];
+  let truncated = false;
+  do {
+    const results = await s3
+      .listObjectsV2({
+        Bucket: bucket,
+        ContinuationToken: continuationToken,
+      })
+      .promise();
+    results.Contents.forEach(r => {
+      objectKey.push({ Key: r.Key });
+    });
+
+    continuationToken = results.NextContinuationToken;
+    truncated = results.IsTruncated;
+  } while (truncated);
+  const chunkedResult = _.chunk(objectKey, 1000);
+  const deleteReq = chunkedResult
+    .map(r => {
+      return {
+        Bucket: bucket,
+        Delete: {
+          Objects: r,
+          Quiet: true,
+        },
+      };
+    })
+    .map(delParams => s3.deleteObjects(delParams).promise());
+  await Promise.all(deleteReq);
+  await s3
+    .deleteBucket({
+      Bucket: bucket,
+    })
+    .promise();
+  await bucketNotExists(bucket);
 };
 
 export const getUserPool = async (userpoolId, region) => {
@@ -79,6 +132,16 @@ export const getFunction = async (functionName: string, region: string) => {
   return await service.getFunction({ FunctionName: functionName }).promise();
 };
 
+export const getLayerVersion = async (functionArn: string, region: string) => {
+  const service = new Lambda({ region });
+  return await service.getLayerVersionByArn({ Arn: functionArn }).promise();
+};
+
+export const listVersions = async (layerName: string, region: string) => {
+  const service = new Lambda({ region });
+  return await service.listLayerVersions({ LayerName: layerName }).promise();
+};
+
 export const invokeFunction = async (functionName: string, payload: string, region: string) => {
   const service = new Lambda({ region });
   return await service.invoke({ FunctionName: functionName, Payload: payload }).promise();
@@ -128,8 +191,8 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
   return logsResp.events || [];
 };
 
-export const describeCloudFormationStack = async (stackName: string, region: string) => {
-  const service = new CloudFormation({ region });
+export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
+  const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
   return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(stack => stack.StackName === stackName);
 };
 

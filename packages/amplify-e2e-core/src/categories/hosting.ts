@@ -29,7 +29,8 @@ export function addDEVHosting(cwd: string) {
 
 export function addPRODHosting(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+    // Cloudfront distrubution takes a long time. Bumping up the timeout
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true, noOutputTimeout: 30 * 60 * 1000 })
       .wait('Select the plugin module to execute')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()

@@ -677,12 +677,11 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateToStringMethod(model: CodeGenModel, declarationBlock: JavaDeclarationBlock): void {
-    const fields = this.getNonConnectedField(model)
-        .map(field => {
-          const fieldName = this.getFieldName(field);
-          const fieldGetterName = this.getFieldGetterName(field);
+    const fields = this.getNonConnectedField(model).map(field => {
+      const fieldName = this.getFieldName(field);
+      const fieldGetterName = this.getFieldGetterName(field);
 
-          return '"' + fieldName + '=" + String.valueOf(' + fieldGetterName + '())';
+      return '"' + fieldName + '=" + String.valueOf(' + fieldGetterName + '())';
     });
 
     const body = [

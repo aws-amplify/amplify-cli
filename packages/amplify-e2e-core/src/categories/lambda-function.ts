@@ -40,103 +40,126 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action == 'update' ? 'update' : 'add', 'function'], {
+    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
 
     if (action === 'create') {
       chain
+        .wait('Select which capability you want to add:')
+        .sendCarriageReturn() // lambda function
         .wait('Provide a friendly name for your resource to be used as a label')
         .sendLine(settings.name || '')
         .wait('Provide the AWS Lambda function name:')
         .sendLine(settings.name || '');
 
       selectRuntime(chain, runtime);
-
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
         selectTemplate(chain, settings.functionTemplate, runtime);
       }
     } else {
-      chain.wait('Please select the Lambda Function you would want to update').sendCarriageReturn();
+      chain
+        .wait('Select which capability you want to update:')
+        .sendCarriageReturn() // lambda function
+        .wait('Select the Lambda function you want to update')
+        .sendCarriageReturn(); // assumes only one function configured in the project
     }
 
     if (functionConfigCallback) {
       functionConfigCallback(chain, cwd, settings);
     }
 
-    if (!settings.expectFailure) {
-      chain.wait(
-        action == 'create'
-          ? 'Do you want to access other resources created in this project from your Lambda function?'
-          : 'Do you want to update permissions granted to this Lambda function to perform on other resources in your project?',
-      );
-
-      if (settings.additionalPermissions) {
-        multiSelect(
-          chain.sendLine('y').wait('Select the category'),
-          settings.additionalPermissions.permissions,
-          settings.additionalPermissions.choices,
-        );
-        // when single resource, it gets autoselected
-        if (settings.additionalPermissions.resources.length > 1) {
-          multiSelect(
-            chain.wait('Select the one you would like your'),
-            settings.additionalPermissions.resources,
-            settings.additionalPermissions.resourceChoices,
-          );
-        }
-
-        // n-resources repeated questions
-        settings.additionalPermissions.resources.reduce(
-          (chain, elem) =>
-            multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
-              'create',
-              'read',
-              'update',
-              'delete',
-            ]),
-          chain,
-        );
-      } else {
-        chain.sendLine('n');
-      }
-
-      //scheduling questions
-      if (action == 'create') {
-        chain.wait('Do you want to invoke this function on a recurring schedule?');
-      } else {
-        if (
-          settings.schedulePermissions === undefined ||
-          (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true')
-        ) {
-          chain.wait('Do you want to invoke this function on a recurring schedule?');
-        } else {
-          chain.wait(`Do you want to update or remove the function's schedule?`);
-        }
-      }
-
-      if (settings.schedulePermissions === undefined) {
-        chain.sendLine('n');
-      } else {
-        chain.sendLine('y');
-        cronWalkthrough(chain, settings, action);
-      }
-
-      chain
-        .wait('Do you want to edit the local lambda function now?')
-        .sendLine('n')
-        .sendEof();
+    if (settings.expectFailure) {
+      runChain(chain, resolve, reject);
+      return;
     }
 
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
+    // other permissions flow
+    chain.wait(
+      action === 'create'
+        ? 'Do you want to access other resources in this project from your Lambda function?'
+        : 'Do you want to update the Lambda function permissions to access other resources in this project?',
+    );
+
+    if (settings.additionalPermissions) {
+      multiSelect(
+        chain.sendLine('y').wait('Select the category'),
+        settings.additionalPermissions.permissions,
+        settings.additionalPermissions.choices,
+      );
+      // when single resource, it gets autoselected
+      if (settings.additionalPermissions.resources.length > 1) {
+        multiSelect(
+          chain.wait('Select the one you would like your'),
+          settings.additionalPermissions.resources,
+          settings.additionalPermissions.resourceChoices,
+        );
       }
-    });
+
+      // n-resources repeated questions
+      settings.additionalPermissions.resources.reduce(
+        (chain, elem) =>
+          multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
+            'create',
+            'read',
+            'update',
+            'delete',
+          ]),
+        chain,
+      );
+    } else {
+      chain.sendLine('n');
+    }
+
+    //scheduling questions
+    if (action === 'create') {
+      chain.wait('Do you want to invoke this function on a recurring schedule?');
+    } else {
+      if (
+        settings.schedulePermissions === undefined ||
+        (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true')
+      ) {
+        chain.wait('Do you want to invoke this function on a recurring schedule?');
+      } else {
+        chain.wait(`Do you want to update or remove the function's schedule?`);
+      }
+    }
+
+    if (settings.schedulePermissions === undefined) {
+      chain.sendLine('n');
+    } else {
+      chain.sendLine('y');
+      cronWalkthrough(chain, settings, action);
+    }
+
+    // lambda layers question
+    chain.wait('Do you want to configure Lambda layers for this function?');
+    if (settings.layerOptions === undefined) {
+      chain.sendLine('n');
+    } else {
+      chain.sendLine('y');
+      addLayerWalkthrough(chain, settings.layerOptions);
+    }
+
+    // edit function question
+    chain
+      .wait('Do you want to edit the local lambda function now?')
+      .sendLine('n')
+      .sendEof();
+
+    runChain(chain, resolve, reject);
+  });
+};
+
+const runChain = (chain, resolve, reject) => {
+  chain.run((err: Error) => {
+    if (!err) {
+      resolve();
+    } else {
+      reject(err);
+    }
   });
 };
 
@@ -203,7 +226,7 @@ export const functionBuild = (cwd: string, settings: any) => {
 
 export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
-  chain.wait('Choose the function runtime that you want to use');
+  chain.wait('Choose the runtime that you want to use');
 
   // reset cursor to top of list because node is default but it throws off offset calculations
   moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));
@@ -219,6 +242,42 @@ export const selectTemplate = (chain: any, functionTemplate: string, runtime: Fu
   moveUp(chain, templateChoices.indexOf('Hello World'));
 
   singleSelect(chain, functionTemplate, templateChoices);
+};
+
+export interface LayerOptions {
+  select: string[]; // list options to select
+  expectedListOptions: string[]; // the expeted list of all layers
+  versions: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
+  customArns?: string[]; // external ARNs to enter
+}
+
+const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => {
+  const prependedListOptions = ['Provide existing Lambda layer ARNs', ...options.expectedListOptions];
+  const amendedSelection = [...options.select];
+  const hasCustomArns = options.customArns && options.customArns.length > 0;
+  if (hasCustomArns) {
+    amendedSelection.unshift('Provide existing Lambda layer ARNs');
+  }
+  chain.wait('Provide existing layers');
+  multiSelect(chain, amendedSelection, prependedListOptions);
+  options.select.forEach(selection => {
+    chain.wait(`Select a version for ${selection}`);
+    singleSelect(
+      chain,
+      options.versions[selection].version.toString(),
+      options.versions[selection].expectedVersionOptions.map(op => op.toString()),
+    );
+  });
+  if (hasCustomArns) {
+    chain.wait('existing Lambda layer ARNs (comma-separated)');
+    chain.sendLine(options.customArns.join(', '));
+  }
+  // not going to attempt to automate the reorder thingy. For e2e tests we can just create the lambda layers in the order we want them
+  const totalLength = hasCustomArns ? options.customArns.length : 0 + options.select.length;
+  if (totalLength > 1) {
+    chain.wait('Modify the layer order');
+    chain.sendCarriageReturn();
+  }
 };
 
 const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string) => {

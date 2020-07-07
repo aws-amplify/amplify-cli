@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
 import { validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
+import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 
 const category = 'api';
 const serviceName = 'API Gateway';
@@ -558,7 +559,7 @@ function functionsExist(context) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === 'Lambda') {
+    if (functionResources[resourceName].service === FunctionServiceName.LambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
   });
@@ -604,8 +605,9 @@ async function newLambdaFunction(context, path) {
       },
     },
   };
-  return add(context, 'awscloudformation', 'Lambda', params).then(resourceName => {
-    context.print.success('Successfully added the Lambda function locally');
+
+  return add(context, 'awscloudformation', FunctionServiceName.LambdaFunction, params).then(resourceName => {
+    context.print.success('Succesfully added the Lambda function locally');
     return { lambdaFunction: resourceName };
   });
 }
@@ -614,7 +616,7 @@ async function askLambdaFromProject(context, currentPath) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === 'Lambda') {
+    if (functionResources[resourceName].service === FunctionServiceName.LambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
   });

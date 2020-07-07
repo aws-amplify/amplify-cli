@@ -1,4 +1,4 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getEnvVars } from '../../src';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getSocialProviders } from '../../src';
 
 export function addAuthWithDefault(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
@@ -20,7 +20,7 @@ export function addAuthWithDefault(cwd: string, settings: any) {
   });
 }
 
-export function removeAuthWithDefault(cwd: string, settings: any) {
+export function removeAuthWithDefault(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
@@ -413,31 +413,15 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any) {
 
 export function addAuthWithDefaultSocial(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
+    const {
+      FACEBOOK_APP_ID,
+      FACEBOOK_APP_SECRET,
+      GOOGLE_APP_ID,
+      GOOGLE_APP_SECRET,
+      AMAZON_APP_ID,
+      AMAZON_APP_SECRET,
+    }: any = getSocialProviders(true);
 
-    const missingVars = [];
-    if (!FACEBOOK_APP_ID) {
-      missingVars.push('FACEBOOK_APP_ID');
-    }
-    if (!FACEBOOK_APP_SECRET) {
-      missingVars.push('FACEBOOK_APP_SECRET');
-    }
-    if (!GOOGLE_APP_ID) {
-      missingVars.push('GOOGLE_APP_ID');
-    }
-    if (!GOOGLE_APP_SECRET) {
-      missingVars.push('GOOGLE_APP_SECRET');
-    }
-    if (!AMAZON_APP_ID) {
-      missingVars.push('AMAZON_APP_ID');
-    }
-    if (!AMAZON_APP_SECRET) {
-      missingVars.push('AMAZON_APP_SECRET');
-    }
-
-    if (missingVars.length > 0) {
-      throw new Error(`.env file is missing the following key/values: ${missingVars.join(', ')} `);
-    }
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send(KEY_DOWN_ARROW)

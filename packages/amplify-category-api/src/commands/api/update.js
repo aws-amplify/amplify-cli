@@ -22,6 +22,7 @@ module.exports = {
       .catch(err => {
         context.print.error(err.message);
         console.log(err.stack);
+        context.usageData.emitError(err);
       });
   },
 };

@@ -1,20 +1,22 @@
 import { start as startAppSyncServer } from './api';
 import { start as startS3Server } from './storage';
-const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', 'Lambda'];
+import { ServiceName as FunctionServiceName } from 'amplify-category-function';
+const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', FunctionServiceName.LambdaFunction];
+
 export async function mockAllCategories(context: any) {
   const resources = await context.amplify.getResourceStatus();
   const mockableResources = resources.allResources.filter(
-    resource => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service)
+    resource => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service),
   );
   const resourceToBePushed = [...resources.resourcesToBeUpdated, ...resources.resourcesToBeCreated].filter(
-    resource => resource.service && !MOCK_SUPPORTED_CATEGORY.includes(resource.service)
+    resource => resource.service && !MOCK_SUPPORTED_CATEGORY.includes(resource.service),
   );
   if (mockableResources.length) {
     if (resourceToBePushed.length) {
       try {
         // push these resources
         context.print.info(
-          'Some resources have changed locally and these resources are not mockable. The resources listed below need to be pushed to the cloud before starting the mock server.'
+          'Some resources have changed locally and these resources are not mockable. The resources listed below need to be pushed to the cloud before starting the mock server.',
         );
         const didPush = await context.amplify.pushResources(context, undefined, undefined, resourceToBePushed);
         if (!didPush) {

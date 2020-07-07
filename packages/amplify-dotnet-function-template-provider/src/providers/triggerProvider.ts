@@ -1,4 +1,4 @@
-import { FunctionTemplateParameters, ContributionRequest } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters, TemplateContributionRequest } from 'amplify-function-plugin-interface';
 import { commonFiles, templateRoot } from '../utils/constants';
 import { getDstMap } from '../utils/destFileMapper';
 import path from 'path';
@@ -7,7 +7,7 @@ import { askEventSourceQuestions } from '../utils/eventSourceWalkthrough';
 const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 const templateFolder = 'Trigger';
 
-export async function provideTrigger(request: ContributionRequest, context: any): Promise<FunctionTemplateParameters> {
+export async function provideTrigger(request: TemplateContributionRequest, context: any): Promise<FunctionTemplateParameters> {
   const eventSourceAnswers: any = await askEventSourceQuestions(context);
   const templateFile = path.join(templateFolder, eventSourceAnswers.triggerEventSourceMappings[0].functionTemplateName as string);
   const handlerSource = path.join('src', `${request.contributionContext.functionName}.cs`);

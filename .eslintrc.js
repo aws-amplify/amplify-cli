@@ -258,6 +258,9 @@ module.exports = {
     '/packages/graphql-*-transformer/lib',
     '/packages/graphql-transformer-*/lib',
     '/packages/amplify-headless-interface/lib',
-    '/packages/amplify-util-headless-input/lib'
+    '/packages/amplify-util-headless-input/lib',
+
+    // Ignore CHANGELOG.md files
+    '/packages/*/CHANGELOG.md'
   ]
 };

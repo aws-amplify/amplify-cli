@@ -66,6 +66,7 @@ async function uploadFile(s3Client, hostingBucketName, filePath, file) {
     .promise()
     .catch(e => {
       console.log('e', e);
+      throw e;
     });
 
   return data;

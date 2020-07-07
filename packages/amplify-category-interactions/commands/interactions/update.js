@@ -22,6 +22,7 @@ module.exports = {
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('There was an error updating the interactions resource');
+        context.usageData.emitError(err);
       });
   },
 };

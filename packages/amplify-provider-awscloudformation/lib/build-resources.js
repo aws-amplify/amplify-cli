@@ -1,10 +1,12 @@
 import path from 'path';
 import fs from 'fs-extra';
+import { ServiceName } from 'amplify-category-function';
 
 async function run(context, category, resourceName) {
   const { allResources } = await context.amplify.getResourceStatus(category, resourceName);
 
-  const resources = allResources.filter(resource => resource.build);
+  const resources = allResources.filter(resource => resource.service === ServiceName.LambdaFunction).filter(resource => resource.build);
+
   const buildPromises = [];
   for (let i = 0; i < resources.length; i += 1) {
     buildPromises.push(buildResource(context, resources[i]));
