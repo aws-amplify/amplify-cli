@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.2...amplify-codegen-appsync-model-plugin@1.20.0-beta.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
 ## [1.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.1...amplify-codegen-appsync-model-plugin@1.19.2) (2020-06-18)
 
 

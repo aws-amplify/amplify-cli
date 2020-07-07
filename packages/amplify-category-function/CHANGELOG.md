@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.8...amplify-category-function@2.21.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* remove env and region from dependsOn, return resource name from addResource, update cypress test ([#4715](https://github.com/aws-amplify/amplify-cli/issues/4715)) ([c4ce4fa](https://github.com/aws-amplify/amplify-cli/commit/c4ce4fadd257a69d3cd4f1628d2b1496a918e72e))
+
+
+### Features
+
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([30a7fe7](https://github.com/aws-amplify/amplify-cli/commit/30a7fe70f5838a766631befcc720a721e801bc5f))
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
 ## [2.20.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.7...amplify-category-function@2.20.8) (2020-06-25)
 
 **Note:** Version bump only for package amplify-category-function

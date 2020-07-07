@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "4.21.1",
+  "version": "4.22.0-beta.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -16,9 +16,9 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-category-auth": "2.15.8",
-    "amplify-category-predictions": "2.3.14",
-    "amplify-codegen": "2.15.11",
+    "amplify-category-auth": "2.16.0-beta.0",
+    "amplify-category-predictions": "2.4.0-beta.0",
+    "amplify-codegen": "2.15.12-beta.0",
     "archiver": "^3.1.1",
     "aws-sdk": "^2.608.0",
     "bottleneck": "2.19.5",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.3.3...amplify-category-hosting@2.4.0-beta.0) (2020-07-07)
+
+
+### Features
+
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([30a7fe7](https://github.com/aws-amplify/amplify-cli/commit/30a7fe70f5838a766631befcc720a721e801bc5f))
+
+
+
+
+
 ## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.3.2...amplify-category-hosting@2.3.3) (2020-06-18)
 
 
