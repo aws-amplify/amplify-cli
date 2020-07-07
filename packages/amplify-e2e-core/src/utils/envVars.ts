@@ -17,7 +17,17 @@ export function getEnvVars(): EnvironmentVariables {
   return { ...process.env } as EnvironmentVariables;
 }
 
-export function getSocialProviders(): SocialProviders {
+export function getSocialProviders(getEnv: boolean = false): SocialProviders {
+  if (!getEnv) {
+    return {
+      FACEBOOK_APP_ID: 'fbAppId',
+      FACEBOOK_APP_SECRET: 'fbAppSecret',
+      GOOGLE_APP_ID: 'gglAppID',
+      GOOGLE_APP_SECRET: 'gglAppSecret',
+      AMAZON_APP_ID: 'amaznAppID',
+      AMAZON_APP_SECRET: 'amaznAppID',
+    };
+  }
   const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
 
   const missingVars = [];

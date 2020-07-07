@@ -420,7 +420,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any) {
       GOOGLE_APP_SECRET,
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
-    }: any = getSocialProviders();
+    }: any = getSocialProviders(true);
 
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
