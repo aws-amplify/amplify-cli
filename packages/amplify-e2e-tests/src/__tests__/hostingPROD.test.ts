@@ -27,7 +27,7 @@ describe('amplify add hosting', () => {
       // Once the Hosting bucket is removed automatically we should get rid of this.
       await deleteS3Bucket(hostingBucket);
     }
-    await deleteProject(projRoot, true);
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 
