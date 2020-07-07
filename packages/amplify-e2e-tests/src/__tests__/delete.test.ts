@@ -110,7 +110,7 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   expect(await bucketExists(deploymentBucketName1)).toBe(true);
   expect(await bucketExists(deploymentBucketName2)).toBe(true);
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(true);
-  await deleteProject(projRoot, true);
+  await deleteProject(projRoot);
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(false);
   expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
   expect(await bucketNotExists(deploymentBucketName2)).toBe(true);
