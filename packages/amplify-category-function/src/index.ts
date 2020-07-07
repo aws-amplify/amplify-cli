@@ -138,7 +138,9 @@ export async function getInvoker(context: any, params: InvokerParameters): Promi
 export function isMockable(context: any, resourceName: string): IsMockableResponse {
   const { service, dependsOn } = context.amplify.getProjectMeta()[category][resourceName];
   const hasLayer =
-    service === ServiceName.LambdaFunction && dependsOn && dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
+    service === ServiceName.LambdaFunction &&
+    Array.isArray(dependsOn) &&
+    dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
   if (hasLayer) {
     return {
       isMockable: false,
