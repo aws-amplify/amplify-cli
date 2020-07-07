@@ -38,7 +38,7 @@ export const supportedServices = {
       {
         key: 'templateSelection',
         type: 'list',
-        question: 'What best describes your project:',
+        question: 'Choose a schema template:',
         options: [
           {
             name: 'Single object with fields (e.g., “Todo” with ID, name, description)',

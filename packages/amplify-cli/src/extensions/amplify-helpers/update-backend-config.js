@@ -49,5 +49,4 @@ module.exports = {
   updateBackendConfigAfterResourceAdd,
   updateBackendConfigAfterResourceUpdate,
   updateBackendConfigAfterResourceRemove,
-  updateBackendConfigAfterResourceUpdate,
 };

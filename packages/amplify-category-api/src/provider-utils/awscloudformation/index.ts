@@ -4,6 +4,7 @@ import { serviceMetadataFor, getServiceWalkthrough, datasourceMetadataFor } from
 import { legacyAddResource } from './legacy-add-resource';
 import { legacyUpdateResource } from './legacy-update-resource';
 import { UpdateApiRequest } from 'amplify-headless-interface';
+import { editSchemaFlow } from './utils/edit-schema-flow';
 
 export async function console(context, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
@@ -26,9 +27,11 @@ export async function addResource(context, category, service, options) {
   const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
   switch (service) {
     case 'AppSync':
-      return serviceWalkthroughPromise
+      const apiName = await serviceWalkthroughPromise
         .then(serviceWalkthroughResultToAddApiRequest)
         .then(getCfnApiArtifactHandler(context).createArtifacts);
+      await editSchemaFlow(context, apiName);
+      return apiName;
     default:
       return legacyAddResource(serviceWalkthroughPromise, context, category, service, options);
   }
@@ -49,8 +52,7 @@ export async function updateResource(context, category, service) {
 
   switch (service) {
     case 'AppSync':
-      return updateWalkthroughPromise
-        .then(getCfnApiArtifactHandler(context).updateArtifacts);
+      return updateWalkthroughPromise.then(getCfnApiArtifactHandler(context).updateArtifacts);
     default:
       return legacyUpdateResource(updateWalkthroughPromise, context, category, service);
   }

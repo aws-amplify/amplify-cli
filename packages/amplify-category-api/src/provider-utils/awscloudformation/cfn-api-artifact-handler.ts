@@ -1,9 +1,15 @@
 import { ApiArtifactHandler } from '../api-artifact-handler';
-import { AddApiRequest, ConflictResolution, AppSyncServiceConfiguration, ResolutionStrategy, UpdateApiRequest } from 'amplify-headless-interface';
+import {
+  AddApiRequest,
+  ConflictResolution,
+  AppSyncServiceConfiguration,
+  ResolutionStrategy,
+  UpdateApiRequest,
+} from 'amplify-headless-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import { category } from '../../category-constants';
-import { rootAssetDir, provider } from './aws-constants';
+import { rootAssetDir, provider, gqlSchemaFilename } from './aws-constants';
 import { readTransformerConfiguration, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
@@ -14,7 +20,6 @@ import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 export const getCfnApiArtifactHandler = (context): ApiArtifactHandler => {
   return new CfnApiArtifactHandler(context);
 };
-const schemaFileName = 'schema.graphql';
 const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
 const defaultStackName = 'CustomResources.json';
@@ -79,20 +84,20 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const apiName = this.getExistingApiName();
     const resourceDir = this.getResourceDir(apiName);
     if (!apiName) {
-      throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`)
+      throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`);
     }
     if (updates.transformSchema) {
       this.writeSchema(resourceDir, updates.transformSchema);
     }
-    if (updates.conflictResolution) {
+    if (!_.isEmpty(updates.conflictResolution)) {
       updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
       await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
     const authConfig = this.getExistingAuthConfig();
-    if (updates.defaultAuthType) {
+    if (!_.isEmpty(updates.defaultAuthType)) {
       authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
     }
-    if (updates.additionalAuthTypes) {
+    if (!_.isEmpty(updates.additionalAuthTypes)) {
       authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
@@ -101,29 +106,29 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       authConfig,
     });
 
-    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', {authConfig});
-    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', {authConfig});
-  }
+    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
+    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+  };
 
   private getExistingAuthConfig = () => {
     const entry = this.getApiAmplifyMetaEntry()[1] as any;
     return entry.output ? entry.output.authConfig : {};
-  }
+  };
 
   private getExistingApiName = (): string | undefined => {
-    const entry = this.getApiAmplifyMetaEntry()
+    const entry = this.getApiAmplifyMetaEntry();
     if (entry) {
       return entry[0];
     }
-  }
+  };
 
   private getApiAmplifyMetaEntry = () => {
     return Object.entries(this.context.amplify.getProjectMeta().api || {}).find(([, value]) => (value as any).service === 'AppSync');
-  }
+  };
 
   private writeSchema = (resourceDir: string, schema: string) => {
-    fs.writeFileSync(path.join(resourceDir, schemaFileName), schema);
-  }
+    fs.writeFileSync(path.join(resourceDir, gqlSchemaFilename), schema);
+  };
 
   private getResourceDir = (apiName: string) => path.join(this.context.amplify.pathManager.getBackendDirPath(), category, apiName);
 
