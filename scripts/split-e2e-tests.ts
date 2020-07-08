@@ -3,7 +3,8 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 
-const CONCURRENCY = 3;
+const CONCURRENCY = 4;
+const AWS_REGIONS_TO_RUN_TESTS = ['us-east-2', 'eu-west-1', 'ap-southeast-1', 'ap-south-1', 'ap-southeast-2'];
 
 // This array needs to be update periodically when new tests suites get added
 // or when a test suite changes drastically
@@ -16,6 +17,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/init.test.ts',
   'src/__tests__/amplify-app.test.ts',
   'src/__tests__/analytics.test.ts',
+  'src/__tests__/hostingPROD.test.ts',
   'src/__tests__/predictions.test.ts',
   'src/__tests__/delete.test.ts',
   'src/__tests__/storage.test.ts',
@@ -94,15 +96,25 @@ function splitTests(
   const job = jobs[jobName];
   const testSuites = getTestFiles(jobRootDir);
 
-  const newJobs = testSuites.reduce((acc, suite) => {
+  const newJobs = testSuites.reduce((acc, suite, index) => {
+    const testRegion = AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
     const newJob = {
       ...job,
       environment: {
         TEST_SUITE: suite,
+        CLI_REGION: testRegion,
       },
     };
     const newJobName = generateJobName(jobName, suite);
     return { ...acc, [newJobName]: newJob };
+  }, {});
+
+  // Spilt jobs by region
+  const jobByRegion = Object.entries(newJobs).reduce((acc, entry: [string, any]) => {
+    const [jobName, job] = entry;
+    const region = job?.environment?.CLI_REGION;
+    const regionJobs = { ...acc[region], [jobName]: job };
+    return { ...acc, [region]: regionJobs };
   }, {});
 
   const workflows = { ...config.workflows };
@@ -120,23 +132,29 @@ function splitTests(
     });
 
     if (workflowJob) {
-      const newJobNames = testSuites.map(suite => generateJobName(jobName, suite));
-      const jobs = newJobNames.map((newJobName, index) => {
-        const requires = getRequiredJob(newJobNames, index, concurrency);
-        if (typeof workflowJob === 'string') {
-          return newJobName;
-        } else {
-          return {
-            [newJobName]: {
-              ...Object.values(workflowJob)[0],
-              requires: [...(workflowJob[jobName].requires || []), ...(requires ? [requires] : [])],
-            },
-          };
-        }
+      Object.values(jobByRegion).forEach(regionJobs => {
+        const newJobNames = Object.keys(regionJobs);
+        const jobs = newJobNames.map((newJobName, index) => {
+          const requires = getRequiredJob(newJobNames, index, concurrency);
+          if (typeof workflowJob === 'string') {
+            return newJobName;
+          } else {
+            return {
+              [newJobName]: {
+                ...Object.values(workflowJob)[0],
+                requires: [...(workflowJob[jobName].requires || []), ...(requires ? [requires] : [])],
+              },
+            };
+          }
+        });
+        workflow.jobs = [...workflow.jobs, ...jobs];
       });
-      const filteredJobs = replaceWorkflowDependency(removeWorkflowJob(workflow.jobs, jobName), jobName, newJobNames);
 
-      workflow.jobs = [...filteredJobs, ...jobs];
+      const lastJobBatch = Object.values(jobByRegion)
+        .map(regionJobs => getLastBatchJobs(Object.keys(regionJobs), concurrency))
+        .reduce((acc, val) => acc.concat(val), []);
+      const filteredJobs = replaceWorkflowDependency(removeWorkflowJob(workflow.jobs, jobName), jobName, lastJobBatch);
+      workflow.jobs = filteredJobs;
     }
     output.workflows = workflows;
   }
@@ -161,6 +179,17 @@ function removeWorkflowJob(jobs: WorkflowJob[], jobName: string): WorkflowJob[] 
       return name !== jobName;
     }
   });
+}
+
+/**
+ *
+ * @param jobs array of job names
+ * @param concurrency number of concurrent jobs
+ */
+function getLastBatchJobs(jobs: string[], concurrency: number): string[] {
+  const lastBatchJobLength = Math.min(concurrency, jobs.length);
+  const lastBatchJobNames = jobs.slice(jobs.length - lastBatchJobLength);
+  return lastBatchJobNames;
 }
 
 /**
@@ -211,7 +240,13 @@ function saveConfig(config: CircleCIConfig): void {
 }
 function main(): void {
   const config = loadConfig();
-  const splitConfig = splitTests(config, 'amplify_e2e_tests', 'build_test_deploy', join(process.cwd(), 'packages', 'amplify-e2e-tests'), 4);
+  const splitConfig = splitTests(
+    config,
+    'amplify_e2e_tests',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-e2e-tests'),
+    CONCURRENCY,
+  );
   saveConfig(splitConfig);
 }
 main();
