@@ -769,13 +769,6 @@ jobs:
           when: always
       - store_artifacts:
           path: ../uitest_android_results
-  hostingPROD-amplify_e2e_tests:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    steps: *ref_1
-    environment:
-      TEST_SUITE: src/__tests__/hostingPROD.test.ts
   layer-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -783,6 +776,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/layer.test.ts
+      CLI_REGION: us-east-2
   plugin-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -790,7 +784,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/plugin.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-1
   datastore-modegen-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -798,7 +792,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/datastore-modegen.test.ts
-      CLI_REGION: eu-west-1
+      CLI_REGION: ap-southeast-1
   interactions-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -806,7 +800,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/interactions.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-south-1
   hosting-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -814,7 +808,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/hosting.test.ts
-      CLI_REGION: ap-south-1
+      CLI_REGION: ap-southeast-2
   init-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -822,7 +816,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/init.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   amplify-app-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -830,7 +824,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/amplify-app.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-1
   analytics-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -838,7 +832,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/analytics.test.ts
-      CLI_REGION: eu-west-1
+      CLI_REGION: ap-southeast-1
   hostingPROD-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -846,7 +840,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/hostingPROD.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-south-1
   predictions-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -854,7 +848,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/predictions.test.ts
-      CLI_REGION: ap-south-1
+      CLI_REGION: ap-southeast-2
   delete-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -862,7 +856,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/delete.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   storage-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -870,7 +864,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/storage.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-1
   migration-api-key-migration-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -878,7 +872,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration.test.ts
-      CLI_REGION: eu-west-1
+      CLI_REGION: ap-southeast-1
   migration-api-connection-migration-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -886,7 +880,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-south-1
   api-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -894,7 +888,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/api.test.ts
-      CLI_REGION: ap-south-1
+      CLI_REGION: ap-southeast-2
   auth-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -902,7 +896,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/auth.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   function-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -910,7 +904,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/function.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-1
 workflows:
   version: 2
   nightly_console_integration_tests:
@@ -1000,8 +994,10 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
-            - hostingPROD-amplify_e2e_tests
             - layer-amplify_e2e_tests
+            - init-amplify_e2e_tests
+            - delete-amplify_e2e_tests
+            - auth-amplify_e2e_tests
             - plugin-amplify_e2e_tests
             - amplify-app-amplify_e2e_tests
             - storage-amplify_e2e_tests
@@ -1015,16 +1011,13 @@ workflows:
             - hosting-amplify_e2e_tests
             - predictions-amplify_e2e_tests
             - api-amplify_e2e_tests
-            - init-amplify_e2e_tests
-            - delete-amplify_e2e_tests
-            - auth-amplify_e2e_tests
           filters:
             branches:
               only:
                 - release
                 - master
                 - beta
-      - plugin-amplify_e2e_tests:
+      - layer-amplify_e2e_tests:
           filters: &ref_2
             branches:
               only:
@@ -1032,7 +1025,15 @@ workflows:
                 - split-test
           requires:
             - publish_to_local_registry
-      - layer-amplify_e2e_tests:
+      - init-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+      - delete-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+      - auth-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1049,16 +1050,6 @@ workflows:
           requires:
             - publish_to_local_registry
       - function-amplify_e2e_tests:
-          filters: *ref_2
-          requires:
-            - publish_to_local_registry
-            - hostingPROD-amplify_e2e_tests
-      - hosting-amplify_e2e_tests:
-          filters: *ref_2
-          requires:
-            - publish_to_local_registry
-            - layer-amplify_e2e_tests
-      - init-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1095,18 +1086,6 @@ workflows:
           requires:
             - publish_to_local_registry
       - api-amplify_e2e_tests:
-          filters: *ref_2
-          requires:
-            - publish_to_local_registry
-      - init-amplify_e2e_tests:
-          filters: *ref_2
-          requires:
-            - publish_to_local_registry
-      - delete-amplify_e2e_tests:
-          filters: *ref_2
-          requires:
-            - publish_to_local_registry
-      - auth-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
