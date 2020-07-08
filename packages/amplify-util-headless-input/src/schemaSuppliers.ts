@@ -12,6 +12,10 @@ export const addApiRequestSchemaSupplier: VersionedSchemaSupplier = version => {
   return getSchema('AddApiRequest', 'api', version);
 };
 
+export const updateApiRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+  return getSchema('UpdateApiRequest', 'api', version);
+};
+
 const getSchema = async (type: string, category: string, version: number) => {
   try {
     return {
