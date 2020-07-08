@@ -96,11 +96,14 @@ export async function initEnv(context) {
   const { amplify } = context;
   const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(category);
 
-  resourcesToBeDeleted.forEach(authResource => {
-    amplify.removeResourceParameters(context, category, authResource.resourceName);
+  // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
+  const resourceCategoryFilter = resource => resource.category === category;
+
+  resourcesToBeDeleted.filter(resourceCategoryFilter).forEach(functionResource => {
+    amplify.removeResourceParameters(context, category, functionResource.resourceName);
   });
 
-  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
+  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated).filter(resourceCategoryFilter);
 
   const functionTasks = tasks.map(functionResource => {
     const { resourceName, service } = functionResource;
