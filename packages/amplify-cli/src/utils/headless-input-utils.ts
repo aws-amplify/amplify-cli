@@ -2,7 +2,7 @@ import readline from 'readline';
 
 const headlessPayloadReadTimeoutMillis = 2000;
 
-// checks if the --stdin flag is set on the amplify command;
+// checks if the --headless flag is set on the amplify command;
 export const isHeadlessCommand = (context: any): boolean => context.input.options && context.input.options.headless;
 
 // waits for a line on stdin.

@@ -36,6 +36,8 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     this.context = context;
   }
 
+  // TODO once the AddApiRequest contains multiple services this class should depend on an ApiArtifactHandler
+  // for each service and delegate to the correct one
   createArtifacts = async (request: AddApiRequest): Promise<string> => {
     const serviceConfig = request.serviceConfiguration;
     const resourceDir = this.getResourceDir(serviceConfig.apiName);
@@ -79,6 +81,8 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     return serviceConfig.apiName;
   };
 
+  // TODO once the AddApiRequest contains multiple services this class should depend on an ApiArtifactHandler
+  // for each service and delegate to the correct one
   updateArtifacts = async (request: UpdateApiRequest): Promise<void> => {
     const updates = request.serviceModification;
     const apiName = this.getExistingApiName();
