@@ -1,10 +1,10 @@
-import path from 'path';
-import fs from 'fs-extra';
 import { serviceWalkthroughResultToAddApiRequest } from './utils/service-walkthrough-result-to-add-api-request';
 import { getCfnApiArtifactHandler } from './cfn-api-artifact-handler';
 import { serviceMetadataFor, getServiceWalkthrough, datasourceMetadataFor } from './utils/dynamic-imports';
-import { parametersFileName } from './aws-constants';
-import { legacyAddResource, copyCfnTemplate } from './legacy-add-resource';
+import { legacyAddResource } from './legacy-add-resource';
+import { legacyUpdateResource } from './legacy-update-resource';
+import { UpdateApiRequest } from 'amplify-headless-interface';
+import { editSchemaFlow } from './utils/edit-schema-flow';
 
 export async function console(context, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
@@ -21,59 +21,41 @@ export async function console(context, service) {
 
 export async function addResource(context, category, service, options) {
   const serviceMetadata = await serviceMetadataFor(service);
-  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 
   const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
   switch (service) {
     case 'AppSync':
-      return serviceWalkthroughPromise
+      const apiName = await serviceWalkthroughPromise
         .then(serviceWalkthroughResultToAddApiRequest)
         .then(getCfnApiArtifactHandler(context).createArtifacts);
+      await editSchemaFlow(context, apiName);
+      return apiName;
     default:
       return legacyAddResource(serviceWalkthroughPromise, context, category, service, options);
   }
 }
 
 export async function updateResource(context, category, service) {
-  let answers;
   const serviceMetadata = await serviceMetadataFor(service);
-  let { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   if (!updateWalkthrough) {
     context.print.error('Update functionality not available for this option');
     process.exit(0);
   }
 
-  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then(result => {
-    const options: any = {};
-    if (result) {
-      if (result.answers) {
-        ({ answers } = result);
-        options.dependsOn = result.dependsOn;
-      } else {
-        answers = result;
-      }
+  const updateWalkthroughPromise: Promise<UpdateApiRequest> = updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 
-      if (!result.noCfnFile) {
-        if (answers.customCfnFile) {
-          cfnFilename = answers.customCfnFile;
-        }
-        copyCfnTemplate(context, category, answers, cfnFilename);
-        const parameters = { ...answers };
-        const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
-        fs.ensureDirSync(resourceDirPath);
-        const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-        const jsonString = JSON.stringify(parameters, null, 4);
-        fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-        context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName, 'dependsOn', answers.dependsOn);
-      }
-    }
-  });
+  switch (service) {
+    case 'AppSync':
+      return updateWalkthroughPromise.then(getCfnApiArtifactHandler(context).updateArtifacts);
+    default:
+      return legacyUpdateResource(updateWalkthroughPromise, context, category, service);
+  }
 }
 
 export async function migrateResource(context, projectPath, service, resourceName) {

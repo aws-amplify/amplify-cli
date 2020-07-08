@@ -7,16 +7,23 @@
                 1
             ]
         },
-        "serviceConfiguration": {
-            "$ref": "#/definitions/AppSyncServiceConfiguration"
+        "serviceModification": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/Pick<AppSyncServiceConfiguration,\"serviceName\">"
+                },
+                {
+                    "$ref": "#/definitions/Partial<Pick<AppSyncServiceConfiguration,\"transformSchema\"|\"defaultAuthType\"|\"additionalAuthTypes\"|\"conflictResolution\">>"
+                }
+            ]
         }
     },
     "required": [
-        "serviceConfiguration",
+        "serviceModification",
         "version"
     ],
     "definitions": {
-        "AppSyncServiceConfiguration": {
+        "Pick<AppSyncServiceConfiguration,\"serviceName\">": {
             "type": "object",
             "properties": {
                 "serviceName": {
@@ -24,10 +31,15 @@
                     "enum": [
                         "AppSync"
                     ]
-                },
-                "apiName": {
-                    "type": "string"
-                },
+                }
+            },
+            "required": [
+                "serviceName"
+            ]
+        },
+        "Partial<Pick<AppSyncServiceConfiguration,\"transformSchema\"|\"defaultAuthType\"|\"additionalAuthTypes\"|\"conflictResolution\">>": {
+            "type": "object",
+            "properties": {
                 "transformSchema": {
                     "description": "The annotated GraphQL schema that defines the AppSync API",
                     "type": "string"
@@ -72,13 +84,7 @@
                 "conflictResolution": {
                     "$ref": "#/definitions/ConflictResolution"
                 }
-            },
-            "required": [
-                "apiName",
-                "defaultAuthType",
-                "serviceName",
-                "transformSchema"
-            ]
+            }
         },
         "AppSyncAPIKeyAuthType": {
             "type": "object",

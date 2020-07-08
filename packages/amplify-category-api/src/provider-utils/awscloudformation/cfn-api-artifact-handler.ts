@@ -1,9 +1,15 @@
 import { ApiArtifactHandler } from '../api-artifact-handler';
-import { AddApiRequest, ConflictResolution, AppSyncServiceConfiguration, ResolutionStrategy } from 'amplify-headless-interface';
+import {
+  AddApiRequest,
+  ConflictResolution,
+  AppSyncServiceConfiguration,
+  ResolutionStrategy,
+  UpdateApiRequest,
+} from 'amplify-headless-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import { category } from '../../category-constants';
-import { rootAssetDir, provider } from './aws-constants';
+import { rootAssetDir, provider, gqlSchemaFilename } from './aws-constants';
 import { readTransformerConfiguration, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
@@ -14,7 +20,6 @@ import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 export const getCfnApiArtifactHandler = (context): ApiArtifactHandler => {
   return new CfnApiArtifactHandler(context);
 };
-const schemaFileName = 'schema.graphql';
 const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
 const defaultStackName = 'CustomResources.json';
@@ -25,16 +30,17 @@ const defaultCfnParameters = (apiName: string) => ({
   DynamoDBEnableServerSideEncryption: false,
 });
 class CfnApiArtifactHandler implements ApiArtifactHandler {
-  private context: any;
+  private readonly context: any;
 
   constructor(context) {
     this.context = context;
   }
 
+  // TODO once the AddApiRequest contains multiple services this class should depend on an ApiArtifactHandler
+  // for each service and delegate to the correct one
   createArtifacts = async (request: AddApiRequest): Promise<string> => {
     const serviceConfig = request.serviceConfiguration;
-    const backendDir = this.context.amplify.pathManager.getBackendDirPath();
-    const resourceDir = path.join(backendDir, category, serviceConfig.apiName);
+    const resourceDir = this.getResourceDir(serviceConfig.apiName);
 
     // Ensure the project directory exists and create the stacks & resolvers directories.
     fs.ensureDirSync(resourceDir);
@@ -61,7 +67,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     );
 
     // write the template buffer to the project folder
-    fs.writeFileSync(path.join(resourceDir, schemaFileName), serviceConfig.transformSchema);
+    this.writeSchema(resourceDir, serviceConfig.transformSchema);
 
     const authConfig = this.extractAuthConfig(serviceConfig);
 
@@ -74,6 +80,61 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig));
     return serviceConfig.apiName;
   };
+
+  // TODO once the AddApiRequest contains multiple services this class should depend on an ApiArtifactHandler
+  // for each service and delegate to the correct one
+  updateArtifacts = async (request: UpdateApiRequest): Promise<void> => {
+    const updates = request.serviceModification;
+    const apiName = this.getExistingApiName();
+    const resourceDir = this.getResourceDir(apiName);
+    if (!apiName) {
+      throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`);
+    }
+    if (updates.transformSchema) {
+      this.writeSchema(resourceDir, updates.transformSchema);
+    }
+    if (!_.isEmpty(updates.conflictResolution)) {
+      updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
+      await writeResolverConfig(updates.conflictResolution, resourceDir);
+    }
+    const authConfig = this.getExistingAuthConfig();
+    if (!_.isEmpty(updates.defaultAuthType)) {
+      authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
+    }
+    if (!_.isEmpty(updates.additionalAuthTypes)) {
+      authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
+    }
+    await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
+      resourceDir,
+      parameters: defaultCfnParameters(apiName),
+      authConfig,
+    });
+
+    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
+    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+  };
+
+  private getExistingAuthConfig = () => {
+    const entry = this.getApiAmplifyMetaEntry()[1] as any;
+    return entry.output ? entry.output.authConfig : {};
+  };
+
+  private getExistingApiName = (): string | undefined => {
+    const entry = this.getApiAmplifyMetaEntry();
+    if (entry) {
+      return entry[0];
+    }
+  };
+
+  private getApiAmplifyMetaEntry = () => {
+    return Object.entries(this.context.amplify.getProjectMeta().api || {}).find(([, value]) => (value as any).service === 'AppSync');
+  };
+
+  private writeSchema = (resourceDir: string, schema: string) => {
+    fs.writeFileSync(path.join(resourceDir, gqlSchemaFilename), schema);
+  };
+
+  private getResourceDir = (apiName: string) => path.join(this.context.amplify.pathManager.getBackendDirPath(), category, apiName);
 
   private createAmplifyMeta = authConfig => ({
     service: 'AppSync',
@@ -169,9 +230,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
  * write to the transformer conf if the resolverConfig is valid
  */
 export const writeResolverConfig = async (conflictResolution: ConflictResolution, resourceDir) => {
-  if (conflictResolution && (conflictResolution.defaultResolutionStrategy || conflictResolution.perModelResolutionStrategy)) {
-    const localTransformerConfig = await readTransformerConfiguration(resourceDir);
-    localTransformerConfig.ResolverConfig = conflictResolutionToResolverConfig(conflictResolution);
-    await writeTransformerConfiguration(resourceDir, localTransformerConfig);
-  }
+  const localTransformerConfig = await readTransformerConfiguration(resourceDir);
+  localTransformerConfig.ResolverConfig = conflictResolutionToResolverConfig(conflictResolution);
+  await writeTransformerConfiguration(resourceDir, localTransformerConfig);
 };
