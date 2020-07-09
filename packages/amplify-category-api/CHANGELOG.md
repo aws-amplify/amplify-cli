@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.20.0...amplify-category-api@2.20.1-beta.0) (2020-07-09)
+
+
+### Bug Fixes
+
+* validatePathName_validPath matcher ([#4559](https://github.com/aws-amplify/amplify-cli/issues/4559)) ([3cf5f91](https://github.com/aws-amplify/amplify-cli/commit/3cf5f914024e55904da0f782ea71bd62bfca40e3))
+
+
+
+
+
 # [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.19.8...amplify-category-api@2.20.0) (2020-07-07)
 
 

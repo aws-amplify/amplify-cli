@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.23.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.23.0...@aws-amplify/cli@4.23.1-beta.0) (2020-07-09)
+
+
+### Bug Fixes
+
+* **cli:** throw error on attach backend ([#4779](https://github.com/aws-amplify/amplify-cli/issues/4779)) ([11c55e3](https://github.com/aws-amplify/amplify-cli/commit/11c55e33e64d25dd198ef06fe76af7f7f402759a))
+
+
+
+
+
 # [4.23.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.22.0...@aws-amplify/cli@4.23.0) (2020-07-07)
 
 

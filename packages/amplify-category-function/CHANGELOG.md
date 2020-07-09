@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.21.0...amplify-category-function@2.21.1-beta.0) (2020-07-09)
+
+
+### Bug Fixes
+
+* filter init env resources by function category ([#4778](https://github.com/aws-amplify/amplify-cli/issues/4778)) ([c11c6bc](https://github.com/aws-amplify/amplify-cli/commit/c11c6bcfe9f2f769b7650bc45b369c9889d8040d))
+* isMockable() handles Lambda functions without dependsOn array ([#4762](https://github.com/aws-amplify/amplify-cli/issues/4762)) ([9b9bf31](https://github.com/aws-amplify/amplify-cli/commit/9b9bf316ae2ebcec651ca3c62f848cb0e409392b))
+
+
+
+
+
 # [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.20.8...amplify-category-function@2.21.0) (2020-07-07)
 
 
