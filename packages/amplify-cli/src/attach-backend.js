@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const path = require('path');
-const util = require('util');
 const queryProvider = require('./attach-backend-steps/a10-queryProvider');
 const analyzeProject = require('./attach-backend-steps/a20-analyzeProject');
 const initFrontend = require('./attach-backend-steps/a30-initFrontend');
@@ -24,8 +23,8 @@ async function attachBackend(context, inputParams) {
       removeFolderStructure(context);
       restoreOriginalAmplifyFolder(context);
       context.print.error('Failed to pull the backend.');
-      context.print.info(util.inspect(e));
       context.usageData.emitError(e);
+      throw e;
     });
 }
 
