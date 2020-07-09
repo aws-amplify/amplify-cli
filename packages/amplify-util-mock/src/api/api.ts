@@ -60,6 +60,7 @@ export class APITest {
       await this.generateTestFrontendExports(context);
       await this.generateCode(context, appSyncConfig);
 
+      context.print.info(`DynamoDB Local endpoint is running at ${this.ddbClient.endpoint.href}`);
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
     } catch (e) {
       context.print.error(`Failed to start API Mock endpoint ${e}`);
