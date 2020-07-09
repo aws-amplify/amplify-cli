@@ -27,10 +27,12 @@ export async function addResource(context, category, service, options) {
   const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
   switch (service) {
     case 'AppSync':
-      const apiName = await serviceWalkthroughPromise
-        .then(serviceWalkthroughResultToAddApiRequest)
-        .then(getCfnApiArtifactHandler(context).createArtifacts);
-      await editSchemaFlow(context, apiName);
+      const walkthroughResult = await serviceWalkthroughPromise;
+      const askToEdit = walkthroughResult.askToEdit;
+      const apiName = await getCfnApiArtifactHandler(context).createArtifacts(serviceWalkthroughResultToAddApiRequest(walkthroughResult));
+      if (askToEdit) {
+        await editSchemaFlow(context, apiName);
+      }
       return apiName;
     default:
       return legacyAddResource(serviceWalkthroughPromise, context, category, service, options);

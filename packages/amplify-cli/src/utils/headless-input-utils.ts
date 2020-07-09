@@ -15,19 +15,15 @@ export const readHeadlessPayload = async (): Promise<string> => {
     terminal: false,
   });
 
-  // rejects a promise after an amount of time
-  const readTimeout = new Promise((_, reject) => {
-    const id = setTimeout(() => {
-      clearTimeout(id);
-      reject(new Error('No input received on stdin'));
-    }, headlessPayloadReadTimeoutMillis);
-  });
+  // closes the readline after an amount of time
+  const id = setTimeout(() => {
+    clearTimeout(id);
+    rl.close();
+  }, headlessPayloadReadTimeoutMillis);
 
   // resolves a promise on the 'line' event
-  const readPromise: Promise<string> = new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     rl.on('line', line => resolve(line));
+    rl.on('close', () => reject(new Error('No input received on stdin')));
   });
-
-  // wait for a line or timeout, whichever comes first
-  return Promise.race([readTimeout, readPromise]) as Promise<string>;
 };

@@ -39,6 +39,10 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   // TODO once the AddApiRequest contains multiple services this class should depend on an ApiArtifactHandler
   // for each service and delegate to the correct one
   createArtifacts = async (request: AddApiRequest): Promise<string> => {
+    const existingApiName = this.getExistingApiName();
+    if (existingApiName) {
+      throw new Error(`GraphQL API ${existingApiName} already exists in the project. Use 'amplify update api' to make modifications.`);
+    }
     const serviceConfig = request.serviceConfiguration;
     const resourceDir = this.getResourceDir(serviceConfig.apiName);
 
@@ -86,10 +90,10 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   updateArtifacts = async (request: UpdateApiRequest): Promise<void> => {
     const updates = request.serviceModification;
     const apiName = this.getExistingApiName();
-    const resourceDir = this.getResourceDir(apiName);
     if (!apiName) {
       throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`);
     }
+    const resourceDir = this.getResourceDir(apiName);
     if (updates.transformSchema) {
       this.writeSchema(resourceDir, updates.transformSchema);
     }

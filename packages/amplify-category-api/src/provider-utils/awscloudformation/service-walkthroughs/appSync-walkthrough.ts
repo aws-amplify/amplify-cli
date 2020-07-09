@@ -5,7 +5,12 @@ import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
 import { rootAssetDir, cfnParametersFilename } from '../aws-constants';
-import { collectDirectivesByTypeNames, writeTransformerConfiguration, readProjectConfiguration, ConflictHandlerType } from 'graphql-transformer-core';
+import {
+  collectDirectivesByTypeNames,
+  writeTransformerConfiguration,
+  readProjectConfiguration,
+  ConflictHandlerType,
+} from 'graphql-transformer-core';
 import { category } from '../../../category-constants';
 import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
@@ -119,9 +124,10 @@ export const serviceWalkthrough = async (context, defaultValuesFilename, service
 
   const schemaFileAnswer = await inquirer.prompt(schemaFileQuestion);
 
+  let schemaContent = '';
+  let askToEdit = true;
   if (schemaFileAnswer[inputs[2].key]) {
     // User has an annotated schema file
-
     const filePathQuestion = {
       type: inputs[3].type,
       name: inputs[3].key,
@@ -129,24 +135,33 @@ export const serviceWalkthrough = async (context, defaultValuesFilename, service
       validate: amplify.inputValidation(inputs[3]),
     };
     const { schemaFilePath } = await inquirer.prompt(filePathQuestion);
-    const schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
-    return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true, resolverConfig, schemaContent };
+    schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
+    askToEdit = false;
+  } else {
+    // Schema template selection
+    const templateSelectionQuestion = {
+      type: inputs[4].type,
+      name: inputs[4].key,
+      message: inputs[4].question,
+      choices: inputs[4].options.filter(templateSchemaFilter(authConfig)),
+      validate: amplify.inputValidation(inputs[4]),
+    };
+
+    const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
+    const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
+    schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
   }
 
-  // Schema template selection
-  const templateSelectionQuestion = {
-    type: inputs[4].type,
-    name: inputs[4].key,
-    message: inputs[4].question,
-    choices: inputs[4].options.filter(templateSchemaFilter(authConfig)),
-    validate: amplify.inputValidation(inputs[4]),
+  return {
+    answers: resourceAnswers,
+    output: {
+      authConfig,
+    },
+    noCfnFile: true,
+    resolverConfig,
+    schemaContent,
+    askToEdit,
   };
-
-  const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
-  const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  const schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
-
-  return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true, resolverConfig, schemaContent };
 };
 
 export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
@@ -248,9 +263,9 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
       serviceName: 'AppSync',
       defaultAuthType: authConfigToAppSyncAuthType(authConfig ? authConfig.defaultAuthentication : undefined),
       additionalAuthTypes: (authConfig ? authConfig.additionalAuthenticationProviders || [] : []).map(authConfigToAppSyncAuthType),
-      conflictResolution: resolverConfigToConflictResolution(resolverConfig)
-    }
-  }
+      conflictResolution: resolverConfigToConflictResolution(resolverConfig),
+    },
+  };
 };
 
 async function askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes?) {
