@@ -14,12 +14,11 @@ export function constructContext(pluginPlatform: PluginPlatform, input: Input): 
 export function attachUsageData(context: Context) {
   const { AMPLIFY_CLI_ENABLE_USAGE_DATA } = process.env;
   const config = init(context);
-  const usageTrackingEnabled = !AMPLIFY_CLI_ENABLE_USAGE_DATA ? false : config.usageDataConfig.isUsageTrackingEnabled;
-  if (usageTrackingEnabled) {
-    context.usageData = UsageData.Instance;
-  } else {
-    context.usageData = NoUsageData.Instance;
-  }
+  const usageTrackingEnabled = AMPLIFY_CLI_ENABLE_USAGE_DATA
+    ? AMPLIFY_CLI_ENABLE_USAGE_DATA === 'true'
+    : config.usageDataConfig.isUsageTrackingEnabled;
+  if (usageTrackingEnabled) context.usageData = UsageData.Instance;
+  else context.usageData = NoUsageData.Instance;
   context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input);
 }
 
