@@ -3,7 +3,7 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 
-const CONCURRENCY = 12;
+const CONCURRENCY = 2;
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-1',
   'us-east-2',
