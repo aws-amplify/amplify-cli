@@ -13,6 +13,7 @@ const regionMappings = {
   'ap-southeast-1': 'Asia Pacific (Singapore)',
   'ap-southeast-2': 'Asia Pacific (Sydney)',
   'ap-south-1': 'Asia Pacific (Mumbai)',
+  'ca-central-1': 'Canada (Central)',
 };
 
 module.exports = {
