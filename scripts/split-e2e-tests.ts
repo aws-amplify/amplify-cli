@@ -7,10 +7,11 @@ const CONCURRENCY = 3;
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-2',
   'us-west-2',
-  'eu-west-1',
   'eu-west-2',
   'eu-central-1',
-  'ap-southeast-1'
+  'ap-northeast-1',
+  'ap-southeast-1',
+  'ap-southeast-2',
 ];
 
 // This array needs to be update periodically when new tests suites get added
