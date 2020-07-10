@@ -1,5 +1,5 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
+import { getCLIPath, nspawn as spawn, singleSelect } from '../../src';
 import _ from 'lodash';
 
 const settings = {
@@ -30,6 +30,7 @@ const amplifyRegions = [
   'ap-southeast-1',
   'ap-southeast-2',
   'ap-south-1',
+  'ca-central-1',
 ];
 
 const defaultPinpointRegion = 'us-east-1';
@@ -84,9 +85,6 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
 }
 
 export function initProject(cwd: string) {
-  let regionIndex = amplifyRegions.indexOf(settings.region);
-  regionIndex = (regionIndex === -1)? 0: regionIndex;
-
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
@@ -118,13 +116,9 @@ export function initProject(cwd: string) {
       .resumeRecording()
       .wait('region');
 
-      while(regionIndex > 0){
-        chain.send(KEY_DOWN_ARROW);
-        regionIndex--;
-      }
+      singleSelect(chain, settings.region, amplifyRegions);
 
-      chain.sendCarriageReturn()
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
           resolve();
