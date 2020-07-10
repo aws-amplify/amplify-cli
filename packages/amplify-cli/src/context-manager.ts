@@ -17,8 +17,11 @@ export function attachUsageData(context: Context) {
   const usageTrackingEnabled = AMPLIFY_CLI_ENABLE_USAGE_DATA
     ? AMPLIFY_CLI_ENABLE_USAGE_DATA === 'true'
     : config.usageDataConfig.isUsageTrackingEnabled;
-  if (usageTrackingEnabled) context.usageData = UsageData.Instance;
-  else context.usageData = NoUsageData.Instance;
+  if (usageTrackingEnabled) {
+    context.usageData = UsageData.Instance;
+  } else {
+    context.usageData = NoUsageData.Instance;
+  }
   context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input);
 }
 
