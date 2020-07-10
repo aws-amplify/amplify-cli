@@ -15,6 +15,9 @@ describe('auth push: ', () => {
       info: jest.fn(),
       error: jest.fn(),
     },
+    usageData: {
+      emitError: jest.fn(),
+    },
   };
 
   it('push run method should exist', () => {
