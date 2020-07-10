@@ -2,6 +2,7 @@ const { readdirSync, existsSync } = require('fs');
 const { createReadStream } = require('fs-extra');
 const Ora = require('ora');
 const mime = require('mime-types');
+const sequential = require('promise-sequential');
 const { getAuthResourceName } = require('../../../utils/getAuthResourceName');
 
 const providerName = 'awscloudformation';
@@ -29,12 +30,15 @@ async function uploadFiles(context) {
       return null;
     }
     const fileList = readdirSync(assetPath);
-    const uploadFileTasks = fileList.map((file) => uploadFile(s3Client, bucketName, `${assetPath}/${file}`, file));
+    const uploadFileTasks = [];
+    fileList.forEach(file => {
+      uploadFileTasks.push(async () => await uploadFile(s3Client, bucketName, `${assetPath}/${file}`, file));
+    });
 
     const spinner = new Ora('Uploading files...');
     try {
       spinner.start();
-      await Promise.all(uploadFileTasks);
+      await sequential(uploadFileTasks);
       spinner.succeed('Uploaded files successfully.');
     } catch (e) {
       spinner.fail('Error has occurred during file upload.');
