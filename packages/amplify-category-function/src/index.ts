@@ -163,6 +163,7 @@ export async function executeAmplifyCommand(context) {
   } else {
     commandPath = path.join(commandPath, category, context.input.command);
   }
+
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
