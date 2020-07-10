@@ -17,9 +17,6 @@ import {
   AmplifyPostPullEventData,
 } from './domain/amplify-event';
 
-const ERROR_NOT_AMPLIFY_PROJECT =
-  "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify";
-
 export async function executeCommand(context: Context) {
   const pluginCandidates = getPluginsWithNameAndCommand(context.pluginPlatform, context.input.plugin!, context.input.command!);
 
@@ -143,18 +140,6 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
   return result;
 }
 
-export async function executeAmplifyCommandForPlugin(context: Context, plugin: any) {
-  try {
-    await plugin.executeAmplifyCommand(context);
-  } catch (err) {
-    if (err.message === ERROR_NOT_AMPLIFY_PROJECT) {
-      context.print.error(err.message);
-    } else {
-      context.print.info(err.stack);
-    }
-  }
-}
-
 async function executePluginModuleCommand(context: Context, plugin: PluginInfo) {
   const { commands, commandAliases } = plugin.manifest;
   if (!commands!.includes(context.input.command!)) {
@@ -170,8 +155,7 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo) 
       typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function'
     ) {
       attachContextExtensions(context, plugin);
-
-      executeAmplifyCommandForPlugin(context, pluginModule);
+      await pluginModule.executeAmplifyCommand(context);
     } else {
       // if the module does not have the executeAmplifyCommand method,
       // fall back to the old approach by scanning the command folder and locate the command file

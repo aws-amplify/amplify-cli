@@ -22,7 +22,7 @@ async function migrate(context, serviceName) {
             if (providerController) {
               if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
                 migrateResourcePromises.push(
-                  providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName),
+                  providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName)
                 );
               }
             }
@@ -149,7 +149,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName],
+          resourceOpsMapping[resourceName]
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });
@@ -171,6 +171,7 @@ async function executeAmplifyCommand(context) {
   } else {
     commandPath = path.join(commandPath, category, context.input.command);
   }
+
   const commandModule = require(commandPath);
   await commandModule.run(context);
 }
