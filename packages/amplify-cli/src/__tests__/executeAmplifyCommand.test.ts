@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { executeAmplifyCommandForPlugin } from '../../lib/execution-manager';
+import { executeAmplifyCommandForPlugin } from '../execution-manager';
 
 describe('executeAmplifyCommand: ', () => {
   const mockExecuteAmplifyCommand = jest.fn();
