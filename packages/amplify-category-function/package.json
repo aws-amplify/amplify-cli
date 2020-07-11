@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "2.21.1",
+  "version": "2.21.2-beta.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-category-storage": "2.5.1",
+    "amplify-category-storage": "2.5.2-beta.0",
     "amplify-function-plugin-interface": "1.4.0",
     "enquirer": "^2.3.5",
     "folder-hash": "^3.3.2",

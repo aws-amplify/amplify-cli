@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.16.1...amplify-category-auth@2.16.2-beta.0) (2020-07-11)
+
+
+### Bug Fixes
+
+* **cli:** remove unnecessary stack trace log when adding services ([#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)) ([5bee574](https://github.com/aws-amplify/amplify-cli/commit/5bee574bbcd956c032e7714b0813aedd7914a6cb))
+* warning added for identity pool deletion ([#4731](https://github.com/aws-amplify/amplify-cli/issues/4731)) ([d555674](https://github.com/aws-amplify/amplify-cli/commit/d555674e4968cceab6fddd34f1b016dd57d506ea))
+
+
+### Performance Improvements
+
+* fulfill promises to upload files to S3 concurrently ([#4575](https://github.com/aws-amplify/amplify-cli/issues/4575)) ([96d1914](https://github.com/aws-amplify/amplify-cli/commit/96d1914f26507184f14371294d31b3a5e5c94954)), closes [#4158](https://github.com/aws-amplify/amplify-cli/issues/4158)
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([7f38d81](https://github.com/aws-amplify/amplify-cli/commit/7f38d81ef2f890c25d39b02407c5255c8760c511)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
 ## [2.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.16.0...amplify-category-auth@2.16.1) (2020-07-09)
 
 **Note:** Version bump only for package amplify-category-auth

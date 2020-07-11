@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.2.0...amplify-e2e-core@1.2.1-beta.0) (2020-07-11)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.1.9...amplify-e2e-core@1.2.0) (2020-07-07)
 
 
