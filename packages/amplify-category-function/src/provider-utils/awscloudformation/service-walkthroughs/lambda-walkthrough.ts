@@ -40,7 +40,7 @@ export async function createWalkthrough(
   templateParameters = merge(templateParameters, await templateWalkthrough(context, templateParameters));
 
   if (await context.amplify.confirmPrompt.run('Do you want to access other resources in this project from your Lambda function?')) {
-    templateParameters = merge(templateParameters, await askExecRolePermissionsQuestions(context));
+    templateParameters = merge(templateParameters, await askExecRolePermissionsQuestions(context, templateParameters.functionName));
   }
 
   // ask scheduling Lambda questions and merge in results
@@ -103,7 +103,10 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
       'Do you want to update the Lambda function permissions to access other resources in this project?',
     )
   ) {
-    merge(functionParameters, await askExecRolePermissionsQuestions(context, currentParameters.permissions));
+    merge(
+      functionParameters,
+      await askExecRolePermissionsQuestions(context, lambdaToUpdate, _.get(currentParameters, ['mutableParametersState', 'permissions'])),
+    );
 
     const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);

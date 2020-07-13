@@ -4,6 +4,7 @@ import path from 'path';
 import * as TransformPackage from 'graphql-transformer-core';
 import _ from 'lodash';
 import { topLevelCommentPrefix, topLevelCommentSuffix, envVarPrintoutPrefix, CRUDOperation } from '../../../constants';
+import { ServiceName } from '../utils/constants';
 import {
   fetchPermissionCategories,
   fetchPermissionResourcesForCategory,
@@ -14,12 +15,14 @@ import { FunctionParameters, FunctionDependency } from 'amplify-function-plugin-
 /**
  * This whole file desperately needs to be refactored
  */
-export const askExecRolePermissionsQuestions = async (context, currentPermissionMap?): Promise<ExecRolePermissionsResponse> => {
-  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+export const askExecRolePermissionsQuestions = async (
+  context,
+  lambdaFunctionToUpdate: string,
+  currentPermissionMap?,
+): Promise<ExecRolePermissionsResponse> => {
+  const amplifyMeta = context.amplify.getProjectMeta();
 
-  let categories = Object.keys(amplifyMeta);
-  categories = categories.filter(category => category !== 'providers');
+  const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers');
 
   // retrieve api's AppSync resource name for conditional logic
   // in blending appsync @model-backed dynamoDB tables into storage category flow
@@ -51,7 +54,7 @@ export const askExecRolePermissionsQuestions = async (context, currentPermission
   const appsyncTableSuffix = '@model(appsync)';
 
   for (let category of selectedCategories) {
-    const resourcesList = category in amplifyMeta ? Object.keys(amplifyMeta[category]) : [];
+    let resourcesList = category in amplifyMeta ? Object.keys(amplifyMeta[category]) : [];
     if (category === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
@@ -62,6 +65,13 @@ export const askExecRolePermissionsQuestions = async (context, currentPermission
           .map(modelName => `${modelName}:${appsyncTableSuffix}`);
         resourcesList.push(...modelNames);
       }
+    } else if (category === 'function') {
+      // A Lambda function cannot depend on itself
+      // Lambda layer dependencies are handled seperately
+      resourcesList = resourcesList.filter(
+        resourceName =>
+          resourceName !== lambdaFunctionToUpdate && amplifyMeta[category][resourceName].service === ServiceName.LambdaFunction,
+      );
     }
 
     if (resourcesList.length === 0) {

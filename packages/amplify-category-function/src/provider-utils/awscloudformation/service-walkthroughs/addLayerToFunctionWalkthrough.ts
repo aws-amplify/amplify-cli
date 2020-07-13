@@ -21,7 +21,7 @@ export const addLayersToFunctionWalkthrough = async (
 
   // ask initial confirmation
   if (!(await context.amplify.confirmPrompt.run(confirmationPrompt, false))) {
-    return { lambdaLayers, dependsOn };
+    return { lambdaLayers: previousSelections, dependsOn };
   }
 
   let askArnQuestion: boolean;
@@ -38,6 +38,11 @@ export const addLayersToFunctionWalkthrough = async (
 
   if (lambdaLayers.length === 0) {
     context.print.info('No Lambda layers were selected');
+    if (previousSelections.length > 0) {
+      const plural = previousSelections.length > 1 ? 's' : '';
+      const removeMessage = `Removing ${previousSelections.length} previously added Lambda layer${plural} from Lambda function`;
+      context.print.info(removeMessage);
+    }
   }
 
   lambdaLayers = await askLayerOrderQuestion(lambdaLayers, previousSelections);
