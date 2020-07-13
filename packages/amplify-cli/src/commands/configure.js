@@ -10,15 +10,19 @@ import { write } from '../app-config';
 module.exports = {
   name: 'configure',
   run: async context => {
-    if (!context.parameters.first) {
-      await configureNewUser.run(context);
-    }
-
     if (context.parameters.options['usage-data-off']) {
       write(context, { usageDataConfig: { isUsageTrackingEnabled: false } });
+      context.print.success('Usage Data has been turned off');
+      return;
     }
     if (context.parameters.options['usage-data-on']) {
       write(context, { usageDataConfig: { isUsageTrackingEnabled: true } });
+      context.print.success('Usage Data has been turned on');
+      return;
+    }
+
+    if (!context.parameters.first) {
+      await configureNewUser.run(context);
     }
 
     if (context.parameters.first === 'project') {
