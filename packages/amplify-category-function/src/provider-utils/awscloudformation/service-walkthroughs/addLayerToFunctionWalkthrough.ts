@@ -38,8 +38,11 @@ export const addLayersToFunctionWalkthrough = async (
 
   if (lambdaLayers.length === 0) {
     context.print.info('No Lambda layers were selected');
-    const removeMessage = `Removing ${previousSelections.length} previously added Lambda layer`;
-    context.print.info(removeMessage + (previousSelections.length === 1 ? '' : 's') + ' from Lambda function');
+    if (previousSelections.length > 0) {
+      const plural = previousSelections.length > 1 ? 's' : '';
+      const removeMessage = `Removing ${previousSelections.length} previously added Lambda layer${plural} from Lambda function`;
+      context.print.info(removeMessage);
+    }
   }
 
   lambdaLayers = await askLayerOrderQuestion(lambdaLayers, previousSelections);
