@@ -16,6 +16,7 @@ import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-aut
 import uuid from 'uuid';
 import _ from 'lodash';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { getAppSyncResourceName, getAppSyncAuthConfig } from './utils/amplify-meta-utils';
 
 export const getCfnApiArtifactHandler = (context): ApiArtifactHandler => {
   return new CfnApiArtifactHandler(context);
@@ -39,7 +40,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   // TODO once the AddApiRequest contains multiple services this class should depend on an ApiArtifactHandler
   // for each service and delegate to the correct one
   createArtifacts = async (request: AddApiRequest): Promise<string> => {
-    const existingApiName = this.getExistingApiName();
+    const existingApiName = getAppSyncResourceName(this.context.amplify.getProjectMeta());
     if (existingApiName) {
       throw new Error(`GraphQL API ${existingApiName} already exists in the project. Use 'amplify update api' to make modifications.`);
     }
@@ -89,7 +90,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   // for each service and delegate to the correct one
   updateArtifacts = async (request: UpdateApiRequest): Promise<void> => {
     const updates = request.serviceModification;
-    const apiName = this.getExistingApiName();
+    const apiName = getAppSyncResourceName(this.context.amplify.getProjectMeta());
     if (!apiName) {
       throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`);
     }
@@ -97,15 +98,15 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     if (updates.transformSchema) {
       this.writeSchema(resourceDir, updates.transformSchema);
     }
-    if (!_.isEmpty(updates.conflictResolution)) {
+    if (updates.conflictResolution) {
       updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
       await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
-    const authConfig = this.getExistingAuthConfig();
-    if (!_.isEmpty(updates.defaultAuthType)) {
+    const authConfig = getAppSyncAuthConfig(this.context.amplify.getProjectMeta());
+    if (updates.defaultAuthType) {
       authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
     }
-    if (!_.isEmpty(updates.additionalAuthTypes)) {
+    if (updates.additionalAuthTypes) {
       authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
@@ -116,22 +117,6 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
-  };
-
-  private getExistingAuthConfig = () => {
-    const entry = this.getApiAmplifyMetaEntry()[1] as any;
-    return entry.output ? entry.output.authConfig : {};
-  };
-
-  private getExistingApiName = (): string | undefined => {
-    const entry = this.getApiAmplifyMetaEntry();
-    if (entry) {
-      return entry[0];
-    }
-  };
-
-  private getApiAmplifyMetaEntry = () => {
-    return Object.entries(this.context.amplify.getProjectMeta().api || {}).find(([, value]) => (value as any).service === 'AppSync');
   };
 
   private writeSchema = (resourceDir: string, schema: string) => {

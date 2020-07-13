@@ -15,6 +15,8 @@ import { category } from '../../../category-constants';
 import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+import _ from 'lodash';
+import { getAppSyncAuthConfig } from '../utils/amplify-meta-utils';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -226,7 +228,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     },
   ];
   // check if DataStore is enabled for the entire API
-  if (project.config && project.config.ResolverConfig) {
+  if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
     updateChoices.push({ name: 'Disable DataStore for entire API', value: 'disableDatastore' });
   } else {
     updateChoices.push({ name: 'Enable DataStore for entire API', value: 'enableDatastore' });
@@ -239,7 +241,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     choices: updateChoices,
   };
 
-  let { updateOption } = await inquirer.prompt([updateOptionQuestion]);
+  const { updateOption } = await inquirer.prompt([updateOptionQuestion]);
 
   if (updateOption === 'enableDatastore') {
     resolverConfig = {
@@ -262,7 +264,10 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     serviceModification: {
       serviceName: 'AppSync',
       defaultAuthType: authConfigToAppSyncAuthType(authConfig ? authConfig.defaultAuthentication : undefined),
-      additionalAuthTypes: (authConfig ? authConfig.additionalAuthenticationProviders || [] : []).map(authConfigToAppSyncAuthType),
+      additionalAuthTypes:
+        authConfig && authConfig.additionalAuthenticationProviders
+          ? authConfig.additionalAuthenticationProviders.map(authConfigToAppSyncAuthType)
+          : undefined,
       conflictResolution: resolverConfigToConflictResolution(resolverConfig),
     },
   };
@@ -416,37 +421,47 @@ async function askSyncFunctionQuestion(context) {
   return { newFunction, lambdaFunctionName };
 }
 async function askDefaultAuthQuestion(context) {
+  const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+  const currentDefaultAuth =
+    currentAuthConfig && currentAuthConfig.defaultAuthentication ? currentAuthConfig.defaultAuthentication.authenticationType : undefined;
   const defaultAuthTypeQuestion = {
     type: 'list',
     name: 'defaultAuthType',
     message: 'Choose the default authorization type for the API',
     choices: authProviderChoices,
+    default: currentDefaultAuth,
   };
 
   const { defaultAuthType } = await inquirer.prompt([defaultAuthTypeQuestion]);
 
-  const authConfig: any = {
-    additionalAuthenticationProviders: [],
-  };
-
   // Get default auth configured
   const defaultAuth = await askAuthQuestions(defaultAuthType, context);
 
-  authConfig.defaultAuthentication = defaultAuth;
-
-  return { authConfig, defaultAuthType };
+  return {
+    authConfig: {
+      defaultAuthentication: defaultAuth,
+    },
+    defaultAuthType,
+  };
 }
 
 async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
   if (await context.prompt.confirm('Configure additional auth types?')) {
+    authConfig.additionalAuthenticationProviders = [];
     // Get additional auth configured
     const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
+
+    const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+    const currentAdditionalAuth = ((currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
+      ? currentAuthConfig.additionalAuthenticationProviders
+      : []) as any[]).map(authProvider => authProvider.authenticationType);
 
     const additionalProvidersQuestion: CheckboxQuestion = {
       type: 'checkbox',
       name: 'authType',
       message: 'Choose the additional authorization types you want to configure for the API',
       choices: remainingAuthProviderChoices,
+      default: currentAdditionalAuth,
     };
 
     const additionalProvidersAnswer = await inquirer.prompt([additionalProvidersQuestion]);
@@ -464,7 +479,7 @@ async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) 
 }
 
 async function checkForCognitoUserPools(context, parameters, authConfig) {
-  const additionalUserPoolProviders = authConfig.additionalAuthenticationProviders.filter(
+  const additionalUserPoolProviders = (authConfig.additionalAuthenticationProviders || []).filter(
     provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
   );
   const additionalUserPoolProvider = additionalUserPoolProviders.length > 0 ? additionalUserPoolProviders[0] : undefined;

@@ -158,12 +158,7 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo):
   const handler = await getHandler(plugin, context);
   attachContextExtensions(context, plugin);
   await raisePreEvent(context);
-  try {
-    await handler();
-  } catch (err) {
-    context.print.error('Command execution failed. Underlying error was:');
-    context.print.error(err.message);
-  }
+  await handler();
   await raisePostEvent(context);
 }
 

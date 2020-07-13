@@ -19,6 +19,7 @@ import {
   getTransformConfig,
 } from 'amplify-e2e-core';
 import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
+import _ from 'lodash';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
@@ -196,7 +197,7 @@ describe('amplify add api (GraphQL)', () => {
     await amplifyPushUpdate(projRoot);
     const disableDSConfig = getTransformConfig(projRoot, name);
     expect(disableDSConfig).toBeDefined();
-    expect(disableDSConfig.ResolverConfig).toBeUndefined();
+    expect(_.isEmpty(disableDSConfig.ResolverConfig)).toBe(true);
   });
 
   it('init a sync enabled project and update conflict resolution strategy', async () => {
