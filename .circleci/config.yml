@@ -769,14 +769,6 @@ jobs:
           when: always
       - store_artifacts:
           path: ../uitest_android_results
-  api_1-amplify_e2e_tests:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    steps: *ref_1
-    environment:
-      TEST_SUITE: src/__tests__/api_1.test.ts
-      CLI_REGION: us-east-2
   api_2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -784,7 +776,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/api_2.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: us-east-2
   auth_1-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -792,7 +784,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/auth_1.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: us-west-2
   auth_2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -800,6 +792,14 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/auth_2.test.ts
+      CLI_REGION: eu-west-2
+  api_1-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/api_1.test.ts
       CLI_REGION: eu-central-1
   function_1-amplify_e2e_tests:
     working_directory: ~/repo
@@ -1018,16 +1018,16 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
-            - api_1-amplify_e2e_tests
+            - api_2-amplify_e2e_tests
             - plugin-amplify_e2e_tests
             - hostingPROD-amplify_e2e_tests
-            - api_2-amplify_e2e_tests
+            - auth_1-amplify_e2e_tests
             - datastore-modegen-amplify_e2e_tests
             - predictions-amplify_e2e_tests
-            - auth_1-amplify_e2e_tests
+            - auth_2-amplify_e2e_tests
             - interactions-amplify_e2e_tests
             - delete-amplify_e2e_tests
-            - auth_2-amplify_e2e_tests
+            - api_1-amplify_e2e_tests
             - hosting-amplify_e2e_tests
             - storage-amplify_e2e_tests
             - function_1-amplify_e2e_tests
@@ -1044,7 +1044,7 @@ workflows:
                 - release
                 - master
                 - beta
-      - api_1-amplify_e2e_tests:
+      - api_2-amplify_e2e_tests:
           filters: &ref_2
             branches:
               only:
@@ -1060,7 +1060,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - api_2-amplify_e2e_tests:
+      - auth_1-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1072,7 +1072,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - auth_1-amplify_e2e_tests:
+      - auth_2-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1084,7 +1084,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - auth_2-amplify_e2e_tests:
+      - api_1-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
