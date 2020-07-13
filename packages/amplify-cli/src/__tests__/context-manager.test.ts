@@ -35,15 +35,9 @@ describe('test attachUsageData', () => {
   mockContext.pluginPlatform = new PluginPlatform();
   mockContext.pluginPlatform.plugins['core'] = [new PluginInfo('', version, '', new PluginManifest('', ''))];
 
-  beforeAll(() => {
-    process.env.AMPLIFY_CLI_ENABLE_USAGE_DATA = 'true';
-  });
+  beforeAll(() => {});
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  afterAll(() => {
-    delete process.env.AMPLIFY_CLI_ENABLE_USAGE_DATA;
   });
 
   it('constructContext', () => {
@@ -80,21 +74,5 @@ describe('test attachUsageData', () => {
     mockedInit.mockReturnValue(returnValue);
     attachUsageData(mockContext);
     expect(UsageData.NoUsageData.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
-  });
-
-  it('test with AMPLIFY_CLI_ENABLE_USAGE_DATA set to falsy', () => {
-    delete process.env.AMPLIFY_CLI_ENABLE_USAGE_DATA;
-    const returnValue = {
-      usageDataConfig: {
-        installationUuid: 'uuid',
-        isUsageTrackingEnabled: true,
-      },
-      setValues: jest.fn(),
-    };
-    const mockedInit = appConfig.init as jest.Mock;
-    mockedInit.mockReturnValue(returnValue);
-    attachUsageData(mockContext);
-    expect(UsageData.NoUsageData.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
-    process.env.AMPLIFY_CLI_ENABLE_USAGE_DATA = 'true';
   });
 });
