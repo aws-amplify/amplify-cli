@@ -1,5 +1,5 @@
 import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
-import { testSchema } from '../api-directives';
+import { testSchema } from '../schema-api-directives';
 
 describe('api directives @auth batch 1', () => {
   let projectDir: string;
@@ -31,21 +31,6 @@ describe('api directives @auth batch 1', () => {
 
   it('auth owner4', async () => {
     const testresult = await testSchema(projectDir, 'auth', 'owner4');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('auth owner5', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'owner5');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('auth owner6', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'owner6');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('auth owner7', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'owner7');
     expect(testresult).toBeTruthy();
   });
 });

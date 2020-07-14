@@ -1,11 +1,11 @@
 import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
-import { testSchema } from '../api-directives';
+import { testSchema } from '../schema-api-directives';
 
-describe('api directives @searchable', () => {
+describe('api directives @versioned', () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('searchable');
+    projectDir = await createNewProjectDir('versioned');
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -14,8 +14,8 @@ describe('api directives @searchable', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('searchable usage', async () => {
-    const testresult = await testSchema(projectDir, 'searchable', 'usage');
+  it('versioned usage', async () => {
+    const testresult = await testSchema(projectDir, 'versioned', 'usage');
     expect(testresult).toBeTruthy();
   });
 });

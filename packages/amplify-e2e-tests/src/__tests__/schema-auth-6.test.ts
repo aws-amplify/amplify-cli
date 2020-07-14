@@ -1,27 +1,17 @@
 import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
-import { testSchema } from '../api-directives';
+import { testSchema } from '../schema-api-directives';
 
-describe('api directives @auth batch 4', () => {
+describe('api directives @auth batch 6', () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('auth4');
+    projectDir = await createNewProjectDir('auth6');
     await initJSProjectWithProfile(projectDir, {});
   });
 
   afterEach(async () => {
     await deleteProject(projectDir);
     deleteProjectDir(projectDir);
-  });
-
-  it('auth combiningAuthRules1', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'combiningAuthRules1');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('auth combiningAuthRules2', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'combiningAuthRules2');
-    expect(testresult).toBeTruthy();
   });
 
   it('auth combiningAuthRules3', async () => {
