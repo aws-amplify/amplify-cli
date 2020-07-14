@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.21.2...amplify-category-function@2.21.3) (2020-07-14)
+
+
+### Bug Fixes
+
+* update function not loading previous selections ([#4823](https://github.com/aws-amplify/amplify-cli/issues/4823)) ([20a8dec](https://github.com/aws-amplify/amplify-cli/commit/20a8dec9b4c51239760846ec94a71dc528009498))
+
+
+
+
+
 ## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.21.1...amplify-category-function@2.21.2) (2020-07-11)
 
 
