@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.18.3...graphql-auth-transformer@6.18.4-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** allow auth progation to recursive types ([#4788](https://github.com/aws-amplify/amplify-cli/issues/4788)) ([827c7b8](https://github.com/aws-amplify/amplify-cli/commit/827c7b8df81fdae38826c94f7ac7698a8887001a)), closes [#4631](https://github.com/aws-amplify/amplify-cli/issues/4631)
+
+
+
+
+
 ## [6.18.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.18.2...graphql-auth-transformer@6.18.3) (2020-06-25)
 
 

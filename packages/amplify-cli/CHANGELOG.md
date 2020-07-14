@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.24.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.24.0...@aws-amplify/cli@4.24.1-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* **amplify-python-function-runtime-provider:** change exec to execa ([#4673](https://github.com/aws-amplify/amplify-cli/issues/4673)) ([56771d9](https://github.com/aws-amplify/amplify-cli/commit/56771d91eeed76a23a1dbf1e0d1d038070c37ad1))
+* **cli:** change in usage data ux and revert usage data disable ([#4791](https://github.com/aws-amplify/amplify-cli/issues/4791)) ([28328a3](https://github.com/aws-amplify/amplify-cli/commit/28328a3d3452f34dbb649fef42211bc8849ee520))
+
+
+
+
+
 # [4.24.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.23.1...@aws-amplify/cli@4.24.0) (2020-07-11)
 
 

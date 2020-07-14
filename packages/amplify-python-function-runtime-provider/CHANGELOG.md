@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.2.0...amplify-python-function-runtime-provider@1.2.1-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* **amplify-python-function-runtime-provider:** change exec to execa ([#4673](https://github.com/aws-amplify/amplify-cli/issues/4673)) ([56771d9](https://github.com/aws-amplify/amplify-cli/commit/56771d91eeed76a23a1dbf1e0d1d038070c37ad1))
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.1.1...amplify-python-function-runtime-provider@1.2.0) (2020-07-07)
 
 

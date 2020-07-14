@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.5.2...amplify-category-storage@2.5.3-beta.0) (2020-07-14)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
 ## [2.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.5.1...amplify-category-storage@2.5.2) (2020-07-11)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "3.22.1",
+  "version": "3.22.2-beta.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -48,7 +48,7 @@
     "aws-sdk": "^2.608.0",
     "aws-sdk-mock": "^5.1.0",
     "axios": "^0.19.2",
-    "graphql-auth-transformer": "6.18.3",
+    "graphql-auth-transformer": "6.18.4-beta.0",
     "graphql-connection-transformer": "4.18.3",
     "graphql-dynamodb-transformer": "6.19.4",
     "graphql-function-transformer": "2.3.11",
