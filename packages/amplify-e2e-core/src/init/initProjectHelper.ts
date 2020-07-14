@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, KEY_DOWN_ARROW } from '../../src';
+import { nspawn as spawn, getCLIPath, singleSelect } from '../../src';
 
 const defaultSettings = {
   name: '\r',
@@ -28,6 +28,7 @@ const amplifyRegions = [
   'ap-southeast-1',
   'ap-southeast-2',
   'ap-south-1',
+  'ca-central-1',
 ];
 
 export function initJSProjectWithProfile(cwd: string, settings: Object) {
@@ -129,8 +130,6 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
 
 export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region?: string }) {
   const s = { ...defaultSettings, ...settings };
-  let regionIndex = amplifyRegions.indexOf(s.region);
-  regionIndex = (regionIndex === -1)? 0: regionIndex;
 
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
@@ -163,13 +162,9 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
       .resumeRecording()
       .wait('region');
 
-      while(regionIndex > 0){
-        chain.send(KEY_DOWN_ARROW);
-        regionIndex--;
-      }
+      singleSelect(chain, settings.region, amplifyRegions);
 
-      chain.sendCarriageReturn()
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -182,7 +177,7 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
 
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')
