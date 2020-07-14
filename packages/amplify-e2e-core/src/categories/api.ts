@@ -70,7 +70,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string) {
       .wait(/.*Enter a description for the API key.*/)
       .sendCarriageReturn()
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendCarriageReturn()
+      .sendLine('1')
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
