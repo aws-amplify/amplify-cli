@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
 import { selectRuntime, selectTemplate } from './lambda-function';
 
-function getSchemaPath(schemaName: string): string {
+export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
 }
 
