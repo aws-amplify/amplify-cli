@@ -128,7 +128,7 @@ describe('amplify add api (GraphQL)', () => {
     // check project doesn't have datastore
     const withoutDSConfig = getTransformConfig(projRoot, name);
     expect(withoutDSConfig).toBeDefined();
-    expect(withoutDSConfig.ResolverConfig).toBeUndefined();
+    expect(_.isEmpty(withoutDSConfig.ResolverConfig)).toBe(true);
 
     // amplify update api to enable datastore
     await apiUpdateToggleDataStore(projRoot, {});
