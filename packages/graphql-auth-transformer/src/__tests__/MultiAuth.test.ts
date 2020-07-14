@@ -1,4 +1,4 @@
-import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind } from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, parse, DocumentNode, Kind } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
@@ -66,6 +66,7 @@ const multiAuthDirective =
 const ownerAuthDirective = '@auth(rules: [{allow: owner}])';
 const ownerWithIAMAuthDirective = '@auth(rules: [{allow: owner, provider: iam }])';
 const ownerRestrictedPublicAuthDirective = '@auth(rules: [{allow: owner},{allow: public, operations: [read]}])';
+const ownerRestrictedIAMPrivateAuthDirective = '@auth(rules: [{allow: owner},{allow: private, operations: [read], provider: iam }])';
 const groupsAuthDirective = '@auth(rules: [{allow: groups}])';
 const groupsWithApiKeyAuthDirective = '@auth(rules: [{allow: groups}, {allow: public, operations: [read]}])';
 const groupsWithProviderAuthDirective = '@auth(rules: [{allow: groups, provider: iam }])';
@@ -140,6 +141,21 @@ const getSchemaWithNonModelField = (authDirective: string) => {
     }`;
 };
 
+const getSchemaWithRecursiveNonModelField = (authDirective: string) => {
+  return `
+    type Post @model ${authDirective} {
+      id: ID!
+      title: String!
+      tags: [Tag]
+    }
+
+    type Tag {
+      id: ID
+      tags: [Tag]
+    }
+  `;
+};
+
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer(), new ModelAuthTransformer({ authConfig })],
@@ -166,6 +182,21 @@ const expectTwo = (fieldOrType, directiveNames) => {
   expect(fieldOrType.directives.length === 2);
   expect(fieldOrType.directives.find(d => d.name.value === directiveNames[0])).toBeDefined();
   expect(fieldOrType.directives.find(d => d.name.value === directiveNames[1])).toBeDefined();
+};
+
+const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]) => {
+  expect(directiveNames).toBeDefined();
+  expect(directiveNames).toHaveLength(directiveNames.length);
+  expect(fieldOrType.directives.length).toEqual(directiveNames.length);
+  directiveNames.forEach(directiveName => {
+    expect(fieldOrType.directives).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: expect.objectContaining({ value: directiveName }),
+        }),
+      ]),
+    );
+  });
 };
 
 const getField = (type, name) => type.fields.find(f => f.name.value === name);
@@ -459,6 +490,19 @@ describe('Type directive transformation tests', () => {
 
       expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
     }
+  });
+
+  test(`Recursive types without @model`, () => {
+    const schema = getSchemaWithRecursiveNonModelField(ownerRestrictedIAMPrivateAuthDirective);
+    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
+
+    const out = transformer.transform(schema);
+    const schemaDoc = parse(out.schema);
+
+    const tagType = getObjectType(schemaDoc, 'Tag');
+    const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
+
+    expectMultiple(tagType, expectedDirectiveNames);
   });
 
   test(`Nested types without @model getting directives applied (cognito default, iam additional)`, () => {
