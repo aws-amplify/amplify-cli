@@ -779,6 +779,8 @@ async function askApiKeyQuestions() {
       message: 'After how many days from now the API key should expire (1-365):',
       default: 7,
       validate: validateDays,
+      // adding filter to ensure parsing input as int -> https://github.com/SBoudrias/Inquirer.js/issues/866
+      filter: value => (isNaN(parseInt(value, 10)) ? value : parseInt(value, 10)),
     },
   ];
 
@@ -833,7 +835,6 @@ async function askOpenIDConnectQuestions() {
 function validateDays(input) {
   const isValid = /^\d+$/.test(input);
   const days = isValid ? parseInt(input, 10) : 0;
-
   if (!isValid || days < 1 || days > 365) {
     return 'Number of days must be between 1 and 365.';
   }
