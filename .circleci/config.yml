@@ -962,6 +962,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - graphql_e2e_testing
           requires:
             - build
@@ -971,6 +972,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - beta
           requires:
             - build
@@ -980,6 +982,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - beta
                 - split-test
           requires:
@@ -989,6 +992,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - split-test
           requires:
             - build
@@ -997,6 +1001,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - split-test
           requires:
             - build
@@ -1043,12 +1048,14 @@ workflows:
               only:
                 - release
                 - master
+                - headless-staging
                 - beta
       - api_1-amplify_e2e_tests:
           filters: &ref_2
             branches:
               only:
                 - master
+                - headless-staging
                 - split-test
           requires:
             - publish_to_local_registry
