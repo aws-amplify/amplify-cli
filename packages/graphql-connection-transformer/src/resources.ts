@@ -18,10 +18,7 @@ import {
   equals,
   iff,
   raw,
-  comment,
-  qref,
   Expression,
-  block,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
