@@ -48,7 +48,13 @@ async function zipLayer(context, resource: Resource) {
     zip.pipe(output);
     [...glob.sync(optPath), ...glob.sync(libPath)]
       .filter(folder => fs.lstatSync(folder).isDirectory())
-      .forEach(folder => zip.directory(folder, path.basename(folder)));
+      .forEach(folder =>
+        zip.directory(
+          folder,
+          // opt files need to be in the root of the zipped dir
+          path.basename(folder) === 'opt' ? false : path.basename(folder),
+        ),
+      );
     zip.finalize();
   });
 }
