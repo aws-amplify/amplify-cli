@@ -1,5 +1,5 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn } from '../../src';
+import { getCLIPath, nspawn as spawn, singleSelect } from '../../src';
 import _ from 'lodash';
 
 const settings = {
@@ -17,6 +17,21 @@ const settings = {
   region: process.env.CLI_REGION,
   pinpointResourceName: 'testpinpoint',
 };
+
+const amplifyRegions = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-2',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-central-1',
+  'ap-northeast-1',
+  'ap-northeast-2',
+  'ap-southeast-1',
+  'ap-southeast-2',
+  'ap-south-1',
+  'ca-central-1',
+];
 
 const defaultPinpointRegion = 'us-east-1';
 const serviceRegionMap = {
@@ -71,7 +86,7 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
 
 export function initProject(cwd: string) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(settings.name)
       .wait('Enter a name for the environment')
@@ -89,7 +104,7 @@ export function initProject(cwd: string) {
       .wait('Build Command:')
       .sendLine(settings.buildCmd)
       .wait('Start Command:')
-      .sendLine(settings.startCmd)
+      .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
       .sendLine('n')
@@ -99,16 +114,17 @@ export function initProject(cwd: string) {
       .wait('secretAccessKey')
       .sendLine(settings.secretAccessKey)
       .resumeRecording()
-      .wait('region')
-      .sendLine(settings.region)
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .wait('region');
+
+    singleSelect(chain, settings.region, amplifyRegions);
+
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 

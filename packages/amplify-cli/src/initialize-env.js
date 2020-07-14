@@ -62,14 +62,15 @@ async function initializeEnv(context, currentAmplifyMeta) {
       isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`,
     );
     await sequential(initializationTasks);
-    spinner.succeed(
-      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',
-    );
 
     const projectDetails = context.amplify.getProjectDetails();
     context.exeInfo = context.exeInfo || {};
     Object.assign(context.exeInfo, projectDetails);
     await sequential(categoryInitializationTasks);
+
+    spinner.succeed(
+      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',
+    );
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt.run(

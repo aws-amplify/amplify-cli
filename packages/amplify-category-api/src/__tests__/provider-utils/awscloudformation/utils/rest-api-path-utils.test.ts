@@ -3,8 +3,8 @@ import { validatePathName, formatCFNPathParamsForExpressJs } from '../../../../p
 const stubOtherPaths = [{ name: '/other/path' }, { name: '/sub/path' }];
 
 test('validatePathName_validPath', () => {
-  expect(validatePathName('/some/path', stubOtherPaths)).toBeTruthy();
-  expect(validatePathName('/path/{with}/{params}', stubOtherPaths)).toBeTruthy();
+  expect(validatePathName('/some/path', stubOtherPaths)).toBe(true);
+  expect(validatePathName('/path/{with}/{params}', stubOtherPaths)).toBe(true);
 });
 
 test('validatePath_empty', () => {

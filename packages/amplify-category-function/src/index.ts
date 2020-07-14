@@ -96,11 +96,14 @@ export async function initEnv(context) {
   const { amplify } = context;
   const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(category);
 
-  resourcesToBeDeleted.forEach(authResource => {
-    amplify.removeResourceParameters(context, category, authResource.resourceName);
+  // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
+  const resourceCategoryFilter = resource => resource.category === category;
+
+  resourcesToBeDeleted.filter(resourceCategoryFilter).forEach(functionResource => {
+    amplify.removeResourceParameters(context, category, functionResource.resourceName);
   });
 
-  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
+  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated).filter(resourceCategoryFilter);
 
   const functionTasks = tasks.map(functionResource => {
     const { resourceName, service } = functionResource;
@@ -138,7 +141,9 @@ export async function getInvoker(context: any, params: InvokerParameters): Promi
 export function isMockable(context: any, resourceName: string): IsMockableResponse {
   const { service, dependsOn } = context.amplify.getProjectMeta()[category][resourceName];
   const hasLayer =
-    service === ServiceName.LambdaFunction && dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
+    service === ServiceName.LambdaFunction &&
+    Array.isArray(dependsOn) &&
+    dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
   if (hasLayer) {
     return {
       isMockable: false,
