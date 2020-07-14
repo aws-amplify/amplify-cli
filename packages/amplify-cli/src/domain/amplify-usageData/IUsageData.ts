@@ -1,6 +1,6 @@
 import { Input } from '../input';
 
-export interface ITelemetry {
+export interface IUsageData {
   emitError(error: Error): Promise<void>;
   emitInvoke(): Promise<void>;
   emitAbort(): Promise<void>;

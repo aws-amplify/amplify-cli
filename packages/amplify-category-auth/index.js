@@ -60,7 +60,7 @@ async function add(context) {
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
-      context.telemetry.emitError(err);
+      context.usageData.emitError(err);
     });
 }
 
@@ -208,7 +208,8 @@ async function checkRequirements(requirements, context) {
 
 async function initEnv(context) {
   const { amplify } = context;
-  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus('auth');
+  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated, allResources } = await amplify.getResourceStatus('auth');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeCreated = [];
   let toBeDeleted = [];
   let toBeUpdated = [];
@@ -228,6 +229,10 @@ async function initEnv(context) {
   });
 
   const tasks = toBeCreated.concat(toBeUpdated);
+  // check if this initialization is happening on a pull
+  if (isPulling && allResources.length > 0) {
+    tasks.push(...allResources);
+  }
 
   const authTasks = tasks.map(authResource => {
     const { resourceName } = authResource;

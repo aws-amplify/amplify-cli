@@ -1,11 +1,11 @@
 const fs = require('fs-extra');
 const path = require('path');
-const util = require('util');
 const queryProvider = require('./attach-backend-steps/a10-queryProvider');
 const analyzeProject = require('./attach-backend-steps/a20-analyzeProject');
 const initFrontend = require('./attach-backend-steps/a30-initFrontend');
 const generateFiles = require('./attach-backend-steps/a40-generateFiles');
 const { postPullCodeGenCheck } = require('./amplify-service-helper');
+const { initializeEnv } = require('./initialize-env');
 
 const backupAmplifyDirName = 'amplify-backup';
 
@@ -23,8 +23,8 @@ async function attachBackend(context, inputParams) {
       removeFolderStructure(context);
       restoreOriginalAmplifyFolder(context);
       context.print.error('Failed to pull the backend.');
-      context.print.info(util.inspect(e));
-      context.telemetry.emitError(e);
+      context.usageData.emitError(e);
+      throw e;
     });
 }
 
@@ -42,10 +42,13 @@ async function onSuccess(context) {
   }
 
   await postPullCodeGenCheck(context);
-
+  const currentAmplifyMetafilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
   if (!inputParams.yes) {
     const confirmKeepCodebase = await context.amplify.confirmPrompt.run('Do you plan on modifying this backend?', true);
     if (confirmKeepCodebase) {
+      if (fs.existsSync(currentAmplifyMetafilePath)) {
+        await initializeEnv(context, context.amplify.readJsonFile(currentAmplifyMetafilePath));
+      }
       const { envName } = context.exeInfo.localEnvInfo;
       context.print.info('');
       context.print.success(`Successfully pulled backend environment ${envName} from the cloud.`);
@@ -57,6 +60,10 @@ async function onSuccess(context) {
       context.print.success(`Added backend environment config object to your project.`);
       context.print.info(`Run 'amplify pull' to sync upstream changes.`);
       context.print.info('');
+    }
+  } else {
+    if (fs.existsSync(currentAmplifyMetafilePath)) {
+      await initializeEnv(context, context.amplify.readJsonFile(currentAmplifyMetafilePath));
     }
   }
 

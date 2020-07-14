@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const pathManager = require('./path-manager');
 const { updateBackendConfigAfterResourceRemove } = require('./update-backend-config');
 const { removeResourceParameters } = require('./envResourceParams');
+const _ = require('lodash');
 
 async function forceRemoveResource(context, category, name, dir) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
@@ -28,7 +29,7 @@ async function forceRemoveResource(context, category, name, dir) {
   return response;
 }
 
-async function removeResource(context, category, resourceName) {
+async function removeResource(context, category, resourceName, questionOptions = {}) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
@@ -36,7 +37,7 @@ async function removeResource(context, category, resourceName) {
     process.exit(1);
   }
 
-  const enabledCategoryResources = Object.keys(amplifyMeta[category]);
+  let enabledCategoryResources = Object.keys(amplifyMeta[category]);
 
   if (resourceName) {
     if (!enabledCategoryResources.includes(resourceName)) {
@@ -44,6 +45,13 @@ async function removeResource(context, category, resourceName) {
       process.exit(1);
     }
   } else {
+    if (questionOptions.serviceSuffix) {
+      enabledCategoryResources = enabledCategoryResources.map(resource => {
+        let service = _.get(amplifyMeta, [category, resource, 'service']);
+        let suffix = _.get(questionOptions, ['serviceSuffix', service], '');
+        return { name: `${resource} ${suffix}`, value: resource };
+      });
+    }
     const question = [
       {
         name: 'resource',
@@ -56,7 +64,12 @@ async function removeResource(context, category, resourceName) {
     resourceName = answer.resource;
   }
 
-  console.log('');
+  context.print.info('');
+  let service = _.get(amplifyMeta, [category, resourceName, 'service']);
+  if (_.has(questionOptions, ['serviceDeletionInfo', service])) {
+    context.print.info(questionOptions.serviceDeletionInfo[service]);
+  }
+
   const resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
 
   return context.amplify.confirmPrompt
@@ -69,7 +82,7 @@ async function removeResource(context, category, resourceName) {
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('An error occurred when removing the resources from the local directory');
-      context.telemetry.emitError(err);
+      context.usageData.emitError(err);
     });
 }
 

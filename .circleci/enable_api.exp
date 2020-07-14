@@ -40,6 +40,8 @@ expect "Do you want to access other resources created in this project from your 
 send -- "n\r"
 expect "Do you want to invoke this function on a recurring schedule?"
 send -- "n\r"
+expect "Do you want to configure Lambda layers for this function?"
+send -- "n\r"
 expect "Do you want to edit the local lambda function now?"
 send -- "n\r"
 expect "Restrict API access"

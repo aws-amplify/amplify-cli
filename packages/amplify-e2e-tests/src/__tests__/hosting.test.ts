@@ -19,7 +19,7 @@ describe('amplify add hosting', () => {
   afterAll(async () => {
     await removeHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
-    await deleteProject(projRoot, true);
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 

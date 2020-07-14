@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "2.18.5",
+  "version": "2.19.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   "dependencies": {
     "aws-amplify": "^3.0.8",
     "aws-appsync": "^2.0.2",
-    "amplify-e2e-core": "1.1.9",
+    "amplify-e2e-core": "1.2.1",
     "aws-sdk": "^2.608.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",

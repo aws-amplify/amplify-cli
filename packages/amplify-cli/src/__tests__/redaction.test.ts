@@ -1,4 +1,4 @@
-import redactInput from '../domain/amplify-telemetry/identifiable-input-regex';
+import redactInput from '../domain/amplify-usageData/identifiable-input-regex';
 import { Input } from '../domain/input';
 
 describe('input-redaction', () => {

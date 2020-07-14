@@ -5,3 +5,4 @@
 **/package-lock.json
 **/.eslintrc.js
 **/tsconfig.json
+packages/*/CHANGELOG.md

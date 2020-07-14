@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.19.0...amplify-e2e-tests@2.19.1) (2020-07-11)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.5...amplify-e2e-tests@2.19.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
 ## [2.18.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.4...amplify-e2e-tests@2.18.5) (2020-06-25)
 
 

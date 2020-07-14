@@ -34,7 +34,7 @@ usage data to AWS, run `,
   ) +
     chalk.blue.italic.bgWhite('amplify configure --usage-data-off ') +
     chalk.blue(` to opt-out.${EOL}${EOL}\
-Learn more - https://docs.amplify.aws/cli/reference/usage-tracking`),
+Learn more - https://docs.amplify.aws/cli/reference/usage-data`),
 );
 console.log(EOL);
 

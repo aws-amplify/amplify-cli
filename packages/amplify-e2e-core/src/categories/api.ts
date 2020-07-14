@@ -1,7 +1,7 @@
 import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
-import { selectRuntime, selectTemplate } from './function';
+import { selectRuntime, selectTemplate } from './lambda-function';
 
 import { singleSelect, multiSelect } from '../utils/selectors';
 
@@ -289,9 +289,11 @@ export function addRestApi(cwd: string, settings: any) {
         }
 
         chain
-          .wait('Do you want to access other resources created in this project from your Lambda function')
+          .wait('Do you want to access other resources in this project from your Lambda function')
           .sendLine('n')
           .wait('Do you want to invoke this function on a recurring schedule?')
+          .sendLine('n')
+          .wait('Do you want to configure Lambda layers for this function?')
           .sendLine('n')
           .wait('Do you want to edit the local lambda function now')
           .sendLine('n');

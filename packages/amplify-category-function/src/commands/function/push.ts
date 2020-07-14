@@ -1,4 +1,4 @@
-import { categoryName } from '../../provider-utils/awscloudformation/utils/constants';
+import { category as categoryName } from '../../constants';
 
 const subcommand = 'push';
 
@@ -11,7 +11,7 @@ module.exports = {
     return amplify.pushResources(context, categoryName, resourceName).catch(err => {
       context.print.info(err.stack);
       context.print.error('An error occurred when pushing the function resource');
-      context.telemetry.emitError(err);
+      context.usageData.emitError(err);
     });
   },
 };

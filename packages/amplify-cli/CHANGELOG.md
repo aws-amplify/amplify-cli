@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.24.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.23.1...@aws-amplify/cli@4.24.0) (2020-07-11)
+
+
+### Bug Fixes
+
+* **cli:** remove unnecessary stack trace log when adding services ([#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)) ([5bee574](https://github.com/aws-amplify/amplify-cli/commit/5bee574bbcd956c032e7714b0813aedd7914a6cb))
+
+
+### Features
+
+* add check for extra command line args provided with amplify delete ([#4576](https://github.com/aws-amplify/amplify-cli/issues/4576)) ([82d1093](https://github.com/aws-amplify/amplify-cli/commit/82d10933754230c311bf5f24dc1c59dfa393ce63)), closes [#4115](https://github.com/aws-amplify/amplify-cli/issues/4115)
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([7f38d81](https://github.com/aws-amplify/amplify-cli/commit/7f38d81ef2f890c25d39b02407c5255c8760c511)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
+## [4.23.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.23.0...@aws-amplify/cli@4.23.1) (2020-07-09)
+
+
+### Bug Fixes
+
+* **cli:** throw error on attach backend ([#4779](https://github.com/aws-amplify/amplify-cli/issues/4779)) ([11c55e3](https://github.com/aws-amplify/amplify-cli/commit/11c55e33e64d25dd198ef06fe76af7f7f402759a))
+
+
+
+
+
+# [4.23.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.22.0...@aws-amplify/cli@4.23.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **cli:** config init wasn't reading string ([#4711](https://github.com/aws-amplify/amplify-cli/issues/4711)) ([4d217af](https://github.com/aws-amplify/amplify-cli/commit/4d217af830e04d7157d65e14f25af6c39d0315de))
+* **cli:** disabling usage-data until new end point is enabled ([#4749](https://github.com/aws-amplify/amplify-cli/issues/4749)) ([2cac361](https://github.com/aws-amplify/amplify-cli/commit/2cac361439aa977eda0b92f5e4ce4a2ea4d8bb29))
+
+
+### Features
+
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([30a7fe7](https://github.com/aws-amplify/amplify-cli/commit/30a7fe70f5838a766631befcc720a721e801bc5f))
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
 # [4.22.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.4...@aws-amplify/cli@4.22.0) (2020-06-25)
 
 

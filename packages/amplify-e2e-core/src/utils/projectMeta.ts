@@ -13,6 +13,10 @@ function getAmplifyConfigIOSPath(projRoot: string): string {
   return path.join(projRoot, 'amplifyconfiguration.json');
 }
 
+function getAmplifyDirPath(projRoot: string) {
+  return path.join(projRoot, 'amplify');
+}
+
 function getAWSConfigIOSPath(projRoot: string): string {
   return path.join(projRoot, 'awsconfiguration.json');
 }
@@ -55,4 +59,5 @@ export {
   getAmplifyConfigIOSPath,
   getAWSConfigIOSPath,
   getS3StorageBucketName,
+  getAmplifyDirPath,
 };

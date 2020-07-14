@@ -1,11 +1,11 @@
 import { Input } from './input';
 import { AmplifyToolkit } from './amplify-toolkit';
 import { PluginPlatform } from './plugin-platform';
-import { ITelemetry } from './amplify-telemetry';
+import { IUsageData } from './amplify-usageData';
 
 export class Context {
   amplify: AmplifyToolkit;
-  telemetry!: ITelemetry;
+  usageData!: IUsageData;
   constructor(public pluginPlatform: PluginPlatform, public input: Input) {
     this.amplify = new AmplifyToolkit();
   }

@@ -640,7 +640,7 @@ workflows:
             branches:
               only:
                 - master
-                - schematests
+                - graphqlschemae2e
     jobs:
       - build
       - publish_to_local_registry:
@@ -664,7 +664,7 @@ workflows:
             branches:
               only:
                 - master
-                - schematests
+                - graphqlschemae2e
                 - graphql_e2e_testing
           requires:
             - build
@@ -674,7 +674,7 @@ workflows:
             branches:
               only:
                 - master
-                - schematests
+                - graphqlschemae2e
                 - beta
           requires:
             - build
@@ -684,9 +684,8 @@ workflows:
             branches:
               only:
                 - master
-                - schematests
+                - graphqlschemae2e
                 - beta
-                - split-test
           requires:
             - build
       - amplify_e2e_tests:
@@ -694,8 +693,7 @@ workflows:
             branches:
               only:
                 - master
-                - schematests
-                - split-test
+                - graphqlschemae2e
           requires:
             - publish_to_local_registry
       - amplify_migration_tests_latest:
@@ -703,8 +701,7 @@ workflows:
             branches:
               only:
                 - master
-                - schematests
-                - split-test
+                - graphqlschemae2e
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -712,8 +709,7 @@ workflows:
             branches:
               only:
                 - master
-                - schematests
-                - split-test
+                - graphqlschemae2e
           requires:
             - build
       - amplify_console_integration_tests:
@@ -740,14 +736,12 @@ workflows:
               only:
                 - release
                 - master
-                - schematests
                 - beta
       # - integration_test_js:
       #     filters:
       #       branches:
       #         only:
       #           - master
-      #           - schematests
       #     requires:
       #       - build
       #       - test
@@ -757,7 +751,6 @@ workflows:
       #       branches:
       #         only:
       #           - master
-      #           - schematests
       #     requires:
       #       - build
       #       - test
