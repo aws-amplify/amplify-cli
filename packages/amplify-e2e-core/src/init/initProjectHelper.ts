@@ -162,7 +162,7 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
       .resumeRecording()
       .wait('region');
 
-      singleSelect(chain, settings.region, amplifyRegions);
+      singleSelect(chain, s.region, amplifyRegions);
 
       chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
