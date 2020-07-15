@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.13-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.12...amplify-codegen@2.15.13-beta.0) (2020-07-15)
+
+
+### Bug Fixes
+
+* codegen spelling mistake ([#4757](https://github.com/aws-amplify/amplify-cli/issues/4757)) ([454fdc0](https://github.com/aws-amplify/amplify-cli/commit/454fdc01f97f74fce337a25efa12950257597174))
+
+
+
+
+
 ## [2.15.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.11...amplify-codegen@2.15.12) (2020-07-07)
 
 **Note:** Version bump only for package amplify-codegen

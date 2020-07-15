@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.24.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.24.1...@aws-amplify/cli@4.24.2-beta.0) (2020-07-15)
+
+
+### Bug Fixes
+
+* Check that config object exists before creating new env ([#3624](https://github.com/aws-amplify/amplify-cli/issues/3624)) ([89bbdb9](https://github.com/aws-amplify/amplify-cli/commit/89bbdb9ca661eea36d529131e5a1b8cac4a43816))
+* **cli:** moving the spinner above category initialization tasks ([#4836](https://github.com/aws-amplify/amplify-cli/issues/4836)) ([5884801](https://github.com/aws-amplify/amplify-cli/commit/5884801217cd07bfcea8273a56bdf0fff21c6994)), closes [#4795](https://github.com/aws-amplify/amplify-cli/issues/4795)
+
+
+
+
+
 ## [4.24.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.24.0...@aws-amplify/cli@4.24.1) (2020-07-14)
 
 

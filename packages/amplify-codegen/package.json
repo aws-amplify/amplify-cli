@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "2.15.12",
+  "version": "2.15.13-beta.0",
   "description": "amplify code generator",
   "repository": {
     "type": "git",

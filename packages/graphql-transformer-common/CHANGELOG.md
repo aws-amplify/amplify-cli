@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.3...graphql-transformer-common@4.17.4-beta.0) (2020-07-15)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** error if field not in relatedType ([#4481](https://github.com/aws-amplify/amplify-cli/issues/4481)) ([0a6a7ea](https://github.com/aws-amplify/amplify-cli/commit/0a6a7eabbe726d7add52b8a8811c54f7257d176f)), closes [#4236](https://github.com/aws-amplify/amplify-cli/issues/4236)
+
+
+
+
+
 ## [4.17.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.2...graphql-transformer-common@4.17.3) (2020-06-25)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.18.4...graphql-auth-transformer@6.18.5-beta.0) (2020-07-15)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** add a time delay when creating apiKey ([#4493](https://github.com/aws-amplify/amplify-cli/issues/4493)) ([1d56b40](https://github.com/aws-amplify/amplify-cli/commit/1d56b40d673b257e07905d9bc1830e8f9c8495a1))
+
+
+
+
+
 ## [6.18.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.18.3...graphql-auth-transformer@6.18.4) (2020-07-14)
 
 

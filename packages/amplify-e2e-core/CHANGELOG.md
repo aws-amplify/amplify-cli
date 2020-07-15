@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.2.1...amplify-e2e-core@1.2.2-beta.0) (2020-07-15)
+
+
+### Bug Fixes
+
+* **cli:** moving the spinner above category initialization tasks ([#4836](https://github.com/aws-amplify/amplify-cli/issues/4836)) ([5884801](https://github.com/aws-amplify/amplify-cli/commit/5884801217cd07bfcea8273a56bdf0fff21c6994)), closes [#4795](https://github.com/aws-amplify/amplify-cli/issues/4795)
+* **graphql-auth-transformer:** add a time delay when creating apiKey ([#4493](https://github.com/aws-amplify/amplify-cli/issues/4493)) ([1d56b40](https://github.com/aws-amplify/amplify-cli/commit/1d56b40d673b257e07905d9bc1830e8f9c8495a1))
+
+
+
+
+
 ## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.2.0...amplify-e2e-core@1.2.1) (2020-07-11)
 
 **Note:** Version bump only for package amplify-e2e-core
