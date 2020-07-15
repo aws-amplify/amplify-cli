@@ -21,11 +21,18 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
+    "aws-amplify": "^3.0.8",
+    "aws-appsync": "^2.0.2",
     "amplify-e2e-core": "1.2.1",
     "aws-sdk": "^2.608.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
+    "graphql-schema-diff": "^2.1.0",
+    "graphql-tag": "^2.10.1",
+    "promise-sequential": "^1.1.1",
+    "uuid": "^3.4.0",
+    "os": "^0.1.1",
     "graphql-transformer-core": "6.19.3",
     "lodash": "^4.17.15",
     "rimraf": "^3.0.0"
