@@ -1,6 +1,6 @@
 type AWSCredentials = {
-  ACCESS_KEY_ID: string;
-  SECRET_ACCESS_KEY: string;
+  ACCESS_KEY_ID?: string;
+  SECRET_ACCESS_KEY?: string;
 };
 type SocialProviders = {
   FACEBOOK_APP_ID?: string;
@@ -11,7 +11,7 @@ type SocialProviders = {
   AMAZON_APP_SECRET?: string;
 };
 
-type EnvironmentVariables = AWSCredentials | SocialProviders;
+type EnvironmentVariables = AWSCredentials & SocialProviders;
 
 export function getEnvVars(): EnvironmentVariables {
   return { ...process.env } as EnvironmentVariables;
