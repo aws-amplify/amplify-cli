@@ -9,7 +9,7 @@ const { getProviderPlugins } = require('./extensions/amplify-helpers/get-provide
 
 async function initializeEnv(context, currentAmplifyMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  let isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
 
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
@@ -43,7 +43,7 @@ async function initializeEnv(context, currentAmplifyMeta) {
             categoryInitializationTasks.push(() => initEnv(context));
           }
         } catch (e) {
-          context.print.warning(`Could not run initEnv for ${category}`);
+          context.print.warning(`Could not load initEnv for ${category}`);
         }
       });
     });
@@ -62,15 +62,14 @@ async function initializeEnv(context, currentAmplifyMeta) {
       isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`,
     );
     await sequential(initializationTasks);
+    spinner.succeed(
+      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',
+    );
 
     const projectDetails = context.amplify.getProjectDetails();
     context.exeInfo = context.exeInfo || {};
     Object.assign(context.exeInfo, projectDetails);
     await sequential(categoryInitializationTasks);
-
-    spinner.succeed(
-      isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',
-    );
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt.run(
@@ -90,9 +89,7 @@ async function initializeEnv(context, currentAmplifyMeta) {
     await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
     context.print.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {
-    spinner.fail(
-      isPulling ? `There was an error pulling the backend environment ${currentEnv}.` : 'There was an error initializing your environment.',
-    );
+    spinner.fail('There was an error initializing your environment.');
     throw e;
   }
 }
