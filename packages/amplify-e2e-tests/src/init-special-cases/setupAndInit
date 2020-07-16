@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+require = require('esm')(module, { cache: false });
+const fs = require('fs-extra');
+const path = require('path');
+const os = require('os');
+
+function isCI()  {
+  return process.env.CI && process.env.CIRCLECI ? true : false;
+}
+
+function getCLIPath() {
+  if (isCI()) {
+    return 'amplify';
+  }
+  return path.join(__dirname, '..', '..', '..', 'amplify-cli', 'bin', 'amplify');
+}
+
+delete process.env.AWS_ACCESS_KEY_ID;
+delete process.env.AWS_SECRET_ACCESS_KEY;
+delete process.env.AWS_DEFAULT_REGION;
+delete process.env.AWS_REGION;
+
+const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
+const credentialsFilePath = path.join(dotAWSDirPath, 'credentials');
+const configFilePath = path.join(dotAWSDirPath, 'config');
+
+const existSyncOrig = fs.existsSync;
+
+fs.existsSync = (path) => {
+    return [credentialsFilePath, configFilePath].includes(path.toString()) ? false :
+existSyncOrig(path)};
+  
+process.argv.push('init');
+
+require(getCLIPath());

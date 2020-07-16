@@ -1,49 +1,17 @@
-import fs from 'fs-extra';
 import path from 'path';
-import os from 'os';
-import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
+import { nspawn as spawn, singleSelect, amplifyRegions } from 'amplify-e2e-core';
 
-export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
+export async function initWithoutCredentialFileAndNoNewUserSetup(cwd) {
   const settings = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-west-2',
+    region: process.env.CLI_REGION || process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-west-2',
   };
-
-  delete process.env.AWS_ACCESS_KEY_ID;
-  delete process.env.AWS_SECRET_ACCESS_KEY;
-  delete process.env.AWS_DEFAULT_REGION;
-  delete process.env.AWS_REGION;
-
-  const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
-  const credentialsFilePath = path.join(dotAWSDirPath, 'credentials');
-  const configFilePath = path.join(dotAWSDirPath, 'config');
-  const credentialsFilePathHide = path.join(dotAWSDirPath, 'credentials.hide');
-  const configFilePathHide = path.join(dotAWSDirPath, 'config.hide');
-
-  try {
-    if (fs.existsSync(configFilePath)) {
-      fs.renameSync(configFilePath, configFilePathHide);
-    }
-    if (fs.existsSync(credentialsFilePath)) {
-      fs.renameSync(credentialsFilePath, credentialsFilePathHide);
-    }
-    await initWorkflow(projRoot, settings);
-  } catch (e) {
-    throw e;
-  } finally {
-    if (fs.existsSync(configFilePathHide)) {
-      fs.renameSync(configFilePathHide, configFilePath);
-    }
-    if (fs.existsSync(credentialsFilePathHide)) {
-      fs.renameSync(credentialsFilePathHide, credentialsFilePath);
-    }
-  }
-}
-
-async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }) {
+  
+  const exePath = path.join(__dirname, './setupAndInit');
+  
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(exePath, [], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendCarriageReturn()
       .wait('Enter a name for the environment')
@@ -71,9 +39,12 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
       .sendLine(settings.accessKeyId)
       .wait('secretAccessKey')
       .sendLine(settings.secretAccessKey)
-      .wait('region')
-      .sendLine(settings.region)
       .resumeRecording()
+      .wait('region');
+
+      singleSelect(chain, settings.region, amplifyRegions);
+
+      chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
           resolve();
