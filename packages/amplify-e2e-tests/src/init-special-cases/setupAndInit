@@ -4,14 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
 
-function isCI()  {
-  return process.env.CI && process.env.CIRCLECI ? true : false;
-}
-
 function getCLIPath() {
-  if (isCI()) {
-    return 'amplify';
-  }
   return path.join(__dirname, '..', '..', '..', 'amplify-cli', 'bin', 'amplify');
 }
 
@@ -29,7 +22,7 @@ const existSyncOrig = fs.existsSync;
 fs.existsSync = (path) => {
     return [credentialsFilePath, configFilePath].includes(path.toString()) ? false :
 existSyncOrig(path)};
-  
-process.argv.push('init');
+
+process.argv[2] = 'init';
 
 require(getCLIPath());
