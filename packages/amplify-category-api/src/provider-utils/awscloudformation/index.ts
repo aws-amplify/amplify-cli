@@ -86,7 +86,7 @@ export async function getPermissionPolicies(context, service, resourceName, crud
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
 
-  if (!getPermissionPolicies) {
+  if (!getIAMPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
     return;
   }

@@ -7,7 +7,6 @@ import open from 'open';
 import { rootAssetDir, cfnParametersFilename } from '../aws-constants';
 import {
   collectDirectivesByTypeNames,
-  writeTransformerConfiguration,
   readProjectConfiguration,
   ConflictHandlerType,
 } from 'graphql-transformer-core';
