@@ -11,10 +11,12 @@ async function generateTableContentForApp(context, appId) {
   let nextToken = null;
   try {
     do {
-      const { branches } = await amplifyClient.listBranches({
-        appId,
-        nextToken,
-      }).promise();
+      const { branches } = await amplifyClient
+        .listBranches({
+          appId,
+          nextToken,
+        })
+        .promise();
 
       for (const branch of branches) {
         const { branchName } = branch;
@@ -25,10 +27,12 @@ async function generateTableContentForApp(context, appId) {
 
     nextToken = null;
     do {
-      const { domainAssociations } = await amplifyClient.listDomainAssociations({
-        appId,
-        nextToken,
-      }).promise();
+      const { domainAssociations } = await amplifyClient
+        .listDomainAssociations({
+          appId,
+          nextToken,
+        })
+        .promise();
 
       for (const domainAssociation of domainAssociations) {
         const { domainName, subDomains } = domainAssociation;
@@ -37,7 +41,11 @@ async function generateTableContentForApp(context, appId) {
           if (!domainMap[branchName]) {
             domainMap[branchName] = [];
           }
-          domainMap[branchName].push(`https://${prefix}.${domainName}`);
+          if (prefix === null || prefix === undefined) {
+            domainMap[branchName].push(`https://${domainName}`);
+          } else {
+            domainMap[branchName].push(`https://${prefix}.${domainName}`);
+          }
         }
       }
     } while (nextToken != null);
@@ -54,10 +62,13 @@ async function generateTableContentForApp(context, appId) {
     for (const [branchName, domains] of Object.entries(domainMap)) {
       for (let index = 0; index < domains.length; index++) {
         if (index === 0) {
-          table.push([{
-            rowSpan: domains.length,
-            content: branchName,
-          }, domains[index]]);
+          table.push([
+            {
+              rowSpan: domains.length,
+              content: branchName,
+            },
+            domains[index],
+          ]);
         } else {
           table.push([domains[index]]);
         }
@@ -69,7 +80,6 @@ async function generateTableContentForApp(context, appId) {
     spinner.fail(err.message);
   }
 }
-
 
 module.exports = {
   generateTableContentForApp,
