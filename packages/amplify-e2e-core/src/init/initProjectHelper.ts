@@ -16,7 +16,7 @@ const defaultSettings = {
   local: false,
 };
 
-const amplifyRegions = [
+export const amplifyRegions = [
   'us-east-1',
   'us-east-2',
   'us-west-2',
@@ -185,13 +185,17 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
       .sendLine('n')
+      .pauseRecording()
       .wait('accessKeyId')
       .sendLine(s.accessKeyId)
       .wait('secretAccessKey')
       .sendLine(s.secretAccessKey)
-      .wait('region')
-      .sendLine('us-east-2')
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .resumeRecording()
+      .wait('region');
+
+      singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
+
+      chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
           resolve();
