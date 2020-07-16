@@ -4,6 +4,7 @@ import { packageResource } from './utils/package';
 import { checkJava, checkJavaCompiler, checkGradle } from './utils/detect';
 import { invokeResource } from './utils/invoke';
 import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
+import path from 'path';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -20,6 +21,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'java',
           cloudTemplateValue: 'java11',
           defaultHandler: 'example.LambdaRequestHandler::handleRequest',
+          layerExecutablePath: path.join('java', 'lib'),
         },
       });
     },

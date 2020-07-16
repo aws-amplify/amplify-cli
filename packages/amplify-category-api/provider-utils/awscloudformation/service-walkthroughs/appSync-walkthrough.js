@@ -5,6 +5,7 @@ const uuid = require('uuid');
 const path = require('path');
 const open = require('open');
 const TransformPackage = require('graphql-transformer-core');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -338,7 +339,7 @@ async function createSyncFunction(context) {
   await context.amplify.copyBatch(context, copyJobs, functionProps, true);
 
   const backendConfigs = {
-    service: 'Lambda',
+    service: FunctionServiceName.LambdaFunction,
     providerPlugin: 'awscloudformation',
     build: true,
   };
@@ -401,25 +402,28 @@ async function updateWalkthrough(context) {
       }
     });
   }
+  const updateChoices = [
+    {
+      name: 'Walkthrough all configurations',
+      value: 'all',
+    },
+    {
+      name: 'Update auth settings',
+      value: 'authUpdate',
+    },
+  ];
+  // check if DataStore is enabled for the entire API
+  if (project.config && project.config.ResolverConfig) {
+    updateChoices.push({ name: 'Disable DataStore for entire API', value: 'disableDatastore' });
+  } else {
+    updateChoices.push({ name: 'Enable DataStore for entire API', value: 'enableDatastore' });
+  }
 
   const updateOptionQuestion = {
     type: 'list',
     name: 'updateOption',
     message: 'Select from the options below',
-    choices: [
-      {
-        name: 'Walkthrough all configurations',
-        value: 'all',
-      },
-      {
-        name: 'Update auth settings',
-        value: 'authUpdate',
-      },
-      {
-        name: 'Enable DataStore for entire API',
-        value: 'enableDatastore',
-      },
-    ],
+    choices: updateChoices,
   };
 
   let { updateOption } = await inquirer.prompt([updateOptionQuestion]);
@@ -428,6 +432,9 @@ async function updateWalkthrough(context) {
     resolverConfig = {
       project: { ConflictHandler: 'AUTOMERGE', ConflictDetection: 'VERSION' },
     };
+  } else if (updateOption === 'disableDatastore') {
+    delete project.config.ResolverConfig;
+    await writeTransformerConfiguration(resourceDir, project.config);
   } else if (updateOption === 'authUpdate') {
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
     authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
@@ -772,6 +779,8 @@ async function askApiKeyQuestions() {
       message: 'After how many days from now the API key should expire (1-365):',
       default: 7,
       validate: validateDays,
+      // adding filter to ensure parsing input as int -> https://github.com/SBoudrias/Inquirer.js/issues/866
+      filter: value => (isNaN(parseInt(value, 10)) ? value : parseInt(value, 10)),
     },
   ];
 
@@ -826,7 +835,6 @@ async function askOpenIDConnectQuestions() {
 function validateDays(input) {
   const isValid = /^\d+$/.test(input);
   const days = isValid ? parseInt(input, 10) : 0;
-
   if (!isValid || days < 1 || days > 365) {
     return 'Number of days must be between 1 and 365.';
   }

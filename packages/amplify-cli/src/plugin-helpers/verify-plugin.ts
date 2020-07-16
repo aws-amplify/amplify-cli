@@ -37,7 +37,7 @@ export async function validPluginName(pluginName: string): Promise<PluginNameVal
   const corePluginJson = await readJsonFile(path.normalize(path.join(__dirname, '../../amplify-plugin.json')));
   if (corePluginJson && corePluginJson.commands && corePluginJson.commands.includes(pluginName)) {
     result.isValid = false;
-    result.message = 'Amplify CLI core comand names can not be used as plugin name';
+    result.message = 'Amplify CLI core command names can not be used as plugin name';
   }
   return result;
 }

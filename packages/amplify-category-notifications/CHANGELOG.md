@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.12...amplify-category-notifications@2.15.13) (2020-07-15)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+## [2.15.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.11...amplify-category-notifications@2.15.12) (2020-07-14)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+## [2.15.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.10...amplify-category-notifications@2.15.11) (2020-07-11)
+
+
+### Bug Fixes
+
+* **cli:** remove unnecessary stack trace log when adding services ([#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)) ([5bee574](https://github.com/aws-amplify/amplify-cli/commit/5bee574bbcd956c032e7714b0813aedd7914a6cb))
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([7f38d81](https://github.com/aws-amplify/amplify-cli/commit/7f38d81ef2f890c25d39b02407c5255c8760c511)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
+## [2.15.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.9...amplify-category-notifications@2.15.10) (2020-07-09)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+## [2.15.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.8...amplify-category-notifications@2.15.9) (2020-07-07)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+## [2.15.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.7...amplify-category-notifications@2.15.8) (2020-06-18)
+
+
+### Bug Fixes
+
+* occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([eaf08e0](https://github.com/aws-amplify/amplify-cli/commit/eaf08e00841830e9654fea61ce901f2cb478eebe))
+
+
+
+
+
+## [2.15.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.6...amplify-category-notifications@2.15.7) (2020-05-26)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
 ## [2.15.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.5...amplify-category-notifications@2.15.6) (2020-05-15)
 
 **Note:** Version bump only for package amplify-category-notifications

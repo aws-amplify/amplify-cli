@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.19.1...amplify-e2e-tests@2.19.2) (2020-07-15)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.19.0...amplify-e2e-tests@2.19.1) (2020-07-11)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.5...amplify-e2e-tests@2.19.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
+## [2.18.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.4...amplify-e2e-tests@2.18.5) (2020-06-25)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
+## [2.18.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.3...amplify-e2e-tests@2.18.4) (2020-06-18)
+
+
+### Bug Fixes
+
+* change scope of hashed files for AppSync ([#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)) ([10fa9da](https://github.com/aws-amplify/amplify-cli/commit/10fa9da646f4de755e2dc92cd4bb2a6319425d72)), closes [#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)
+
+
+
+
+
+## [2.18.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.2...amplify-e2e-tests@2.18.3) (2020-06-11)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.18.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.1...amplify-e2e-tests@2.18.2) (2020-06-10)
+
+
+### Performance Improvements
+
+* **amplify-category-hosting:** http2 for cloudfront distconfig ([#3616](https://github.com/aws-amplify/amplify-cli/issues/3616)) ([b5de093](https://github.com/aws-amplify/amplify-cli/commit/b5de093cb0c387ac7f902498727af2c1111a77ca))
+
+
+
+
+
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.18.0...amplify-e2e-tests@2.18.1) (2020-06-02)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.3...amplify-e2e-tests@2.18.0) (2020-05-26)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** toggle datastore in update ([#4276](https://github.com/aws-amplify/amplify-cli/issues/4276)) ([c522f29](https://github.com/aws-amplify/amplify-cli/commit/c522f295304410aeb1d6f60aaba9b466d3304ee1)), closes [#4058](https://github.com/aws-amplify/amplify-cli/issues/4058)
+
+
+### Features
+
+* **amplify-app:** group amplify files in xcode integration ([#4268](https://github.com/aws-amplify/amplify-cli/issues/4268)) ([73f3eab](https://github.com/aws-amplify/amplify-cli/commit/73f3eabc11def219faa1724fee93ce171949e40f))
+
+
+### Reverts
+
+* Revert "test(amplify-e2e-tests):test uncommented (#3742)" (#4324) ([b4eb173](https://github.com/aws-amplify/amplify-cli/commit/b4eb1733139f24612fd89c046582b14a2e643227)), closes [#3742](https://github.com/aws-amplify/amplify-cli/issues/3742) [#4324](https://github.com/aws-amplify/amplify-cli/issues/4324)
+
+
+
+
+
 ## [2.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.17.2...amplify-e2e-tests@2.17.3) (2020-05-15)
 
 

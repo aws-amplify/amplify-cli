@@ -3,6 +3,99 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.4...graphql-transformers-e2e-tests@6.18.5) (2020-07-15)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.18.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.3...graphql-transformers-e2e-tests@6.18.4) (2020-07-14)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.18.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.2...graphql-transformers-e2e-tests@6.18.3) (2020-06-25)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
+## [6.18.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.1...graphql-transformers-e2e-tests@6.18.2) (2020-06-18)
+
+
+### Bug Fixes
+
+* change scope of hashed files for AppSync ([#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)) ([10fa9da](https://github.com/aws-amplify/amplify-cli/commit/10fa9da646f4de755e2dc92cd4bb2a6319425d72)), closes [#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)
+
+
+
+
+
+## [6.18.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.0...graphql-transformers-e2e-tests@6.18.1) (2020-06-11)
+
+
+### Reverts
+
+* add query automatically for named keys ([#4513](https://github.com/aws-amplify/amplify-cli/issues/4513)) ([6d3123b](https://github.com/aws-amplify/amplify-cli/commit/6d3123bfe3ba412d3b1af076e550e6733c988c8f))
+
+
+
+
+
+# [6.18.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.17.0...graphql-transformers-e2e-tests@6.18.0) (2020-06-10)
+
+
+### Bug Fixes
+
+* sort direction argument for lists and queries ([#4459](https://github.com/aws-amplify/amplify-cli/issues/4459)) ([6be33e1](https://github.com/aws-amplify/amplify-cli/commit/6be33e16a8a8ba52cbf717d4e299d7321d9ad400))
+
+
+### Features
+
+* **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([3d194f8](https://github.com/aws-amplify/amplify-cli/commit/3d194f805dcbd6325ddf78155c4327dbca3e7f4a))
+
+
+
+
+
+# [6.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.16.1...graphql-transformers-e2e-tests@6.17.0) (2020-06-02)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** use read to allow subscriptions ([#4340](https://github.com/aws-amplify/amplify-cli/issues/4340)) ([15eac84](https://github.com/aws-amplify/amplify-cli/commit/15eac8454e0455cd402776308a2716ac406bacbb)), closes [#3777](https://github.com/aws-amplify/amplify-cli/issues/3777) [#4182](https://github.com/aws-amplify/amplify-cli/issues/4182) [#4137](https://github.com/aws-amplify/amplify-cli/issues/4137)
+
+
+### Features
+
+* **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([c0a4f88](https://github.com/aws-amplify/amplify-cli/commit/c0a4f8889fc363bb9c9d08ff822c591874777f7b))
+
+
+
+
+
+## [6.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.16.0...graphql-transformers-e2e-tests@6.16.1) (2020-05-26)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** limit was not respected ([#4021](https://github.com/aws-amplify/amplify-cli/issues/4021)) ([9800384](https://github.com/aws-amplify/amplify-cli/commit/9800384efff53a57973105508482cad945523727))
+* **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([f57f824](https://github.com/aws-amplify/amplify-cli/commit/f57f8242f18c79d48b751e29952e3cdd21409f98)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+
+
+
+
+
 # [6.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.15.4...graphql-transformers-e2e-tests@6.16.0) (2020-05-15)
 
 

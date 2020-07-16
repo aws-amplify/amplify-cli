@@ -26,13 +26,6 @@ export type AppSyncModelCodeGenPresetConfig = {
   target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript';
 };
 
-const hasDirective = (directiveName: string) => (typeObj: TypeDefinitionNode): boolean => {
-  if (typeObj && typeObj.directives && typeObj.directives.length) {
-    return typeObj.directives.find(d => d.name.value === directiveName) !== undefined;
-  }
-  return false;
-};
-
 const generateJavaPreset = (
   options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
   models: TypeDefinitionNode[],
@@ -83,7 +76,7 @@ const generateSwiftPreset = (
         selectedType: modelName,
       },
     });
-    if (model.kind !== Kind.ENUM_TYPE_DEFINITION && hasDirective('model')(model)) {
+    if (model.kind !== Kind.ENUM_TYPE_DEFINITION) {
       config.push({
         ...options,
         filename: join(options.baseOutputDir, `${modelName}+Schema.swift`),

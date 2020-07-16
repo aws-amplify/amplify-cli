@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.4.3...amplify-category-interactions@2.4.4) (2020-07-15)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.4.2...amplify-category-interactions@2.4.3) (2020-07-14)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.4.1...amplify-category-interactions@2.4.2) (2020-07-11)
+
+
+### Bug Fixes
+
+* **cli:** remove unnecessary stack trace log when adding services ([#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)) ([5bee574](https://github.com/aws-amplify/amplify-cli/commit/5bee574bbcd956c032e7714b0813aedd7914a6cb))
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([7f38d81](https://github.com/aws-amplify/amplify-cli/commit/7f38d81ef2f890c25d39b02407c5255c8760c511)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.4.0...amplify-category-interactions@2.4.1) (2020-07-09)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.3.9...amplify-category-interactions@2.4.0) (2020-07-07)
+
+
+### Features
+
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([30a7fe7](https://github.com/aws-amplify/amplify-cli/commit/30a7fe70f5838a766631befcc720a721e801bc5f))
+
+
+
+
+
+## [2.3.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.3.8...amplify-category-interactions@2.3.9) (2020-06-18)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [2.3.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.3.7...amplify-category-interactions@2.3.8) (2020-05-26)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
 ## [2.3.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.3.6...amplify-category-interactions@2.3.7) (2020-05-15)
 
 **Note:** Version bump only for package amplify-category-interactions

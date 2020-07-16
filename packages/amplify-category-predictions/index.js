@@ -51,6 +51,7 @@ async function console(context) {
     .catch(err => {
       context.print.error('Error opening console.');
       context.print.info(err.message);
+      context.usageData.emitError(err);
     });
 }
 

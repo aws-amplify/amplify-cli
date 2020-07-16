@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-ios",
-  "version": "2.13.2",
+  "version": "2.13.6",
   "description": "amplify-cli front-end plugin for xcode projects",
   "repository": {
     "type": "git",
@@ -15,8 +15,24 @@
     "appsync",
     "aws"
   ],
+  "scripts": {
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "test-ci": "jest --ci -i"
+  },
   "dependencies": {
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "testURL": "http://localhost",
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

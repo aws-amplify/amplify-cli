@@ -9,6 +9,7 @@ module.exports = {
     return context.amplify.pushResources(context, category, resourceName).catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error pushing the XR resource');
+      context.usageData.emitError(err);
     });
   },
 };

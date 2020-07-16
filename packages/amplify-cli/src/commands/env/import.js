@@ -14,6 +14,30 @@ module.exports = {
     let config;
     try {
       config = JSON.parse(context.parameters.options.config);
+      let awsCF = config.awscloudformation;
+      if (
+        !(
+          config.hasOwnProperty('awscloudformation') &&
+          awsCF.hasOwnProperty('Region') &&
+          awsCF.Region &&
+          awsCF.hasOwnProperty('DeploymentBucketName') &&
+          awsCF.DeploymentBucketName &&
+          awsCF.hasOwnProperty('UnauthRoleName') &&
+          awsCF.UnauthRoleName &&
+          awsCF.hasOwnProperty('StackName') &&
+          awsCF.StackName &&
+          awsCF.hasOwnProperty('StackId') &&
+          awsCF.StackId &&
+          awsCF.hasOwnProperty('AuthRoleName') &&
+          awsCF.AuthRoleName &&
+          awsCF.hasOwnProperty('UnauthRoleArn') &&
+          awsCF.UnauthRoleArn &&
+          awsCF.hasOwnProperty('AuthRoleArn') &&
+          awsCF.AuthRoleArn
+        )
+      ) {
+        throw 'The provided config was invalid or incomplete';
+      }
     } catch (e) {
       context.print.error('You must pass in the configs of the environment in an object format using the --config flag');
       process.exit(1);
@@ -25,19 +49,13 @@ module.exports = {
         awsInfo = JSON.parse(context.parameters.options.awsInfo);
       } catch (e) {
         context.print.error(
-          'You must pass in the AWS credential info in an object format for intializating your environment using the --awsInfo flag'
+          'You must pass in the AWS credential info in an object format for intializating your environment using the --awsInfo flag',
         );
         process.exit(1);
       }
     }
 
-    let envFound = false;
     const allEnvs = context.amplify.getEnvDetails();
-    Object.keys(allEnvs).forEach(env => {
-      if (env === envName) {
-        envFound = true;
-      }
-    });
 
     const addNewEnvConfig = () => {
       const envProviderFilepath = context.amplify.pathManager.getProviderInfoFilePath();
@@ -60,12 +78,12 @@ module.exports = {
       context.print.success('Successfully added environment from your project');
     };
 
-    if (envFound) {
+    if (allEnvs.hasOwnProperty(envName)) {
       if (context.parameters.options.yes) {
         addNewEnvConfig();
       } else if (
         await context.amplify.confirmPrompt.run(
-          'We found an environment with the same name. Do you want to overwrite existing enviornment config?'
+          'We found an environment with the same name. Do you want to overwrite the existing environment config?',
         )
       ) {
         addNewEnvConfig();

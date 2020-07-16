@@ -34,6 +34,9 @@ describe('auth update: ', () => {
       info: jest.fn(),
       error: jest.fn(),
     },
+    usageData: {
+      emitError: jest.fn(),
+    },
   };
   const dependencies = ['analytics', 'api', 'function', 'storage'];
 

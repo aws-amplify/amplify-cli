@@ -16,6 +16,7 @@ import {
   bool,
   forEach,
   list,
+  and,
 } from 'graphql-mapping-template';
 import {
   ResolverResourceIDs,
@@ -137,7 +138,7 @@ export class KeyTransformer extends Transformer {
       }
       if (listResolver) {
         listResolver.Properties.RequestMappingTemplate = joinSnippets([
-          print(setQuerySnippet(definition, directive, ctx)),
+          print(setQuerySnippet(definition, directive, ctx, true)),
           listResolver.Properties.RequestMappingTemplate,
         ]);
       }
@@ -348,10 +349,12 @@ export class KeyTransformer extends Transformer {
   private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     if (this.isPrimaryKey(directive)) {
       const directiveArgs: KeyArguments = getDirectiveArguments(directive);
-      const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
-      if (createInput) {
-        ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
-      }
+
+      // There is no need to update the create Input as fields that can be in the index have to be non-nullable (which is enforece by
+      // @key directive). The @model transformer generates the createXInput where non-nullable fields  are
+      // also non-nullables in the input types as wekk. Only exception to this is when these fields can be automatically populated
+      // like id, createdAt and updatedAt, which will automatically get default value
+
       const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
       if (updateInput) {
         ctx.putType(replaceUpdateInput(definition, updateInput, directiveArgs.fields));
@@ -462,7 +465,7 @@ export class KeyTransformer extends Transformer {
       if (!fieldMap.has(fieldName)) {
         const checkedKeyName = directiveArgs.name ? directiveArgs.name : '<unnamed>';
         throw new InvalidDirectiveError(
-          `You cannot specify a non-existant field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`,
+          `You cannot specify a nonexistent field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`,
         );
       } else {
         const existingField = fieldMap.get(fieldName);
@@ -701,24 +704,6 @@ function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string
   });
 }
 
-// Key fields are non-nullable, non-key fields follow what their @model declaration makes.
-function replaceCreateInput(
-  definition: ObjectTypeDefinitionNode,
-  input: InputObjectTypeDefinitionNode,
-  keyFields: string[],
-): InputObjectTypeDefinitionNode {
-  return {
-    ...input,
-    fields: input.fields.reduce((acc, f) => {
-      // If the field is a key, make it non-null.
-      if (keyFields.find(k => k === f.name.value)) {
-        return [...acc, makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))))];
-      }
-      return [...acc, f];
-    }, []),
-  };
-}
-
 // Key fields are non-nullable, non-key fields are not non-nullable.
 function replaceUpdateInput(
   definition: ObjectTypeDefinitionNode,
@@ -830,7 +815,7 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
     TypeName: queryTypeName,
     RequestMappingTemplate: print(
       compoundExpression([
-        setQuerySnippet(definition, directive, ctx),
+        setQuerySnippet(definition, directive, ctx, false),
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
         set(
           ref(requestVariable),
@@ -861,17 +846,41 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
   });
 }
 
-function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) {
+function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext, isListResolver: boolean) {
   const args: KeyArguments = getDirectiveArguments(directive);
   const keys = args.fields;
   const keyTypes = keys.map(k => {
     const field = definition.fields.find(f => f.name.value === k);
     return attributeTypeFromType(field.type, ctx);
   });
-  return block(`Set query expression for @key`, [
+
+  const expressions: Expression[] = [];
+
+  // if @key has only Hash key then we've to add sortDirection validation to the VTL as it will not work
+  // TODO: when we will have featureflags we can fix it by not generating sortDirection parameter at all for these operations
+  if (keys.length === 1) {
+    const sortDirectionValidation = iff(
+      raw(`!$util.isNull($ctx.args.sortDirection)`),
+      raw(`$util.error("sortDirection is not supported for List operations without a Sort key defined.", "InvalidArgumentsError")`),
+    );
+
+    expressions.push(sortDirectionValidation);
+  } else if (isListResolver === true && keys.length >= 1) {
+    // We only need this check for List queries, and not for @key queries
+    const sortDirectionValidation = iff(
+      and([raw(`$util.isNull($ctx.args.${keys[0]})`), raw(`!$util.isNull($ctx.args.sortDirection)`)]),
+      raw(`$util.error("When providing argument 'sortDirection' you must also provide argument '${keys[0]}'.", "InvalidArgumentsError")`),
+    );
+
+    expressions.push(sortDirectionValidation);
+  }
+
+  expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
     applyKeyExpressionForCompositeKey(keys, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression),
-  ]);
+  );
+
+  return block(`Set query expression for @key`, expressions);
 }
 
 function addHashField(
