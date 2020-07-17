@@ -112,7 +112,7 @@ export class VelocityTemplate {
       stash: convertToJavaTypes(stash || {}),
       source: convertToJavaTypes(source),
       result: convertToJavaTypes(result),
-      error,
+      error: error ? { ...error, type: error.extensions.errorType } : error,
     };
 
     if (typeof prevResult !== 'undefined') {
