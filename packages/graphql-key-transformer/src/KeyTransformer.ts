@@ -17,6 +17,7 @@ import {
   forEach,
   list,
   and,
+  RESOLVER_VERSION_ID,
 } from 'graphql-mapping-template';
 import {
   ResolverResourceIDs,
@@ -820,7 +821,7 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
         set(
           ref(requestVariable),
           obj({
-            version: str('2017-02-28'),
+            version: str(RESOLVER_VERSION_ID),
             operation: str('Query'),
             limit: ref('limit'),
             query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
@@ -842,7 +843,12 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
         raw(`$util.toJson($${requestVariable})`),
       ]),
     ),
-    ResponseMappingTemplate: print(raw('$util.toJson($ctx.result)')),
+    ResponseMappingTemplate: print(
+      compoundExpression([
+        iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
+        raw('$util.toJson($ctx.result)'),
+      ]),
+    ),
   });
 }
 

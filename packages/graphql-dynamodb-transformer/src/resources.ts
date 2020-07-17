@@ -19,6 +19,7 @@ import {
   comment,
   forEach,
   and,
+  RESOLVER_VERSION_ID,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -713,7 +714,7 @@ export class ResourceFactory {
           set(
             ref(requestVariable),
             obj({
-              version: isSyncEnabled ? str('2018-05-29') : str('2017-02-28'),
+              version: str(RESOLVER_VERSION_ID),
               limit: ref('limit'),
             }),
           ),

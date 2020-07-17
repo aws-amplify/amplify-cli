@@ -17,7 +17,7 @@ import {
   CompoundExpressionNode,
 } from './ast';
 
-const RESOLVER_VERSION_ID = '2018-05-29';
+export const RESOLVER_VERSION_ID = '2018-05-29';
 
 export class DynamoDBMappingTemplate {
   /**
