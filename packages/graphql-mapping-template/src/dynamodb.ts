@@ -164,10 +164,8 @@ export class DynamoDBMappingTemplate {
     condition: ObjectNode | ReferenceNode;
     isSyncEnabled: boolean;
   }): ObjectNode {
-    const version: string = isSyncEnabled ? '2018-05-29' : RESOLVER_VERSION_ID;
-
     return obj({
-      version: str(version),
+      version: str(RESOLVER_VERSION_ID),
       operation: str('DeleteItem'),
       key,
       condition,
@@ -288,7 +286,9 @@ export class DynamoDBMappingTemplate {
     const errorExpresion = isSyncEnabled
       ? ref('util.error($ctx.error.message, $ctx.error.type, $ctx.result)')
       : ref('util.error($ctx.error.message, $ctx.error.type)');
-    const resultExpression = returnExpression ? returnExpression : ref('util.toJson($ctx.result)');
+    const resultExpression = returnExpression
+      ? returnExpression
+      : ref('util.toJson($ctx.result)');
     return compoundExpression([ifElse(ref('ctx.error'), errorExpresion, resultExpression)]);
   }
 

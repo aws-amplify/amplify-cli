@@ -49,7 +49,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
 } )
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
@@ -58,7 +58,11 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
   \\"condition\\": $util.toJson($condition)
 }
 ## [End] Prepare DynamoDB PutItem Request. **",
-  "Mutation.createItem.res.vtl": "$util.toJson($ctx.result)",
+  "Mutation.createItem.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end",
   "Mutation.deleteItem.req.vtl": "
 
 ## [Start] Set the primary @key. **
@@ -124,14 +128,18 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
 } )
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
   \\"condition\\": $util.toJson($condition)
 }",
-  "Mutation.deleteItem.res.vtl": "$util.toJson($ctx.result)",
+  "Mutation.deleteItem.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end",
   "Mutation.updateItem.req.vtl": "
 
 
@@ -272,7 +280,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($update.put(\\"expressionValues\\", $expValues))
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": {
@@ -282,7 +290,11 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $util.toJson($update),
   \\"condition\\": $util.toJson($condition)
 }",
-  "Mutation.updateItem.res.vtl": "$util.toJson($ctx.result)",
+  "Mutation.updateItem.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end",
   "Query.getItem.req.vtl": "## [Start] Set the primary @key. **
 #set( $modelObjectKey = {
   \\"orderId\\": $util.dynamodb.toDynamoDB($ctx.args.orderId),
@@ -290,13 +302,17 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 } )
 ## [End] Set the primary @key. **
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.id)
 } #end
 }",
-  "Query.getItem.res.vtl": "$util.toJson($ctx.result)",
+  "Query.getItem.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end",
   "Query.itemsByCreatedAt.req.vtl": "## [Start] Set query expression for @key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -356,7 +372,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## [End] Set query expression for @key **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $QueryRequest = {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Query\\",
   \\"limit\\": $limit,
   \\"query\\": $modelQueryExpression,
@@ -431,7 +447,7 @@ $util.toJson($QueryRequest)",
 ## [End] Set query expression for @key **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $QueryRequest = {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Query\\",
   \\"limit\\": $limit,
   \\"query\\": $modelQueryExpression,
@@ -577,7 +593,11 @@ $util.toJson($QueryRequest)",
   $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
 #end
 $util.toJson($ListRequest)",
-  "Query.listItems.res.vtl": "$util.toJson($ctx.result)",
+  "Query.listItems.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end",
 }
 `;
 

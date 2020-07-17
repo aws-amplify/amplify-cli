@@ -644,7 +644,7 @@ test('AND per-field dynamic auth rule test', async () => {
       }
       `);
   console.log(badUpdatePostResponse);
-  expect(badUpdatePostResponse.errors[0].errorType).toBeNull();
+  expect(badUpdatePostResponse.errors[0].data).toBeNull();
   expect(badUpdatePostResponse.errors[0].errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 
   const correctUpdatePostResponse = await GRAPHQL_CLIENT_1.query(`mutation UpdatePost {
