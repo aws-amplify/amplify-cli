@@ -7,6 +7,7 @@ const { flattenDeep } = require('lodash');
 const { join } = require('path');
 const { uniq } = require('lodash');
 const { readJsonFile } = require('./read-json-file');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 /** ADD A TRIGGER
  * @function addTrigger
@@ -52,14 +53,16 @@ const addTrigger = async triggerOptions => {
     throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
   }
 
-  await add(context, 'awscloudformation', 'Lambda', {
+  await add(context, 'awscloudformation', FunctionServiceName.LambdaFunction, {
     trigger: true,
     cloudResourceTemplatePath: join(triggerDir, 'cloudformation-templates', triggerTemplate),
     functionTemplate: {
       sourceRoot: join(triggerDir, 'function-template-dir'),
       sourceFiles: ['trigger-index.js', 'package.json.ejs', 'event.json'],
       destMap: {
-        'trigger-index.js': 'index.js',
+        'trigger-index.js': join('src', 'index.js'),
+        'package.json.ejs': join('src', 'package.json'),
+        'event.json': join('src', 'event.json'),
       },
     },
     modules: values,
@@ -76,7 +79,7 @@ const addTrigger = async triggerOptions => {
     roleName: functionName,
     skipEdit,
   });
-  context.print.success('Succesfully added the Lambda function locally');
+  context.print.success('Successfully added the Lambda function locally');
   if (values && values.length > 0) {
     for (let v = 0; v < values.length; v += 1) {
       await copyFunctions(key, values[v], category, context, targetPath);
@@ -133,7 +136,7 @@ const updateTrigger = async triggerOptions => {
     await update(
       context,
       'awscloudformation',
-      'Lambda',
+      FunctionServiceName.LambdaFunction,
       {
         trigger: true,
         modules: values,
@@ -164,7 +167,7 @@ const updateTrigger = async triggerOptions => {
 
       await cleanFunctions(key, values, category, context, targetPath);
     }
-    context.print.success('Succesfully updated the Lambda function locally');
+    context.print.success('Successfully updated the Lambda function locally');
     return null;
   } catch (e) {
     throw new Error('Unable to update lambda function');

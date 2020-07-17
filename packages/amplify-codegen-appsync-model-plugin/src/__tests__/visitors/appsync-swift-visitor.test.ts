@@ -51,9 +51,9 @@ describe('AppSyncSwiftVisitor', () => {
         }
       }"
     `);
-    const metaDataVisitor = getVisitor(schema, 'SimpleModel', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'SimpleModel', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -104,9 +104,9 @@ describe('AppSyncSwiftVisitor', () => {
         case done
       }"
     `);
-    const metaDataVisitor = getVisitor(schema, 'status', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'status', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -141,9 +141,9 @@ describe('AppSyncSwiftVisitor', () => {
       }"
     `);
 
-    const metaDataVisitor = getVisitor(schema, 'snake_case', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'snake_case', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -238,9 +238,9 @@ describe('AppSyncSwiftVisitor', () => {
       }"
     `);
 
-    const metaDataVisitor = getVisitor(schema, 'authorBook', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'authorBook', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -336,9 +336,9 @@ describe('AppSyncSwiftVisitor', () => {
           }"
         `);
 
-        const metaDataVisitor = getVisitor(schema, 'Todo', CodeGenGenerateEnum.metadata);
-        const generatedMetaData = metaDataVisitor.generate();
-        expect(generatedMetaData).toMatchInlineSnapshot(`
+        const metadataVisitor = getVisitor(schema, 'Todo', CodeGenGenerateEnum.metadata);
+        const generatedMetadata = metadataVisitor.generate();
+        expect(generatedMetadata).toMatchInlineSnapshot(`
           "// swiftlint:disable all
           import Amplify
           import Foundation
@@ -392,15 +392,15 @@ describe('AppSyncSwiftVisitor', () => {
             public var title: String
             public var done: Bool
             public var todo: Todo?
-            public var time: Date?
-            public var createdOn: Date?
+            public var time: Temporal.Time?
+            public var createdOn: Temporal.Date?
             
             public init(id: String = UUID().uuidString,
                 title: String,
                 done: Bool,
                 todo: Todo? = nil,
-                time: Date? = nil,
-                createdOn: Date? = nil) {
+                time: Temporal.Time? = nil,
+                createdOn: Temporal.Date? = nil) {
                 self.id = id
                 self.title = title
                 self.done = done
@@ -411,9 +411,9 @@ describe('AppSyncSwiftVisitor', () => {
           }"
         `);
 
-        const metaDataVisitor = getVisitor(schema, 'task', CodeGenGenerateEnum.metadata);
-        const generatedMetaData = metaDataVisitor.generate();
-        expect(generatedMetaData).toMatchInlineSnapshot(`
+        const metadataVisitor = getVisitor(schema, 'task', CodeGenGenerateEnum.metadata);
+        const generatedMetadata = metadataVisitor.generate();
+        expect(generatedMetadata).toMatchInlineSnapshot(`
           "// swiftlint:disable all
           import Amplify
           import Foundation
@@ -450,6 +450,172 @@ describe('AppSyncSwiftVisitor', () => {
         `);
       });
     });
+
+    describe('connection with key directive', () => {
+      it('should not throw error when connection has keyName', () => {
+        const schema = /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            title: String!
+            editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+          }
+
+          # Create a join model and disable queries as you don't need them
+          # and can query through Post.editors and User.posts
+          type PostEditor
+            @model(queries: null)
+            @key(name: "byPost", fields: ["postID", "editorID"])
+            @key(name: "byEditor", fields: ["editorID", "postID"]) {
+            id: ID!
+            postID: ID!
+            editorID: ID!
+            post: Post! @connection(fields: ["postID"])
+            editor: User! @connection(fields: ["editorID"])
+          }
+
+          type User @model {
+            id: ID!
+            username: String!
+            posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
+          }
+        `;
+        const postVisitor = getVisitor(schema, 'Post');
+        expect(() => postVisitor.generate()).not.toThrowError();
+      });
+
+      it('should support connection directive with fields', () => {
+        const schema = /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            title: String!
+            editors: [PostEditor] @connection(fields: ["id"])
+          }
+
+          # Create a join model and disable queries as you don't need them
+          # and can query through Post.editors and User.posts
+          type PostEditor
+            @model(queries: null)
+            @key(name: "byPost", fields: ["postID", "editorID"])
+            @key(name: "byEditor", fields: ["editorID", "postID"]) {
+            id: ID!
+            postID: ID!
+            editorID: ID!
+            post: Post! @connection(fields: ["postID"])
+            editor: User! @connection(fields: ["editorID"])
+          }
+
+          type User @model {
+            id: ID!
+            username: String!
+            posts: [PostEditor] @connection(fields: ["id"])
+          }
+        `;
+
+        const postVisitor = getVisitor(schema, 'Post');
+        expect(postVisitor.generate()).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          public struct Post: Model {
+            public let id: String
+            public var title: String
+            public var editors: List<PostEditor>?
+            
+            public init(id: String = UUID().uuidString,
+                title: String,
+                editors: List<PostEditor>? = []) {
+                self.id = id
+                self.title = title
+                self.editors = editors
+            }
+          }"
+        `);
+
+        const postSchemaVisitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        expect(postSchemaVisitor.generate()).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case editors
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .hasMany(post.editors, is: .optional, ofType: PostEditor.self, associatedWith: PostEditor.keys.id)
+              )
+              }
+          }"
+        `);
+
+        const postEditorVisitor = getVisitor(schema, 'Post');
+        expect(postEditorVisitor.generate()).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          public struct Post: Model {
+            public let id: String
+            public var title: String
+            public var editors: List<PostEditor>?
+            
+            public init(id: String = UUID().uuidString,
+                title: String,
+                editors: List<PostEditor>? = []) {
+                self.id = id
+                self.title = title
+                self.editors = editors
+            }
+          }"
+        `);
+
+        const postEditorSchemaVisitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        expect(postEditorSchemaVisitor.generate()).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case editors
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .hasMany(post.editors, is: .optional, ofType: PostEditor.self, associatedWith: PostEditor.keys.id)
+              )
+              }
+          }"
+        `);
+      });
+    });
   });
 
   it('should not convert non model type to List<type>', () => {
@@ -480,7 +646,7 @@ describe('AppSyncSwiftVisitor', () => {
         public var strArr: [String]?
         public var floatArr: [Double]?
         public var boolArr: [Bool]?
-        public var dateArr: [Date]?
+        public var dateArr: [Temporal.Date]?
         public var enumArr: [EnumType]?
         
         public init(id: String = UUID().uuidString,
@@ -488,7 +654,7 @@ describe('AppSyncSwiftVisitor', () => {
             strArr: [String]? = [],
             floatArr: [Double]? = [],
             boolArr: [Bool]? = [],
-            dateArr: [Date]? = [],
+            dateArr: [Temporal.Date]? = [],
             enumArr: [EnumType]? = []) {
             self.id = id
             self.intArr = intArr
@@ -501,9 +667,9 @@ describe('AppSyncSwiftVisitor', () => {
       }"
     `);
 
-    const metaDataVisitor = getVisitor(schema, 'ObjectWithNativeTypes', CodeGenGenerateEnum.metadata);
-    const generatedMetaData = metaDataVisitor.generate();
-    expect(generatedMetaData).toMatchInlineSnapshot(`
+    const metadataVisitor = getVisitor(schema, 'ObjectWithNativeTypes', CodeGenGenerateEnum.metadata);
+    const generatedMetadata = metadataVisitor.generate();
+    expect(generatedMetadata).toMatchInlineSnapshot(`
       "// swiftlint:disable all
       import Amplify
       import Foundation
@@ -530,19 +696,19 @@ describe('AppSyncSwiftVisitor', () => {
           
           model.fields(
             .id(),
-            .field(objectWithNativeTypes.intArr, is: .optional, ofType: .customType([Int].self)),
-            .field(objectWithNativeTypes.strArr, is: .optional, ofType: .customType([String].self)),
-            .field(objectWithNativeTypes.floatArr, is: .optional, ofType: .customType([Double].self)),
-            .field(objectWithNativeTypes.boolArr, is: .optional, ofType: .customType([Bool].self)),
-            .field(objectWithNativeTypes.dateArr, is: .optional, ofType: .customType([Date].self)),
-            .field(objectWithNativeTypes.enumArr, is: .optional, ofType: .customType([EnumType].self))
+            .field(objectWithNativeTypes.intArr, is: .optional, ofType: .embeddedCollection(of: Int.self)),
+            .field(objectWithNativeTypes.strArr, is: .optional, ofType: .embeddedCollection(of: String.self)),
+            .field(objectWithNativeTypes.floatArr, is: .optional, ofType: .embeddedCollection(of: Double.self)),
+            .field(objectWithNativeTypes.boolArr, is: .optional, ofType: .embeddedCollection(of: Bool.self)),
+            .field(objectWithNativeTypes.dateArr, is: .optional, ofType: .embeddedCollection(of: Temporal.Date.self)),
+            .field(objectWithNativeTypes.enumArr, is: .optional, ofType: .embeddedCollection(of: EnumType.self))
           )
           }
       }"
     `);
   });
 
-  it('should support using non model types in models', () => {
+  it('should support using embedded types in models', () => {
     const schema = /* GraphQL */ `
       type Attraction @model {
         id: ID!
@@ -626,11 +792,11 @@ describe('AppSyncSwiftVisitor', () => {
           model.fields(
             .id(),
             .field(attraction.name, is: .required, ofType: .string),
-            .field(attraction.location, is: .required, ofType: .customType(Location.self)),
-            .field(attraction.nearByLocations, is: .optional, ofType: .customType([Location].self)),
+            .field(attraction.location, is: .required, ofType: .embedded(type: Location.self)),
+            .field(attraction.nearByLocations, is: .optional, ofType: .embeddedCollection(of: Location.self)),
             .field(attraction.status, is: .required, ofType: .enum(type: Status.self)),
-            .field(attraction.statusHistory, is: .optional, ofType: .customType([Status].self)),
-            .field(attraction.tags, is: .optional, ofType: .customType([String].self))
+            .field(attraction.statusHistory, is: .optional, ofType: .embeddedCollection(of: Status.self)),
+            .field(attraction.tags, is: .optional, ofType: .embeddedCollection(of: String.self))
           )
           }
       }"
@@ -654,29 +820,60 @@ describe('AppSyncSwiftVisitor', () => {
       import Amplify
       import Foundation
 
-      public struct Location: Codable {
+      public struct Location: Embeddable {
         var lat: String
         var lang: String
         var tags: [String]?
       }"
     `);
 
+    const visitorLocationSchema = getVisitor(schema, 'Location', CodeGenGenerateEnum.metadata);
+    expect(visitorLocationSchema.generate()).toMatchInlineSnapshot(`
+      "// swiftlint:disable all
+      import Amplify
+      import Foundation
+
+      extension Location {
+        // MARK: - CodingKeys 
+         public enum CodingKeys: String, ModelKey {
+          case lat
+          case lang
+          case tags
+        }
+        
+        public static let keys = CodingKeys.self
+        //  MARK: - ModelSchema 
+        
+        public static let schema = defineSchema { model in
+          let location = Location.keys
+          
+          model.pluralName = \\"Locations\\"
+          
+          model.fields(
+            .field(location.lat, is: .required, ofType: .string),
+            .field(location.lang, is: .required, ofType: .string),
+            .field(location.tags, is: .optional, ofType: .embeddedCollection(of: String.self))
+          )
+          }
+      }"
+    `);
+
     const visitorClassLoader = getVisitor(schema, undefined, CodeGenGenerateEnum.loader);
     expect(visitorClassLoader.generate()).toMatchInlineSnapshot(`
-"// swiftlint:disable all
-import Amplify
-import Foundation
+      "// swiftlint:disable all
+      import Amplify
+      import Foundation
 
-// Contains the set of classes that conforms to the \`Model\` protocol. 
+      // Contains the set of classes that conforms to the \`Model\` protocol. 
 
-final public class AmplifyModels: AmplifyModelRegistration {
-  public let version: String = \\"ca73d7dc63498f675fff2b260548d216\\"
-  
-  public func registerModels(registry: ModelRegistry.Type) {
-    ModelRegistry.register(modelType: Attraction.self)
-  }
-}"
-`);
+      final public class AmplifyModels: AmplifyModelRegistration {
+        public let version: String = \\"ca73d7dc63498f675fff2b260548d216\\"
+        
+        public func registerModels(registry: ModelRegistry.Type) {
+          ModelRegistry.register(modelType: Attraction.self)
+        }
+      }"
+    `);
   });
 
   it('should escape swift reserved keywords in enum', () => {
@@ -690,15 +887,15 @@ final public class AmplifyModels: AmplifyModelRegistration {
     const generatedCode = visitor.generate();
 
     expect(generatedCode).toMatchInlineSnapshot(`
-"// swiftlint:disable all
-import Amplify
-import Foundation
+      "// swiftlint:disable all
+      import Amplify
+      import Foundation
 
-public enum PostStatus: String, EnumPersistable {
-  case \`private\`
-  case \`public\`
-}"
-`);
+      public enum PostStatus: String, EnumPersistable {
+        case \`private\`
+        case \`public\`
+      }"
+    `);
   });
 
   describe('reserved word escape', () => {
@@ -713,15 +910,15 @@ public enum PostStatus: String, EnumPersistable {
       const generatedCode = visitor.generate();
 
       expect(generatedCode).toMatchInlineSnapshot(`
-"// swiftlint:disable all
-import Amplify
-import Foundation
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
 
-public enum PostStatus: String, EnumPersistable {
-  case \`private\`
-  case \`public\`
-}"
-`);
+        public enum PostStatus: String, EnumPersistable {
+          case \`private\`
+          case \`public\`
+        }"
+      `);
     });
 
     it('should escape swift reserved keywords in enum name', () => {
@@ -741,43 +938,457 @@ public enum PostStatus: String, EnumPersistable {
       const visitor = getVisitor(schema, 'Class');
       const generatedEnumCode = visitor.generate();
       expect(generatedEnumCode).toMatchInlineSnapshot(`
-"// swiftlint:disable all
-import Amplify
-import Foundation
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
 
-public enum \`Class\`: String, EnumPersistable {
-  case \`private\`
-  case \`public\`
-}"
-`);
+        public enum \`Class\`: String, EnumPersistable {
+          case \`private\`
+          case \`public\`
+        }"
+      `);
 
       const fooVisitor = getVisitor(schema, 'Foo');
       const fooModel = fooVisitor.generate();
       expect(fooModel).toMatchInlineSnapshot(`
-"// swiftlint:disable all
-import Amplify
-import Foundation
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
 
-public struct Foo: Model {
-  public let id: String
-  public var \`Class\`: Class?
-  public var nonNullClass: Class
-  public var classes: [\`Class\`]?
-  public var nonNullClasses: [\`Class\`]
-  
-  public init(id: String = UUID().uuidString,
-      \`Class\`: \`Class\`? = nil,
-      nonNullClass: \`Class\`,
-      classes: [\`Class\`]? = [],
-      nonNullClasses: [\`Class\`] = []) {
-      self.id = id
-      self.\`Class\` = \`Class\`
-      self.nonNullClass = nonNullClass
-      self.classes = classes
-      self.nonNullClasses = nonNullClasses
-  }
-}"
-`);
+        public struct Foo: Model {
+          public let id: String
+          public var \`Class\`: Class?
+          public var nonNullClass: Class
+          public var classes: [\`Class\`]?
+          public var nonNullClasses: [\`Class\`]
+          
+          public init(id: String = UUID().uuidString,
+              \`Class\`: \`Class\`? = nil,
+              nonNullClass: \`Class\`,
+              classes: [\`Class\`]? = [],
+              nonNullClasses: [\`Class\`] = []) {
+              self.id = id
+              self.\`Class\` = \`Class\`
+              self.nonNullClass = nonNullClass
+              self.classes = classes
+              self.nonNullClasses = nonNullClasses
+          }
+        }"
+      `);
     });
+  });
+  describe('auth directives', () => {
+    describe('owner auth', () => {
+      it('should include authRules in schema when owner auth is used', () => {
+        const schema = /* GraphQL */ `
+          type Post @model @auth(rules: [{ allow: owner }]) {
+            id: ID!
+            title: String!
+            owner: String!
+          }
+        `;
+        const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        const generatedCode = visitor.generate();
+        expect(generatedCode).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case owner
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.authRules = [
+                rule(allow: .owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete, .read])
+              ]
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .field(post.owner, is: .required, ofType: .string)
+              )
+              }
+          }"
+        `);
+      });
+
+      it('should include authRules in schema when owner auth is used', () => {
+        const schema = /* GraphQL */ `
+          type Post @model @auth(rules: [{ allow: owner, ownerField: "author" }]) {
+            id: ID!
+            title: String!
+            author: String!
+          }
+        `;
+        const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        const generatedCode = visitor.generate();
+        expect(generatedCode).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case author
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.authRules = [
+                rule(allow: .owner, ownerField: \\"author\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete, .read])
+              ]
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .field(post.author, is: .required, ofType: .string)
+              )
+              }
+          }"
+        `);
+      });
+
+      it('should support changing allowed operation', () => {
+        const schema = /* GraphQL */ `
+          type Post @model @auth(rules: [{ allow: owner, ownerField: "author", operations: ["create", "update", "delete"] }]) {
+            id: ID!
+            title: String!
+            author: String!
+          }
+        `;
+
+        const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        const generatedCode = visitor.generate();
+        expect(generatedCode).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case author
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.authRules = [
+                rule(allow: .owner, ownerField: \\"author\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete])
+              ]
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .field(post.author, is: .required, ofType: .string)
+              )
+              }
+          }"
+        `);
+      });
+
+      it('should support changing identityClaim ', () => {
+        const schema = /* GraphQL */ `
+          type Post @model @auth(rules: [{ allow: owner, ownerField: "author", identityClaim: "sub" }]) {
+            id: ID!
+            title: String!
+            author: String!
+          }
+        `;
+
+        const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        const generatedCode = visitor.generate();
+        expect(generatedCode).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case author
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.authRules = [
+                rule(allow: .owner, ownerField: \\"author\\", identityClaim: \\"sub\\", operations: [.create, .update, .delete, .read])
+              ]
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .field(post.author, is: .required, ofType: .string)
+              )
+              }
+          }"
+        `);
+      });
+    });
+  });
+
+  describe('group auth', () => {
+    it('should include authRules in schema when static groups auth is used', () => {
+      const schema = /* GraphQL */ `
+        type Post @model @auth(rules: [{ allow: groups, groups: ["admin", "editors"] }]) {
+          id: ID!
+          title: String!
+        }
+      `;
+      const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+      const generatedCode = visitor.generate();
+      expect(generatedCode).toMatchInlineSnapshot(`
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
+
+        extension Post {
+          // MARK: - CodingKeys 
+           public enum CodingKeys: String, ModelKey {
+            case id
+            case title
+          }
+          
+          public static let keys = CodingKeys.self
+          //  MARK: - ModelSchema 
+          
+          public static let schema = defineSchema { model in
+            let post = Post.keys
+            
+            model.authRules = [
+              rule(allow: .groups, groupClaim: \\"cognito:groups\\", groups: [\\"admin\\", \\"editors\\"], operations: [.create, .update, .delete, .read])
+            ]
+            
+            model.pluralName = \\"Posts\\"
+            
+            model.fields(
+              .id(),
+              .field(post.title, is: .required, ofType: .string)
+            )
+            }
+        }"
+      `);
+    });
+
+    it('should include authRules in schema when dynamoc auth is used', () => {
+      const schema = /* GraphQL */ `
+        type Post @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+          id: ID!
+          title: String!
+          groups: [String!]!
+        }
+      `;
+      const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+      const generatedCode = visitor.generate();
+      expect(generatedCode).toMatchInlineSnapshot(`
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
+
+        extension Post {
+          // MARK: - CodingKeys 
+           public enum CodingKeys: String, ModelKey {
+            case id
+            case title
+            case groups
+          }
+          
+          public static let keys = CodingKeys.self
+          //  MARK: - ModelSchema 
+          
+          public static let schema = defineSchema { model in
+            let post = Post.keys
+            
+            model.authRules = [
+              rule(allow: .groups, groupClaim: \\"cognito:groups\\", groupsField: \\"groups\\", operations: [.create, .update, .delete, .read])
+            ]
+            
+            model.pluralName = \\"Posts\\"
+            
+            model.fields(
+              .id(),
+              .field(post.title, is: .required, ofType: .string),
+              .field(post.groups, is: .required, ofType: .embeddedCollection(of: String.self))
+            )
+            }
+        }"
+      `);
+    });
+
+    it('should support changing allowed operation', () => {
+      const schema = /* GraphQL */ `
+        type Post @model @auth(rules: [{ allow: groups, groups: ["admin"], operations: ["create", "update", "delete"] }]) {
+          id: ID!
+          title: String!
+        }
+      `;
+
+      const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+      const generatedCode = visitor.generate();
+      expect(generatedCode).toMatchInlineSnapshot(`
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
+
+        extension Post {
+          // MARK: - CodingKeys 
+           public enum CodingKeys: String, ModelKey {
+            case id
+            case title
+          }
+          
+          public static let keys = CodingKeys.self
+          //  MARK: - ModelSchema 
+          
+          public static let schema = defineSchema { model in
+            let post = Post.keys
+            
+            model.authRules = [
+              rule(allow: .groups, groupClaim: \\"cognito:groups\\", groups: [\\"admin\\"], operations: [.create, .update, .delete])
+            ]
+            
+            model.pluralName = \\"Posts\\"
+            
+            model.fields(
+              .id(),
+              .field(post.title, is: .required, ofType: .string)
+            )
+            }
+        }"
+      `);
+    });
+
+    it('should support changing groupsClaim ', () => {
+      const schema = /* GraphQL */ `
+        type Post @model @auth(rules: [{ allow: groups, groups: ["admin"], groupClaim: "custom:groups" }]) {
+          id: ID!
+          title: String!
+        }
+      `;
+
+      const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+      const generatedCode = visitor.generate();
+      expect(generatedCode).toMatchInlineSnapshot(`
+        "// swiftlint:disable all
+        import Amplify
+        import Foundation
+
+        extension Post {
+          // MARK: - CodingKeys 
+           public enum CodingKeys: String, ModelKey {
+            case id
+            case title
+          }
+          
+          public static let keys = CodingKeys.self
+          //  MARK: - ModelSchema 
+          
+          public static let schema = defineSchema { model in
+            let post = Post.keys
+            
+            model.authRules = [
+              rule(allow: .groups, groupClaim: \\"custom:groups\\", groups: [\\"admin\\"], operations: [.create, .update, .delete, .read])
+            ]
+            
+            model.pluralName = \\"Posts\\"
+            
+            model.fields(
+              .id(),
+              .field(post.title, is: .required, ofType: .string)
+            )
+            }
+        }"
+      `);
+    });
+  });
+  it('should support multiple auth rules', () => {
+    const schema = /* GraphQL */ `
+      type Post
+        @model
+        @auth(
+          rules: [
+            { allow: groups, groups: ["admin"] }
+            { allow: owner, operations: ["create", "update"] }
+            { allow: public, operation: ["read"] }
+          ]
+        ) {
+        id: ID!
+        title: String!
+        owner: String!
+      }
+    `;
+
+    const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+    const generatedCode = visitor.generate();
+    expect(generatedCode).toMatchInlineSnapshot(`
+      "// swiftlint:disable all
+      import Amplify
+      import Foundation
+
+      extension Post {
+        // MARK: - CodingKeys 
+         public enum CodingKeys: String, ModelKey {
+          case id
+          case title
+          case owner
+        }
+        
+        public static let keys = CodingKeys.self
+        //  MARK: - ModelSchema 
+        
+        public static let schema = defineSchema { model in
+          let post = Post.keys
+          
+          model.authRules = [
+            rule(allow: .groups, groupClaim: \\"cognito:groups\\", groups: [\\"admin\\"], operations: [.create, .update, .delete, .read]),
+            rule(allow: .owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", operations: [.create, .update])
+          ]
+          
+          model.pluralName = \\"Posts\\"
+          
+          model.fields(
+            .id(),
+            .field(post.title, is: .required, ofType: .string),
+            .field(post.owner, is: .required, ofType: .string)
+          )
+          }
+      }"
+    `);
   });
 });

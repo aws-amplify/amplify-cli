@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.3.4...amplify-graphql-types-generator@2.3.5) (2020-06-10)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** use zen-observable-ts ([#4415](https://github.com/aws-amplify/amplify-cli/issues/4415)) ([4e49e0c](https://github.com/aws-amplify/amplify-cli/commit/4e49e0cb7c8d389a41cc3e78d5a8f021afb4f691))
+
+
+
+
+
+## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.3.3...amplify-graphql-types-generator@2.3.4) (2020-05-15)
+
+**Note:** Version bump only for package amplify-graphql-types-generator
+
+
+
+
+
+## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.3.2...amplify-graphql-types-generator@2.3.3) (2020-04-23)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** return string instead on object ([#3963](https://github.com/aws-amplify/amplify-cli/issues/3963)) ([2df1b93](https://github.com/aws-amplify/amplify-cli/commit/2df1b9374cbbd26c18f05e92a01521474cf3dee0)), closes [#3744](https://github.com/aws-amplify/amplify-cli/issues/3744) [#3958](https://github.com/aws-amplify/amplify-cli/issues/3958)
+
+
+
+
+
 ## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.3.1...amplify-graphql-types-generator@2.3.2) (2020-03-22)
 
 

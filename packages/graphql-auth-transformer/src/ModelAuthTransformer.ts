@@ -22,7 +22,6 @@ import {
   NamedTypeNode,
   InputObjectTypeDefinitionNode,
   TypeDefinitionNode,
-  TypeSystemDefinitionNode,
 } from 'graphql';
 import {
   ResourceConstants,
@@ -42,7 +41,7 @@ import {
 import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
-import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
+import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NON_MODEL_TYPES } from './constants';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -266,6 +265,9 @@ export class ModelAuthTransformer extends Transformer {
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeConditions(template.Conditions);
     this.updateAPIAuthentication(ctx);
+    if (!ctx.metadata.has(AUTH_NON_MODEL_TYPES)) {
+      ctx.metadata.set(AUTH_NON_MODEL_TYPES, new Set<string>());
+    }
   };
 
   public after = (ctx: TransformerContext): void => {
@@ -416,9 +418,9 @@ export class ModelAuthTransformer extends Transformer {
 
     // Check if subscriptions is enabled
     if (modelConfiguration.getName('level') !== 'off') {
-      this.protectOnCreateSubscription(ctx, operationRules.create, def, modelConfiguration);
-      this.protectOnUpdateSubscription(ctx, operationRules.update, def, modelConfiguration);
-      this.protectOnDeleteSubscription(ctx, operationRules.delete, def, modelConfiguration);
+      this.protectOnCreateSubscription(ctx, operationRules.read, def, modelConfiguration);
+      this.protectOnUpdateSubscription(ctx, operationRules.read, def, modelConfiguration);
+      this.protectOnDeleteSubscription(ctx, operationRules.read, def, modelConfiguration);
     }
 
     // Update ModelXConditionInput type
@@ -522,34 +524,36 @@ Static group authorization should perform as expected.`,
   };
 
   private propagateAuthDirectivesToNestedTypes(type: ObjectTypeDefinitionNode, rules: AuthRule[], ctx: TransformerContext) {
+    const seenNonModelTypes: Set<string> = ctx.metadata.get(AUTH_NON_MODEL_TYPES);
+
     const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
       if (fieldType) {
         if (fieldType.kind !== 'ObjectTypeDefinition') {
           return undefined;
         }
-
         const typeModel = fieldType.directives.find(dir => dir.name.value === 'model');
         return typeModel !== undefined ? undefined : fieldType;
       }
-
       return fieldType;
     };
-
     const nonModelFieldTypes = type.fields.map(f => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
-
     for (const nonModelFieldType of nonModelFieldTypes) {
-      const directives = this.getDirectivesForRules(rules, false);
+      if (!seenNonModelTypes.has(nonModelFieldType.name.value)) {
+        // add to the set of seen non model types
+        seenNonModelTypes.add(nonModelFieldType.name.value);
+        const directives = this.getDirectivesForRules(rules, false);
+        // Add the directives to the Type node itself
+        if (directives.length > 0) {
+          this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
+        }
+        const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+        if (hasIAM) {
+          this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+          this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+        }
 
-      // Add the directives to the Type node itself
-      if (directives.length > 0) {
-        this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
-      }
-
-      const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
-
-      if (hasIAM) {
-        this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
-        this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+        // Recursively process the nested types if there is any
+        this.propagateAuthDirectivesToNestedTypes(<ObjectTypeDefinitionNode>nonModelFieldType, rules, ctx);
       }
     }
   }
@@ -560,37 +564,37 @@ Static group authorization should perform as expected.`,
     field: FieldDefinitionNode,
     staticGroupRules: AuthRule[],
   ) {
-      const typeName = parent.name.value;
-      const fieldName = field.name.value;
-      const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
-      let fieldResolverResource = ctx.getResource(resolverResourceId);
+    const typeName = parent.name.value;
+    const fieldName = field.name.value;
+    const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+    let fieldResolverResource = ctx.getResource(resolverResourceId);
 
-      const templateParts = [];
+    const templateParts = [];
 
-      if (staticGroupRules && staticGroupRules.length) {
-        // add logic here to only use static group rules
-        const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
-        const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
-        const throwIfUnauthorizedExpression = this.resources.throwIfStaticGroupUnauthorized(field);
-        const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
+    if (staticGroupRules && staticGroupRules.length) {
+      // add logic here to only use static group rules
+      const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
+      const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
+      const throwIfUnauthorizedExpression = this.resources.throwIfStaticGroupUnauthorized(field);
+      const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
 
-        templateParts.push(print(compoundExpression(authCheckExpressions)));
-      }
+      templateParts.push(print(compoundExpression(authCheckExpressions)));
+    }
 
-      // if the field resolver does not exist create it
-      if (!fieldResolverResource) {
-        fieldResolverResource = this.resources.blankResolver(typeName, fieldName);
-        ctx.setResource(resolverResourceId, fieldResolverResource);
-        // add none ds if that does not exist
-        const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource);
-        if (!noneDS) {
-          ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource());
-        }
-      } else {
-        templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
-      }
-      fieldResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n');
+    // if the field resolver does not exist create it
+    if (!fieldResolverResource) {
+      fieldResolverResource = this.resources.blankResolver(typeName, fieldName);
       ctx.setResource(resolverResourceId, fieldResolverResource);
+      // add none ds if that does not exist
+      const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource);
+      if (!noneDS) {
+        ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource());
+      }
+    } else {
+      templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
+    }
+    fieldResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n');
+    ctx.setResource(resolverResourceId, fieldResolverResource);
   }
 
   private protectReadForField(
@@ -971,14 +975,14 @@ All @auth directives used on field definitions are performed when the field is r
       if (isParentTypeBuiltinType && rule.operations && rule.operations.length > 0) {
         throw new InvalidDirectiveError(
           `@auth rules on fields within Query, Mutation, Subscription cannot specify 'operations' argument as these rules \
-are already on an operation already.`
+are already on an operation already.`,
         );
       }
 
       if (!parentHasModelDirective && rule.operations && rule.operations.length > 0) {
         throw new InvalidDirectiveError(
           `@auth rules on fields within types that does not have @model directive cannot specify 'operations' argument as there are \
-operations will be generated by the CLI.`
+operations will be generated by the CLI.`,
         );
       }
 
@@ -1449,13 +1453,6 @@ operations will be generated by the CLI.`
         // Generate the expressions to validate each strategy.
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
 
-        // In create mutations, the dynamic group and ownership authorization checks
-        // are done before calling PutItem.
-        const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForUpdateOrDeleteOperations(
-          dynamicGroupAuthorizationRules,
-          field ? field.name.value : undefined,
-        );
-
         const fieldIsList = (fieldName: string) => {
           const field = parent.fields.find(field => field.name.value === fieldName);
           if (field) {
@@ -1463,6 +1460,15 @@ operations will be generated by the CLI.`
           }
           return false;
         };
+
+        // In create mutations, the dynamic group and ownership authorization checks
+        // are done before calling PutItem.
+        const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForUpdateOrDeleteOperations(
+          dynamicGroupAuthorizationRules,
+          fieldIsList,
+          field ? field.name.value : undefined,
+        );
+
         const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForUpdateOrDeleteOperations(
           ownerAuthorizationRules,
           fieldIsList,
@@ -1696,7 +1702,7 @@ operations will be generated by the CLI.`
       const authExpression = this.authorizationExpressionForListResult(rules, 'es_items');
       if (authExpression) {
         const templateParts = [
-          print(this.resources.makeESItemsExpression()),
+          print(this.resources.makeESItemsExpression(ctx.isProjectUsingDataStore())),
           print(authExpression),
           print(this.resources.makeESToGQLExpression()),
         ];
@@ -1738,7 +1744,7 @@ operations will be generated by the CLI.`
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
       names.forEach(name => {
-        this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'create');
+        this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
   }
@@ -1754,7 +1760,7 @@ operations will be generated by the CLI.`
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
       names.forEach(name => {
-        this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'update');
+        this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
   }
@@ -1770,7 +1776,7 @@ operations will be generated by the CLI.`
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
       names.forEach(name => {
-        this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'delete');
+        this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
   }
@@ -1782,7 +1788,6 @@ operations will be generated by the CLI.`
     parent: ObjectTypeDefinitionNode,
     level: ModelSubscriptionLevel,
     fieldName: string,
-    mutationOperation: ModelDirectiveOperationType,
   ) {
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID('Subscription', fieldName);
     const resolver = this.resources.generateSubscriptionResolver(fieldName);
@@ -1797,7 +1802,7 @@ operations will be generated by the CLI.`
       ctx.setResource(resolverResourceId, resolver);
     } else {
       // Get the directives we need to add to the GraphQL nodes
-      const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, mutationOperation) : false;
+      const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'get') : false;
       const directives = this.getDirectivesForRules(rules, includeDefault);
 
       if (directives.length > 0) {

@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const importGlobal = require('import-global');
+const importFrom = require('import-from');
 const { DynamoDBModelTransformer } = require('graphql-dynamodb-transformer');
 const { ModelAuthTransformer } = require('graphql-auth-transformer');
 const { ModelConnectionTransformer } = require('graphql-connection-transformer');
@@ -13,8 +15,8 @@ const { PredictionsTransformer } = require('graphql-predictions-transformer');
 const { KeyTransformer } = require('graphql-key-transformer');
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
-const { hashElement } = require('folder-hash');
 const { print } = require('graphql');
+const { hashDirectory } = require('./upload-appsync-files');
 
 const {
   collectDirectivesByTypeNames,
@@ -39,7 +41,7 @@ function warnOnAuth(context, map) {
   if (unAuthModelTypes.length) {
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
-    context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth \n');
+    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/directives#auth\n');
   }
 }
 
@@ -86,26 +88,17 @@ function getTransformerFactory(context, resourceDir, authConfig) {
             importedModule = require(modulePath);
           } else {
             const projectRootPath = context.amplify.pathManager.searchProjectRootPath();
-            const { createRequireFromPath } = require('module');
-            const projectRequire = createRequireFromPath(projectRootPath);
+            const projectNodeModules = path.join(projectRootPath, 'node_modules');
 
-            if (tempModulePath.startsWith('./')) {
-              // Lookup 'locally' within project's node_modules with require mechanism
-              importedModule = projectRequire(tempModulePath);
-            } else {
-              const prefixedModuleName = `./${tempModulePath}`;
+            try {
+              importedModule = importFrom(projectNodeModules, modulePath);
+            } catch (_) {
+              // Intentionally left blank to try global
+            }
 
-              try {
-                // Lookup 'locally' within project's node_modules with require mechanism
-                importedModule = projectRequire(prefixedModuleName);
-              } catch (_) {
-                // Intentionally left blank to try global
-              }
-
-              if (!importedModule) {
-                // Lookup in global with require
-                importedModule = require(tempModulePath);
-              }
+            // Try global package install
+            if (!importedModule) {
+              importedModule = importGlobal(modulePath);
             }
           }
 
@@ -146,9 +139,9 @@ function getTransformerFactory(context, resourceDir, authConfig) {
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
   const versionChangeMessage =
-    'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+    'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://docs.amplify.aws/cli/graphql-transformer/directives#authorizing-subscriptions';
   const warningESMessage =
-    'The behavior for @searchable has changed after version 4.14.1.\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#migration-warning';
+    'The behavior for @searchable has changed after version 4.14.1.\nRead here for details: https://docs.amplify.aws/cli/graphql-transformer/directives#searchable';
   const checkVersionExist = config => config && config.Version;
   const checkESWarningExists = config => config && config.ElasticsearchWarning;
   let writeToConfig = false;
@@ -446,13 +439,14 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const buildConfig = {
+    ...options,
     buildParameters,
     projectDirectory: options.dryrun ? false : resourceDir,
     transformersFactory: transformerListFactory,
     transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
-    disableResolverOverrides: options.disableResolverOverrides,
+    minify: options.minify,
   };
   const transformerOutput = await TransformPackage.buildAPIProject(buildConfig);
 
@@ -471,17 +465,6 @@ function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
   return projectBucket;
-}
-
-async function hashDirectory(directory) {
-  const options = {
-    encoding: 'hex',
-    folders: {
-      exclude: ['build'],
-    },
-  };
-
-  return hashElement(directory, options).then(result => result.hash);
 }
 
 async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {

@@ -1,0 +1,92 @@
+{
+  "name": "amplify-console-integration-tests",
+  "version": "1.2.14",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-console-integration-tests.git",
+    "directory": "packages/amplify-console-integration-tests"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "amplify console",
+    "integration"
+  ],
+  "private": true,
+  "scripts": {
+    "console-integration": "npm run setup-profile && jest",
+    "setup-profile": "ts-node ./src/setup-profile.ts"
+  },
+  "dependencies": {
+    "@types/ini": "^1.3.30",
+    "amplify-e2e-core": "1.2.2",
+    "aws-sdk": "^2.608.0",
+    "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
+    "fs-extra": "^8.1.0",
+    "ini": "^1.3.5",
+    "moment": "^2.24.0",
+    "nexpect": "^0.6.0",
+    "os": "^0.1.1",
+    "promise-sequential": "^1.1.1"
+  },
+  "jest": {
+    "verbose": false,
+    "preset": "ts-jest",
+    "testRunner": "amplify-e2e-core/runner",
+    "testEnvironment": "amplify-e2e-core/environment",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "lib"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!src/__tests__/**",
+      "!**/*.d.ts"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit",
+      [
+        "amplify-e2e-core/reporter",
+        {
+          "publicPath": "./console-integration-reports",
+          "filename": "index.html",
+          "expand": true
+        }
+      ]
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setup-tests.ts"
+    ],
+    "globals": {
+      "window": {},
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
+  }
+}

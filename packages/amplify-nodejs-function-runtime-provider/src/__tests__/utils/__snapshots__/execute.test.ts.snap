@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`execute async handler should fail when throwing an error 1`] = `[Error: Fail]`;
+
+exports[`execute async handler should succeed with a returned value 1`] = `"foo"`;
+
+exports[`execute callback handler should fail when returning an error 1`] = `[Error: Fail]`;
+
+exports[`execute callback handler should succeed with a returned value 1`] = `"foo"`;
+
+exports[`execute non-promise returned handler should resolve to null 1`] = `null`;

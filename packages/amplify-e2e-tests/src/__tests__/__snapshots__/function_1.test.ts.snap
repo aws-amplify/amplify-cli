@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`nodejs amplify add function with additional permissions environment vars comment should update on permission update 1`] = `
+"/* Amplify Params - DO NOT EDIT
+	ENV
+	REGION
+	STORAGE_NODETESTDDB_ARN
+	STORAGE_NODETESTDDB_NAME
+Amplify Params - DO NOT EDIT */
+
+exports.handler = async (event) => {
+    // TODO implement
+    const response = {
+        statusCode: 200,
+        body: JSON.stringify('Hello from Lambda!'),
+    };
+    return response;
+};
+"
+`;

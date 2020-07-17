@@ -1,7 +1,7 @@
 import { buildASTSchema, concatAST, DocumentNode, GraphQLObjectType, parse, Source } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
 import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncSimulatorBaseResolverConfig } from '../type-definition';
+import { AppSyncSimulatorPipelineResolverConfig, AppSyncSimulatorUnitResolverConfig } from '../type-definition';
 import { scalars } from './appsync-scalars';
 import { AwsAuth, AwsSubscribe, protectResolversWithAuthRules } from './directives';
 import { AppSyncSimulatorDirectiveBase } from './directives/directive-base';
@@ -12,14 +12,14 @@ const KNOWN_DIRECTIVES: {
 
 export function generateResolvers(
   schema: Source,
-  resolversConfig: AppSyncSimulatorBaseResolverConfig[] = [],
-  simulatorContext: AmplifyAppSyncSimulator
+  resolversConfig: (AppSyncSimulatorUnitResolverConfig | AppSyncSimulatorPipelineResolverConfig)[] = [],
+  simulatorContext: AmplifyAppSyncSimulator,
 ) {
   const appSyncScalars = new Source(
     Object.keys(scalars)
       .map(scalar => `scalar ${scalar}`)
       .join('\n'),
-    'AppSync-scalar.json'
+    'AppSync-scalar.json',
   );
 
   const directives = KNOWN_DIRECTIVES.reduce((set, d) => {
@@ -66,7 +66,7 @@ export function generateResolvers(
                 if (context.appsyncErrors.length) {
                   throw new Error('Subscription failed');
                 }
-                return simulatorContext.pubsub.asyncIterator(fieldName);
+                return simulatorContext.asyncIterator(fieldName);
               },
             }
           : {}),
@@ -76,7 +76,7 @@ export function generateResolvers(
         [resolverConfig.typeName]: typeObj,
       };
     },
-    { Subscription: {} }
+    { Subscription: {} },
   );
   const defaultSubscriptions = generateDefaultSubscriptions(doc, resolversConfig, simulatorContext);
   const schemaDirectives = KNOWN_DIRECTIVES.reduce((sum, d) => {
@@ -105,8 +105,8 @@ export function generateResolvers(
 
 function generateDefaultSubscriptions(
   doc: DocumentNode,
-  configuredResolvers: AppSyncSimulatorBaseResolverConfig[],
-  simulatorContext: AmplifyAppSyncSimulator
+  configuredResolvers: (AppSyncSimulatorUnitResolverConfig | AppSyncSimulatorPipelineResolverConfig)[],
+  simulatorContext: AmplifyAppSyncSimulator,
 ) {
   const configuredSubscriptions = configuredResolvers.filter(cfg => cfg.fieldName === 'Subscription').map(cfg => cfg.typeName);
   const schema = buildASTSchema(doc);
@@ -120,7 +120,7 @@ function generateDefaultSubscriptions(
         .reduce((acc, sub) => {
           const resolver = {
             resolve: data => data,
-            subscribe: () => simulatorContext.pubsub.asyncIterator(sub),
+            subscribe: () => simulatorContext.asyncIterator(sub),
           };
           return { ...acc, [sub]: resolver };
         }, {});

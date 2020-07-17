@@ -5,6 +5,7 @@ const uuid = require('uuid');
 const path = require('path');
 const open = require('open');
 const TransformPackage = require('graphql-transformer-core');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -107,11 +108,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ask additonal questions
 
-  /* eslint-disable */
   ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
   ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType));
   await checkForCognitoUserPools(context, parameters, authConfig);
-  /* eslint-disable */
 
   // Ask schema file question
 
@@ -340,7 +339,7 @@ async function createSyncFunction(context) {
   await context.amplify.copyBatch(context, copyJobs, functionProps, true);
 
   const backendConfigs = {
-    service: 'Lambda',
+    service: FunctionServiceName.LambdaFunction,
     providerPlugin: 'awscloudformation',
     build: true,
   };
@@ -355,7 +354,9 @@ async function updateWalkthrough(context) {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
-  let authConfig, defaultAuthType, resolverConfig;
+  let authConfig;
+  let defaultAuthType;
+  let resolverConfig;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
 
   // There can only be one appsync resource
@@ -401,36 +402,76 @@ async function updateWalkthrough(context) {
       }
     });
   }
-
-  /* eslint-disable */
-  ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
-  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
-  await checkForCognitoUserPools(context, parameters, authConfig);
-  /* eslint-disable */
-
-  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
-
-  if (amplifyMeta[category][resourceName].output.securityType) {
-    delete amplifyMeta[category][resourceName].output.securityType;
+  const updateChoices = [
+    {
+      name: 'Walkthrough all configurations',
+      value: 'all',
+    },
+    {
+      name: 'Update auth settings',
+      value: 'authUpdate',
+    },
+  ];
+  // check if DataStore is enabled for the entire API
+  if (project.config && project.config.ResolverConfig) {
+    updateChoices.push({ name: 'Disable DataStore for entire API', value: 'disableDatastore' });
+  } else {
+    updateChoices.push({ name: 'Enable DataStore for entire API', value: 'enableDatastore' });
   }
 
-  amplifyMeta[category][resourceName].output.authConfig = authConfig;
-  let jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  const updateOptionQuestion = {
+    type: 'list',
+    name: 'updateOption',
+    message: 'Select from the options below',
+    choices: updateChoices,
+  };
 
-  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
-  const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
+  let { updateOption } = await inquirer.prompt([updateOptionQuestion]);
 
-  if (backendConfig[category][resourceName].output.securityType) {
-    delete backendConfig[category][resourceName].output.securityType;
+  if (updateOption === 'enableDatastore') {
+    resolverConfig = {
+      project: { ConflictHandler: 'AUTOMERGE', ConflictDetection: 'VERSION' },
+    };
+  } else if (updateOption === 'disableDatastore') {
+    delete project.config.ResolverConfig;
+    await writeTransformerConfiguration(resourceDir, project.config);
+  } else if (updateOption === 'authUpdate') {
+    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
+    authConfig = await askAdditionalAuthQuestions(context, parameters, authConfig, defaultAuthType);
+    await checkForCognitoUserPools(context, parameters, authConfig);
+  } else if (updateOption === 'all') {
+    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context, parameters));
+    ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, parameters, authConfig, defaultAuthType, modelTypes));
+    await checkForCognitoUserPools(context, parameters, authConfig);
   }
 
-  backendConfig[category][resourceName].output.authConfig = authConfig;
-  jsonString = JSON.stringify(backendConfig, null, '\t');
-  fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+  if (authConfig) {
+    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
-  await writeResolverConfig(resolverConfig, resourceDir);
+    if (amplifyMeta[category][resourceName].output.securityType) {
+      delete amplifyMeta[category][resourceName].output.securityType;
+    }
+
+    amplifyMeta[category][resourceName].output.authConfig = authConfig;
+    let jsonString = JSON.stringify(amplifyMeta, null, 4);
+    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
+    const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
+
+    if (backendConfig[category][resourceName].output.securityType) {
+      delete backendConfig[category][resourceName].output.securityType;
+    }
+
+    backendConfig[category][resourceName].output.authConfig = authConfig;
+    jsonString = JSON.stringify(backendConfig, null, 4);
+    fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+  }
+
+  if (resolverConfig) {
+    await writeResolverConfig(resolverConfig, resourceDir);
+  }
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     resourceDir,
@@ -738,6 +779,8 @@ async function askApiKeyQuestions() {
       message: 'After how many days from now the API key should expire (1-365):',
       default: 7,
       validate: validateDays,
+      // adding filter to ensure parsing input as int -> https://github.com/SBoudrias/Inquirer.js/issues/866
+      filter: value => (isNaN(parseInt(value, 10)) ? value : parseInt(value, 10)),
     },
   ];
 
@@ -792,7 +835,6 @@ async function askOpenIDConnectQuestions() {
 function validateDays(input) {
   const isValid = /^\d+$/.test(input);
   const days = isValid ? parseInt(input, 10) : 0;
-
   if (!isValid || days < 1 || days > 365) {
     return 'Number of days must be between 1 and 365.';
   }

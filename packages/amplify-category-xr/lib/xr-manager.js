@@ -89,7 +89,9 @@ function getExistingScenes(context) {
 
 async function addScene(context) {
   context.print.info(`Open the Amazon Sumerian console: ${chalk.green(SUMERIAN_CONSOLE_URL)}`);
-  context.print.info(`Publish the scene you want to add. See ${chalk.green('https://aws-amplify.github.io/docs/js/xr#configuration')}`);
+  context.print.info(
+    `Publish the scene you want to add. See ${chalk.green('https://docs.amplify.aws/lib/xr/getting-started/q/platform/js')}`,
+  );
   context.print.info('Then download the JSON configuration to your local computer.');
   await inquirer.prompt({
     name: 'pressEnter',
@@ -128,11 +130,11 @@ async function addScene(context) {
   context.print.success('Some next steps:');
   context.print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   context.print.info(
-    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud'
+    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
   context.print.info('');
   context.print.warning(
-    'Only the IAM policy for this scene resource will be provisioned in the cloud. This will not change the scene in the Sumerian console.'
+    'Only the IAM policy for this scene resource will be provisioned in the cloud. This will not change the scene in the Sumerian console.',
   );
 }
 
@@ -226,6 +228,7 @@ async function remove(context) {
     })
     .catch(err => {
       context.print.info(err.stack);
+      context.usageData.emitError(err);
     });
 }
 

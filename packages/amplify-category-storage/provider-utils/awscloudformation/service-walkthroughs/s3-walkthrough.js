@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
 const uuid = require('uuid');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -658,9 +659,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
       lambdaResources = lambdaResources.filter(lambdaResource => lambdaResource !== triggerFunction);
     }
     if (lambdaResources.length === 0) {
-      throw new Error(
-        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project.",
-      );
+      throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
     }
 
     const triggerOptionQuestion = {
@@ -734,7 +733,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
     // Update amplify-meta and backend-config
 
     const backendConfigs = {
-      service: 'Lambda',
+      service: FunctionServiceName.LambdaFunction,
       providerPlugin: 'awscloudformation',
       build: true,
     };
@@ -970,7 +969,9 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
 
 async function getLambdaFunctions(context) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaResources = allResources.filter(resource => resource.service === 'Lambda').map(resource => resource.resourceName);
+  const lambdaResources = allResources
+    .filter(resource => resource.service === FunctionServiceName.LambdaFunction)
+    .map(resource => resource.resourceName);
 
   return lambdaResources;
 }

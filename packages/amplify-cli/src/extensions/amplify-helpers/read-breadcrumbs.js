@@ -7,7 +7,17 @@ function readBreadcrumbs(context, category, resourceName) {
     resourceName,
     context.amplify.constants.BreadcrumbsFileName,
   );
-  return context.amplify.readJsonFile(breadcrumbsPath, undefined, false);
+  let breadcrumbs = context.amplify.readJsonFile(breadcrumbsPath, undefined, false);
+  if (!breadcrumbs) {
+    breadcrumbs = {
+      pluginId: 'amplify-nodejs-function-runtime-provider',
+      functionRuntime: 'nodejs',
+      defaultEditorFile: 'src/index.js',
+      useLegacyBuild: true,
+    };
+    context.amplify.leaveBreadcrumbs(context, category, resourceName, breadcrumbs);
+  }
+  return breadcrumbs;
 }
 
 module.exports = {

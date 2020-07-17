@@ -108,39 +108,39 @@ export class AppSyncJSONVisitor<
   generate(): string {
     this.processDirectives();
     if (this._parsedConfig.metadataTarget === 'typescript') {
-      return this.generateTypeScriptMetaData();
+      return this.generateTypeScriptMetadata();
     } else if (this._parsedConfig.metadataTarget === 'javascript') {
-      return this.generateJavaScriptMetaData();
+      return this.generateJavaScriptMetadata();
     } else if (this._parsedConfig.metadataTarget === 'typeDeclaration') {
       return this.generateTypeDeclaration();
     }
     throw new Error(`Unsupported metadataTarget ${this._parsedConfig.metadataTarget}. Supported targets are javascript and typescript`);
   }
 
-  protected generateTypeScriptMetaData(): string {
-    const metadataObj = this.generateMetaData();
-    const metaData: string[] = [`import { Schema } from "@aws-amplify/datastore";`, ''];
-    metaData.push(`export const schema: Schema = ${JSON.stringify(metadataObj, null, 4)};`);
-    return metaData.join('\n');
+  protected generateTypeScriptMetadata(): string {
+    const metadataObj = this.generateMetadata();
+    const metadata: string[] = [`import { Schema } from "@aws-amplify/datastore";`, ''];
+    metadata.push(`export const schema: Schema = ${JSON.stringify(metadataObj, null, 4)};`);
+    return metadata.join('\n');
   }
 
-  protected generateJavaScriptMetaData(): string {
-    const metadataObj = this.generateMetaData();
-    const metaData: string[] = [];
-    metaData.push(`export const schema = ${JSON.stringify(metadataObj, null, 4)};`);
-    return metaData.join('\n');
+  protected generateJavaScriptMetadata(): string {
+    const metadataObj = this.generateMetadata();
+    const metadata: string[] = [];
+    metadata.push(`export const schema = ${JSON.stringify(metadataObj, null, 4)};`);
+    return metadata.join('\n');
   }
 
   protected generateTypeDeclaration() {
     return ["import { Schema } from '@aws-amplify/datastore';", '', 'export declare const schema: Schema;'].join('\n');
   }
 
-  protected generateJSONMetaData(): string {
-    const metaData = this.generateMetaData();
-    return JSON.stringify(metaData, null, 4);
+  protected generateJSONMetadata(): string {
+    const metadata = this.generateMetadata();
+    return JSON.stringify(metadata, null, 4);
   }
 
-  protected generateMetaData(): JSONSchema {
+  protected generateMetadata(): JSONSchema {
     const result: JSONSchema = {
       models: {},
       enums: {},
@@ -149,15 +149,15 @@ export class AppSyncJSONVisitor<
     };
 
     const models = Object.values(this.getSelectedModels()).reduce((acc, model: CodeGenModel) => {
-      return { ...acc, [model.name]: this.generateModelMetaData(model) };
+      return { ...acc, [model.name]: this.generateModelMetadata(model) };
     }, {});
 
     const nonModels = Object.values(this.getSelectedNonModels()).reduce((acc, nonModel: CodeGenModel) => {
-      return { ...acc, [nonModel.name]: this.generateNonModelMetaData(nonModel) };
+      return { ...acc, [nonModel.name]: this.generateNonModelMetadata(nonModel) };
     }, {});
 
     const enums = Object.values(this.enumMap).reduce((acc, enumObj) => {
-      const enumV = this.generateEnumMetaData(enumObj);
+      const enumV = this.generateEnumMetadata(enumObj);
       return { ...acc, [this.getEnumName(enumObj)]: enumV };
     }, {});
     return { ...result, models, nonModels: nonModels, enums };
@@ -182,16 +182,16 @@ export class AppSyncJSONVisitor<
       properties: d.arguments,
     }));
   }
-  private generateModelMetaData(model: CodeGenModel): JSONSchemaModel {
+  private generateModelMetadata(model: CodeGenModel): JSONSchemaModel {
     return {
-      ...this.generateNonModelMetaData(model),
+      ...this.generateNonModelMetadata(model),
       syncable: true,
       pluralName: this.pluralizeModelName(model),
       attributes: this.generateModelAttributes(model),
     };
   }
 
-  private generateNonModelMetaData(nonModel: CodeGenModel): JSONSchemaNonModel {
+  private generateNonModelMetadata(nonModel: CodeGenModel): JSONSchemaNonModel {
     return {
       name: this.getModelName(nonModel),
       fields: nonModel.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
@@ -211,7 +211,7 @@ export class AppSyncJSONVisitor<
       }, {}),
     };
   }
-  private generateEnumMetaData(enumObj: CodeGenEnum): JSONSchemaEnum {
+  private generateEnumMetadata(enumObj: CodeGenEnum): JSONSchemaEnum {
     return {
       name: enumObj.name,
       values: Object.values(enumObj.values),

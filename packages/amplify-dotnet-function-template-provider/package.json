@@ -1,0 +1,32 @@
+{
+  "name": "amplify-dotnet-function-template-provider",
+  "version": "1.3.0",
+  "description": ".NET Core templates supplied by the Amplify Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-dotnet-function-template-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "dotnet",
+    "dotnetcore"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.4.0",
+    "graphql-transformer-core": "6.13.1"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^6.5.0",
+    "@types/node": "^10.17.13"
+  }
+}

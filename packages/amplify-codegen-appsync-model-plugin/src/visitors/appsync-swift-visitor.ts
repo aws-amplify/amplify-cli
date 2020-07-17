@@ -5,6 +5,8 @@ import { schemaTypeMap } from '../configs/swift-config';
 import { SwiftDeclarationBlock, escapeKeywords, ListType } from '../languages/swift-declaration-block';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
+import { AuthDirective, AuthStrategy } from '../utils/process-auth';
+import { printWarning } from '../utils/warn';
 
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
@@ -93,7 +95,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       const structBlock: SwiftDeclarationBlock = new SwiftDeclarationBlock()
         .withName(this.getModelName(obj))
         .access('public')
-        .withProtocols(['Codable']);
+        .withProtocols(['Embeddable']);
       Object.values(obj.fields).forEach(field => {
         const fieldType = this.getNativeType(field);
         structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'DEFAULT', {
@@ -122,6 +124,15 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
         result.push(schemaDeclarations.string);
       });
+
+    Object.values(this.getSelectedNonModels()).forEach(model => {
+      const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getNonModelName(model));
+
+      this.generateCodingKeys(this.getNonModelName(model), model, schemaDeclarations),
+        this.generateModelSchema(this.getNonModelName(model), model, schemaDeclarations);
+
+      result.push(schemaDeclarations.string);
+    });
     return result.join('\n');
   }
 
@@ -149,11 +160,12 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     const fields = model.fields.map(field => {
       return this.generateFieldSchema(field, keysName);
     });
-
+    const authRules = this.generateAuthRules(model);
     const closure = [
       '{ model in',
       `let ${keysName} = ${this.getModelName(model)}.keys`,
       '',
+      ...(authRules.length ? [`model.authRules = ${authRules}`, ''] : []),
       `model.pluralName = "${this.pluralizeModelName(model)}"`,
       '',
       'model.fields(',
@@ -246,7 +258,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       if (isModelType) {
         ofType = `.collection(of: ${this.getSwiftModelTypeName(field)})`;
       } else {
-        ofType = `.customType(${this.getSwiftModelTypeName(field)})`;
+        ofType = `.embeddedCollection(of: ${this.getSwiftModelTypeName(field)})`;
       }
     } else {
       if (isEnumType) {
@@ -254,7 +266,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       } else if (isModelType) {
         ofType = `.model(${typeName})`;
       } else if (isNonModelType) {
-        ofType = `.customType(${typeName})`;
+        ofType = `.embedded(type: ${typeName})`;
       } else {
         ofType = typeName;
       }
@@ -266,19 +278,17 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   private getSwiftModelTypeName(field: CodeGenField) {
     if (this.isEnumType(field)) {
-      const name = this.getEnumName(field.type);
-      return field.isList ? `[${name}].self` : `${name}.self`;
+      return `${this.getEnumName(field.type)}.self`;
     }
     if (this.isModelType(field)) {
       return `${this.getModelName(this.modelMap[field.type])}.self`;
     }
     if (this.isNonModelType(field)) {
-      const name = this.getNonModelName(this.nonModelMap[field.type]);
-      return field.isList ? `[${name}].self` : `${name}.self`;
+      return `${this.getNonModelName(this.nonModelMap[field.type])}.self`;
     }
     if (field.type in schemaTypeMap) {
       if (field.isList) {
-        return `[${this.getNativeType(field)}].self`;
+        return `${this.getNativeType(field)}.self`;
       }
       return schemaTypeMap[field.type];
     }
@@ -303,5 +313,40 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       return false;
     }
     return !field.isNullable;
+  }
+
+  protected generateAuthRules(model: CodeGenModel): string {
+    const authDirectives: AuthDirective[] = (model.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+    const rules: string[] = [];
+    authDirectives.forEach(directive => {
+      directive.arguments?.rules.forEach(rule => {
+        const authRule = [];
+        switch (rule.allow) {
+          case AuthStrategy.owner:
+            authRule.push('allow: .owner');
+            authRule.push(`ownerField: "${rule.ownerField}"`);
+            authRule.push(`identityClaim: "${rule.identityClaim}"`);
+            break;
+          case AuthStrategy.groups:
+            authRule.push('allow: .groups');
+            authRule.push(`groupClaim: "${rule.groupClaim}"`);
+            if (rule.groups) {
+              authRule.push(`groups: [${rule.groups?.map(group => `"${group}"`).join(', ')}]`);
+            } else {
+              authRule.push(`groupsField: "${rule.groupField}"`);
+            }
+            break;
+          default:
+            printWarning(`Model ${model.name} has auth with authStrategy ${rule.allow} of which is not yet supported in DataStore.`);
+            return;
+        }
+        authRule.push(`operations: [${rule.operations?.map(op => `.${op}`).join(', ')}]`);
+        rules.push(`rule(${authRule.join(', ')})`);
+      });
+    });
+    if (rules.length) {
+      return ['[', `${indentMultiline(rules.join(',\n'))}`, ']'].join('\n');
+    }
+    return '';
   }
 }

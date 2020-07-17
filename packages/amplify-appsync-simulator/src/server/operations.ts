@@ -1,86 +1,47 @@
 import cors from 'cors';
-import e2p from 'event-to-promise';
 import express from 'express';
-import { execute, parse, specifiedRules, validate } from 'graphql';
-import { address as getLocalIpAddress } from 'ip';
-import jwtDecode from 'jwt-decode';
+import { ExecutionResult, parse } from 'graphql';
+import { Server } from 'http';
 import { join } from 'path';
-import portfinder from 'portfinder';
 import { AmplifyAppSyncSimulator } from '..';
-import {
-  AmplifyAppSyncAuthenticationProviderOIDCConfig,
-  AmplifyAppSyncSimulatorAuthenticationType,
-  AppSyncSimulatorServerConfig,
-} from '../type-definition';
-import { exposeGraphQLErrors } from '../utils/expose-graphql-errors';
+import { AppSyncSimulatorServerConfig } from '../type-definition';
+import { extractHeader, extractJwtToken, getAuthorizationMode } from '../utils/auth-helpers';
+import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
+import { getOperationType } from '../utils/graphql-runner/helpers';
+import { runQueryOrMutation } from '../utils/graphql-runner/query-and-mutation';
+import { runSubscription, SubscriptionResult } from '../utils/graphql-runner/subscriptions';
+import { AppSyncSimulatorSubscriptionServer } from './websocket-subscription';
 import { SubscriptionServer } from './subscription';
 
 const MAX_BODY_SIZE = '10mb';
-const BASE_PORT = 8900;
-const MAX_PORT = 9999;
 
 const STATIC_ROOT = join(__dirname, '..', '..', 'public');
 export class OperationServer {
-  private app;
-  private server;
-  private connection;
-  private port: number;
-  url: string;
+  private _app: express.Application;
 
   constructor(
     private config: AppSyncSimulatorServerConfig,
     private simulatorContext: AmplifyAppSyncSimulator,
     private subscriptionServer: SubscriptionServer,
   ) {
-    this.port = config.port;
-    this.app = express();
-    this.app.use(express.json({ limit: MAX_BODY_SIZE }));
-    this.app.use(cors());
-    this.app.post('/graphql', this.handleRequest.bind(this));
-    this.app.get('/api-config', this.handleAPIInfoRequest.bind(this));
-    this.app.use('/', express.static(STATIC_ROOT));
-    this.server = null;
+    this._app = express();
+    this._app.use(express.json({ limit: MAX_BODY_SIZE }));
+    this._app.use(cors());
+    this._app.post('/graphql', this.handleRequest);
+    this._app.get('/api-config', this.handleAPIInfoRequest);
+    this._app.use('/', express.static(STATIC_ROOT));
   }
 
-  async start() {
-    if (this.server) {
-      throw new Error('Server is already running');
-    }
-
-    if (!this.port) {
-      this.port = await portfinder.getPortPromise({
-        startPort: BASE_PORT,
-        stopPort: MAX_PORT,
-      });
-    }
-
-    this.server = this.app.listen(this.port);
-
-    return await e2p(this.server, 'listening').then(() => {
-      this.connection = this.server.address();
-      this.url = `http://${getLocalIpAddress()}:${this.connection.port}`;
-      return this.server;
-    });
-  }
-
-  stop() {
-    if (this.server) {
-      this.server.close();
-      this.server = null;
-      this.connection = null;
-    }
-  }
-
-  private handleAPIInfoRequest(request, response) {
+  private handleAPIInfoRequest = (request: express.Request, response: express.Response) => {
     return response.send(this.simulatorContext.appSyncConfig);
-  }
+  };
 
-  private async handleRequest(request, response) {
+  private handleRequest = async (request: express.Request, response: express.Response) => {
     try {
       const { headers } = request;
       let requestAuthorizationMode;
       try {
-        requestAuthorizationMode = this.checkAuthorization(request);
+        requestAuthorizationMode = getAuthorizationMode(headers, this.simulatorContext.appSyncConfig);
       } catch (e) {
         return response.status(401).send({
           errors: [
@@ -101,43 +62,41 @@ export class OperationServer {
           error: 'No schema available',
         });
       }
-      const validationErrors = validate(this.simulatorContext.schema, doc, specifiedRules);
-      if (validationErrors.length) {
-        return response.send({
-          errors: validationErrors,
-        });
-      }
-      const {
-        definitions: [{ operation: queryType }],
-      } = doc as any; // Remove casting
-      const authorization = headers.Authorization || headers.authorization;
-      const jwt = (authorization && this.extractJwtToken(authorization)) || {};
-      const context = { jwt, requestAuthorizationMode, request, appsyncErrors: [] };
-      switch (queryType) {
+      const authorization = extractHeader(headers, 'Authorization');
+      const jwt = authorization && extractJwtToken(authorization);
+      const sourceIp = request.connection.remoteAddress;
+      const context: AppSyncGraphQLExecutionContext = {
+        jwt,
+        requestAuthorizationMode,
+        sourceIp,
+        headers: request.headers,
+        appsyncErrors: [],
+      };
+      switch (getOperationType(doc, operationName)) {
         case 'query':
         case 'mutation':
-          const results: any = await execute(this.simulatorContext.schema, doc, null, context, variables, operationName);
-          const errors = [...(results.errors || []), ...context.appsyncErrors];
-          if (errors.length > 0) {
-            results.errors = exposeGraphQLErrors(errors);
-          }
-          return response.send({ data: null, ...results });
+          const gqlResult = await runQueryOrMutation(this.simulatorContext.schema, doc, variables, operationName, context);
+          return response.send(gqlResult);
 
         case 'subscription':
-          const result = await execute(this.simulatorContext.schema, doc, null, context, variables, operationName);
-          if (context.appsyncErrors.length) {
-            const errors = exposeGraphQLErrors(context.appsyncErrors);
-            return response.send({
-              errors,
-            });
+          const subscriptionResult = await runSubscription(this.simulatorContext.schema, doc, variables, operationName, context);
+          if ((subscriptionResult as ExecutionResult).errors) {
+            return response.send(subscriptionResult);
           }
-          const subscription = await this.subscriptionServer.register(doc, variables, context);
+          const subscription = await this.subscriptionServer.register(
+            doc,
+            variables,
+            { ...context, request },
+            (subscriptionResult as SubscriptionResult).asyncIterator,
+          );
           return response.send({
             ...subscription,
-            ...result,
+            ...subscriptionResult,
           });
+          break;
+
         default:
-          throw new Error(`unknown operation type: ${queryType}`);
+          throw new Error(`unknown operation`);
       }
     } catch (e) {
       console.log('Error while executing GraphQL statement', e);
@@ -145,86 +104,8 @@ export class OperationServer {
         errorMessage: e.message,
       });
     }
-  }
-
-  private checkAuthorization(request): AmplifyAppSyncSimulatorAuthenticationType {
-    const appSyncConfig = this.simulatorContext.appSyncConfig;
-    const { headers } = request;
-
-    const apiKey = this.extractHeader(headers, 'x-api-key');
-    const authorization = this.extractHeader(headers, 'Authorization');
-    const jwtToken = this.extractJwtToken(authorization);
-    const allowedAuthTypes = this.getAllowedAuthTypes();
-    const isApiKeyAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.API_KEY);
-    const isIamAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM);
-    const isCupAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS);
-    const isOidcAllowed = allowedAuthTypes.includes(AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT);
-
-    if (isApiKeyAllowed) {
-      if (apiKey) {
-        if (appSyncConfig.apiKey === apiKey) {
-          return AmplifyAppSyncSimulatorAuthenticationType.API_KEY;
-        }
-
-        throw new Error('UnauthorizedException: Invalid API key');
-      }
-    }
-
-    if (authorization) {
-      if (isIamAllowed) {
-        const isSignatureV4Token = authorization.startsWith('AWS4-HMAC-SHA256');
-        if (isSignatureV4Token) {
-          return AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM;
-        }
-      }
-
-      if (isCupAllowed) {
-        const isCupToken = jwtToken.iss.startsWith('https://cognito-idp.');
-        if (isCupToken) {
-          return AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS;
-        }
-      }
-
-      if (isOidcAllowed) {
-        const isOidcToken = this.hasValidOidcIssuer(jwtToken);
-        if (isOidcToken) {
-          return AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT;
-        }
-      }
-
-      throw new Error('UnauthorizedException: Invalid JWT token');
-    }
-
-    throw new Error('UnauthorizedException: Missing authorization');
-  }
-
-  private extractHeader(headers, name) {
-    const headerName = Object.keys(headers).find(header => header.toLowerCase() === name.toLowerCase());
-    return headerName && headers[headerName];
-  }
-
-  private extractJwtToken(authorization) {
-    try {
-      return jwtDecode(authorization);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  private getAllowedAuthTypes(): AmplifyAppSyncSimulatorAuthenticationType[] {
-    const appSyncConfig = this.simulatorContext.appSyncConfig;
-    const allAuthTypes = [appSyncConfig.defaultAuthenticationType, ...appSyncConfig.additionalAuthenticationProviders];
-    return allAuthTypes.map(c => c.authenticationType).filter(c => c);
-  }
-
-  private hasValidOidcIssuer(token): boolean {
-    const appSyncConfig = this.simulatorContext.appSyncConfig;
-    const allAuthTypes = [appSyncConfig.defaultAuthenticationType, ...appSyncConfig.additionalAuthenticationProviders];
-
-    const oidcIssuers = allAuthTypes
-      .filter(authType => authType.authenticationType === AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT)
-      .map((auth: AmplifyAppSyncAuthenticationProviderOIDCConfig) => auth.openIDConnectConfig.Issuer);
-
-    return oidcIssuers.length > 0 && oidcIssuers.includes(token.iss);
+  };
+  get app() {
+    return this._app;
   }
 }

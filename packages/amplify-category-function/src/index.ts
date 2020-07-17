@@ -1,12 +1,14 @@
 import path from 'path';
 import { category } from './constants';
-
-const sequential = require('promise-sequential');
-const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
-
-const { invokeFunction } = require('./provider-utils/awscloudformation/utils/invoke');
-
-const { run } = require('./commands/function/invoke');
+export { category } from './constants';
+import { FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import sequential from 'promise-sequential';
+import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
+import { supportedServices } from './provider-utils/supported-services';
+import _ from 'lodash';
+export { packageLayer, hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
+import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 
 export async function add(context, providerName, service, parameters) {
   const options = {
@@ -16,7 +18,7 @@ export async function add(context, providerName, service, parameters) {
   };
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
-    context.print.error('Provider not confgiured for this category');
+    context.print.error('Provider not configured for this category');
     return;
   }
   return providerController.addResource(context, category, service, options, parameters);
@@ -25,7 +27,7 @@ export async function add(context, providerName, service, parameters) {
 export async function update(context, providerName, service, parameters, resourceToUpdate) {
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
-    context.print.error('Provider not confgiured for this category');
+    context.print.error('Provider not configured for this category');
     return;
   }
   return providerController.updateResource(context, category, service, parameters, resourceToUpdate);
@@ -92,31 +94,66 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
 
 export async function initEnv(context) {
   const { amplify } = context;
-  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus('function');
+  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(category);
 
-  resourcesToBeDeleted.forEach(authResource => {
-    amplify.removeResourceParameters(context, 'function', authResource.resourceName);
+  // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
+  const resourceCategoryFilter = resource => resource.category === category;
+
+  resourcesToBeDeleted.filter(resourceCategoryFilter).forEach(functionResource => {
+    amplify.removeResourceParameters(context, category, functionResource.resourceName);
   });
 
-  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
+  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated).filter(resourceCategoryFilter);
 
   const functionTasks = tasks.map(functionResource => {
-    const { resourceName } = functionResource;
+    const { resourceName, service } = functionResource;
     return async () => {
-      const config = await updateConfigOnEnvInit(context, 'function', resourceName);
-      context.amplify.saveEnvResourceParameters(context, 'function', resourceName, config);
+      const config = await updateConfigOnEnvInit(context, resourceName, service);
+      context.amplify.saveEnvResourceParameters(context, category, resourceName, config);
     };
   });
 
   await sequential(functionTasks);
 }
 
-export function invoke(options) {
-  invokeFunction(options);
+// returns a function that can be used to invoke the lambda locally
+export async function getInvoker(context: any, params: InvokerParameters): Promise<({ event: any }) => Promise<any>> {
+  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), category, params.resourceName);
+  const breadcrumbs: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(context, category, params.resourceName);
+  const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, breadcrumbs.pluginId);
+
+  const lastBuildTimestampStr = (await context.amplify.getResourceStatus(category, params.resourceName)).allResources.find(
+    resource => resource.resourceName === params.resourceName,
+  ).lastBuildTimeStamp as string;
+
+  return async request =>
+    await runtimeManager.invoke({
+      handler: params.handler,
+      event: JSON.stringify(request.event),
+      env: context.amplify.getEnvInfo().envName,
+      runtime: breadcrumbs.functionRuntime,
+      srcRoot: resourcePath,
+      envVars: params.envVars,
+      lastBuildTimestamp: lastBuildTimestampStr ? new Date(lastBuildTimestampStr) : undefined,
+    });
 }
 
-export function invokeWalkthroughRun(context) {
-  run(context);
+export function isMockable(context: any, resourceName: string): IsMockableResponse {
+  const { service, dependsOn } = context.amplify.getProjectMeta()[category][resourceName];
+  const hasLayer =
+    service === ServiceName.LambdaFunction &&
+    Array.isArray(dependsOn) &&
+    dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
+  if (hasLayer) {
+    return {
+      isMockable: false,
+      reason:
+        'Mocking a function with layers is not supported. ' +
+        'To test in the cloud: run "amplify push" to deploy your function to the cloud ' +
+        'and then run "amplify console function" to test your function in the Lambda console.',
+    };
+  }
+  return supportedServices[service].providerController.isMockable(service);
 }
 
 export async function executeAmplifyCommand(context) {
@@ -136,15 +173,14 @@ export async function handleAmplifyEvent(context, args) {
   context.print.info(`Received event args ${args}`);
 }
 
-module.exports = {
-  add,
-  update,
-  console,
-  migrate,
-  initEnv,
-  getPermissionPolicies,
-  invoke,
-  invokeWalkthroughRun,
-  executeAmplifyCommand,
-  handleAmplifyEvent,
+// Object used for internal invocation of lambda functions
+export type InvokerParameters = {
+  resourceName: string;
+  handler: string;
+  envVars?: { [key: string]: string };
 };
+
+export interface IsMockableResponse {
+  isMockable: boolean;
+  reason?: string;
+}

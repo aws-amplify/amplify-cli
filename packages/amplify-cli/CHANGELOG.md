@@ -3,6 +3,238 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.24.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.24.1...@aws-amplify/cli@4.24.2) (2020-07-15)
+
+
+### Bug Fixes
+
+* Check that config object exists before creating new env ([#3624](https://github.com/aws-amplify/amplify-cli/issues/3624)) ([89bbdb9](https://github.com/aws-amplify/amplify-cli/commit/89bbdb9ca661eea36d529131e5a1b8cac4a43816))
+* **cli:** moving the spinner above category initialization tasks ([#4836](https://github.com/aws-amplify/amplify-cli/issues/4836)) ([5884801](https://github.com/aws-amplify/amplify-cli/commit/5884801217cd07bfcea8273a56bdf0fff21c6994)), closes [#4795](https://github.com/aws-amplify/amplify-cli/issues/4795)
+
+
+
+
+
+## [4.24.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.24.0...@aws-amplify/cli@4.24.1) (2020-07-14)
+
+
+### Bug Fixes
+
+* **amplify-python-function-runtime-provider:** change exec to execa ([#4673](https://github.com/aws-amplify/amplify-cli/issues/4673)) ([56771d9](https://github.com/aws-amplify/amplify-cli/commit/56771d91eeed76a23a1dbf1e0d1d038070c37ad1))
+* **cli:** change in usage data ux and revert usage data disable ([#4791](https://github.com/aws-amplify/amplify-cli/issues/4791)) ([28328a3](https://github.com/aws-amplify/amplify-cli/commit/28328a3d3452f34dbb649fef42211bc8849ee520))
+
+
+
+
+
+# [4.24.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.23.1...@aws-amplify/cli@4.24.0) (2020-07-11)
+
+
+### Bug Fixes
+
+* **cli:** remove unnecessary stack trace log when adding services ([#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)) ([5bee574](https://github.com/aws-amplify/amplify-cli/commit/5bee574bbcd956c032e7714b0813aedd7914a6cb))
+
+
+### Features
+
+* add check for extra command line args provided with amplify delete ([#4576](https://github.com/aws-amplify/amplify-cli/issues/4576)) ([82d1093](https://github.com/aws-amplify/amplify-cli/commit/82d10933754230c311bf5f24dc1c59dfa393ce63)), closes [#4115](https://github.com/aws-amplify/amplify-cli/issues/4115)
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([7f38d81](https://github.com/aws-amplify/amplify-cli/commit/7f38d81ef2f890c25d39b02407c5255c8760c511)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
+## [4.23.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.23.0...@aws-amplify/cli@4.23.1) (2020-07-09)
+
+
+### Bug Fixes
+
+* **cli:** throw error on attach backend ([#4779](https://github.com/aws-amplify/amplify-cli/issues/4779)) ([11c55e3](https://github.com/aws-amplify/amplify-cli/commit/11c55e33e64d25dd198ef06fe76af7f7f402759a))
+
+
+
+
+
+# [4.23.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.22.0...@aws-amplify/cli@4.23.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **cli:** config init wasn't reading string ([#4711](https://github.com/aws-amplify/amplify-cli/issues/4711)) ([4d217af](https://github.com/aws-amplify/amplify-cli/commit/4d217af830e04d7157d65e14f25af6c39d0315de))
+* **cli:** disabling usage-data until new end point is enabled ([#4749](https://github.com/aws-amplify/amplify-cli/issues/4749)) ([2cac361](https://github.com/aws-amplify/amplify-cli/commit/2cac361439aa977eda0b92f5e4ce4a2ea4d8bb29))
+
+
+### Features
+
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([30a7fe7](https://github.com/aws-amplify/amplify-cli/commit/30a7fe70f5838a766631befcc720a721e801bc5f))
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
+# [4.22.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.4...@aws-amplify/cli@4.22.0) (2020-06-25)
+
+
+### Features
+
+* change `amplify delete` prompt default value from yes to no ([#4580](https://github.com/aws-amplify/amplify-cli/issues/4580)) ([0bdbb77](https://github.com/aws-amplify/amplify-cli/commit/0bdbb775915f84efb863821cfa9b1b0f048a0f95)), closes [#4579](https://github.com/aws-amplify/amplify-cli/issues/4579)
+
+
+
+
+
+## [4.21.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.3...@aws-amplify/cli@4.21.4) (2020-06-18)
+
+
+### Bug Fixes
+
+* [#4549](https://github.com/aws-amplify/amplify-cli/issues/4549) [#4550](https://github.com/aws-amplify/amplify-cli/issues/4550) init and folder exist checks ([#4553](https://github.com/aws-amplify/amplify-cli/issues/4553)) ([543d531](https://github.com/aws-amplify/amplify-cli/commit/543d5312823783db7794ad574d03d0ca3991c8b5))
+* occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([eaf08e0](https://github.com/aws-amplify/amplify-cli/commit/eaf08e00841830e9654fea61ce901f2cb478eebe))
+
+
+
+
+
+## [4.21.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.2...@aws-amplify/cli@4.21.3) (2020-06-11)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.21.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.1...@aws-amplify/cli@4.21.2) (2020-06-10)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.21.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.21.0...@aws-amplify/cli@4.21.1) (2020-06-02)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [4.21.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.20.0...@aws-amplify/cli@4.21.0) (2020-05-26)
+
+
+### Bug Fixes
+
+* **cli:** update the warning message for delete command ([#4288](https://github.com/aws-amplify/amplify-cli/issues/4288)) ([cf0c528](https://github.com/aws-amplify/amplify-cli/commit/cf0c528d9763e6a9b525893acbf609e2aa4c6495))
+
+
+### Features
+
+* **amplify-app:** group amplify files in xcode integration ([#4268](https://github.com/aws-amplify/amplify-cli/issues/4268)) ([73f3eab](https://github.com/aws-amplify/amplify-cli/commit/73f3eabc11def219faa1724fee93ce171949e40f))
+
+
+
+
+
+# [4.20.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.19.0...@aws-amplify/cli@4.20.0) (2020-05-15)
+
+
+### Bug Fixes
+
+* **cli:** add information on pre/post pull in learn more ([#3880](https://github.com/aws-amplify/amplify-cli/issues/3880)) ([b40867f](https://github.com/aws-amplify/amplify-cli/commit/b40867f148454d8d87a619d67e1df2e6a6f982dc))
+* **cli:** fixes issues for missing build or start command ([#3918](https://github.com/aws-amplify/amplify-cli/issues/3918)) ([25c53ce](https://github.com/aws-amplify/amplify-cli/commit/25c53ce81a74c3f706f60b0519eda0a4338edbf7)), closes [#3728](https://github.com/aws-amplify/amplify-cli/issues/3728) [#3806](https://github.com/aws-amplify/amplify-cli/issues/3806)
+* append env resource params instead of replace ([#4161](https://github.com/aws-amplify/amplify-cli/issues/4161)) ([4f1aa97](https://github.com/aws-amplify/amplify-cli/commit/4f1aa97685c0162044e299d97668b1d92e4ad1dc))
+* revert esm change temporarily, it conflicts with some imports ([#4223](https://github.com/aws-amplify/amplify-cli/issues/4223)) ([1b9bf06](https://github.com/aws-amplify/amplify-cli/commit/1b9bf063c500b32c13d8190277e1940fcba8cf21))
+
+
+### Features
+
+* make 'dev' the default envname if it's not present ([#4201](https://github.com/aws-amplify/amplify-cli/issues/4201)) ([0b0e775](https://github.com/aws-amplify/amplify-cli/commit/0b0e7758b825d78686af2fd37b13b8dcd1f28674))
+
+
+### Performance Improvements
+
+* use node's async esm module loader above node>=12 ([#4221](https://github.com/aws-amplify/amplify-cli/issues/4221)) ([a26eebe](https://github.com/aws-amplify/amplify-cli/commit/a26eebe68fde928b1286b158c33eeaa2db6151e9))
+
+
+
+
+
+# [4.19.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.18.1...@aws-amplify/cli@4.19.0) (2020-05-08)
+
+
+### Bug Fixes
+
+* prevent naming conflicts with new env names ([#3875](https://github.com/aws-amplify/amplify-cli/issues/3875)) ([a7734ae](https://github.com/aws-amplify/amplify-cli/commit/a7734aedb8e846620874ae69e5c38da393dbbe30)), closes [#3854](https://github.com/aws-amplify/amplify-cli/issues/3854)
+* replaced v1 docs references with v2 docs references ([#4169](https://github.com/aws-amplify/amplify-cli/issues/4169)) ([b578c2d](https://github.com/aws-amplify/amplify-cli/commit/b578c2dcd10038367c653ede2f6da42e7644b41b))
+
+
+### Features
+
+* notify if a CLI update is available ([#4046](https://github.com/aws-amplify/amplify-cli/issues/4046)) ([1a597a8](https://github.com/aws-amplify/amplify-cli/commit/1a597a8c05609521ea283be3d28a1f51ba3c4a8a))
+
+
+### Performance Improvements
+
+* plugin scan perf optimization ([#4187](https://github.com/aws-amplify/amplify-cli/issues/4187)) ([3b2cae6](https://github.com/aws-amplify/amplify-cli/commit/3b2cae6f5deb78069955676714c9b8248ca89019))
+
+
+
+
+
+## [4.18.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.18.0...@aws-amplify/cli@4.18.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* add function plugin interface to cli deps ([#3905](https://github.com/aws-amplify/amplify-cli/issues/3905)) ([001adfb](https://github.com/aws-amplify/amplify-cli/commit/001adfb137929e71acdc393e03916ad621bf2c8f))
+* prevent hyphenated project names ([#3893](https://github.com/aws-amplify/amplify-cli/issues/3893)) ([236137d](https://github.com/aws-amplify/amplify-cli/commit/236137d84b3ff3c1e0a84ff7c7bd22bf4a8a52dd))
+* **cli:** fix amplify console welcome message format ([#3936](https://github.com/aws-amplify/amplify-cli/issues/3936)) ([ee601a5](https://github.com/aws-amplify/amplify-cli/commit/ee601a501ad516db50c9ac83dc57bb730134e998))
+
+
+### Reverts
+
+* Revert "fix: add function plugin interface to cli deps (#3905)" (#3906) ([f534324](https://github.com/aws-amplify/amplify-cli/commit/f534324f4e315ea4e1e3f95afa840962ef8fc17a)), closes [#3905](https://github.com/aws-amplify/amplify-cli/issues/3905) [#3906](https://github.com/aws-amplify/amplify-cli/issues/3906)
+
+
+
+
+
+# [4.18.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.2...@aws-amplify/cli@4.18.0) (2020-04-06)
+
+
+### Bug Fixes
+
+* add default editor if not present ([#3844](https://github.com/aws-amplify/amplify-cli/issues/3844)) ([549e1ad](https://github.com/aws-amplify/amplify-cli/commit/549e1ade795da3f7d3d9e9fbeb5a380bacab6dd2))
+* dotnet function provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
+* rename node pluign packages ([#3788](https://github.com/aws-amplify/amplify-cli/issues/3788)) ([7b1f0f2](https://github.com/aws-amplify/amplify-cli/commit/7b1f0f2c7bb67a9d154e8462643fb0fe35e88399))
+
+
+### Features
+
+* **amplify-category-function:** Refactor invoke to call runtime plugins ([#3768](https://github.com/aws-amplify/amplify-cli/issues/3768)) ([92293fa](https://github.com/aws-amplify/amplify-cli/commit/92293fa83190bd18aacdc2f46a22938f94b89609))
+* golang function support for CLI ([#3789](https://github.com/aws-amplify/amplify-cli/issues/3789)) ([3dbc234](https://github.com/aws-amplify/amplify-cli/commit/3dbc23497d0d1c238c6868adcf3a6d00ad909edd))
+* minor tweaks to multi-runtime platform ([#3804](https://github.com/aws-amplify/amplify-cli/issues/3804)) ([60d68d7](https://github.com/aws-amplify/amplify-cli/commit/60d68d7e1a6e8c00cd629a38e9aefb2396a59737))
+
+
+
+
+
+## [4.17.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.1...@aws-amplify/cli@4.17.2) (2020-03-26)
+
+
+### Bug Fixes
+
+* **cli:** added logic for use of dir separator in generate() ([#3739](https://github.com/aws-amplify/amplify-cli/issues/3739)) ([da17add](https://github.com/aws-amplify/amplify-cli/commit/da17adda27addc9fd37834f8968093c123988fce)), closes [#3761](https://github.com/aws-amplify/amplify-cli/issues/3761)
+
+
+
+
+
 ## [4.17.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.17.0...@aws-amplify/cli@4.17.1) (2020-03-22)
 
 

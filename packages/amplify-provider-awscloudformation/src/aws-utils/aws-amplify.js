@@ -14,6 +14,7 @@ const amplifyServiceRegions = [
   'ap-south-1',
   'ap-southeast-1',
   'ap-southeast-2',
+  'ca-central-1',
 ];
 
 async function getConfiguredAmplifyClient(context, options = {}) {
@@ -44,9 +45,9 @@ async function getConfiguredAmplifyClient(context, options = {}) {
 
   const config = { ...cred, ...defaultOptions, ...options };
 
-  if (cred) {
-    // this is the "project" config level case, creds and region are explicitly set or retrieved from a profile
-    if (config.region && amplifyServiceRegions.includes(config.region)) {
+  // this is the "project" config level case, creds and region are explicitly set or retrieved from a profile
+  if (config.region) {
+    if (amplifyServiceRegions.includes(config.region)) {
       return new aws.Amplify(config);
     }
     return undefined;
@@ -58,8 +59,8 @@ async function getConfiguredAmplifyClient(context, options = {}) {
 function printAuthErrorMessage(context) {
   context.print.warning('As of Amplify CLI version 4.0');
   context.print.warning('A cloud project in the Amplify Console will be created to view your resources.');
-  context.print.warning('Please update your IAM policy accordingly based on the following doc.');
-  context.print.green('https://aws-amplify.github.io/docs/cli-toolchain/usage#iam-policy-for-the-cli');
+  context.print.warning('Please update your IAM policy accordingly based on the following documentation:');
+  context.print.green('https://docs.amplify.aws/cli/usage/iam');
   context.print.warning('These permissions will be required in a future CLI release.');
 }
 

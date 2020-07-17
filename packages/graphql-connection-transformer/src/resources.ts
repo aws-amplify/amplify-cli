@@ -18,10 +18,7 @@ import {
   equals,
   iff,
   raw,
-  comment,
-  qref,
   Expression,
-  block,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -185,8 +182,7 @@ export class ResourceFactory {
     sortKeyInfo?: { fieldName: string; attributeType: 'S' | 'B' | 'N' },
     limit?: number,
   ) {
-    const defaultPageLimit = 10;
-    const pageLimit = limit || defaultPageLimit;
+    const pageLimit = limit || ResourceConstants.DEFAULT_PAGE_LIMIT;
     const setup: Expression[] = [
       set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${pageLimit})`)),
       set(
@@ -310,10 +306,11 @@ export class ResourceFactory {
     connectionAttributes: string[],
     keySchema: KeySchema[],
     indexName: string,
+    limit?: number,
   ) {
-    const defaultPageLimit = 10;
+    const pageLimit = limit || ResourceConstants.DEFAULT_PAGE_LIMIT;
     const setup: Expression[] = [
-      set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+      set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${pageLimit})`)),
       set(ref('query'), this.makeExpression(keySchema, connectionAttributes)),
     ];
 

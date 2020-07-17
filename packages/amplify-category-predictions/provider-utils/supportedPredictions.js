@@ -40,7 +40,7 @@ function categories(info) {
 Convert allows you to translate text from one source language to a target language, using Amazon Translate. You can also generate speech audio from text input, using Amazon Polly. Lastly, you can take an audio input and transcribe it, using Amazon Transcribe.\n\
 Interpret allows you to analyze text for language, entities (places, people), key phrases, sentiment (postive, neutral, negative), and syntax (pronouns, verbs, adjectives).\n\
 Infer allows you to perform inference against a cloud endpoint. It’s an advanced feature using Amazon SageMaker, where you have more control over your models.\n\
-Learn More: https://aws-amplify.github.io/docs/js/predictions';
+Learn More: https://docs.amplify.aws/lib/predictions/intro/q/platform/js';
     helpText = `\n${helpText.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
     questions[0].prefix = chalkpipe(null, chalk.green)(helpText);
   }

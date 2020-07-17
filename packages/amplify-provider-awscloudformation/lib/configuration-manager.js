@@ -305,7 +305,8 @@ async function promptForProjectConfigConfirmation(context) {
 
   const configurationSettings = [
     {
-      type: 'input',
+      type: 'password',
+      mask: '*',
       name: 'accessKeyId',
       message: 'accessKeyId: ',
       default: awsConfigInfo.config.accessKeyId
@@ -314,7 +315,8 @@ async function promptForProjectConfigConfirmation(context) {
       transformer: obfuscateUtil.transform,
     },
     {
-      type: 'input',
+      type: 'password',
+      mask: '*',
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
       default: awsConfigInfo.config.secretAccessKey
@@ -342,7 +344,7 @@ async function promptForProjectConfigConfirmation(context) {
       return context;
     }
   } else {
-    awsConfigInfo.useProfile = false;
+    awsConfigInfo.config.useProfile = false;
   }
 
   answers = await inquirer.prompt(configurationSettings);

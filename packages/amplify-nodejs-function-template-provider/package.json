@@ -1,0 +1,32 @@
+{
+  "name": "amplify-nodejs-function-template-provider",
+  "version": "1.1.0",
+  "description": "Node JS templates supplied by the Amplify Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-nodejs-function-template-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "nodejs"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.4.0",
+    "graphql-transformer-core": "6.13.1",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^6.5.0",
+    "@types/node": "^10.17.13"
+  }
+}

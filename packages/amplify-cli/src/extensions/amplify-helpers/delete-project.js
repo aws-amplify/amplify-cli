@@ -25,7 +25,7 @@ async function deleteProject(context) {
         }
       }
     } catch (ex) {
-      spinner.fail(`Project delete failed ${ex.message}`);
+      spinner.fail('Project delete failed');
       throw ex;
     }
     spinner.succeed('Project deleted in the cloud');
@@ -58,9 +58,10 @@ async function getConfirmation(context, env) {
   const environmentText = env ? `'${env}' environment` : 'all the environments';
   return {
     proceed: await context.amplify.confirmPrompt.run(
-      `Are you sure you want to continue? (This would delete ${environmentText} of the project from the cloud${
-        env ? '' : ' and wipe out all the local amplify resource files'
+      `Are you sure you want to continue? This CANNOT be undone. (This would delete ${environmentText} of the project from the cloud${
+        env ? '' : ' and wipe out all the local files created by Amplify CLI'
       })`,
+      false,
     ),
     // Place holder for later selective deletes
     deleteS3: true,

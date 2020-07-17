@@ -34,10 +34,6 @@ module.exports = {
         name: 'build',
         description: 'Builds all the functions in the project (does an npm install on the functions src directory)',
       },
-      {
-        name: 'invoke <resourcename>',
-        description: 'Invokes a function locally for testing',
-      },
     ];
 
     context.amplify.showHelp(header, commands);

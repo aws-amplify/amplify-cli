@@ -3,6 +3,75 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.3...amplify-appsync-simulator@1.21.0) (2020-07-07)
+
+
+### Features
+
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([30a7fe7](https://github.com/aws-amplify/amplify-cli/commit/30a7fe70f5838a766631befcc720a721e801bc5f))
+
+
+
+
+
+## [1.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.2...amplify-appsync-simulator@1.20.3) (2020-06-02)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** adds equals method to JavaString class ([#4316](https://github.com/aws-amplify/amplify-cli/issues/4316)) ([4c0c692](https://github.com/aws-amplify/amplify-cli/commit/4c0c692fa6cab2e8461f20099581ff8d7d7504f8))
+* **amplify-appsync-simulator:** after pipeline template mapping ([#4303](https://github.com/aws-amplify/amplify-cli/issues/4303)) ([72d4039](https://github.com/aws-amplify/amplify-cli/commit/72d403937b8ab5a298d35910c061e0c10c5c43ce))
+* **amplify-appsync-simulator:** replace "extend" with "_.defaultsDeep" ([#4285](https://github.com/aws-amplify/amplify-cli/issues/4285)) ([a74c2f8](https://github.com/aws-amplify/amplify-cli/commit/a74c2f80864adae0cbabce1df342a40b762ba5a7))
+
+
+
+
+
+## [1.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.1...amplify-appsync-simulator@1.20.2) (2020-05-15)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** support inline resolver templates ([56fdd00](https://github.com/aws-amplify/amplify-cli/commit/56fdd0057a6ecfbd320f2a3f8b0858959bbe750e)), closes [#3834](https://github.com/aws-amplify/amplify-cli/issues/3834)
+* **amplify-appsync-simulator:** support more than 1 operation in query ([#4189](https://github.com/aws-amplify/amplify-cli/issues/4189)) ([4794c8f](https://github.com/aws-amplify/amplify-cli/commit/4794c8fef04b15deaff13f4a77be774ca91bbecb)), closes [#4181](https://github.com/aws-amplify/amplify-cli/issues/4181)
+
+
+
+
+
+## [1.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.0...amplify-appsync-simulator@1.20.1) (2020-05-08)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** custom transformer imports ([#3236](https://github.com/aws-amplify/amplify-cli/issues/3236)) ([7794d73](https://github.com/aws-amplify/amplify-cli/commit/7794d73ab28d74bc8f5a13f8b4296cbb00f0ac13))
+
+
+
+
+
+# [1.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.19.0...amplify-appsync-simulator@1.20.0) (2020-04-23)
+
+
+### Features
+
+* **amplify-appsync-simulator:** add support for websocket subscriptions ([#3912](https://github.com/aws-amplify/amplify-cli/issues/3912)) ([f6dac5b](https://github.com/aws-amplify/amplify-cli/commit/f6dac5b6d55867e35b28b1c3eec9a6eeb4e4fbe3)), closes [#3008](https://github.com/aws-amplify/amplify-cli/issues/3008)
+
+
+
+
+
+# [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.18.0...amplify-appsync-simulator@1.19.0) (2020-04-06)
+
+
+### Features
+
+* **amplify-category-function:** Refactor invoke to call runtime plugins ([#3768](https://github.com/aws-amplify/amplify-cli/issues/3768)) ([92293fa](https://github.com/aws-amplify/amplify-cli/commit/92293fa83190bd18aacdc2f46a22938f94b89609))
+
+
+
+
+
 # [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.17.0...amplify-appsync-simulator@1.18.0) (2020-03-22)
 
 

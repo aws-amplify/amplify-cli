@@ -19,6 +19,9 @@ describe('auth enable: ', () => {
       info: jest.fn(),
       error: jest.fn(),
     },
+    usageData: {
+      emitError: jest.fn(),
+    },
   };
 
   it('enable run method should exist', () => {

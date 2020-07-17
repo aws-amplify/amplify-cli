@@ -40,8 +40,8 @@ beforeAll(async () => {
         id: ID!
         title: String!
         version: Int!
-        createdAt: String
-        updatedAt: String
+        createdAt: AWSDateTime
+        updatedAt: AWSDateTime
     }
     `;
   const transformer = new GraphQLTransform({

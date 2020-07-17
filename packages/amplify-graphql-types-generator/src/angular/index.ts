@@ -26,7 +26,7 @@ export function generateSource(context: LegacyCompilerContext) {
   generator.printOnNewline(`import API, { graphqlOperation } from '@aws-amplify/api';`);
   generator.printOnNewline(`import { GraphQLResult } from "@aws-amplify/api/lib/types";`);
 
-  generator.printOnNewline(`import * as Observable from 'zen-observable';`);
+  generator.printOnNewline(`import { Observable } from 'zen-observable-ts';`);
   generator.printNewline();
 
   generateTypes(generator, context);
@@ -82,7 +82,7 @@ function interfaceDeclarationForOperation(generator: CodeGenerator, { operationN
 }
 
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
-  if (operation.fields.length && operation.fields[0].fields) {
+  if (operation.fields.length) {
     return operation.fields[0];
   }
 }

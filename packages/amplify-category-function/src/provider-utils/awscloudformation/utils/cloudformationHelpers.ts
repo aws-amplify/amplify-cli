@@ -1,4 +1,4 @@
-import { categoryName } from './constants';
+import { category as categoryName } from '../../../constants';
 
 export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults) {
   const currentResources = [];
@@ -164,4 +164,52 @@ export function constructCFModelTableNameComponent(appsyncResourceName, resource
       'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
     },
   };
+}
+
+export function constructCloudWatchEventComponent(cfnFilePath: string, cfnContent) {
+  cfnContent.Resources.CloudWatchEvent = {
+    Type: 'AWS::Events::Rule',
+    Properties: {
+      Description: 'Schedule rule for Lambda',
+      ScheduleExpression: {
+        Ref: 'CloudWatchRule',
+      },
+      State: 'ENABLED',
+      Targets: [
+        {
+          Arn: { 'Fn::GetAtt': ['LambdaFunction', 'Arn'] },
+          Id: {
+            Ref: 'LambdaFunction',
+          },
+        },
+      ],
+    },
+  };
+  // append permissions to invoke lambda via cloiudwatch to CFN file
+  cfnContent.Resources.PermissionForEventsToInvokeLambda = {
+    Type: 'AWS::Lambda::Permission',
+    Properties: {
+      FunctionName: {
+        Ref: 'LambdaFunction',
+      },
+      Action: 'lambda:InvokeFunction',
+      Principal: 'events.amazonaws.com',
+      SourceArn: { 'Fn::GetAtt': ['CloudWatchEvent', 'Arn'] },
+    },
+  };
+  // append the outputs section of cloudwatchRULE
+  cfnContent.Outputs.CloudWatchEventRule = {
+    Value: {
+      Ref: 'CloudWatchEvent',
+    },
+  };
+
+  // apend the cloudwatch parameters if not present
+  if (cfnContent.Parameters.CloudWatchRule === undefined) {
+    cfnContent.Parameters.CloudWatchRule = {
+      Type: 'String',
+      Default: 'NONE',
+      Description: ' Schedule Expression',
+    };
+  }
 }

@@ -740,7 +740,7 @@
       },
       {
         "key": "hostedUIDomainName",
-        "question": "What domain name prefix you want us to create for you?",
+        "question": "What domain name prefix do you want to use?",
         "required": true,
         "andConditions": [
           {
@@ -751,8 +751,8 @@
         ],
         "validation": {
           "operator": "regex",
-          "value": "^(?!([a-z0-9]{0,1})(?!((?!aws)(?!amazon).)*$))(?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
-          "onErrorMsg": "The value must be a valid domain name format.  A valid format consists of lowercase alphanumeric characters or hyphens. Hyphens cannot be at the beginning or end of the string. The domain cannot use the reserved words 'aws' or 'amazon'."
+          "value": "^(?!([a-z0-9]{0,1})(?!((?!aws)(?!amazon)(?!cognito).)*$))(?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+          "onErrorMsg": "The value must be a valid domain name format.  A valid format consists of lowercase alphanumeric characters or hyphens. Hyphens cannot be at the beginning or end of the string. The domain cannot use the reserved words 'aws', 'amazon', or 'cognito'."
         }
       },
       {

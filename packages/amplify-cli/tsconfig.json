@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": false,
     "allowJs": true,
@@ -10,5 +10,8 @@
   },
   "include": [
     "src/**/*"
+  ],
+  "references": [
+    {"path": "../amplify-category-function"}
   ]
 }

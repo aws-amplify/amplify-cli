@@ -10,6 +10,7 @@ module.exports = {
     return amplify.pushResources(context, category, resourceName).catch(err => {
       context.print.info(err.stack);
       context.print.error('An error occurred when pushing the analytics resource');
+      context.usageData.emitError(err);
     });
   },
 };

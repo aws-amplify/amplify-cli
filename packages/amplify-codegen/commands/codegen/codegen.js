@@ -16,7 +16,7 @@ module.exports = {
           description: constants.CMD_DESCRIPTION_GENERATE_TYPES,
         },
         {
-          name: 'statments [--nodownload] [--max-depth]',
+          name: 'statements [--nodownload] [--max-depth]',
           description: constants.CMD_DESCRIPTION_GENERATE_STATEMENTS,
         },
         {

@@ -1,0 +1,29 @@
+{
+  "name": "amplify-python-function-template-provider",
+  "version": "1.2.0",
+  "description": "Python templates supplied by the Amplify Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-python-function-template-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "python"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.17.13"
+  }
+}

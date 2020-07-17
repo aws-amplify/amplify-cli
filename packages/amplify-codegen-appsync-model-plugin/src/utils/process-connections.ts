@@ -6,10 +6,12 @@ export enum CodeGenConnectionType {
   BELONGS_TO = 'BELONGS_TO',
   HAS_MANY = 'HAS_MANY',
 }
+export const DEFAULT_HASH_KEY_FIELD = 'id';
 
 export type CodeGenConnectionTypeBase = {
   kind: CodeGenConnectionType;
   connectedModel: CodeGenModel;
+  isConnectingFieldAutoCreated: boolean;
 };
 export type CodeGenFieldConnectionBelongsTo = CodeGenConnectionTypeBase & {
   kind: CodeGenConnectionType.BELONGS_TO;
@@ -45,35 +47,47 @@ export function getConnectedField(field: CodeGenField, model: CodeGenModel, conn
   }
   const connectionName = connectionInfo.arguments.name;
   const keyName = connectionInfo.arguments.keyName;
-  if (keyName) {
-    const keyDirective = connectedModel.directives.find(dir => {
-      return dir.name === 'key' && dir.arguments.name === keyName;
-    });
-
-    if (keyDirective) {
-      // when there is a keyName in the connection
-      const connectedFieldName = keyDirective.arguments.fields[0];
-      // Find a field on the other side which connected by a @connection and has the same fields[0] as keyName field
-      const otherSideConnectedField = connectedModel.fields.find(f => {
-        return f.directives.find(d => {
-          return d.name === 'connection' && d.arguments.fields && d.arguments.fields[0] === connectedFieldName;
-        });
+  const connectionFields = connectionInfo.arguments.fields;
+  if (connectionFields) {
+    let keyDirective;
+    if (keyName) {
+      keyDirective = connectedModel.directives.find(dir => {
+        return dir.name === 'key' && dir.arguments.name === keyName;
       });
-      if (otherSideConnectedField) {
-        return otherSideConnectedField;
+      if (!keyDirective) {
+        throw new Error(
+          `Error processing @connection directive on ${model.name}.${field.name}, @key directive with name ${keyName} was not found in connected model ${connectedModel.name}`,
+        );
       }
-      // If there are no field with @connection with keyName then try to find a field that has same name as connection name
-      const connectedField = connectedModel.fields.find(f => f.name === connectedFieldName);
-
-      if (!connectedField) {
-        throw new Error(`Can not find key field ${connectedFieldName} in ${connectedModel}`);
-      }
-      return connectedField;
+    } else {
+      keyDirective = connectedModel.directives.find(dir => {
+        return dir.name === 'key' && typeof dir.arguments.name === 'undefined';
+      });
     }
+
+    // when there is a fields argument in the connection
+    const connectedFieldName = keyDirective ? keyDirective.arguments.fields[0] : DEFAULT_HASH_KEY_FIELD;
+
+    // Find a field on the other side which connected by a @connection and has the same fields[0] as keyName field
+    const otherSideConnectedField = connectedModel.fields.find(f => {
+      return f.directives.find(d => {
+        return d.name === 'connection' && d.arguments.fields && d.arguments.fields[0] === connectedFieldName;
+      });
+    });
+    if (otherSideConnectedField) {
+      return otherSideConnectedField;
+    }
+    // If there are no field with @connection with keyName then try to find a field that has same name as connection name
+    const connectedField = connectedModel.fields.find(f => f.name === connectedFieldName);
+
+    if (!connectedField) {
+      throw new Error(`Can not find key field ${connectedFieldName} in ${connectedModel}`);
+    }
+    return connectedField;
   } else if (connectionName) {
     // when the connection is named
     const connectedField = connectedModel.fields.find(f =>
-      f.directives.find(d => d.name === 'connection' && d.arguments.name === connectionName && f !== field)
+      f.directives.find(d => d.name === 'connection' && d.arguments.name === connectionName && f !== field),
     );
     if (!connectedField) {
       throw new Error(`Can not find key field with connection name ${connectionName} in ${connectedModel}`);
@@ -97,7 +111,7 @@ export function getConnectedField(field: CodeGenField, model: CodeGenModel, conn
 export function processConnections(
   field: CodeGenField,
   model: CodeGenModel,
-  modelMap: CodeGenModelMap
+  modelMap: CodeGenModelMap,
 ): CodeGenFieldConnection | undefined {
   const connectionDirective = field.directives.find(d => d.name === 'connection');
   if (connectionDirective) {
@@ -107,6 +121,12 @@ export function processConnections(
 
     const isNewField = !otherSide.fields.includes(otherSideField);
 
+    // if a type is connected using name, then graphql-connection-transformer adds a field to
+    //  track the connection and that field is not part of the selection set
+    // but if the field are connected using fields argument in connection directive
+    // we are reusing the field and it should be preserved in selection set
+    const isConnectingFieldAutoCreated = connectionFields.length === 0;
+
     if (!isNewField) {
       // 2 way connection
       if (field.isList && !otherSideField.isList) {
@@ -114,6 +134,7 @@ export function processConnections(
         return {
           kind: CodeGenConnectionType.HAS_MANY,
           associatedWith: otherSideField,
+          isConnectingFieldAutoCreated,
           connectedModel: otherSide,
         };
       } else if (!field.isList && otherSideField.isList) {
@@ -125,6 +146,7 @@ export function processConnections(
         return {
           kind: CodeGenConnectionType.BELONGS_TO,
           connectedModel: otherSide,
+          isConnectingFieldAutoCreated,
           targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
         };
       } else if (!field.isList && !otherSideField.isList) {
@@ -145,6 +167,7 @@ export function processConnections(
           return {
             kind: CodeGenConnectionType.BELONGS_TO,
             connectedModel: otherSide,
+            isConnectingFieldAutoCreated,
             targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
           };
         } else if (field.isNullable && !otherSideField.isNullable) {
@@ -158,7 +181,12 @@ export function processConnections(
             license: License;
           }
           */
-          return { kind: CodeGenConnectionType.HAS_ONE, associatedWith: otherSideField, connectedModel: otherSide };
+          return {
+            kind: CodeGenConnectionType.HAS_ONE,
+            associatedWith: otherSideField,
+            connectedModel: otherSide,
+            isConnectingFieldAutoCreated,
+          };
         } else {
           /*
           # model
@@ -181,6 +209,7 @@ export function processConnections(
         return {
           kind: CodeGenConnectionType.HAS_MANY,
           connectedModel: otherSide,
+          isConnectingFieldAutoCreated,
           associatedWith: existingConnectionField || {
             name: connectionFieldName,
             type: 'ID',
@@ -197,6 +226,7 @@ export function processConnections(
         return {
           kind: CodeGenConnectionType.BELONGS_TO,
           connectedModel: otherSide,
+          isConnectingFieldAutoCreated,
           targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
         };
       }
