@@ -47,7 +47,7 @@ export function authConfigPull(projectRootDirPath: string, params: { appId: stri
     if (params[key]) pullCommand.push(...[`--${key}`, JSON.stringify(params[key])]);
   });
   const s = { ...defaultSettings, ...settings };
-  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET, 
+  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET,
     OIDC_APP_ID, OIDC_APP_SECRET, OIDC_APP_ISSUER, OIDC_APP_SCOPES, OIDC_APP_MAPPING } = getSocialProviders();
   return new Promise((resolve, reject) => {
     spawn(util.getCLIPath(), pullCommand, { cwd: projectRootDirPath, stripColors: true })
