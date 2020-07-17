@@ -385,6 +385,7 @@ export class ResourceFactory {
    */
   public makeCreateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type));
+    const isSyncEnabled = syncConfig ? true : false;
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -426,24 +427,21 @@ export class ResourceFactory {
               }),
             ),
           ),
-          DynamoDBMappingTemplate.putItem(
-            {
-              key: ifElse(
-                ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-                raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
-                obj({
-                  id: raw(`$util.dynamodb.toDynamoDBJson($ctx.args.input.id)`),
-                }),
-                true,
-              ),
-              attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
-              condition: ref('util.toJson($condition)'),
-            },
-            syncConfig ? '2018-05-29' : '2017-02-28',
-          ),
+          DynamoDBMappingTemplate.putItem({
+            key: ifElse(
+              ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+              raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
+              obj({
+                id: raw(`$util.dynamodb.toDynamoDBJson($ctx.args.input.id)`),
+              }),
+              true,
+            ),
+            attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
+            condition: ref('util.toJson($condition)'),
+          }),
         ]),
       ),
-      ResponseMappingTemplate: syncConfig ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
@@ -595,7 +593,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
@@ -624,7 +622,7 @@ export class ResourceFactory {
           isSyncEnabled,
         }),
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
     });
   }
 
@@ -647,7 +645,7 @@ export class ResourceFactory {
           nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
         }),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse()),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(true)),
     });
   }
   /**
@@ -684,17 +682,15 @@ export class ResourceFactory {
             filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
             limit: ref('limit'),
             nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
-            isSyncEnabled,
           }),
         ]),
       ),
-      ResponseMappingTemplate: isSyncEnabled
-        ? print(
-            DynamoDBMappingTemplate.dynamoDBResponse(
-              compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
-            ),
-          )
-        : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(
+        DynamoDBMappingTemplate.dynamoDBResponse(
+          isSyncEnabled,
+          compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+        ),
+      ),
     });
   }
 
@@ -743,7 +739,7 @@ export class ResourceFactory {
           raw(`$util.toJson($${requestVariable})`),
         ]),
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
     });
   }
 
@@ -862,7 +858,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
