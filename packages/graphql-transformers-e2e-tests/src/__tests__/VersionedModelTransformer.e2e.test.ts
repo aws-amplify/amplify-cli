@@ -208,6 +208,7 @@ test('Test failed updatePost mutation with wrong version', async () => {
     {},
   );
   expect(updateResponse.errors.length).toEqual(1);
+  expect((updateResponse.errors[0] as any).data).toBeNull();
   expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
@@ -268,5 +269,6 @@ test('Test deletePost mutation with wrong version', async () => {
     {},
   );
   expect(deleteResponse.errors.length).toEqual(1);
+  expect((deleteResponse.errors[0] as any).data).toBeNull();
   expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
