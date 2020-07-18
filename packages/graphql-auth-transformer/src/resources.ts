@@ -25,6 +25,7 @@ import {
   ifElse,
   newline,
   methodCall,
+  RESOLVER_VERSION_ID,
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
 import GraphQLApi, {
@@ -226,7 +227,7 @@ export class ResourceFactory {
       TypeName: type,
       RequestMappingTemplate: print(
         obj({
-          version: str('2017-02-28'),
+          version: str(RESOLVER_VERSION_ID),
           payload: obj({}),
         }),
       ),
@@ -900,7 +901,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       TypeName: subscriptionTypeName,
       RequestMappingTemplate: print(
         raw(`{
-    "version": "2018-05-29",
+    "version": "${RESOLVER_VERSION_ID}",
     "payload": {}
 }`),
       ),
@@ -916,7 +917,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
   }
 
   public setOperationExpression(operation: string): string {
-    return print(block('Setting the operation', [set(ref('context.result.operation'), str(operation))]));
+    return print(block('Setting the operation', [qref(print(methodCall(ref('ctx.result.put'), str('operation'), str(operation))))]));
   }
 
   public getAuthModeCheckWrappedExpression(expectedAuthModes: Set<AuthProvider>, expression: Expression): Expression {
