@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.13.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.4...graphql-mapping-template@4.13.5) (2020-07-18)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
 ## [4.13.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.3...graphql-mapping-template@4.13.4) (2020-05-08)
 
 
