@@ -40,13 +40,13 @@ test('Test that subscriptions are only generated if the respective mutation oper
   expect(out.resolvers['Salary.secret.res.vtl']).toContain('#if( $operation == "Mutation" )');
   expect(out.resolvers['Salary.secret.res.vtl']).toMatchSnapshot();
 
-  expect(out.resolvers['Mutation.createSalary.res.vtl']).toContain('#set( $context.result.operation = "Mutation" )');
+  expect(out.resolvers['Mutation.createSalary.res.vtl']).toContain('$util.qr($ctx.result.put("operation", "Mutation"))');
   expect(out.resolvers['Mutation.createSalary.res.vtl']).toMatchSnapshot();
 
-  expect(out.resolvers['Mutation.updateSalary.res.vtl']).toContain('#set( $context.result.operation = "Mutation" )');
+  expect(out.resolvers['Mutation.updateSalary.res.vtl']).toContain('$util.qr($ctx.result.put("operation", "Mutation"))');
   expect(out.resolvers['Mutation.updateSalary.res.vtl']).toMatchSnapshot();
 
-  expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toContain('#set( $context.result.operation = "Mutation" )');
+  expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toContain('$util.qr($ctx.result.put("operation", "Mutation"))');
   expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toMatchSnapshot();
 });
 
