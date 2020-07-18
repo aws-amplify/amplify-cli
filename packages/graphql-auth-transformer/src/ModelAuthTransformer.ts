@@ -2276,7 +2276,7 @@ found '${rule.provider}' assigned.`,
   }
 
   private isOperationExpressionSet(operationTypeName: string, template: string): boolean {
-    return template.includes(`$context.result.operation = "${operationTypeName}"`);
+    return template.includes(`$ctx.result.put("operation", "${operationTypeName}")`);
   }
 
   private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode, rules: Array<AuthRule>): void {
