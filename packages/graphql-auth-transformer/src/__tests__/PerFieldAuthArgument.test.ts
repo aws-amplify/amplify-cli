@@ -35,18 +35,18 @@ test('Test that subscriptions are only generated if the respective mutation oper
   // expect to generate subscription resolvers for create and update only
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS'
+    'AMAZON_COGNITO_USER_POOLS',
   );
   expect(out.resolvers['Salary.secret.res.vtl']).toContain('#if( $operation == "Mutation" )');
   expect(out.resolvers['Salary.secret.res.vtl']).toMatchSnapshot();
 
-  expect(out.resolvers['Mutation.createSalary.res.vtl']).toContain('#set( $context.result.operation = "Mutation" )');
+  expect(out.resolvers['Mutation.createSalary.res.vtl']).toContain('$util.qr($ctx.result.put("operation", "Mutation"))');
   expect(out.resolvers['Mutation.createSalary.res.vtl']).toMatchSnapshot();
 
-  expect(out.resolvers['Mutation.updateSalary.res.vtl']).toContain('#set( $context.result.operation = "Mutation" )');
+  expect(out.resolvers['Mutation.updateSalary.res.vtl']).toContain('$util.qr($ctx.result.put("operation", "Mutation"))');
   expect(out.resolvers['Mutation.updateSalary.res.vtl']).toMatchSnapshot();
 
-  expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toContain('#set( $context.result.operation = "Mutation" )');
+  expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toContain('$util.qr($ctx.result.put("operation", "Mutation"))');
   expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toMatchSnapshot();
 });
 
@@ -75,7 +75,7 @@ test('Test per-field @auth without model', () => {
 
   expect(out).toBeDefined();
   expect(out.resolvers['Query.listContext.req.vtl']).toContain(
-    '## Authorization rule: { allow: groups, groups: ["Allowed"], groupClaim: "cognito:groups" } **'
+    '## Authorization rule: { allow: groups, groups: ["Allowed"], groupClaim: "cognito:groups" } **',
   );
   expect(out.resolvers['Query.listContext.req.vtl']).toMatchSnapshot();
 });

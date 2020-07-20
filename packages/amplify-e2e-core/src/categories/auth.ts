@@ -1,5 +1,5 @@
 import { KEY_UP_ARROW } from '../utils';
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getEnvVars, getSocialProviders } from '../../src';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getSocialProviders } from '../../src';
 
 export function addAuthWithDefault(cwd: string, settings: any = {}) {
   return new Promise((resolve, reject) => {

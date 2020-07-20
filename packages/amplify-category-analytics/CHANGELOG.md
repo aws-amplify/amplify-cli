@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.17.4...amplify-category-analytics@2.17.5) (2020-07-18)
+
+
+### Bug Fixes
+
+* **amplify-category-analytics:** adds another resource to the policy doc ([#4845](https://github.com/aws-amplify/amplify-cli/issues/4845)) ([c46c006](https://github.com/aws-amplify/amplify-cli/commit/c46c0063724a6c978c8c5e032c3eccabed58af7c))
+
+
+
+
+
 ## [2.17.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.17.3...amplify-category-analytics@2.17.4) (2020-07-15)
 
 **Note:** Version bump only for package amplify-category-analytics
