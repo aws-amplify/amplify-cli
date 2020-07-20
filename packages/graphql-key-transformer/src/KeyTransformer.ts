@@ -118,7 +118,7 @@ export class KeyTransformer extends Transformer {
     this.updateInputObjects(definition, directive, ctx);
     const isPrimaryKey = this.isPrimaryKey(directive);
     if (isPrimaryKey) {
-      this.removeAutocreatedPrimaryKey(definition, directive, ctx);
+      this.removeAutoCreatedPrimaryKey(definition, directive, ctx);
     }
   };
 
@@ -200,7 +200,7 @@ export class KeyTransformer extends Transformer {
     }
   };
 
-  private removeAutocreatedPrimaryKey = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
+  private removeAutoCreatedPrimaryKey = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
     const schemaHasIdField = definition.fields.find(f => f.name.value === 'id');
     if (!schemaHasIdField) {
       const obj = ctx.getObject(definition.name.value);
