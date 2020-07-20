@@ -83,7 +83,7 @@ export function authConfigPull(projectRootDirPath: string, params: { appId: stri
       .sendLine(AMAZON_APP_ID)
       .wait('Enter your Amazon App Secret for your OAuth flow:')
       .sendLine(AMAZON_APP_SECRET)
-      .wait('Enter your Amazon App ID for your OAuth flow:')
+      .wait('Enter your OpenID Connect App ID for your OAuth flow:')
       .sendLine(OIDC_APP_ID)
       .wait('Enter your OpenID Connect App Secret for your OAuth flow:')
       .sendLine(OIDC_APP_SECRET)

@@ -187,7 +187,14 @@
         "key": "oidcAppId",
         "prefix": " \n You've opted to allow users to authenticate via OpenID Connect.  If you haven't already, you'll need to go to your OpenID connect provider and create an App ID. \n",
         "question": "Enter your OIDC Client ID for your identity pool: ",
-        "required": true
+        "required": true,
+        "andConditions": [
+          {
+            "key": "authProviders",
+            "value": "OIDC",
+            "operator": "includes"
+          }
+        ]
       },
       {
         "key": "googleIos",

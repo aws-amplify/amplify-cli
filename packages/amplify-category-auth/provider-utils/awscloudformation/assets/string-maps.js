@@ -415,6 +415,11 @@ const authProviders = [
     value: 'www.amazon.com',
     answerHashKey: 'amazonAppId',
   },
+  {
+    name: 'Custom OIDC',
+    value: 'OIDC',
+    answerHashKey: 'oidcAppId',
+  },
 ];
 
 const hostedUIProviders = [
@@ -431,7 +436,7 @@ const hostedUIProviders = [
     value: 'LoginWithAmazon',
   },
   {
-    name: 'Custom OIDC',
+    name: 'Custom Open ID Connect',
     value: 'OIDC',
   },
 ];
