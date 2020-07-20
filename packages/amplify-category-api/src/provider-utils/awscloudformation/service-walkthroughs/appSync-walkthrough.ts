@@ -5,17 +5,13 @@ import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
 import { rootAssetDir, cfnParametersFilename } from '../aws-constants';
-import {
-  collectDirectivesByTypeNames,
-  readProjectConfiguration,
-  ConflictHandlerType,
-} from 'graphql-transformer-core';
+import { collectDirectivesByTypeNames, readProjectConfiguration, ConflictHandlerType } from 'graphql-transformer-core';
 import { category } from '../../../category-constants';
 import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
-import { getAppSyncAuthConfig } from '../utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, checkIfAuthExists } from '../utils/amplify-meta-utils';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -108,7 +104,6 @@ export const serviceWalkthrough = async (context, defaultValuesFilename, service
 
   ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
   ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType));
-  await checkForCognitoUserPools(context, parameters, authConfig);
 
   // Ask schema file question
 
@@ -251,11 +246,9 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   } else if (updateOption === 'authUpdate') {
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
     authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
-    await checkForCognitoUserPools(context, parameters, authConfig);
   } else if (updateOption === 'all') {
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
     ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes));
-    await checkForCognitoUserPools(context, parameters, authConfig);
   }
 
   return {
@@ -477,34 +470,6 @@ async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) 
   return authConfig;
 }
 
-async function checkForCognitoUserPools(context, parameters, authConfig) {
-  const additionalUserPoolProviders = (authConfig.additionalAuthenticationProviders || []).filter(
-    provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
-  );
-  const additionalUserPoolProvider = additionalUserPoolProviders.length > 0 ? additionalUserPoolProviders[0] : undefined;
-
-  if (authConfig.defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS' || additionalUserPoolProvider) {
-    let userPoolId;
-    const configuredUserPoolName = checkIfAuthExists(context);
-
-    if (authConfig.userPoolConfig) {
-      ({ userPoolId } = authConfig.userPoolConfig);
-    } else if (additionalUserPoolProvider && additionalUserPoolProvider.userPoolConfig) {
-      ({ userPoolId } = additionalUserPoolProvider.userPoolConfig);
-    } else if (configuredUserPoolName) {
-      userPoolId = `auth${configuredUserPoolName}`;
-    } else {
-      throw new Error('Cannot find a configured Cognito User Pool.');
-    }
-
-    parameters.AuthCognitoUserPoolId = {
-      'Fn::GetAtt': [userPoolId, 'Outputs.UserPoolId'],
-    };
-  } else {
-    delete parameters.AuthCognitoUserPoolId;
-  }
-}
-
 async function askAuthQuestions(authType, context, printLeadText = false) {
   if (authType === 'AMAZON_COGNITO_USER_POOLS') {
     if (printLeadText) {
@@ -682,24 +647,6 @@ function resourceAlreadyExists(context) {
   }
 
   return resourceName;
-}
-
-function checkIfAuthExists(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let authResourceName;
-  const authServiceName = 'Cognito';
-  const authCategory = 'auth';
-
-  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-    const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === authServiceName) {
-        authResourceName = resource;
-      }
-    });
-  }
-  return authResourceName;
 }
 
 export const migrate = async context => {

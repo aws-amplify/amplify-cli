@@ -1,3 +1,21 @@
+export const checkIfAuthExists = context => {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  let authResourceName;
+  const authServiceName = 'Cognito';
+  const authCategory = 'auth';
+
+  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
+    const categoryResources = amplifyMeta[authCategory];
+    Object.keys(categoryResources).forEach(resource => {
+      if (categoryResources[resource].service === authServiceName) {
+        authResourceName = resource;
+      }
+    });
+  }
+  return authResourceName;
+};
+
 // some utility functions to extract the AppSync API name and config from amplify-meta
 
 export const getAppSyncAuthConfig = projectMeta => {

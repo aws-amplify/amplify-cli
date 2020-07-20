@@ -16,7 +16,7 @@ import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-aut
 import uuid from 'uuid';
 import _ from 'lodash';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-import { getAppSyncResourceName, getAppSyncAuthConfig } from './utils/amplify-meta-utils';
+import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists } from './utils/amplify-meta-utils';
 
 export const getCfnApiArtifactHandler = (context): ApiArtifactHandler => {
   return new CfnApiArtifactHandler(context);
@@ -78,7 +78,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
       resourceDir,
-      parameters: defaultCfnParameters(serviceConfig.apiName),
+      parameters: this.getCfnParameters(serviceConfig.apiName, authConfig),
       authConfig,
     });
 
@@ -111,7 +111,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
       resourceDir,
-      parameters: defaultCfnParameters(apiName),
+      parameters: this.getCfnParameters(apiName, authConfig),
       authConfig,
     });
 
@@ -164,6 +164,41 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
         .map(generateLambdaIfNew),
     );
     return newConflictResolution;
+  };
+
+  private getCfnParameters = (apiName: string, authConfig) => {
+    const params = defaultCfnParameters(apiName);
+    const cognitoPool = this.getCognitoUserPool(authConfig);
+    if (cognitoPool) {
+      _.assign(params, cognitoPool);
+    }
+    return params;
+  };
+
+  private getCognitoUserPool = authConfig => {
+    const additionalUserPoolProvider = (authConfig.additionalAuthenticationProviders || []).find(
+      provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
+    );
+    if (authConfig.defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS' || additionalUserPoolProvider) {
+      let userPoolId;
+      const configuredUserPoolName = checkIfAuthExists(this.context);
+
+      if (authConfig.userPoolConfig) {
+        ({ userPoolId } = authConfig.userPoolConfig);
+      } else if (additionalUserPoolProvider && additionalUserPoolProvider.userPoolConfig) {
+        ({ userPoolId } = additionalUserPoolProvider.userPoolConfig);
+      } else if (configuredUserPoolName) {
+        userPoolId = `auth${configuredUserPoolName}`;
+      } else {
+        throw new Error('Cannot find a configured Cognito User Pool.');
+      }
+
+      return {
+        AuthCognitoUserPoolId: {
+          'Fn::GetAtt': [userPoolId, 'Outputs.UserPoolId'],
+        },
+      };
+    }
   };
 
   private createSyncFunction = async () => {

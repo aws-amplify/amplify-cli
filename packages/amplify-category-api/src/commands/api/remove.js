@@ -13,6 +13,7 @@ module.exports = {
     return amplify
       .removeResource(context, category, resourceName)
       .then(resourceValues => {
+        if (!resourceValues) return; // indicates that the customer selected "no" at the confirmation prompt
         if (resourceValues.service === 'AppSync') {
           const { projectPath } = amplify.getEnvInfo();
 
