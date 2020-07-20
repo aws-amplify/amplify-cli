@@ -775,14 +775,20 @@ jobs:
     resource_class: large
     steps: *ref_1
     environment:
+<<<<<<< HEAD
       TEST_SUITE: src/__tests__/layer.test.ts
       CLI_REGION: us-east-2
   schema-data-access-patterns-amplify_e2e_tests:
+=======
+      TEST_SUITE: src/__tests__/hostingPROD.test.ts
+  tags-amplify_e2e_tests:
+>>>>>>> feat: initial version of e2e tests and tags
     working_directory: ~/repo
     docker: *ref_0
     resource_class: large
     steps: *ref_1
     environment:
+<<<<<<< HEAD
       TEST_SUITE: src/__tests__/schema-data-access-patterns.test.ts
       CLI_REGION: us-west-2
   api_2-amplify_e2e_tests:
@@ -961,6 +967,9 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-5.test.ts
       CLI_REGION: eu-west-2
+=======
+      TEST_SUITE: src/__tests__/tags.test.ts
+>>>>>>> feat: initial version of e2e tests and tags
   plugin-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1157,7 +1166,16 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
+<<<<<<< HEAD
             - schema-auth-3-amplify_e2e_tests
+=======
+            - hostingPROD-amplify_e2e_tests
+            - tags-amplify_e2e_tests
+            - plugin-amplify_e2e_tests
+            - datastore-modegen-amplify_e2e_tests
+            - interactions-amplify_e2e_tests
+            - hosting-amplify_e2e_tests
+>>>>>>> feat: initial version of e2e tests and tags
             - init-amplify_e2e_tests
             - migration-api-key-migration-amplify_e2e_tests
             - schema-auth-4-amplify_e2e_tests
@@ -1192,7 +1210,15 @@ workflows:
                 - graphqlschemae2e
           requires:
             - publish_to_local_registry
+<<<<<<< HEAD
       - function_1-amplify_e2e_tests:
+=======
+      - tags-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+      - plugin-amplify_e2e_tests:
+>>>>>>> feat: initial version of e2e tests and tags
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1204,6 +1230,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+<<<<<<< HEAD
             - layer-amplify_e2e_tests
       - init-amplify_e2e_tests:
           filters: *ref_2
@@ -1211,6 +1238,15 @@ workflows:
             - publish_to_local_registry
             - function_1-amplify_e2e_tests
       - migration-api-key-migration-amplify_e2e_tests:
+=======
+            - hostingPROD-amplify_e2e_tests
+      - hosting-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+            - tags-amplify_e2e_tests
+      - init-amplify_e2e_tests:
+>>>>>>> feat: initial version of e2e tests and tags
           filters: *ref_2
           requires:
             - publish_to_local_registry

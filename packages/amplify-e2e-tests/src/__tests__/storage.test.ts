@@ -35,7 +35,7 @@ describe('amplify add/update storage(S3)', () => {
     expect(bucketExists).toMatchObject({});
   }
 
-  it('init a project and add S3 bucket with Auth user access only', async () => {
+  it.only('init a project and add S3 bucket with Auth user access only', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
     await amplifyPushAuth(projRoot);

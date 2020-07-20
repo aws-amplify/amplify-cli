@@ -1,11 +1,9 @@
-const fs = require('fs-extra');
+function isValidJSON(json) {
+  const stringJson = JSON.stringify(json);
 
-const parseJsonFile = pathToFile => JSON.parse(fs.readFileSync(pathToFile, 'utf-8'));
-
-export function isValidJSON(pathToJson) {
   // We can assume that the file exists, since we already checked when retrieving the project details
   try {
-    parseJsonFile(pathToJson);
+    JSON.parse(stringJson);
   } catch (e) {
     throw new Error("JSON file can't be read");
   }
@@ -13,24 +11,48 @@ export function isValidJSON(pathToJson) {
   return true;
 }
 
-export function isWithinLimit(pathToJson) {
-  const parsedJson = parseJsonFile(pathToJson);
-  const nOfItems = Object.keys(parsedJson).length;
+/*
+  Makes sure that every JS object to the arary comes with its
+  key-value pair. It doesn't specifically check if the JSON itself
+  is valid, since that already sends an error directly through the
+  console before anything else
+*/
+function hasValidTags(json) {
+  // Looping through all of the objects and returning an error if one is empty
+  for (let i = 0; i < Object.keys(json).length; i++) {
+    let currObj = Object.values(json[i]);
+    let currObjKeys = Object.keys(json[i])
+      .toString()
+      .split(',');
+
+    // First check : If obj is empty
+    if (currObj.length === 0) throw new Error('Invalid empty tag object found');
+
+    // Second check : If obj only includes the key or the value, or none of these (meaning that  random strings for the key and value representation were used)
+    if (!currObjKeys.includes('Key') || !currObjKeys.includes('Value'))
+      throw new Error('Make sure to follow the correct key-value format. Check tags.json file for example.');
+  }
+
+  // returns true if the file includes only valid tags
+  // this can be a bit confusing, so I'm going to have to refactor this part
+  return true;
+}
+
+function isWithinLimit(json) {
+  const nOfItems = Object.keys(json).length;
 
   if (nOfItems > 50) throw new Error('Tag limit exceeded (50 tags max)');
 
   return true;
 }
 
-export function checkDuplicates(pathToJson) {
-  const parsedJson = parseJsonFile(pathToJson);
-
+function checkDuplicates(json) {
   // Using Map so I can have quick access to the .has() function that comes with it
   let map = new Map();
   let hasDuplicates = false;
 
-  for (let i = 0; i < Object.keys(parsedJson).length; i++) {
-    let currVal = Object.values(parsedJson[i])[0]; // This grabs the key value from the object, instead of having the key-value pair
+  for (let i = 0; i < Object.keys(json).length; i++) {
+    let currVal = Object.values(json[i])[0]; // This grabs the key value from the object, instead of having the key-value pair
 
     if (map.has(currVal)) {
       let keyVal = map.get(currVal);
@@ -47,6 +69,13 @@ export function checkDuplicates(pathToJson) {
   if (hasDuplicates) throw new Error('File contains duplicate keys');
 
   // returns true if there are no duplicates
-  // this can be a bit confusing, so I'm going to have to refactor this part
+  // again, this can be a bit confusing, so I'm going to have to refactor this part
   return true;
 }
+
+module.exports = {
+  isValidJSON,
+  hasValidTags,
+  isWithinLimit,
+  checkDuplicates,
+};

@@ -27,7 +27,7 @@ describe('amplify add hosting', () => {
 
   afterEach(async () => {});
 
-  it('push creates correct amplify artifacts', async () => {
+  it.only('push creates correct amplify artifacts', async () => {
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
     const projectMeta = getProjectMeta(projRoot);
     expect(projectMeta.hosting).toBeDefined();

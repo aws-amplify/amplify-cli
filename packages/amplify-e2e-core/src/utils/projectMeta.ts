@@ -29,6 +29,10 @@ function getProjectMeta(projectRoot: string) {
 function getBackendAmplifyMeta(projectRoot: string) {
   const metaFilePath = path.join(projectRoot, 'amplify', 'backend', 'amplify-meta.json');
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
+  
+function getProjectTags(projectRoot: string) {
+  const tagsFilePath = path.join(projectRoot, 'amplify', 'tags.json');
+  return JSON.parse(fs.readFileSync(tagsFilePath, 'utf8'));
 }
 
 function getS3StorageBucketName(projectRoot: string) {
@@ -50,6 +54,7 @@ function getAwsIOSConfig(projectRoot: string) {
 }
 
 export {
+  getProjectTags,
   getProjectMeta,
   getBackendAmplifyMeta,
   getAwsAndroidConfig,
