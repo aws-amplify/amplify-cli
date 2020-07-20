@@ -9,7 +9,7 @@ import {
 import path from 'path';
 import fs from 'fs-extra';
 import { category } from '../../category-constants';
-import { rootAssetDir, provider, gqlSchemaFilename } from './aws-constants';
+import { rootAssetDir, provider, gqlSchemaFilename, cfnParametersFilename } from './aws-constants';
 import { readTransformerConfiguration, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
@@ -78,7 +78,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
       resourceDir,
-      parameters: this.getCfnParameters(serviceConfig.apiName, authConfig),
+      parameters: this.getCfnParameters(serviceConfig.apiName, authConfig, resourceDir),
       authConfig,
     });
 
@@ -111,7 +111,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
       resourceDir,
-      parameters: this.getCfnParameters(apiName, authConfig),
+      parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
       authConfig,
     });
 
@@ -166,11 +166,14 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     return newConflictResolution;
   };
 
-  private getCfnParameters = (apiName: string, authConfig) => {
-    const params = defaultCfnParameters(apiName);
+  private getCfnParameters = (apiName: string, authConfig, resourceDir: string) => {
+    const params =
+      this.context.amplify.readJsonFile(path.join(resourceDir, cfnParametersFilename), undefined, false) || defaultCfnParameters(apiName);
     const cognitoPool = this.getCognitoUserPool(authConfig);
     if (cognitoPool) {
-      _.assign(params, cognitoPool);
+      params.AuthCognitoUserPoolId = cognitoPool;
+    } else {
+      delete params.AuthCognitoUserPoolId;
     }
     return params;
   };
@@ -195,9 +198,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       }
 
       return {
-        AuthCognitoUserPoolId: {
-          'Fn::GetAtt': [userPoolId, 'Outputs.UserPoolId'],
-        },
+        'Fn::GetAtt': [userPoolId, 'Outputs.UserPoolId'],
       };
     }
   };
