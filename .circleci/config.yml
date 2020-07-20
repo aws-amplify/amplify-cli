@@ -776,6 +776,13 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/hostingPROD.test.ts
+  tags-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/tags.test.ts
   plugin-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -971,6 +978,7 @@ workflows:
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
             - hostingPROD-amplify_e2e_tests
+            - tags-amplify_e2e_tests
             - plugin-amplify_e2e_tests
             - datastore-modegen-amplify_e2e_tests
             - interactions-amplify_e2e_tests
@@ -1000,6 +1008,10 @@ workflows:
                 - split-test
           requires:
             - publish_to_local_registry
+      - tags-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
       - plugin-amplify_e2e_tests:
           filters: *ref_2
           requires:
@@ -1012,11 +1024,12 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+            - hostingPROD-amplify_e2e_tests
       - hosting-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-            - hostingPROD-amplify_e2e_tests
+            - tags-amplify_e2e_tests
       - init-amplify_e2e_tests:
           filters: *ref_2
           requires:

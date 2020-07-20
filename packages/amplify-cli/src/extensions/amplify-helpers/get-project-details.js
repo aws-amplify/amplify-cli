@@ -24,7 +24,7 @@ function getProjectDetails() {
   let tags;
   const tagsFilePath = pathManager.getTagsConfigFilePath();
   if (fs.existsSync(tagsFilePath)) {
-    tags = tagsFilePath;
+    tags = readJsonFile(tagsFilePath);
   }
 
   return {
