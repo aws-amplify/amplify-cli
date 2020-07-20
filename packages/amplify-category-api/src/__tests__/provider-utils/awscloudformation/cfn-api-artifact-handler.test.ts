@@ -6,6 +6,7 @@ import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import { category } from '../../../category-constants';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
 import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
+import { getAppSyncResourceName, getAppSyncAuthConfig } from '../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import _ from 'lodash';
 
 jest.mock('fs-extra');
@@ -15,9 +16,20 @@ jest.mock('graphql-transformer-core', () => ({
   writeTransformerConfiguration: jest.fn(),
 }));
 
+jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', () => ({
+  checkIfAuthExists: jest.fn(),
+  getAppSyncResourceName: jest.fn(() => testApiName),
+  getAppSyncAuthConfig: jest.fn(() => ({})),
+}));
+
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
 const writeTransformerConfiguration_mock = writeTransformerConfiguration as jest.MockedFunction<typeof writeTransformerConfiguration>;
+const getAppSyncResourceName_mock = getAppSyncResourceName as jest.MockedFunction<typeof getAppSyncResourceName>;
+const getAppSyncAuthConfig_mock = getAppSyncAuthConfig as jest.MockedFunction<typeof getAppSyncAuthConfig>;
+
 const backendDirPathStub = 'backendDirPath';
+
+const testApiName = 'testApiName';
 
 const context_stub = {
   print: {
@@ -42,7 +54,7 @@ describe('create artifacts', () => {
     version: 1,
     serviceConfiguration: {
       serviceName: 'AppSync',
-      apiName: 'testApiName',
+      apiName: testApiName,
       transformSchema: 'my test schema',
       defaultAuthType: {
         mode: 'API_KEY',
@@ -53,7 +65,7 @@ describe('create artifacts', () => {
   };
   beforeAll(() => {
     fs_mock.existsSync.mockImplementation(() => false);
-    context_stub.amplify.getProjectMeta.mockImplementation(() => ({}));
+    getAppSyncResourceName_mock.mockImplementation(() => undefined);
   });
   beforeEach(() => {
     jest.clearAllMocks();
@@ -61,25 +73,19 @@ describe('create artifacts', () => {
   });
 
   it('does not create a second API if one already exists', async () => {
-    context_stub.amplify.getProjectMeta.mockImplementationOnce(() => ({
-      api: {
-        myApi: {
-          service: 'AppSync',
-        },
-      },
-    }));
-
+    getAppSyncResourceName_mock.mockImplementationOnce(() => testApiName);
     return expect(cfnApiArtifactHandler.createArtifacts(addRequestStub)).rejects.toMatchInlineSnapshot(
-      `[Error: GraphQL API myApi already exists in the project. Use 'amplify update api' to make modifications.]`,
+      `[Error: GraphQL API testApiName already exists in the project. Use 'amplify update api' to make modifications.]`,
     );
   });
+
   it('creates the correct directories', async () => {
     await cfnApiArtifactHandler.createArtifacts(addRequestStub);
     expect(fs_mock.ensureDirSync.mock.calls.length).toBe(1);
-    expect(fs_mock.ensureDirSync.mock.calls[0][0]).toBe(path.join(backendDirPathStub, category, 'testApiName'));
+    expect(fs_mock.ensureDirSync.mock.calls[0][0]).toBe(path.join(backendDirPathStub, category, testApiName));
     expect(fs_mock.mkdirSync.mock.calls.length).toBe(2);
-    expect(fs_mock.mkdirSync.mock.calls[0][0]).toBe(path.join(backendDirPathStub, category, 'testApiName', 'resolvers'));
-    expect(fs_mock.mkdirSync.mock.calls[1][0]).toBe(path.join(backendDirPathStub, category, 'testApiName', 'stacks'));
+    expect(fs_mock.mkdirSync.mock.calls[0][0]).toBe(path.join(backendDirPathStub, category, testApiName, 'resolvers'));
+    expect(fs_mock.mkdirSync.mock.calls[1][0]).toBe(path.join(backendDirPathStub, category, testApiName, 'stacks'));
   });
 
   it('creates the transform.conf.json file', async () => {
@@ -140,31 +146,23 @@ describe('update artifacts', () => {
   };
 
   beforeAll(() => {
-    context_stub.amplify.getProjectMeta.mockImplementation(() => ({
-      api: {
-        myApi: {
-          service: 'AppSync',
-          output: {
-            authConfig: {
-              defaultAuthentication: {
-                authenticationType: 'API_KEY',
-                apiKeyConfig: {
-                  apiKeyExpirationDays: 7,
-                  description: '',
-                },
-              },
-              additionalAuthenticationProviders: [
-                {
-                  authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-                  userPoolConfig: {
-                    userPoolId: 'myUserPoolId',
-                  },
-                },
-              ],
-            },
-          },
+    getAppSyncResourceName_mock.mockImplementation(() => testApiName);
+    getAppSyncAuthConfig_mock.mockImplementation(() => ({
+      defaultAuthentication: {
+        authenticationType: 'API_KEY',
+        apiKeyConfig: {
+          apiKeyExpirationDays: 7,
+          description: '',
         },
       },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          userPoolConfig: {
+            userPoolId: 'myUserPoolId',
+          },
+        },
+      ],
     }));
   });
 
@@ -175,7 +173,7 @@ describe('update artifacts', () => {
   });
 
   it('throws error if no GQL API in project', () => {
-    context_stub.amplify.getProjectMeta.mockImplementationOnce(() => ({}));
+    getAppSyncResourceName_mock.mockImplementationOnce(() => undefined);
     return expect(cfnApiArtifactHandler.updateArtifacts(updateRequestStub)).rejects.toMatchInlineSnapshot(
       `[Error: No AppSync API configured in the project. Use 'amplify add api' to create an API.]`,
     );

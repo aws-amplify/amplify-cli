@@ -179,7 +179,8 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const additionalUserPoolProvider = (authConfig.additionalAuthenticationProviders || []).find(
       provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS',
     );
-    if (authConfig.defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS' || additionalUserPoolProvider) {
+    const defaultAuth = authConfig.defaultAuthentication || {};
+    if (defaultAuth.authenticationType === 'AMAZON_COGNITO_USER_POOLS' || additionalUserPoolProvider) {
       let userPoolId;
       const configuredUserPoolName = checkIfAuthExists(this.context);
 
