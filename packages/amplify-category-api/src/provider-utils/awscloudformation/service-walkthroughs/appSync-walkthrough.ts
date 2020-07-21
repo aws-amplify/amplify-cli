@@ -94,12 +94,6 @@ export const serviceWalkthrough = async (context, defaultValuesFilename, service
   const resourceAnswers = await inquirer.prompt(resourceQuestions);
   resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
 
-  const parameters = {
-    AppSyncApiName: resourceAnswers[inputs[1].key],
-    DynamoDBBillingMode: 'PAY_PER_REQUEST',
-    DynamoDBEnableServerSideEncryption: 'false',
-  };
-
   // Ask additonal questions
 
   ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
@@ -185,18 +179,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     process.exit(0);
   }
 
-  const parametersFilePath = path.join(resourceDir, cfnParametersFilename);
-  let parameters = {};
-
-  try {
-    parameters = context.amplify.readJsonFile(parametersFilePath);
-  } catch (e) {
-    context.print.error('Parameters file not found');
-    context.print.info(e.stack);
-  }
-
   // Get models
-
   const project = await readProjectConfiguration(resourceDir);
   let resolverConfig = project.config.ResolverConfig;
 
