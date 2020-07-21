@@ -21,7 +21,9 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
+    "amplify-headless-interface": "1.0.0",
     "chalk": "^3.0.0",
+    "execa":"^4.0.3",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.19.5",
     "jest-environment-node": "^25.1.0",

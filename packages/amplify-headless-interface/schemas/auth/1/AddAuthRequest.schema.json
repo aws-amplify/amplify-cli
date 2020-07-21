@@ -1,0 +1,595 @@
+{
+    "description": "Defines acceptable payloads to amplify add auth --stdin",
+    "type": "object",
+    "properties": {
+        "version": {
+            "type": "number",
+            "enum": [
+                1
+            ]
+        },
+        "serviceConfiguration": {
+            "description": "Defines AWS Cognito parameters",
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/BaseCognitoServiceConfiguration"
+                        },
+                        {
+                            "$ref": "#/definitions/NoCognitoIdentityPool"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/BaseCognitoServiceConfiguration"
+                        },
+                        {
+                            "$ref": "#/definitions/CognitoIdentityPool"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "required": [
+        "serviceConfiguration",
+        "version"
+    ],
+    "definitions": {
+        "BaseCognitoServiceConfiguration": {
+            "description": "Configuration that applies to all Cognito configuration",
+            "type": "object",
+            "properties": {
+                "serviceName": {
+                    "type": "string",
+                    "enum": [
+                        "cognito"
+                    ]
+                },
+                "userPoolConfiguration": {
+                    "$ref": "#/definitions/CognitoUserPoolConfiguration"
+                }
+            },
+            "required": [
+                "serviceName",
+                "userPoolConfiguration"
+            ]
+        },
+        "CognitoUserPoolConfiguration": {
+            "type": "object",
+            "properties": {
+                "signinMethod": {
+                    "$ref": "#/definitions/CognitoUserPoolSigninMethod"
+                },
+                "requiredSignupInformation": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "ADDRESS",
+                            "BIRTHDATE",
+                            "EMAIL",
+                            "FAMILY_NAME",
+                            "GENDER",
+                            "GIVEN_NAME",
+                            "LOCALE",
+                            "MIDDLE_NAME",
+                            "NAME",
+                            "NICKNAME",
+                            "PHONE_NUMBER",
+                            "PICTURE",
+                            "PREFERRED_USERNAME",
+                            "PROFILE",
+                            "UPDATED_AT",
+                            "WEBSITE",
+                            "ZONE_INFO"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "userPoolName": {
+                    "type": "string"
+                },
+                "userPoolGroups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CognitoUserPoolGroup"
+                    }
+                },
+                "adminQueries": {
+                    "$ref": "#/definitions/CognitoAdminQueries"
+                },
+                "mfa": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/CognitoMFAOff"
+                        },
+                        {
+                            "$ref": "#/definitions/CognitoMFASettings"
+                        }
+                    ]
+                },
+                "forgotPassword": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/CognitoForgotPasswordEmailConfiguration"
+                        },
+                        {
+                            "$ref": "#/definitions/CognitoForgotPasswordSMSConfiguration"
+                        }
+                    ]
+                },
+                "passwordPolicy": {
+                    "$ref": "#/definitions/CognitoPasswordPolicy"
+                },
+                "refreshTokenPeriod": {
+                    "type": "number"
+                },
+                "readAttributes": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "ADDRESS",
+                            "BIRTHDATE",
+                            "EMAIL",
+                            "FAMILY_NAME",
+                            "GENDER",
+                            "GIVEN_NAME",
+                            "LOCALE",
+                            "MIDDLE_NAME",
+                            "NAME",
+                            "NICKNAME",
+                            "PHONE_NUMBER",
+                            "PICTURE",
+                            "PREFERRED_USERNAME",
+                            "PROFILE",
+                            "UPDATED_AT",
+                            "WEBSITE",
+                            "ZONE_INFO"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "writeAttributes": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "ADDRESS",
+                            "BIRTHDATE",
+                            "EMAIL",
+                            "FAMILY_NAME",
+                            "GENDER",
+                            "GIVEN_NAME",
+                            "LOCALE",
+                            "MIDDLE_NAME",
+                            "NAME",
+                            "NICKNAME",
+                            "PHONE_NUMBER",
+                            "PICTURE",
+                            "PREFERRED_USERNAME",
+                            "PROFILE",
+                            "UPDATED_AT",
+                            "WEBSITE",
+                            "ZONE_INFO"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "oAuth": {
+                    "$ref": "#/definitions/CognitoOAuthConfiguration"
+                },
+                "confirmationRedirect": {
+                    "$ref": "#/definitions/CognitoConfirmationRedirectConfiguration"
+                },
+                "addUserToGroup": {
+                    "type": "object",
+                    "properties": {
+                        "groupName": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "groupName"
+                    ]
+                },
+                "emailBlacklist": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "emailWhitelist": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "customAuthScaffolding": {
+                    "type": "object",
+                    "properties": {
+                        "customChallengeAnswer": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "customChallengeAnswer"
+                    ]
+                }
+            },
+            "required": [
+                "requiredSignupInformation",
+                "signinMethod"
+            ]
+        },
+        "CognitoUserPoolSigninMethod": {
+            "enum": [
+                "EMAIL",
+                "EMAIL_AND_PHONE_NUMBER",
+                "PHONE_NUMBER",
+                "USERNAME"
+            ],
+            "type": "string"
+        },
+        "CognitoUserPoolGroup": {
+            "type": "object",
+            "properties": {
+                "priority": {
+                    "type": "number"
+                },
+                "customPolicy": {
+                    "type": "string"
+                },
+                "groupName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "groupName",
+                "priority"
+            ]
+        },
+        "CognitoAdminQueries": {
+            "type": "object",
+            "properties": {
+                "permissions": {
+                    "type": "object",
+                    "properties": {
+                        "restrictAccess": {
+                            "type": "boolean"
+                        },
+                        "groupName": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "restrictAccess"
+                    ]
+                }
+            },
+            "required": [
+                "permissions"
+            ]
+        },
+        "CognitoMFAOff": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "OFF"
+                    ]
+                }
+            },
+            "required": [
+                "mode"
+            ]
+        },
+        "CognitoMFASettings": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "enum": [
+                        "ON",
+                        "OPTIONAL"
+                    ],
+                    "type": "string"
+                },
+                "mfaTypes": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "SMS",
+                            "TOTP"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "smsMessage": {
+                    "type": "string"
+                },
+                "mfaWithCaptcha": {
+                    "type": "object",
+                    "properties": {
+                        "googleRecaptchaSecret": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "googleRecaptchaSecret"
+                    ]
+                }
+            },
+            "required": [
+                "mfaTypes",
+                "mode",
+                "smsMessage"
+            ]
+        },
+        "CognitoForgotPasswordEmailConfiguration": {
+            "type": "object",
+            "properties": {
+                "deliveryMethod": {
+                    "type": "string",
+                    "enum": [
+                        "EMAIL"
+                    ]
+                },
+                "emailMessage": {
+                    "type": "string"
+                },
+                "emailSubject": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "deliveryMethod",
+                "emailMessage",
+                "emailSubject"
+            ]
+        },
+        "CognitoForgotPasswordSMSConfiguration": {
+            "type": "object",
+            "properties": {
+                "deliveryMethod": {
+                    "type": "string",
+                    "enum": [
+                        "SMS"
+                    ]
+                },
+                "smsMessage": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "deliveryMethod",
+                "smsMessage"
+            ]
+        },
+        "CognitoPasswordPolicy": {
+            "type": "object",
+            "properties": {
+                "minimumLength": {
+                    "type": "number"
+                },
+                "additionalConstraints": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "REQUIRE_DIGIT",
+                            "REQUIRE_LOWERCASE",
+                            "REQUIRE_SYMBOL",
+                            "REQUIRE_UPPERCASE"
+                        ],
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "additionalConstraints",
+                "minimumLength"
+            ]
+        },
+        "CognitoOAuthConfiguration": {
+            "type": "object",
+            "properties": {
+                "domainPrefix": {
+                    "type": "string"
+                },
+                "redirectSigninURIs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "redirectSignoutURIs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "oAuthGrantType": {
+                    "enum": [
+                        "CODE",
+                        "IMPLICIT"
+                    ],
+                    "type": "string"
+                },
+                "oAuthScopes": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "AWS.COGNITO.SIGNIN.USER.ADMIN",
+                            "EMAIL",
+                            "OPENID",
+                            "PHONE",
+                            "PROFILE"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "socialProviderSettings": {
+                    "type": "object",
+                    "properties": {
+                        "Facebook": {
+                            "type": "object",
+                            "properties": {
+                                "appId": {
+                                    "type": "string"
+                                },
+                                "appSecret": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "appId",
+                                "appSecret"
+                            ]
+                        },
+                        "Google": {
+                            "type": "object",
+                            "properties": {
+                                "webClientId": {
+                                    "type": "string"
+                                },
+                                "webClientSecret": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "webClientId",
+                                "webClientSecret"
+                            ]
+                        },
+                        "LoginWithAmazon": {
+                            "type": "object",
+                            "properties": {
+                                "appId": {
+                                    "type": "string"
+                                },
+                                "appSecret": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "appId",
+                                "appSecret"
+                            ]
+                        }
+                    }
+                }
+            },
+            "required": [
+                "oAuthGrantType",
+                "oAuthScopes",
+                "redirectSigninURIs",
+                "redirectSignoutURIs"
+            ]
+        },
+        "CognitoConfirmationRedirectConfiguration": {
+            "type": "object",
+            "properties": {
+                "redirectURL": {
+                    "type": "string"
+                },
+                "emailSubject": {
+                    "type": "string"
+                },
+                "emailMessage": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "emailMessage",
+                "emailSubject",
+                "redirectURL"
+            ]
+        },
+        "NoCognitoIdentityPool": {
+            "description": "Specifies that the Cognito configuration should not include an identity pool",
+            "type": "object",
+            "properties": {
+                "includeIdentityPool": {
+                    "type": "boolean",
+                    "enum": [
+                        false
+                    ]
+                }
+            },
+            "required": [
+                "includeIdentityPool"
+            ]
+        },
+        "CognitoIdentityPool": {
+            "description": "Specifies that the Cognito configuration includes an identity pool configuration",
+            "type": "object",
+            "properties": {
+                "includeIdentityPool": {
+                    "type": "boolean",
+                    "enum": [
+                        true
+                    ]
+                },
+                "identityPoolConfiguration": {
+                    "$ref": "#/definitions/CognitoIdentityPoolConfiguration",
+                    "description": "The identity pool configuration. If not specified, defaults are applied"
+                }
+            },
+            "required": [
+                "includeIdentityPool"
+            ]
+        },
+        "CognitoIdentityPoolConfiguration": {
+            "type": "object",
+            "properties": {
+                "identityPoolName": {
+                    "description": "If not specified, a random string is generated",
+                    "type": "string"
+                },
+                "unauthenticatedLogin": {
+                    "type": "boolean"
+                },
+                "identitySocialFederation": {
+                    "type": "object",
+                    "properties": {
+                        "facebook": {
+                            "type": "object",
+                            "properties": {
+                                "facebookAppId": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "facebookAppId"
+                            ]
+                        },
+                        "google": {
+                            "type": "object",
+                            "properties": {
+                                "googleClientId": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "googleClientId"
+                            ]
+                        },
+                        "amazon": {
+                            "type": "object",
+                            "properties": {
+                                "amazonAppId": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "amazonAppId"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}
