@@ -46,13 +46,20 @@ async function zipLayer(context, resource: Resource) {
     const libGlob = glob.sync(path.join(resourcePath, 'lib', '*'));
     const optPath = path.join(resourcePath, 'opt');
 
+    let conflicts: string[] = [];
     libGlob.forEach(lib => {
-      if (fs.pathExistsSync(path.join(optPath, path.basename(lib)))) {
-        context.print.warning(
-          `${lib} folder found in both /lib and /opt. These folders will be merged and the files in /opt will take precedence if a conflict exists.`,
-        );
+      const basename = path.basename(lib);
+      if (fs.pathExistsSync(path.join(optPath, basename))) {
+        conflicts.push(basename);
       }
     });
+    if (conflicts.length > 0) {
+      const libs = conflicts.map(lib => `"/${lib}"`).join(', ');
+      const plural = conflicts.length > 1 ? 'ies' : 'y';
+      context.print.warning(
+        `${libs} sub director${plural} found in both "/lib" and "/opt". These folders will be merged and the files in "/opt" will take precedence if a conflict exists.`,
+      );
+    }
 
     zip.pipe(output);
     [optPath, ...libGlob]
