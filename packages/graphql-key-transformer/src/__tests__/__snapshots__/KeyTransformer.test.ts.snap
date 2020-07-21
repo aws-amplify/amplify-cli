@@ -387,7 +387,7 @@ $util.toJson($ctx.result)
 #if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
 #if( $context.args.filter ) #set( $QueryRequest.filter = $util.parseJson(\\"$util.transform.toDynamoDBFilterExpression($ctx.args.filter)\\") ) #end
 $util.toJson($QueryRequest)",
-  "Query.itemsByCreatedAt.res.vtl": "$util.toJson($ctx.result)",
+  "Query.itemsByCreatedAt.res.vtl": "#if( $ctx.error )\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n$util.toJson($ctx.result)",
   "Query.itemsByStatus.req.vtl": "## [Start] Set query expression for @key **
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
@@ -462,7 +462,7 @@ $util.toJson($QueryRequest)",
 #if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
 #if( $context.args.filter ) #set( $QueryRequest.filter = $util.parseJson(\\"$util.transform.toDynamoDBFilterExpression($ctx.args.filter)\\") ) #end
 $util.toJson($QueryRequest)",
-  "Query.itemsByStatus.res.vtl": "$util.toJson($ctx.result)",
+  "Query.itemsByStatus.res.vtl": "#if( $ctx.error )\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n$util.toJson($ctx.result)",
   "Query.listItems.req.vtl": "## [Start] Set query expression for @key **
 #if( $util.isNull($ctx.args.orderId) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'orderId'.\\", \\"InvalidArgumentsError\\")
@@ -571,7 +571,7 @@ $util.toJson($QueryRequest)",
 ## [End] Set query expression for @key **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
 #if( $context.args.nextToken )
@@ -664,7 +664,7 @@ exports[`Check sortDirection validation code present in list resolver code for c
 ## [End] Set query expression for @key **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
 #if( $context.args.nextToken )
@@ -708,7 +708,7 @@ exports[`Check sortDirection validation code present in list resolver code for s
 ## [End] Set query expression for @key **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
 #if( $context.args.nextToken )
