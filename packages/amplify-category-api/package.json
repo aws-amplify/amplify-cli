@@ -9,14 +9,17 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest",
     "test-ci": "jest --ci -i"
   },
   "dependencies": {
     "amplify-category-auth": "2.16.5",
     "amplify-category-function": "2.21.5",
+    "amplify-util-headless-input": "1.0.0",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
@@ -28,15 +31,12 @@
     "ora": "^4.0.3",
     "uuid": "^3.4.0"
   },
-  "devDependencies": {
-    "rewire": "^4.0.1"
-  },
   "jest": {
     "testURL": "http://localhost",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "(.*/__tests__/.*.test.(js|ts))$",
+    "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",

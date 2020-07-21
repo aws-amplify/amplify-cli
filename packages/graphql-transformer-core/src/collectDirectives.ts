@@ -47,7 +47,7 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
   return directives;
 }
 
-export function collectDirectivesByTypeNames(sdl: string): Object {
+export function collectDirectivesByTypeNames(sdl: string) {
   let types = collectDirectivesByType(sdl);
   const directives: Set<string> = new Set();
   Object.keys(types).forEach(dir => {
