@@ -5,7 +5,7 @@ const { editorSelection } = require('./editor-selection');
 const { getEnvInfo } = require('./get-env-info');
 const fs = require('fs-extra');
 
-async function openEditor(context, filePath) {
+async function openEditor(context, filePath, waitToContinue = true) {
   const continueQuestion = {
     type: 'input',
     name: 'pressKey',
@@ -23,7 +23,7 @@ async function openEditor(context, filePath) {
 
     if (!editor) {
       console.error(
-        `Selected editor '${editorSelected}' was not found in your machine. Please open your favorite editor and modify the file if needed.`
+        `Selected editor '${editorSelected}' was not found in your machine. Please open your favorite editor and modify the file if needed.`,
       );
     }
     const editorPath = editor.paths.find(p => fs.existsSync(p));
@@ -43,13 +43,15 @@ async function openEditor(context, filePath) {
 
         subProcess.on('error', () => {
           context.print.error(
-            `Selected  editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`
+            `Selected  editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`,
           );
         });
 
         subProcess.unref();
         context.print.info(`Please edit the file in your editor: ${filePath}`);
-        await inquirer.prompt(continueQuestion);
+        if (waitToContinue) {
+          await inquirer.prompt(continueQuestion);
+        }
       } else {
         childProcess.spawnSync(editorPath || editor.binary, editorArguments, {
           detached: true,
