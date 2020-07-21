@@ -2,10 +2,9 @@ import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
 import { selectRuntime, selectTemplate } from './lambda-function';
-
 import { singleSelect, multiSelect } from '../utils/selectors';
 
-function getSchemaPath(schemaName: string): string {
+export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
 }
 
@@ -40,9 +39,7 @@ export function addApiWithoutSchema(cwd: string) {
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
       .sendLine('n')
-      .wait('Do you want a guided schema creation')
-      .sendLine('y')
-      .wait('What best describes your project')
+      .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
@@ -372,9 +369,7 @@ export function addApi(projectDir: string, settings?: any) {
     chain
       .wait('Do you have an annotated GraphQL schema?')
       .sendLine('n')
-      .wait('Do you want a guided schema creation')
-      .sendLine('y')
-      .wait('What best describes your project')
+      .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
@@ -464,9 +459,7 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
       .sendLine('n')
-      .wait('Do you want a guided schema creation')
-      .sendLine('y')
-      .wait('What best describes your project')
+      .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
