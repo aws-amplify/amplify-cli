@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
+const { CLIContextEnvironmentProvider, FeatureFlagProvider } = require('amplify-cli-core');
 const { getFrontendPlugins } = require('../extensions/amplify-helpers/get-frontend-plugins');
 const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provider-plugins');
 const gitManager = require('../extensions/amplify-helpers/git-manager');
@@ -39,6 +40,17 @@ async function run(context) {
 
   generateLocalRuntimeFiles(context);
   generateNonRuntimeFiles(context);
+
+  if (context.exeInfo.isNewProject) {
+    // Initialize feature flags
+    const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
+      getEnvInfo: () => context.amplify.getEnvInfo(),
+    });
+
+    await FeatureFlagProvider.initialize(contextEnvironmentProvider, projectPath);
+
+    await FeatureFlagProvider.ensureDefaultFeatureFlags(true);
+  }
 
   context.exeInfo.projectConfig.providers.forEach(provider => {
     const providerModule = require(providerPlugins[provider]);

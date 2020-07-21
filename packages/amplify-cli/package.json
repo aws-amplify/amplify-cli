@@ -47,6 +47,7 @@
     "amplify-category-predictions": "2.4.5",
     "amplify-category-storage": "2.5.5",
     "amplify-category-xr": "2.4.5",
+    "amplify-cli-core": "1.0.0",
     "amplify-codegen": "2.15.13",
     "amplify-console-hosting": "1.4.1",
     "amplify-dotnet-function-runtime-provider": "1.2.0",

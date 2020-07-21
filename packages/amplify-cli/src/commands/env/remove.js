@@ -61,6 +61,32 @@ module.exports = {
           jsonString = JSON.stringify(awsInfo, null, '\t');
           fs.writeFileSync(awsInfoFilePath, jsonString, 'utf8');
         }
+
+        // Remove env specific amplify.{env}.json
+        const getProjectPath = () => {
+          try {
+            const { projectPath } = context.amplify.getEnvInfo();
+
+            return projectPath;
+          } catch {
+            return '';
+          }
+        };
+
+        const projectPath = getProjectPath();
+
+        if (projectPath) {
+          const deleteFile = filename => {
+            if (fs.existsSync(filename)) {
+              fs.removeSync(filename);
+            }
+          };
+
+          const fileName = path.join(projectPath, `amplify.{$env}.json`);
+
+          deleteFile(fileName);
+        }
+
         context.print.success('Successfully removed environment from your project locally');
       }
     }
