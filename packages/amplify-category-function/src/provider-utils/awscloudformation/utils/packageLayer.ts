@@ -43,10 +43,19 @@ async function zipLayer(context, resource: Resource) {
       reject(new Error('Failed to zip code.'));
     });
 
-    const libPath = path.join(resourcePath, 'lib', '*');
+    const libGlob = glob.sync(path.join(resourcePath, 'lib', '*'));
     const optPath = path.join(resourcePath, 'opt');
+
+    libGlob.forEach(lib => {
+      if (fs.pathExistsSync(path.join(optPath, path.basename(lib)))) {
+        context.print.warning(
+          `${lib} folder found in both /lib and /opt. These folders will be merged and the files in /opt will take precedence if a conflict exists.`,
+        );
+      }
+    });
+
     zip.pipe(output);
-    [...glob.sync(optPath), ...glob.sync(libPath)]
+    [optPath, ...libGlob]
       .filter(folder => fs.lstatSync(folder).isDirectory())
       .forEach(folder =>
         zip.directory(
