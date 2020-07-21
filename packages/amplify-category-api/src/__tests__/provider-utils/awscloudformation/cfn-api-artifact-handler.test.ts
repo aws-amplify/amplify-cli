@@ -42,6 +42,7 @@ const context_stub = {
     executeProviderUtils: jest.fn(),
     copyBatch: jest.fn(),
     getProjectMeta: jest.fn(),
+    readJsonFile: jest.fn(),
     pathManager: {
       getBackendDirPath: jest.fn(() => backendDirPathStub),
     },
