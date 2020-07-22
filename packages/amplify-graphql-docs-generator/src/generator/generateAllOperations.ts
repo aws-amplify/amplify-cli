@@ -1,5 +1,5 @@
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
-const pascalCase = require('pascal-case');
+import { pascalCase } from 'change-case';
 
 import generateOperation from './generateOperation';
 import {
@@ -15,7 +15,7 @@ export function generateQueries(
   queries: GraphQLObjectType,
   schema: GraphQLSchema,
   maxDepth: number,
-  options: GQLDocsGenOptions
+  options: GQLDocsGenOptions,
 ): Array<GQLTemplateOp> | undefined {
   if (queries) {
     const allQueries = queries.getFields();
@@ -33,7 +33,7 @@ export function generateMutations(
   mutations: GraphQLObjectType,
   schema: GraphQLSchema,
   maxDepth: number,
-  options: GQLDocsGenOptions
+  options: GQLDocsGenOptions,
 ): Array<any> {
   if (mutations) {
     const allMutations = mutations.getFields();
@@ -51,7 +51,7 @@ export function generateSubscriptions(
   subscriptions: GraphQLObjectType,
   schema: GraphQLSchema,
   maxDepth: number,
-  options: GQLDocsGenOptions
+  options: GQLDocsGenOptions,
 ): Array<any> {
   if (subscriptions) {
     const allSubscriptions = subscriptions.getFields();

@@ -10,12 +10,12 @@ import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { S3Client } from '../S3Client';
 import * as path from 'path';
 import { deploy } from '../deployNestedStacks';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { createUserPool, createUserPoolClient, deleteUserPool, signupAndAuthenticateUser, configureAmplify } from '../cognitoUtils';
 import Role from 'cloudform-types/types/iam/role';
@@ -23,6 +23,7 @@ import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 import AWS = require('aws-sdk');
+import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -178,6 +179,62 @@ beforeAll(async () => {
         title: String
         type: String
         date: AWSDateTime
+    }
+
+    # This type is for the managed policy slicing, only deployment test in this e2e
+    type TodoWithExtraLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName @model(subscriptions:null) @auth(rules:[{allow: private, provider: iam}])
+    {
+      id: ID!
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename001: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename002: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename003: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename004: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename005: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename006: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename007: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename008: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename009: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename010: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename011: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename012: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename013: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename014: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename015: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename016: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename017: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename018: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename019: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename020: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename021: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename022: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename023: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename024: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename025: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename026: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename027: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename028: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename029: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename030: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename031: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename032: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename033: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename034: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename035: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename036: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename037: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename038: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename039: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename040: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename041: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename042: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename043: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename044: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename045: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename046: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename047: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename048: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename049: String! @auth(rules:[{allow: private, provider: iam}])
+      description: String
     }
     `;
 
@@ -372,10 +429,23 @@ beforeAll(async () => {
 
     // Since we're doing the policy here we've to remove the transformer generated artifacts from
     // the generated stack.
-    delete out.rootStack.Resources[ResourceConstants.RESOURCES.UnauthRolePolicy];
-    delete out.rootStack.Parameters.unauthRoleName;
-    delete out.rootStack.Resources[ResourceConstants.RESOURCES.AuthRolePolicy];
+    const maxPolicyCount = 10;
+    for (let i = 0; i < maxPolicyCount; i++) {
+      const paddedIndex = `${i + 1}`.padStart(2, '0');
+      const authResourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
+      const unauthResourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
+
+      if (out.rootStack.Resources[authResourceName]) {
+        delete out.rootStack.Resources[authResourceName];
+      }
+
+      if (out.rootStack.Resources[unauthResourceName]) {
+        delete out.rootStack.Resources[unauthResourceName];
+      }
+    }
+
     delete out.rootStack.Parameters.authRoleName;
+    delete out.rootStack.Parameters.unauthRoleName;
 
     for (const key of Object.keys(out.rootStack.Resources)) {
       if (
@@ -436,7 +506,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -549,19 +619,23 @@ afterAll(async () => {
  */
 test(`Test 'public' authStrategy`, async () => {
   try {
-    const createMutation = gql(`mutation {
-            createPostPublic(input: { title: "Hello, World!" }) {
-                id
-                title
-            }
-        }`);
+    const createMutation = gql`
+      mutation {
+        createPostPublic(input: { title: "Hello, World!" }) {
+          id
+          title
+        }
+      }
+    `;
 
-    const getQuery = gql(`query ($id: ID!) {
-            getPostPublic(id: $id) {
-                id
-                title
-            }
-        }`);
+    const getQuery = gql`
+      query($id: ID!) {
+        getPostPublic(id: $id) {
+          id
+          title
+        }
+      }
+    `;
 
     const response = await APIKEY_GRAPHQL_CLIENT.mutate({
       mutation: createMutation,
@@ -609,19 +683,23 @@ test(`Test 'public' authStrategy`, async () => {
 
 test(`Test 'public' provider: 'iam' authStrategy`, async () => {
   try {
-    const createMutation = gql(`mutation {
-            createPostPublicIAM(input: { title: "Hello, World!" }) {
-                id
-                title
-            }
-        }`);
+    const createMutation = gql`
+      mutation {
+        createPostPublicIAM(input: { title: "Hello, World!" }) {
+          id
+          title
+        }
+      }
+    `;
 
-    const getQuery = gql(`query ($id: ID!) {
-            getPostPublicIAM(id: $id) {
-                id
-                title
-            }
-        }`);
+    const getQuery = gql`
+      query($id: ID!) {
+        getPostPublicIAM(id: $id) {
+          id
+          title
+        }
+      }
+    `;
 
     const response = await IAM_UNAUTHCLIENT.mutate({
       mutation: createMutation,
@@ -669,19 +747,23 @@ test(`Test 'public' provider: 'iam' authStrategy`, async () => {
 
 test(`Test 'private' authStrategy`, async () => {
   try {
-    const createMutation = gql(`mutation {
-            createPostPrivate(input: { title: "Hello, World!" }) {
-                id
-                title
-            }
-        }`);
+    const createMutation = gql`
+      mutation {
+        createPostPrivate(input: { title: "Hello, World!" }) {
+          id
+          title
+        }
+      }
+    `;
 
-    const getQuery = gql(`query ($id: ID!) {
-            getPostPrivate(id: $id) {
-                id
-                title
-            }
-        }`);
+    const getQuery = gql`
+      query($id: ID!) {
+        getPostPrivate(id: $id) {
+          id
+          title
+        }
+      }
+    `;
 
     const response = await USER_POOL_AUTH_CLIENT.mutate({
       mutation: createMutation,
@@ -731,19 +813,23 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
   // This test reuses the unauth role, but any IAM credentials would work
   // in real world scenarios, we've to see if provider override works.
   try {
-    const createMutation = gql(`mutation {
-            createPostPrivateIAM(input: { title: "Hello, World!" }) {
-                id
-                title
-            }
-        }`);
+    const createMutation = gql`
+      mutation {
+        createPostPrivateIAM(input: { title: "Hello, World!" }) {
+          id
+          title
+        }
+      }
+    `;
 
-    const getQuery = gql(`query ($id: ID!) {
-            getPostPrivateIAM(id: $id) {
-                id
-                title
-            }
-        }`);
+    const getQuery = gql`
+      query($id: ID!) {
+        getPostPrivateIAM(id: $id) {
+          id
+          title
+        }
+      }
+    `;
 
     const response = await IAM_UNAUTHCLIENT.mutate({
       mutation: createMutation,
@@ -801,21 +887,25 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
   // - Get API Key - Verify deny
 
   try {
-    const createMutation = gql(`mutation {
-            createPostOwnerIAM(input: { title: "Hello, World!" }) {
-                id
-                title
-                owner
-            }
-        }`);
+    const createMutation = gql`
+      mutation {
+        createPostOwnerIAM(input: { title: "Hello, World!" }) {
+          id
+          title
+          owner
+        }
+      }
+    `;
 
-    const getQuery = gql(`query ($id: ID!) {
-            getPostOwnerIAM(id: $id) {
-                id
-                title
-                owner
-            }
-        }`);
+    const getQuery = gql`
+      query($id: ID!) {
+        getPostOwnerIAM(id: $id) {
+          id
+          title
+          owner
+        }
+      }
+    `;
 
     const response = await USER_POOL_AUTH_CLIENT.mutate({
       mutation: createMutation,
@@ -901,35 +991,43 @@ describe(`Test IAM protected field operations`, () => {
   // This test reuses the unauth role, but any IAM credentials would work
   // in real world scenarios, we've to see if provider override works.
 
-  const createMutation = gql(`mutation {
-        createPostSecretFieldIAM(input: { title: "Hello, World!"  }) {
-            id
-            title
-        }
-    }`);
+  const createMutation = gql`
+    mutation {
+      createPostSecretFieldIAM(input: { title: "Hello, World!" }) {
+        id
+        title
+      }
+    }
+  `;
 
-  const createMutationWithSecret = gql(`mutation {
-        createPostSecretFieldIAM(input: { title: "Hello, World!", secret: "42" }) {
-            id
-            title
-            secret
-        }
-    }`);
+  const createMutationWithSecret = gql`
+    mutation {
+      createPostSecretFieldIAM(input: { title: "Hello, World!", secret: "42" }) {
+        id
+        title
+        secret
+      }
+    }
+  `;
 
-  const getQuery = gql(`query ($id: ID!) {
-        getPostSecretFieldIAM(id: $id) {
-            id
-            title
-        }
-    }`);
+  const getQuery = gql`
+    query($id: ID!) {
+      getPostSecretFieldIAM(id: $id) {
+        id
+        title
+      }
+    }
+  `;
 
-  const getQueryWithSecret = gql(`query ($id: ID!) {
-        getPostSecretFieldIAM(id: $id) {
-            id
-            title
-            secret
-        }
-    }`);
+  const getQueryWithSecret = gql`
+    query($id: ID!) {
+      getPostSecretFieldIAM(id: $id) {
+        id
+        title
+        secret
+      }
+    }
+  `;
 
   let postIdNoSecret = '';
   let postIdSecret = '';
@@ -978,7 +1076,7 @@ describe(`Test IAM protected field operations`, () => {
         variables: {
           id: postIdSecret,
         },
-      })
+      }),
     ).rejects.toThrow('GraphQL error: Not Authorized to access secret on type PostSecretFieldIAM');
   });
 
@@ -991,67 +1089,75 @@ describe(`Test IAM protected field operations`, () => {
         variables: {
           id: postIdSecret,
         },
-      })
+      }),
     ).rejects.toThrow('GraphQL error: Not Authorized to access getPostSecretFieldIAM on type Query');
   });
 });
 
 describe(`Connection tests with @auth on type`, () => {
-  const createPostMutation = gql(`mutation {
-        createPostConnection(input: { title: "Hello, World!" }) {
-            id
-            title
-        }
-    }`);
+  const createPostMutation = gql`
+    mutation {
+      createPostConnection(input: { title: "Hello, World!" }) {
+        id
+        title
+      }
+    }
+  `;
 
-  const createCommentMutation = gql(`mutation ( $postId: ID! ) {
-        createCommentConnection(input: { content: "Comment", commentConnectionPostId: $postId }) {
+  const createCommentMutation = gql`
+    mutation($postId: ID!) {
+      createCommentConnection(input: { content: "Comment", commentConnectionPostId: $postId }) {
+        id
+        content
+      }
+    }
+  `;
+
+  const getPostQuery = gql`
+    query($postId: ID!) {
+      getPostConnection(id: $postId) {
+        id
+        title
+      }
+    }
+  `;
+
+  const getPostQueryWithComments = gql`
+    query($postId: ID!) {
+      getPostConnection(id: $postId) {
+        id
+        title
+        comments {
+          items {
             id
             content
+          }
         }
-    }`);
-
-  const getPostQuery = gql(`query ( $postId: ID! ) {
-        getPostConnection ( id: $postId ) {
-            id
-            title
-        }
+      }
     }
-    `);
+  `;
 
-  const getPostQueryWithComments = gql(`query ( $postId: ID! ) {
-        getPostConnection ( id: $postId ) {
-            id
-            title
-            comments {
-                items {
-                    id
-                    content
-                }
-            }
-        }
+  const getCommentQuery = gql`
+    query($commentId: ID!) {
+      getCommentConnection(id: $commentId) {
+        id
+        content
+      }
     }
-    `);
+  `;
 
-  const getCommentQuery = gql(`query ( $commentId: ID! ) {
-        getCommentConnection ( id: $commentId ) {
-            id
-            content
+  const getCommentWithPostQuery = gql`
+    query($commentId: ID!) {
+      getCommentConnection(id: $commentId) {
+        id
+        content
+        post {
+          id
+          title
         }
+      }
     }
-    `);
-
-  const getCommentWithPostQuery = gql(`query ( $commentId: ID! ) {
-        getCommentConnection ( id: $commentId ) {
-            id
-            content
-            post {
-                id
-                title
-            }
-        }
-    }
-    `);
+  `;
 
   let postId = '';
   let commentId = '';
@@ -1088,7 +1194,7 @@ describe(`Connection tests with @auth on type`, () => {
       USER_POOL_AUTH_CLIENT.mutate({
         mutation: createPostMutation,
         fetchPolicy: 'no-cache',
-      })
+      }),
     ).rejects.toThrow('GraphQL error: Not Authorized to access createPostConnection on type Mutation');
   });
 
@@ -1101,7 +1207,7 @@ describe(`Connection tests with @auth on type`, () => {
         variables: {
           postId,
         },
-      })
+      }),
     ).rejects.toThrow('Not Authorized to access createCommentConnection on type Mutation');
   });
 
@@ -1126,7 +1232,7 @@ describe(`Connection tests with @auth on type`, () => {
         variables: {
           postId,
         },
-      })
+      }),
     ).rejects.toThrow('Not Authorized to access items on type ModelCommentConnectionConnection');
   });
 
@@ -1139,7 +1245,7 @@ describe(`Connection tests with @auth on type`, () => {
         variables: {
           postId,
         },
-      })
+      }),
     ).rejects.toThrow('Not Authorized to access getPostConnection on type Query');
   });
 
@@ -1164,7 +1270,7 @@ describe(`Connection tests with @auth on type`, () => {
         variables: {
           commentId,
         },
-      })
+      }),
     ).rejects.toThrow('Not Authorized to access getCommentConnection on type Query');
   });
 
@@ -1184,25 +1290,29 @@ describe(`Connection tests with @auth on type`, () => {
 });
 
 describe(`IAM Tests`, () => {
-  const createMutation = gql(`mutation {
-        createPostIAMWithKeys(input: { title: "Hello, World!", type: "Post", date: "2019-01-01T00:00:00Z" }) {
-            id
-            title
-            type
-            date
-        }
-    }`);
+  const createMutation = gql`
+    mutation {
+      createPostIAMWithKeys(input: { title: "Hello, World!", type: "Post", date: "2019-01-01T00:00:00Z" }) {
+        id
+        title
+        type
+        date
+      }
+    }
+  `;
 
-  const getPostIAMWithKeysByDate = gql(`query {
-        getPostIAMWithKeysByDate(type: "Post") {
-            items {
-                id
-                title
-                type
-                date
-            }
+  const getPostIAMWithKeysByDate = gql`
+    query {
+      getPostIAMWithKeysByDate(type: "Post") {
+        items {
+          id
+          title
+          type
+          date
         }
-    }`);
+      }
+    }
+  `;
 
   let postId = '';
 

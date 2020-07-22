@@ -20,7 +20,6 @@ import {
   ObjectValueNode,
   InputObjectTypeDefinitionNode,
 } from 'graphql';
-import { access } from 'fs';
 
 type ScalarMap = {
   [k: string]: 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
@@ -68,7 +67,7 @@ export const MAP_SCALARS: { [k: string]: boolean } = {
   AWSJSON: true,
 };
 
-export function attributeTypeFromScalar(scalar: TypeNode) {
+export function attributeTypeFromScalar(scalar: TypeNode): 'S' | 'N' {
   const baseType = getBaseType(scalar);
   const baseScalar = DEFAULT_SCALARS[baseType];
   if (!baseScalar) {
@@ -265,11 +264,23 @@ export function makeInputObjectDefinition(name: string, inputs: InputValueDefini
   };
 }
 
+export function makeObjectDefinition(name: string, inputs: FieldDefinitionNode[]): ObjectTypeDefinitionNode {
+  return {
+    kind: Kind.OBJECT_TYPE_DEFINITION,
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    fields: inputs,
+    directives: [],
+  };
+}
+
 export function makeField(
   name: string,
   args: InputValueDefinitionNode[],
   type: TypeNode,
-  directives: DirectiveNode[] = []
+  directives: DirectiveNode[] = [],
 ): FieldDefinitionNode {
   return {
     kind: Kind.FIELD_DEFINITION,

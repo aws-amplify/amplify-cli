@@ -24,7 +24,7 @@ function loadIntrospectionSchema(schemaPath: string): GraphQLSchema {
 }
 
 function loadSDLSchema(schemaPath: string): GraphQLSchema {
-  const authDirectivePath = normalize(join(__dirname, '../../..', 'awsApppSyncDirectives.graphql'));
+  const authDirectivePath = normalize(join(__dirname, '../../..', 'awsAppSyncDirectives.graphql'));
   const doc = loadAndMergeQueryDocuments([authDirectivePath, schemaPath]);
   return buildASTSchema(doc);
 }

@@ -4,6 +4,7 @@ const { messages } = require('../../provider-utils/awscloudformation/assets/stri
 
 jest.mock('fs', () => ({
   readFileSync: () => '{ "Cognito": { "provider": "aws"}}',
+  existsSync: () => true,
 }));
 
 describe('auth update: ', () => {
@@ -32,6 +33,9 @@ describe('auth update: ', () => {
       warning: jest.fn(),
       info: jest.fn(),
       error: jest.fn(),
+    },
+    usageData: {
+      emitError: jest.fn(),
     },
   };
   const dependencies = ['analytics', 'api', 'function', 'storage'];

@@ -16,7 +16,7 @@ export async function run(context: Context) {
 async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string): Promise<boolean> {
   let isPluggedIn = false;
 
-  const addPluginResult = addUserPluginPackage(context.pluginPlatform, pluginDirPath);
+  const addPluginResult = await addUserPluginPackage(context.pluginPlatform, pluginDirPath);
   if (addPluginResult.isAdded) {
     isPluggedIn = true;
   } else {
@@ -34,46 +34,6 @@ async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string):
 
   return isPluggedIn;
 }
-
-// async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string):
-// Promise<boolean> {
-//   let isPluggedIn = false;
-
-//   const yesFlag = context.input.options && context.input.options[Constant.YES];
-
-//   let ifPlugIntoLocalAmplifyCLI = true;
-
-//   if (!yesFlag) {
-//     context.print.info('The package can be plugged into the local Amplify CLI \
-// for testing during development.');
-//     const plugQuestion = {
-//       type: 'confirm',
-//       name: 'ifPlugIntoLocalAmplifyCLI',
-//       message: 'Do you want this package plugged into the local Amplify CLI',
-//       default: ifPlugIntoLocalAmplifyCLI,
-//     };
-//     const answer = await inquirer.prompt(plugQuestion);
-//     ifPlugIntoLocalAmplifyCLI = answer.ifPlugIntoLocalAmplifyCLI;
-//   }
-
-//   if (ifPlugIntoLocalAmplifyCLI) {
-//     const addPluginResult = addUserPluginPackage(context.pluginPlatform, pluginDirPath);
-//     if (addPluginResult.isAdded) {
-//       isPluggedIn = true;
-//       await confirmAndScan(context.pluginPlatform);
-//     } else {
-//       context.print.error('Failed to add the plugin package.');
-//       context.print.info(`Error code: ${addPluginResult.error}`);
-//       if (addPluginResult.error === AddPluginError.FailedVerification &&
-//                 addPluginResult.pluginVerificationResult &&
-//                 addPluginResult.pluginVerificationResult.error) {
-//         context.print.info(`Plugin verification error code: \
-// ${addPluginResult.pluginVerificationResult.error}`);
-//       }
-//     }
-//   }
-//   return isPluggedIn;
-// }
 
 function printInfo(context: Context, pluginDirPath: string, isPluggedInLocalAmplifyCLI: boolean) {
   context.print.info('');

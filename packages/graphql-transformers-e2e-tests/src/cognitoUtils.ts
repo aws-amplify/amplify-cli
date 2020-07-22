@@ -13,7 +13,7 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common';
 import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import { AuthenticationDetails } from 'amazon-cognito-identity-js';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import TestStorage from './TestStorage';
 import DeploymentResources from 'graphql-transformer-core/lib/DeploymentResources';
 
@@ -52,7 +52,7 @@ export async function signupUser(userPoolId: string, name: string, pw: string) {
         Username: name,
         TemporaryPassword: pw,
       },
-      (err, data) => (err ? rej(err) : res(data))
+      (err, data) => (err ? rej(err) : res(data)),
     );
   });
 }
@@ -176,7 +176,7 @@ export async function deleteUserPool(client: CognitoClient, userPoolId: string):
 export async function createUserPoolClient(
   client: CognitoClient,
   userPoolId: string,
-  clientName: string
+  clientName: string,
 ): Promise<CreateUserPoolClientResponse> {
   return new Promise((res, rej) => {
     const params: CreateUserPoolClientRequest = {
@@ -343,10 +343,23 @@ export function addIAMRolesToCFNStack(out: DeploymentResources, e2eConfig: E2Eco
 
   // Since we're doing the policy here we've to remove the transformer generated artifacts from
   // the generated stack.
-  delete out.rootStack.Resources[ResourceConstants.RESOURCES.UnauthRolePolicy];
-  delete out.rootStack.Parameters.unauthRoleName;
-  delete out.rootStack.Resources[ResourceConstants.RESOURCES.AuthRolePolicy];
+  const maxPolicyCount = 10;
+  for (let i = 0; i < maxPolicyCount; i++) {
+    const paddedIndex = `${i + 1}`.padStart(2, '0');
+    const authResourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
+    const unauthResourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
+
+    if (out.rootStack.Resources[authResourceName]) {
+      delete out.rootStack.Resources[authResourceName];
+    }
+
+    if (out.rootStack.Resources[unauthResourceName]) {
+      delete out.rootStack.Resources[unauthResourceName];
+    }
+  }
+
   delete out.rootStack.Parameters.authRoleName;
+  delete out.rootStack.Parameters.unauthRoleName;
 
   for (const key of Object.keys(out.rootStack.Resources)) {
     if (

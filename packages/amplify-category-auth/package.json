@@ -1,37 +1,38 @@
 {
   "name": "amplify-category-auth",
-  "version": "1.30.0",
+  "version": "2.16.5",
   "description": "amplify-cli authentication plugin",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-auth"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
   "scripts": {
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix",
     "test": "jest",
     "test-watch": "jest --watch",
     "test-ci": "jest --ci -i"
   },
   "dependencies": {
-    "amplify-category-function": "1.30.0",
-    "aws-sdk": "^2.510.0",
-    "chalk": "^2.4.2",
-    "chalk-pipe": "^2.0.0",
-    "enquirer": "^2.3.1",
+    "amplify-category-function": "2.21.5",
+    "aws-sdk": "^2.608.0",
+    "chalk": "^3.0.0",
+    "chalk-pipe": "^3.0.0",
+    "enquirer": "^2.3.4",
     "fs-extra": "^8.1.0",
-    "inquirer": "^6.5.1",
+    "inquirer": "^7.0.3",
     "lodash": "^4.17.15",
-    "mime-types": "^2.1.24",
-    "open": "^6.4.0",
-    "ora": "^3.4.0",
+    "mime-types": "^2.1.26",
+    "open": "^7.0.0",
+    "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
-    "uuid": "^3.3.2"
-  },
-  "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0",
-    "jest": "^23.5.0"
+    "uuid": "^3.4.0"
   },
   "jest": {
     "collectCoverage": true,

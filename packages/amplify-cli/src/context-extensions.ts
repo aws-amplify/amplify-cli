@@ -47,11 +47,12 @@ export function attachExtentions(context: Context) {
 function attachPrompt(context: Context) {
   const inquirer = require('inquirer');
   context.prompt = {
-    confirm: async (message: string): Promise<boolean> => {
+    confirm: async (message: string, defaultValue: boolean = false): Promise<boolean> => {
       const { yesno } = await inquirer.prompt({
         name: 'yesno',
         type: 'confirm',
         message,
+        default: defaultValue,
       });
       return yesno;
     },
@@ -315,8 +316,9 @@ function attachTemplate(context: Context) {
       const data = {
         props,
       };
-      const directory = opts.directory;
-      const pathToTemplate = `${directory}/${template}`;
+      // If a directory was supplied, append a directory seprator.
+      // Otherwise, the template path will be use as-is.
+      const pathToTemplate = opts.directory ? path.join(opts.directory, template) : template;
 
       if (!contextFileSystem.isFile(pathToTemplate)) {
         throw new Error(`template not found ${pathToTemplate}`);

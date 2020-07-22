@@ -6,11 +6,11 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
 
@@ -25,8 +25,8 @@ const STACK_NAME = `FunctionTransformerTests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-function-transformer-test-bucket-${BUILD_TIMESTAMP}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/function_transformer_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
-const ECHO_FUNCTION_NAME = `e2e-tests-echo-dev-${BUILD_TIMESTAMP}`;
-const HELLO_FUNCTION_NAME = `e2e-tests-hello-${BUILD_TIMESTAMP}`;
+const ECHO_FUNCTION_NAME = `long-prefix-e2e-test-functions-echo-dev-${BUILD_TIMESTAMP}`;
+const HELLO_FUNCTION_NAME = `long-prefix-e2e-test-functions-hello-${BUILD_TIMESTAMP}`;
 const LAMBDA_EXECUTION_ROLE_NAME = `amplify_e2e_tests_lambda_basic_${BUILD_TIMESTAMP}`;
 const LAMBDA_EXECUTION_POLICY_NAME = `amplify_e2e_tests_lambda_basic_access_${BUILD_TIMESTAMP}`;
 let LAMBDA_EXECUTION_POLICY_ARN = '';
@@ -46,9 +46,9 @@ function outputValueSelector(key: string) {
 beforeAll(async () => {
   const validSchema = `
     type Query {
-        echo(msg: String!): Context @function(name: "e2e-tests-echo-dev-${BUILD_TIMESTAMP}")
-        echoEnv(msg: String!): Context @function(name: "e2e-tests-echo-\${env}-${BUILD_TIMESTAMP}")
-        duplicate(msg: String!): Context @function(name: "e2e-tests-echo-dev-${BUILD_TIMESTAMP}")
+        echo(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}")
+        echoEnv(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-\${env}-${BUILD_TIMESTAMP}")
+        duplicate(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-dev-${BUILD_TIMESTAMP}")
         pipeline(msg: String!): String
             @function(name: "${ECHO_FUNCTION_NAME}")
             @function(name: "${HELLO_FUNCTION_NAME}")
@@ -107,7 +107,7 @@ beforeAll(async () => {
     LOCAL_FS_BUILD_DIR,
     BUCKET_NAME,
     S3_ROOT_DIR_KEY,
-    BUILD_TIMESTAMP
+    BUILD_TIMESTAMP,
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
@@ -185,7 +185,7 @@ test('Test simple echo function', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.echo.arguments.msg).toEqual('Hello');
@@ -204,7 +204,7 @@ test('Test simple echoEnv function', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.echoEnv.arguments.msg).toEqual('Hello');
@@ -223,7 +223,7 @@ test('Test simple duplicate function', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.duplicate.arguments.msg).toEqual('Hello');
@@ -236,7 +236,7 @@ test('Test pipeline of @function(s)', async () => {
     `query {
         pipeline(msg: "IGNORED")
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.pipeline).toEqual('Hello, world!');
@@ -253,7 +253,7 @@ test('Test pipelineReverse of @function(s)', async () => {
             fieldName
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response, null, 4));
   expect(response.data.pipelineReverse.arguments.msg).toEqual('Hello');

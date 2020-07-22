@@ -1,0 +1,30 @@
+{
+  "name": "amplify-java-function-template-provider",
+  "version": "1.2.0",
+  "description": "JAVA templates supplied by the Amplify Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-java-function-template-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "java"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.4.0",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^6.5.0"
+  }
+}

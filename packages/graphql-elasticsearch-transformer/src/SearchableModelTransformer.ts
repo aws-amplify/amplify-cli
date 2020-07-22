@@ -18,7 +18,7 @@ import {
   makeInputValueDefinition,
 } from 'graphql-transformer-common';
 import { Expression, str } from 'graphql-mapping-template';
-import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType } from 'graphql-transformer-common';
+import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
 import path = require('path');
 
 const STACK_NAME = 'SearchableStack';
@@ -46,18 +46,21 @@ export class SearchableModelTransformer extends Transformer {
         input SearchableQueryMap {
           search: String
         }
-      `
+      `,
     );
     this.resources = new ResourceFactory();
   }
 
   public before = (ctx: TransformerContext): void => {
-    const template = this.resources.initTemplate();
+    const template = this.resources.initTemplate(ctx.isProjectUsingDataStore());
     ctx.mergeResources(template.Resources);
     ctx.mergeParameters(template.Parameters);
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeMappings(template.Mappings);
-    ctx.metadata.set('ElasticsearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`));
+    ctx.metadata.set(
+      ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID,
+      path.resolve(`${__dirname}/../lib/streaming-lambda.zip`),
+    );
     for (const resourceId of Object.keys(template.Resources)) {
       ctx.mapResourceToStack(STACK_NAME, resourceId);
     }
@@ -95,7 +98,7 @@ export class SearchableModelTransformer extends Transformer {
     const typeName = def.name.value;
     ctx.setResource(
       SearchableResourceIDs.SearchableEventSourceMappingID(typeName),
-      this.resources.makeDynamoDBStreamEventSourceMapping(typeName)
+      this.resources.makeDynamoDBStreamEventSourceMapping(typeName),
     );
     ctx.mapResourceToStack(STACK_NAME, SearchableResourceIDs.SearchableEventSourceMappingID(typeName));
 
@@ -121,21 +124,22 @@ export class SearchableModelTransformer extends Transformer {
         nonKeywordFields,
         primaryKey,
         ctx.getQueryTypeName(),
-        searchFieldNameOverride
+        searchFieldNameOverride,
+        ctx.isProjectUsingDataStore(),
       );
       ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver);
       ctx.mapResourceToStack(STACK_NAME, ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value));
       queryFields.push(
         makeField(
-          searchResolver.Properties.FieldName,
+          searchResolver.Properties.FieldName.toString(),
           [
             makeInputValueDefinition('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
             makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
             makeInputValueDefinition('limit', makeNamedType('Int')),
             makeInputValueDefinition('nextToken', makeNamedType('String')),
           ],
-          makeNamedType(`Searchable${def.name.value}Connection`)
-        )
+          makeNamedType(`Searchable${def.name.value}Connection`),
+        ),
       );
     }
 

@@ -1,3 +1,6 @@
+// *** NOTE! ***
+// If updating this list, also update the corresponding list in amplify-e2e-tests/src/configure/index.ts
+// *** NOTE! ***
 const regionMappings = {
   'us-east-1': 'US East (N. Virginia)',
   'us-east-2': 'US East (Ohio)',
@@ -10,6 +13,7 @@ const regionMappings = {
   'ap-southeast-1': 'Asia Pacific (Singapore)',
   'ap-southeast-2': 'Asia Pacific (Sydney)',
   'ap-south-1': 'Asia Pacific (Mumbai)',
+  'ca-central-1': 'Canada (Central)',
 };
 
 module.exports = {

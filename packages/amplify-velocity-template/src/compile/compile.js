@@ -28,6 +28,7 @@ module.exports = function(Velocity, utils) {
      * @return str
      */
     render: function(context, macros, silence) {
+      this._state = { stop: false, break: false, return: false };
       this.silence = !!silence;
       this.context = context || {};
       this.jsmacros = utils.mixin(macros || {}, this.directive);
@@ -96,8 +97,16 @@ module.exports = function(Velocity, utils) {
 
             case 'return':
               this._state.stop = true;
+              this._state.return = true;
               if (ast.value) {
-                str += this.format(this.getExpression(ast.value, true));
+                const result = this.getExpression(ast.value, true);
+                try {
+                  str = JSON.stringify(result);
+                } catch (e) {
+                  str = result;
+                }
+              } else {
+                str = null;
               }
               break;
             default:
@@ -105,7 +114,7 @@ module.exports = function(Velocity, utils) {
               break;
           }
         },
-        this
+        this,
       );
 
       return str;

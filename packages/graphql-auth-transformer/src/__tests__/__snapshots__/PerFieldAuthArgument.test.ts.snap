@@ -17,7 +17,7 @@ exports[`Test per-field @auth without model 1`] = `
 
 
 ## [Start] Throw if unauthorized **
-#if( !($listContext_isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+#if( $listContext_isStaticGroupAuthorized == false )
   $util.unauthorized()
 #end
 ## [End] Throw if unauthorized **"
@@ -36,24 +36,36 @@ $util.toJson($context.source.secret)
 
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 2`] = `
 "## [Start] Setting the operation **
-#set( $context.result.operation = \\"Mutation\\" )
+$util.qr($ctx.result.put(\\"operation\\", \\"Mutation\\"))
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end"
 `;
 
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 3`] = `
 "## [Start] Setting the operation **
-#set( $context.result.operation = \\"Mutation\\" )
+$util.qr($ctx.result.put(\\"operation\\", \\"Mutation\\"))
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end"
 `;
 
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 4`] = `
 "## [Start] Setting the operation **
-#set( $context.result.operation = \\"Mutation\\" )
+$util.qr($ctx.result.put(\\"operation\\", \\"Mutation\\"))
 ## [End] Setting the operation **
 
-$util.toJson($context.result)"
+#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end"
 `;

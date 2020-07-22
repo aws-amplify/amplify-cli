@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const proxyAgent = require('proxy-agent');
 const awsRegions = require('./aws-regions');
 const constants = require('./constants');
 const setupNewUser = require('./setup-new-user');
@@ -48,6 +49,9 @@ function doesAwsConfigExists(context) {
   if (fs.existsSync(configInfoFilePath)) {
     const envAwsInfo = context.amplify.readJsonFile(configInfoFilePath);
     if (envAwsInfo[envName]) {
+      context.exeInfo = context.exeInfo || {};
+      context.exeInfo.awsConfigInfo = envAwsInfo[envName];
+      context.exeInfo.awsConfigInfo.config = envAwsInfo[envName];
       configExists = true;
     }
   }
@@ -108,8 +112,6 @@ function normalizeInputParams(context) {
       }
     }
     context.exeInfo.inputParams[constants.Label] = normalizedInputParams;
-  } else {
-    context.exeInfo.inputParams = {};
   }
 }
 
@@ -303,7 +305,8 @@ async function promptForProjectConfigConfirmation(context) {
 
   const configurationSettings = [
     {
-      type: 'input',
+      type: 'password',
+      mask: '*',
       name: 'accessKeyId',
       message: 'accessKeyId: ',
       default: awsConfigInfo.config.accessKeyId
@@ -312,7 +315,8 @@ async function promptForProjectConfigConfirmation(context) {
       transformer: obfuscateUtil.transform,
     },
     {
-      type: 'input',
+      type: 'password',
+      mask: '*',
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
       default: awsConfigInfo.config.secretAccessKey
@@ -340,7 +344,7 @@ async function promptForProjectConfigConfirmation(context) {
       return context;
     }
   } else {
-    awsConfigInfo.useProfile = false;
+    awsConfigInfo.config.useProfile = false;
   }
 
   answers = await inquirer.prompt(configurationSettings);
@@ -626,6 +630,33 @@ function getConfigLevel(context) {
   return configLevel;
 }
 
+async function getAwsConfig(context) {
+  const { awsConfigInfo } = context.exeInfo;
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+
+  let awsConfig;
+  if (awsConfigInfo.configLevel === 'project') {
+    if (awsConfigInfo.config.useProfile) {
+      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
+    } else {
+      awsConfig = {
+        accessKeyId: awsConfigInfo.config.accessKeyId,
+        secretAccessKey: awsConfigInfo.config.secretAccessKey,
+        region: awsConfigInfo.config.region,
+      };
+    }
+  }
+
+  if (httpProxy) {
+    awsConfig = {
+      ...awsConfig,
+      httpOptions: { agent: proxyAgent(httpProxy) },
+    };
+  }
+
+  return awsConfig;
+}
+
 module.exports = {
   init,
   onInitSuccessful,
@@ -634,4 +665,5 @@ module.exports = {
   resetCache,
   resolveRegion,
   loadConfigurationForEnv,
+  getAwsConfig,
 };

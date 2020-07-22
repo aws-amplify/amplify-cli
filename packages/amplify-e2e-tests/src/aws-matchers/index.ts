@@ -1,2 +1,2 @@
-require('./s3matcher');
-require('./iamMatcher');
+export * from './iamMatcher';
+export * from './s3matcher';

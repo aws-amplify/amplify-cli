@@ -4,6 +4,8 @@ exports[`test auth logic is enabled for iam/apiKey auth rules in response es res
 "type Post @aws_api_key @aws_iam {
   id: ID!
   content: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
   secret: String @aws_iam
 }
 
@@ -50,8 +52,6 @@ input ModelIntFilterInput {
   lt: Int
   ge: Int
   gt: Int
-  contains: Int
-  notContains: Int
   between: [Int]
 }
 
@@ -62,8 +62,6 @@ input ModelFloatFilterInput {
   lt: Float
   ge: Float
   gt: Float
-  contains: Float
-  notContains: Float
   between: [Float]
 }
 
@@ -117,6 +115,10 @@ type Subscription {
 
 input SearchableStringFilterInput {
   ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
   eq: String
   match: String
   matchPhrase: String
@@ -129,6 +131,10 @@ input SearchableStringFilterInput {
 
 input SearchableIDFilterInput {
   ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
   eq: ID
   match: ID
   matchPhrase: ID
@@ -192,6 +198,7 @@ input SearchablePostSortInput {
 type SearchablePostConnection @aws_api_key @aws_iam {
   items: [Post]
   nextToken: String
+  total: Int
 }
 "
 `;

@@ -4,8 +4,6 @@ import {
   Expression,
   ReferenceNode,
   StringNode,
-  IntNode,
-  FloatNode,
   str,
   ObjectNode,
   compoundExpression,
@@ -19,22 +17,27 @@ import {
   CompoundExpressionNode,
 } from './ast';
 
+export const RESOLVER_VERSION_ID = '2018-05-29';
+
 export class DynamoDBMappingTemplate {
   /**
    * Create a put item resolver template.
    * @param keys A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
    */
-  public static putItem({
-    key,
-    attributeValues,
-    condition,
-  }: {
-    key: ObjectNode | Expression;
-    attributeValues: Expression;
-    condition?: ObjectNode;
-  }): ObjectNode {
+  public static putItem(
+    {
+      key,
+      attributeValues,
+      condition,
+    }: {
+      key: ObjectNode | Expression;
+      attributeValues: Expression;
+      condition?: ObjectNode | ReferenceNode;
+    },
+    version: string = RESOLVER_VERSION_ID,
+  ): ObjectNode {
     return obj({
-      version: str('2017-02-28'),
+      version: str(version),
       operation: str('PutItem'),
       key,
       attributeValues,
@@ -46,9 +49,13 @@ export class DynamoDBMappingTemplate {
    * Create a get item resolver template.
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
    */
-  public static getItem({ key }: { key: ObjectNode | Expression }): ObjectNode {
+  public static getItem({ key, isSyncEnabled }: { key: ObjectNode | Expression; isSyncEnabled?: boolean }): ObjectNode {
+    let version = RESOLVER_VERSION_ID;
+    if (isSyncEnabled) {
+      version = '2018-05-29';
+    }
     return obj({
-      version: str('2017-02-28'),
+      version: str(version),
       operation: str('GetItem'),
       key,
     });
@@ -58,7 +65,14 @@ export class DynamoDBMappingTemplate {
    * Create a query resolver template.
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
    */
-  public static query(args: {
+  public static query({
+    query,
+    scanIndexForward,
+    filter,
+    limit,
+    nextToken,
+    index,
+  }: {
     query: ObjectNode | Expression;
     scanIndexForward: Expression;
     filter: ObjectNode | Expression;
@@ -67,9 +81,14 @@ export class DynamoDBMappingTemplate {
     index?: StringNode;
   }): ObjectNode {
     return obj({
-      version: str('2017-02-28'),
+      version: str(RESOLVER_VERSION_ID),
       operation: str('Query'),
-      ...args,
+      query,
+      scanIndexForward,
+      filter,
+      limit,
+      ...(nextToken ? { nextToken } : {}),
+      ...(index ? { index } : {}),
     });
   }
 
@@ -77,23 +96,26 @@ export class DynamoDBMappingTemplate {
    * Create a list item resolver template.
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
    */
-  public static listItem({
-    filter,
-    limit,
-    nextToken,
-    scanIndexForward,
-    query,
-    index,
-  }: {
-    filter: ObjectNode | Expression;
-    limit: Expression;
-    nextToken?: Expression;
-    scanIndexForward?: Expression;
-    query?: ObjectNode | Expression;
-    index?: StringNode;
-  }): ObjectNode {
+  public static listItem(
+    {
+      filter,
+      limit,
+      nextToken,
+      scanIndexForward,
+      query,
+      index,
+    }: {
+      filter: ObjectNode | Expression;
+      limit: Expression;
+      nextToken?: Expression;
+      scanIndexForward?: Expression;
+      query?: ObjectNode | Expression;
+      index?: StringNode;
+    },
+    version: string = RESOLVER_VERSION_ID,
+  ): ObjectNode {
     return obj({
-      version: str('2017-02-28'),
+      version: str(version),
       operation: str('Scan'),
       filter,
       limit,
@@ -105,15 +127,49 @@ export class DynamoDBMappingTemplate {
   }
 
   /**
+   * Creates a sync resolver template
+   * @param param An object used when creating the operation request to appsync
+   */
+  public static syncItem({
+    filter,
+    limit,
+    nextToken,
+    lastSync,
+  }: {
+    filter?: ObjectNode | Expression;
+    limit?: Expression;
+    nextToken?: Expression;
+    lastSync?: Expression;
+  }): ObjectNode {
+    return obj({
+      version: str('2018-05-29'),
+      operation: str('Sync'),
+      limit,
+      nextToken,
+      lastSync,
+      filter,
+    });
+  }
+
+  /**
    * Create a delete item resolver template.
    * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
    */
-  public static deleteItem({ key, condition }: { key: ObjectNode | Expression; condition: ObjectNode | ReferenceNode }): ObjectNode {
+  public static deleteItem({
+    key,
+    condition,
+    isSyncEnabled,
+  }: {
+    key: ObjectNode | Expression;
+    condition: ObjectNode | ReferenceNode;
+    isSyncEnabled: boolean;
+  }): ObjectNode {
     return obj({
-      version: str('2017-02-28'),
+      version: str(RESOLVER_VERSION_ID),
       operation: str('DeleteItem'),
       key,
       condition,
+      ...(isSyncEnabled && { _version: ref('util.defaultIfNull($ctx.args.input["_version"], "0")') }),
     });
   }
 
@@ -126,21 +182,30 @@ export class DynamoDBMappingTemplate {
     condition,
     objectKeyVariable,
     nameOverrideMap,
+    isSyncEnabled,
   }: {
     key: ObjectNode | Expression;
     condition: ObjectNode | ReferenceNode;
     objectKeyVariable: string;
     nameOverrideMap?: string;
+    isSyncEnabled?: boolean;
   }): CompoundExpressionNode {
     // const keyFields = key.attributes.map((attr: [string, Expression]) => attr[0])
     // Auto timestamp
     // qref('$input.put("updatedAt", "$util.time.nowISO8601()")'),
     const entryKeyAttributeNameVar = 'entryKeyAttributeName';
+    let keyFields: StringNode[] = [str('id')];
+    let version = RESOLVER_VERSION_ID;
+    // sync changes made to the resolver
+    if (isSyncEnabled) {
+      keyFields = [...keyFields, str('_version'), str('_deleted'), str('_lastChangedAt')];
+      version = '2018-05-29';
+    }
     const handleRename = (keyVar: string) =>
       ifElse(
         raw(`!$util.isNull($${nameOverrideMap}) && $${nameOverrideMap}.containsKey("${keyVar}")`),
         set(ref(entryKeyAttributeNameVar), raw(`$${nameOverrideMap}.get("${keyVar}")`)),
-        set(ref(entryKeyAttributeNameVar), raw(keyVar))
+        set(ref(entryKeyAttributeNameVar), raw(keyVar)),
       );
     return compoundExpression([
       set(ref('expNames'), obj({})),
@@ -154,7 +219,7 @@ export class DynamoDBMappingTemplate {
           set(ref('keyFields'), list([])),
           forEach(ref('entry'), ref(`${objectKeyVariable}.entrySet()`), [qref('$keyFields.add("$entry.key")')]),
         ]),
-        set(ref('keyFields'), list([str('id')]))
+        set(ref('keyFields'), list(keyFields)),
       ),
       forEach(ref('entry'), ref(`util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet()`), [
         handleRename('$entry.key'),
@@ -168,7 +233,7 @@ export class DynamoDBMappingTemplate {
             qref(`$expSet.put("#$${entryKeyAttributeNameVar}", ":$${entryKeyAttributeNameVar}")`),
             qref(`$expNames.put("#$${entryKeyAttributeNameVar}", "$entry.key")`),
             qref(`$expValues.put(":$${entryKeyAttributeNameVar}", $util.dynamodb.toDynamoDB($entry.value))`),
-          ])
+          ]),
         ),
       ]),
       set(ref('expression'), str('')),
@@ -180,7 +245,7 @@ export class DynamoDBMappingTemplate {
             set(ref('expression'), str('$expression $entry.key = $entry.value')),
             iff(ref('foreach.hasNext()'), set(ref('expression'), str('$expression,'))),
           ]),
-        ])
+        ]),
       ),
       iff(
         raw('!$expAdd.isEmpty()'),
@@ -190,7 +255,7 @@ export class DynamoDBMappingTemplate {
             set(ref('expression'), str('$expression $entry.key $entry.value')),
             iff(ref('foreach.hasNext()'), set(ref('expression'), str('$expression,'))),
           ]),
-        ])
+        ]),
       ),
       iff(
         raw('!$expRemove.isEmpty()'),
@@ -200,20 +265,29 @@ export class DynamoDBMappingTemplate {
             set(ref('expression'), str('$expression $entry')),
             iff(ref('foreach.hasNext()'), set(ref('expression'), str('$expression,'))),
           ]),
-        ])
+        ]),
       ),
       set(ref('update'), obj({})),
       qref('$update.put("expression", "$expression")'),
       iff(raw('!$expNames.isEmpty()'), qref('$update.put("expressionNames", $expNames)')),
       iff(raw('!$expValues.isEmpty()'), qref('$update.put("expressionValues", $expValues)')),
       obj({
-        version: str('2017-02-28'),
+        version: str(version),
         operation: str('UpdateItem'),
         key,
         update: ref('util.toJson($update)'),
         condition,
+        ...(isSyncEnabled && { _version: ref('util.defaultIfNull($ctx.args.input["_version"], "0")') }),
       }),
     ]);
+  }
+
+  public static dynamoDBResponse(isSyncEnabled: boolean, returnExpression?: Expression): CompoundExpressionNode {
+    const errorExpresion = isSyncEnabled
+      ? ref('util.error($ctx.error.message, $ctx.error.type, $ctx.result)')
+      : ref('util.error($ctx.error.message, $ctx.error.type)');
+    const resultExpression = returnExpression ? returnExpression : ref('util.toJson($ctx.result)');
+    return compoundExpression([ifElse(ref('ctx.error'), errorExpresion, resultExpression)]);
   }
 
   public static stringAttributeValue(value: Expression): ObjectNode {

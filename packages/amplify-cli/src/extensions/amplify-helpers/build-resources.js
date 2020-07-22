@@ -4,8 +4,12 @@ const { getProviderPlugins } = require('./get-provider-plugins');
 const spinner = ora('Building resources. This may take a few minutes...');
 
 function buildResources(context, category, resourceName) {
-  return context.amplify.confirmPrompt
-    .run('Are you sure you want to continue building the resources?')
+  const confirmationPromise =
+    context.input.options && context.input.options.yes
+      ? Promise.resolve(true)
+      : context.amplify.confirmPrompt.run('Are you sure you want to continue building the resources?');
+
+  return confirmationPromise
     .then(answer => {
       if (answer) {
         const providerPlugins = getProviderPlugins(context);
@@ -22,7 +26,6 @@ function buildResources(context, category, resourceName) {
     })
     .then(() => spinner.succeed('All resources are built.'))
     .catch(err => {
-      console.log(err);
       spinner.fail('An error occurred when building the resources.');
       throw err;
     });

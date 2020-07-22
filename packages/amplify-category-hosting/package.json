@@ -1,33 +1,35 @@
 {
   "name": "amplify-category-hosting",
-  "version": "1.26.0",
+  "version": "2.4.0",
   "description": "amplify-cli hosting plugin",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-hosting"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
   "scripts": {
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix",
     "test": "jest --coverage",
     "test-ci": "jest --ci -i"
   },
   "dependencies": {
-    "chalk": "^2.4.2",
+    "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^6.5.1",
-    "mime-types": "^2.1.24",
+    "inquirer": "^7.0.3",
+    "mime-types": "^2.1.26",
     "minimatch": "^3.0.4",
     "moment": "^2.24.0",
-    "open": "^6.4.0",
-    "ora": "^3.4.0",
-    "promise-sequential": "^1.1.1",
-    "util": "^0.12.1"
+    "open": "^7.0.0",
+    "ora": "^4.0.3",
+    "promise-sequential": "^1.1.1"
   },
   "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0",
-    "jest": "^23.5.0",
     "mockirer": "^2.0.1"
   },
   "jest": {

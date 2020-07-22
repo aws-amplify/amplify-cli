@@ -20,6 +20,8 @@ import {
   ifElse,
   int,
   Expression,
+  bool,
+  methodCall,
 } from 'graphql-mapping-template';
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
 import { MappingParameters } from 'graphql-transformer-core/src/TransformerContext';
@@ -108,7 +110,7 @@ export class ResourceFactory {
   /**
    * Creates the barebones template for an application.
    */
-  public initTemplate(): Template {
+  public initTemplate(isProjectUsingDataStore: boolean = false): Template {
     return {
       Parameters: this.makeParams(),
       Resources: {
@@ -116,7 +118,9 @@ export class ResourceFactory {
         [ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]: this.makeElasticsearchDataSource(),
         [ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID]: this.makeElasticsearchDomain(),
         [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
-        [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(),
+        [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(
+          isProjectUsingDataStore,
+        ),
       },
       Mappings: this.getLayerMapping(),
       Outputs: {
@@ -223,7 +227,7 @@ export class ResourceFactory {
    * Deploy a lambda function that will stream data from our DynamoDB table
    * to our elasticsearch index.
    */
-  public makeDynamoDBStreamingFunction() {
+  public makeDynamoDBStreamingFunction(isProjectUsingDataStore: boolean = false) {
     return new Lambda.Function({
       Code: {
         S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
@@ -246,6 +250,7 @@ export class ResourceFactory {
           ES_ENDPOINT: Fn.Join('', ['https://', Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainEndpoint')]),
           ES_REGION: Fn.Select(3, Fn.Split(':', Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainArn'))),
           DEBUG: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchDebugStreamingLambda),
+          ES_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
         },
       },
     }).dependsOn([
@@ -268,7 +273,7 @@ export class ResourceFactory {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Join(separator, [...listToJoin, Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
-      Fn.Join(separator, listToJoin)
+      Fn.Join(separator, listToJoin),
     );
   }
 
@@ -396,7 +401,7 @@ export class ResourceFactory {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Refs.NoValue,
-      Fn.Join('-', ['d', Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+      Fn.Join('-', ['d', Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
     );
   }
 
@@ -432,7 +437,8 @@ export class ResourceFactory {
     nonKeywordFields: Expression[],
     primaryKey: string,
     queryTypeName: string,
-    nameOverride?: string
+    nameOverride?: string,
+    includeVersion: boolean = false,
   ) {
     const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)));
     return new AppSync.Resolver({
@@ -448,50 +454,60 @@ export class ResourceFactory {
             ref('util.isNullOrEmpty($context.args.sort)'),
             compoundExpression([set(ref('sortDirection'), str('desc')), set(ref('sortField'), str(primaryKey))]),
             compoundExpression([
-              set(ref('sortDirection'), raw('$util.defaultIfNull($context.args.sort.direction, "desc")')),
-              set(ref('sortField'), raw(`$util.defaultIfNull($context.args.sort.field, "${primaryKey}")`)),
-            ])
+              set(ref('sortDirection'), ref('util.defaultIfNull($context.args.sort.direction, "desc")')),
+              set(ref('sortField'), ref(`util.defaultIfNull($context.args.sort.field, "${primaryKey}")`)),
+            ]),
+          ),
+          ifElse(
+            ref('nonKeywordFields.contains($sortField)'),
+            compoundExpression([set(ref('sortField0'), ref('util.toJson($sortField)'))]),
+            compoundExpression([set(ref('sortField0'), ref('util.toJson("${sortField}.keyword")'))]),
           ),
           ElasticsearchMappingTemplate.searchItem({
             path: str('$indexPath'),
-            size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(10), true),
-            search_after: list([str('$context.args.nextToken')]),
+            size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
+            search_after: list([ref('util.toJson($context.args.nextToken)')]),
+            version: bool(includeVersion),
             query: ifElse(
               ref('context.args.filter'),
               ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
               obj({
                 match_all: obj({}),
-              })
+              }),
             ),
-            sort: list([
-              raw(
-                '{ #if($nonKeywordFields.contains($sortField))\
-    "$sortField" #else "${sortField}.keyword" #end : {\
-    "order" : "$sortDirection"\
-} }'
-              ),
-            ]),
+            sort: list([raw('{$sortField0: { "order" : $util.toJson($sortDirection) }}')]),
           }),
-        ])
+        ]),
       ),
       ResponseMappingTemplate: print(
         compoundExpression([
           set(ref('es_items'), list([])),
           forEach(ref('entry'), ref('context.result.hits.hits'), [
             iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('entry.sort.get(0)'))),
-            qref('$es_items.add($entry.get("_source"))'),
+            ...this.getSourceMapper(includeVersion),
           ]),
           toJson(
             obj({
               items: ref('es_items'),
               total: ref('ctx.result.hits.total'),
               nextToken: ref('nextToken'),
-            })
+            }),
           ),
-        ])
+        ]),
       ),
     }).dependsOn([ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]);
   }
+
+  private getSourceMapper = (includeVersion: boolean) => {
+    if (includeVersion) {
+      return [
+        set(ref('row'), methodCall(ref('entry.get'), str('_source'))),
+        qref('$row.put("_version", $entry.get("_version"))'),
+        qref('$es_items.add($row)'),
+      ];
+    }
+    return [qref('$es_items.add($entry.get("_source"))')];
+  };
 
   /**
    * OUTPUTS

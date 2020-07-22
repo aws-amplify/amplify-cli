@@ -1,24 +1,25 @@
 {
   "name": "amplify-category-storage",
-  "version": "1.31.0",
+  "version": "2.5.5",
   "description": "amplify-cli storage plugin",
-  "main": "index.js",
-  "dependencies": {
-    "amplify-category-auth": "1.30.0",
-    "fs-extra": "^8.1.0",
-    "inquirer": "^6.5.1",
-    "lodash": "^4.17.15",
-    "uuid": "^3.3.2"
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-storage"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
+  "main": "index.js",
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+  "dependencies": {
+    "amplify-category-auth": "2.16.5",
+    "amplify-category-function": "2.21.5",
+    "fs-extra": "^8.1.0",
+    "inquirer": "^7.0.3",
+    "lodash": "^4.17.15",
+    "uuid": "^3.4.0"
   }
 }

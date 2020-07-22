@@ -1,0 +1,1142 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchableModelTransformer with external versioning 1`] = `
+"#set( $indexPath = \\"/post/doc/_search\\" )
+#set( $nonKeywordFields = [] )
+#if( $util.isNullOrEmpty($context.args.sort) )
+  #set( $sortDirection = \\"desc\\" )
+  #set( $sortField = \\"id\\" )
+#else
+  #set( $sortDirection = $util.defaultIfNull($context.args.sort.direction, \\"desc\\") )
+  #set( $sortField = $util.defaultIfNull($context.args.sort.field, \\"id\\") )
+#end
+#if( $nonKeywordFields.contains($sortField) )
+  #set( $sortField0 = $util.toJson($sortField) )
+#else
+  #set( $sortField0 = $util.toJson(\\"\${sortField}.keyword\\") )
+#end
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GET\\",
+  \\"path\\": \\"$indexPath\\",
+  \\"params\\": {
+      \\"body\\":     {
+                #if( $context.args.nextToken )\\"search_after\\": [$util.toJson($context.args.nextToken)], #end
+                \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
+                \\"sort\\": [{$sortField0: { \\"order\\" : $util.toJson($sortDirection) }}],
+                \\"version\\": true,
+                \\"query\\": #if( $context.args.filter )
+$util.transform.toElasticsearchQueryDSL($ctx.args.filter)
+#else
+{
+      \\"match_all\\": {}
+  }
+#end
+                }
+  }
+}"
+`;
+
+exports[`SearchableModelTransformer with external versioning 2`] = `
+"#set( $es_items = [] )
+#foreach( $entry in $context.result.hits.hits )
+  #if( !$foreach.hasNext )
+    #set( $nextToken = $entry.sort.get(0) )
+  #end
+  #set( $row = $entry.get(\\"_source\\") )
+  $util.qr($row.put(\\"_version\\", $entry.get(\\"_version\\")))
+  $util.qr($es_items.add($row))
+#end
+$util.toJson({
+  \\"items\\": $es_items,
+  \\"total\\": $ctx.result.hits.total,
+  \\"nextToken\\": $nextToken
+})"
+`;
+
+exports[`Test SearchableModelTransformer validation happy case 1`] = `
+"type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPostFilterInput {
+  id: ModelIDFilterInput
+  title: ModelStringFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+}
+
+input CreatePostInput {
+  id: ID
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+  createdAt: String
+  updatedAt: String
+}
+
+input DeletePostInput {
+  id: ID
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): Post
+  updatePost(input: UpdatePostInput!): Post
+  deletePost(input: DeletePostInput!): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchablePostFilterInput {
+  id: SearchableIDFilterInput
+  title: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchablePostFilterInput]
+  or: [SearchablePostFilterInput]
+  not: SearchablePostFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchablePostSortableFields {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostSortInput {
+  field: SearchablePostSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchablePostConnection {
+  items: [Post]
+  nextToken: String
+  total: Int
+}
+"
+`;
+
+exports[`Test SearchableModelTransformer with multiple model searchable directives 1`] = `
+"type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+type User {
+  id: ID!
+  name: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPostFilterInput {
+  id: ModelIDFilterInput
+  title: ModelStringFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  getUser(id: ID!): User
+  listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+  searchUsers(filter: SearchableUserFilterInput, sort: SearchableUserSortInput, limit: Int, nextToken: String): SearchableUserConnection
+}
+
+input CreatePostInput {
+  id: ID
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+  createdAt: String
+  updatedAt: String
+}
+
+input DeletePostInput {
+  id: ID
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): Post
+  updatePost(input: UpdatePostInput!): Post
+  deletePost(input: DeletePostInput!): Post
+  createUser(input: CreateUserInput!): User
+  updateUser(input: UpdateUserInput!): User
+  deleteUser(input: DeleteUserInput!): User
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreateUser: User @aws_subscribe(mutations: [\\"createUser\\"])
+  onUpdateUser: User @aws_subscribe(mutations: [\\"updateUser\\"])
+  onDeleteUser: User @aws_subscribe(mutations: [\\"deleteUser\\"])
+}
+
+type ModelUserConnection {
+  items: [User]
+  nextToken: String
+}
+
+input ModelUserFilterInput {
+  id: ModelIDFilterInput
+  name: ModelStringFilterInput
+  and: [ModelUserFilterInput]
+  or: [ModelUserFilterInput]
+  not: ModelUserFilterInput
+}
+
+input CreateUserInput {
+  id: ID
+  name: String!
+}
+
+input UpdateUserInput {
+  id: ID!
+  name: String
+}
+
+input DeleteUserInput {
+  id: ID
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchablePostFilterInput {
+  id: SearchableIDFilterInput
+  title: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchablePostFilterInput]
+  or: [SearchablePostFilterInput]
+  not: SearchablePostFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchablePostSortableFields {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostSortInput {
+  field: SearchablePostSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchablePostConnection {
+  items: [Post]
+  nextToken: String
+  total: Int
+}
+
+input SearchableUserFilterInput {
+  id: SearchableIDFilterInput
+  name: SearchableStringFilterInput
+  and: [SearchableUserFilterInput]
+  or: [SearchableUserFilterInput]
+  not: SearchableUserFilterInput
+}
+
+enum SearchableUserSortableFields {
+  id
+  name
+}
+
+input SearchableUserSortInput {
+  field: SearchableUserSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchableUserConnection {
+  items: [User]
+  nextToken: String
+  total: Int
+}
+"
+`;
+
+exports[`Test SearchableModelTransformer with only create mutations 1`] = `
+"type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPostFilterInput {
+  id: ModelIDFilterInput
+  title: ModelStringFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+}
+
+input CreatePostInput {
+  id: ID
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+type Mutation {
+  customCreatePost(input: CreatePostInput!): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"customCreatePost\\"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchablePostFilterInput {
+  id: SearchableIDFilterInput
+  title: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchablePostFilterInput]
+  or: [SearchablePostFilterInput]
+  not: SearchablePostFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchablePostSortableFields {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostSortInput {
+  field: SearchablePostSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchablePostConnection {
+  items: [Post]
+  nextToken: String
+  total: Int
+}
+"
+`;
+
+exports[`Test SearchableModelTransformer with query overrides 1`] = `
+"type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPostFilterInput {
+  id: ModelIDFilterInput
+  title: ModelStringFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  customSearchPost(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+}
+
+input CreatePostInput {
+  id: ID
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+  createdAt: String
+  updatedAt: String
+}
+
+input DeletePostInput {
+  id: ID
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): Post
+  updatePost(input: UpdatePostInput!): Post
+  deletePost(input: DeletePostInput!): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchablePostFilterInput {
+  id: SearchableIDFilterInput
+  title: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchablePostFilterInput]
+  or: [SearchablePostFilterInput]
+  not: SearchablePostFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchablePostSortableFields {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostSortInput {
+  field: SearchablePostSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchablePostConnection {
+  items: [Post]
+  nextToken: String
+  total: Int
+}
+"
+`;
+
+exports[`Test SearchableModelTransformer with sort fields 1`] = `
+"type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPostFilterInput {
+  id: ModelIDFilterInput
+  title: ModelStringFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+}
+
+input CreatePostInput {
+  id: ID
+  title: String!
+  createdAt: String
+  updatedAt: String
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+  createdAt: String
+  updatedAt: String
+}
+
+input DeletePostInput {
+  id: ID
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): Post
+  updatePost(input: UpdatePostInput!): Post
+  deletePost(input: DeletePostInput!): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchablePostFilterInput {
+  id: SearchableIDFilterInput
+  title: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchablePostFilterInput]
+  or: [SearchablePostFilterInput]
+  not: SearchablePostFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchablePostSortableFields {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostSortInput {
+  field: SearchablePostSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchablePostConnection {
+  items: [Post]
+  nextToken: String
+  total: Int
+}
+"
+`;

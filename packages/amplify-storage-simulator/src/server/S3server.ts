@@ -1,17 +1,17 @@
-import * as express from 'express';
-import * as cors from 'cors';
+import express from 'express';
+import cors from 'cors';
 import { join, normalize } from 'path';
 import { readFile, unlink, statSync, ensureFileSync, writeFileSync, existsSync } from 'fs-extra';
-import * as xml from 'xml';
+import xml from 'xml';
 import * as bodyParser from 'body-parser';
 import * as convert from 'xml-js';
-import * as e2p from 'event-to-promise';
-import * as serveStatic from 'serve-static';
+import e2p from 'event-to-promise';
+import serveStatic from 'serve-static';
 import * as glob from 'glob';
-import * as o2x from 'object-to-xml';
-import * as uuid from 'uuid';
-import * as etag from 'etag';
-import * as EventEmitter from 'events';
+import o2x from 'object-to-xml';
+import uuid from 'uuid';
+import etag from 'etag';
+import { EventEmitter } from 'events';
 
 import { StorageSimulatorServerConfig } from '../index';
 
@@ -44,11 +44,8 @@ export class StorageServer extends EventEmitter {
     super();
     this.localDirectoryPath = config.localDirS3;
     this.app = express();
-    this.app.use(express.json());
     this.app.use(cors(corsOptions));
     this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
-    this.app.use(bodyParser.json({ limit: '50mb', type: '*/*' }));
-    this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: false, type: '*/*' }));
     this.app.use(serveStatic(this.localDirectoryPath), this.handleRequestAll.bind(this));
 
     this.server = null;
@@ -131,7 +128,7 @@ export class StorageServer extends EventEmitter {
             RequestId: '',
             HostId: '',
           },
-        })
+        }),
       );
     }
   }
@@ -154,23 +151,23 @@ export class StorageServer extends EventEmitter {
     // getting folders recursively
     const dirPath = normalize(join(this.localDirectoryPath, request.params.path) + '/');
 
-    let files = glob.sync(dirPath + '/**/*');
-    for (let file in files) {
+    const files = glob.sync(dirPath + '/**/*');
+    for (const file of files) {
       if (delimiter !== '' && util.checkfile(file, prefix, delimiter)) {
         ListBucketResult[LIST_COMMOM_PREFIXES].push({
-          prefix: request.params.path + files[file].split(dirPath)[1],
+          prefix: request.params.path + file.split(dirPath)[1],
         });
       }
-      if (!statSync(files[file]).isDirectory()) {
+      if (!statSync(file).isDirectory()) {
         if (keyCount === maxKeys) {
           break;
         }
 
         ListBucketResult[LIST_CONTENT].push({
-          Key: request.params.path + files[file].split(dirPath)[1],
-          LastModified: new Date(statSync(files[file]).mtime).toISOString(),
-          Size: statSync(files[file]).size,
-          ETag: etag(files[file]),
+          Key: request.params.path + file.split(dirPath)[1],
+          LastModified: new Date(statSync(file).mtime).toISOString(),
+          Size: statSync(file).size,
+          ETag: etag(file),
           StorageClass: 'STANDARD',
         });
         keyCount = keyCount + 1;
@@ -191,7 +188,7 @@ export class StorageServer extends EventEmitter {
       o2x({
         '?xml version="1.0" encoding="utf-8"?': null,
         ListBucketResult,
-      })
+      }),
     );
   }
 
@@ -238,7 +235,7 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             UploadId: id,
           },
-        })
+        }),
       );
     } else if (this.uploadIds.includes(request.query.uploadId)) {
       let arr: Buffer[] = Object.values(this.upload_bufferMap[request.query.uploadId]); // store all the buffers  in an array
@@ -257,11 +254,10 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             Etag: etag(directoryPath),
           },
-        })
+        }),
       );
       let buf = Buffer.concat(arr);
       writeFileSync(directoryPath, buf);
-
       // event trigger for multipart post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
@@ -282,7 +278,7 @@ export class StorageServer extends EventEmitter {
             Key: request.params.path,
             Etag: etag(directoryPath),
           },
-        })
+        }),
       );
     }
   }

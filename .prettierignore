@@ -4,4 +4,6 @@
 **/yarn.lock
 **/package-lock.json
 **/.eslintrc.js
-**/tslint.json
+**/tsconfig.json
+packages/amplify-headless-interface/**/*.schema.json
+packages/*/CHANGELOG.md

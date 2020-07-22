@@ -7,6 +7,7 @@ const { flattenDeep } = require('lodash');
 const { join } = require('path');
 const { uniq } = require('lodash');
 const { readJsonFile } = require('./read-json-file');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 /** ADD A TRIGGER
  * @function addTrigger
@@ -52,11 +53,22 @@ const addTrigger = async triggerOptions => {
     throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
   }
 
-  await add(context, 'awscloudformation', 'Lambda', {
+  await add(context, 'awscloudformation', FunctionServiceName.LambdaFunction, {
     trigger: true,
+    cloudResourceTemplatePath: join(triggerDir, 'cloudformation-templates', triggerTemplate),
+    functionTemplate: {
+      sourceRoot: join(triggerDir, 'function-template-dir'),
+      sourceFiles: ['trigger-index.js', 'package.json.ejs', 'event.json'],
+      destMap: {
+        'trigger-index.js': join('src', 'index.js'),
+        'package.json.ejs': join('src', 'package.json'),
+        'event.json': join('src', 'event.json'),
+      },
+    },
     modules: values,
     parentResource,
     functionName,
+    resourceName: functionName,
     parentStack,
     triggerEnvs: JSON.stringify(triggerEnvs[key]),
     triggerIndexPath,
@@ -67,7 +79,7 @@ const addTrigger = async triggerOptions => {
     roleName: functionName,
     skipEdit,
   });
-  context.print.success('Succesfully added the Lambda function locally');
+  context.print.success('Successfully added the Lambda function locally');
   if (values && values.length > 0) {
     for (let v = 0; v < values.length; v += 1) {
       await copyFunctions(key, values[v], category, context, targetPath);
@@ -124,7 +136,7 @@ const updateTrigger = async triggerOptions => {
     await update(
       context,
       'awscloudformation',
-      'Lambda',
+      FunctionServiceName.LambdaFunction,
       {
         trigger: true,
         modules: values,
@@ -140,7 +152,7 @@ const updateTrigger = async triggerOptions => {
         triggerEventPath,
         skipEdit,
       },
-      functionName
+      functionName,
     );
     if (values && values.length > 0) {
       for (let v = 0; v < values.length; v += 1) {
@@ -155,7 +167,7 @@ const updateTrigger = async triggerOptions => {
 
       await cleanFunctions(key, values, category, context, targetPath);
     }
-    context.print.success('Succesfully updated the Lambda function locally');
+    context.print.success('Successfully updated the Lambda function locally');
     return null;
   } catch (e) {
     throw new Error('Unable to update lambda function');
@@ -217,7 +229,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
     return null;
   }
 
-  const pluginPath = context.amplify.getCategoryPlugins(context)[category];
+  const pluginPath = context.amplify.getCategoryPluginInfo(context, category).packageLocation;
 
   // path to trigger directory in category
   const triggerPath = `${pluginPath}/provider-utils/awscloudformation/triggers/`;
@@ -271,7 +283,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
         delete triggerObj[Object.keys(tempTriggerObj)[index]];
       }
     },
-    { triggerObj }
+    { triggerObj },
   );
   return triggerObj;
 };
@@ -298,7 +310,8 @@ const getTriggerPermissions = async (context, triggers, category) => {
   let permissions = [];
   const parsedTriggers = JSON.parse(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
-  const pluginPath = context.amplify.getCategoryPlugins(context)[category];
+
+  const pluginPath = context.amplify.getCategoryPluginInfo(context, category).packageLocation;
 
   for (let c = 0; c < triggerKeys.length; c += 1) {
     const index = triggerKeys[c];
@@ -326,16 +339,17 @@ const learnMoreLoop = async (key, map, metaData, question) => {
   ) {
     let prefix;
     if (metaData.URL) {
-      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(null, chalk.blue.underline)(
-        metaData.URL
-      )}\n`;
+      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(
+        null,
+        chalk.blue.underline,
+      )(metaData.URL)}\n`;
       prefix = prefix.concat('\n');
     } else {
       prefix = `\nThe following ${key} are available in ${map}\n`;
       Object.values(metaData).forEach(m => {
         prefix = prefix.concat('\n');
         prefix = prefix.concat(
-          `${chalkpipe(null, chalk.green)('\nName:')} ${m.name}${chalkpipe(null, chalk.green)('\nDescription:')} ${m.description}\n`
+          `${chalkpipe(null, chalk.green)('\nName:')} ${m.name}${chalkpipe(null, chalk.green)('\nDescription:')} ${m.description}\n`,
         );
         prefix = prefix.concat('\n');
       });
@@ -378,8 +392,8 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
       fs.mkdirSync(targetPath);
     }
     const dirContents = fs.readdirSync(targetPath);
-    const pluginPath = context.amplify.getCategoryPlugins(context)[category];
-    const functionPath = context.amplify.getCategoryPlugins(context).function;
+    const pluginPath = context.amplify.getCategoryPluginInfo(context, category).packageLocation;
+    const functionPath = context.amplify.getCategoryPluginInfo(context, 'function').packageLocation;
 
     if (!dirContents.includes(`${value}.js`)) {
       let source = '';
@@ -397,7 +411,7 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
 };
 
 const cleanFunctions = async (key, values, category, context, targetPath) => {
-  const pluginPath = context.amplify.getCategoryPlugins(context)[category];
+  const pluginPath = context.amplify.getCategoryPluginInfo(context, category).packageLocation;
   try {
     const meta = context.amplify.getTriggerMetadata(`${pluginPath}/provider-utils/awscloudformation/triggers/${key}`, key);
     const dirContents = fs.readdirSync(targetPath);
@@ -430,7 +444,7 @@ const cleanFunctions = async (key, values, category, context, targetPath) => {
 };
 
 const getTriggerEnvVariables = (context, trigger, category) => {
-  const pluginPath = context.amplify.getCategoryPlugins(context)[category];
+  const pluginPath = context.amplify.getCategoryPluginInfo(context, category).packageLocation;
   let env = [];
   const meta = context.amplify.getTriggerMetadata(`${pluginPath}/provider-utils/awscloudformation/triggers/${trigger.key}`, trigger.key);
   if (trigger.modules) {

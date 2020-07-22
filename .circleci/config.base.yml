@@ -1,0 +1,757 @@
+version: 2.1
+machine:
+  environment:
+    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:10.18
+  resource_class: large
+
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: yarn config set workspaces-experimental true
+      - run: yarn cache clean --force
+      - run: yarn run production-build
+      - save_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache
+      - save_cache:
+          key: amplify-cli-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
+      - persist_to_workspace:
+          root: .
+          paths: .
+
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Install Java
+          command: |
+            curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+            tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
+            sudo mv jdk-11* /usr/local/
+            echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
+            echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
+            source $BASH_ENV
+            java -version
+      - run:
+          name: Lint
+          command: yarn lint
+      - run:
+          name: Run tests
+          command: yarn test-ci
+      - run:
+          name: Collect code coverage
+          command: yarn coverage
+
+  mock_e2e_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Install Java
+          command: sudo apt-get install default-jdk
+      - run:
+          name: Run Transformer end-to-end tests with mock server
+          command: cd packages/amplify-util-mock/ && yarn e2e
+          no_output_timeout: 90m
+          environment:
+            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+      - store_test_results:
+          path: packages/amplify-util-mock/
+
+  publish_to_local_registry:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Publish to verdaccio
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            loginToLocalRegistry
+            yarn publish-to-verdaccio
+            unsetNpmRegistryUrl
+      - save_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/verdaccio-cache/
+
+  graphql_e2e_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run GraphQL end-to-end tests
+          command: cd packages/graphql-transformers-e2e-tests/ && yarn e2e --maxWorkers=3
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/graphql-transformers-e2e-tests/
+
+  amplify_e2e_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Install Java
+          command: |
+            curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+            tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
+            sudo mv jdk-11* /usr/local/
+            echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
+            echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
+            source $BASH_ENV
+            java -version
+      - run:
+          name: Install Gradle
+          command: |
+            wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
+            sudo unzip -d /opt/gradle /tmp/gradle-*.zip
+            echo "export GRADLE_HOME=/opt/gradle/gradle-6.3" >> $BASH_ENV
+            echo "export PATH=$PATH:/opt/gradle/gradle-6.3/bin" >> $BASH_ENV
+            source $BASH_ENV
+            gradle --version
+      - run:
+          name: Install Go
+          command: |
+            curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+            sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
+            rm go1.14.1.linux-amd64.tar.gz
+            echo "export PATH=$PATH:/usr/local/go/bin" >> $BASH_ENV
+            source $BASH_ENV
+            go version
+      - run:
+          name: Install Python
+          command: |
+            sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl
+            curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
+            sudo tar -C /usr/local -xf Python-3.8.2.tar.xz
+            cd /usr/local/Python-3.8.2
+            sudo ./configure
+            sudo make -j 4
+            sudo make install
+            sudo apt install python3-pip
+            pip3 install --user pipenv
+            python3 --version
+            pipenv --version
+      - run:
+          name: Install .NET
+          command: |
+            sudo apt-get install apt-transport-https ca-certificates
+            wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
+            sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+            wget https://packages.microsoft.com/config/debian/9/prod.list
+            sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+            sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+            sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+
+            sudo apt-get update
+            sudo apt-get install apt-transport-https
+            sudo apt-get update
+            sudo apt-get install dotnet-sdk-3.1
+            dotnet --version
+            dotnet tool install -g amazon.lambda.tools
+            dotnet tool install -g amazon.lambda.testtool-3.1
+            echo "export PATH=$PATH:$HOME/.dotnet/tools" >> $BASH_ENV
+            source $BASH_ENV
+            dotnet tool list -g
+      - run:
+          name: Start verdaccio and Install Amplify CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            npm install -g @aws-amplify/cli
+            npm install -g amplify-app
+            unsetNpmRegistryUrl
+      - run:
+          name: Run Amplify end-to-end tests
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            amplify -v
+            amplify-app --version
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            cd packages/amplify-e2e-tests
+            yarn run e2e --maxWorkers=3 $TEST_SUITE
+            unsetNpmRegistryUrl
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+    working_directory: ~/repo
+
+  amplify_migration_tests_v4:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Run tests migrating from CLI v4.0.0
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
+  amplify_migration_tests_latest:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Run tests migrating from latest CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            yarn run migration --maxWorkers=3 $TEST_SUITE
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
+  amplify_console_integration_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio and Install Amplify CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            changeNpmGlobalPath
+            npm install -g @aws-amplify/cli
+      - run:
+          command: |
+            echo "export PATH=~/.npm-global/bin:$PATH" >> $BASH_ENV
+            source $BASH_ENV
+            amplify -v
+            cd packages/amplify-console-integration-tests
+            yarn run console-integration --maxWorkers=3
+          name: 'Run Amplify Console integration tests'
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-console-integration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-console-integration-tests/console-integration-reports
+    working_directory: ~/repo
+
+  integration_test:
+    working_directory: ~/repo
+    docker:
+      - image: cypress/base:10.18.0
+        environment:
+          TERM: dumb
+    resource_class: large
+    steps:
+      - checkout
+      - run: apt-get update
+      - run: apt-get install -y sudo
+      - run: sudo apt-get install -y tcl
+      - run: sudo apt-get install -y expect
+      - run: sudo apt-get install -y zip
+      - run: sudo apt-get install -y lsof
+      - run: sudo apt-get install -y python
+      - run: sudo apt-get install -y python-pip libpython-dev
+      - run: sudo apt-get install -y jq
+      - run: pip install awscli
+      - run: cd .circleci/ && chmod +x aws.sh
+      - run: expect .circleci/aws_configure.exp
+      - run: yarn setup-dev
+      - run: amplify-dev
+      - run:
+          name: Clone auth test package
+          command: |
+            cd ..
+            git clone $AUTH_CLONE_URL
+            cd aws-amplify-cypress-auth
+            yarn
+      - run: cd .circleci/ && chmod +x auth.sh
+      - run: cd .circleci/ && chmod +x amplify_init.sh
+      - run: cd .circleci/ && chmod +x amplify_init.exp
+      - run: expect .circleci/amplify_init.exp ../aws-amplify-cypress-auth
+      - run: expect .circleci/enable_auth.exp
+      - run: cd ../aws-amplify-cypress-auth
+      - run: yarn --frozen-lockfile
+      - run: cd ../aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*')
+      - run:
+          name: Start Auth test server in background
+          command: |
+            cd ../aws-amplify-cypress-auth
+            pwd
+            yarn start
+          background: true
+      - run: cat $(find ../repo -type f -name 'auth_spec*')
+      - run:
+          name: Run cypress tests for auth
+          command: |
+            cd ../aws-amplify-cypress-auth
+            yarn add cypress --save
+            cp ../repo/cypress.json .
+            cp -R ../repo/cypress .
+            node_modules/.bin/cypress run --spec $(find . -type f -name 'auth_spec*')
+      - run: sudo kill -9 $(lsof -t -i:3000)
+      - run: cd .circleci/ && chmod +x delete_auth.sh
+      - run: expect .circleci/delete_auth.exp
+      - run:
+          name: Clone API test package
+          command: |
+            cd ..
+            git clone $API_CLONE_URL
+            cd aws-amplify-cypress-api
+            yarn
+      - run: cd .circleci/ && chmod +x api.sh
+      - run: expect .circleci/amplify_init.exp ../aws-amplify-cypress-api
+      - run: expect .circleci/enable_api.exp
+      - run: cd ../aws-amplify-cypress-api
+      - run: yarn --frozen-lockfile
+      - run: cd ../aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')
+      - run:
+          name: Start API test server in background
+          command: |
+            cd ../aws-amplify-cypress-api
+            pwd
+            yarn start
+          background: true
+      - run:
+          name: Run cypress tests for api
+          command: |
+            cd ../aws-amplify-cypress-auth
+            yarn add cypress --save
+            cp ../repo/cypress.json .
+            cp -R ../repo/cypress .
+            node_modules/.bin/cypress run --spec $(find . -type f -name 'api_spec*')
+      - run: cd .circleci/ && chmod +x delete_api.sh
+      - run: expect .circleci/delete_api.exp
+      - store_artifacts:
+          path: ../../aws-amplify-cypress-auth/cypress/videos
+      - store_artifacts:
+          path: ../aws-amplify-cypress-auth/cypress/screenshots
+      - store_artifacts:
+          path: ../aws-amplify-cypress-api/cypress/videos
+      - store_artifacts:
+          path: ../aws-amplify-cypress-api/cypress/screenshots
+
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          keys:
+            - amplify-cli-ssh-deps-{{ .Branch }}
+            - amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Authenticate with npm
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - run:
+          name: Publish Amplify CLI
+          command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              git config --global user.email $GITHUB_EMAIL
+              git config --global user.name $GITHUB_USER
+              npm run publish:$CIRCLE_BRANCH
+            else
+              echo "Skipping deploy."
+            fi
+
+  integration_test_js:
+    working_directory: ~/repo
+    docker:
+      - image: cypress/base:10.18.0
+        environment:
+          TERM: dumb
+    steps:
+      - attach_workspace:
+          at: ./
+      - checkout
+      - run:
+          name: Install AWS CLI dependencies
+          command: |
+            apt-get install -y sudo
+            sudo apt-get install -y lsof
+            sudo apt-get install -y python
+            sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+      - run:
+          name: Install Cypress Binary
+          command: |
+            cd ..
+            mkdir videos
+            mkdir screenshots
+            npm install cypress
+      - run:
+          name: Install AWS CLI
+          command: pip install awscli
+      - run:
+          name: Configure AWS CLI
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+            aws configure set region $CLI_REGION --profile default
+      - run:
+          name: Run ui tests in JS SDK
+          command: 'cd packages/amplify-ui-tests && npm run ui'
+          no_output_timeout: 45m
+      - store_artifacts:
+          path: /root/videos
+      - store_artifacts:
+          path: /root/screenshots
+      - store_test_results:
+          path: packages/amplify-ui-tests/
+
+  integration_test_ios:
+    macos:
+      xcode: '11.0.0'
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: Set up environment variables
+          command: |
+            cd ..
+            circleci_root_directory=$(pwd)
+            echo "export circleci_root_directory=$circleci_root_directory" >> $BASH_ENV
+      - run:
+          name: Checkout sample apps repository
+          command: |
+            cd ..
+            git clone https://github.com/awslabs/aws-sdk-ios-samples.git -b e2e-testing
+      - run:
+          name: Install AWS CLI
+          command: pip install awscli
+      - run:
+          name: Configure AWS CLI
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+            aws configure set region $CLI_REGION --profile default
+      - run:
+          name: Set-Up configuration for UITests
+          command: |
+            cd ../aws-sdk-ios-samples/CircleciScripts
+            python3 setup_uitest_config.py -s master -l uitest_logs
+      - run:
+          name: Set-Up Mobile SDK Dependencies
+          command: |
+            cd ../aws-sdk-ios-samples/CircleciScripts
+            python3 run_setup_mobile_sdk_dependencies.py -n PhotoAlbum -a ${circleci_root_directory}/aws-sdk-ios-samples
+      - run:
+          name: Configure AWS Resources
+          command: |
+            cd packages/amplify-ui-tests
+            cp ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum/simple_model.graphql ./schemas/simple_model.graphql
+            npm run config ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum ios auth storage api
+      - run:
+          name: Build and UITest
+          command: |
+            cd ../aws-sdk-ios-samples/CircleciScripts
+            python3 run_build_and_uitest.py -n PhotoAlbum -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}
+      - run:
+          name: Clean-Up UITest
+          command: |
+            cd packages/amplify-ui-tests
+            npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum
+          when: always
+      - store_artifacts:
+          path: ../uitest_logs
+      - store_test_results:
+          path: ../uitest_logs
+
+  integration_test_android:
+    docker:
+      - image: circleci/android:api-27-node
+    environment:
+      JVM_OPTS: -Xms1024m -Xmx3584m
+      JAVA_TOOL_OPTIONS: -Xms1024m -Xmx3584m
+      MAVEN_OPTS: -Xms1024m -Xmx3584m
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx3584m -XX:+HeapDumpOnOutOfMemoryError"'
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: Install Android platforms 18, 21, 23
+          command: |
+            sudo yes | sdkmanager "platforms;android-18" "platforms;android-21" "platforms;android-23"
+            sdkmanager --update
+      - run:
+          name: Install Maven
+          command: |
+            sudo apt-get update
+            sudo apt-get install maven
+      - run:
+          name: Checkout PhotoAlbum Sample App Repo
+          command: |
+            cd ..
+            git clone https://github.com/awslabs/aws-sdk-android-samples.git -b e2e-tests-sample-app sample_app_repo
+            cd sample_app_repo/PhotoAlbumSample
+            app_root=$(pwd)
+            echo "export app_root=$app_root" >> $BASH_ENV
+      - run:
+          name: Set environment variables
+          command: |
+            cd ..
+            echo "Home: ${HOME}"
+            echo "JAVA_HOME: $JAVA_HOME"
+            echo "ANDROID_HOME: $ANDROID_HOME"
+            echo "PATH: $PATH"
+            echo 'export ANDROID_PLATFORM="27"' >> $BASH_ENV
+            echo 'export ANDROID_BUILDTOOL_VERSION="27.0.1"' >> $BASH_ENV
+            echo "export ANDROID_SDK_ROOT=$ANDROID_HOME" >> $BASH_ENV
+            circleci_root_directory=$(pwd)
+            echo "export circleci_root_directory=$circleci_root_directory" >> $BASH_ENV
+            echo 'export appSync_branch_to_uitest="master"' >> $BASH_ENV
+            echo 'export android_sdk_branch_to_uitest="master"' >> $BASH_ENV
+      - run:
+          name: Install pip3
+          command: |
+            sudo apt-get -y install python3-pip
+      - run:
+          name: Install AWS CLI
+          command: sudo pip3 install awscli
+      - run:
+          name: Configure AWS CLI
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+            aws configure set region $CLI_REGION --profile default
+      - run:
+          name: Install json parser
+          command: sudo pip3 install demjson
+      - run:
+          name: Install lxml
+          command: sudo pip3 install lxml
+      - run:
+          name: Download Gradle Dependencies
+          command: |
+            cd ${circleci_root_directory}/sample_app_repo/PhotoAlbumSample
+            bash gradlew app:dependencies
+            sudo npm install -g apollo-codegen@0.19.1
+      - run:
+          name: Configure AWS Resources
+          command: |
+            cd packages/amplify-ui-tests
+            cp ${circleci_root_directory}/sample_app_repo/PhotoAlbumSample/simple_model.graphql schemas/simple_model.graphql
+            npm run config ${app_root} android auth storage api
+      - run:
+          name: Set-Up Mobile SDK Dependencies
+          command: |
+            cd ${circleci_root_directory}/sample_app_repo/CircleciScripts
+            python3 run_setup_mobile_sdk_dependencies.py -n PhotoAlbumSample -a ${circleci_root_directory}/sample_app_repo
+      - run:
+          name: Setup emulator
+          command: |
+            echo y | sdkmanager "system-images;android-23;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-23;default;armeabi-v7a"
+      - run:
+          name: Launch emulator
+          command: |
+            cd ${ANDROID_HOME}/emulator;ls
+            export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib:/usr/lib64:/usr/lib:${ANDROID_HOME}/emulator/lib
+            sudo apt-get install libpulse0
+            ${ANDROID_HOME}/emulator/emulator -avd test -no-boot-anim -no-window -noaudio -accel auto -verbose
+          background: true
+      - run:
+          name: Launch logcat
+          command: adb logcat > logcat.log
+          background: true
+      - run:
+          name: Wait emulator
+          command: |
+            circle-android wait-for-boot
+            python3 ${circleci_root_directory}/sample_app_repo/CircleciScripts/unlock_emulatorscreen.py
+      - run:
+          name: Build and UITest
+          command: |
+            cd ${circleci_root_directory}/sample_app_repo/CircleciScripts
+            python3 run_build_and_uitest.py -n PhotoAlbumSample -a ${circleci_root_directory}/sample_app_repo -c ${circleci_root_directory}
+      - run:
+          name: Clean-Up UITest
+          command: |
+            cd packages/amplify-ui-tests
+            npm run delete ${app_root}
+          when: always
+      - store_artifacts:
+          path: ../uitest_android_results
+
+workflows:
+  version: 2
+  nightly_console_integration_tests:
+    triggers:
+      - schedule:
+          cron: '0 14 * * *'
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+    jobs:
+      - build
+      - publish_to_local_registry:
+          requires:
+            - build
+      - amplify_console_integration_tests:
+          requires:
+            - build
+            - publish_to_local_registry
+  build_test_deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - mock_e2e_tests:
+          requires:
+            - build
+      - graphql_e2e_tests:
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+                - graphql_e2e_testing
+          requires:
+            - build
+            - mock_e2e_tests
+      - integration_test:
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+                - beta
+          requires:
+            - build
+            - mock_e2e_tests
+      - publish_to_local_registry:
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+                - beta
+          requires:
+            - build
+      - amplify_e2e_tests:
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+          requires:
+            - publish_to_local_registry
+      - amplify_migration_tests_latest:
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+          requires:
+            - build
+      - amplify_migration_tests_v4:
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+          requires:
+            - build
+      - amplify_console_integration_tests:
+          filters:
+            branches:
+              only:
+                - beta
+          requires:
+            - build
+            - publish_to_local_registry
+      - deploy:
+          requires:
+            - build
+            - test
+            - mock_e2e_tests
+            - graphql_e2e_tests
+            - integration_test
+            - amplify_e2e_tests
+            - amplify_console_integration_tests
+            - amplify_migration_tests_latest
+            - amplify_migration_tests_v4
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - beta
+      # - integration_test_js:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - build
+      #       - test
+      #       - mock_e2e_tests
+      # - integration_test_ios:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - build
+      #       - test
+      #       - mock_e2e_tests

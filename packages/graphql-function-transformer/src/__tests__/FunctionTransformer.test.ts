@@ -90,7 +90,7 @@ test('two @function directives for the same field should be valid', () => {
   );
 });
 
-test('@function directive applied to Object should throw SchemaValidationError', () => {
+test('@function directive applied to Object should throw Error', () => {
   const invalidSchema = `
     type Query @function(name: "echofunction-\${env}") {
         echo(msg: String): String @function(name: "echofunction-\${env}")
@@ -102,8 +102,8 @@ test('@function directive applied to Object should throw SchemaValidationError',
   });
   try {
     transformer.transform(invalidSchema);
-    fail('SchemaValidationError is expected to be thrown');
+    fail('Error is expected to be thrown');
   } catch (error) {
-    expect(error.name).toEqual('SchemaValidationError');
+    expect(error.message).toEqual('Directive "function" may not be used on OBJECT.');
   }
 });

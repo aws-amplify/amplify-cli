@@ -266,6 +266,20 @@ describe('Angular code generation', function() {
       expect(source).toMatchSnapshot();
     });
 
+    test('should generate queries returning Arrays as Array objects', () => {
+      const { compileFromSource } = setup(miscSchema);
+      const context = compileFromSource(`
+        query CustomScalar {
+          arrayTest {
+            test
+          }
+        }
+      `);
+
+      const source = generateSource(context);
+      expect(source).toMatchSnapshot();
+    });
+
     test('should have __typename value matching fragment type on generic type', () => {
       const { compileFromSource } = setup(starWarsSchema);
       const context = compileFromSource(`
@@ -297,6 +311,42 @@ describe('Angular code generation', function() {
         fragment DroidWithName on Droid {
           __typename
           name
+        }
+      `);
+
+      const source = generateSource(context);
+      expect(source).toMatchSnapshot();
+    });
+
+    test('should have the correct __typename(s) for nested fragments', () => {
+      const { compileFromSource } = setup(starWarsSchema);
+      const context = compileFromSource(`
+        query FindHuman($id: ID!) {
+          human {
+            ...humanDetails
+          }
+        }
+        fragment humanDetails on Human {
+          id
+          name
+          starships {
+            ...starshipDetails
+          }
+        }
+        fragment starshipDetails on Starship {
+          id
+          name
+        }
+      `);
+      const source = generateSource(context);
+      expect(source).toMatchSnapshot();
+    });
+
+    test(`should generate simple query operation with scalar field and scalar return type`, function() {
+      const { compileFromSource } = setup(miscSchema);
+      const context = compileFromSource(`
+        query Echo($msg: String) {
+          echo(msg: $msg)
         }
       `);
 

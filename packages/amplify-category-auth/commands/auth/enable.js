@@ -33,26 +33,57 @@ module.exports = {
         return providerController.addResource(context, category, result.service);
       })
       .then(resourceName => {
-        const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', resourceName, 'parameters.json');
+        const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
         const authParameters = amplify.readJsonFile(resourceDirPath);
 
         if (authParameters.dependsOn) {
           options.dependsOn = authParameters.dependsOn;
         }
+
+        let customAuthConfigured = false;
+        if (authParameters.triggers) {
+          const triggers = JSON.parse(authParameters.triggers);
+          customAuthConfigured =
+            triggers.DefineAuthChallenge &&
+            triggers.DefineAuthChallenge.length > 0 &&
+            triggers.CreateAuthChallenge &&
+            triggers.CreateAuthChallenge.length > 0 &&
+            triggers.VerifyAuthChallengeResponse &&
+            triggers.VerifyAuthChallengeResponse.length > 0;
+        }
+        options.customAuth = customAuthConfigured;
+
         amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+
+        // Remove Identity Pool dependency attributes on userpool groups if Identity Pool not enabled
+        const allResources = context.amplify.getProjectMeta();
+        if (allResources.auth && allResources.auth.userPoolGroups) {
+          if (!authParameters.identityPoolName) {
+            const userPoolGroupDependsOn = [
+              {
+                category: 'auth',
+                resourceName,
+                attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID'],
+              },
+            ];
+            amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
+          }
+        }
+
         const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally`);
         print.info('');
         print.success('Some next steps:');
         print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
         print.info(
-          '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud'
+          '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
         );
         print.info('');
       })
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the auth resource');
+        context.usageData.emitError(err);
       });
   },
 };

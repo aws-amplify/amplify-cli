@@ -2,23 +2,16 @@ const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
-
-const FILE_EXTENSION_MAP = {
-  javascript: 'js',
-  graphql: 'graphql',
-  flow: 'js',
-  typescript: 'ts',
-  angular: 'graphql',
-  swift: 'graphql',
-};
-
-const fileNames = ['queries', 'mutations', 'subscriptions'];
+const amplifyConfigHelper = require('./amplify-config-helper');
 
 function deleteAmplifyConfig(context) {
   const srcDirPath = getSrcDir(context);
+  // delete aws configuration and amplify configuration
   if (fs.existsSync(srcDirPath)) {
-    const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-    fs.removeSync(targetFilePath);
+    const amplifyConfigFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
+    const awsConfigFilePath = path.join(srcDirPath, constants.awsConfigFilename);
+    fs.removeSync(amplifyConfigFilePath);
+    fs.removeSync(awsConfigFilePath);
   }
 
   if (!fs.existsSync(path.join(srcDirPath, '.graphqlconfig.yml'))) return;
@@ -27,12 +20,13 @@ function deleteAmplifyConfig(context) {
     const { projects } = gqlConfig.config;
     Object.keys(projects).forEach(project => {
       const { codeGenTarget, docsFilePath, generatedFileName } = projects[project].extensions.amplify;
-      fileNames.forEach(filename => {
-        const file = path.join(srcDirPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget]}`);
+      constants.fileNames.forEach(filename => {
+        const file = path.join(srcDirPath, docsFilePath, `${filename}.${constants.FILE_EXTENSION_MAP[codeGenTarget]}`);
         if (fs.existsSync(file)) fs.removeSync(file);
       });
-
-      fs.removeSync(path.join(srcDirPath, generatedFileName));
+      if (generatedFileName.trim() !== '') {
+        fs.removeSync(path.join(srcDirPath, generatedFileName));
+      }
     });
   }
 }
@@ -43,17 +37,28 @@ function getSrcDir(context) {
   return path.join(projectPath);
 }
 
-function createAmplifyConfig(context, amplifyResources) {
-  const srcDirPath = getSrcDir(context);
+function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
+  const { amplify } = context;
+  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const srcDirPath = path.join(projectPath);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-    const jsonString = JSON.stringify(amplifyResources, null, 4);
+    let amplifyConfig;
+    if (fs.existsSync(targetFilePath)) {
+      amplifyConfig = context.amplify.readJsonFile(targetFilePath);
+    }
+
+    // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
+    const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
+    amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig, newAWSConfig);
+
+    const jsonString = JSON.stringify(amplifyConfig, null, 4);
     fs.writeFileSync(targetFilePath, jsonString, 'utf8');
   }
 }
 
-function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
+function getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources) {
   const newAWSConfig = getAWSConfigObject(amplifyResources);
   const cloudAWSConfig = getAWSConfigObject(cloudAmplifyResources);
   const currentAWSConfig = getCurrentAWSConfig(context);
@@ -61,7 +66,11 @@ function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
   const customConfigs = getCustomConfigs(cloudAWSConfig, currentAWSConfig);
 
   Object.assign(newAWSConfig, customConfigs);
+  return newAWSConfig;
+}
 
+function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
+  const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
   generateAWSConfigFile(context, newAWSConfig);
   return context;
 }
@@ -225,6 +234,16 @@ function getCognitoConfig(cognitoResources, projectRegion) {
         },
       },
     });
+  }
+
+  if (cognitoConfig.Auth && cognitoConfig.Auth.Default) {
+    cognitoConfig.Auth.Default.authenticationFlowType = cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH';
+  } else {
+    cognitoConfig.Auth = {
+      Default: {
+        authenticationFlowType: cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH',
+      },
+    };
   }
 
   return cognitoConfig;

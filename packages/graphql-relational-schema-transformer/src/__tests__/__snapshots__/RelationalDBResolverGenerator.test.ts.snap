@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verify generated templates 1`] = `"testFilePath/Mutation.createTomatoes.req.vtl"`;
+
+exports[`verify generated templates 2`] = `
+"#set( $cols = [] )
+#set( $vals = [] )
+#foreach( $entry in $ctx.args.createTomatoesInput.keySet() )
+  #set( $discard = $cols.add($entry) )
+  #set( $discard = $vals.add(\\"'$ctx.args.createTomatoesInput[$entry]'\\") )
+#end
+#set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
+#set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"INSERT INTO Tomatoes $colStr VALUES $valStr\\", \\"SELECT * FROM Tomatoes WHERE Id='$ctx.args.createTomatoesInput.Id'\\"]
+}"
+`;
+
+exports[`verify generated templates 3`] = `"testFilePath/Mutation.createTomatoes.res.vtl"`;
+
+exports[`verify generated templates 4`] = `"$utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])"`;
+
+exports[`verify generated templates 5`] = `"testFilePath/Query.getTomatoes.req.vtl"`;
+
+exports[`verify generated templates 6`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE Id='$ctx.args.Id'\\"]
+}"
+`;
+
+exports[`verify generated templates 7`] = `"testFilePath/Query.getTomatoes.res.vtl"`;
+
+exports[`verify generated templates 8`] = `
+"#set( $output = $utils.rds.toJsonObject($ctx.result) )
+#if( $output.isEmpty() )
+  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+#end
+#set( $output = $output[0] )
+#if( $output.isEmpty() )
+  #return
+#end
+$utils.toJson($output[0])"
+`;
+
+exports[`verify generated templates 9`] = `"testFilePath/Mutation.updateTomatoes.req.vtl"`;
+
+exports[`verify generated templates 10`] = `
+"#set( $updateList = {} )
+#foreach( $entry in $ctx.args.updateTomatoesInput.keySet() )
+  #set( $discard = $updateList.put($entry, \\"'$ctx.args.updateTomatoesInput[$entry]'\\") )
+#end
+#set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"UPDATE Tomatoes SET $update WHERE Id=$ctx.args.updateTomatoesInput.Id\\", \\"SELECT * FROM Tomatoes WHERE Id='$ctx.args.updateTomatoesInput.Id'\\"]
+}"
+`;
+
+exports[`verify generated templates 11`] = `"testFilePath/Mutation.updateTomatoes.res.vtl"`;
+
+exports[`verify generated templates 12`] = `
+"#set( $output = $utils.rds.toJsonObject($ctx.result) )
+#if( $output.length() < 2 )
+  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+#end
+#set( $output = $output[1] )
+#if( $output.isEmpty() )
+  #return
+#end
+$utils.toJson($output[0])"
+`;
+
+exports[`verify generated templates 13`] = `"testFilePath/Mutation.deleteTomatoes.req.vtl"`;
+
+exports[`verify generated templates 14`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE Id='$ctx.args.Id'\\", \\"DELETE FROM Tomatoes WHERE Id=$ctx.args.Id\\"]
+}"
+`;
+
+exports[`verify generated templates 15`] = `"testFilePath/Mutation.deleteTomatoes.res.vtl"`;
+
+exports[`verify generated templates 16`] = `
+"#set( $output = $utils.rds.toJsonObject($ctx.result) )
+#if( $output.isEmpty() )
+  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+#end
+#set( $output = $output[0] )
+#if( $output.isEmpty() )
+  #return
+#end
+$utils.toJson($output[0])"
+`;
+
+exports[`verify generated templates 17`] = `"testFilePath/Query.listTomatoess.req.vtl"`;
+
+exports[`verify generated templates 18`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"SELECT * FROM Tomatoes\\"]
+}"
+`;
+
+exports[`verify generated templates 19`] = `"testFilePath/Query.listTomatoess.res.vtl"`;
+
+exports[`verify generated templates 20`] = `"$utils.toJson($utils.rds.toJsonObject($ctx.result)[0])"`;

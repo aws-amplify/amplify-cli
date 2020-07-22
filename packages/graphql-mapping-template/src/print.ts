@@ -27,6 +27,8 @@ import {
   comment,
   NotNode,
   NewLineNode,
+  ReturnNode,
+  parens,
 } from './ast';
 
 const TAB = '  ';
@@ -137,7 +139,10 @@ function printComment(node: CommentNode, indent: string = ''): string {
 }
 
 function printCompoundExpression(node: CompoundExpressionNode, indent: string = ''): string {
-  return node.expressions.map((node: Expression) => printExpr(node, indent)).join(`\n`);
+  if (node.recurseIndent) {
+    return node.expressions.map((node: Expression) => printExpr(node, indent)).join(node.joiner);
+  }
+  return indent + node.expressions.map((node: Expression) => printExpr(node)).join(node.joiner);
 }
 
 function printToJson(node: ToJsonNode, indent: string = ''): string {
@@ -150,6 +155,14 @@ function printNot(node: NotNode, indent: string = ''): string {
 
 function printNewLine(node: NewLineNode): string {
   return '\n';
+}
+
+function printReturn(node: ReturnNode, indent: string = ''): string {
+  var suffix: string = '';
+  if (node.value !== undefined) {
+    suffix = printParens(parens(node.value));
+  }
+  return `${indent}#return` + suffix;
 }
 
 function printExpr(expr: Expression, indent: string = ''): string {
@@ -207,6 +220,8 @@ function printExpr(expr: Expression, indent: string = ''): string {
       return printNot(expr, indent);
     case 'NewLine':
       return printNewLine(expr);
+    case 'Return':
+      return printReturn(expr, indent);
     default:
       return '';
   }

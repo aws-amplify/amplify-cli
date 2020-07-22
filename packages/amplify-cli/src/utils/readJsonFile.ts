@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
+import parseJson from 'parse-json';
 
 function stripBOM(content: string) {
-  // tslint:disable-next-line
   if (content.charCodeAt(0) === 0xfeff) {
     content = content.slice(1);
   }
@@ -9,10 +9,11 @@ function stripBOM(content: string) {
 }
 
 export function readJsonFileSync(jsonFilePath: string, encoding: string = 'utf8'): any {
-  return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
+  const content = fs.readFileSync(jsonFilePath, encoding);
+  return parseJson(stripBOM(content), jsonFilePath);
 }
 
 export async function readJsonFile(jsonFilePath: string, encoding: string = 'utf8'): Promise<any> {
-  const contents = await fs.readFile(jsonFilePath, encoding);
-  return JSON.parse(stripBOM(contents));
+  const content = await fs.readFile(jsonFilePath, encoding);
+  return parseJson(stripBOM(content), jsonFilePath);
 }

@@ -9,8 +9,10 @@ export function addIntrinsicFunction(keyword: string, func: (node, cfnContext: C
 }
 
 export function parseValue(node, context: CloudFormationParseContext) {
-  if (typeof node === 'string') return node;
+  if (['string', 'number'].includes(typeof node)) return node;
 
+  // convert object to plain object
+  node = JSON.parse(JSON.stringify(node));
   if (isPlainObject(node) && Object.keys(node).length === 1 && Object.keys(intrinsicFunctionMap).includes(Object.keys(node)[0])) {
     const op = Object.keys(node)[0];
     const valNode = node[op];

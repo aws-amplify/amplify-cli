@@ -1,35 +1,36 @@
 {
   "name": "graphql-transformer-common",
-  "version": "3.32.0",
+  "version": "4.17.5",
   "description": "Common code and constants for AppSync Transformers",
-  "main": "lib/index.js",
-  "scripts": {
-    "test": "jest",
-    "test-ci": "jest --ci -i",
-    "build": "tsc",
-    "clean": "rm -rf ./lib"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-transformer-common"
   },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "graphql",
     "appsync",
     "aws"
   ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
+  "scripts": {
+    "test": "jest",
+    "test-ci": "jest --ci -i",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib"
+  },
   "dependencies": {
-    "cloudform": "^3.5.0",
-    "graphql": "^0.13.2",
-    "graphql-mapping-template": "3.25.0"
+    "graphql": "^14.5.8",
+    "graphql-mapping-template": "4.13.5",
+    "md5": "^2.2.1"
   },
   "devDependencies": {
-    "@types/graphql": "^0.13.4",
-    "@types/jest": "23.1.1",
-    "@types/node": "^8.10.51",
-    "aws-sdk": "^2.510.0",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
-    "typescript": "^3.6.4"
+    "@types/md5": "^2.1.33",
+    "@types/node": "^10.17.13"
   },
   "jest": {
     "transform": {

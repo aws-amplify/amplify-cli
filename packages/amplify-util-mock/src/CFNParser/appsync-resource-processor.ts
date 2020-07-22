@@ -1,11 +1,9 @@
-import { CloudFormationParseContext } from './types';
-import { isPlainObject } from 'lodash';
-import { parseValue } from './field-parser';
-import {
-  AmplifyAppSyncSimulatorConfig,
-  AmplifyAppSyncAPIConfig,
-  AmplifyAppSyncSimulatorAuthenticationType,
-} from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulatorAuthenticationType, AmplifyAppSyncSimulatorConfig } from 'amplify-appsync-simulator';
+import { registerAppSyncResourceProcessor, registerIAMResourceProcessor, registerLambdaResourceProcessor } from './resource-processors';
+import { AppSyncAPIKeyProcessedResource, AppSyncAPIProcessedResource } from './resource-processors/appsync';
+import { processCloudFormationStack } from './stack/index';
+import { CloudFormationTemplateFetcher, CloudFormationTemplate } from './stack/types';
+
 const CFN_DEFAULT_PARAMS = {
   'AWS::Region': 'us-east-1-fake',
   'AWS::AccountId': '12345678910',
@@ -13,223 +11,66 @@ const CFN_DEFAULT_PARAMS = {
   'AWS::StackName': 'local-testing',
 };
 
-const CFN_DEFAULT_CONDITIONS = {
-  HasEnvironmentParameter: true,
-};
-const resourceProcessorMapping = {
-  'AWS::AppSync::GraphQLApi': graphQLAPIResourceHandler,
-  'AWS::AppSync::ApiKey': graphQLAPIKeyResourceHandler,
-  'AWS::AppSync::GraphQLSchema': graphQLSchemaHandler,
-  'AWS::DynamoDB::Table': dynamoDBResourceHandler,
-  'AWS::AppSync::Resolver': graphQLResolverHandler,
-  'AWS::AppSync::DataSource': graphQLDataSource,
-  'AWS::AppSync::FunctionConfiguration': graphqlFunctionHandler,
-};
-export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
-  const tableName = resourceName;
-  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map(gsi => {
-    const p = { ...gsi };
-    delete p.ProvisionedThroughput;
-    return p;
-  });
-  const processedResource: any = {
-    Type: 'AWS::DynamoDB::Table',
-    Properties: {
-      TableName: tableName,
-      BillingMode: 'PAY_PER_REQUEST',
-      KeySchema: resource.Properties.KeySchema,
-      AttributeDefinitions: resource.Properties.AttributeDefinitions,
-    },
-  };
+const RESOLVER_TEMPLATE_LOCATION_PREFIX = 's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/';
 
-  if (resource.Properties.LocalSecondaryIndexes) {
-    processedResource.Properties.LocalSecondaryIndexes = resource.Properties.LocalSecondaryIndexes;
-  }
+export function processApiResources(
+  resources: Record<string, { Type: string; result: any }>,
+  transformResult: any,
+  appSyncConfig: AmplifyAppSyncSimulatorConfig,
+): void {
+  Object.values(resources).forEach(resource => {
+    const { Type: resourceType } = resource;
+    const result: any = resource.result;
 
-  if (gsis.length) {
-    processedResource.Properties.GlobalSecondaryIndexes = gsis;
-  }
-  return processedResource;
-}
-
-export function graphQLDataSource(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
-  const tableName = resource.Properties.Name;
-  const typeName = resource.Properties.Type;
-  if (typeName === 'AMAZON_DYNAMODB') {
-    return {
-      name: tableName,
-      type: 'AMAZON_DYNAMODB',
-      config: {
-        tableName,
-      },
-    };
-  }
-  if (typeName === 'NONE') {
-    return {
-      name: resource.Properties.Name,
-      type: 'NONE',
-    };
-  }
-
-  if (typeName === 'AWS_LAMBDA') {
-    const lambdaArn = parseValue(resource.Properties.LambdaConfig.LambdaFunctionArn, cfnContext);
-    return {
-      type: 'AWS_LAMBDA',
-      name: resource.Properties.Name,
-      LambdaFunctionArn: lambdaArn,
-    };
-  }
-
-  // XXX: Handle un-supported data sources
-  console.log(`Data source of type ${typeName} is not supported by local mocking. A NONE data source will be used.`);
-  return {
-    name: resourceName,
-    type: 'NONE',
-  };
-}
-
-export function graphQLAPIResourceHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-  transformResult: any
-): AmplifyAppSyncAPIConfig {
-  const apiId = 'amplify-test-api-id';
-  const processedResource = {
-    type: resource.Type,
-    name: cfnContext.params.AppSyncApiName || 'AppSyncTransformer',
-    defaultAuthenticationType: {
-      authenticationType: resource.Properties.AuthenticationType,
-      ...(resource.Properties.OpenIDConnectConfig ? { openIDConnectConfig: resource.Properties.OpenIDConnectConfig } : {}),
-      ...(resource.Properties.UserPoolConfig ? { cognitoUserPoolConfig: resource.Properties.UserPoolConfig } : {}),
-    },
-    // authenticationType: parseValue(resource.Properties.AuthenticationType, cfnContext,  transformResult: any),
-    ref: `arn:aws:appsync:us-east-1:123456789012:apis/${apiId}`,
-    ...(resource.Properties.AdditionalAuthenticationProviders
-      ? {
-          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map(p => {
-            return {
-              authenticationType: p.AuthenticationType,
-              ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
-              ...(p.CognitoUserPoolConfig ? { cognitoUserPoolConfig: p.CognitoUserPoolConfig } : {}),
-            };
-          }),
+    switch (resourceType) {
+      case 'AWS::AppSync::DataSource':
+        appSyncConfig.dataSources.push(result);
+        break;
+      case 'AWS::AppSync::Resolver':
+        appSyncConfig.resolvers.push({
+          ...result,
+          requestMappingTemplateLocation:
+            result.requestMappingTemplateLocation && result.requestMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
+          responseMappingTemplateLocation:
+            result.responseMappingTemplateLocation && result.responseMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
+        });
+        break;
+      case 'AWS::DynamoDB::Table':
+        appSyncConfig.tables.push(result);
+        break;
+      case 'AWS::AppSync::FunctionConfiguration':
+        appSyncConfig.functions.push({
+          ...result,
+          requestMappingTemplateLocation:
+            result.requestMappingTemplateLocation && result.requestMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
+          responseMappingTemplateLocation:
+            result.responseMappingTemplateLocation && result.responseMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
+        });
+        break;
+      case 'AWS::AppSync::GraphQLSchema':
+        if (result.definition) {
+          appSyncConfig.schema = { content: result.definition };
+        } else {
+          appSyncConfig.schema = { path: 'schema.graphql', content: transformResult.schema };
         }
-      : {
-          additionalAuthenticationProviders: [],
-        }),
-  };
-  return processedResource;
-}
 
-export function graphQLAPIKeyResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
-  const value = 'da2-fakeApiId123456'; // TODO: Generate
-  const processedResource = {
-    type: resource.Type,
-    // apiId: parseValue(resource.Properties.ApiId, cfnContext),
-    value,
-    ref: `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/apikey/apikeya1bzhi${value}`,
-  };
-  return processedResource;
-}
-
-export function graphQLSchemaHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
-  return {
-    content: transformResult.schema,
-    path: 'schema.json', // XXX: handle schema folder
-  };
-}
-
-export function graphQLResolverHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
-  const { Properties: properties } = resource;
-  const requestMappingTemplate = parseValue(properties.RequestMappingTemplateS3Location, cfnContext).replace(
-    's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/',
-    ''
-  );
-  const responseMappingTemplate = parseValue(properties.ResponseMappingTemplateS3Location, cfnContext).replace(
-    's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/',
-    ''
-  );
-  let dataSourceName;
-  let functions;
-  if (properties.Kind === 'PIPELINE') {
-    functions = (properties.PipelineConfig.Functions || []).map(f => getAppSyncFunctionName(f));
-  } else {
-    dataSourceName = getDataSourceName(properties.DataSourceName, cfnContext.resources);
-  }
-
-  return {
-    dataSourceName,
-    typeName: properties.TypeName,
-    functions,
-    fieldName: properties.FieldName,
-    requestMappingTemplateLocation: requestMappingTemplate,
-    responseMappingTemplateLocation: responseMappingTemplate,
-    kind: properties.Kind || 'UNIT',
-  };
-}
-
-function getDataSourceName(dataSourceName, resources) {
-  // XXX: Util to map data source based on type of intrinsic function
-  let processedDataSourceName;
-  if (typeof dataSourceName === 'string') {
-    return dataSourceName;
-  }
-
-  if (isPlainObject(dataSourceName) && Object.keys(dataSourceName).length === 1) {
-    const intrinsicFn = Object.keys(dataSourceName)[0];
-    if (intrinsicFn === 'Fn::GetAtt') {
-      processedDataSourceName = dataSourceName[intrinsicFn][0];
+        break;
+      case 'AWS::AppSync::GraphQLApi':
+        const resource = result as AppSyncAPIProcessedResource;
+        appSyncConfig.appSync.name = resource.name;
+        appSyncConfig.appSync.defaultAuthenticationType = resource.defaultAuthenticationType;
+        appSyncConfig.appSync.additionalAuthenticationProviders = resource.additionalAuthenticationProviders || [];
+        break;
+      case 'AWS::AppSync::ApiKey':
+        appSyncConfig.appSync.apiKey = (result as AppSyncAPIKeyProcessedResource).ApiKey;
+        break;
+      case 'AWS::CloudFormation::Stack':
+        processApiResources(result.resources, transformResult, appSyncConfig);
+        break;
     }
-  } else if (dataSourceName.name === 'Fn::ImportValue') {
-    processedDataSourceName = dataSourceName.payload.payload[1][2];
-  }
-  return resources[processedDataSourceName].name;
+  });
 }
-
-function getAppSyncFunctionName(functionConfig) {
-  if (functionConfig['Fn::GetAtt']) {
-    return functionConfig['Fn::GetAtt'][0];
-  }
-  return functionConfig;
-}
-
-export function graphqlFunctionHandler(resourceName, resource, cfnContext: CloudFormationParseContext, transformResult: any) {
-  const { Properties: properties } = resource;
-  const requestMappingTemplate = parseValue(properties.RequestMappingTemplateS3Location, cfnContext).replace(
-    's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/',
-    ''
-  );
-  const responseMappingTemplate = parseValue(properties.ResponseMappingTemplateS3Location, cfnContext).replace(
-    's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/',
-    ''
-  );
-
-  const dataSourceName = getDataSourceName(properties.DataSourceName, cfnContext.resources);
-
-  return {
-    name: resource.Properties.Name,
-    dataSourceName,
-    requestMappingTemplateLocation: requestMappingTemplate,
-    responseMappingTemplateLocation: responseMappingTemplate,
-  };
-}
-
-export function processResources(resources, transformResult: any, params = {}): AmplifyAppSyncSimulatorConfig {
-  const cfnContext: CloudFormationParseContext = {
-    conditions: {
-      ...CFN_DEFAULT_CONDITIONS,
-    },
-    params: {
-      ...CFN_DEFAULT_PARAMS,
-      env: '${env}',
-      S3DeploymentBucket: '${S3DeploymentBucket}',
-      S3DeploymentRootKey: '${S3DeploymentRootKey}',
-      ...params,
-    },
-    resources: {},
-    exports: {},
-  };
+export function processCloudFormationResults(resources, transformResult) {
   const processedResources: AmplifyAppSyncSimulatorConfig = {
     schema: {
       content: '',
@@ -248,40 +89,8 @@ export function processResources(resources, transformResult: any, params = {}): 
       additionalAuthenticationProviders: [],
     },
   };
-  Object.entries(resources).forEach(entry => {
-    const [resourceName, resource] = entry;
-    const { Type: resourceType } = resource as any;
-    if (Object.keys(resourceProcessorMapping).includes(resourceType)) {
-      const result = resourceProcessorMapping[resourceType](resourceName, resource, cfnContext, transformResult);
-      cfnContext.resources[resourceName] = result;
 
-      switch (resourceType) {
-        case 'AWS::AppSync::DataSource':
-          processedResources.dataSources.push(result);
-          break;
-        case 'AWS::AppSync::Resolver':
-          processedResources.resolvers.push(result);
-          break;
-        case 'AWS::DynamoDB::Table':
-          processedResources.tables.push(result);
-          break;
-        case 'AWS::AppSync::FunctionConfiguration':
-          processedResources.functions.push(result);
-          break;
-        case 'AWS::AppSync::GraphQLSchema':
-          processedResources.schema = result;
-          break;
-        case 'AWS::AppSync::GraphQLApi':
-          processedResources.appSync.name = result.name;
-          processedResources.appSync.defaultAuthenticationType = result.defaultAuthenticationType;
-          processedResources.appSync.additionalAuthenticationProviders = result.additionalAuthenticationProviders || [];
-          break;
-        case 'AWS::AppSync::ApiKey':
-          processedResources.appSync.apiKey = result.value;
-          break;
-      }
-    }
-  });
+  processApiResources(resources, transformResult, processedResources);
   Object.entries(transformResult.resolvers).forEach(([path, content]) => {
     processedResources.mappingTemplates.push({
       path: `resolvers/${path}`,
@@ -296,4 +105,40 @@ export function processResources(resources, transformResult: any, params = {}): 
   });
 
   return processedResources;
+}
+export function processTransformerStacks(transformResult, params = {}): AmplifyAppSyncSimulatorConfig {
+  registerAppSyncResourceProcessor();
+  registerIAMResourceProcessor();
+  registerLambdaResourceProcessor();
+
+  const rootStack = JSON.parse(JSON.stringify(transformResult.rootStack)); // rootstack is not
+  const cfnParams = {
+    ...CFN_DEFAULT_PARAMS,
+    env: '${env}',
+    S3DeploymentBucket: '${S3DeploymentBucket}',
+    S3DeploymentRootKey: '${S3DeploymentRootKey}',
+    CreateAPIKey: 1,
+    ...params,
+  };
+
+  const cfnTemplateFetcher: CloudFormationTemplateFetcher = {
+    getCloudFormationStackTemplate: (templateName: string): CloudFormationTemplate => {
+      const template = templateName.replace('https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/', '');
+      const stackTemplate = Object.keys(transformResult.stacks).includes(template)
+        ? transformResult.stacks[template]
+        : transformResult.stacks[template.replace('.json', '')];
+      if (stackTemplate && typeof stackTemplate === 'undefined') {
+        throw new Error(`Invalid cloud formation template ${templateName}`);
+      }
+      return stackTemplate;
+    },
+  };
+
+  const processedStacks = processCloudFormationStack(
+    rootStack,
+    { authRoleName: 'authRole', unauthRoleName: 'unAuthRole', ...cfnParams },
+    {},
+    cfnTemplateFetcher,
+  );
+  return processCloudFormationResults(processedStacks.resources, transformResult);
 }

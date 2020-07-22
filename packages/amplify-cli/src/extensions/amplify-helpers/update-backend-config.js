@@ -1,10 +1,12 @@
 const fs = require('fs-extra');
 const pathManager = require('./path-manager');
 const { readJsonFile } = require('./read-json-file');
+const _ = require('lodash');
 
 function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
+  const backendConfig = getExistingBackendConfig(backendConfigFilePath);
+
   if (!backendConfig[category]) {
     backendConfig[category] = {};
   }
@@ -16,26 +18,16 @@ function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
   }
 }
 
-function updateBackendConfigDependsOn(category, resourceName, attribute, value) {
+function updateBackendConfigAfterResourceUpdate(category, resourceName, attribute, value) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
-
-  if (!backendConfig[category]) {
-    backendConfig[category] = {};
-    backendConfig[category][resourceName] = {};
-  } else if (!backendConfig[category][resourceName]) {
-    backendConfig[category][resourceName] = {};
-  }
-  backendConfig[category][resourceName][attribute] = value;
-
-  const jsonString = JSON.stringify(backendConfig, null, 4);
-
-  fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+  const backendConfig = getExistingBackendConfig(backendConfigFilePath);
+  _.set(backendConfig, [category, resourceName, attribute], value);
+  fs.writeFileSync(backendConfigFilePath, JSON.stringify(backendConfig, undefined, 4), 'utf8');
 }
 
 function updateBackendConfigAfterResourceRemove(category, resourceName) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = readJsonFile(backendConfigFilePath);
+  const backendConfig = getExistingBackendConfig(backendConfigFilePath);
 
   if (backendConfig[category] && backendConfig[category][resourceName] !== undefined) {
     delete backendConfig[category][resourceName];
@@ -45,8 +37,16 @@ function updateBackendConfigAfterResourceRemove(category, resourceName) {
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 }
 
+function getExistingBackendConfig(backendConfigFilePath) {
+  let backendConfig = {};
+  if (fs.existsSync(backendConfigFilePath)) {
+    backendConfig = readJsonFile(backendConfigFilePath);
+  }
+  return backendConfig;
+}
+
 module.exports = {
   updateBackendConfigAfterResourceAdd,
+  updateBackendConfigAfterResourceUpdate,
   updateBackendConfigAfterResourceRemove,
-  updateBackendConfigDependsOn,
 };

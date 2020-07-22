@@ -47,7 +47,7 @@ async function add(context) {
         service: resultMetadata.service,
         providerPlugin: resultMetadata.providerName,
       };
-      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', resourceName, 'parameters.json');
+      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
       const authParameters = amplify.readJsonFile(resourceDirPath);
 
       if (authParameters.dependsOn) {
@@ -60,6 +60,7 @@ async function add(context) {
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
+      context.usageData.emitError(err);
     });
 }
 
@@ -120,28 +121,49 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   };
 
   try {
-    authProps = removeDeprecatedProps(authProps);
+    authProps = await removeDeprecatedProps(authProps);
     await copyCfnTemplate(context, category, authProps, cfnFilename);
-    saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
+    await saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
+    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', authProps.resourceName, 'parameters.json');
+    const authParameters = await amplify.readJsonFile(resourceDirPath);
     if (!authExists) {
       const options = {
         service: 'Cognito',
         providerPlugin: 'awscloudformation',
       };
-      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', authProps.resourceName, 'parameters.json');
-      const authParameters = amplify.readJsonFile(resourceDirPath);
 
       if (authParameters.dependsOn) {
         options.dependsOn = authParameters.dependsOn;
       }
       await amplify.updateamplifyMetaAfterResourceAdd(category, authProps.resourceName, options);
     }
+
+    // Update Identity Pool dependency attributes on userpool groups
+    const allResources = context.amplify.getProjectMeta();
+    if (allResources.auth && allResources.auth.userPoolGroups) {
+      let attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
+      if (authParameters.identityPoolName) {
+        attributes.push('IdentityPoolId');
+      }
+      const userPoolGroupDependsOn = [
+        {
+          category: 'auth',
+          resourceName: authProps.resourceName,
+          attributes,
+        },
+      ];
+
+      amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
+      await transformUserPoolGroupSchema(context);
+    }
+
     const action = authExists ? 'updated' : 'added';
     context.print.success(`Successfully ${action} auth resource locally.`);
 
     return requirements.resourceName;
   } catch (e) {
-    return new Error('Error updating Cognito resource');
+    context.print.error('Error updating Cognito resource');
+    throw e;
   }
 }
 
@@ -164,7 +186,7 @@ async function checkRequirements(requirements, context) {
 
   if (existingAuth && Object.keys(existingAuth).length > 0) {
     const authResourceName = await getAuthResourceName(context);
-    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), '/auth/', authResourceName, 'parameters.json');
+    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', authResourceName, 'parameters.json');
     authParameters = amplify.readJsonFile(resourceDirPath);
   } else {
     return { authEnabled: false };
@@ -186,7 +208,8 @@ async function checkRequirements(requirements, context) {
 
 async function initEnv(context) {
   const { amplify } = context;
-  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus('auth');
+  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated, allResources } = await amplify.getResourceStatus('auth');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeCreated = [];
   let toBeDeleted = [];
   let toBeUpdated = [];
@@ -206,6 +229,10 @@ async function initEnv(context) {
   });
 
   const tasks = toBeCreated.concat(toBeUpdated);
+  // check if this initialization is happening on a pull
+  if (isPulling && allResources.length > 0) {
+    tasks.push(...allResources);
+  }
 
   const authTasks = tasks.map(authResource => {
     const { resourceName } = authResource;
@@ -240,6 +267,7 @@ async function console(context) {
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error trying to open the auth web console.');
+      throw err;
     });
 }
 
@@ -257,7 +285,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           context,
           amplifyMeta[category][resourceName].service,
           resourceName,
-          resourceOpsMapping[resourceName]
+          resourceOpsMapping[resourceName],
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });

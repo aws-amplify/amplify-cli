@@ -7,13 +7,13 @@ import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { CreateBucketRequest } from 'aws-sdk/clients/s3';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import { deploy } from '../deployNestedStacks';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import {
   createUserPool,
@@ -24,6 +24,7 @@ import {
   addUserToGroup,
   configureAmplify,
 } from '../cognitoUtils';
+import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -173,7 +174,7 @@ beforeAll(async () => {
       LOCAL_BUILD_ROOT,
       BUCKET_NAME,
       DEPLOYMENT_ROOT_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -255,7 +256,7 @@ test('Test creating a post and immediately view it via the User.posts connection
             id
         }
     }`,
-    {}
+    {},
   );
   console.log(createUser1);
   expect(createUser1.data.createUser.id).toEqual('user1@test.com');
@@ -268,7 +269,7 @@ test('Test creating a post and immediately view it via the User.posts connection
             owner
         }
     }`,
-    {}
+    {},
   );
   console.log(response);
   expect(response.data.createPost.id).toBeDefined();
@@ -290,7 +291,7 @@ test('Test creating a post and immediately view it via the User.posts connection
             }
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(getResponse, null, 4));
   expect(getResponse.data.getUser.posts.items[0].id).toBeDefined();
@@ -308,7 +309,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response1);
   expect(response1.data.createFieldProtected.id).toEqual('1');
@@ -323,7 +324,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response2);
   expect(response2.data.getFieldProtected.ownerOnly).toBeNull();
@@ -337,7 +338,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response3);
   expect(response3.data.getFieldProtected.id).toEqual('1');
@@ -354,7 +355,7 @@ test('Test that @connection resolvers respect @model read operations.', async ()
             name
         }
     }`,
-    {}
+    {},
   );
   console.log(response1);
   expect(response1.data.createOpenTopLevel.id).toEqual('1');
@@ -370,7 +371,7 @@ test('Test that @connection resolvers respect @model read operations.', async ()
             topLevelID
         }
     }`,
-    {}
+    {},
   );
   console.log(response2);
   expect(response2.data.createConnectionProtected.id).toEqual('1');
@@ -390,7 +391,7 @@ test('Test that @connection resolvers respect @model read operations.', async ()
             }
         }
     }`,
-    {}
+    {},
   );
   console.log(response3);
   expect(response3.data.getOpenTopLevel.id).toEqual('1');
@@ -409,7 +410,7 @@ test('Test that @connection resolvers respect @model read operations.', async ()
             }
         }
     }`,
-    {}
+    {},
   );
   console.log(response4);
   expect(response4.data.getOpenTopLevel.id).toEqual('1');
@@ -426,7 +427,7 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response1));
   expect(response1.data.createFieldProtected.id).toEqual('2');
@@ -441,7 +442,7 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response2);
   expect(response2.data.createFieldProtected).toBeNull();
@@ -457,7 +458,7 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response3);
   expect(response3.data.createFieldProtected.id).toEqual('4');
@@ -477,7 +478,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(response1));
   expect(response1.data.createFieldProtected.id).not.toBeNull();
@@ -492,7 +493,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response2);
   expect(response2.data.updateFieldProtected).toBeNull();
@@ -508,7 +509,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response3);
   const resposne3ID = response3.data.updateFieldProtected.id;
@@ -533,7 +534,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response4);
   expect(response4.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id);
@@ -548,7 +549,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
             ownerOnly
         }
     }`,
-    {}
+    {},
   );
   console.log(response5);
   expect(response5.data.getFieldProtected.ownerOnly).toEqual('updated');

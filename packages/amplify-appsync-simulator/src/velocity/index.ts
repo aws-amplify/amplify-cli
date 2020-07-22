@@ -1,10 +1,11 @@
 import { Compile, parse } from 'amplify-velocity-template';
-import * as JSON5 from 'json5';
 import { AmplifyAppSyncSimulator } from '..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
 import { create as createUtil, TemplateSentError } from './util';
 import { map as convertToJavaTypes, map } from './value-mapper/mapper';
 import { GraphQLResolveInfo } from 'graphql';
+import { createInfo } from './util/info';
+import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
 
 export type AppSyncSimulatorRequestContext = {
   jwt?: {
@@ -47,29 +48,35 @@ export class VelocityTemplate {
   }
   render(
     ctxValues: AppSyncVTLRenderContext,
-    requestContext: AppSyncSimulatorRequestContext,
-    info?: GraphQLResolveInfo
-  ): { result; stash; errors } {
+    requestContext: AppSyncGraphQLExecutionContext,
+    info?: GraphQLResolveInfo,
+  ): { result; stash; errors; isReturn: boolean } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
 
     const templateResult = this.compiler.render(context);
+    const isReturn = this.compiler._state.return; // If the template has #return, then set the value
     const stash = context.ctx.stash.toJSON();
     try {
-      const result = JSON5.parse(templateResult);
-      return { result, stash, errors: context.util.errors };
+      const result = JSON.parse(templateResult);
+      return { result, stash, errors: context.util.errors, isReturn };
     } catch (e) {
+      if (isReturn) {
+        // # when template has #return, if the value is non JSON, we pass that along
+        return { result: templateResult, stash, errors: context.util.errors, isReturn };
+      }
       const errorMessage = `Unable to convert ${templateResult} to class com.amazonaws.deepdish.transform.model.lambda.LambdaVersionedConfig.`;
       throw new TemplateSentError(errorMessage, 'MappingTemplate', null, null, info);
     }
   }
 
-  private buildRenderContext(ctxValues: AppSyncVTLRenderContext, requestContext: any, info: GraphQLResolveInfo): any {
+  private buildRenderContext(
+    ctxValues: AppSyncVTLRenderContext,
+    requestContext: AppSyncGraphQLExecutionContext,
+    info: GraphQLResolveInfo,
+  ): any {
     const { source, arguments: argument, result, stash, prevResult, error } = ctxValues;
-
-    const {
-      jwt: { iss: issuer, sub, 'cognito:username': cognitoUserName, username },
-      request,
-    } = requestContext;
+    const { jwt } = requestContext;
+    const { iss: issuer, sub, 'cognito:username': cognitoUserName, username } = jwt || {};
 
     const util = createUtil([], new Date(Date.now()), info);
     const args = convertToJavaTypes(argument);
@@ -87,7 +94,7 @@ export class VelocityTemplate {
         issuer,
         'cognito:username': cognitoUserName,
         username: username || cognitoUserName,
-        sourceIp: this.getRemoteIpAddress(requestContext.request),
+        sourceIp: requestContext.sourceIp,
         claims: requestContext.jwt,
         ...(this.simulatorContext.appSyncConfig.defaultAuthenticationType.authenticationType ===
         AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS
@@ -99,15 +106,18 @@ export class VelocityTemplate {
     const vtlContext = {
       arguments: args,
       args,
-      request: request ? { headers: request.headers } : {},
+      info: createInfo(info),
+      request: { headers: requestContext.headers },
       identity,
       stash: convertToJavaTypes(stash || {}),
       source: convertToJavaTypes(source),
       result: convertToJavaTypes(result),
-      error,
+      // surfacing the errorType to ensure the type is included in $ctx.error
+      // Mapping Template Errors: https://docs.aws.amazon.com/appsync/latest/devguide/troubleshooting-and-common-mistakes.html#mapping-template-errors
+      error: error ? { ...error, type: error.extensions.errorType } : error,
     };
 
-    if (prevResult) {
+    if (typeof prevResult !== 'undefined') {
       vtlContext['prev'] = convertToJavaTypes({
         result: prevResult,
       });

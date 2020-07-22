@@ -1,20 +1,26 @@
 {
   "name": "amplify-graphql-docs-generator",
-  "version": "1.28.0",
-  "main": "lib/index.js",
+  "version": "2.1.13",
+  "description": "amplify graphql docs generator plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-graphql-docs-generator"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "engines": {
-    "node": ">=8.12.0"
-  },
-  "bin": {
-    "amplify-graphql-docs-generator": "./bin/cli"
-  },
+  "main": "lib/index.js",
   "keywords": [
     "graphql",
     "appsync",
     "aws"
   ],
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "bin": {
+    "amplify-graphql-docs-generator": "./bin/cli"
+  },
   "directories": {
     "test": "tests"
   },
@@ -24,31 +30,18 @@
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rm -rf ./lib",
-    "lint": "tslint -p ./tsconfig.json"
-  },
-  "devDependencies": {
-    "@types/ejs": "^2.6.0",
-    "@types/graphql": "^0.13.4",
-    "@types/jest": "23.3.1",
-    "@types/node": "^8.10.51",
-    "@types/prettier": "^1.13.2",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
-    "typescript": "^3.6.4"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "camel-case": "^3.0.0",
-    "commander": "^2.9.0",
-    "fetch": "^1.1.0",
-    "graphql": "^0.13.2",
-    "handlebars": "^4.1.2",
-    "lodash": "^4.17.15",
-    "node-fetch": "^2.6.0",
-    "pascal-case": "^2.0.1",
-    "prettier": "^1.18.2",
-    "yargs": "^13.3.0"
+    "change-case": "^4.1.1",
+    "graphql": "^14.5.8",
+    "handlebars": "4.5.3",
+    "prettier": "^1.19.1",
+    "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.17.13",
+    "@types/prettier": "^1.19.0"
   },
   "jest": {
     "transform": {
@@ -66,6 +59,11 @@
       "js",
       "jsx",
       "node"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
   }
 }

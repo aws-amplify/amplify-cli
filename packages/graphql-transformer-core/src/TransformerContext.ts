@@ -31,7 +31,7 @@ import {
   InputValueDefinitionNode,
 } from 'graphql/language/ast';
 import { _Kind } from 'graphql/language/kinds';
-
+import { ResolverConfig } from './util';
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {
@@ -108,6 +108,10 @@ export class TransformerContext {
   public metadata: TransformerContextMetadata = new TransformerContextMetadata();
 
   private stackMapping: StackMapping = new Map();
+
+  private resolverConfig: ResolverConfig;
+
+  private transformerVersion: Number;
 
   constructor(inputSDL: string) {
     const doc: DocumentNode = parse(inputSDL);
@@ -365,6 +369,13 @@ export class TransformerContext {
     this.nodeMap[obj.name.value] = obj;
   }
 
+  public updateObject(obj: ObjectTypeDefinitionNode) {
+    if (!this.nodeMap[obj.name.value]) {
+      throw new Error(`Type ${obj.name.value} does not exist.`);
+    }
+    this.nodeMap[obj.name.value] = obj;
+  }
+
   public getObject(name: string): ObjectTypeDefinitionNode | undefined {
     if (this.nodeMap[name]) {
       const node = this.nodeMap[name];
@@ -432,7 +443,7 @@ export class TransformerContext {
    */
   public addObjectExtension(obj: ObjectTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant type '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent type '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getObject(obj.name.value);
@@ -457,7 +468,7 @@ export class TransformerContext {
         ...acc,
         [field.name.value]: field,
       }),
-      {}
+      {},
     );
     const newFields = obj.fields || [];
     const mergedFields = [...oldFields];
@@ -475,7 +486,7 @@ export class TransformerContext {
         ...acc,
         [field.name.value]: field,
       }),
-      {}
+      {},
     );
     const newInterfaces = obj.interfaces || [];
     const mergedInterfaces = [...oldInterfaces];
@@ -500,7 +511,7 @@ export class TransformerContext {
    */
   public addInputExtension(obj: InputObjectTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant input '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent input '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getType(obj.name.value) as InputObjectTypeDefinitionNode;
@@ -515,7 +526,7 @@ export class TransformerContext {
         ...acc,
         [field.name.value]: field,
       }),
-      {}
+      {},
     );
     const newFields = obj.fields || [];
     const mergedFields = [...oldFields];
@@ -540,7 +551,7 @@ export class TransformerContext {
    */
   public addInterfaceExtension(obj: InterfaceTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant interface '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent interface '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getType(obj.name.value) as InterfaceTypeDefinitionNode;
@@ -555,7 +566,7 @@ export class TransformerContext {
         ...acc,
         [field.name.value]: field,
       }),
-      {}
+      {},
     );
     const newFields = obj.fields || [];
     const mergedFields = [...oldFields];
@@ -580,7 +591,7 @@ export class TransformerContext {
    */
   public addUnionExtension(obj: UnionTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant union '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent union '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getType(obj.name.value) as UnionTypeDefinitionNode;
@@ -595,7 +606,7 @@ export class TransformerContext {
         ...acc,
         [type.name.value]: true,
       }),
-      {}
+      {},
     );
     const newTypes = obj.types || [];
     const mergedFields = [...oldTypes];
@@ -620,7 +631,7 @@ export class TransformerContext {
    */
   public addEnumExtension(obj: EnumTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant enum '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent enum '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getType(obj.name.value) as EnumTypeDefinitionNode;
@@ -635,7 +646,7 @@ export class TransformerContext {
         ...acc,
         [type.name.value]: true,
       }),
-      {}
+      {},
     );
     const newValues = obj.values || [];
     const mergedValues = [...oldValues];
@@ -686,5 +697,31 @@ export class TransformerContext {
 
   public getStackMapping(): StackMapping {
     return this.stackMapping;
+  }
+
+  /**
+   * Setter and getter the sync config
+   */
+  public setResolverConfig(resolverConfig: ResolverConfig) {
+    if (this.resolverConfig) {
+      throw new Error(`Resolver Configuration has already been added to the context`);
+    }
+    this.resolverConfig = resolverConfig;
+  }
+
+  public getResolverConfig(): ResolverConfig {
+    return this.resolverConfig;
+  }
+
+  public setTransformerVersion(version: Number) {
+    this.transformerVersion = version;
+  }
+
+  public getTransformerVersion(): Number {
+    return this.transformerVersion;
+  }
+
+  public isProjectUsingDataStore(): boolean {
+    return this.resolverConfig && (typeof this.resolverConfig.project !== undefined || typeof this.resolverConfig.models !== undefined);
   }
 }

@@ -6,11 +6,12 @@ import { HttpTransformer } from '../../../graphql-http-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { deployJsonServer, destroyJsonServer } from '../cdkUtils';
 
 jest.setTimeout(2000000);
 
@@ -34,36 +35,38 @@ function outputValueSelector(key: string) {
 }
 
 beforeAll(async () => {
+  const { apiUrl } = deployJsonServer();
+
   const validSchema = `
     type Comment @model {
         id: ID!
         title: String
-        simpleGet: CompObj @http(method: GET, url: "https://jsonplaceholder.typicode.com/posts/1")
-        simpleGet2: CompObj @http(url: "https://jsonplaceholder.typicode.com/posts/2")
+        simpleGet: CompObj @http(method: GET, url: "${apiUrl}posts/1")
+        simpleGet2: CompObj @http(url: "${apiUrl}posts/2")
         complexPost(
             id: Int,
             title: String!,
             body: String,
             userId: Int
-        ): CompObj @http(method: POST, url: "https://jsonplaceholder.typicode.com/posts")
+        ): CompObj @http(method: POST, url: "${apiUrl}posts")
         complexPut(
             id: Int!,
             title: String,
             body: String,
             userId: Int
-        ): CompObj @http(method: PUT, url: "https://jsonplaceholder.typicode.com/posts/:id")
-        deleter: String @http(method: DELETE, url: "https://jsonplaceholder.typicode.com/posts/3")
+        ): CompObj @http(method: PUT, url: "${apiUrl}posts/:id")
+        deleter: String @http(method: DELETE, url: "${apiUrl}posts/4")
         complexGet(
             data: String!,
             userId: Int!,
             _limit: Int
-        ): [CompObj] @http(url: "https://jsonplaceholder.typicode.com/:data")
+        ): [CompObj] @http(url: "${apiUrl}:data")
         complexGet2(
             dataType: String!,
             postId: Int!,
             secondType: String!,
             id: Int
-        ): [PostComment] @http(url: "https://jsonplaceholder.typicode.com/:dataType/:postId/:secondType")
+        ): [PostComment] @http(url: "${apiUrl}:dataType/:postId/:secondType")
     }
     type CompObj {
         userId: Int
@@ -79,11 +82,13 @@ beforeAll(async () => {
         body: String
     }
     `;
+
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
   }
+
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
@@ -98,8 +103,9 @@ beforeAll(async () => {
       new HttpTransformer(),
     ],
   });
+
   const out = transformer.transform(validSchema);
-  // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+
   try {
     const finishedStack = await deploy(
       customS3Client,
@@ -110,19 +116,24 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
+
     // Arbitrary wait to make sure everything is ready.
     await cf.wait(5, () => Promise.resolve());
+
     console.log('Successfully created stack ' + STACK_NAME);
     console.log(finishedStack);
     expect(finishedStack).toBeDefined();
+
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
     const endpoint = getApiEndpoint(finishedStack.Outputs);
     const apiKey = getApiKey(finishedStack.Outputs);
+
     expect(apiKey).toBeDefined();
     expect(endpoint).toBeDefined();
+
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
   } catch (e) {
     console.error(e);
@@ -132,7 +143,11 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
+    console.log('Deleting json server deployment');
+    destroyJsonServer();
+
     console.log('Deleting stack ' + STACK_NAME);
+
     await cf.deleteStack(STACK_NAME);
     await cf.waitForStack(STACK_NAME);
     console.log('Successfully deleted stack ' + STACK_NAME);
@@ -146,6 +161,7 @@ afterAll(async () => {
       expect(true).toEqual(false);
     }
   }
+
   try {
     await emptyBucket(BUCKET_NAME);
   } catch (e) {
@@ -170,9 +186,12 @@ test('Test HTTP GET request', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
+
     const post1Title = 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit';
+
+    expect(response.errors).toBeUndefined();
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
     expect(response.data.createComment.simpleGet).toBeDefined();
@@ -198,9 +217,12 @@ test('Test HTTP GET request 2', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
+
     const post2Title = 'qui est esse';
+
+    expect(response.errors).toBeUndefined();
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
     expect(response.data.createComment.simpleGet2).toBeDefined();
@@ -233,8 +255,10 @@ test('Test HTTP POST request', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
+
+    expect(response.errors).toBeUndefined();
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
     expect(response.data.createComment.complexPost).toBeDefined();
@@ -256,7 +280,7 @@ test('Test HTTP PUT request', async () => {
                 title
                 complexPut(
                     params: {
-                        id: "2"
+                        id: "3"
                     },
                     body: {
                         title: "foo",
@@ -271,8 +295,10 @@ test('Test HTTP PUT request', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
+
+    expect(response.errors).toBeUndefined();
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
     expect(response.data.createComment.complexPut).toBeDefined();
@@ -295,11 +321,13 @@ test('Test HTTP DELETE request', async () => {
                 deleter
             }
         }`,
-      {}
+      {},
     );
+
+    expect(response.errors).toBeUndefined();
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
-    expect(response.data.createComment.deleter).toBeDefined();
+    expect(response.data.createComment.deleter).not.toBeNull();
   } catch (e) {
     console.error(e);
     // fail
@@ -329,8 +357,10 @@ test('Test GET with URL param and query values', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
+
+    expect(response.errors).toBeUndefined();
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
     expect(response.data.createComment.complexGet).toBeDefined();
@@ -365,8 +395,10 @@ test('Test GET with multiple URL params and query values', async () => {
                 }
             }
         }`,
-      {}
+      {},
     );
+
+    expect(response.errors).toBeUndefined();
     expect(response.data.createComment.id).toBeDefined();
     expect(response.data.createComment.title).toEqual('Hello, World!');
     expect(response.data.createComment.complexGet2).toBeDefined();
@@ -396,9 +428,13 @@ test('Test that GET errors when missing a required Query input object', async ()
                 }
             }
         }`,
-      {}
+      {},
     );
+
     expect(response.data).toBeNull();
+    expect(response.errors).toBeDefined();
+    expect(response.errors).toHaveLength(1);
+    expect(response.errors[0].message).toEqual('Validation error of type MissingFieldArgument: Missing field argument query @ \'createComment/complexGet\'');
   } catch (e) {
     console.error(e);
     // fail
@@ -425,9 +461,13 @@ test('Test that POST errors when missing a non-null arg in query/body', async ()
                 }
             }
         }`,
-      {}
+      {},
     );
+
     expect(response.data.createComment.complexPost).toBeNull();
+    expect(response.errors).toBeDefined();
+    expect(response.errors).toHaveLength(1);
+    expect(response.errors[0].message).toEqual('An argument you marked as Non-Null is not present in the query nor the body of your request.');
   } catch (e) {
     console.error(e);
     // fail

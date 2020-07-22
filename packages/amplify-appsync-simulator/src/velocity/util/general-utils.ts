@@ -1,14 +1,16 @@
 import { Unauthorized, ValidateError, TemplateSentError } from './errors';
-import * as autoId from 'uuid/v4';
+import autoId from 'uuid/v4';
 import { JavaString } from '../value-mapper/string';
 import { JavaArray } from '../value-mapper/array';
 import { JavaMap } from '../value-mapper/map';
+import jsStringEscape from 'js-string-escape';
+import { GraphQLResolveInfo, FieldNode } from 'graphql';
 export const generalUtils = {
   errors: [],
   quiet: () => '',
   qr: () => '',
   escapeJavaScript(value) {
-    return require('js-string-escape')(value);
+    return jsStringEscape(value);
   },
   urlEncode(value) {
     return encodeURI(value);
@@ -39,11 +41,13 @@ export const generalUtils = {
     throw err;
   },
   error(message, type = null, data = null, errorInfo = null) {
+    data = filterData(this.info, data);
     const err = new TemplateSentError(message, type, data, errorInfo, this.info);
     this.errors.push(err);
     throw err;
   },
   appendError(message, type = null, data = null, errorInfo = null) {
+    data = filterData(this.info, data);
     this.errors.push(new TemplateSentError(message, type, data, errorInfo, this.info));
     return '';
   },
@@ -119,3 +123,17 @@ export const generalUtils = {
     return new RegExp(pattern).test(value);
   },
 };
+
+function filterData(info: GraphQLResolveInfo, data = null): any {
+  if (data instanceof JavaMap) {
+    var filteredData = {};
+    // filter fields in data based on the query selection set
+    info.operation.selectionSet.selections
+      .map(selection => selection as FieldNode)
+      .find(selection => selection.name.value === info.fieldName)
+      .selectionSet.selections.map(fieldNode => (fieldNode as FieldNode).name.value)
+      .forEach(field => (filteredData[field] = data.get(field)));
+    data = filteredData;
+  }
+  return data;
+}

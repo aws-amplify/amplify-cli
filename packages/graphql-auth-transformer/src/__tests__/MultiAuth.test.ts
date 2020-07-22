@@ -1,6 +1,5 @@
-import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind } from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, parse, DocumentNode, Kind } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer, AppSyncAuthConfiguration, AppSyncAuthMode } from '../ModelAuthTransformer';
@@ -67,6 +66,7 @@ const multiAuthDirective =
 const ownerAuthDirective = '@auth(rules: [{allow: owner}])';
 const ownerWithIAMAuthDirective = '@auth(rules: [{allow: owner, provider: iam }])';
 const ownerRestrictedPublicAuthDirective = '@auth(rules: [{allow: owner},{allow: public, operations: [read]}])';
+const ownerRestrictedIAMPrivateAuthDirective = '@auth(rules: [{allow: owner},{allow: private, operations: [read], provider: iam }])';
 const groupsAuthDirective = '@auth(rules: [{allow: groups}])';
 const groupsWithApiKeyAuthDirective = '@auth(rules: [{allow: groups}, {allow: public, operations: [read]}])';
 const groupsWithProviderAuthDirective = '@auth(rules: [{allow: groups, provider: iam }])';
@@ -76,6 +76,9 @@ const publicIAMAuthDirective = '@auth(rules: [{allow: public, provider: iam }])'
 const privateWithApiKeyAuthDirective = '@auth(rules: [{allow: private, provider: apiKey }])';
 const publicAuthDirective = '@auth(rules: [{allow: public}])';
 const publicUserPoolsAuthDirective = '@auth(rules: [{allow: public, provider: userPools}])';
+const privateAndPublicDirective = '@auth(rules: [{allow: private}, {allow: public}])';
+const privateAndPrivateIAMDirective = '@auth(rules: [{allow: private}, {allow: private, provider: iam}])';
+const privateIAMDirective = '@auth(rules: [{allow: private, provider: iam}])';
 
 const getSchema = (authDirective: string) => {
   return `
@@ -109,6 +112,50 @@ const getSchemaWithTypeAndFieldAuth = (typeAuthDirective: string, fieldAuthDirec
     }`;
 };
 
+const getSchemaWithNonModelField = (authDirective: string) => {
+  return `
+    type Post @model ${authDirective} {
+        id: ID!
+        title: String!
+        location: Location
+        status: Status
+        createdAt: String
+        updatedAt: String
+    }
+
+    type Location {
+      name: String
+      address: Address
+    }
+
+    type Address {
+      street: String
+      city: String
+      state: String
+      zip: String
+    }
+
+    enum Status {
+      PUBLISHED,
+      DRAFT
+    }`;
+};
+
+const getSchemaWithRecursiveNonModelField = (authDirective: string) => {
+  return `
+    type Post @model ${authDirective} {
+      id: ID!
+      title: String!
+      tags: [Tag]
+    }
+
+    type Tag {
+      id: ID
+      tags: [Tag]
+    }
+  `;
+};
+
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer(), new ModelAuthTransformer({ authConfig })],
@@ -137,6 +184,21 @@ const expectTwo = (fieldOrType, directiveNames) => {
   expect(fieldOrType.directives.find(d => d.name.value === directiveNames[1])).toBeDefined();
 };
 
+const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]) => {
+  expect(directiveNames).toBeDefined();
+  expect(directiveNames).toHaveLength(directiveNames.length);
+  expect(fieldOrType.directives.length).toEqual(directiveNames.length);
+  directiveNames.forEach(directiveName => {
+    expect(fieldOrType.directives).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: expect.objectContaining({ value: directiveName }),
+        }),
+      ]),
+    );
+  });
+};
+
 const getField = (type, name) => type.fields.find(f => f.name.value === name);
 
 describe('Validation tests', () => {
@@ -156,7 +218,7 @@ describe('Validation tests', () => {
       privateAuthDirective,
       apiKeyDefaultConfig,
       `@auth directive with 'userPools' provider found, but the project has no Cognito User \
-Pools authentication provider configured.`
+Pools authentication provider configured.`,
     );
   });
 
@@ -165,7 +227,7 @@ Pools authentication provider configured.`
       publicAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'apiKey' provider found, but the project has no API Key \
-authentication provider configured.`
+authentication provider configured.`,
     );
   });
 
@@ -174,7 +236,7 @@ authentication provider configured.`
       publicIAMAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'iam' provider found, but the project has no IAM \
-authentication provider configured.`
+authentication provider configured.`,
     );
   });
 
@@ -183,7 +245,7 @@ authentication provider configured.`
       ownerOpenIdAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT \
-authentication provider configured.`
+authentication provider configured.`,
     );
   });
 
@@ -191,8 +253,8 @@ authentication provider configured.`
     validationTest(
       groupsWithProviderAuthDirective,
       userPoolsDefaultConfig,
-      `@auth directive with 'groups' strategy only supports 'userPools' provider, but found \
-'iam' assigned`
+      `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found \
+'iam' assigned`,
     );
   });
 
@@ -201,7 +263,7 @@ authentication provider configured.`
       ownerWithIAMAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'owner' strategy only supports 'userPools' (default) and \
-'oidc' providers, but found 'iam' assigned.`
+'oidc' providers, but found 'iam' assigned.`,
     );
   });
 
@@ -210,7 +272,7 @@ authentication provider configured.`
       publicUserPoolsAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
-found 'userPools' assigned.`
+found 'userPools' assigned.`,
     );
   });
 
@@ -219,7 +281,7 @@ found 'userPools' assigned.`
       privateWithApiKeyAuthDirective,
       userPoolsDefaultConfig,
       `@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but \
-found 'apiKey' assigned.`
+found 'apiKey' assigned.`,
     );
   });
 });
@@ -306,12 +368,12 @@ describe('Type directive transformation tests', () => {
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expect(expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
-    expect(expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']);
+    expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']);
 
-    expect(expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
   });
 
   test(`'public' with IAM provider adds policy for Unauth role`, () => {
@@ -320,7 +382,7 @@ describe('Type directive transformation tests', () => {
 
     const out = transformer.transform(schema);
 
-    expect(out.rootStack.Resources[ResourceConstants.RESOURCES.UnauthRolePolicy]).toBeDefined();
+    expect(out.rootStack.Resources.UnauthRolePolicy01).toBeDefined();
   });
 
   test(`Field level @auth is propagated to type and the type related operations`, () => {
@@ -332,15 +394,15 @@ describe('Type directive transformation tests', () => {
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expect(expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
-    expect(expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']);
+    expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']);
 
-    expect(expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
 
     const postType = getObjectType(schemaDoc, 'Post');
-    expect(expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']);
 
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Determine request authentication mode';
@@ -357,15 +419,15 @@ describe('Type directive transformation tests', () => {
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expect(expectOne(getField(queryType, 'getPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(queryType, 'listPosts'), 'aws_cognito_user_pools'));
+    expectOne(getField(queryType, 'getPost'), 'aws_cognito_user_pools');
+    expectOne(getField(queryType, 'listPosts'), 'aws_cognito_user_pools');
 
-    expect(expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
 
     const postType = getObjectType(schemaDoc, 'Post');
-    expect(expectOne(getField(postType, 'protected'), 'aws_cognito_user_pools'));
+    expectOne(getField(postType, 'protected'), 'aws_cognito_user_pools');
 
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Determine request authentication mode';
@@ -382,20 +444,171 @@ describe('Type directive transformation tests', () => {
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expect(expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
-    expect(expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']);
+    expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']);
 
-    expect(expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
-    expect(expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
+    expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
 
     const postType = getObjectType(schemaDoc, 'Post');
-    expect(expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']));
+    expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']);
 
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Determine request authentication mode';
 
     expect(out.resolvers['Post.protected.req.vtl']).toContain(authModeCheckSnippet);
+  });
+
+  test(`Nested types without @model getting directives applied (cognito default, api key additional)`, () => {
+    const schema = getSchemaWithNonModelField(privateAndPublicDirective);
+    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['API_KEY']));
+
+    const out = transformer.transform(schema);
+    const schemaDoc = parse(out.schema);
+
+    const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
+    const expectedDirectiveNames = [userPoolsDirectiveName, apiKeyDirectiveName];
+
+    if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
+      let expectedDireciveNameCount = 0;
+
+      for (const expectedDirectiveName of expectedDirectiveNames) {
+        expect(locationType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expectedDireciveNameCount++;
+      }
+
+      expect(expectedDireciveNameCount).toEqual(locationType.directives.length);
+
+      expectedDireciveNameCount = 0;
+
+      for (const expectedDirectiveName of expectedDirectiveNames) {
+        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expectedDireciveNameCount++;
+      }
+
+      expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
+    }
+  });
+
+  test(`Recursive types without @model`, () => {
+    const schema = getSchemaWithRecursiveNonModelField(ownerRestrictedIAMPrivateAuthDirective);
+    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
+
+    const out = transformer.transform(schema);
+    const schemaDoc = parse(out.schema);
+
+    const tagType = getObjectType(schemaDoc, 'Tag');
+    const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
+
+    expectMultiple(tagType, expectedDirectiveNames);
+  });
+
+  test(`Nested types without @model getting directives applied (cognito default, iam additional)`, () => {
+    const schema = getSchemaWithNonModelField(privateAndPrivateIAMDirective);
+    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
+
+    const out = transformer.transform(schema);
+    const schemaDoc = parse(out.schema);
+
+    const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
+    const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
+
+    if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
+      let expectedDireciveNameCount = 0;
+
+      for (const expectedDirectiveName of expectedDirectiveNames) {
+        expect(locationType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expectedDireciveNameCount++;
+      }
+
+      expect(expectedDireciveNameCount).toEqual(locationType.directives.length);
+
+      expectedDireciveNameCount = 0;
+
+      for (const expectedDirectiveName of expectedDirectiveNames) {
+        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expectedDireciveNameCount++;
+      }
+
+      expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
+
+      expect(out.rootStack.Resources.AuthRolePolicy01).toBeDefined();
+
+      const locationPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
+        r =>
+          r['Fn::Sub'] &&
+          r['Fn::Sub'].length &&
+          r['Fn::Sub'].length === 2 &&
+          r['Fn::Sub'][1].typeName &&
+          r['Fn::Sub'][1].typeName === 'Location',
+      );
+      expect(locationPolicy).toBeDefined();
+
+      const addressPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
+        r =>
+          r['Fn::Sub'] &&
+          r['Fn::Sub'].length &&
+          r['Fn::Sub'].length === 2 &&
+          r['Fn::Sub'][1].typeName &&
+          r['Fn::Sub'][1].typeName === 'Address',
+      );
+      expect(addressPolicy).toBeDefined();
+    }
+  });
+
+  test(`Nested types without @model not getting directives applied for iam, and no policy is generated`, () => {
+    const schema = getSchemaWithNonModelField('');
+    const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+
+    const out = transformer.transform(schema);
+    const schemaDoc = parse(out.schema);
+
+    const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
+
+    expect(locationType.directives.length).toBe(0);
+    expect(addressType.directives.length).toBe(0);
+
+    expect(out.rootStack.Resources.AuthRolePolicy01).toBeUndefined();
+  });
+
+  test(`Nested types without @model not getting directives applied for iam, but policy is generated`, () => {
+    const schema = getSchemaWithNonModelField(privateIAMDirective);
+    const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+
+    const out = transformer.transform(schema);
+    const schemaDoc = parse(out.schema);
+
+    const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
+
+    expect(locationType.directives.length).toBe(0);
+    expect(addressType.directives.length).toBe(0);
+
+    expect(out.rootStack.Resources.AuthRolePolicy01).toBeDefined();
+
+    const locationPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
+      r =>
+        r['Fn::Sub'] &&
+        r['Fn::Sub'].length &&
+        r['Fn::Sub'].length === 2 &&
+        r['Fn::Sub'][1].typeName &&
+        r['Fn::Sub'][1].typeName === 'Location',
+    );
+    expect(locationPolicy).toBeDefined();
+
+    const addressPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
+      r =>
+        r['Fn::Sub'] &&
+        r['Fn::Sub'].length &&
+        r['Fn::Sub'].length === 2 &&
+        r['Fn::Sub'][1].typeName &&
+        r['Fn::Sub'][1].typeName === 'Address',
+    );
+    expect(addressPolicy).toBeDefined();
   });
 
   // Disabling until troubleshooting the changes
@@ -437,4 +650,77 @@ describe('Type directive transformation tests', () => {
   //     const modelPostConnectionType = getObjectType(schemaDoc, 'ModelPostConnection');
   //     expect (expectOne(modelPostConnectionType, 'aws_cognito_user_pools'));
   // });
+});
+
+describe(`Policy slicing tests`, () => {
+  test(`'For the long Todo type there should be 2 auth role managed policies generated`, () => {
+    const schema = `
+    type TodoWithExtraLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName @model(subscriptions:null) @auth(rules:[{allow: private, provider: iam}])
+    {
+      id: ID!
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename001: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename002: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename003: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename004: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename005: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename006: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename007: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename008: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename009: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename010: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename011: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename012: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename013: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename014: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename015: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename016: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename017: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename018: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename019: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename020: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename021: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename022: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename023: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename024: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename025: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename026: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename027: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename028: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename029: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename030: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename031: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename032: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename033: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename034: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename035: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename036: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename037: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename038: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename039: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename040: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename041: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename042: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename043: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename044: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename045: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename046: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename047: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename048: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename049: String! @auth(rules:[{allow: private, provider: iam}])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename050: String! @auth(rules:[{allow: private, provider: iam}])
+      description: String
+    }
+    `;
+    const authConfig = withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM']);
+    const transformer = getTransformer(authConfig);
+    const out = transformer.transform(schema);
+
+    expect(out.rootStack.Resources.AuthRolePolicy01).toBeTruthy();
+    expect(out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(26);
+    expect(out.rootStack.Resources.AuthRolePolicy02).toBeTruthy();
+    expect(out.rootStack.Resources.AuthRolePolicy02.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(26);
+    expect(out.rootStack.Resources.AuthRolePolicy03).toBeTruthy();
+    expect(out.rootStack.Resources.AuthRolePolicy03.Properties.PolicyDocument.Statement[0].Resource.length).toEqual(4);
+    expect(out.rootStack.Resources.UnauthRolePolicy01).toBeFalsy();
+  });
 });

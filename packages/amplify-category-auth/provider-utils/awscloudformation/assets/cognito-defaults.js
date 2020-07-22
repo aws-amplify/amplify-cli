@@ -13,6 +13,7 @@ const roles = {
 };
 
 const generalDefaults = projectName => ({
+  sharedId,
   resourceName: `${projectName}${sharedId}`,
   resourceNameTruncated: `${projectName.substring(0, 6)}${sharedId}`,
   authSelections: 'identityPoolAndUserPool',
@@ -46,7 +47,7 @@ const userPoolDefaults = projectName => {
 
 const withSocialDefaults = projectName => ({
   hostedUI: true,
-  hostedUIDomainName: `${projectName}-${sharedId}`,
+  hostedUIDomainName: `${projectName.replace('_', '')}-${sharedId}`,
   AllowedOAuthFlows: ['code'],
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });

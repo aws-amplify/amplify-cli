@@ -14,8 +14,11 @@ export async function run(context: Context) {
     .then(async subCommandModule => {
       await subCommandModule.run(context);
     })
-    .catch(() => {
-      context.print.error(`Cannot load command amplify plugin ${subCommand}`);
+    .catch(err => {
+      context.print.error(`Error executing command amplify plugin ${subCommand}`);
+      context.print.error(err.message || err.stack || JSON.stringify(err));
+      context.usageData.emitError(err);
+      process.exit(1);
     });
 }
 

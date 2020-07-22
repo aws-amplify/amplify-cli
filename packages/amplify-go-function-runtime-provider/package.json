@@ -1,0 +1,39 @@
+{
+  "name": "amplify-go-function-runtime-provider",
+  "version": "1.2.0",
+  "description": "Provides functionality related to functions in Go 1.x on AWS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-go-function-runtime-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "golang"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo resources/localinvoke/go.sum resources/localinvoke/main resources/localinvoke/main.exe"
+  },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.4.0",
+    "archiver": "^3.1.1",
+    "execa": "^4.0.0",
+    "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
+    "portfinder": "^1.0.25",
+    "semver": "^7.1.3",
+    "which": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/archiver": "^3.1.0",
+    "@types/node": "^10.17.13",
+    "@types/semver": "^7.1.0",
+    "@types/which": "^1.3.2"
+  }
+}

@@ -6,11 +6,11 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 
 jest.setTimeout(2000000);
 
@@ -34,40 +34,62 @@ function outputValueSelector(key: string) {
 }
 
 beforeAll(async () => {
-  const validSchema = `
+  const validSchema = /* GraphQL */ `
     type Order @model @key(fields: ["customerEmail", "createdAt"]) {
-        customerEmail: String!
-        createdAt: String!
-        orderId: ID!
+      customerEmail: String!
+      createdAt: AWSDateTime!
+      orderId: ID!
     }
     type Customer @model @key(fields: ["email"]) {
-        email: String!
-        addresslist:  [String]
-        username: String
+      email: String!
+      addresslist: [String]
+      username: String
     }
-    type Item @model
-        @key(fields: ["orderId", "status", "createdAt"])
-        @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
-        @key(name: "ByCreatedAt", fields: ["createdAt", "status"], queryField: "itemsByCreatedAt")
-    {
-        orderId: ID!
-        status: Status!
-        createdAt: AWSDateTime!
-        name: String!
+    type Item
+      @model
+      @key(fields: ["orderId", "status", "createdAt"])
+      @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
+      @key(name: "ByCreatedAt", fields: ["createdAt", "status"], queryField: "itemsByCreatedAt") {
+      orderId: ID!
+      status: Status!
+      createdAt: AWSDateTime!
+      name: String!
     }
     enum Status {
-        DELIVERED IN_TRANSIT PENDING UNKNOWN
+      DELIVERED
+      IN_TRANSIT
+      PENDING
+      UNKNOWN
     }
-    type ShippingUpdate @model
-        @key(name: "ByOrderItemStatus", fields: ["orderId", "itemId", "status"], queryField: "shippingUpdates")
-    {
-        id: ID!
-        orderId: ID
-        itemId: ID
-        status: Status
-        name: String
+    type ShippingUpdate @model @key(name: "ByOrderItemStatus", fields: ["orderId", "itemId", "status"], queryField: "shippingUpdates") {
+      id: ID!
+      orderId: ID
+      itemId: ID
+      status: Status
+      name: String
     }
-    `;
+    type ModelWithIdAndCreatedAtAsKey @model @key(fields: ["id", "createdAt"]) {
+      id: ID!
+      createdAt: AWSDateTime!
+      name: String!
+    }
+    type KeylessBlog @model {
+      id: ID!
+      name: String!
+      createdAt: AWSDateTime!
+    }
+    type KeyedBlog @model @key(fields: ["id"]) {
+      id: ID!
+      name: String!
+      createdAt: AWSDateTime
+    }
+    type KeyedSortedBlog @model @key(fields: ["id", "createdAt"]) {
+      id: ID!
+      name: String!
+      createdAt: AWSDateTime!
+    }
+  `;
+
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
@@ -97,12 +119,11 @@ beforeAll(async () => {
     LOCAL_FS_BUILD_DIR,
     BUCKET_NAME,
     S3_ROOT_DIR_KEY,
-    BUILD_TIMESTAMP
+    BUILD_TIMESTAMP,
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
   console.log('Successfully created stack ' + STACK_NAME);
-  console.log(finishedStack);
   expect(finishedStack).toBeDefined();
   const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
   const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
@@ -139,6 +160,46 @@ afterAll(async () => {
 /**
  * Test queries below
  */
+test('Test next token with key', async () => {
+  const status = 'PENDING';
+  const createdAt = '2019-06-06T00:01:01.000Z';
+  // createItems
+  await createItem('order1', status, 'item1', '2019-01-06T00:01:01.000Z');
+  await createItem('order2', status, 'item2', '2019-02-06T00:01:01.000Z');
+  await createItem('order3', status, 'item3', '2019-03-06T00:01:01.000Z');
+  await createItem('order4', status, 'item4', '2019-06-06T00:01:01.000Z');
+  // query itemsByCreatedAt with limit of 2
+  // const items = await itemsByCreatedAt(createdAt, { beginsWith: status }, 2);
+  const items = await itemsByStatus(status, { beginsWith: '2019' }, 2);
+  expect(items.data).toBeDefined();
+  const itemsNextToken = items.data.itemsByStatus.nextToken;
+  expect(itemsNextToken).toBeDefined();
+  // get first two values
+  expect(items.data.itemsByStatus.items).toHaveLength(2);
+  expect(items.data.itemsByStatus.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ orderId: 'order1', name: 'item1' }),
+      expect.objectContaining({ orderId: 'order2', name: 'item2' }),
+    ]),
+  );
+  // use next token to get other values
+  const items2 = await itemsByStatus(status, { beginsWith: '2019' }, 2, itemsNextToken);
+  expect(items2.data).toBeDefined();
+  // get last two values
+  expect(items2.data.itemsByStatus.items).toHaveLength(2);
+  expect(items2.data.itemsByStatus.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ orderId: 'order3', name: 'item3' }),
+      expect.objectContaining({ orderId: 'order4', name: 'item4' }),
+    ]),
+  );
+  // deleteItems
+  await deleteItem('order1', status, createdAt);
+  await deleteItem('order2', status, createdAt);
+  await deleteItem('order3', status, createdAt);
+  await deleteItem('order4', status, createdAt);
+});
+
 test('Test getX with a two part primary key.', async () => {
   const order1 = await createOrder('test@gmail.com', '1');
   const getOrder1 = await getOrder('test@gmail.com', order1.data.createOrder.createdAt);
@@ -210,7 +271,10 @@ test('Test listX with three part primary key.', async () => {
   items = await listItem(hashKey, { eq: { status: 'PENDING', createdAt: '2018-09-01T00:01:01.000Z' } });
   expect(items.data.listItems.items).toHaveLength(1);
   items = await listItem(hashKey, {
-    between: [{ status: 'PENDING', createdAt: '2018-08-01' }, { status: 'PENDING', createdAt: '2018-10-01' }],
+    between: [
+      { status: 'PENDING', createdAt: '2018-08-01' },
+      { status: 'PENDING', createdAt: '2018-10-01' },
+    ],
   });
   expect(items.data.listItems.items).toHaveLength(1);
   items = await listItem(hashKey, { gt: { status: 'PENDING', createdAt: '2018-08-1' } });
@@ -291,8 +355,16 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
   await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
 });
 
-test('Test update mutation validation with three part secondary key.', async () => {
-  await createShippingUpdate('order1', 'item1', 'PENDING', 'name1');
+test('Test create/update mutation validation with three part secondary key.', async () => {
+  const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: 'order1', itemId: 'item1', name: '42' });
+  expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
+  expect(createResponseMissingLastSortKey.errors).toHaveLength(1);
+
+  const createResponseMissingFirstSortKey = await createShippingUpdate({ orderId: '2ndtry', status: 'PENDING', name: '43?' });
+  expect(createResponseMissingFirstSortKey.data.createShippingUpdate).toBeNull();
+  expect(createResponseMissingFirstSortKey.errors).toHaveLength(1);
+
+  await createShippingUpdate({ orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1' });
   const items = await getShippingUpdates('order1');
   expect(items.data.shippingUpdates.items).toHaveLength(1);
   const item = items.data.shippingUpdates.items[0];
@@ -343,14 +415,14 @@ test('Test Customer Mutation with list member', async () => {
 });
 
 test('Test @key directive with customer sortDirection', async () => {
-  await createOrder('testorder1@email.com', '1', '2016-03-10');
-  await createOrder('testorder1@email.com', '2', '2018-05-22');
-  await createOrder('testorder1@email.com', '3', '2019-06-27');
+  await createOrder('testorder1@email.com', '1', '2016-03-10T00:45:08+00:00');
+  await createOrder('testorder1@email.com', '2', '2018-05-22T21:45:08+00:00');
+  await createOrder('testorder1@email.com', '3', '2019-06-27T12:00:08+00:00');
   const newOrders = await listOrders('testorder1@email.com', { beginsWith: '201' }, 'DESC');
   const oldOrders = await listOrders('testorder1@email.com', { beginsWith: '201' }, 'ASC');
-  expect(newOrders.data.listOrders.items[0].createdAt).toEqual('2019-06-27');
+  expect(newOrders.data.listOrders.items[0].createdAt).toEqual('2019-06-27T12:00:08+00:00');
   expect(newOrders.data.listOrders.items[0].orderId).toEqual('3');
-  expect(oldOrders.data.listOrders.items[0].createdAt).toEqual('2016-03-10');
+  expect(oldOrders.data.listOrders.items[0].createdAt).toEqual('2016-03-10T00:45:08+00:00');
   expect(oldOrders.data.listOrders.items[0].orderId).toEqual('1');
 });
 
@@ -358,16 +430,120 @@ test('Test @key directive with customer sortDirection', async () => {
 // DELIVERED IN_TRANSIT PENDING UNKNOWN
 // (orderId: string, itemId: string, sortDirection: string)
 test('Test @key directive with sortDirection on GSI', async () => {
-  await createShippingUpdate('order1', 'product1', 'PENDING', 'order1Name1');
-  await createShippingUpdate('order1', 'product2', 'IN_TRANSIT', 'order1Name2');
-  await createShippingUpdate('order1', 'product3', 'DELIVERED', 'order1Name3');
-  await createShippingUpdate('order1', 'product4', 'DELIVERED', 'order1Name4');
+  await createShippingUpdate({ orderId: 'order1', itemId: 'product1', status: 'PENDING', name: 'order1Name1' });
+  await createShippingUpdate({ orderId: 'order1', itemId: 'product2', status: 'IN_TRANSIT', name: 'order1Name2' });
+  await createShippingUpdate({ orderId: 'order1', itemId: 'product3', status: 'DELIVERED', name: 'order1Name3' });
+  await createShippingUpdate({ orderId: 'order1', itemId: 'product4', status: 'DELIVERED', name: 'order1Name4' });
   const newShippingUpdates = await listGSIShippingUpdate('order1', { beginsWith: { itemId: 'product' } }, 'DESC');
   const oldShippingUpdates = await listGSIShippingUpdate('order1', { beginsWith: { itemId: 'product' } }, 'ASC');
   expect(oldShippingUpdates.data.shippingUpdates.items[0].status).toEqual('PENDING');
   expect(oldShippingUpdates.data.shippingUpdates.items[0].name).toEqual('testing2');
   expect(newShippingUpdates.data.shippingUpdates.items[0].status).toEqual('DELIVERED');
   expect(newShippingUpdates.data.shippingUpdates.items[0].name).toEqual('order1Name4');
+});
+
+test('Test @key directive supports auto Id and createdAt fields in create mutation', async () => {
+  const result = await GRAPHQL_CLIENT.query(
+    `mutation CreateModelWithIdAndCreatedAtAsKey{
+        createModelWithIdAndCreatedAtAsKey(input:{ name: "John Doe" }) {
+            id
+            createdAt
+            name
+        }
+    }`,
+  );
+  expect(result.data.createModelWithIdAndCreatedAtAsKey.id).not.toBeNull();
+  expect(result.data.createModelWithIdAndCreatedAtAsKey.createdAt).not.toBeNull();
+  expect(result.data.createModelWithIdAndCreatedAtAsKey.name).toEqual('John Doe');
+});
+
+test('Test sortDirection validation error for List on KeyedBlog type', async () => {
+  const result = await GRAPHQL_CLIENT.query(
+    `mutation CreateKeyedBlog($input: CreateKeyedBlogInput!) {
+        createKeyedBlog(input: $input) {
+            id
+            name
+        }
+    }`,
+    {
+      input: {
+        id: 'B1',
+        name: 'Blog #1',
+      },
+    },
+  );
+
+  expect(result.data).not.toBeNull();
+  expect(result.errors).toBeUndefined();
+
+  const listResult = await GRAPHQL_CLIENT.query(
+    `query ListKeyedBlogs {
+          listKeyedBlogs(sortDirection: ASC) {
+            items {
+              id
+              name
+            }
+          }
+        }`,
+  );
+
+  expect(listResult.data).not.toBeNull();
+  expect(listResult.data.listKeyedBlogs).toBeNull();
+  expect(listResult.errors).toBeDefined();
+  expect(listResult.errors.length).toEqual(1);
+  expect(listResult.errors[0].message).toEqual('sortDirection is not supported for List operations without a Sort key defined.');
+});
+
+test('Test sortDirection validation error for List on KeyedSortedBlog type', async () => {
+  const result = await GRAPHQL_CLIENT.query(
+    `mutation CreateKeyedSortedBlog($input: CreateKeyedSortedBlogInput!) {
+        createKeyedSortedBlog(input: $input) {
+            id
+            name
+        }
+    }`,
+    {
+      input: {
+        id: 'B1',
+        name: 'Blog #1',
+      },
+    },
+  );
+
+  expect(result.data).not.toBeNull();
+  expect(result.errors).toBeUndefined();
+
+  const listWithErrorResult = await GRAPHQL_CLIENT.query(
+    `query ListKeyedSortedBlogs {
+          listKeyedSortedBlogs(sortDirection: ASC) {
+            items {
+              id
+              name
+            }
+          }
+        }`,
+  );
+
+  expect(listWithErrorResult.data).not.toBeNull();
+  expect(listWithErrorResult.data.listKeyedSortedBlogs).toBeNull();
+  expect(listWithErrorResult.errors).toBeDefined();
+  expect(listWithErrorResult.errors.length).toEqual(1);
+  expect(listWithErrorResult.errors[0].message).toEqual("When providing argument 'sortDirection' you must also provide argument 'id'.");
+
+  const listResult = await GRAPHQL_CLIENT.query(
+    `query ListKeyedSortedBlogs {
+          listKeyedSortedBlogs(id: "B1", sortDirection: ASC) {
+            items {
+              id
+              name
+            }
+          }
+        }`,
+  );
+
+  expect(listResult.data).not.toBeNull();
+  expect(listResult.data.listKeyedSortedBlogs).not.toBeNull();
+  expect(listResult.errors).toBeUndefined;
 });
 
 async function createCustomer(email: string, addresslist: string[], username: string) {
@@ -381,9 +557,8 @@ async function createCustomer(email: string, addresslist: string[], username: st
     }`,
     {
       input: { email, addresslist, username },
-    }
+    },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -398,9 +573,8 @@ async function updateCustomer(email: string, addresslist: string[], username: st
     }`,
     {
       input: { email, addresslist, username },
-    }
+    },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -415,9 +589,8 @@ async function getCustomer(email: string) {
     }`,
     {
       email,
-    }
+    },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -432,9 +605,8 @@ async function createOrder(customerEmail: string, orderId: string, createdAt: st
     }`,
     {
       input: { customerEmail, orderId, createdAt },
-    }
+    },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -449,9 +621,8 @@ async function updateOrder(customerEmail: string, createdAt: string, orderId: st
     }`,
     {
       input: { customerEmail, orderId, createdAt },
-    }
+    },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -466,24 +637,22 @@ async function deleteOrder(customerEmail: string, createdAt: string) {
     }`,
     {
       input: { customerEmail, createdAt },
-    }
+    },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
 async function getOrder(customerEmail: string, createdAt: string) {
   const result = await GRAPHQL_CLIENT.query(
-    `query GetOrder($customerEmail: String!, $createdAt: String!) {
+    `query GetOrder($customerEmail: String!, $createdAt: AWSDateTime!) {
         getOrder(customerEmail: $customerEmail, createdAt: $createdAt) {
             customerEmail
             orderId
             createdAt
         }
     }`,
-    { customerEmail, createdAt }
+    { customerEmail, createdAt },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -510,9 +679,8 @@ async function listOrders(customerEmail: string, createdAt: ModelStringKeyCondit
                 }
             }
         }`,
-    input
+    input,
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -529,10 +697,8 @@ async function createItem(orderId: string, status: string, name: string, created
     }`,
     {
       input,
-    }
+    },
   );
-  console.log(`Running create: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -549,10 +715,8 @@ async function updateItem(orderId: string, status: string, createdAt: string, na
     }`,
     {
       input,
-    }
+    },
   );
-  console.log(`Running create: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -569,10 +733,8 @@ async function deleteItem(orderId: string, status: string, createdAt: string) {
     }`,
     {
       input,
-    }
+    },
   );
-  console.log(`Running delete: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -586,9 +748,8 @@ async function getItem(orderId: string, status: string, createdAt: string) {
             name
         }
     }`,
-    { orderId, status, createdAt }
+    { orderId, status, createdAt },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -629,9 +790,8 @@ async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyCond
             nextToken
         }
     }`,
-    { orderId, statusCreatedAt, limit, nextToken }
+    { orderId, statusCreatedAt, limit, nextToken },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -649,9 +809,8 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
             nextToken
         }
     }`,
-    { status, createdAt, limit, nextToken }
+    { status, createdAt, limit, nextToken },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -669,14 +828,20 @@ async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionIn
             nextToken
         }
     }`,
-    { createdAt, status, limit, nextToken }
+    { createdAt, status, limit, nextToken },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
-async function createShippingUpdate(orderId: string, itemId: string, status: string, name?: string) {
-  const input = { status, orderId, itemId, name };
+interface CreateShippingInput {
+  id?: string;
+  orderId?: string;
+  status?: string;
+  itemId?: string;
+  name?: string;
+}
+
+async function createShippingUpdate(input: CreateShippingInput) {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateShippingUpdate($input: CreateShippingUpdateInput!) {
         createShippingUpdate(input: $input) {
@@ -689,10 +854,8 @@ async function createShippingUpdate(orderId: string, itemId: string, status: str
     }`,
     {
       input,
-    }
+    },
   );
-  console.log(`Running create: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -714,10 +877,8 @@ async function listGSIShippingUpdate(orderId: string, itemId: object, sortDirect
                 }
             }
         }`,
-    input
+    input,
   );
-  console.log(`Running create: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -729,7 +890,6 @@ interface UpdateShippingInput {
   name?: string;
 }
 async function updateShippingUpdate(input: UpdateShippingInput) {
-  // const input = { id, status, orderId, itemId, name };
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateShippingUpdate($input: UpdateShippingUpdateInput!) {
         updateShippingUpdate(input: $input) {
@@ -742,10 +902,8 @@ async function updateShippingUpdate(input: UpdateShippingInput) {
     }`,
     {
       input,
-    }
+    },
   );
-  console.log(`Running update: ${JSON.stringify(input)}`);
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -763,9 +921,8 @@ async function getShippingUpdates(orderId: string) {
             nextToken
         }
     }`,
-    { orderId }
+    { orderId },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }
 
@@ -783,8 +940,7 @@ async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
             nextToken
         }
     }`,
-    { orderId, name }
+    { orderId, name },
   );
-  console.log(JSON.stringify(result, null, 4));
   return result;
 }

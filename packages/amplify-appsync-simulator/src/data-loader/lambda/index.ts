@@ -8,7 +8,7 @@ export class LambdaDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       return result;
     } catch (e) {
       console.log('Lambda Data source failed with the following error');
-      console.log(e);
+      console.error(e);
       throw e;
     }
   }

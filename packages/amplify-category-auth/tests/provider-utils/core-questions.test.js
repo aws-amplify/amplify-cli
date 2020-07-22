@@ -10,7 +10,10 @@ const mockContext = {};
 let mockAmplify = {};
 const mappedOptions1 = [{ name: 'name1', value: 'value1' }];
 const mappedOptions2 = [{ name: 'name1', value: 'value1' }];
-const mappedOptions3 = [{ name: 'name1', value: 'value1' }, { name: 'name2', value: 'value2' }];
+const mappedOptions3 = [
+  { name: 'name1', value: 'value1' },
+  { name: 'name2', value: 'value2' },
+];
 const hostedUIProviders = [
   {
     name: 'prov1',

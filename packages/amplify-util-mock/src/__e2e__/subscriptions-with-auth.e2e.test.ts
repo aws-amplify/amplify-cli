@@ -23,7 +23,7 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 // delays
 const SUBSCRIPTION_DELAY = 2000;
 const PROPAGATAION_DELAY = 5000;
-const JEST_TIMEOUT = 2000000;
+const JEST_TIMEOUT = 20000;
 
 jest.setTimeout(JEST_TIMEOUT);
 
@@ -46,10 +46,19 @@ const USERNAME2 = 'user2@domain.com';
 const USERNAME3 = 'user3@domain.com';
 
 const INSTRUCTOR_GROUP_NAME = 'Instructor';
+const ADMIN_GROUP_NAME = 'Admin';
+const MEMBER_GROUP_NAME = 'Member';
 
 /**
  * Interface Inputs
  */
+interface MemberInput {
+  id: string;
+  name?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 interface CreateStudentInput {
   id?: string;
   name?: string;
@@ -85,6 +94,17 @@ beforeAll(async () => {
             name: String,
             email: AWSEmail,
             ssn: String @auth(rules: [{allow: owner}])
+        }
+
+        type Member @model
+        @auth(rules: [
+          { allow: groups, groups: ["Admin"] }
+          { allow: groups, groups: ["Member"], operations: [read] }
+        ]) {
+          id: ID
+          name: String
+          createdAt: AWSDateTime
+          updatedAt: AWSDateTime
         }
 
         type Post @model
@@ -124,7 +144,7 @@ beforeAll(async () => {
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
     // Configure Amplify, create users, and sign in.
-    const idToken1 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [INSTRUCTOR_GROUP_NAME]);
+    const idToken1 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [INSTRUCTOR_GROUP_NAME, ADMIN_GROUP_NAME]);
     GRAPHQL_CLIENT_1 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -137,7 +157,7 @@ beforeAll(async () => {
         jwtToken: idToken1,
       },
     });
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [INSTRUCTOR_GROUP_NAME]);
+    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -338,6 +358,94 @@ test('Test a subscription on delete', async done => {
   await deleteStudent(GRAPHQL_CLIENT_1, { id: student4ID });
 });
 
+test('test that group is only allowed to listen to subscriptions and listen to onCreate', async done => {
+  const memberID = '001';
+  const memberName = 'username00';
+  // test that a user that only read can't mutate
+  try {
+    await createMember(GRAPHQL_CLIENT_2, { id: '001', name: 'notUser' });
+  } catch (err) {
+    expect(err).toBeDefined();
+    expect(err.graphQLErrors[0].errorType).toEqual('Unauthorized');
+  }
+
+  // though they should see when a new member is created
+  const observer = GRAPHQL_CLIENT_2.subscribe({
+    query: gql`
+      subscription OnCreateMember {
+        onCreateMember {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `});
+  const subscription = observer.subscribe((event: any) => {
+    const member = event.data.onCreateMember;
+    subscription.unsubscribe();
+    expect(member).toBeDefined();
+    expect(member.id).toEqual(memberID);
+    expect(member.name).toEqual(memberName);
+    done();
+  });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+  // user that is authorized creates the update the mutation
+  createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+});
+
+test('authorized group is allowed to listen to onUpdate', async done => {
+  const memberID = '001'
+  const memberName = 'newUsername';
+  const observer = GRAPHQL_CLIENT_2.subscribe({
+    query: gql`
+    subscription OnUpdateMember {
+      onUpdateMember {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }`});
+    const subscription = observer.subscribe( (event: any) => {
+      const subResponse = event.data.onUpdateMember;
+      subscription.unsubscribe();
+      expect(subResponse).toBeDefined();
+      expect(subResponse.id).toEqual(memberID);
+      expect(subResponse.name).toEqual(memberName);
+      done();
+    });
+    await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+    // user that is authorized creates the update the mutation
+    updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+});
+
+test('authoirzed group is allowed to listen to onDelete', async done => {
+  const memberID = '001';
+  const memberName = 'newUsername';
+  const observer = GRAPHQL_CLIENT_2.subscribe({
+    query: gql`
+    subscription OnDeleteMember {
+      onDeleteMember {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }`});
+  const subscription = observer.subscribe( (event: any) => {
+    const subResponse = event.data.onDeleteMember;
+    subscription.unsubscribe();
+    expect(subResponse).toBeDefined();
+    expect(subResponse.id).toEqual(memberID);
+    expect(subResponse.name).toEqual(memberName);
+    done();
+  });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+  // user that is authorized creates the update the mutation
+  deleteMember(GRAPHQL_CLIENT_1, { id: memberID });
+});
+
 // ownerField Tests
 test('Test subscription onCreatePost with ownerField', async done => {
   const observer = GRAPHQL_CLIENT_1.subscribe({
@@ -379,6 +487,48 @@ async function createStudent(client: AWSAppSyncClient<any>, input: CreateStudent
     }
   `;
   return await client.mutate({ mutation: request, variables: { input } });
+}
+
+async function createMember(client: AWSAppSyncClient<any>, input: MemberInput) {
+  const request = gql`
+    mutation CreateMember($input: CreateMemberInput!) {
+      createMember(input: $input) {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }
+  `;
+  return await client.mutate({ mutation: request, variables: { input } });
+}
+
+async function updateMember(client: AWSAppSyncClient<any>, input: MemberInput) {
+  const request = gql`
+    mutation UpdateMember(
+      $input: UpdateMemberInput! ) {
+      updateMember(input: $input) {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }`;
+  return await client.mutate({ mutation: request, variables: { input }});
+}
+
+async function deleteMember(client: AWSAppSyncClient<any>, input: MemberInput) {
+  const request = gql`
+  mutation DeleteMember(
+    $input: DeleteMemberInput! ) {
+    deleteMember(input: $input) {
+      id
+      name
+      createdAt
+      updatedAt
+    }
+  }`;
+  return await client.mutate({ mutation: request, variables: { input }})
 }
 
 async function updateStudent(client: AWSAppSyncClient<any>, input: UpdateStudentInput) {

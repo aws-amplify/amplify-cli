@@ -20,6 +20,8 @@ import {
   InterfaceTypeDefinitionNode,
   valueFromASTUntyped,
   NamedTypeNode,
+  InputObjectTypeDefinitionNode,
+  TypeDefinitionNode,
 } from 'graphql';
 import {
   ResourceConstants,
@@ -34,11 +36,12 @@ import {
   extendFieldWithDirectives,
   makeNonNullType,
   makeField,
+  ModelResourceIDs,
 } from 'graphql-transformer-common';
-import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, or, newline, comment } from 'graphql-mapping-template';
+import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
-import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
+import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NON_MODEL_TYPES } from './constants';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -224,7 +227,7 @@ export class ModelAuthTransformer extends Transformer {
           update
           delete
         }
-      `
+      `,
     );
 
     if (config && config.authConfig) {
@@ -262,6 +265,9 @@ export class ModelAuthTransformer extends Transformer {
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeConditions(template.Conditions);
     this.updateAPIAuthentication(ctx);
+    if (!ctx.metadata.has(AUTH_NON_MODEL_TYPES)) {
+      ctx.metadata.set(AUTH_NON_MODEL_TYPES, new Set<string>());
+    }
   };
 
   public after = (ctx: TransformerContext): void => {
@@ -277,9 +283,15 @@ export class ModelAuthTransformer extends Transformer {
         }),
       });
 
-      ctx.mergeResources({
-        [ResourceConstants.RESOURCES.AuthRolePolicy]: this.resources.makeIAMPolicyForRole(true, this.authPolicyResources),
-      });
+      const authPolicies = this.resources.makeIAMPolicyForRole(true, this.authPolicyResources);
+
+      for (let i = 0; i < authPolicies.length; i++) {
+        const paddedIndex = `${i + 1}`.padStart(2, '0');
+        const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
+        ctx.mergeResources({
+          [resourceName]: authPolicies[i],
+        });
+      }
     }
 
     if (this.generateIAMPolicyforUnauthRole === true) {
@@ -294,17 +306,23 @@ export class ModelAuthTransformer extends Transformer {
         }),
       });
 
-      ctx.mergeResources({
-        [ResourceConstants.RESOURCES.UnauthRolePolicy]: this.resources.makeIAMPolicyForRole(false, this.unauthPolicyResources),
-      });
+      const unauthPolicies = this.resources.makeIAMPolicyForRole(false, this.unauthPolicyResources);
+
+      for (let i = 0; i < unauthPolicies.length; i++) {
+        const paddedIndex = `${i + 1}`.padStart(2, '0');
+        const resourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
+        ctx.mergeResources({
+          [resourceName]: unauthPolicies[i],
+        });
+      }
     }
   };
 
   private getApiKeyConfig(): ApiKeyConfig {
-    const authProviders = [];
+    let authProviders = [];
 
     if (this.config.authConfig.additionalAuthenticationProviders) {
-      authProviders.concat(this.config.authConfig.additionalAuthenticationProviders.filter(p => !!p.authenticationType));
+      authProviders = authProviders.concat(this.config.authConfig.additionalAuthenticationProviders.filter(p => !!p.authenticationType));
     }
 
     authProviders.push(this.config.authConfig.defaultAuthentication);
@@ -336,6 +354,11 @@ export class ModelAuthTransformer extends Transformer {
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
 
+    // Check if the object type has fields of type without the @model directive.
+    // We've to make sure that appropriate @aws_* directive will be added and a policy entry for the
+    // type will be emitted as well in case of IAM.
+    this.propagateAuthDirectivesToNestedTypes(def, rules, ctx);
+
     const { operationRules, queryRules } = this.splitRules(rules);
 
     // Retrieve the configuration options for the related @model directive
@@ -356,21 +379,21 @@ export class ModelAuthTransformer extends Transformer {
       ResolverResourceIDs.DynamoDBCreateResolverResourceID(def.name.value),
       operationRules.create,
       def,
-      modelConfiguration
+      modelConfiguration,
     );
     this.protectUpdateMutation(
       ctx,
       ResolverResourceIDs.DynamoDBUpdateResolverResourceID(def.name.value),
       operationRules.update,
       def,
-      modelConfiguration
+      modelConfiguration,
     );
     this.protectDeleteMutation(
       ctx,
       ResolverResourceIDs.DynamoDBDeleteResolverResourceID(def.name.value),
       operationRules.delete,
       def,
-      modelConfiguration
+      modelConfiguration,
     );
     this.protectGetQuery(ctx, ResolverResourceIDs.DynamoDBGetResolverResourceID(def.name.value), queryRules.get, def, modelConfiguration);
     this.protectListQuery(
@@ -378,7 +401,7 @@ export class ModelAuthTransformer extends Transformer {
       ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value),
       queryRules.list,
       def,
-      modelConfiguration
+      modelConfiguration,
     );
     this.protectConnections(ctx, def, operationRules.read, modelConfiguration);
     this.protectQueries(ctx, def, operationRules.read, modelConfiguration);
@@ -388,35 +411,44 @@ export class ModelAuthTransformer extends Transformer {
       this.protectSearchQuery(ctx, def, ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), operationRules.read);
     }
 
+    // protect sync query if model is sync enabled
+    if (this.isSyncEnabled(ctx, def.name.value)) {
+      this.protectSyncQuery(ctx, def, ResolverResourceIDs.SyncResolverResourceID(def.name.value), operationRules.read);
+    }
+
     // Check if subscriptions is enabled
     if (modelConfiguration.getName('level') !== 'off') {
-      this.protectOnCreateSubscription(ctx, operationRules.create, def, modelConfiguration);
-      this.protectOnUpdateSubscription(ctx, operationRules.update, def, modelConfiguration);
-      this.protectOnDeleteSubscription(ctx, operationRules.delete, def, modelConfiguration);
+      this.protectOnCreateSubscription(ctx, operationRules.read, def, modelConfiguration);
+      this.protectOnUpdateSubscription(ctx, operationRules.read, def, modelConfiguration);
+      this.protectOnDeleteSubscription(ctx, operationRules.read, def, modelConfiguration);
     }
+
+    // Update ModelXConditionInput type
+    this.updateMutationConditionInput(ctx, def, rules);
   };
 
   public field = (
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
-    ctx: TransformerContext
+    ctx: TransformerContext,
   ) => {
     if (parent.kind === Kind.INTERFACE_TYPE_DEFINITION) {
       throw new InvalidDirectiveError(
-        `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}${definition.name.value}`
+        `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}${definition.name.value}`,
       );
     }
     const modelDirective = parent.directives.find(dir => dir.name.value === 'model');
-    if (
+    const isParentTypeBuiltinType =
       parent.name.value === ctx.getQueryTypeName() ||
       parent.name.value === ctx.getMutationTypeName() ||
-      parent.name.value === ctx.getSubscriptionTypeName()
-    ) {
+      parent.name.value === ctx.getSubscriptionTypeName();
+
+    if (isParentTypeBuiltinType) {
       console.warn(
         `Be careful when using @auth directives on a field in a root type. @auth directives on field definitions use the source \
 object to perform authorization logic and the source will be an empty object for fields on root types. \
-Static group authorization should perform as expected.`
+Static group authorization should perform as expected.`,
       );
     }
 
@@ -424,7 +456,7 @@ Static group authorization should perform as expected.`
     const rules = this.getAuthRulesFromDirective(directive);
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
-    this.validateFieldRules(rules);
+    this.validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined);
     // Check the rules if we've to generate IAM policies for Unauth role or not
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
@@ -436,7 +468,8 @@ Static group authorization should perform as expected.`
     // or
     // - The type has @auth rules for the default provider
     const includeDefault = this.isTypeNeedsDefaultProviderAccess(parent);
-    const typeDirectives = this.getDirectivesForRules(rules, includeDefault);
+    // Should not propagate auth directives onto Query/Mutation/Subscription types
+    const typeDirectives = isParentTypeBuiltinType ? [] : this.getDirectivesForRules(rules, includeDefault);
 
     if (typeDirectives.length > 0) {
       this.extendTypeWithDirectives(ctx, parent.name.value, typeDirectives);
@@ -478,28 +511,76 @@ Static group authorization should perform as expected.`
       const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule));
       this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration);
     } else {
+      const directives = this.getDirectivesForRules(rules, false);
+
+      if (directives.length > 0) {
+        this.addDirectivesToField(ctx, parent.name.value, definition.name.value, directives);
+      }
+
       // if @auth is used without @model only generate static group rules
       const staticGroupRules = rules.filter((rule: AuthRule) => rule.groups);
       this.protectField(ctx, parent, definition, staticGroupRules);
     }
   };
 
+  private propagateAuthDirectivesToNestedTypes(type: ObjectTypeDefinitionNode, rules: AuthRule[], ctx: TransformerContext) {
+    const seenNonModelTypes: Set<string> = ctx.metadata.get(AUTH_NON_MODEL_TYPES);
+
+    const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
+      if (fieldType) {
+        if (fieldType.kind !== 'ObjectTypeDefinition') {
+          return undefined;
+        }
+        const typeModel = fieldType.directives.find(dir => dir.name.value === 'model');
+        return typeModel !== undefined ? undefined : fieldType;
+      }
+      return fieldType;
+    };
+    const nonModelFieldTypes = type.fields.map(f => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
+    for (const nonModelFieldType of nonModelFieldTypes) {
+      if (!seenNonModelTypes.has(nonModelFieldType.name.value)) {
+        // add to the set of seen non model types
+        seenNonModelTypes.add(nonModelFieldType.name.value);
+        const directives = this.getDirectivesForRules(rules, false);
+        // Add the directives to the Type node itself
+        if (directives.length > 0) {
+          this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
+        }
+        const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+        if (hasIAM) {
+          this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+          this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+        }
+
+        // Recursively process the nested types if there is any
+        this.propagateAuthDirectivesToNestedTypes(<ObjectTypeDefinitionNode>nonModelFieldType, rules, ctx);
+      }
+    }
+  }
+
   private protectField(
     ctx: TransformerContext,
     parent: ObjectTypeDefinitionNode,
     field: FieldDefinitionNode,
-    staticGroupRules: AuthRule[]
+    staticGroupRules: AuthRule[],
   ) {
     const typeName = parent.name.value;
     const fieldName = field.name.value;
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
     let fieldResolverResource = ctx.getResource(resolverResourceId);
-    // add logic here to only use static group rules
-    const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
-    const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
-    const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized(field);
-    const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
-    const templateParts = [print(compoundExpression(authCheckExpressions))];
+
+    const templateParts = [];
+
+    if (staticGroupRules && staticGroupRules.length) {
+      // add logic here to only use static group rules
+      const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
+      const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
+      const throwIfUnauthorizedExpression = this.resources.throwIfStaticGroupUnauthorized(field);
+      const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
+
+      templateParts.push(print(compoundExpression(authCheckExpressions)));
+    }
+
     // if the field resolver does not exist create it
     if (!fieldResolverResource) {
       fieldResolverResource = this.resources.blankResolver(typeName, fieldName);
@@ -521,7 +602,7 @@ Static group authorization should perform as expected.`
     parent: ObjectTypeDefinitionNode,
     field: FieldDefinitionNode,
     rules: AuthRule[],
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     if (rules && rules.length) {
       // Get the directives we need to add to the GraphQL nodes
@@ -580,7 +661,7 @@ Either make the field optional, set auth on the object and not the field, or dis
         }
         // operation check in the protected field
         resolver.Properties.ResponseMappingTemplate = print(
-          this.resources.operationCheckExpression(ctx.getMutationTypeName(), field.name.value)
+          this.resources.operationCheckExpression(ctx.getMutationTypeName(), field.name.value),
         );
       }
       // If a resolver exists, a @connection for example. Prepend it to the req.
@@ -595,7 +676,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     parent: ObjectTypeDefinitionNode,
     field: FieldDefinitionNode,
     rules: AuthRule[],
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const resolverResourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(parent.name.value);
     const subscriptionOperation: ModelDirectiveOperationType = 'onUpdate';
@@ -607,7 +688,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     parent: ObjectTypeDefinitionNode,
     field: FieldDefinitionNode,
     rules: AuthRule[],
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const resolverResourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(parent.name.value);
     const subscriptionOperation: ModelDirectiveOperationType = 'onDelete';
@@ -626,7 +707,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     parent: ObjectTypeDefinitionNode,
     field: FieldDefinitionNode,
     rules: AuthRule[],
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const typeName = parent.name.value;
     const resolverResourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
@@ -661,8 +742,12 @@ Either make the field optional, set auth on the object and not the field, or dis
       const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
       const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
       const ownerAuthorizationRules = this.getOwnerRules(rules);
+      const providerAuthorization = this.hasProviderAuthRules(rules);
 
-      if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      if (
+        (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+        providerAuthorization === false
+      ) {
         // Generate the expressions to validate each strategy.
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
 
@@ -670,7 +755,7 @@ Either make the field optional, set auth on the object and not the field, or dis
         // are done before calling PutItem.
         const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForCreateOperationsByField(
           dynamicGroupAuthorizationRules,
-          field.name.value
+          field.name.value,
         );
         const fieldIsList = (fieldName: string) => {
           const field = parent.fields.find(field => field.name.value === fieldName);
@@ -682,7 +767,7 @@ Either make the field optional, set auth on the object and not the field, or dis
         const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForCreateOperationsByField(
           ownerAuthorizationRules,
           field.name.value,
-          fieldIsList
+          fieldIsList,
         );
 
         const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized(field);
@@ -693,19 +778,24 @@ Either make the field optional, set auth on the object and not the field, or dis
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
         // If we've any modes to check, then add the authMode check code block
         // to the start of the resolver.
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -870,7 +960,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     }
   }
 
-  private validateFieldRules(rules: AuthRule[]) {
+  private validateFieldRules(rules: AuthRule[], isParentTypeBuiltinType: boolean, parentHasModelDirective: boolean) {
     for (const rule of rules) {
       this.validateRuleAuthStrategy(rule);
 
@@ -878,9 +968,24 @@ Either make the field optional, set auth on the object and not the field, or dis
       if (queries || mutations) {
         throw new InvalidDirectiveError(
           `@auth directives used on field definitions may not specify the 'queries' or 'mutations' arguments. \
-All @auth directives used on field definitions are performed when the field is resolved and can be thought of as 'read' operations.`
+All @auth directives used on field definitions are performed when the field is resolved and can be thought of as 'read' operations.`,
         );
       }
+
+      if (isParentTypeBuiltinType && rule.operations && rule.operations.length > 0) {
+        throw new InvalidDirectiveError(
+          `@auth rules on fields within Query, Mutation, Subscription cannot specify 'operations' argument as these rules \
+are already on an operation already.`,
+        );
+      }
+
+      if (!parentHasModelDirective && rule.operations && rule.operations.length > 0) {
+        throw new InvalidDirectiveError(
+          `@auth rules on fields within types that does not have @model directive cannot specify 'operations' argument as there are \
+operations will be generated by the CLI.`,
+        );
+      }
+
       this.commonRuleValidation(rule);
     }
   }
@@ -920,7 +1025,7 @@ All @auth directives used on field definitions are performed when the field is r
     resolverResourceId: string,
     rules: AuthRule[],
     parent: ObjectTypeDefinitionNode | null,
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const resolver = ctx.getResource(resolverResourceId);
     if (!rules || rules.length === 0 || !resolver) {
@@ -960,17 +1065,21 @@ All @auth directives used on field definitions are performed when the field is r
     const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
     const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
     const ownerAuthorizationRules = this.getOwnerRules(rules);
+    const providerAuthorization = this.hasProviderAuthRules(rules);
 
-    if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+    if (
+      (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+      providerAuthorization === false
+    ) {
       // Generate the expressions to validate each strategy.
       const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
       const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForReadOperations(
         dynamicGroupAuthorizationRules,
-        objectPath
+        objectPath,
       );
       const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForReadOperations(
         ownerAuthorizationRules,
-        objectPath
+        objectPath,
       );
       const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized();
 
@@ -981,17 +1090,22 @@ All @auth directives used on field definitions are performed when the field is r
 
       if (
         ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-        staticGroupAuthorizationRules.length > 0 ||
-        dynamicGroupAuthorizationRules.length > 0
+        staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
       ) {
         authModesToCheck.add('userPools');
       }
-      if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+      if (
+        ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+        staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+      ) {
         authModesToCheck.add('oidc');
       }
 
       if (authModesToCheck.size > 0) {
-        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+        const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
       }
 
       // Update the existing resolver with the authorization checks.
@@ -1030,34 +1144,34 @@ All @auth directives used on field definitions are performed when the field is r
     rules: AuthRule[],
     parent: ObjectTypeDefinitionNode | null,
     modelConfiguration: ModelDirectiveConfiguration,
-    explicitOperationName: string = undefined
+    explicitOperationName: string = undefined,
   ) {
     const resolver = ctx.getResource(resolverResourceId);
     if (!rules || rules.length === 0 || !resolver) {
       return;
-    } else {
-      if (modelConfiguration.shouldHave('list')) {
-        const operationName = explicitOperationName ? explicitOperationName : modelConfiguration.getName('list');
-        // If the parent type has any rules for this operation AND
-        // the default provider we've to get directives including the default
-        // as well.
-        const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'list') : false;
-        const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
+    }
 
-        if (operationDirectives.length > 0) {
-          this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
-        }
+    if (modelConfiguration.shouldHave('list')) {
+      const operationName = explicitOperationName ? explicitOperationName : modelConfiguration.getName('list');
+      // If the parent type has any rules for this operation AND
+      // the default provider we've to get directives including the default
+      // as well.
+      const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'list') : false;
+      const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
-        this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
+      if (operationDirectives.length > 0) {
+        this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
       }
 
-      const authExpression = this.authorizationExpressionForListResult(rules);
+      this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
+    }
 
-      if (authExpression) {
-        const templateParts = [print(authExpression), resolver.Properties.ResponseMappingTemplate];
-        resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
-        ctx.setResource(resolverResourceId, resolver);
-      }
+    const authExpression = this.authorizationExpressionForListResult(rules);
+
+    if (authExpression) {
+      const templateParts = [print(authExpression), resolver.Properties.ResponseMappingTemplate];
+      resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
+      ctx.setResource(resolverResourceId, resolver);
     }
   }
 
@@ -1072,8 +1186,17 @@ All @auth directives used on field definitions are performed when the field is r
     const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
     const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
     const ownerAuthorizationRules = this.getOwnerRules(rules);
+    const providerAuthorization = this.hasProviderAuthRules(rules);
 
-    if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+    // if there is a rule combination of owner or group and private, public for userpools then we don't need to emit any of the access check
+    // logic since it is not needed. For example we don't emit any of this logic for rules like this:
+    // { allow: groups, groups: ["Admin"]},
+    // { allow: private }
+
+    if (
+      (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+      providerAuthorization === false
+    ) {
       // Generate the expressions to validate each strategy.
       const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
 
@@ -1084,18 +1207,18 @@ All @auth directives used on field definitions are performed when the field is r
         dynamicGroupAuthorizationRules,
         'item',
         ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable,
-        raw(`false`)
+        raw(`false`),
       );
       const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForReadOperations(
         ownerAuthorizationRules,
         'item',
         ResourceConstants.SNIPPETS.IsLocalOwnerAuthorizedVariable,
-        raw(`false`)
+        raw(`false`),
       );
       const appendIfLocallyAuthorized = this.resources.appendItemIfLocallyAuthorized();
 
       const ifNotStaticallyAuthedFilterObjects = iff(
-        raw(`! $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
+        not(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable)),
         compoundExpression([
           set(ref('items'), list([])),
           forEach(ref('item'), ref(itemList), [
@@ -1106,7 +1229,7 @@ All @auth directives used on field definitions are performed when the field is r
             appendIfLocallyAuthorized,
           ]),
           set(ref(itemList), ref('items')),
-        ])
+        ]),
       );
 
       // If we've any modes to check, then add the authMode check code block
@@ -1116,17 +1239,22 @@ All @auth directives used on field definitions are performed when the field is r
 
       if (
         ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-        staticGroupAuthorizationRules.length > 0 ||
-        dynamicGroupAuthorizationRules.length > 0
+        staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
       ) {
         authModesToCheck.add('userPools');
       }
-      if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+      if (
+        ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+        staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+        dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+      ) {
         authModesToCheck.add('oidc');
       }
 
       if (authModesToCheck.size > 0) {
-        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+        const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
       }
 
       // These statements will be wrapped into an authMode check if statement
@@ -1162,7 +1290,7 @@ All @auth directives used on field definitions are performed when the field is r
     resolverResourceId: string,
     rules: AuthRule[],
     parent: ObjectTypeDefinitionNode,
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const resolver = ctx.getResource(resolverResourceId);
     if (!rules || rules.length === 0 || !resolver) {
@@ -1189,15 +1317,19 @@ All @auth directives used on field definitions are performed when the field is r
       const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
       const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
       const ownerAuthorizationRules = this.getOwnerRules(rules);
+      const providerAuthorization = this.hasProviderAuthRules(rules);
 
-      if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      if (
+        (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+        providerAuthorization === false
+      ) {
         // Generate the expressions to validate each strategy.
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
 
         // In create mutations, the dynamic group and ownership authorization checks
         // are done before calling PutItem.
         const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForCreateOperations(
-          dynamicGroupAuthorizationRules
+          dynamicGroupAuthorizationRules,
         );
         const fieldIsList = (fieldName: string) => {
           const field = parent.fields.find(field => field.name.value === fieldName);
@@ -1208,7 +1340,7 @@ All @auth directives used on field definitions are performed when the field is r
         };
         const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForCreateOperations(
           ownerAuthorizationRules,
-          fieldIsList
+          fieldIsList,
         );
 
         const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized();
@@ -1220,17 +1352,22 @@ All @auth directives used on field definitions are performed when the field is r
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -1280,7 +1417,7 @@ All @auth directives used on field definitions are performed when the field is r
     isUpdate: boolean,
     field?: FieldDefinitionNode,
     ifCondition?: Expression,
-    subscriptionOperation?: ModelDirectiveOperationType
+    subscriptionOperation?: ModelDirectiveOperationType,
   ) {
     const resolver = ctx.getResource(resolverResourceId);
     if (!rules || rules.length === 0 || !resolver) {
@@ -1307,17 +1444,14 @@ All @auth directives used on field definitions are performed when the field is r
       const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
       const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules);
       const ownerAuthorizationRules = this.getOwnerRules(rules);
+      const providerAuthorization = this.hasProviderAuthRules(rules);
 
-      if (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      if (
+        (staticGroupAuthorizationRules.length > 0 || dynamicGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) &&
+        providerAuthorization === false
+      ) {
         // Generate the expressions to validate each strategy.
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
-
-        // In create mutations, the dynamic group and ownership authorization checks
-        // are done before calling PutItem.
-        const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForUpdateOrDeleteOperations(
-          dynamicGroupAuthorizationRules,
-          field ? field.name.value : undefined
-        );
 
         const fieldIsList = (fieldName: string) => {
           const field = parent.fields.find(field => field.name.value === fieldName);
@@ -1326,10 +1460,19 @@ All @auth directives used on field definitions are performed when the field is r
           }
           return false;
         };
+
+        // In create mutations, the dynamic group and ownership authorization checks
+        // are done before calling PutItem.
+        const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForUpdateOrDeleteOperations(
+          dynamicGroupAuthorizationRules,
+          fieldIsList,
+          field ? field.name.value : undefined,
+        );
+
         const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForUpdateOrDeleteOperations(
           ownerAuthorizationRules,
           fieldIsList,
-          field ? field.name.value : undefined
+          field ? field.name.value : undefined,
         );
 
         const collectAuthCondition = this.resources.collectAuthCondition();
@@ -1342,11 +1485,11 @@ All @auth directives used on field definitions are performed when the field is r
             ownerAuthorizationExpression,
             newline(),
             collectAuthCondition,
-          ])
+          ]),
         );
 
         const throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty = this.resources.throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(
-          field
+          field,
         );
 
         // If we've any modes to check, then add the authMode check code block
@@ -1356,17 +1499,22 @@ All @auth directives used on field definitions are performed when the field is r
 
         if (
           ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
-          staticGroupAuthorizationRules.length > 0 ||
-          dynamicGroupAuthorizationRules.length > 0
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'userPools')
         ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'oidc') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'oidc') ||
+          dynamicGroupAuthorizationRules.find(r => r.provider === 'oidc')
+        ) {
           authModesToCheck.add('oidc');
         }
 
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         // These statements will be wrapped into an authMode check if statement
@@ -1429,7 +1577,7 @@ All @auth directives used on field definitions are performed when the field is r
     parent: ObjectTypeDefinitionNode,
     modelConfiguration: ModelDirectiveConfiguration,
     field?: FieldDefinitionNode,
-    subscriptionOperation?: ModelDirectiveOperationType
+    subscriptionOperation?: ModelDirectiveOperationType,
   ) {
     return this.protectUpdateOrDeleteMutation(
       ctx,
@@ -1440,7 +1588,7 @@ All @auth directives used on field definitions are performed when the field is r
       true,
       field,
       field ? raw(`$ctx.args.input.containsKey("${field.name.value}")`) : undefined,
-      subscriptionOperation
+      subscriptionOperation,
     );
   }
 
@@ -1460,7 +1608,7 @@ All @auth directives used on field definitions are performed when the field is r
     parent: ObjectTypeDefinitionNode,
     modelConfiguration: ModelDirectiveConfiguration,
     field?: FieldDefinitionNode,
-    subscriptionOperation?: ModelDirectiveOperationType
+    subscriptionOperation?: ModelDirectiveOperationType,
   ) {
     return this.protectUpdateOrDeleteMutation(
       ctx,
@@ -1473,7 +1621,7 @@ All @auth directives used on field definitions are performed when the field is r
       field
         ? raw(`$ctx.args.input.containsKey("${field.name.value}") && $util.isNull($ctx.args.input.get("${field.name.value}"))`)
         : undefined,
-      subscriptionOperation
+      subscriptionOperation,
     );
   }
 
@@ -1485,7 +1633,7 @@ All @auth directives used on field definitions are performed when the field is r
     ctx: TransformerContext,
     def: ObjectTypeDefinitionNode,
     rules: AuthRule[],
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const thisModelName = def.name.value;
     for (const inputDef of ctx.inputDocument.definitions) {
@@ -1521,7 +1669,7 @@ All @auth directives used on field definitions are performed when the field is r
     ctx: TransformerContext,
     def: ObjectTypeDefinitionNode,
     rules: AuthRule[],
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const secondaryKeyDirectivesWithQueries = (def.directives || []).filter(d => {
       const isKey = d.name.value === 'key';
@@ -1554,7 +1702,7 @@ All @auth directives used on field definitions are performed when the field is r
       const authExpression = this.authorizationExpressionForListResult(rules, 'es_items');
       if (authExpression) {
         const templateParts = [
-          print(this.resources.makeESItemsExpression()),
+          print(this.resources.makeESItemsExpression(ctx.isProjectUsingDataStore())),
           print(authExpression),
           print(this.resources.makeESToGQLExpression()),
         ];
@@ -1564,18 +1712,39 @@ All @auth directives used on field definitions are performed when the field is r
     }
   }
 
+  protectSyncQuery(ctx: TransformerContext, def: ObjectTypeDefinitionNode, resolverResourceID: string, rules: AuthRule[]) {
+    const resolver = ctx.getResource(resolverResourceID);
+    if (!rules || rules.length === 0 || !resolver) {
+      return;
+    }
+    const operationName = resolver.Properties.FieldName;
+    const includeDefault = def !== null ? this.isTypeHasRulesForOperation(def, 'list') : false;
+    const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
+    if (operationDirectives.length > 0) {
+      this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
+    }
+    this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
+    // create auth expression
+    const authExpression = this.authorizationExpressionForListResult(rules);
+    if (authExpression) {
+      const templateParts = [print(authExpression), resolver.Properties.ResponseMappingTemplate];
+      resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
+      ctx.setResource(resolverResourceID, resolver);
+    }
+  }
+
   // OnCreate Subscription
   private protectOnCreateSubscription(
     ctx: TransformerContext,
     rules: AuthRule[],
     parent: ObjectTypeDefinitionNode,
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const names = modelConfiguration.getNames('onCreate');
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
       names.forEach(name => {
-        this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'create');
+        this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
   }
@@ -1585,13 +1754,13 @@ All @auth directives used on field definitions are performed when the field is r
     ctx: TransformerContext,
     rules: AuthRule[],
     parent: ObjectTypeDefinitionNode,
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const names = modelConfiguration.getNames('onUpdate');
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
       names.forEach(name => {
-        this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'update');
+        this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
   }
@@ -1601,13 +1770,13 @@ All @auth directives used on field definitions are performed when the field is r
     ctx: TransformerContext,
     rules: AuthRule[],
     parent: ObjectTypeDefinitionNode,
-    modelConfiguration: ModelDirectiveConfiguration
+    modelConfiguration: ModelDirectiveConfiguration,
   ) {
     const names = modelConfiguration.getNames('onDelete');
     const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
     if (names) {
       names.forEach(name => {
-        this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'delete');
+        this.addSubscriptionResolvers(ctx, rules, parent, level, name);
       });
     }
   }
@@ -1619,7 +1788,6 @@ All @auth directives used on field definitions are performed when the field is r
     parent: ObjectTypeDefinitionNode,
     level: ModelSubscriptionLevel,
     fieldName: string,
-    mutationOperation: ModelDirectiveOperationType
   ) {
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID('Subscription', fieldName);
     const resolver = this.resources.generateSubscriptionResolver(fieldName);
@@ -1634,7 +1802,7 @@ All @auth directives used on field definitions are performed when the field is r
       ctx.setResource(resolverResourceId, resolver);
     } else {
       // Get the directives we need to add to the GraphQL nodes
-      const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, mutationOperation) : false;
+      const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'get') : false;
       const directives = this.getDirectivesForRules(rules, includeDefault);
 
       if (directives.length > 0) {
@@ -1646,8 +1814,9 @@ All @auth directives used on field definitions are performed when the field is r
       // Break the rules out by strategy.
       const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
       const ownerAuthorizationRules = this.getOwnerRules(rules);
+      const providerAuthorization = this.hasProviderAuthRules(rules);
 
-      if (staticGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) {
+      if ((staticGroupAuthorizationRules.length > 0 || ownerAuthorizationRules.length > 0) && providerAuthorization === false) {
         const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules);
         const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(ownerAuthorizationRules);
 
@@ -1657,17 +1826,21 @@ All @auth directives used on field definitions are performed when the field is r
         const authModesToCheck = new Set<AuthProvider>();
         const expressions: Array<Expression> = new Array();
 
-        if (ownerAuthorizationRules.find(r => r.provider === 'userPools') || staticGroupAuthorizationRules.length > 0) {
+        if (
+          ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
+          staticGroupAuthorizationRules.find(r => r.provider === 'userPools')
+        ) {
           authModesToCheck.add('userPools');
         }
-        if (ownerAuthorizationRules.find(r => r.provider === 'oidc')) {
+        if (ownerAuthorizationRules.find(r => r.provider === 'oidc') || staticGroupAuthorizationRules.find(r => r.provider === 'oidc')) {
           authModesToCheck.add('oidc');
         }
 
         // If we've any modes to check, then add the authMode check code block
         // to the start of the resolver.
         if (authModesToCheck.size > 0) {
-          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+          const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+          expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
         }
 
         const authCheckExpressions = [
@@ -1712,7 +1885,7 @@ All @auth directives used on field definitions are performed when the field is r
   private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, ownerRules: AuthRule[], makeNonNull: boolean = false) {
     let subscription = ctx.getSubscription();
     let createField: FieldDefinitionNode = subscription.fields.find(
-      field => field.name.value === resolver.Properties.FieldName
+      field => field.name.value === resolver.Properties.FieldName,
     ) as FieldDefinitionNode;
     const nameNode: any = makeNonNull ? makeNonNullType(makeNamedType('String')) : makeNamedType('String');
     // const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
@@ -1749,6 +1922,10 @@ All @auth directives used on field definitions are performed when the field is r
 
   private getDynamicGroupRules(rules: AuthRule[]): AuthRule[] {
     return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups));
+  }
+
+  public hasProviderAuthRules(rules: AuthRule[]): Boolean {
+    return rules.filter(rule => rule.provider === 'userPools' && (rule.allow === 'public' || rule.allow === 'private')).length > 0;
   }
 
   private extendTypeWithDirectives(ctx: TransformerContext, typeName: string, directives: DirectiveNode[]) {
@@ -1846,7 +2023,7 @@ All @auth directives used on field definitions are performed when the field is r
     // @auth(rules: [{allow: owner},{allow: public, operations: [read]}])
     //
     // Then we need to add @aws_api_key on the create mutation together with the
-    // @aws_cognito_useR_pools, but we cannot add @was_api_key to other operations
+    // @aws_cognito_user_pools, but we cannot add @aws_api_key to other operations
     // since that is not allowed by the rule.
     //
 
@@ -1854,7 +2031,7 @@ All @auth directives used on field definitions are performed when the field is r
       Boolean(rules.find(r => r.provider === this.configuredAuthProviders.default)) &&
       Boolean(
         rules.find(r => r.provider !== this.configuredAuthProviders.default) &&
-          !Boolean(directives.find(d => d.name.value === authProviderDirectiveMap.get(this.configuredAuthProviders.default)))
+          !Boolean(directives.find(d => d.name.value === authProviderDirectiveMap.get(this.configuredAuthProviders.default))),
       )
     ) {
       directives.push(makeDirective(authProviderDirectiveMap.get(this.configuredAuthProviders.default), []));
@@ -1891,9 +2068,9 @@ All @auth directives used on field definitions are performed when the field is r
     // Groups
     //
 
-    if (rule.allow === 'groups' && rule.provider !== 'userPools') {
+    if (rule.allow === 'groups' && rule.provider !== 'userPools' && rule.provider !== 'oidc') {
       throw new InvalidDirectiveError(
-        `@auth directive with 'groups' strategy only supports 'userPools' provider, but found '${rule.provider}' assigned.`
+        `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found '${rule.provider}' assigned.`,
       );
     }
 
@@ -1905,7 +2082,7 @@ All @auth directives used on field definitions are performed when the field is r
       if (rule.provider !== null && rule.provider !== 'userPools' && rule.provider !== 'oidc') {
         throw new InvalidDirectiveError(
           `@auth directive with 'owner' strategy only supports 'userPools' (default) and 'oidc' providers, but \
-found '${rule.provider}' assigned.`
+found '${rule.provider}' assigned.`,
         );
       }
     }
@@ -1918,7 +2095,7 @@ found '${rule.provider}' assigned.`
       if (rule.provider !== null && rule.provider !== 'apiKey' && rule.provider !== 'iam') {
         throw new InvalidDirectiveError(
           `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
-found '${rule.provider}' assigned.`
+found '${rule.provider}' assigned.`,
         );
       }
     }
@@ -1931,7 +2108,7 @@ found '${rule.provider}' assigned.`
       if (rule.provider !== null && rule.provider !== 'userPools' && rule.provider !== 'iam') {
         throw new InvalidDirectiveError(
           `@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but \
-found '${rule.provider}' assigned.`
+found '${rule.provider}' assigned.`,
         );
       }
     }
@@ -1942,19 +2119,19 @@ found '${rule.provider}' assigned.`
 
     if (rule.provider === 'apiKey' && this.configuredAuthProviders.hasApiKey === false) {
       throw new InvalidDirectiveError(
-        `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
+        `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`,
       );
     } else if (rule.provider === 'oidc' && this.configuredAuthProviders.hasOIDC === false) {
       throw new InvalidDirectiveError(
-        `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
+        `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`,
       );
     } else if (rule.provider === 'userPools' && this.configuredAuthProviders.hasUserPools === false) {
       throw new InvalidDirectiveError(
-        `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
+        `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`,
       );
     } else if (rule.provider === 'iam' && this.configuredAuthProviders.hasIAM === false) {
       throw new InvalidDirectiveError(
-        `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`
+        `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`,
       );
     }
   }
@@ -2099,7 +2276,73 @@ found '${rule.provider}' assigned.`
   }
 
   private isOperationExpressionSet(operationTypeName: string, template: string): boolean {
-    return template.includes(`$context.result.operation = "${operationTypeName}"`);
+    return template.includes(`$ctx.result.put("operation", "${operationTypeName}")`);
+  }
+
+  private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode, rules: Array<AuthRule>): void {
+    // Get the existing ModelXConditionInput
+    const tableXMutationConditionInputName = ModelResourceIDs.ModelConditionInputTypeName(type.name.value);
+
+    if (this.typeExist(tableXMutationConditionInputName, ctx)) {
+      const tableXMutationConditionInput = <InputObjectTypeDefinitionNode>ctx.getType(tableXMutationConditionInputName);
+
+      const fieldNames = new Set<String>();
+
+      // Get auth related field names from @auth directive rules
+      const getAuthFieldNames = (): void => {
+        if (rules.length > 0) {
+          // Process owner rules
+          const ownerRules = this.getOwnerRules(rules);
+          const ownerFieldNameArgs = ownerRules.filter(rule => !!rule.ownerField).map(rule => rule.ownerField);
+
+          ownerFieldNameArgs.forEach((f: string) => fieldNames.add(f));
+
+          // Add 'owner' to field list if we've owner rules without ownerField argument
+          if (ownerRules.find(rule => !rule.ownerField)) {
+            fieldNames.add('owner');
+          }
+
+          // Process owner rules
+          const groupsRules = rules.filter(rule => rule.allow === 'groups');
+          const groupFieldNameArgs = groupsRules.filter(rule => !!rule.groupsField).map(rule => rule.groupsField);
+
+          groupFieldNameArgs.forEach((f: string) => fieldNames.add(f));
+
+          // Add 'groups' to field list if we've groups rules without groupsField argument
+          if (groupsRules.find(rule => !rule.groupsField)) {
+            fieldNames.add('groups');
+          }
+        }
+      };
+
+      getAuthFieldNames();
+
+      if (fieldNames.size > 0) {
+        const reducedFields = tableXMutationConditionInput.fields.filter(field => !fieldNames.has(field.name.value));
+
+        const updatedInput = {
+          ...tableXMutationConditionInput,
+          fields: reducedFields,
+        };
+
+        ctx.putType(updatedInput);
+      }
+    }
+  }
+
+  private typeExist(type: string, ctx: TransformerContext): boolean {
+    return Boolean(type in ctx.nodeMap);
+  }
+
+  private isSyncEnabled(ctx: TransformerContext, typeName: string): boolean {
+    const resolverConfig = ctx.getResolverConfig();
+    if (resolverConfig && resolverConfig.project) {
+      return true;
+    }
+    if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
+      return true;
+    }
+    return false;
   }
 }
 

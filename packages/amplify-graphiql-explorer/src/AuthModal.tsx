@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Button, Form, Modal, Dropdown, Input, TextArea, Label } from 'semantic-ui-react';
-import { generateToken, parse } from './utils/jwt'
+import { generateToken, parse } from './utils/jwt';
 
 export enum AUTH_MODE {
   API_KEY = 'API_KEY',
   AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
   OPENID_CONNECT = 'OPENID_CONNECT',
+  AWS_IAM = 'AWS_IAM',
 }
 
 type State = {
@@ -33,7 +34,7 @@ type Props = {
   apiKey?: string;
 };
 export class AuthModal extends Component<Props, State> {
-  state:State = {
+  state: State = {
     currentCognitoToken: '',
     currentOIDCTokenDecoded: '',
     currentOIDCToken: '',
@@ -86,14 +87,10 @@ export class AuthModal extends Component<Props, State> {
     const result = {
       authMode: this.state.currentAuthMode,
       apiKey: this.state.currentAuthMode === AUTH_MODE.API_KEY ? this.state.apiKey : null,
-      cognitoToken:
-        this.state.currentAuthMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS
-          ? this.state.currentCognitoToken
-          : null,
-      OIDCToken:
-        this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT
-          ? this.state.currentOIDCToken
-          : null,
+      cognitoToken: this.state.currentAuthMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS ? this.state.currentCognitoToken : null,
+      OIDCToken: this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT ? this.state.currentOIDCToken : null,
+      // We have no data for IAM to store, so we just store a constant string for now
+      iam: this.state.currentAuthMode === AUTH_MODE.AWS_IAM ? 'AWS4-HMAC-SHA256 IAMAuthorized' : null,
     };
 
     if (this.props.onClose) {
@@ -148,12 +145,7 @@ export class AuthModal extends Component<Props, State> {
         <>
           <Form.Field>
             <label>ApiKey</label>
-            <Input
-              readOnly
-              placeholder='APIKey'
-              value={this.state.apiKey}
-              onChange={this.changeAPIKey}
-            />
+            <Input readOnly placeholder='APIKey' value={this.state.apiKey} onChange={this.changeAPIKey} />
           </Form.Field>
         </>
       );
@@ -163,11 +155,7 @@ export class AuthModal extends Component<Props, State> {
         <>
           <Form.Field>
             <label>Username</label>
-            <Input
-              placeholder='User Name'
-              value={this.state.userName}
-              onChange={this.onUserNameChange}
-            />
+            <Input placeholder='User Name' value={this.state.userName} onChange={this.onUserNameChange} />
           </Form.Field>
           <Form.Field>
             <label>Groups</label>
@@ -196,23 +184,29 @@ export class AuthModal extends Component<Props, State> {
       );
     } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
       const errorLabel = this.state.oidcTokenError ? (
-        <Label basic color="red" pointing="below">
+        <Label basic color='red' pointing='below'>
           {this.state.oidcTokenError}
         </Label>
-      ) : null
+      ) : null;
       formContent = (
         <>
           <Form.Field>
             <label>Decoded OpenID Connect Token</label>
-            { errorLabel }
+            {errorLabel}
             <TextArea
               onChange={this.onOIDCTokenChange}
               rows={10}
               placeholder='Decoded OIDC Token'
-              spellCheck="false"
+              spellCheck='false'
               value={this.state.currentOIDCTokenDecoded}
             />
           </Form.Field>
+        </>
+      );
+    } else if (this.state.currentAuthMode === AUTH_MODE.AWS_IAM) {
+      formContent = (
+        <>
+          <label>IAM authentication mode has no settings.</label>
         </>
       );
     }
@@ -237,7 +231,9 @@ export class AuthModal extends Component<Props, State> {
               value={this.state.currentAuthMode}
               onChange={this.onAuthModeChange}
             />
-            <Form>{formContent}</Form>
+            <div style={{ marginTop: '1em' }}>
+              <Form>{formContent}</Form>
+            </div>
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
@@ -261,12 +257,11 @@ export class AuthModal extends Component<Props, State> {
       this.setState(newState, () => {
         this.onClose();
       });
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   generateCognitoJWTToken() {
-    const tokenPayload:any = {
+    const tokenPayload: any = {
       sub: '7d8ca528-4931-4254-9273-ea5ee853f271',
       'cognito:groups': [],
       email_verified: true,
@@ -296,7 +291,7 @@ export class AuthModal extends Component<Props, State> {
       return generateToken(tokenPayload);
     } catch (e) {
       this.setState({
-        oidcTokenError: e.message
+        oidcTokenError: e.message,
       });
       throw e;
     }

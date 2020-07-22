@@ -63,8 +63,8 @@ function getPluginsJsonFileName(): string {
   let result = constants.PLUGINS_FILE_NAME;
   const amplifyExecutableName = path.basename(process.argv[1]);
 
-  if (amplifyExecutableName !== constants.Amplify) {
-    result = amplifyExecutableName + '-' + constants.PLUGINS_FILE_NAME;
+  if (amplifyExecutableName === 'amplify-dev') {
+    result = `${amplifyExecutableName}-${constants.PLUGINS_FILE_NAME}`;
   }
 
   return result;

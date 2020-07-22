@@ -20,8 +20,9 @@ const fileNames = ['queries', 'mutations', 'subscriptions'];
 
 function deleteAmplifyConfig(context) {
   const { srcDirPath, projectPath } = getSrcDir(context);
+  // delete aws-exports
   if (fs.existsSync(srcDirPath)) {
-    const targetFilePath = path.join(srcDirPath, constants.configFilename);
+    const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
     fs.removeSync(targetFilePath);
   }
   if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;

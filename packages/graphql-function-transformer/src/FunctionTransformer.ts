@@ -9,10 +9,12 @@ const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
 
 export class FunctionTransformer extends Transformer {
   constructor() {
+    // TODO remove once prettier is upgraded
+    // prettier-ignore
     super(
       'FunctionTransformer',
       gql`
-        directive @function(name: String!, region: String) on FIELD_DEFINITION
+        directive @function(name: String!, region: String) repeatable on FIELD_DEFINITION
       `
     );
   }
@@ -71,12 +73,12 @@ export class FunctionTransformer extends Transformer {
       RoleName: Fn.If(
         ResourceConstants.CONDITIONS.HasEnvironmentParameter,
         Fn.Join('-', [
-          FunctionResourceIDs.FunctionIAMRoleID(name, region).slice(0, 26), // max of 64. 64-10-26-28 = 0
+          FunctionResourceIDs.FunctionIAMRoleName(name, true), // max of 64. 64-10-26-28 = 0
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
           Fn.Ref(ResourceConstants.PARAMETERS.Env), // 10
         ]),
         Fn.Join('-', [
-          FunctionResourceIDs.FunctionIAMRoleID(name, region).slice(0, 37), // max of 64. 64-26-38 = 0
+          FunctionResourceIDs.FunctionIAMRoleName(name, false), // max of 64. 64-26-38 = 0
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
         ])
       ),

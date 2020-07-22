@@ -6,7 +6,10 @@ jest.mock('inquirer');
 
 describe('Select project', () => {
   const mockContext = 'CONTEXT';
-  const mockProjects = [{ name: 'proj1', value: 'prj-1' }, { name: 'Proj2', value: 'prj2' }];
+  const mockProjects = [
+    { name: 'proj1', value: 'prj-1' },
+    { name: 'Proj2', value: 'prj2' },
+  ];
   const selectedProject = 'prj2';
 
   beforeEach(() => {

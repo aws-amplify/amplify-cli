@@ -2,7 +2,6 @@ const aws = require('./aws.js');
 const _ = require('lodash');
 const providerName = require('../../lib/constants').ProviderName;
 const configurationManager = require('../../lib/configuration-manager');
-
 class S3 {
   constructor(context, options = {}) {
     return (async () => {
@@ -19,17 +18,32 @@ class S3 {
   }
 
   uploadFile(s3Params) {
-    const projectDetails = this.context.amplify.getProjectDetails();
-    const { envName } = this.context.amplify.getEnvInfo();
-    const projectBucket = projectDetails.amplifyMeta.providers
-      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
-      : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
-    s3Params.Bucket = projectBucket;
+    // envName and bucket does not change during execution, cache them into a class level
+    // field.
+    if (this.uploadState === undefined) {
+      const projectDetails = this.context.amplify.getProjectDetails();
+      const { envName } = this.context.amplify.getEnvInfo();
+      const projectBucket = projectDetails.amplifyMeta.providers
+        ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
+        : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+
+      this.uploadState = {
+        envName,
+        s3Params: {
+          Bucket: projectBucket,
+        },
+      };
+    }
+
+    const augmentedS3Params = {
+      ...s3Params,
+      ...this.uploadState.s3Params,
+    };
 
     return this.s3
-      .putObject(s3Params)
+      .putObject(augmentedS3Params)
       .promise()
-      .then(() => projectBucket);
+      .then(() => this.uploadState.s3Params.Bucket);
   }
 
   getFile(s3Params, envName = this.context.amplify.getEnvInfo().envName) {
@@ -52,7 +66,7 @@ class S3 {
     return this.ifBucketExists(bucketName).then(result => {
       if (!result) {
         this.context.print.warning(
-          'The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....'
+          'The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....',
         );
         this.context.print.warning(`Bucket name: ${bucketName}`);
 
@@ -61,68 +75,118 @@ class S3 {
           .promise()
           .then(() => this.s3.waitFor('bucketExists', params).promise())
           .then(() => {
-            this.context.print.success('S3 bucket sucessfully created');
+            this.context.print.success('S3 bucket successfully created');
             return bucketName;
           });
       }
     });
   }
-
-  deleteAllObjects(bucketName) {
+  getAllObjectKeys(bucketName, continuationToken = null) {
     return new Promise((resolve, reject) => {
       this.s3
-        .listObjects({ Bucket: bucketName })
+        .listObjectsV2({ Bucket: bucketName, ContinuationToken: continuationToken })
         .promise()
         .then((result, lerr) => {
           if (lerr) {
             reject(lerr);
             return;
           }
-
-          const promises = result.Contents.map(r => this.s3.deleteObject({ Bucket: bucketName, Key: r.Key }).promise());
-          Promise.all(promises).then((results, errors) => {
-            if (!_.compact(errors).length) resolve();
-            else reject(errors);
+          const objects = result.Contents.map(r => {
+            return { Key: r.Key };
           });
+          if (result.IsTruncated) {
+            this.getAllObjectKeys(bucketName, result.NextContinuationToken).then((result, error) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(objects.concat(result));
+              }
+            });
+          } else {
+            resolve(objects);
+          }
         });
+    });
+  }
+
+  deleteAllObjects(bucketName) {
+    return new Promise((resolve, reject) => {
+      this.getAllObjectKeys(bucketName).then((bucketObjects, error) => {
+        if (error) reject(error);
+        const chunkedResult = _.chunk(bucketObjects, 1000);
+
+        const deleteReq = chunkedResult
+          .map(res => {
+            return {
+              Bucket: bucketName,
+              Delete: {
+                Objects: res,
+                Quiet: false,
+              },
+            };
+          })
+          .map(delParams => this.s3.deleteObjects(delParams))
+          .map(delRequest => delRequest.promise());
+        Promise.all(deleteReq)
+          .then(resolve)
+          .catch(reject);
+      });
     });
   }
 
   deleteS3Bucket(bucketName) {
     return new Promise((resolve, reject) => {
-      this.deleteAllObjects(bucketName).then((result, err) => {
+      this.ifBucketExists(bucketName).then((exists, err) => {
         if (err) {
           reject(err);
-          return;
         }
-
-        this.s3
-          .deleteBucket({
-            Bucket: bucketName,
-          })
-          .promise()
-          .then((dresult, derr) => {
-            if (derr) {
-              reject(derr);
+        if (exists) {
+          this.deleteAllObjects(bucketName).then((result, err) => {
+            if (err) {
+              reject(err);
               return;
             }
-            resolve(dresult);
+            this.s3
+              .deleteBucket({
+                Bucket: bucketName,
+              })
+              .promise()
+              .then((dresult, derr) => {
+                if (derr) {
+                  reject(derr);
+                  return;
+                }
+                resolve(dresult);
+              });
           });
+        } else {
+          resolve();
+        }
       });
     });
   }
 
   ifBucketExists(bucketName) {
-    return this.s3
-      .listBuckets({})
-      .promise()
-      .then(result => {
-        const index = result.Buckets.findIndex(bucket => bucket.Name === bucketName);
-        if (index !== -1) {
-          return true;
-        }
-        return false;
-      });
+    return new Promise((resolve, reject) => {
+      this.s3.headBucket(
+        {
+          Bucket: bucketName,
+        },
+        (err, data) => {
+          if (data !== null) {
+            resolve(true);
+            return;
+          } else {
+            if (err.statusCode === 404) {
+              resolve(false);
+              return;
+            }
+          }
+
+          reject(err.message);
+        },
+      );
+    });
   }
 }
 

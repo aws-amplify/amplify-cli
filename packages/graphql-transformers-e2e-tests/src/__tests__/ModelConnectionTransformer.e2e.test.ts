@@ -9,8 +9,8 @@ import { GraphQLClient } from '../GraphQLClient';
 import { deploy } from '../deployNestedStacks';
 import emptyBucket from '../emptyBucket';
 import { S3Client } from '../S3Client';
-import * as S3 from 'aws-sdk/clients/s3';
-import * as moment from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
 
 jest.setTimeout(2000000);
 
@@ -38,8 +38,8 @@ beforeAll(async () => {
     type Post @model {
         id: ID!
         title: String!
-        createdAt: String
-        updatedAt: String
+        createdAt: AWSDateTime
+        updatedAt: AWSDateTime
         comments: [Comment] @connection(name: "PostComments", keyField: "postId", limit:50)
         sortedComments: [SortedComment] @connection(name: "SortedPostComments", keyField: "postId", sortField: "when")
     }
@@ -102,7 +102,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
 
     // Arbitrary wait to make sure everything is ready.
@@ -158,7 +158,7 @@ test('Test queryPost query', async () => {
             title
         }
     }`,
-    {}
+    {},
   );
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual('Test Query');
@@ -173,7 +173,7 @@ test('Test queryPost query', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(createCommentResponse.data.createComment.id).toBeDefined();
   expect(createCommentResponse.data.createComment.content).toEqual('A comment!');
@@ -192,7 +192,7 @@ test('Test queryPost query', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponse.data.getPost).toBeDefined();
   const items = queryResponse.data.getPost.comments.items;
@@ -217,7 +217,7 @@ test('Test queryPost query with sortField', async () => {
             title
         }
     }`,
-    {}
+    {},
   );
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual(title);
@@ -236,7 +236,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(createCommentResponse1.data.createSortedComment.id).toBeDefined();
   expect(createCommentResponse1.data.createSortedComment.content).toEqual(comment1);
@@ -259,7 +259,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(createCommentResponse2.data.createSortedComment.id).toBeDefined();
   expect(createCommentResponse2.data.createSortedComment.content).toEqual(comment2);
@@ -280,7 +280,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponse.data.getPost).toBeDefined();
   const items = queryResponse.data.getPost.sortedComments.items;
@@ -302,7 +302,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseDesc.data.getPost).toBeDefined();
   const itemsDesc = queryResponseDesc.data.getPost.sortedComments.items;
@@ -324,7 +324,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyCondition.data.getPost).toBeDefined();
   const itemsDescWithKeyCondition = queryResponseWithKeyCondition.data.getPost.sortedComments.items;
@@ -345,7 +345,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionEq.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionEq = queryResponseWithKeyConditionEq.data.getPost.sortedComments.items;
@@ -366,7 +366,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionGt.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionGt = queryResponseWithKeyConditionGt.data.getPost.sortedComments.items;
@@ -387,7 +387,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionGe.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionGe = queryResponseWithKeyConditionGe.data.getPost.sortedComments.items;
@@ -409,7 +409,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionLe.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionLe = queryResponseWithKeyConditionLe.data.getPost.sortedComments.items;
@@ -431,7 +431,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionLt.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionLt = queryResponseWithKeyConditionLt.data.getPost.sortedComments.items;
@@ -452,7 +452,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionBetween.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionBetween = queryResponseWithKeyConditionBetween.data.getPost.sortedComments.items;
@@ -474,7 +474,7 @@ test('Test create comment without a post and then querying the comment.', async 
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(createCommentResponse1.data.createComment.id).toBeDefined();
     expect(createCommentResponse1.data.createComment.content).toEqual(comment1);
@@ -490,7 +490,7 @@ test('Test create comment without a post and then querying the comment.', async 
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(queryResponseDesc.data.getComment).toBeDefined();
     expect(queryResponseDesc.data.getComment.post).toBeNull();
@@ -509,7 +509,7 @@ test('Test album self connection.', async () => {
             title
         }
     }`,
-    {}
+    {},
   );
   expect(createAlbum.data.createAlbum.id).toBeDefined();
   expect(createAlbum.data.createAlbum.title).toEqual('Test Album');
@@ -525,7 +525,7 @@ test('Test album self connection.', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(createSelfAlbum.data.createAlbum.id).toBeDefined();
   expect(createSelfAlbum.data.createAlbum.title).toEqual('A Album!');
@@ -539,7 +539,7 @@ test('Test album self connection.', async () => {
             title
         }
     }`,
-    {}
+    {},
   );
   expect(queryAlbum.data.getAlbum).toBeDefined();
   expect(queryAlbum.data.getAlbum.title).toEqual('Test Album');
@@ -557,7 +557,7 @@ test('Test default limit is 50', async () => {
         }
       }
       `,
-    {}
+    {},
   );
   expect(createPost.data.createPost).toBeDefined();
   expect(createPost.data.createPost.id).toEqual(postID);
@@ -576,7 +576,7 @@ test('Test default limit is 50', async () => {
             }
           }
         `,
-      {}
+      {},
     );
   }
 
@@ -597,7 +597,7 @@ test('Test default limit is 50', async () => {
             }
           }
         }`,
-    { id: postID }
+    { id: postID },
   );
 
   expect(getPost.data.getPost.comments.items.length).toEqual(50);

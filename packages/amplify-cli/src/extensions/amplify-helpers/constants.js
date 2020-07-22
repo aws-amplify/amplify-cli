@@ -17,5 +17,6 @@ module.exports = {
   LocalEnvFileName: 'local-env-info.json',
   ProviderInfoFileName: 'team-provider-info.json',
   BackendConfigFileName: 'backend-config.json',
-  PROJECT_CONFIG_VERSION: '2.0',
+  PROJECT_CONFIG_VERSION: '3.0',
+  BreadcrumbsFileName: 'amplify.state',
 };

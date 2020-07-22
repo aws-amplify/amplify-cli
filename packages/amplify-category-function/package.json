@@ -1,25 +1,39 @@
 {
   "name": "amplify-category-function",
-  "version": "1.30.0",
-  "main": "index.js",
+  "version": "2.21.5",
   "description": "amplify-cli function plugin",
-  "dependencies": {
-    "amplify-category-storage": "1.31.0",
-    "fs-extra": "^8.1.0",
-    "inquirer": "^6.5.1",
-    "mime-types": "^2.1.24",
-    "promise-sequential": "^1.1.1",
-    "uuid": "^3.3.2"
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-category-function"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "test": "jest"
+  },
+  "keywords": [
+    "amplify",
+    "aws"
+  ],
+  "dependencies": {
+    "amplify-category-storage": "2.5.5",
+    "amplify-function-plugin-interface": "1.4.0",
+    "enquirer": "^2.3.5",
+    "folder-hash": "^3.3.2",
+    "fs-extra": "^8.1.0",
+    "globby": "^11.0.1",
+    "graphql-transformer-core": "6.19.5",
+    "inquirer": "^7.0.3",
+    "inquirer-datepicker": "^1.1.0",
+    "jstreemap": "^1.28.2",
+    "lodash": "^4.17.15",
+    "mime-types": "^2.1.26",
+    "promise-sequential": "^1.1.1",
+    "uuid": "^3.4.0"
   }
 }

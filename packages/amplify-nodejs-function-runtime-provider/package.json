@@ -1,0 +1,55 @@
+{
+  "name": "amplify-nodejs-function-runtime-provider",
+  "version": "1.1.0",
+  "description": "Provides functionality related to functions in NodeJS on AWS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplfiy-nodejs-function-runtime-provider"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "keywords": [
+    "aws",
+    "amplify",
+    "lambda",
+    "nodejs"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "test": "jest",
+    "test-ci": "jest"
+  },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.4.0",
+    "archiver": "^3.1.1",
+    "fs-extra": "^8.1.0",
+    "glob": "^7.1.6"
+  },
+  "devDependencies": {
+    "@types/archiver": "^3.1.0",
+    "@types/node": "^10.17.13"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/*.d.ts"
+    ],
+    "testURL": "http://localhost/",
+    "testRegex": "(src/__tests__/.*.test.(js|ts))$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}

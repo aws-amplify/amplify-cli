@@ -1,8 +1,13 @@
 import { PluginPlatform } from './domain/plugin-platform';
 import { PluginInfo } from './domain/plugin-info';
 import { readPluginsJsonFileSync, writePluginsJsonFileSync } from './plugin-helpers/access-plugins-file';
-import { scanPluginPlatform, getCorePluginDirPath, isUnderScanCoverageSync } from './plugin-helpers/scan-plugin-platform';
-import { verifyPlugin, verifyPluginSync } from './plugin-helpers/verify-plugin';
+import {
+  scanPluginPlatform,
+  getCorePluginDirPath,
+  getCorePluginVersion,
+  isUnderScanCoverageSync,
+} from './plugin-helpers/scan-plugin-platform';
+import { verifyPlugin } from './plugin-helpers/verify-plugin';
 import createNewPlugin from './plugin-helpers/create-new-plugin';
 import { AddPluginResult, AddPluginError } from './domain/add-plugin-result';
 import { twoPluginsAreTheSame } from './plugin-helpers/compare-plugins';
@@ -42,8 +47,10 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
 function isCoreMatching(pluginPlatform: PluginPlatform): boolean {
   try {
     const currentCorePluginDirPath = getCorePluginDirPath();
+    const currentCorePluginVersion = getCorePluginVersion();
     const platformCorePluginDirPath = pluginPlatform.plugins[constants.CORE][0].packageLocation;
-    return currentCorePluginDirPath === platformCorePluginDirPath;
+    const platformCorePluginVersion = pluginPlatform.plugins[constants.CORE][0].packageVersion;
+    return currentCorePluginDirPath === platformCorePluginDirPath && currentCorePluginVersion === platformCorePluginVersion;
   } catch {
     return false;
   }
@@ -147,16 +154,16 @@ export async function confirmAndScan(pluginPlatform: PluginPlatform) {
   }
 }
 
-export function addUserPluginPackage(pluginPlatform: PluginPlatform, pluginDirPath: string): AddPluginResult {
+export const addUserPluginPackage = async (pluginPlatform: PluginPlatform, pluginDirPath: string): Promise<AddPluginResult> => {
   return addPluginPackage(pluginPlatform, pluginDirPath);
-}
+};
 
-export function addExcludedPluginPackage(pluginPlatform: PluginPlatform, pluginInfo: PluginInfo): AddPluginResult {
+export const addExcludedPluginPackage = async (pluginPlatform: PluginPlatform, pluginInfo: PluginInfo): Promise<AddPluginResult> => {
   return addPluginPackage(pluginPlatform, pluginInfo.packageLocation);
-}
+};
 
-export function addPluginPackage(pluginPlatform: PluginPlatform, pluginDirPath: string): AddPluginResult {
-  const pluginVerificationResult = verifyPluginSync(pluginDirPath);
+export const addPluginPackage = async (pluginPlatform: PluginPlatform, pluginDirPath: string): Promise<AddPluginResult> => {
+  const pluginVerificationResult = await verifyPlugin(pluginDirPath);
   const result = new AddPluginResult(false, pluginVerificationResult);
 
   if (pluginVerificationResult.verified) {
@@ -202,7 +209,7 @@ export function addPluginPackage(pluginPlatform: PluginPlatform, pluginDirPath: 
     result.error = AddPluginError.FailedVerification;
   }
   return result;
-}
+};
 
 // remove: select from the plugins only,
 // if the location belongs to the scan directories, put the info inside the excluded.

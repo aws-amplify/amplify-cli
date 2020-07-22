@@ -488,21 +488,41 @@ exports[`end 2 end tests should generate statements in JS 1`] = `
 "/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const hero = \`query Hero($episode: Episode) {
-  hero(episode: $episode) {
-    id
-    name
-    friends {
+export const hero = /* GraphQL */ \`
+  query Hero($episode: Episode) {
+    hero(episode: $episode) {
       id
       name
       friends {
         id
         name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
         appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -510,6 +530,27 @@ export const hero = \`query Hero($episode: Episode) {
       }
       friendsConnection {
         totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
       }
       appearsIn
       ... on Human {
@@ -527,59 +568,321 @@ export const hero = \`query Hero($episode: Episode) {
         primaryFunction
       }
     }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
+  }
+\`;
+export const reviews = /* GraphQL */ \`
+  query Reviews($episode: Episode!) {
+    reviews(episode: $episode) {
+      episode
+      stars
+      commentary
+    }
+  }
+\`;
+export const search = /* GraphQL */ \`
+  query Search($text: String) {
+    search(text: $text) {
+      ... on Human {
         id
         name
+        homePlanet
+        height
+        mass
+        friends {
+          id
+          name
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          friendsConnection {
+            totalCount
+          }
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+            starships {
+              id
+              name
+              length
+              coordinates
+            }
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+          edges {
+            cursor
+          }
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+          }
+        }
         appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
+        starships {
+          id
+          name
+          length
+          coordinates
         }
       }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
+      ... on Droid {
+        id
+        name
+        friends {
+          id
+          name
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          friendsConnection {
+            totalCount
+          }
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+            starships {
+              id
+              name
+              length
+              coordinates
+            }
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+          edges {
+            cursor
+          }
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+          }
+        }
+        appearsIn
+        primaryFunction
       }
-    }
-    appearsIn
-    ... on Human {
-      homePlanet
-      height
-      mass
-      starships {
+      ... on Starship {
         id
         name
         length
         coordinates
       }
     }
-    ... on Droid {
+  }
+\`;
+export const character = /* GraphQL */ \`
+  query Character($id: ID!) {
+    character(id: $id) {
+      id
+      name
+      friends {
+        id
+        name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+      appearsIn
+      ... on Human {
+        homePlanet
+        height
+        mass
+        starships {
+          id
+          name
+          length
+          coordinates
+        }
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+  }
+\`;
+export const droid = /* GraphQL */ \`
+  query Droid($id: ID!) {
+    droid(id: $id) {
+      id
+      name
+      friends {
+        id
+        name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+      appearsIn
       primaryFunction
     }
   }
-}
 \`;
-export const reviews = \`query Reviews($episode: Episode!) {
-  reviews(episode: $episode) {
-    episode
-    stars
-    commentary
-  }
-}
-\`;
-export const search = \`query Search($text: String) {
-  search(text: $text) {
-    ... on Human {
+export const human = /* GraphQL */ \`
+  query Human($id: ID!) {
+    human(id: $id) {
       id
       name
       homePlanet
@@ -652,352 +955,79 @@ export const search = \`query Search($text: String) {
         coordinates
       }
     }
-    ... on Droid {
-      id
-      name
-      friends {
-        id
-        name
-        friends {
-          id
-          name
-          appearsIn
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-        }
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          appearsIn
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        pageInfo {
-          startCursor
-          endCursor
-          hasNextPage
-        }
-      }
-      appearsIn
-      primaryFunction
-    }
-    ... on Starship {
+  }
+\`;
+export const starship = /* GraphQL */ \`
+  query Starship($id: ID!) {
+    starship(id: $id) {
       id
       name
       length
       coordinates
     }
   }
-}
 \`;
-export const character = \`query Character($id: ID!) {
-  character(id: $id) {
-    id
-    name
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    ... on Human {
-      homePlanet
-      height
-      mass
-      starships {
-        id
-        name
-        length
-        coordinates
-      }
-    }
-    ... on Droid {
-      primaryFunction
+export const createReview = /* GraphQL */ \`
+  mutation CreateReview($episode: Episode, $review: ReviewInput!) {
+    createReview(episode: $episode, review: $review) {
+      episode
+      stars
+      commentary
     }
   }
-}
 \`;
-export const droid = \`query Droid($id: ID!) {
-  droid(id: $id) {
-    id
-    name
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    primaryFunction
-  }
-}
-\`;
-export const human = \`query Human($id: ID!) {
-  human(id: $id) {
-    id
-    name
-    homePlanet
-    height
-    mass
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    starships {
-      id
-      name
-      length
-      coordinates
+export const reviewAdded = /* GraphQL */ \`
+  subscription ReviewAdded($episode: Episode) {
+    reviewAdded(episode: $episode) {
+      episode
+      stars
+      commentary
     }
   }
-}
-\`;
-export const starship = \`query Starship($id: ID!) {
-  starship(id: $id) {
-    id
-    name
-    length
-    coordinates
-  }
-}
-\`;
-export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
-  createReview(episode: $episode, review: $review) {
-    episode
-    stars
-    commentary
-  }
-}
-\`;
-export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
-  reviewAdded(episode: $episode) {
-    episode
-    stars
-    commentary
-  }
-}
 \`;
 "
 `;
 
 exports[`end 2 end tests should generate statements in Typescript 1`] = `
-"// tslint:disable
+"/* tslint:disable */
+/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const hero = \`query Hero($episode: Episode) {
-  hero(episode: $episode) {
-    id
-    name
-    friends {
+export const hero = /* GraphQL */ \`
+  query Hero($episode: Episode) {
+    hero(episode: $episode) {
       id
       name
       friends {
         id
         name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
         appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -1005,6 +1035,27 @@ export const hero = \`query Hero($episode: Episode) {
       }
       friendsConnection {
         totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
       }
       appearsIn
       ... on Human {
@@ -1022,59 +1073,321 @@ export const hero = \`query Hero($episode: Episode) {
         primaryFunction
       }
     }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
+  }
+\`;
+export const reviews = /* GraphQL */ \`
+  query Reviews($episode: Episode!) {
+    reviews(episode: $episode) {
+      episode
+      stars
+      commentary
+    }
+  }
+\`;
+export const search = /* GraphQL */ \`
+  query Search($text: String) {
+    search(text: $text) {
+      ... on Human {
         id
         name
+        homePlanet
+        height
+        mass
+        friends {
+          id
+          name
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          friendsConnection {
+            totalCount
+          }
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+            starships {
+              id
+              name
+              length
+              coordinates
+            }
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+          edges {
+            cursor
+          }
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+          }
+        }
         appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
+        starships {
+          id
+          name
+          length
+          coordinates
         }
       }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
+      ... on Droid {
+        id
+        name
+        friends {
+          id
+          name
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          friendsConnection {
+            totalCount
+          }
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+            starships {
+              id
+              name
+              length
+              coordinates
+            }
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+          edges {
+            cursor
+          }
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+          }
+        }
+        appearsIn
+        primaryFunction
       }
-    }
-    appearsIn
-    ... on Human {
-      homePlanet
-      height
-      mass
-      starships {
+      ... on Starship {
         id
         name
         length
         coordinates
       }
     }
-    ... on Droid {
+  }
+\`;
+export const character = /* GraphQL */ \`
+  query Character($id: ID!) {
+    character(id: $id) {
+      id
+      name
+      friends {
+        id
+        name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+      appearsIn
+      ... on Human {
+        homePlanet
+        height
+        mass
+        starships {
+          id
+          name
+          length
+          coordinates
+        }
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+  }
+\`;
+export const droid = /* GraphQL */ \`
+  query Droid($id: ID!) {
+    droid(id: $id) {
+      id
+      name
+      friends {
+        id
+        name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+      appearsIn
       primaryFunction
     }
   }
-}
 \`;
-export const reviews = \`query Reviews($episode: Episode!) {
-  reviews(episode: $episode) {
-    episode
-    stars
-    commentary
-  }
-}
-\`;
-export const search = \`query Search($text: String) {
-  search(text: $text) {
-    ... on Human {
+export const human = /* GraphQL */ \`
+  query Human($id: ID!) {
+    human(id: $id) {
       id
       name
       homePlanet
@@ -1147,329 +1460,35 @@ export const search = \`query Search($text: String) {
         coordinates
       }
     }
-    ... on Droid {
-      id
-      name
-      friends {
-        id
-        name
-        friends {
-          id
-          name
-          appearsIn
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-        }
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          appearsIn
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        pageInfo {
-          startCursor
-          endCursor
-          hasNextPage
-        }
-      }
-      appearsIn
-      primaryFunction
-    }
-    ... on Starship {
+  }
+\`;
+export const starship = /* GraphQL */ \`
+  query Starship($id: ID!) {
+    starship(id: $id) {
       id
       name
       length
       coordinates
     }
   }
-}
 \`;
-export const character = \`query Character($id: ID!) {
-  character(id: $id) {
-    id
-    name
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    ... on Human {
-      homePlanet
-      height
-      mass
-      starships {
-        id
-        name
-        length
-        coordinates
-      }
-    }
-    ... on Droid {
-      primaryFunction
+export const createReview = /* GraphQL */ \`
+  mutation CreateReview($episode: Episode, $review: ReviewInput!) {
+    createReview(episode: $episode, review: $review) {
+      episode
+      stars
+      commentary
     }
   }
-}
 \`;
-export const droid = \`query Droid($id: ID!) {
-  droid(id: $id) {
-    id
-    name
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    primaryFunction
-  }
-}
-\`;
-export const human = \`query Human($id: ID!) {
-  human(id: $id) {
-    id
-    name
-    homePlanet
-    height
-    mass
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    starships {
-      id
-      name
-      length
-      coordinates
+export const reviewAdded = /* GraphQL */ \`
+  subscription ReviewAdded($episode: Episode) {
+    reviewAdded(episode: $episode) {
+      episode
+      stars
+      commentary
     }
   }
-}
-\`;
-export const starship = \`query Starship($id: ID!) {
-  starship(id: $id) {
-    id
-    name
-    length
-    coordinates
-  }
-}
-\`;
-export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
-  createReview(episode: $episode, review: $review) {
-    episode
-    stars
-    commentary
-  }
-}
-\`;
-export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
-  reviewAdded(episode: $episode) {
-    episode
-    stars
-    commentary
-  }
-}
 \`;
 "
 `;
@@ -1478,21 +1497,41 @@ exports[`end 2 end tests should generate statements in flow 1`] = `
 "// @flow
 // this is an auto generated file. This will be overwritten
 
-export const hero = \`query Hero($episode: Episode) {
-  hero(episode: $episode) {
-    id
-    name
-    friends {
+export const hero = /* GraphQL */ \`
+  query Hero($episode: Episode) {
+    hero(episode: $episode) {
       id
       name
       friends {
         id
         name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
         appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -1500,6 +1539,27 @@ export const hero = \`query Hero($episode: Episode) {
       }
       friendsConnection {
         totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
       }
       appearsIn
       ... on Human {
@@ -1517,59 +1577,321 @@ export const hero = \`query Hero($episode: Episode) {
         primaryFunction
       }
     }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
+  }
+\`;
+export const reviews = /* GraphQL */ \`
+  query Reviews($episode: Episode!) {
+    reviews(episode: $episode) {
+      episode
+      stars
+      commentary
+    }
+  }
+\`;
+export const search = /* GraphQL */ \`
+  query Search($text: String) {
+    search(text: $text) {
+      ... on Human {
         id
         name
+        homePlanet
+        height
+        mass
+        friends {
+          id
+          name
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          friendsConnection {
+            totalCount
+          }
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+            starships {
+              id
+              name
+              length
+              coordinates
+            }
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+          edges {
+            cursor
+          }
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+          }
+        }
         appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
+        starships {
+          id
+          name
+          length
+          coordinates
         }
       }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
+      ... on Droid {
+        id
+        name
+        friends {
+          id
+          name
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          friendsConnection {
+            totalCount
+          }
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+            starships {
+              id
+              name
+              length
+              coordinates
+            }
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+          edges {
+            cursor
+          }
+          friends {
+            id
+            name
+            appearsIn
+            ... on Human {
+              homePlanet
+              height
+              mass
+            }
+            ... on Droid {
+              primaryFunction
+            }
+          }
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+          }
+        }
+        appearsIn
+        primaryFunction
       }
-    }
-    appearsIn
-    ... on Human {
-      homePlanet
-      height
-      mass
-      starships {
+      ... on Starship {
         id
         name
         length
         coordinates
       }
     }
-    ... on Droid {
+  }
+\`;
+export const character = /* GraphQL */ \`
+  query Character($id: ID!) {
+    character(id: $id) {
+      id
+      name
+      friends {
+        id
+        name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+      appearsIn
+      ... on Human {
+        homePlanet
+        height
+        mass
+        starships {
+          id
+          name
+          length
+          coordinates
+        }
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+  }
+\`;
+export const droid = /* GraphQL */ \`
+  query Droid($id: ID!) {
+    droid(id: $id) {
+      id
+      name
+      friends {
+        id
+        name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+      appearsIn
       primaryFunction
     }
   }
-}
 \`;
-export const reviews = \`query Reviews($episode: Episode!) {
-  reviews(episode: $episode) {
-    episode
-    stars
-    commentary
-  }
-}
-\`;
-export const search = \`query Search($text: String) {
-  search(text: $text) {
-    ... on Human {
+export const human = /* GraphQL */ \`
+  query Human($id: ID!) {
+    human(id: $id) {
       id
       name
       homePlanet
@@ -1642,329 +1964,35 @@ export const search = \`query Search($text: String) {
         coordinates
       }
     }
-    ... on Droid {
-      id
-      name
-      friends {
-        id
-        name
-        friends {
-          id
-          name
-          appearsIn
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-        }
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          appearsIn
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        pageInfo {
-          startCursor
-          endCursor
-          hasNextPage
-        }
-      }
-      appearsIn
-      primaryFunction
-    }
-    ... on Starship {
+  }
+\`;
+export const starship = /* GraphQL */ \`
+  query Starship($id: ID!) {
+    starship(id: $id) {
       id
       name
       length
       coordinates
     }
   }
-}
 \`;
-export const character = \`query Character($id: ID!) {
-  character(id: $id) {
-    id
-    name
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    ... on Human {
-      homePlanet
-      height
-      mass
-      starships {
-        id
-        name
-        length
-        coordinates
-      }
-    }
-    ... on Droid {
-      primaryFunction
+export const createReview = /* GraphQL */ \`
+  mutation CreateReview($episode: Episode, $review: ReviewInput!) {
+    createReview(episode: $episode, review: $review) {
+      episode
+      stars
+      commentary
     }
   }
-}
 \`;
-export const droid = \`query Droid($id: ID!) {
-  droid(id: $id) {
-    id
-    name
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    primaryFunction
-  }
-}
-\`;
-export const human = \`query Human($id: ID!) {
-  human(id: $id) {
-    id
-    name
-    homePlanet
-    height
-    mass
-    friends {
-      id
-      name
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      friendsConnection {
-        totalCount
-      }
-      appearsIn
-      ... on Human {
-        homePlanet
-        height
-        mass
-        starships {
-          id
-          name
-          length
-          coordinates
-        }
-      }
-      ... on Droid {
-        primaryFunction
-      }
-    }
-    friendsConnection {
-      totalCount
-      edges {
-        cursor
-      }
-      friends {
-        id
-        name
-        appearsIn
-        ... on Human {
-          homePlanet
-          height
-          mass
-        }
-        ... on Droid {
-          primaryFunction
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-      }
-    }
-    appearsIn
-    starships {
-      id
-      name
-      length
-      coordinates
+export const reviewAdded = /* GraphQL */ \`
+  subscription ReviewAdded($episode: Episode) {
+    reviewAdded(episode: $episode) {
+      episode
+      stars
+      commentary
     }
   }
-}
-\`;
-export const starship = \`query Starship($id: ID!) {
-  starship(id: $id) {
-    id
-    name
-    length
-    coordinates
-  }
-}
-\`;
-export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
-  createReview(episode: $episode, review: $review) {
-    episode
-    stars
-    commentary
-  }
-}
-\`;
-export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
-  reviewAdded(episode: $episode) {
-    episode
-    stars
-    commentary
-  }
-}
 \`;
 "
 `;

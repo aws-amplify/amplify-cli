@@ -15,6 +15,7 @@
             "Type":  "String"
         }
     },
+    "Mappings":  <%- JSON.stringify(props.mappings, null, 4) %>,
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -65,7 +66,7 @@
                 },
                 "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
                 "Environment": {"Variables" : { "ENV": {"Ref": "env"}}},
-                "Runtime": "nodejs8.10",
+                "Runtime": "nodejs10.x",
                 "Timeout": "300"
             }
         },
@@ -182,7 +183,13 @@
                         "LambdaFunction",
                         "Arn"
                     ]
-                }
+                },
+                "region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "lexRegion": {
+                    "Fn::FindInMap": ["RegionMapping", { "Ref": "AWS::Region" }, "lexRegion"]
+                  }
             }
         },
         "CognitoUnauthPolicy": {
@@ -305,7 +312,7 @@
     "Outputs": {
         "Region": {
             "Value": {
-                "Ref": "AWS::Region"
+                "Fn::FindInMap": ["RegionMapping", { "Ref": "AWS::Region" }, "lexRegion"]
             }
         },
         "BotName":  {
