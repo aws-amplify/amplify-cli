@@ -23,7 +23,8 @@
     "Eward Song"
   ],
   "scripts": {
-    "test": "mocha tests --require should",
+    "test": "npm run test-sub",
+    "test-sub": "mocha tests --require should",
     "pub": "npm version patch && npm publish && git push origin master && git push origin --tag",
     "build": "jison src/parse/velocity.yy src/parse/velocity.l -o src/parse/index.js"
   },
