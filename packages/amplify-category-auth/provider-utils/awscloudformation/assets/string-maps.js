@@ -417,12 +417,7 @@ const authProviders = [
     name: 'Amazon',
     value: 'www.amazon.com',
     answerHashKey: 'amazonAppId',
-  },
-  {
-    name: 'Custom OIDC',
-    value: 'OIDC',
-    answerHashKey: 'oidcAppId',
-  },
+  }
 ];
 
 const hostedUIProviders = [
