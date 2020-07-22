@@ -13,8 +13,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest",
-    "test-ci": "jest --ci -i"
+    "test": "jest"
   },
   "dependencies": {
     "amplify-category-auth": "2.16.5",
