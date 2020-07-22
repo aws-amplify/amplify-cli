@@ -61,6 +61,8 @@ export async function start(context) {
   context.print.success('Starting execution...');
   await invoker({ event })
     .then(result => {
+      // invoke does a build internally, so update amplify-meta accordingly
+      context.amplify.updateamplifyMetaAfterBuild({category, resourceName});
       const msg = typeof result === 'object' ? JSON.stringify(result) : result;
       context.print.success('Result:');
       context.print.info(typeof result === 'undefined' ? '' : msg);
