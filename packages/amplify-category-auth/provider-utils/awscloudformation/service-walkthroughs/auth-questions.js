@@ -417,7 +417,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
       oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
         const scopes = el === 'OIDC' ? JSON.parse(answers.oidcAppOIDCAuthorizeScopes) : [];
-        const maps = el === 'OIDC' ? JSON.parse(answers.oidcAppOIDCAttributesMapping) : {};
+        const maps = el === 'OIDC' && answers.oidcAppOIDCAttributesMapping ? JSON.parse(answers.oidcAppOIDCAttributesMapping) : {};
         attributesForMapping.forEach(a => {
           const attributeKey = attributeProviderMap[a];
           if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
@@ -435,8 +435,8 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
         return {
           ProviderName: el,
           authorize_scopes: scopes.join(delimmiter),
-          oidc_issuer: answers.oidcAppOIDCIssuer,
-          attributes_request_method: answers.oidcAppOIDCAttributesRequestMethod,
+          oidc_issuer:  el === 'OIDC' ? answers.oidcAppOIDCIssuer : undefined,
+          attributes_request_method: el === 'OIDC' ? answers.oidcAppOIDCAttributesRequestMethod: undefined,
           AttributeMapping: maps,
         };
       }),
@@ -523,7 +523,9 @@ function parseOAuthCreds(providers, metadata, envCreds) {
         const creds = parsedCreds.find(i => i.ProviderName === el);
         providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
         providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
-        providerKeys[`${el.toLowerCase()}AppOIDCIssuer`] = creds.oidc_issuer;
+        if(el === 'OIDC') {
+          providerKeys[`${el.toLowerCase()}AppOIDCIssuer`] = creds.oidc_issuer;
+        }
         providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
       } catch (e) {
         return null;

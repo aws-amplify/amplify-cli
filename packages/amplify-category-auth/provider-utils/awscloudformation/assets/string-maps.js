@@ -163,7 +163,10 @@ const attributeProviderMap = {
       attr: 'email',
       scope: 'profile',
     },
-    oidc: {},
+    oidc: {
+      attr: 'email',
+      scope: 'email'
+    },
   },
   family_name: {
     facebook: {

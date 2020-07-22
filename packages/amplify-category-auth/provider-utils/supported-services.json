@@ -1133,15 +1133,20 @@
       },
       {
         "key": "oidcAppSecretUserPool",
-        "question": "Enter your OIDC App Secret for your OAuth flow: ",
-        "required": true,
+        "question": "Enter your OIDC App Secret for your OAuth flow (optional): ",
+        "required": false,
         "andConditions": [
           {
             "key": "authProvidersUserPool",
             "value": "OIDC",
             "operator": "includes"
           }
-        ]
+        ],
+        "validation": {
+          "operator": "regex",
+          "value": ".*",
+          "onErrorMsg": "The value can be anything."
+        }
       },
       {
         "key": "oidcAppOIDCIssuer",
@@ -1209,8 +1214,8 @@
         ],
         "validation": {
           "operator": "regex",
-          "value": "{}|^({(\"\\w*\\s*\"):(\"\\w*\\s*\"))(\\,(\"\\w*\\s*\"):(\"\\w*\\s*\"))*}",
-          "onErrorMsg": "The value must be a valid JSON array without spaces."
+          "value": "^$|^({(\"\\w*\\s*\"):(\"\\w*\\s*\"))(\\,(\"\\w*\\s*\"):(\"\\w*\\s*\"))*}",
+          "onErrorMsg": "The value must be a valid JSON object without spaces."
         }
       },
       {
