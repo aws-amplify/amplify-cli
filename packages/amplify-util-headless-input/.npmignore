@@ -1,6 +1,5 @@
 **/__mocks__/**
 **/__tests__/**
-jest.config.js
 src
 tsconfig.json
 tsconfig.tsbuildinfo
