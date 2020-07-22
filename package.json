@@ -5,7 +5,7 @@
   "scripts": {
     "test-changed": "lerna run test --since master",
     "test": "lerna run test",
-    "test-ci": "lerna run test-ci --concurrency 1",
+    "test-ci": "lerna run test --concurrency 1 -- --ci -i",
     "e2e": "lerna run e2e",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --quiet",
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
