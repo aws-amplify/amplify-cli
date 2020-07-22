@@ -22,8 +22,7 @@
     "clean": "rimraf ./lib",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
-    "test": "jest",
-    "test-ci": "jest"
+    "test": "jest"
   },
   "dependencies": {
     "amplify-velocity-template": "1.1.10",

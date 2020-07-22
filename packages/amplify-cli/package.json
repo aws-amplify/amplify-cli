@@ -24,7 +24,6 @@
   },
   "scripts": {
     "test": "jest",
-    "test-ci": "jest --ci -i",
     "postinstall": "node scripts/post-install.js",
     "build": "tsc",
     "start": "tsc -w",
