@@ -27,7 +27,7 @@ export function createFunctionResources(context: any, parameters: FunctionParame
 export const createLayerArtifacts = (context, parameters: LayerParameters): string => {
   const layerDirPath = ensureLayerFolders(context, parameters);
   createLayerParametersFile(context, parameters, layerDirPath);
-  createParametersFile(context, {}, parameters.layerName, 'parameters.json');
+  createParametersFile(context, {}, parameters.layerName, parametersFileName);
   createLayerCfnFile(context, parameters, layerDirPath);
   addLayerToAmplifyMeta(context, parameters);
   return layerDirPath;
@@ -202,11 +202,9 @@ const layerParamsToStoredParams = (parameters: LayerParameters | StoredLayerPara
 });
 
 function createParametersFile(context, parameters, resourceName, parametersFileName) {
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
-  fs.ensureDirSync(resourceDirPath);
-  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-  const currentParameters = fs.existsSync(parametersFilePath) ? context.amplify.readJsonFile(parametersFilePath) : {};
+  const parametersFilePath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, resourceName, parametersFileName);
+  const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
+  delete currentParameters.mutableParametersState; // this field was written in error in a previous version of the cli
   context.amplify.writeObjectAsJson(parametersFilePath, { ...currentParameters, ...parameters }, true);
 }
 
@@ -216,7 +214,7 @@ function buildParametersFileObj(
   if ('trigger' in parameters) {
     return _.omit(parameters, ['functionTemplate', 'cloudResourceTemplatePath']);
   }
-  return _.pick(parameters, ['mutableParametersState', 'lambdaLayers']);
+  return { ...parameters.mutableParametersState, ..._.pick(parameters, ['lambdaLayers']) };
 }
 
 function translateFuncParamsToResourceOpts(params: FunctionParameters | FunctionTriggerParameters): any {
