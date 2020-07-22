@@ -30,7 +30,6 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "test-ci": "jest --ci -i",
     "test:smoke": "npm install && npm run build && rimraf node_modules && npm install --prod && node ./lib/cli.js && echo 'Smoke Test Passed'"
   },
   "dependencies": {

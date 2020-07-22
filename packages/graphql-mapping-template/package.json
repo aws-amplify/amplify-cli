@@ -19,7 +19,6 @@
   ],
   "scripts": {
     "test": "jest",
-    "test-ci": "jest --ci -i",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf ./lib"
