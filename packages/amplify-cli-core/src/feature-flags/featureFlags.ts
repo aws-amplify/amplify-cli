@@ -79,7 +79,7 @@ export class FeatureFlags {
     // - environment project level
     // - environment env level
     //
-    // The sections, properties and values are verified against the dynamically built up yup schema
+    // The sections, properties and values are verified against the dynamically built up json schema
     //
 
     instance.effectiveFlags = _.merge(
@@ -365,7 +365,7 @@ export class FeatureFlags {
           return value.toString();
         case 'number': {
           const n = Number.parseInt(value, 10);
-          if (!isNaN(n)) {
+          if (!Number.isNaN(n)) {
             return n;
           } else {
             throw new Error(`Invalid number value: '${value}' for '${flagName}' in section '${section}'`);
