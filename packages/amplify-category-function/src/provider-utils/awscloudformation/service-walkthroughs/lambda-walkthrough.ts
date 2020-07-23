@@ -15,6 +15,7 @@ import { merge } from '../utils/funcParamsUtils';
 import { tryUpdateTopLevelComment } from '../utils/updateTopLevelComment';
 import { addLayersToFunctionWalkthrough } from './addLayerToFunctionWalkthrough';
 import { convertLambdaLayerMetaToLayerCFNArray } from '../utils/layerArnConverter';
+import { loadFunctionParameters } from '../utils/loadFunctionParameters';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -95,18 +96,14 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, category, functionParameters.resourceName);
-  const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
-  const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
+  const currentParameters = loadFunctionParameters(context, resourceDirPath);
 
   if (
     await context.amplify.confirmPrompt.run(
       'Do you want to update the Lambda function permissions to access other resources in this project?',
     )
   ) {
-    merge(
-      functionParameters,
-      await askExecRolePermissionsQuestions(context, lambdaToUpdate, _.get(currentParameters, ['mutableParametersState', 'permissions'])),
-    );
+    merge(functionParameters, await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions));
 
     const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);

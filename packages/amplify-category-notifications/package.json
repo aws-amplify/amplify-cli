@@ -15,8 +15,7 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest --coverage",
-    "test-ci": "jest --ci -i"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "amplify-category-auth": "2.16.5",

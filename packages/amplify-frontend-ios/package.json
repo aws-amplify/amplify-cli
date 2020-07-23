@@ -17,8 +17,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "test-watch": "jest --watch",
-    "test-ci": "jest --ci -i"
+    "test-watch": "jest --watch"
   },
   "dependencies": {
     "fs-extra": "^8.1.0",
