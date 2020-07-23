@@ -28,7 +28,7 @@
     "build": "jison src/parse/velocity.yy src/parse/velocity.l -o src/parse/index.js"
   },
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.19"
   },
   "devDependencies": {
     "browser": "^0.2.6",

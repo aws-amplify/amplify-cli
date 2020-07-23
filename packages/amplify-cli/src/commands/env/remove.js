@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
+const { FeatureFlags } = require('amplify-cli-core');
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 const { getConfirmation } = require('../../extensions/amplify-helpers/delete-project');
 
@@ -62,30 +63,7 @@ module.exports = {
           fs.writeFileSync(awsInfoFilePath, jsonString, 'utf8');
         }
 
-        // Remove env specific amplify.{env}.json
-        const getProjectPath = () => {
-          try {
-            const { projectPath } = context.amplify.getEnvInfo();
-
-            return projectPath;
-          } catch {
-            return '';
-          }
-        };
-
-        const projectPath = getProjectPath();
-
-        if (projectPath) {
-          const deleteFile = filename => {
-            if (fs.existsSync(filename)) {
-              fs.removeSync(filename);
-            }
-          };
-
-          const fileName = path.join(projectPath, `amplify.{$env}.json`);
-
-          deleteFile(fileName);
-        }
+        await FeatureFlags.removeFeatureFlagConfiguration(false, [envName]);
 
         context.print.success('Successfully removed environment from your project locally');
       }

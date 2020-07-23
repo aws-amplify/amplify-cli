@@ -1,5 +1,5 @@
-import { FeatureFlags } from '.';
+import { FeatureFlagConfiguration } from '.';
 
 export interface FeatureFlagValueProvider {
-  load(): Promise<FeatureFlags>;
+  load(): Promise<FeatureFlagConfiguration>;
 }

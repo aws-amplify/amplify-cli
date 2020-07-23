@@ -1,3 +1,3 @@
 export interface CLIEnvironmentProvider {
-  getCurrent(): string;
+  getCurrentEnvName(): string;
 }

@@ -1,2 +1,2 @@
-export const AmplifyConfigFileName = 'amplify.json';
-export const AmplifyConfigEnvFileNameTemplate = 'amplify.{env}.json';
+export const amplifyConfigFileName = 'amplify.json';
+export const amplifyConfigEnvFileNameTemplate = (env: string) => `amplify.${env}.json`;

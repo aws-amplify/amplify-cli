@@ -1,45 +1,21 @@
 const fs = require('fs-extra');
 const ora = require('ora');
 const path = require('path');
+const { FeatureFlags } = require('amplify-cli-core');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 const { getFrontendPlugins } = require('./get-frontend-plugins');
 const { getPluginInstance } = require('./get-plugin-instance');
 const { getAmplifyAppId } = require('./get-amplify-appId');
+
 async function deleteProject(context) {
   const confirmation = await getConfirmation(context);
+
   if (confirmation.proceed) {
-    const getProjectPath = () => {
-      try {
-        const { projectPath } = context.amplify.getEnvInfo();
-
-        return projectPath;
-      } catch {
-        return '';
-      }
-    };
-
-    const projectPath = getProjectPath();
     const allEnvs = context.amplify.getEnvDetails();
+    const envNames = Object.keys(allEnvs);
 
-    if (projectPath) {
-      // TODO: Once we export fileName from CLI replace the literal
-      const amplifyJsonFileName = path.join(projectPath, 'amplify.json');
-
-      const deleteFile = filename => {
-        if (fs.existsSync(filename)) {
-          fs.removeSync(filename);
-        }
-      };
-
-      deleteFile(amplifyJsonFileName);
-
-      Object.keys(allEnvs).map(env => {
-        const fileName = path.join(projectPath, `amplify.{$env}.json`);
-
-        deleteFile(fileName);
-      });
-    }
+    await FeatureFlags.removeFeatureFlagConfiguration(true, envNames);
 
     const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
 

@@ -9,7 +9,7 @@ export class CLIContextEnvironmentProvider implements CLIEnvironmentProvider {
     }
   }
 
-  getCurrent(): string {
+  getCurrentEnvName(): string {
     try {
       const envInfo = this.context.getEnvInfo();
 

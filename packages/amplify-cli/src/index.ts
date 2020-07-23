@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { CLIContextEnvironmentProvider, FeatureFlagProvider } from 'amplify-cli-core';
+import { CLIContextEnvironmentProvider, FeatureFlags } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -57,7 +57,7 @@ export async function run() {
 
     // Initialize feature flags
     const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
-      getEnvInfo: () => context.amplify.getEnvInfo(),
+      getEnvInfo: context.amplify.getEnvInfo,
     });
 
     const getProjectPath = (): string => {
@@ -73,7 +73,7 @@ export async function run() {
     const projectPath = getProjectPath();
 
     if (projectPath) {
-      await FeatureFlagProvider.initialize(contextEnvironmentProvider, projectPath);
+      await FeatureFlags.initialize(contextEnvironmentProvider, projectPath);
     }
 
     await attachUsageData(context);

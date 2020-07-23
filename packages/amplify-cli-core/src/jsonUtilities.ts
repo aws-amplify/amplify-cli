@@ -5,30 +5,33 @@ import * as hjson from 'hjson';
 export class JSONUtilities {
   public static readJson = async <T>(
     fileName: string,
-    options: {
+    options?: {
       throwIfNotExist?: boolean;
       preserveComments?: boolean;
-    } = {
-      throwIfNotExist: true,
-      preserveComments: false,
     },
-  ): Promise<T> => {
+  ): Promise<T | undefined> => {
     if (!fileName) {
       throw new Error(`'fileName' argument missing`);
     }
 
+    const mergedOptions = {
+      throwIfNotExist: true,
+      preserveComments: false,
+      ...options,
+    };
+
     if (!fs.existsSync(fileName)) {
-      if (options.throwIfNotExist === true) {
+      if (mergedOptions.throwIfNotExist) {
         throw new Error(`File at path: '${fileName}' does not exist`);
       } else {
-        return (undefined as unknown) as T;
+        return undefined;
       }
     }
 
     const content = await fs.readFile(fileName, 'utf8');
 
     const data = JSONUtilities.parse<T>(content, {
-      preserveComments: options.preserveComments,
+      preserveComments: mergedOptions.preserveComments,
     });
 
     return data as T;
@@ -37,12 +40,9 @@ export class JSONUtilities {
   public static writeJson = async (
     fileName: string,
     data: any,
-    options: {
+    options?: {
       minify?: boolean;
       keepComments?: boolean;
-    } = {
-      minify: false,
-      keepComments: false,
     },
   ): Promise<void> => {
     if (!fileName) {
@@ -53,31 +53,38 @@ export class JSONUtilities {
       throw new Error(`'data' argument missing`);
     }
 
+    const mergedOptions = {
+      minify: false,
+      keepComments: false,
+      ...options,
+    };
+
     const jsonString = JSONUtilities.stringify(data, {
-      minify: options.minify,
-      keepComments: options.keepComments,
+      minify: mergedOptions.minify,
+      keepComments: mergedOptions.keepComments,
     });
 
     // Create nested directories if needed
     const dirPath = path.dirname(fileName);
-    if (!(await fs.pathExists(dirPath))) {
-      await fs.mkdirs(dirPath);
-    }
+    await fs.ensureDir(dirPath);
 
     await fs.writeFile(fileName, jsonString, 'utf8');
   };
 
   public static parse = <T>(
     jsonString: string,
-    options: {
+    options?: {
       preserveComments?: boolean;
-    } = {
-      preserveComments: false,
     },
   ): T => {
     if (!jsonString || jsonString.trim().length === 0) {
       throw new Error("'jsonString' argument missing");
     }
+
+    const mergedOptions = {
+      preserveComments: false,
+      ...options,
+    };
 
     let cleanString = jsonString;
 
@@ -87,7 +94,7 @@ export class JSONUtilities {
     }
 
     const data = hjson.parse(cleanString, {
-      keepWsc: options.preserveComments,
+      keepWsc: mergedOptions.preserveComments,
     });
 
     return data as T;
@@ -95,29 +102,32 @@ export class JSONUtilities {
 
   public static stringify = (
     data: any,
-    options: {
+    options?: {
       minify?: boolean;
       keepComments?: boolean;
-    } = {
-      minify: false,
-      keepComments: false,
     },
   ): string | undefined => {
     if (!data) {
       throw new Error("'data' argument missing");
     }
 
+    const mergedOptions = {
+      minify: false,
+      keepComments: false,
+      ...options,
+    };
+
     let jsonString = '';
 
     // For minification use builtin JSON.stringify as hjson has no option for it
-    if (options.minify === true) {
+    if (mergedOptions.minify) {
       jsonString = JSON.stringify(data);
     } else {
       jsonString = hjson.stringify(data, {
         space: 2,
         separator: true,
         quotes: 'all',
-        keepWsc: options.keepComments,
+        keepWsc: mergedOptions.keepComments,
       });
     }
 

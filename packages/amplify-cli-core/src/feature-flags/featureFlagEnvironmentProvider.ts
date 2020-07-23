@@ -1,7 +1,8 @@
 import * as path from 'path';
+import * as _ from 'lodash';
 import { config as dotenvConfig } from 'dotenv';
 
-import { EnvVarFormatError, FeatureFlags } from '.';
+import { EnvVarFormatError, FeatureFlagConfiguration } from '.';
 import { FeatureFlagValueProvider } from './featureFlagValueProvider';
 
 export type FeatureFlagEnvironmentProviderOptions = {
@@ -37,8 +38,15 @@ export class FeatureFlagEnvironmentProvider implements FeatureFlagValueProvider 
     };
   }
 
-  public load = (): Promise<FeatureFlags> => {
+  public load = (): Promise<FeatureFlagConfiguration> => {
     return new Promise((resolve, reject) => {
+      if (!process.env) {
+        resolve({
+          project: {},
+          environments: {},
+        });
+      }
+
       // Load .env file from the project's directory (cwd if not passed in)
       const envFilePath = this.options.projectPath ? path.join(this.options.projectPath, '.env') : undefined;
 
@@ -46,55 +54,50 @@ export class FeatureFlagEnvironmentProvider implements FeatureFlagValueProvider 
         path: envFilePath,
       });
 
-      if (process.env) {
-        const variableMap = Object.keys(process.env).reduce<FeatureFlags>(
-          (result: FeatureFlags, key) => {
-            if (key.startsWith(this.options.prefix!) && process.env[key] !== undefined) {
-              let normalizedKey = key
-                .toLowerCase()
-                .slice(this.options.prefix!.length)
-                .replace(this.options.envPathSeparator!, this.options.internalSeparator!);
+      const variableReducer = (result: FeatureFlagConfiguration, key: string) => {
+        if (key.startsWith(this.options.prefix!) && process.env[key] !== undefined) {
+          let normalizedKey = key
+            .toLowerCase()
+            .slice(this.options.prefix!.length)
+            .replace(this.options.envPathSeparator!, this.options.internalSeparator!);
 
-              if (normalizedKey.startsWith(this.options.environmentNameSeparator!)) {
-                // Check if variable name starts with Amplify environment separator or not
+          if (normalizedKey.startsWith(this.options.environmentNameSeparator!)) {
+            // Check if variable name starts with Amplify environment separator or not
 
-                normalizedKey = normalizedKey.slice(this.options.environmentNameSeparator!.length);
+            normalizedKey = normalizedKey.slice(this.options.environmentNameSeparator!.length);
 
-                const [env, envRemaining] = this.parseUntilNextSeparator(key, normalizedKey, this.options.noEnvironmentNameSeparator!);
-                const [section, property] = this.parseUntilNextSeparator(key, envRemaining, this.options.internalSeparator!);
+            const [env, envRemaining] = this.parseUntilNextSeparator(key, normalizedKey, this.options.noEnvironmentNameSeparator!);
+            const [section, property] = this.parseUntilNextSeparator(key, envRemaining, this.options.internalSeparator!);
 
-                this.setValue(result, env, section, property, process.env[key]);
-              } else if (normalizedKey.startsWith(this.options.noEnvironmentNameSeparator!)) {
-                // Check if variable name starts with Amplify path separator character or not
+            this.setValue(result, env, section, property, process.env[key]);
+          } else if (normalizedKey.startsWith(this.options.noEnvironmentNameSeparator!)) {
+            // Check if variable name starts with Amplify path separator character or not
 
-                normalizedKey = normalizedKey.slice(this.options.noEnvironmentNameSeparator!.length);
+            normalizedKey = normalizedKey.slice(this.options.noEnvironmentNameSeparator!.length);
 
-                const [section, property] = this.parseUntilNextSeparator(key, normalizedKey, this.options.internalSeparator!);
+            const [section, property] = this.parseUntilNextSeparator(key, normalizedKey, this.options.internalSeparator!);
 
-                this.setValue(result, null, section, property, process.env[key]);
-              } else {
-                // Throw error since the format of the environment variable is incorrect, could be a mistake
-                // skipping it could cause hard to find errors for customers. Error message does not contain the value
-                // since that can be sensitive data.
-                reject(new EnvVarFormatError(key));
-              }
-            }
+            this.setValue(result, null, section, property, process.env[key]);
+          } else {
+            // Throw error since the format of the environment variable is incorrect, could be a mistake
+            // skipping it could cause hard to find errors for customers. Error message does not contain the value
+            // since that can be sensitive data.
+            reject(new EnvVarFormatError(key));
+          }
+        }
 
-            return result;
-          },
-          {
-            project: {},
-            environments: {},
-          },
-        );
+        return result;
+      };
 
-        resolve(variableMap);
-      }
+      const variableMap = Object.keys(process.env).reduce<FeatureFlagConfiguration>(
+        (result: FeatureFlagConfiguration, key) => variableReducer(result, key),
+        {
+          project: {},
+          environments: {},
+        },
+      );
 
-      resolve({
-        project: {},
-        environments: {},
-      });
+      resolve(variableMap);
     });
   };
 
@@ -117,32 +120,20 @@ export class FeatureFlagEnvironmentProvider implements FeatureFlagValueProvider 
   };
 
   private setValue = (
-    featureFlags: FeatureFlags,
+    featureFlags: FeatureFlagConfiguration,
     environment: string | null,
     section: string,
     property: string,
-    value: string | undefined,
+    value?: string,
   ): void => {
     if (!value) {
       return;
     }
 
     if (environment === null) {
-      if (!featureFlags.project[section]) {
-        featureFlags.project[section] = {};
-      }
-
-      featureFlags.project[section][property] = value;
+      _.set(featureFlags, ['project', section, property], value);
     } else {
-      if (!featureFlags.environments[environment]) {
-        featureFlags.environments[environment] = {};
-      }
-
-      if (!featureFlags.environments[environment][section]) {
-        featureFlags.environments[environment][section] = {};
-      }
-
-      featureFlags.environments[environment][section][property] = value;
+      _.set(featureFlags, ['environments', environment, section, property], value);
     }
   };
 }
