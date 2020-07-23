@@ -61,14 +61,14 @@ describe('amplify add auth...', () => {
     }) as any;
     const idpId = cognitoResource.output.IdentityPoolId;
 
-    expect(AuthRoleName).toHaveAssumeRolePolicyConditionMatchingIdpId(idpId);
-    expect(UnauthRoleName).toHaveAssumeRolePolicyConditionMatchingIdpId(idpId);
+    expect(AuthRoleName).toHaveValidPolicyConditionMatchingIdpId(idpId);
+    expect(UnauthRoleName).toHaveValidPolicyConditionMatchingIdpId(idpId);
 
     await removeAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
 
-    expect(AuthRoleName).not.toHaveAssumeRolePolicyConditionMatchingIdpId(idpId);
-    expect(UnauthRoleName).not.toHaveAssumeRolePolicyConditionMatchingIdpId(idpId);
+    expect(AuthRoleName).not.toHaveValidPolicyConditionMatchingIdpId(idpId);
+    expect(UnauthRoleName).not.toHaveValidPolicyConditionMatchingIdpId(idpId);
   });
 
   it('...should init a project with only user pool and no identity pool', async () => {

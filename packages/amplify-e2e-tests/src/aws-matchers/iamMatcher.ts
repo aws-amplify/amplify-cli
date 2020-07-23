@@ -28,7 +28,7 @@ export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
   return result;
 };
 
-export const toHaveAssumeRolePolicyConditionMatchingIdpId = async (roleName: string, idpId: string) => {
+export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, idpId: string) => {
   let pass: boolean = false;
   let message: string = '';
 
@@ -55,21 +55,16 @@ export const toHaveAssumeRolePolicyConditionMatchingIdpId = async (roleName: str
         return false;
       }
     });
-
-    if (pass) {
-      message = 'Found Matching Condition';
-    } else {
-      message = 'Matching Condition does not exist';
-    }
+    
+    message = pass ? 'Found Matching Condition' : 'Matching Condition does not exist';
+   
   } catch (e) {
     pass = false;
     message = 'IAM GetRole threw Error: ' + e.message;
   }
 
-  const result = {
+  return {
     message: () => message,
     pass,
   };
-
-  return result;
 };
