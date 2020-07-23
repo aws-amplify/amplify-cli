@@ -91,7 +91,8 @@ export function invokeFunction(options: InvokeOptions) {
 process.on('message', async options => {
   try {
     const result = await invokeFunction(JSON.parse(options));
-    process.send!(JSON.stringify({ result, error: null }));
+    process.stdout.write('\n');
+    process.stdout.write(JSON.stringify({ result, error: null }));
   } catch (error) {
     process.send!(
       JSON.stringify({
