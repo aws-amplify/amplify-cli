@@ -1,13 +1,20 @@
 const ora = require('ora');
+const { FeatureFlags } = require('amplify-cli-core');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 const { getFrontendPlugins } = require('./get-frontend-plugins');
 const { getPluginInstance } = require('./get-plugin-instance');
 const { getAmplifyAppId } = require('./get-amplify-appId');
+
 async function deleteProject(context) {
   const confirmation = await getConfirmation(context);
+
   if (confirmation.proceed) {
     const allEnvs = context.amplify.getEnvDetails();
+    const envNames = Object.keys(allEnvs);
+
+    await FeatureFlags.removeFeatureFlagConfiguration(true, envNames);
+
     const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
 
     try {
