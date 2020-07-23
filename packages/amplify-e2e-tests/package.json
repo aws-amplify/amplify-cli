@@ -31,7 +31,7 @@
     "graphql-schema-diff": "^2.1.0",
     "graphql-tag": "^2.10.1",
     "graphql-transformer-core": "6.19.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "os": "^0.1.1",
     "promise-sequential": "^1.1.1",
     "rimraf": "^3.0.0",

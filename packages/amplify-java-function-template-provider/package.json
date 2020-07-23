@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "amplify-function-plugin-interface": "1.4.0",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.19"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0"
