@@ -1,6 +1,4 @@
-const fs = require('fs-extra');
 const ora = require('ora');
-const path = require('path');
 const { FeatureFlags } = require('amplify-cli-core');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');

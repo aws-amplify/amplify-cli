@@ -21,7 +21,7 @@ export class FeatureFlags {
 
   public static initialize = async (environmentProvider: CLIEnvironmentProvider, projectPath: string): Promise<void> => {
     // If we are not running by tests, guard against multiple calls to initialize invocations
-    if (!typeof jest && FeatureFlags.instance) {
+    if (typeof jest === 'undefined' && FeatureFlags.instance) {
       throw new Error('FeatureFlags can only be initialzied once');
     }
 
@@ -111,9 +111,9 @@ export class FeatureFlags {
     });
 
     // If no configuration file or configuration file exists but does not have a features property create it and overwrite the file
-    if (!config || (config && !config.features)) {
+    if (!config || !config.features) {
       config = {
-        ...config,
+        ...(config ?? {}), // to fix 'Spread types may only be created from object types.(2698)' warning
         features: newProject ? FeatureFlags.getNewProjectDefaults() : FeatureFlags.getExistingProjectDefaults(),
       };
 
