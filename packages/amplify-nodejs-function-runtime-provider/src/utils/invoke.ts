@@ -1,17 +1,22 @@
-import { fork } from 'child_process';
 import { InvokeOptions } from './invokeOptions';
 import path from 'path';
+import * as execa from 'execa';
 
 // copied from amplify-util-mock with slight modifications
 export function invoke(options: InvokeOptions): Promise<any> {
   return new Promise((resolve, reject) => {
     try {
-      const lambdaFn = fork(path.join(__dirname, 'execute.js'), [], {
-        execArgv: [],
+      let data: string = '';
+      const lambdaFn = execa.node(path.join(__dirname, 'execute.js'), [], {
         env: options.environment || {},
       });
-      lambdaFn.on('message', msg => {
-        const result = JSON.parse(msg);
+      lambdaFn.stdout.on('data', msg => {
+        data += msg;
+      });
+      lambdaFn.on('close', () => {
+        const lines = data.split('\n');
+        const lastLine = lines[lines.length - 1];
+        const result = JSON.parse(lastLine);
         if (result.error) {
           reject(result.error);
         }
