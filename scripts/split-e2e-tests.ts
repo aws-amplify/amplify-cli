@@ -238,7 +238,7 @@ function getRequiredJob(jobNames: string[], index: number, concurrency: number =
 
 function loadConfig(): CircleCIConfig {
   const configFile = join(process.cwd(), '.circleci', 'config.base.yml');
-  return yaml.safeLoad(fs.readFileSync(configFile, 'utf8'));
+  return <CircleCIConfig>yaml.safeLoad(fs.readFileSync(configFile, 'utf8'));
 }
 
 function saveConfig(config: CircleCIConfig): void {
