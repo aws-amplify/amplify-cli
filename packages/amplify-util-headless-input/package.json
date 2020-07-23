@@ -20,5 +20,13 @@
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.5"
+  },
+  "jest": {
+    "clearMocks": true,
+    "coverageDirectory": "coverage",
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    }
   }
 }
