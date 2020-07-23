@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.20.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.19.5...graphql-transformer-core@6.20.0) (2020-07-23)
+
+
+### Features
+
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([b729266](https://github.com/aws-amplify/amplify-cli/commit/b729266b9bb519738ef88125784d72ac428f47e1))
+
+
+
+
+
 ## [6.19.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.19.4...graphql-transformer-core@6.19.5) (2020-07-18)
 
 **Note:** Version bump only for package graphql-transformer-core
