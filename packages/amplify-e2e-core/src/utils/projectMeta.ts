@@ -13,12 +13,21 @@ function getAmplifyConfigIOSPath(projRoot: string): string {
   return path.join(projRoot, 'amplifyconfiguration.json');
 }
 
+function getAmplifyDirPath(projRoot: string) {
+  return path.join(projRoot, 'amplify');
+}
+
 function getAWSConfigIOSPath(projRoot: string): string {
   return path.join(projRoot, 'awsconfiguration.json');
 }
 
 function getProjectMeta(projectRoot: string) {
   const metaFilePath = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+  return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
+}
+
+function getBackendAmplifyMeta(projectRoot: string) {
+  const metaFilePath = path.join(projectRoot, 'amplify', 'backend', 'amplify-meta.json');
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 }
 
@@ -42,6 +51,7 @@ function getAwsIOSConfig(projectRoot: string) {
 
 export {
   getProjectMeta,
+  getBackendAmplifyMeta,
   getAwsAndroidConfig,
   getAwsIOSConfig,
   getAWSConfigAndroidPath,
@@ -49,4 +59,5 @@ export {
   getAmplifyConfigIOSPath,
   getAWSConfigIOSPath,
   getS3StorageBucketName,
+  getAmplifyDirPath,
 };

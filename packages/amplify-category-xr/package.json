@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-xr",
-  "version": "2.3.7",
+  "version": "2.4.5",
   "description": "amplify-cli xr plugin",
   "repository": {
     "type": "git",
@@ -16,11 +16,10 @@
   ],
   "scripts": {
     "test": "jest",
-    "test-watch": "jest --watch",
-    "test-ci": "jest --ci -i"
+    "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-category-auth": "2.15.7",
+    "amplify-category-auth": "2.16.5",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",

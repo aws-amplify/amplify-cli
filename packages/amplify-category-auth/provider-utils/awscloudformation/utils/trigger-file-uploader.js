@@ -41,7 +41,7 @@ async function uploadFiles(context) {
       await sequential(uploadFileTasks);
       spinner.succeed('Uploaded files successfully.');
     } catch (e) {
-      spinner.fail('Error has occured during file upload.');
+      spinner.fail('Error has occurred during file upload.');
       throw e;
     }
   } catch (e) {
@@ -66,6 +66,7 @@ async function uploadFile(s3Client, hostingBucketName, filePath, file) {
     .promise()
     .catch(e => {
       console.log('e', e);
+      throw e;
     });
 
   return data;

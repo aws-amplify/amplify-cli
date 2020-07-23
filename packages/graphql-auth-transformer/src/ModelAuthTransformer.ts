@@ -41,7 +41,7 @@ import {
 import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
-import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
+import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NON_MODEL_TYPES } from './constants';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -265,6 +265,9 @@ export class ModelAuthTransformer extends Transformer {
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeConditions(template.Conditions);
     this.updateAPIAuthentication(ctx);
+    if (!ctx.metadata.has(AUTH_NON_MODEL_TYPES)) {
+      ctx.metadata.set(AUTH_NON_MODEL_TYPES, new Set<string>());
+    }
   };
 
   public after = (ctx: TransformerContext): void => {
@@ -521,34 +524,36 @@ Static group authorization should perform as expected.`,
   };
 
   private propagateAuthDirectivesToNestedTypes(type: ObjectTypeDefinitionNode, rules: AuthRule[], ctx: TransformerContext) {
+    const seenNonModelTypes: Set<string> = ctx.metadata.get(AUTH_NON_MODEL_TYPES);
+
     const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
       if (fieldType) {
         if (fieldType.kind !== 'ObjectTypeDefinition') {
           return undefined;
         }
-
         const typeModel = fieldType.directives.find(dir => dir.name.value === 'model');
         return typeModel !== undefined ? undefined : fieldType;
       }
-
       return fieldType;
     };
-
     const nonModelFieldTypes = type.fields.map(f => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
-
     for (const nonModelFieldType of nonModelFieldTypes) {
-      const directives = this.getDirectivesForRules(rules, false);
+      if (!seenNonModelTypes.has(nonModelFieldType.name.value)) {
+        // add to the set of seen non model types
+        seenNonModelTypes.add(nonModelFieldType.name.value);
+        const directives = this.getDirectivesForRules(rules, false);
+        // Add the directives to the Type node itself
+        if (directives.length > 0) {
+          this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
+        }
+        const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+        if (hasIAM) {
+          this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+          this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+        }
 
-      // Add the directives to the Type node itself
-      if (directives.length > 0) {
-        this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
-      }
-
-      const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
-
-      if (hasIAM) {
-        this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
-        this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+        // Recursively process the nested types if there is any
+        this.propagateAuthDirectivesToNestedTypes(<ObjectTypeDefinitionNode>nonModelFieldType, rules, ctx);
       }
     }
   }
@@ -2271,7 +2276,7 @@ found '${rule.provider}' assigned.`,
   }
 
   private isOperationExpressionSet(operationTypeName: string, template: string): boolean {
-    return template.includes(`$context.result.operation = "${operationTypeName}"`);
+    return template.includes(`$ctx.result.put("operation", "${operationTypeName}")`);
   }
 
   private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode, rules: Array<AuthRule>): void {

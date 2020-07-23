@@ -1,4 +1,4 @@
-import { getInvoker } from 'amplify-category-function';
+import { getInvoker, category, isMockable } from 'amplify-category-function';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
 import { loadMinimalLambdaConfig } from '../utils/lambda/loadMinimal';
@@ -10,8 +10,13 @@ export async function start(context) {
   }
 
   const resourceName = context.input.subCommands[0];
+  // check that the resource is mockable
+  const mockable = isMockable(context, resourceName);
+  if (!mockable.isMockable) {
+    throw new Error(`Unable to mock ${resourceName}. ${mockable.reason}`);
+  }
   const { amplify } = context;
-  const resourcePath = path.join(amplify.pathManager.getBackendDirPath(), 'function', resourceName);
+  const resourcePath = path.join(amplify.pathManager.getBackendDirPath(), category, resourceName);
   const eventNameValidator = amplify.inputValidation({
     operator: 'regex',
     value: '^[a-zA-Z0-9/._-]+?\\.json$',

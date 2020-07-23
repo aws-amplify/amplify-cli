@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-types-generator",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "description": "Generate API code or type annotations based on a GraphQL schema and statements",
   "repository": {
     "type": "git",
@@ -30,7 +30,6 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "test-ci": "jest --ci -i",
     "test:smoke": "npm install && npm run build && rimraf node_modules && npm install --prod && node ./lib/cli.js && echo 'Smoke Test Passed'"
   },
   "dependencies": {

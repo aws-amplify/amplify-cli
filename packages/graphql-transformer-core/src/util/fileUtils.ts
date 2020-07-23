@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Readable } from 'stream';
 const fs = require('fs-extra');
 
 /**
@@ -63,7 +64,8 @@ export async function readFromPath(directory: string): Promise<any> {
   return accum;
 }
 
-export type FileHandler = (file: { Key: string; Body: Buffer | string }) => Promise<string>;
+export type FileHandler = (file: { Key: string; Body: Buffer | string | Readable }) => Promise<string>;
+
 /**
  * Uploads a file with exponential backoff up to a point.
  * @param opts The deployment options
@@ -72,7 +74,13 @@ export type FileHandler = (file: { Key: string; Body: Buffer | string }) => Prom
  * @param backoffMS The time to wait this invocation
  * @param numTries The max number of tries
  */
-export async function handleFile(handler: FileHandler, key: string, body: Buffer, backoffMS: number = 500, numTries: number = 3) {
+export async function handleFile(
+  handler: FileHandler,
+  key: string,
+  body: Buffer | string | Readable,
+  backoffMS: number = 500,
+  numTries: number = 3,
+) {
   try {
     return await handler({
       Key: key,
@@ -85,28 +93,6 @@ export async function handleFile(handler: FileHandler, key: string, body: Buffer
     }
     throw e;
   }
-}
-
-export async function walkDirRec(dir: string, handler: FileHandler, relativePath: string = '', joinPath: (...paths: string[]) => string) {
-  const files = await fs.readdir(dir);
-  for (const file of files) {
-    const resourcePath = path.join(dir, file);
-    const newRelPath = joinPath(relativePath, file);
-    const isDirectory = (await fs.lstat(resourcePath)).isDirectory();
-    if (isDirectory) {
-      await walkDirRec(resourcePath, handler, newRelPath, joinPath);
-    } else {
-      const resourceContents = await fs.readFile(resourcePath);
-      await handleFile(handler, newRelPath, resourceContents);
-    }
-  }
-}
-
-export async function walkDir(dir: string, handler: (file: { Key: string; Body: Buffer | string }) => Promise<string>) {
-  return await walkDirRec(dir, handler, '', path.join);
-}
-export async function walkDirPosix(dir: string, handler: (file: { Key: string; Body: Buffer | string }) => Promise<string>) {
-  return await walkDirRec(dir, handler, '', path.posix.join);
 }
 
 export function throwIfNotJSONExt(stackFile: string) {

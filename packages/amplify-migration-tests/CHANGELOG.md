@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.11...amplify-migration-tests@2.17.12) (2020-07-18)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.17.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.10...amplify-migration-tests@2.17.11) (2020-07-15)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.17.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.9...amplify-migration-tests@2.17.10) (2020-07-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.17.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.8...amplify-migration-tests@2.17.9) (2020-07-07)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.17.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.7...amplify-migration-tests@2.17.8) (2020-06-25)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.17.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.6...amplify-migration-tests@2.17.7) (2020-06-18)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.17.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.5...amplify-migration-tests@2.17.6) (2020-06-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.17.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.4...amplify-migration-tests@2.17.5) (2020-06-10)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 ## [2.17.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.3...amplify-migration-tests@2.17.4) (2020-06-02)
 
 **Note:** Version bump only for package amplify-migration-tests

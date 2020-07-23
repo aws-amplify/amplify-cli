@@ -443,7 +443,7 @@ export class TransformerContext {
    */
   public addObjectExtension(obj: ObjectTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant type '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent type '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getObject(obj.name.value);
@@ -511,7 +511,7 @@ export class TransformerContext {
    */
   public addInputExtension(obj: InputObjectTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant input '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent input '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getType(obj.name.value) as InputObjectTypeDefinitionNode;
@@ -551,7 +551,7 @@ export class TransformerContext {
    */
   public addInterfaceExtension(obj: InterfaceTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant interface '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent interface '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getType(obj.name.value) as InterfaceTypeDefinitionNode;
@@ -591,7 +591,7 @@ export class TransformerContext {
    */
   public addUnionExtension(obj: UnionTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant union '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent union '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getType(obj.name.value) as UnionTypeDefinitionNode;
@@ -631,7 +631,7 @@ export class TransformerContext {
    */
   public addEnumExtension(obj: EnumTypeExtensionNode) {
     if (!this.nodeMap[obj.name.value]) {
-      throw new Error(`Cannot extend non-existant enum '${obj.name.value}'.`);
+      throw new Error(`Cannot extend nonexistent enum '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
     const oldNode = this.getType(obj.name.value) as EnumTypeDefinitionNode;

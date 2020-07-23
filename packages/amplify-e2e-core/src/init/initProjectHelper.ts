@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath } from '../../src';
+import { nspawn as spawn, getCLIPath, singleSelect } from '../../src';
 
 const defaultSettings = {
   name: '\r',
@@ -12,8 +12,24 @@ const defaultSettings = {
   startCmd: '\r',
   useProfile: '\r',
   profileName: '\r',
+  region: process.env.CLI_REGION,
   local: false,
 };
+
+export const amplifyRegions = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-2',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-central-1',
+  'ap-northeast-1',
+  'ap-northeast-2',
+  'ap-southeast-1',
+  'ap-southeast-2',
+  'ap-south-1',
+  'ca-central-1',
+];
 
 export function initJSProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
@@ -112,10 +128,11 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: string; secretAccessKey: string }) {
+export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region?: string }) {
   const s = { ...defaultSettings, ...settings };
+
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -143,22 +160,23 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
       .wait('secretAccessKey')
       .sendLine(s.secretAccessKey)
       .resumeRecording()
-      .wait('region')
-      .sendLine('us-east-2')
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .wait('region');
+
+    singleSelect(chain, s.region, amplifyRegions);
+
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')
@@ -166,20 +184,23 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
       .sendLine('n')
+      .pauseRecording()
       .wait('accessKeyId')
       .sendLine(s.accessKeyId)
       .wait('secretAccessKey')
       .sendLine(s.secretAccessKey)
-      .wait('region')
-      .sendLine('us-east-2')
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .resumeRecording()
+      .wait('region');
+
+    singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
+
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 

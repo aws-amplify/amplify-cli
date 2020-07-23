@@ -67,7 +67,7 @@ export const MAP_SCALARS: { [k: string]: boolean } = {
   AWSJSON: true,
 };
 
-export function attributeTypeFromScalar(scalar: TypeNode) {
+export function attributeTypeFromScalar(scalar: TypeNode): 'S' | 'N' {
   const baseType = getBaseType(scalar);
   const baseScalar = DEFAULT_SCALARS[baseType];
   if (!baseScalar) {
@@ -280,7 +280,7 @@ export function makeField(
   name: string,
   args: InputValueDefinitionNode[],
   type: TypeNode,
-  directives: DirectiveNode[] = []
+  directives: DirectiveNode[] = [],
 ): FieldDefinitionNode {
   return {
     kind: Kind.FIELD_DEFINITION,
@@ -358,7 +358,6 @@ export function makeInputValueDefinition(name: string, type: TypeNode): InputVal
     directives: [],
   };
 }
-
 
 export function makeNamedType(name: string): NamedTypeNode {
   return {

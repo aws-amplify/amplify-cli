@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.2...amplify-codegen-appsync-model-plugin@1.20.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
+## [1.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.1...amplify-codegen-appsync-model-plugin@1.19.2) (2020-06-18)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:**  Support Embeddable Types for iOS  ([#4545](https://github.com/aws-amplify/amplify-cli/issues/4545)) ([7d4652b](https://github.com/aws-amplify/amplify-cli/commit/7d4652be017c660379832702c6ec8eb7005d9989))
+
+
+
+
+
+## [1.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.0...amplify-codegen-appsync-model-plugin@1.19.1) (2020-06-10)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** Add delimiter in Android `toString` output ([#4463](https://github.com/aws-amplify/amplify-cli/issues/4463)) ([a0a3972](https://github.com/aws-amplify/amplify-cli/commit/a0a39727b477954c6c13ab519aa998addbe729a8))
+
+
+
+
+
 # [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.18.0...amplify-codegen-appsync-model-plugin@1.19.0) (2020-05-26)
 
 

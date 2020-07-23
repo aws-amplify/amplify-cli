@@ -1,4 +1,4 @@
-import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind } from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, parse, DocumentNode, Kind } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
@@ -66,6 +66,7 @@ const multiAuthDirective =
 const ownerAuthDirective = '@auth(rules: [{allow: owner}])';
 const ownerWithIAMAuthDirective = '@auth(rules: [{allow: owner, provider: iam }])';
 const ownerRestrictedPublicAuthDirective = '@auth(rules: [{allow: owner},{allow: public, operations: [read]}])';
+const ownerRestrictedIAMPrivateAuthDirective = '@auth(rules: [{allow: owner},{allow: private, operations: [read], provider: iam }])';
 const groupsAuthDirective = '@auth(rules: [{allow: groups}])';
 const groupsWithApiKeyAuthDirective = '@auth(rules: [{allow: groups}, {allow: public, operations: [read]}])';
 const groupsWithProviderAuthDirective = '@auth(rules: [{allow: groups, provider: iam }])';
@@ -124,12 +125,35 @@ const getSchemaWithNonModelField = (authDirective: string) => {
 
     type Location {
       name: String
+      address: Address
+    }
+
+    type Address {
+      street: String
+      city: String
+      state: String
+      zip: String
     }
 
     enum Status {
       PUBLISHED,
       DRAFT
     }`;
+};
+
+const getSchemaWithRecursiveNonModelField = (authDirective: string) => {
+  return `
+    type Post @model ${authDirective} {
+      id: ID!
+      title: String!
+      tags: [Tag]
+    }
+
+    type Tag {
+      id: ID
+      tags: [Tag]
+    }
+  `;
 };
 
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
@@ -158,6 +182,21 @@ const expectTwo = (fieldOrType, directiveNames) => {
   expect(fieldOrType.directives.length === 2);
   expect(fieldOrType.directives.find(d => d.name.value === directiveNames[0])).toBeDefined();
   expect(fieldOrType.directives.find(d => d.name.value === directiveNames[1])).toBeDefined();
+};
+
+const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]) => {
+  expect(directiveNames).toBeDefined();
+  expect(directiveNames).toHaveLength(directiveNames.length);
+  expect(fieldOrType.directives.length).toEqual(directiveNames.length);
+  directiveNames.forEach(directiveName => {
+    expect(fieldOrType.directives).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: expect.objectContaining({ value: directiveName }),
+        }),
+      ]),
+    );
+  });
 };
 
 const getField = (type, name) => type.fields.find(f => f.name.value === name);
@@ -429,6 +468,7 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
     const expectedDirectiveNames = [userPoolsDirectiveName, apiKeyDirectiveName];
 
     if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
@@ -440,7 +480,29 @@ describe('Type directive transformation tests', () => {
       }
 
       expect(expectedDireciveNameCount).toEqual(locationType.directives.length);
+
+      expectedDireciveNameCount = 0;
+
+      for (const expectedDirectiveName of expectedDirectiveNames) {
+        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expectedDireciveNameCount++;
+      }
+
+      expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
     }
+  });
+
+  test(`Recursive types without @model`, () => {
+    const schema = getSchemaWithRecursiveNonModelField(ownerRestrictedIAMPrivateAuthDirective);
+    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
+
+    const out = transformer.transform(schema);
+    const schemaDoc = parse(out.schema);
+
+    const tagType = getObjectType(schemaDoc, 'Tag');
+    const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
+
+    expectMultiple(tagType, expectedDirectiveNames);
   });
 
   test(`Nested types without @model getting directives applied (cognito default, iam additional)`, () => {
@@ -451,6 +513,7 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
     const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
 
     if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
@@ -463,6 +526,15 @@ describe('Type directive transformation tests', () => {
 
       expect(expectedDireciveNameCount).toEqual(locationType.directives.length);
 
+      expectedDireciveNameCount = 0;
+
+      for (const expectedDirectiveName of expectedDirectiveNames) {
+        expect(addressType.directives.find(d => d.name.value === expectedDirectiveName)).toBeDefined();
+        expectedDireciveNameCount++;
+      }
+
+      expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
+
       expect(out.rootStack.Resources.AuthRolePolicy01).toBeDefined();
 
       const locationPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
@@ -474,6 +546,16 @@ describe('Type directive transformation tests', () => {
           r['Fn::Sub'][1].typeName === 'Location',
       );
       expect(locationPolicy).toBeDefined();
+
+      const addressPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
+        r =>
+          r['Fn::Sub'] &&
+          r['Fn::Sub'].length &&
+          r['Fn::Sub'].length === 2 &&
+          r['Fn::Sub'][1].typeName &&
+          r['Fn::Sub'][1].typeName === 'Address',
+      );
+      expect(addressPolicy).toBeDefined();
     }
   });
 
@@ -485,8 +567,10 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
 
     expect(locationType.directives.length).toBe(0);
+    expect(addressType.directives.length).toBe(0);
 
     expect(out.rootStack.Resources.AuthRolePolicy01).toBeUndefined();
   });
@@ -499,8 +583,10 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
 
     const locationType = getObjectType(schemaDoc, 'Location');
+    const addressType = getObjectType(schemaDoc, 'Address');
 
     expect(locationType.directives.length).toBe(0);
+    expect(addressType.directives.length).toBe(0);
 
     expect(out.rootStack.Resources.AuthRolePolicy01).toBeDefined();
 
@@ -513,6 +599,16 @@ describe('Type directive transformation tests', () => {
         r['Fn::Sub'][1].typeName === 'Location',
     );
     expect(locationPolicy).toBeDefined();
+
+    const addressPolicy = out.rootStack.Resources.AuthRolePolicy01.Properties.PolicyDocument.Statement[0].Resource.filter(
+      r =>
+        r['Fn::Sub'] &&
+        r['Fn::Sub'].length &&
+        r['Fn::Sub'].length === 2 &&
+        r['Fn::Sub'][1].typeName &&
+        r['Fn::Sub'][1].typeName === 'Address',
+    );
+    expect(addressPolicy).toBeDefined();
   });
 
   // Disabling until troubleshooting the changes

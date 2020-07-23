@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
+const glob = require('glob');
 const ora = require('ora');
 const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
@@ -16,10 +17,13 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
+const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 const optionalBuildDirectoryName = 'build';
+const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
+const parametersJson = 'parameters.json';
 
 async function run(context, resourceDefinition) {
   try {
@@ -160,7 +164,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
     })
     .catch(err => {
       if (!isCLIMigration) {
-        spinner.fail('An error occured when migrating the API project.');
+        spinner.fail('An error occurred when migrating the API project.');
       }
       throw err;
     });
@@ -199,9 +203,10 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
     const { category, resourceName } = resourcesToBeUpdated[i];
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const files = fs.readdirSync(resourceDir);
-    // Fetch all the Cloudformation templates for the resource (can be json or yml)
-    const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && file.indexOf('.') !== 0);
+    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+      cwd: resourceDir,
+      ignore: [parametersJson],
+    });
     for (let j = 0; j < cfnFiles.length; j += 1) {
       const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
       try {
@@ -220,7 +225,7 @@ function packageResources(context, resources) {
 
   const packageResource = (context, resource) => {
     let s3Key;
-    return buildResource(context, resource)
+    return (resource.service === FunctionServiceName.LambdaLayer ? packageLayer(context, resource) : buildResource(context, resource))
       .then(result => {
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
@@ -238,9 +243,10 @@ function packageResources(context, resources) {
         const backEndDir = context.amplify.pathManager.getBackendDirPath();
         const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
 
-        const files = fs.readdirSync(resourceDir);
-        // Fetch all the Cloudformation templates for the resource (can be json or yml)
-        const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && /\.(json|yaml|yml)$/.test(file));
+        const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+          cwd: resourceDir,
+          ignore: [parametersJson],
+        });
 
         if (cfnFiles.length !== 1) {
           context.print.error('Only one CloudFormation template is allowed in the resource directory');
@@ -253,26 +259,32 @@ function packageResources(context, resources) {
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-          cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-            Bucket: s3Bucket,
-            Key: s3Key,
-          };
-        } else {
-          cfnMeta.Resources.LambdaFunction.Properties.Code = {
+        if (resource.service === FunctionServiceName.LambdaLayer) {
+          cfnMeta.Resources.LambdaLayer.Properties.Content = {
             S3Bucket: s3Bucket,
             S3Key: s3Key,
           };
+        } else {
+          if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+            cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+              Bucket: s3Bucket,
+              Key: s3Key,
+            };
+          } else {
+            cfnMeta.Resources.LambdaFunction.Properties.Code = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+          }
         }
-
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
       });
   };
 
   const promises = [];
-  for (let i = 0; i < resources.length; i += 1) {
-    promises.push(packageResource(context, resources[i]));
+  for (let resource of resources) {
+    promises.push(packageResource(context, resource));
   }
 
   return Promise.all(promises);
@@ -332,8 +344,10 @@ function getCfnFiles(context, category, resourceName) {
    * Otherwise falls back to the default behavior.
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
-    const files = fs.readdirSync(resourceBuildDir);
-    const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
+    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+      cwd: resourceBuildDir,
+      ignore: [parametersJson],
+    });
 
     if (cfnFiles.length > 0) {
       return {
@@ -342,8 +356,10 @@ function getCfnFiles(context, category, resourceName) {
       };
     }
   }
-  const files = fs.readdirSync(resourceDir);
-  const cfnFiles = files.filter(file => file.indexOf('.') !== 0).filter(file => file.indexOf('template') !== -1);
+  const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+    cwd: resourceDir,
+    ignore: [parametersJson],
+  });
   return {
     resourceDir,
     cfnFiles,

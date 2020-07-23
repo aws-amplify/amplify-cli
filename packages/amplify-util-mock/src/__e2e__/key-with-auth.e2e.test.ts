@@ -202,7 +202,7 @@ async function createOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -219,7 +219,7 @@ async function updateOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -236,7 +236,7 @@ async function deleteOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -251,7 +251,7 @@ async function getOrder(client: GraphQLClient, customerEmail: string, orderId: s
             createdAt
         }
     }`,
-    { customerEmail, orderId }
+    { customerEmail, orderId },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -269,7 +269,7 @@ async function listOrders(client: GraphQLClient, customerEmail: string, orderId:
             nextToken
         }
     }`,
-    { customerEmail, orderId }
+    { customerEmail, orderId },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -287,7 +287,7 @@ async function ordersByOrderId(client: GraphQLClient, orderId: string) {
             nextToken
         }
     }`,
-    { orderId }
+    { orderId },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;

@@ -10,5 +10,8 @@
   },
   "include": [
     "src/**/*"
+  ],
+  "references": [
+    {"path": "../amplify-category-function"}
   ]
 }

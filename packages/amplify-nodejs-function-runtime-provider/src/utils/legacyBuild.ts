@@ -68,7 +68,9 @@ function isBuildStale(resourceDir: string, lastBuildTimestamp: Date) {
     return true;
   }
   const fileUpdatedAfterLastBuild = glob
-    .sync(`${resourceDir}/*/!(node_modules)/**`)
+    .sync(`${resourceDir}/**`)
+    .filter(p => !p.includes('dist'))
+    .filter(p => !p.includes('node_modules'))
     .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
   return !!fileUpdatedAfterLastBuild;
 }

@@ -17,6 +17,25 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'nodejs',
           cloudTemplateValue: 'nodejs12.x',
           defaultHandler: 'index.handler',
+          layerExecutablePath: path.join('nodejs', 'node_modules'),
+          layerDefaultFiles: [
+            {
+              path: 'nodejs',
+              filename: 'package.json',
+              content: JSON.stringify(
+                {
+                  // this really needs to be moved to a resource file
+                  version: '1.0.0',
+                  description: '',
+                  main: 'index.js',
+                  dependencies: {},
+                  devDependencies: {},
+                },
+                undefined,
+                2,
+              ),
+            },
+          ],
         },
       });
     },

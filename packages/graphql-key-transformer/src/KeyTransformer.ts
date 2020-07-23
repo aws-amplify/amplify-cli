@@ -16,6 +16,8 @@ import {
   bool,
   forEach,
   list,
+  and,
+  RESOLVER_VERSION_ID,
 } from 'graphql-mapping-template';
 import {
   ResolverResourceIDs,
@@ -137,7 +139,7 @@ export class KeyTransformer extends Transformer {
       }
       if (listResolver) {
         listResolver.Properties.RequestMappingTemplate = joinSnippets([
-          print(setQuerySnippet(definition, directive, ctx)),
+          print(setQuerySnippet(definition, directive, ctx, true)),
           listResolver.Properties.RequestMappingTemplate,
         ]);
       }
@@ -464,7 +466,7 @@ export class KeyTransformer extends Transformer {
       if (!fieldMap.has(fieldName)) {
         const checkedKeyName = directiveArgs.name ? directiveArgs.name : '<unnamed>';
         throw new InvalidDirectiveError(
-          `You cannot specify a non-existant field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`,
+          `You cannot specify a nonexistent field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`,
         );
       } else {
         const existingField = fieldMap.get(fieldName);
@@ -814,12 +816,12 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
     TypeName: queryTypeName,
     RequestMappingTemplate: print(
       compoundExpression([
-        setQuerySnippet(definition, directive, ctx),
+        setQuerySnippet(definition, directive, ctx, false),
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
         set(
           ref(requestVariable),
           obj({
-            version: str('2017-02-28'),
+            version: str(RESOLVER_VERSION_ID),
             operation: str('Query'),
             limit: ref('limit'),
             query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
@@ -841,21 +843,50 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
         raw(`$util.toJson($${requestVariable})`),
       ]),
     ),
-    ResponseMappingTemplate: print(raw('$util.toJson($ctx.result)')),
+    ResponseMappingTemplate: print(
+      compoundExpression([
+        iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
+        raw('$util.toJson($ctx.result)'),
+      ]),
+    ),
   });
 }
 
-function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) {
+function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext, isListResolver: boolean) {
   const args: KeyArguments = getDirectiveArguments(directive);
   const keys = args.fields;
   const keyTypes = keys.map(k => {
     const field = definition.fields.find(f => f.name.value === k);
     return attributeTypeFromType(field.type, ctx);
   });
-  return block(`Set query expression for @key`, [
+
+  const expressions: Expression[] = [];
+
+  // if @key has only Hash key then we've to add sortDirection validation to the VTL as it will not work
+  // TODO: when we will have featureflags we can fix it by not generating sortDirection parameter at all for these operations
+  if (keys.length === 1) {
+    const sortDirectionValidation = iff(
+      raw(`!$util.isNull($ctx.args.sortDirection)`),
+      raw(`$util.error("sortDirection is not supported for List operations without a Sort key defined.", "InvalidArgumentsError")`),
+    );
+
+    expressions.push(sortDirectionValidation);
+  } else if (isListResolver === true && keys.length >= 1) {
+    // We only need this check for List queries, and not for @key queries
+    const sortDirectionValidation = iff(
+      and([raw(`$util.isNull($ctx.args.${keys[0]})`), raw(`!$util.isNull($ctx.args.sortDirection)`)]),
+      raw(`$util.error("When providing argument 'sortDirection' you must also provide argument '${keys[0]}'.", "InvalidArgumentsError")`),
+    );
+
+    expressions.push(sortDirectionValidation);
+  }
+
+  expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
     applyKeyExpressionForCompositeKey(keys, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression),
-  ]);
+  );
+
+  return block(`Set query expression for @key`, expressions);
 }
 
 function addHashField(

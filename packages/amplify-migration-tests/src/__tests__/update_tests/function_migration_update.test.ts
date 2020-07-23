@@ -1,9 +1,8 @@
+import { v4 as uuid } from 'uuid';
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction } from 'amplify-e2e-core';
+import { addFunction, addLayer, invokeFunction, updateFunction, updateLayer, validateLayerMetadata } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
-
-import { invokeFunction } from 'amplify-e2e-core';
 
 describe('amplify function migration', () => {
   let projRoot: string;
@@ -61,8 +60,8 @@ describe('amplify function migration', () => {
           resources: ['Todo:@model(appsync)'],
           resourceChoices: ['Todo:@model(appsync)'],
           operations: ['read'],
-          testingWithLatestCodebase: true,
         },
+        testingWithLatestCodebase: true,
       },
       'nodejs',
     );
@@ -80,5 +79,39 @@ describe('amplify function migration', () => {
     expect(payload.Items).toBeDefined();
     expect(payload.Count).toBeDefined();
     expect(payload.ScannedCount).toBeDefined();
+  });
+
+  it('Add 2 functions, upgrade cli, add layer, update a function to depend on layer', async () => {
+    const [shortId] = uuid().split('-');
+    const function1 = 'function1' + shortId;
+    const function2 = 'function2' + shortId;
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, { name: function1, functionTemplate: 'Hello World' }, 'nodejs', undefined);
+    await addFunction(projRoot, { name: function2, functionTemplate: 'Hello World' }, 'nodejs', undefined);
+    await amplifyPushAuth(projRoot);
+
+    const layerName = `test${shortId}`;
+    const layerSettings = {
+      layerName,
+      versionChanged: true,
+      runtimes: ['nodejs'],
+    };
+    await addLayer(projRoot, layerSettings, true);
+    await updateFunction(
+      projRoot,
+      {
+        layerOptions: {
+          select: [layerName],
+          expectedListOptions: [layerName],
+          versions: { [layerName]: { version: 1, expectedVersionOptions: [1] } },
+        },
+        name: function1,
+        testingWithLatestCodebase: true,
+      },
+      'nodejs',
+    );
+    await amplifyPushAuth(projRoot, true);
+    const meta = getProjectMeta(projRoot);
+    await validateLayerMetadata(layerName, meta);
   });
 });

@@ -3,6 +3,7 @@ import { pythonBuild } from './util/buildUtils';
 import { pythonPackage } from './util/packageUtils';
 import { pythonInvoke } from './util/invokeUtil';
 import { checkDeps } from './util/depUtils';
+import path from 'path';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -17,6 +18,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'python',
           cloudTemplateValue: 'python3.8',
           defaultHandler: 'index.handler',
+          layerExecutablePath: path.join('python', 'lib', 'python3.8', 'site-packages'),
         },
       });
     },
