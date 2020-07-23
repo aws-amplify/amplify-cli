@@ -1099,6 +1099,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - graphqlschemae2e
                 - graphql_e2e_testing
           requires:
@@ -1109,6 +1110,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - graphqlschemae2e
                 - beta
           requires:
@@ -1119,6 +1121,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - graphqlschemae2e
                 - beta
           requires:
@@ -1128,6 +1131,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - graphqlschemae2e
           requires:
             - build
@@ -1136,6 +1140,7 @@ workflows:
             branches:
               only:
                 - master
+                - headless-staging
                 - graphqlschemae2e
           requires:
             - build
@@ -1183,12 +1188,14 @@ workflows:
               only:
                 - release
                 - master
+                - headless-staging
                 - beta
       - api_1-amplify_e2e_tests:
           filters: &ref_2
             branches:
               only:
                 - master
+                - headless-staging
                 - graphqlschemae2e
           requires:
             - publish_to_local_registry

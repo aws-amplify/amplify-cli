@@ -1,6 +1,6 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
 import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
-import { addLayer, LayerOptions } from 'amplify-e2e-core';
+import { addLayer, addOptData, LayerOptions } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
 import {
@@ -317,7 +317,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
 
 describe('add function with layers for runtime nodeJS', () => {
   let projRoot: string;
-  const helloWorldSuccessOutput = 'Hello from Lambda!';
+  const helloWorldSuccessOutput = 'Hello from Lambda! data';
   const random = Math.floor(Math.random() * 10000);
   let functionName: string;
 
@@ -330,6 +330,7 @@ describe('add function with layers for runtime nodeJS', () => {
       runtimes: ['nodejs'],
     };
     await addLayer(projRoot, settings);
+    addOptData(projRoot, settings.layerName);
     // create index.js
     overrideLayerCode(
       projRoot,
@@ -357,11 +358,13 @@ describe('add function with layers for runtime nodeJS', () => {
       projRoot,
       functionName,
       `
+      const fs = require('fs');
       const testString = require('${settings.layerName}');
       exports.handler = async (event) => {
+        const data = fs.readFileSync('/opt/data.txt')
         const response = {
             statusCode: 200,
-            body: JSON.stringify(testString),
+            body: JSON.stringify(testString + ' ' + data),
         };
         return response;
       };

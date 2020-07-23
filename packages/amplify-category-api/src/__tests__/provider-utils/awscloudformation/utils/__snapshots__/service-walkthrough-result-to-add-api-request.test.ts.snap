@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`walkthrough result to AddApiRequest conversion maps properties correctly 1`] = `
+Object {
+  "serviceConfiguration": Object {
+    "additionalAuthTypes": Array [
+      Object {
+        "mode": "AWS_IAM",
+      },
+    ],
+    "apiName": "myApiName",
+    "conflictResolution": Object {},
+    "defaultAuthType": Object {
+      "mode": "AWS_IAM",
+    },
+    "serviceName": "AppSync",
+    "transformSchema": "mySchemaContent",
+  },
+  "version": 1,
+}
+`;

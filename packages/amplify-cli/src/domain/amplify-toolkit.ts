@@ -52,6 +52,7 @@ export class AmplifyToolkit {
   private _updateamplifyMetaAfterBuild: any;
   private _updateAmplifyMetaAfterPackage: any;
   private _updateBackendConfigAfterResourceAdd: any;
+  private _updateBackendConfigAfterResourceUpdate: any;
   private _updateBackendConfigAfterResourceRemove: any;
   private _loadEnvResourceParameters: any;
   private _saveEnvResourceParameters: any;
@@ -315,6 +316,12 @@ export class AmplifyToolkit {
       this._updateBackendConfigAfterResourceAdd ||
       require(path.join(this._amplifyHelpersDirPath, 'update-backend-config')).updateBackendConfigAfterResourceAdd;
     return this._updateBackendConfigAfterResourceAdd;
+  }
+  get updateBackendConfigAfterResourceUpdate(): any {
+    this._updateBackendConfigAfterResourceUpdate =
+      this._updateBackendConfigAfterResourceUpdate ||
+      require(path.join(this._amplifyHelpersDirPath, 'update-backend-config')).updateBackendConfigAfterResourceUpdate;
+    return this._updateBackendConfigAfterResourceUpdate;
   }
   get updateBackendConfigAfterResourceRemove(): any {
     this._updateBackendConfigAfterResourceRemove =

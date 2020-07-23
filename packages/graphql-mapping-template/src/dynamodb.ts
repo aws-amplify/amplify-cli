@@ -286,9 +286,7 @@ export class DynamoDBMappingTemplate {
     const errorExpresion = isSyncEnabled
       ? ref('util.error($ctx.error.message, $ctx.error.type, $ctx.result)')
       : ref('util.error($ctx.error.message, $ctx.error.type)');
-    const resultExpression = returnExpression
-      ? returnExpression
-      : ref('util.toJson($ctx.result)');
+    const resultExpression = returnExpression ? returnExpression : ref('util.toJson($ctx.result)');
     return compoundExpression([ifElse(ref('ctx.error'), errorExpresion, resultExpression)]);
   }
 
