@@ -1,6 +1,7 @@
-import { toBeIAMRoleWithArn, toBeAS3Bucket } from './aws-matchers';
+import { toBeIAMRoleWithArn, toHaveAssumeRolePolicyConditionMatchingIdpId, toBeAS3Bucket } from './aws-matchers';
 
 expect.extend({ toBeIAMRoleWithArn });
+expect.extend({ toHaveAssumeRolePolicyConditionMatchingIdpId });
 expect.extend({ toBeAS3Bucket });
 
 // tslint:disable-next-line: no-magic-numbers
