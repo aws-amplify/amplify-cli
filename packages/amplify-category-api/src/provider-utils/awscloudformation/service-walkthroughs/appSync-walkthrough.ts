@@ -11,7 +11,7 @@ import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
-import { getAppSyncAuthConfig, checkIfAuthExists } from '../utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -639,7 +639,7 @@ export const migrate = async context => {
   });
 };
 
-export const getIAMPolicies = (resourceName, crudOptions) => {
+export const getIAMPolicies = (resourceName, crudOptions, context) => {
   let policy = {};
   const actions = [];
 
@@ -686,6 +686,9 @@ export const getIAMPolicies = (resourceName, crudOptions) => {
   };
 
   const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
+  if (authConfigHasApiKey(getAppSyncAuthConfig(context.amplify.getProjectMeta()))) {
+    attributes.push('GraphQLAPIKeyOutput');
+  }
 
   return { policy, attributes };
 };

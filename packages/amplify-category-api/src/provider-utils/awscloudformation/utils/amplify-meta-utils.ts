@@ -1,3 +1,18 @@
+import _ from 'lodash';
+
+export const authConfigHasApiKey = authConfig => {
+  if (!authConfig) {
+    return false;
+  }
+  return (
+    Array.of(authConfig.defaultAuthentication)
+      .concat(authConfig.additionalAuthenticationProviders)
+      .filter(auth => !!auth) // filter out undefined elements which can happen if there are no addtl auth providers
+      .map(auth => auth.authenticationType)
+      .findIndex(authType => authType === 'API_KEY') > -1
+  );
+};
+
 export const checkIfAuthExists = context => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
