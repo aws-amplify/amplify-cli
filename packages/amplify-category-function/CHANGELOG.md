@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.21.5...amplify-category-function@2.22.0) (2020-07-23)
+
+
+### Bug Fixes
+
+* /opt folder should be packaged at the root of the zipped dir ([#4835](https://github.com/aws-amplify/amplify-cli/issues/4835)) ([f4abd69](https://github.com/aws-amplify/amplify-cli/commit/f4abd6918826bf565f157641593fb1d751877713))
+* remove mutableParametersState from stored function-params ([#4897](https://github.com/aws-amplify/amplify-cli/issues/4897)) ([6e379fa](https://github.com/aws-amplify/amplify-cli/commit/6e379fabd9f5ea2316ce91f03c3e7cb3aa39fe08))
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([4639450](https://github.com/aws-amplify/amplify-cli/commit/463945029cfe861f74986d9a8b9af6b827d2063d))
+
+
+
+
+
 ## [2.21.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.21.4...amplify-category-function@2.21.5) (2020-07-18)
 
 **Note:** Version bump only for package amplify-category-function

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.20.5...amplify-category-api@2.21.0) (2020-07-23)
+
+
+### Bug Fixes
+
+* remove mutableParametersState from stored function-params ([#4897](https://github.com/aws-amplify/amplify-cli/issues/4897)) ([6e379fa](https://github.com/aws-amplify/amplify-cli/commit/6e379fabd9f5ea2316ce91f03c3e7cb3aa39fe08))
+
+
+### Features
+
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([b729266](https://github.com/aws-amplify/amplify-cli/commit/b729266b9bb519738ef88125784d72ac428f47e1))
+
+
+
+
+
 ## [2.20.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.20.4...amplify-category-api@2.20.5) (2020-07-18)
 
 **Note:** Version bump only for package amplify-category-api
