@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const graphql = require('graphql');
 const path = require('path');
-const glob = require('glob');
 const { RelationalDBSchemaTransformer } = require('graphql-relational-schema-transformer');
 const { RelationalDBTemplateGenerator, AuroraServerlessMySQLDatabaseReader } = require('graphql-relational-schema-transformer');
 const { mergeTypes } = require('merge-graphql-schemas');
@@ -107,14 +106,29 @@ module.exports = {
          */
         const apiDirPath = `${projectBackendDirPath}/${category}/${resourceName}`;
         fs.ensureDirSync(apiDirPath);
-        const graphqlSchemaFilePath = `${apiDirPath}/schema.graphql`;
-        const graphqlSchemaRaw = readSchema(apiDirPath);
-
+        const graphqlSchemaFilePath = path.join(apiDirPath, 'schema.graphql');
+        const schemaFileExists = fs.existsSync(graphqlSchemaFilePath);
         const rdsGraphQLSchemaDoc = graphqlSchemaContext.schemaDoc;
-        const currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
-        const concatGraphQLSchemaDoc = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
+        const schemaDirectoryPath = path.join(apiDirPath, 'schema');
+        const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
 
-        fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
+        if (schemaFileExists) {
+          const graphqlSchemaRaw = fs.readFileSync(graphqlSchemaFilePath).toString();
+          try {
+            const currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
+            const concatGraphQLSchemaDoc = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
+            fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
+          } catch (err) {
+            const relativePathToInput = path.relative(process.cwd(), graphqlSchemaRaw);
+            throw new Error(`Could not parse graphql schema \n${relativePathToInput}\n${err.message}`);
+          }
+        } else if (schemaDirectoryExists) {
+          const rdsSchemaFilePath = path.join(apiDirPath, 'rds.graphql');
+          const concatGraphQLSchemaDoc = mergeTypes([{}, rdsGraphQLSchemaDoc], { all: true });
+          fs.writeFileSync(rdsSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
+        } else {
+          throw new Error(`Could not find a schema at ${graphqlSchemaFilePath} and schema dir at ${schemaDirectoryPath}`);
+        }
 
         const resolversDir = `${projectBackendDirPath}/${category}/${resourceName}/resolvers`;
 
@@ -206,36 +220,4 @@ async function getAwsClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   return await provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
-}
-
-function readSchema(projectDirectory) {
-  const schemaFilePath = path.join(projectDirectory, 'schema.graphql');
-  const schemaDirectoryPath = path.join(projectDirectory, 'schema');
-  const schemaFileExists = fs.existsSync(schemaFilePath);
-  const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
-  let schema;
-  if (schemaFileExists) {
-    schema = fs.readFileSync(schemaFilePath).toString();
-  } else if (schemaDirectoryExists) {
-    schema = readSchemaDocuments(schemaDirectoryPath).join('\n');
-  } else {
-    throw new Error(`Could not find a schema at ${schemaFilePath}`);
-  }
-  return schema;
-}
-
-function readSchemaDocuments(schemaDirectoryPath) {
-  const files = glob.sync(schemaDirectoryPath + '/**/*');
-  let schemaDocuments = [];
-  for (const file of files) {
-    if (file.indexOf('.') === 0) {
-      continue;
-    }
-    const stats = fs.lstatSync(file);
-    if (stats.isFile() && file.split('.')[file.split('.').length - 1] === 'graphql') {
-      const schemaDoc = fs.readFileSync(file);
-      schemaDocuments.push(schemaDoc);
-    }
-  }
-  return schemaDocuments;
 }
