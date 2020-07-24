@@ -29,6 +29,7 @@ function generateLayerCfnObjBase() {
  */
 export function generateLayerCfnObj(context, parameters: LayerParameters) {
   const layerData = getLayerMetadataFactory(context)(parameters.layerName);
+  const envName = context.amplify.getEnvInfo().envName;
   const outputObj = {
     Outputs: {
       Arn: {
@@ -47,23 +48,23 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
       S3Key: Fn.Ref('s3Key'),
     },
     Description: `Lambda layer version ${latestVersion}`,
-    LayerName: parameters.layerName,
+    LayerName: `${parameters.layerName}-${envName}`,
   });
   layer.deletionPolicy(POLICY_RETAIN);
   _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });
 
   cfnObj.Resources['LambdaLayer'] = layer;
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
-    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
+    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build, envName);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   });
   return cfnObj;
 }
 
-function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, isContentUpdated: boolean) {
+function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, isContentUpdated: boolean, env: string) {
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
-    LayerVersionArn: createLayerversionArn(layerData, layerName, version, isContentUpdated),
+    LayerVersionArn: createLayerversionArn(layerData, layerName, version, isContentUpdated, env),
   };
 
   const result = [];
@@ -114,7 +115,7 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
   return result;
 }
 
-function createLayerversionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean) {
+function createLayerversionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean, env: string) {
   //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
   if (isContentUpdated) {
     // if runtime/Content updated
@@ -122,7 +123,7 @@ function createLayerversionArn(layerData: LayerMetadata, layerName: string, vers
       return Fn.Ref('LambdaLayer');
     }
   }
-  return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}:${layerVersion}', {
+  return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}', {
     layerName: layerName,
     layerVersion: version,
   });
