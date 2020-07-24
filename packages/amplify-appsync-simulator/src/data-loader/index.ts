@@ -3,7 +3,7 @@ import { NoneDataLoader } from './none';
 import { LambdaDataLoader } from './lambda';
 
 export interface AmplifyAppSyncSimulatorDataLoader {
-  load(payload: any): Promise<object | null>;
+  load(payload: any, extraData?: any): Promise<object | null>;
 }
 const DATA_LOADER_MAP = new Map();
 export function getDataLoader(sourceType) {
