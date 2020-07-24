@@ -128,7 +128,7 @@ function copyTemplateFiles(context: any, parameters: FunctionParameters | Functi
 
   const copyJobParams: any = parameters;
   if ('lambdaLayers' in parameters) {
-    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(parameters.lambdaLayers);
+    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(parameters.lambdaLayers, context.amplify.getEnvInfo().envName);
     copyJobParams.lambdaLayersCFNArray = layerCFNValues;
   }
   context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, false);
@@ -175,6 +175,8 @@ const addLayerToAmplifyMeta = (context, parameters: LayerParameters) =>
 
 const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
   const metaParams = layerParamsToAmplifyMetaParams(parameters);
+  // Info needed in amplify-meta.json for adding layers to Lambda functions
+  // TODO: differentiate between environments
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', metaParams.runtimes);
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'layerVersionMap', metaParams.layerVersionMap);
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', metaParams.build);
@@ -183,7 +185,16 @@ const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
 const createLayerParametersFile = (context, parameters: LayerParameters | StoredLayerParameters, layerDirPath: string) => {
   fs.ensureDirSync(layerDirPath);
   const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
-  context.amplify.writeObjectAsJson(parametersFilePath, layerParamsToStoredParams(parameters), true);
+
+  // Preserve other env's data
+  let layerDataToWrite;
+  if (fs.existsSync(parametersFilePath)) {
+    layerDataToWrite = fs.readJsonSync(parametersFilePath);
+    layerDataToWrite[context.amplify.getEnvInfo().envName] = layerParamsToStoredParams(parameters);
+  } else {
+    layerDataToWrite = { [context.amplify.getEnvInfo().envName]: layerParamsToStoredParams(parameters) };
+  }
+  context.amplify.writeObjectAsJson(parametersFilePath, layerDataToWrite, true);
 };
 
 const layerParamsToAmplifyMetaParams = (
