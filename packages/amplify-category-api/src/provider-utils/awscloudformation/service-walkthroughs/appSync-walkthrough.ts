@@ -4,7 +4,7 @@ import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
-import { rootAssetDir, cfnParametersFilename } from '../aws-constants';
+import { rootAssetDir } from '../aws-constants';
 import { collectDirectivesByTypeNames, readProjectConfiguration, ConflictHandlerType } from 'graphql-transformer-core';
 import { category } from '../../../category-constants';
 import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';

@@ -22,6 +22,7 @@ import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEven
 import fs from 'fs-extra';
 import path from 'path';
 import { retry, readJsonFile } from 'amplify-e2e-core';
+import _ from 'lodash';
 
 describe('nodejs', () => {
   describe('amplify add function', () => {
@@ -464,6 +465,34 @@ describe('nodejs', () => {
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
       expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
+    });
+
+    it('should add api key from api to env vars', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const apiName = `apiwithapikey${random}`;
+      await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName });
+      const fnName = `apikeyenvvar${random}`;
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['api'],
+            choices: ['api'],
+            resources: [apiName],
+            operations: ['read'],
+          },
+        },
+        'nodejs',
+      );
+
+      const lambdaCFN = readJsonFile(
+        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
+      );
+      const envVarsObj = lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables;
+      expect(_.keys(envVarsObj)).toContain(`API_${apiName.toUpperCase()}_GRAPHQLAPIKEYOUTPUT`);
     });
   });
 });

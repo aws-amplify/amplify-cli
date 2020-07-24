@@ -99,15 +99,13 @@ const coreFunction = (
       }
 
       // n-resources repeated questions
-      settings.additionalPermissions.resources.reduce(
-        (chain, elem) =>
-          multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
-            'create',
-            'read',
-            'update',
-            'delete',
-          ]),
-        chain,
+      settings.additionalPermissions.resources.forEach(elem =>
+        multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
+          'create',
+          'read',
+          'update',
+          'delete',
+        ]),
       );
     } else {
       chain.sendLine('n');
