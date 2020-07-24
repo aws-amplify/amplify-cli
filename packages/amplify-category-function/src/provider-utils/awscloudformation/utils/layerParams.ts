@@ -83,9 +83,25 @@ class LayerState implements LayerMetadata {
   constructor(context, storedParams: StoredLayerParameters, layerName: string) {
     this.context = context;
     this.layerName = layerName;
-    this.storedParams = storedParams;
-    this.runtimes = storedParams.runtimes;
-    Object.entries(storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
+
+    // If storedParams is undefined, env has changed
+    this.storedParams =
+      storedParams !== undefined
+        ? storedParams
+        : ({
+            runtimes: _.get(context.amplify.getProjectMeta(), ['function', layerName, 'runtimes']),
+            layerVersionMap: {
+              '1': {
+                permissions: [
+                  {
+                    type: 'private',
+                  },
+                ],
+              },
+            },
+          } as StoredLayerParameters);
+    this.runtimes = this.storedParams.runtimes;
+    Object.entries(this.storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
       this.versionMap.set(Number(versionNumber), new LayerVersionState(versionData));
     });
   }
@@ -248,7 +264,7 @@ export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
       return undefined;
     }
     const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-    const obj = context.amplify.readJsonFile(parametersFilePath) as StoredLayerParameters;
+    const obj = context.amplify.readJsonFile(parametersFilePath)[context.amplify.getEnvInfo().envName] as StoredLayerParameters;
     return new LayerState(context, obj, layerName);
   };
 };
