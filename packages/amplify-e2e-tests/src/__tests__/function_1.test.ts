@@ -465,6 +465,21 @@ describe('nodejs', () => {
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
       expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
+
+      const configPath = path.join(projRoot, 'amplify', 'backend', 'backend-config.json');
+      const metaPath = path.join(projRoot, 'amplify', 'backend', 'amplify-meta.json');
+      const functionConfig = readJsonFile(configPath).function[fnName];
+      const functionMeta = readJsonFile(metaPath).function[fnName];
+      delete functionMeta.lastPushTimeStamp;
+
+      // Don't update anything, sends 'n' to the question:
+      // Do you want to update the Lambda function permissions to access...?
+      await updateFunction(projRoot, {}, 'nodejs');
+      const updatedFunctionConfig = readJsonFile(configPath).function[fnName];
+      const updatedFunctionMeta = readJsonFile(metaPath).function[fnName];
+      delete updatedFunctionMeta.lastPushTimeStamp;
+      expect(functionConfig).toStrictEqual(updatedFunctionConfig);
+      expect(functionMeta).toStrictEqual(updatedFunctionMeta);
     });
 
     it('should add api key from api to env vars', async () => {

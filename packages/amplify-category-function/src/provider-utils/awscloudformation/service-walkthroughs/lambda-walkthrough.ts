@@ -162,7 +162,11 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
 
     context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
     tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
+  } else {
+    // Need to load previous dependsOn
+    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
   }
+
   // ask scheduling Lambda questions and merge in results
   const cfnParameters = context.amplify.readJsonFile(path.join(resourceDirPath, parametersFileName), undefined, false) || {};
   const scheduleParameters = {
