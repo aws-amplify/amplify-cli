@@ -91,5 +91,5 @@ export async function getPermissionPolicies(context, service, resourceName, crud
     return;
   }
 
-  return getIAMPolicies(resourceName, crudOptions);
+  return getIAMPolicies(resourceName, crudOptions, context);
 }
