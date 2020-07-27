@@ -1,4 +1,4 @@
-import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate } from 'amplify-function-plugin-interface';
+import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './utils/layerParams';
 import { supportedServices } from '../supported-services';
 import { ServiceName, provider, parametersFileName } from './utils/constants';
@@ -306,31 +306,68 @@ function getHeadlessParams(context, resourceName) {
 }
 
 export async function updateConfigOnEnvInit(context: any, resourceName: string, service: ServiceName) {
-  const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
-  const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
-  const functionParametersPath = path.join(
-    context.amplify.pathManager.getBackendDirPath(),
-    categoryName,
-    resourceName,
-    'function-parameters.json',
-  );
-  let resourceParams: any = {};
-  const functionParametersExists = fs.existsSync(functionParametersPath);
-  if (functionParametersExists) {
-    resourceParams = context.amplify.readJsonFile(functionParametersPath);
-  }
-  let envParams = {};
+  if (service === ServiceName.LambdaFunction) {
+    const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
+    const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
+    const functionParametersPath = path.join(
+      context.amplify.pathManager.getBackendDirPath(),
+      categoryName,
+      resourceName,
+      'function-parameters.json',
+    );
+    let resourceParams: any = {};
+    const functionParametersExists = fs.existsSync(functionParametersPath);
+    if (functionParametersExists) {
+      resourceParams = context.amplify.readJsonFile(functionParametersPath);
+    }
+    let envParams = {};
 
-  // headless mode
-  if (isInHeadlessMode(context)) {
-    const functionParams = getHeadlessParams(context, resourceName);
-    return functionParams;
-  }
+    // headless mode
+    if (isInHeadlessMode(context)) {
+      const functionParams = getHeadlessParams(context, resourceName);
+      return functionParams;
+    }
 
-  if (resourceParams.trigger === true) {
-    envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
+    if (resourceParams.trigger === true) {
+      envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
+    }
+    return envParams;
+  } else if (service === ServiceName.LambdaLayer) {
+    const { envName } = context.amplify.getEnvInfo();
+    context.print.warning('A Lambda layer has appeared...');
+    const layerParamsPath = path.join('amplify', 'backend', categoryName, resourceName, parametersFileName);
+    let layerEnvParams = _.get(context.amplify.readJsonFile(layerParamsPath), envName, null);
+    let providerContext: ProviderContext;
+
+    if (layerEnvParams === null) {
+      const layerMeta = _.get(context.amplify.getProjectMeta(), [categoryName, resourceName], null);
+      if (layerMeta === null) {
+        throw `Lambda layer ${resourceName} is missing from amplify-meta.json`;
+      }
+      // TODO comment what is happening
+      layerEnvParams.layerVersionMap = {
+        '1': {
+          permissions: [
+            {
+              type: 'private',
+            },
+          ],
+        },
+      };
+      layerEnvParams.layerName = resourceName;
+
+      providerContext = {
+        provider: layerMeta.providerPlugin,
+        service,
+        projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+      };
+      layerEnvParams.providerContext = providerContext;
+    }
+
+    context.print.warning(layerEnvParams);
+
+    updateLayerArtifacts(context, layerEnvParams);
   }
-  return envParams;
 }
 
 async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData: ServiceConfig<FunctionParameters>) {
