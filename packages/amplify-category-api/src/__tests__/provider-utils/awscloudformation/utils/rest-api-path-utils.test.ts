@@ -1,27 +1,27 @@
-import { validatePathName, formatCFNPathParamsForExpressJs } from '../../../../provider-utils/awscloudformation/utils/rest-api-path-utils';
+import {
+  validatePathName,
+  checkForPathOverlap,
+  formatCFNPathParamsForExpressJs,
+} from '../../../../provider-utils/awscloudformation/utils/rest-api-path-utils';
 
-const walkthrough = rewire('../awscloudformation/service-walkthroughs/apigw-walkthrough.js');
-
-const validatePathName = walkthrough.__get__('validatePathName');
-const checkForPathOverlap = walkthrough.__get__('checkForPathOverlap');
 const stubOtherPaths = [{ name: '/other/path' }, { name: '/sub/path' }, { name: '/path/{with}/{params}' }];
 
 test('validatePathName_validPath', () => {
-  expect(validatePathName('/some/path', stubOtherPaths)).toBe(true);
-  expect(validatePathName('/path/{with}/{params}', stubOtherPaths)).toBe(true);
-  expect(validatePathName('/', stubOtherPaths)).toBe(true);
+  expect(validatePathName('/some/path')).toBe(true);
+  expect(validatePathName('/path/{with}/{params}')).toBe(true);
+  expect(validatePathName('/')).toBe(true);
 });
 
 test('validatePath_empty', () => {
-  expect(validatePathName('', stubOtherPaths)).toStrictEqual('The path must not be empty');
+  expect(validatePathName('')).toStrictEqual('The path must not be empty');
 });
 
 test('validatePathName_noLeadingSlash', () => {
-  expect(validatePathName('no/leading/slash', stubOtherPaths)).toStrictEqual('The path must begin with / e.g. /items');
+  expect(validatePathName('no/leading/slash')).toStrictEqual('The path must begin with / e.g. /items');
 });
 
 test('validatePathName_hasTrailingSlash', () => {
-  expect(validatePathName('/has/trailing/slash/', stubOtherPaths)).toStrictEqual('The path must not end with /');
+  expect(validatePathName('/has/trailing/slash/')).toStrictEqual('The path must not end with /');
 });
 
 test('validatePathName_invalidCharacters', () => {
@@ -30,9 +30,9 @@ test('validatePathName_invalidCharacters', () => {
     'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.';
 
   // test
-  expect(validatePathName('/invalid+/{char}', stubOtherPaths)).toStrictEqual(errorMessage);
-  expect(validatePathName('/invalid/{char@}', stubOtherPaths)).toStrictEqual(errorMessage);
-  expect(validatePathName('/invalid/{param', stubOtherPaths)).toStrictEqual(errorMessage);
+  expect(validatePathName('/invalid+/{char}')).toStrictEqual(errorMessage);
+  expect(validatePathName('/invalid/{char@}')).toStrictEqual(errorMessage);
+  expect(validatePathName('/invalid/{param')).toStrictEqual(errorMessage);
 });
 
 test('checkForPathOverlap_subPathMatch', () => {
@@ -63,10 +63,6 @@ test('checkForPathOverlap_pathMatch', () => {
 });
 
 test('formatCFNPathParamsForExpressJs', () => {
-  // setup
-  const formatCFNPathParamsForExpressJs = walkthrough.__get__('formatCFNPathParamsForExpressJs');
-
-  // test
   expect(formatCFNPathParamsForExpressJs('/')).toStrictEqual('/');
   expect(formatCFNPathParamsForExpressJs('/path')).toStrictEqual('/path');
   expect(formatCFNPathParamsForExpressJs('/path/{param}')).toStrictEqual('/path/:param');
