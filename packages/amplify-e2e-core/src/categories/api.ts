@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { singleSelect, multiSelect } from '../utils/selectors';
+import _ from 'lodash';
 
 export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
@@ -22,13 +23,22 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
   });
 }
 
-export function addApiWithoutSchema(cwd: string) {
+interface AddApiOptions {
+  apiName: string;
+}
+
+const defaultOptions: AddApiOptions = {
+  apiName: '\r',
+};
+
+export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = {}) {
+  const options = _.assign(defaultOptions, opts);
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendCarriageReturn()
+      .sendLine(opts.apiName)
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
@@ -56,14 +66,15 @@ export function addApiWithoutSchema(cwd: string) {
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string) {
+export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions> = {}) {
+  const options = _.assign(defaultOptions, opts);
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendCarriageReturn()
+      .sendLine(options.apiName)
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)

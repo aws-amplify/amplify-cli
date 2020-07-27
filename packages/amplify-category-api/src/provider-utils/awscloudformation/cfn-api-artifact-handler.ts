@@ -16,7 +16,8 @@ import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-aut
 import uuid from 'uuid';
 import _ from 'lodash';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists } from './utils/amplify-meta-utils';
+import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
+import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 
 export const getCfnApiArtifactHandler = (context): ApiArtifactHandler => {
   return new CfnApiArtifactHandler(context);
@@ -103,6 +104,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
     const authConfig = getAppSyncAuthConfig(this.context.amplify.getProjectMeta());
+    const oldConfigHadApiKey = authConfigHasApiKey(authConfig);
     if (updates.defaultAuthType) {
       authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
     }
@@ -117,6 +119,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+    printApiKeyWarnings(this.context, oldConfigHadApiKey, authConfigHasApiKey(authConfig));
   };
 
   private writeSchema = (resourceDir: string, schema: string) => {

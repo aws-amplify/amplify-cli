@@ -4,14 +4,14 @@ import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
-import { rootAssetDir, cfnParametersFilename } from '../aws-constants';
+import { rootAssetDir } from '../aws-constants';
 import { collectDirectivesByTypeNames, readProjectConfiguration, ConflictHandlerType } from 'graphql-transformer-core';
 import { category } from '../../../category-constants';
 import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
-import { getAppSyncAuthConfig, checkIfAuthExists } from '../utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -639,7 +639,7 @@ export const migrate = async context => {
   });
 };
 
-export const getIAMPolicies = (resourceName, crudOptions) => {
+export const getIAMPolicies = (resourceName, crudOptions, context) => {
   let policy = {};
   const actions = [];
 
@@ -686,6 +686,9 @@ export const getIAMPolicies = (resourceName, crudOptions) => {
   };
 
   const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
+  if (authConfigHasApiKey(getAppSyncAuthConfig(context.amplify.getProjectMeta()))) {
+    attributes.push('GraphQLAPIKeyOutput');
+  }
 
   return { policy, attributes };
 };
