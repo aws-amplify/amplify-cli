@@ -226,3 +226,19 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
       });
   });
 }
+
+export function amplifyStatus(cwd: string, expectedStatus: string) {
+  return new Promise((resolve, reject) => {
+    let regex = new RegExp(`.*${expectedStatus}*`);
+    spawn(getCLIPath(), ['status'], { cwd, stripColors: true })
+      .wait(regex)
+      .sendLine('\r')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
