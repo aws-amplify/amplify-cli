@@ -1,3 +1,4 @@
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import { CLIContextEnvironmentProvider, FeatureFlags } from 'amplify-cli-core';
 import { Input } from './domain/input';
@@ -62,7 +63,14 @@ export async function run() {
 
     const getProjectPath = (): string => {
       try {
-        const { projectPath } = context.amplify.getEnvInfo();
+        let { projectPath } = context.amplify.getEnvInfo();
+
+        // Check if the returned path exists, because it is possible that
+        // local-env-info.json is checked in and contains an invalid path
+        // https://github.com/aws-amplify/amplify-cli/issues/4950
+        if (projectPath && !fs.pathExistsSync(projectPath)) {
+          projectPath = '';
+        }
 
         return projectPath;
       } catch {
