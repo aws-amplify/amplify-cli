@@ -29,7 +29,7 @@ function generateLayerCfnObjBase() {
  */
 export function generateLayerCfnObj(context, parameters: LayerParameters) {
   const layerData = getLayerMetadataFactory(context)(parameters.layerName);
-  const envName = context.amplify.getEnvInfo().envName;
+  const { envName } = context.amplify.getEnvInfo();
   const outputObj = {
     Outputs: {
       Arn: {
@@ -55,16 +55,16 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
 
   cfnObj.Resources['LambdaLayer'] = layer;
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
-    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build, envName);
+    const answer = assignLayerPermissions(layerData, key, `${parameters.layerName}-${envName}`, parameters.build);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   });
   return cfnObj;
 }
 
-function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, isContentUpdated: boolean, env: string) {
+function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, isContentUpdated: boolean) {
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
-    LayerVersionArn: createLayerversionArn(layerData, layerName, version, isContentUpdated, env),
+    LayerVersionArn: createLayerversionArn(layerData, layerName, version, isContentUpdated),
   };
 
   const result = [];
@@ -115,7 +115,7 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
   return result;
 }
 
-function createLayerversionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean, env: string) {
+function createLayerversionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean) {
   //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
   if (isContentUpdated) {
     // if runtime/Content updated
@@ -123,7 +123,7 @@ function createLayerversionArn(layerData: LayerMetadata, layerName: string, vers
       return Fn.Ref('LambdaLayer');
     }
   }
-  return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}', {
+  return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}:${layerVersion}', {
     layerName: layerName,
     layerVersion: version,
   });
