@@ -225,7 +225,7 @@ export const askExecRolePermissionsQuestions = async (
       envVars.add(envName);
     });
 
-    if (dependsOn.filter(dep => dep.resourceName === resourceName).length === 0) {
+    if (!dependsOn.find(dep => dep.resourceName === resourceName)) {
       dependsOn.push({
         category: resource.category,
         resourceName: resource.resourceName,
@@ -237,6 +237,7 @@ export const askExecRolePermissionsQuestions = async (
   const envVarStringList = Array.from(envVars)
     .sort()
     .join('\n\t');
+
   context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
 
   return {
