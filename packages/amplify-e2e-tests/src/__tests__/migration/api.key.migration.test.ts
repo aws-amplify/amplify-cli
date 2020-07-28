@@ -68,6 +68,22 @@ describe('amplify add api', () => {
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
+  it('init project, run invalid migration trying to add more than one gsi, and check for error', async () => {
+    const projectName = 'migratingkey';
+    const initialSchema = 'migrations_key/initial_schema.graphql';
+    const nextSchema1 = 'migrations_key/cant_add_more_gsi.graphql';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await expect(
+      amplifyPushUpdate(
+        projRoot,
+        /Attempting to add more than 1 global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
+      ),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
+  });
+
   it('init project, run valid migration adding a GSI', async () => {
     const projectName = 'validaddinggsi';
     const initialSchema = 'migrations_key/initial_schema.graphql';
