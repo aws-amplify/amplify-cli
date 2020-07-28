@@ -15,6 +15,10 @@ export function invoke(options: InvokeOptions): Promise<any> {
       });
       lambdaFn.on('close', () => {
         const lines = data.split('\n');
+        if (lines.length > 1) {
+          const logs = lines.slice(0, -1).join('\n');
+          console.log(logs);
+        }
         const lastLine = lines[lines.length - 1];
         const result = JSON.parse(lastLine);
         if (result.error) {
