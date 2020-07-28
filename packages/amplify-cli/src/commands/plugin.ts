@@ -1,11 +1,11 @@
-import path from 'path';
+import * as path from 'path';
 import { Context } from '../domain/context';
 
-export async function run(context: Context) {
+export const run = async (context: Context) => {
   let subCommand = 'help';
 
   if (context.input.subCommands && context.input.subCommands.length > 0) {
-    subCommand = context.input.subCommands![0];
+    subCommand = context.input.subCommands[0];
   }
   subCommand = mapSubcommandAlias(subCommand);
 
@@ -20,7 +20,7 @@ export async function run(context: Context) {
       context.usageData.emitError(err);
       process.exit(1);
     });
-}
+};
 
 function mapSubcommandAlias(subcommand: string): string {
   if (subcommand === 'init') {

@@ -1,5 +1,5 @@
-import path from 'path';
-import fs from 'fs-extra';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import { PluginCollection } from '../domain/plugin-collection';
 import { PluginPlatform } from '../domain/plugin-platform';
 import { constants } from '../domain/constants';
@@ -30,7 +30,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     });
 
     const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(pluginDirPath => async () =>
-      await verifyAndAdd(pluginPlatform!, pluginDirPath)
+      await verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }

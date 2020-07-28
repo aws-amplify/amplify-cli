@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 
 export class AmplifyToolkit {
   private _buildResources: any;
@@ -25,7 +25,6 @@ export class AmplifyToolkit {
   private _getResourceOutputs: any;
   private _getWhen: any;
   private _inputValidation: any;
-  private _isRunningOnEC2: any;
   private _listCategories: any;
   private _makeId: any;
   private _openEditor: any;
@@ -83,11 +82,11 @@ export class AmplifyToolkit {
     return this._buildResources;
   }
   get confirmPrompt(): any {
-    this._confirmPrompt = this._confirmPrompt || require(path.join(this._amplifyHelpersDirPath, 'confirm-prompt'));
+    this._confirmPrompt = this._confirmPrompt || require(path.join(this._amplifyHelpersDirPath, 'confirm-prompt')).confirmPrompt;
     return this._confirmPrompt;
   }
   get constants(): any {
-    this._constants = this._constants || require(path.join(this._amplifyHelpersDirPath, 'constants'));
+    this._constants = this._constants || require(path.join(this._amplifyHelpersDirPath, 'constants')).amplifyCLIConstants;
     return this._constants;
   }
   get constructExeInfo(): any {
@@ -185,10 +184,6 @@ export class AmplifyToolkit {
   get inputValidation(): any {
     this._inputValidation = this._inputValidation || require(path.join(this._amplifyHelpersDirPath, 'input-validation')).inputValidation;
     return this._inputValidation;
-  }
-  get isRunningOnEC2(): any {
-    this._isRunningOnEC2 = this._isRunningOnEC2 || require(path.join(this._amplifyHelpersDirPath, 'is-running-on-EC2')).isRunningOnEC2;
-    return this._isRunningOnEC2;
   }
   get listCategories(): any {
     this._listCategories = this._listCategories || require(path.join(this._amplifyHelpersDirPath, 'list-categories')).listCategories;

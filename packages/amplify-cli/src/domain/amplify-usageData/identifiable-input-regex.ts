@@ -14,7 +14,7 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
   if (jsonregex.test(s)) {
     jsonregex.lastIndex = 0;
     let m: RegExpExecArray | null;
-    let valuesToRedact = [];
+    const valuesToRedact: any = [];
 
     //find all values to redact
     do {
@@ -44,7 +44,7 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: Bo
     delete input.options;
     return input;
   }
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     argv[i] = testReplaceJsonValues(argv[i], replacementString);
     if (redactString) {
       if (!isJson(argv[i])) argv[i] = replacementString;

@@ -1,7 +1,8 @@
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import { init } from '../app-config';
 import { Context } from '../domain/context';
 import { Input } from '../domain/input';
+
 describe('test usageData', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -18,20 +19,24 @@ describe('test usageData', () => {
     warning: jest.fn(),
   };
   test('case: valid Json', () => {
-    fs.existsSync = jest.fn().mockReturnValue(true);
+    (fs.existsSync as any).mockReturnValue(true);
     const installationUuid = 'testuuid';
-    fs.readFileSync = jest
-      .fn()
-      .mockReturnValue(`{"usageDataConfig":{"installationUuid":"${installationUuid}","isUsageTrackingEnabled":true}}`);
+    (fs.readFileSync as any).mockReturnValue(
+      `{"usageDataConfig":{"installationUuid":"${installationUuid}","isUsageTrackingEnabled":true}}`,
+    );
+
     const config = init(mockContext);
+
     expect(config.usageDataConfig.installationUuid).toEqual(installationUuid);
   });
 
   test('case: Invalid json', () => {
-    fs.existsSync = jest.fn().mockReturnValue(true);
-    fs.writeFile = jest.fn();
-    fs.readFileSync = jest.fn().mockReturnValue(`{"usageDataConfig":{"installationUuid,"isUsageTrackingEnabled":true}}`);
+    (fs.existsSync as any).mockReturnValue(true);
+    (fs.writeFile as any).mockReturnValue();
+    (fs.readFileSync as any).mockReturnValue(`{"usageDataConfig":{"installationUuid,"isUsageTrackingEnabled":true}}`);
+
     const config = init(mockContext);
+
     expect(mockContext.print.warning).toBeCalled();
     expect(fs.writeFileSync).toBeCalled();
     expect(config.usageDataConfig).toBeDefined();

@@ -22,7 +22,7 @@ const permissionMap = {
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, options) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt.run(
+      await context.amplify.confirmPrompt(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -334,7 +334,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // Ask Lambda trigger question
 
   if (!parameters || !parameters.triggerFunction || parameters.triggerFunction === 'NONE') {
-    if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your S3 Bucket?', false)) {
+    if (await amplify.confirmPrompt('Do you want to add a Lambda Trigger for your S3 Bucket?', false)) {
       try {
         answers.triggerFunction = await addTrigger(context, parameters.resourceName, undefined, parameters.adminTriggerFunction, options);
       } catch (e) {
@@ -740,7 +740,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
 
     await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
     context.print.success(`Successfully added resource ${functionName} locally`);
-    if (await context.amplify.confirmPrompt.run(`Do you want to edit the local ${functionName} lambda function now?`)) {
+    if (await context.amplify.confirmPrompt(`Do you want to edit the local ${functionName} lambda function now?`)) {
       await context.amplify.openEditor(context, `${targetDir}/function/${functionName}/src/index.js`);
     }
   }
