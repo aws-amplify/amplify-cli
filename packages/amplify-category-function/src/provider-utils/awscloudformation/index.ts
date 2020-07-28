@@ -344,6 +344,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       if (layerMeta === null) {
         throw `Lambda layer ${resourceName} is missing from amplify-meta.json`;
       }
+      layerEnvParams = {};
       // TODO comment what is happening
       layerEnvParams.layerVersionMap = {
         '1': {
@@ -355,7 +356,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
         },
       };
       layerEnvParams.layerName = resourceName;
-
+      layerEnvParams.runtimes = layerMeta.runtimes;
       providerContext = {
         provider: layerMeta.providerPlugin,
         service,
