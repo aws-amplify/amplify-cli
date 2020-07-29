@@ -127,7 +127,7 @@ module.exports = {
           const concatGraphQLSchemaDoc = mergeTypes([{}, rdsGraphQLSchemaDoc], { all: true });
           fs.writeFileSync(rdsSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
         } else {
-          throw new Error(`Could not find a schema at ${graphqlSchemaFilePath} and schema dir at ${schemaDirectoryPath}`);
+          throw new Error(`Could not find a schema in either ${graphqlSchemaFilePath} or schema directory at ${schemaDirectoryPath}`);
         }
 
         const resolversDir = `${projectBackendDirPath}/${category}/${resourceName}/resolvers`;
