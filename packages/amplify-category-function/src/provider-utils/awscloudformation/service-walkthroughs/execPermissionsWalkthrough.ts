@@ -225,14 +225,7 @@ export const askExecRolePermissionsQuestions = async (
       envVars.add(envName);
     });
 
-    let resourceExists = false;
-    dependsOn.forEach(amplifyResource => {
-      if (amplifyResource.resourceName === resourceName) {
-        resourceExists = true;
-      }
-    });
-
-    if (!resourceExists) {
+    if (!dependsOn.find(dep => dep.resourceName === resourceName)) {
       dependsOn.push({
         category: resource.category,
         resourceName: resource.resourceName,
