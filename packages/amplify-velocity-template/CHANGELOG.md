@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.1.10...amplify-velocity-template@1.3.0-beta.0) (2020-07-29)
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.1.10...amplify-velocity-template@1.2.0) (2020-07-23)
 
 
