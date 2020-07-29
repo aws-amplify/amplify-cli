@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
-import { validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
+import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 
 const category = 'api';
@@ -406,6 +406,7 @@ async function askReadWrite(userType, context, privacy) {
 
 async function askPaths(context, answers, currentPath) {
   // const existingLambdaArns = true;
+
   const existingFunctions = functionsExist(context);
 
   const choices = [
@@ -438,33 +439,55 @@ async function askPaths(context, answers, currentPath) {
     defaultFunctionType = currentPath.lambdaArn ? 'arn' : 'projectFunction';
   }
 
-  const questions = [
-    {
-      name: 'name',
-      type: 'input',
-      message: 'Provide a path (e.g., /book/{isbn}):',
-      default: currentPath ? currentPath.name : '/items',
-      validate: value => validatePathName(value, answers.paths),
-    },
-    {
+  const paths = [...answers.paths];
+
+  let addAnotherPath;
+  do {
+    let pathName;
+    let isPathValid;
+    do {
+      const pathAnswer = await inquirer.prompt({
+        name: 'name',
+        type: 'input',
+        message: 'Provide a path (e.g., /book/{isbn}):',
+        default: currentPath ? currentPath.name : '/items',
+        validate: value => validatePathName(value),
+      });
+      pathName = pathAnswer.name;
+
+      const overlapCheckResult = checkForPathOverlap(pathName, paths);
+      if (overlapCheckResult === false) {
+        // The path provided by the user is valid, and doesn't overlap with any other endpoints that they've stood up with API Gateway.
+        isPathValid = true;
+      } else {
+        // The path provided by the user overlaps with another endpoint that they've stood up with API Gateway.
+        // Ask them if they're okay with this. If they are, then we'll consider their provided path to be valid.
+        const higherOrderPath = overlapCheckResult.higherOrderPath;
+        const lowerOrderPath = overlapCheckResult.lowerOrderPath;
+        isPathValid = (
+          await inquirer.prompt({
+            name: 'isOverlappingPathOK',
+            type: 'confirm',
+            message: `This path ${lowerOrderPath} is overlapping with ${higherOrderPath}. ${higherOrderPath} is going to catch all requests from ${lowerOrderPath}. Are you sure you want to continue?`,
+            default: false,
+          })
+        ).isOverlappingPathOK;
+      }
+    } while (!isPathValid);
+
+    const lambdaAnswer = await inquirer.prompt({
       name: 'functionType',
       type: 'list',
       message: 'Choose a Lambda source',
       choices,
       default: defaultFunctionType,
-    },
-  ];
+    });
 
-  let addAnotherPath;
-  const paths = [...answers.paths];
-
-  do {
-    const answer = await inquirer.prompt(questions);
     // TODO: add path validation like awsmobile-cli does
-    let path = { name: answer.name };
+    let path = { name: pathName };
     let lambda;
     do {
-      lambda = await askLambdaSource(context, answer.functionType, answer.name, currentPath);
+      lambda = await askLambdaSource(context, lambdaAnswer.functionType, path.name, currentPath);
     } while (!lambda);
     const privacy = await askPrivacy(context, answers, currentPath);
     path = { ...path, ...lambda, privacy };
