@@ -64,8 +64,7 @@ export async function migrate(context) {
 }
 
 export async function getPermissionPolicies(context, resourceOpsMapping) {
-  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+  const amplifyMeta = context.amplify.getProjectMeta();
   const permissionPolicies = [];
   const resourceAttributes = [];
 

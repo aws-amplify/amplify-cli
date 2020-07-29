@@ -467,6 +467,47 @@ describe('nodejs', () => {
       expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
     });
 
+    it('function dependencies should be preserved when not editing permissions during `amplify update function`', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addApiWithSchema(projRoot, 'two-model-schema.graphql');
+
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      const ddbName = `ddbTable${random}`;
+
+      await addSimpleDDB(projRoot, { name: ddbName });
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['api', 'storage'],
+            resources: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            resourceChoices: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            operations: ['read'],
+          },
+        },
+        'nodejs',
+      );
+
+      const configPath = path.join(projRoot, 'amplify', 'backend', 'backend-config.json');
+      const metaPath = path.join(projRoot, 'amplify', 'backend', 'amplify-meta.json');
+      const functionConfig = readJsonFile(configPath).function[fnName];
+      const functionMeta = readJsonFile(metaPath).function[fnName];
+      delete functionMeta.lastPushTimeStamp;
+
+      // Don't update anything, sends 'n' to the question:
+      // Do you want to update the Lambda function permissions to access...?
+      await updateFunction(projRoot, {}, 'nodejs');
+      const updatedFunctionConfig = readJsonFile(configPath).function[fnName];
+      const updatedFunctionMeta = readJsonFile(metaPath).function[fnName];
+      delete updatedFunctionMeta.lastPushTimeStamp;
+      expect(functionConfig).toStrictEqual(updatedFunctionConfig);
+      expect(functionMeta).toStrictEqual(updatedFunctionMeta);
+    });
+
     it('should add api key from api to env vars', async () => {
       await initJSProjectWithProfile(projRoot, {});
       const random = Math.floor(Math.random() * 10000);
