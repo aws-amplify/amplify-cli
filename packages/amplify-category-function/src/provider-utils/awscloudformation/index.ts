@@ -334,7 +334,6 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
     return envParams;
   } else if (service === ServiceName.LambdaLayer) {
     const { envName } = context.amplify.getEnvInfo();
-    context.print.warning('A Lambda layer has appeared...');
     const layerParamsPath = path.join('amplify', 'backend', categoryName, resourceName, parametersFileName);
     let layerEnvParams = _.get(context.amplify.readJsonFile(layerParamsPath), envName, null);
     let providerContext: ProviderContext;
@@ -347,12 +346,8 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       layerEnvParams = {};
       // TODO comment what is happening
       layerEnvParams.layerVersionMap = {
-        '1': {
-          permissions: [
-            {
-              type: 'private',
-            },
-          ],
+        1: {
+          permissions: [{ type: 'private' }],
         },
       };
       layerEnvParams.layerName = resourceName;
