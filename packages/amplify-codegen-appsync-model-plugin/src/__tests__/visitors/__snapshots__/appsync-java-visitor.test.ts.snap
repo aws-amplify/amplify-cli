@@ -1019,7 +1019,7 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the privateType type in your schema. */
 @SuppressWarnings(\\"all\\")
 @ModelConfig(pluralName = \\"privateTypes\\", authRules = {
-  @AuthRule(allow = AuthStrategy.PRIVATE)
+  @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
 })
 public final class privateType implements Model {
   public static final QueryField ID = field(\\"id\\");
@@ -1218,7 +1218,7 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the privateType type in your schema. */
 @SuppressWarnings(\\"all\\")
 @ModelConfig(pluralName = \\"privateTypes\\", authRules = {
-  @AuthRule(allow = AuthStrategy.PRIVATE)
+  @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
 })
 public final class privateType implements Model {
   public static final QueryField ID = field(\\"id\\");
@@ -1419,7 +1419,7 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the publicType type in your schema. */
 @SuppressWarnings(\\"all\\")
 @ModelConfig(pluralName = \\"publicTypes\\", authRules = {
-  @AuthRule(allow = AuthStrategy.PUBLIC)
+  @AuthRule(allow = AuthStrategy.PUBLIC, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
 })
 public final class publicType implements Model {
   public static final QueryField ID = field(\\"id\\");

@@ -774,6 +774,12 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateAuthRules(authDirectives: AuthDirective[]): string {
+    const operationMapping = {
+      create: 'ModelOperation.CREATE',
+      read: 'ModelOperation.READ',
+      update: 'ModelOperation.UPDATE',
+      delete: 'ModelOperation.DELETE',
+    };
     const rules: string[] = [];
     authDirectives.forEach(directive => {
       directive.arguments?.rules.forEach(rule => {
@@ -781,12 +787,8 @@ export class AppSyncModelJavaVisitor<
         switch (rule.allow) {
           case AuthStrategy.owner:
             authRule.push('allow = AuthStrategy.OWNER');
-            if (rule.ownerField) {
-              authRule.push(`ownerField = "${rule.ownerField}"`);
-            }
-            if (rule.identityClaim) {
-              authRule.push(`identityClaim = "${rule.identityClaim}"`);
-            }
+            authRule.push(`ownerField = "${rule.ownerField}"`);
+            authRule.push(`identityClaim = "${rule.identityClaim}"`);
             break;
           case AuthStrategy.private:
             authRule.push('allow = AuthStrategy.PRIVATE');
@@ -796,13 +798,10 @@ export class AppSyncModelJavaVisitor<
             break;
           case AuthStrategy.groups:
             authRule.push('allow = AuthStrategy.GROUPS');
-            if (rule.groupClaim) {
-              authRule.push(`groupClaim = "${rule.groupClaim}"`);
-            }
+            authRule.push(`groupClaim = "${rule.groupClaim}"`);
             if (rule.groups) {
               authRule.push(`groups = { ${rule.groups?.map(group => `"${group}"`).join(', ')} }`);
-            }
-            if (rule.groupField) {
+            } else {
               authRule.push(`groupsField = "${rule.groupField}"`);
             }
             break;
@@ -810,9 +809,7 @@ export class AppSyncModelJavaVisitor<
             printWarning(`Model has auth with authStrategy ${rule.allow} of which is not yet supported`);
             return;
         }
-        if (rule.operations) {
-          authRule.push(`operations = { ${rule.operations?.map(op => `ModelOperation.${op.toUpperCase()}`).join(', ')} }`);
-        }
+        authRule.push(`operations = { ${rule.operations?.map(op => operationMapping[op]).join(', ')} }`);
         rules.push(`@AuthRule(${authRule.join(', ')})`);
       });
     });
