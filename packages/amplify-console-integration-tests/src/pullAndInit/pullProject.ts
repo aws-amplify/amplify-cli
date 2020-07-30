@@ -47,8 +47,9 @@ export function authConfigPull(projectRootDirPath: string, params: { appId: stri
     if (params[key]) pullCommand.push(...[`--${key}`, JSON.stringify(params[key])]);
   });
   const s = { ...defaultSettings, ...settings };
-  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders();
-  return new Promise((resolve, reject) => {
+  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET,
+  OIDC_APP_ID, OIDC_APP_SECRET } = getSocialProviders();
+    return new Promise((resolve, reject) => {
     spawn(util.getCLIPath(), pullCommand, { cwd: projectRootDirPath, stripColors: true })
       .wait('Do you want to use an AWS profile?')
       .sendLine('y')
@@ -83,6 +84,10 @@ export function authConfigPull(projectRootDirPath: string, params: { appId: stri
       .wait('Enter your Amazon App Secret for your OAuth flow:')
       .sendLine(AMAZON_APP_SECRET)
       .wait('Successfully pulled backend environment dev from the cloud.')
+      .wait('Enter your OpenID Connect App ID for your OAuth flow:')
+      .sendLine(OIDC_APP_ID)
+      .wait('Enter your OpenID Connect App Secret for your OAuth flow:')
+      .sendLine(OIDC_APP_SECRET)
       .run((err: Error) => {
         if (!err) {
           resolve();

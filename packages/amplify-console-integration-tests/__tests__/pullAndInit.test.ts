@@ -198,6 +198,8 @@ describe('amplify app console tests', () => {
       GOOGLE_APP_SECRET,
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
+      OIDC_APP_ID,	
+      OIDC_APP_SECRET
     } = getSocialProviders();
     await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
     await addAuthWithDefaultSocial(projRoot, {});
@@ -223,6 +225,8 @@ describe('amplify app console tests', () => {
         googleAppSecretUserPool: GOOGLE_APP_SECRET,
         loginwithamazonAppIdUserPool: AMAZON_APP_ID,
         loginwithamazonAppSecretUserPool: AMAZON_APP_SECRET,
+        oidcAppIdUserPool: OIDC_APP_ID,	
+        oidcAppSecretUserPool: OIDC_APP_SECRET,
       },
     });
 
