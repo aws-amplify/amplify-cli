@@ -1,6 +1,6 @@
 {
   "name": "amplify-java-function-template-provider",
-  "version": "1.2.0",
+  "version": "1.4.0",
   "description": "JAVA templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "amplify-function-plugin-interface": "1.4.0",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.19"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0"

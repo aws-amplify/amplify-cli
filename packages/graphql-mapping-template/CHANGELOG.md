@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.15.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.5...graphql-mapping-template@4.15.0) (2020-07-29)
+
+
+### Features
+
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([c2e09d7](https://github.com/aws-amplify/amplify-cli/commit/c2e09d73fd1bb461eeace8f4a7addd70a63047ad))
+
+
+
+
+
+# [4.14.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.5...graphql-mapping-template@4.14.0) (2020-07-23)
+
+
+### Features
+
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([b729266](https://github.com/aws-amplify/amplify-cli/commit/b729266b9bb519738ef88125784d72ac428f47e1))
+
+
+
+
+
+## [4.13.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.4...graphql-mapping-template@4.13.5) (2020-07-18)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
 ## [4.13.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.3...graphql-mapping-template@4.13.4) (2020-05-08)
 
 

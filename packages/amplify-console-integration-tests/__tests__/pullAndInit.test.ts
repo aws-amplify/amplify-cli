@@ -194,8 +194,6 @@ describe('amplify app console tests', () => {
     const {
       FACEBOOK_APP_ID,
       FACEBOOK_APP_SECRET,
-      OIDC_APP_ID,
-      OIDC_APP_SECRET,
       GOOGLE_APP_ID,
       GOOGLE_APP_SECRET,
       AMAZON_APP_ID,
@@ -225,8 +223,6 @@ describe('amplify app console tests', () => {
         googleAppSecretUserPool: GOOGLE_APP_SECRET,
         loginwithamazonAppIdUserPool: AMAZON_APP_ID,
         loginwithamazonAppSecretUserPool: AMAZON_APP_SECRET,
-        oidcAppIdUserPool: OIDC_APP_ID,
-        oidcAppSecretUserPool: OIDC_APP_SECRET,
       },
     });
 

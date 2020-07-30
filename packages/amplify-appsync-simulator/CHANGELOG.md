@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.21.1...amplify-appsync-simulator@1.23.0) (2020-07-29)
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+* **amplify-appsync-simulator:** implement BatchInvoke ([#4421](https://github.com/aws-amplify/amplify-cli/issues/4421)) ([a330274](https://github.com/aws-amplify/amplify-cli/commit/a330274f1595f438ca7d234e2c964a633b1608b7)), closes [#4404](https://github.com/aws-amplify/amplify-cli/issues/4404)
+
+
+
+
+
+# [1.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.21.1...amplify-appsync-simulator@1.22.0) (2020-07-23)
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([4639450](https://github.com/aws-amplify/amplify-cli/commit/463945029cfe861f74986d9a8b9af6b827d2063d))
+
+
+
+
+
+## [1.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.21.0...amplify-appsync-simulator@1.21.1) (2020-07-18)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
 # [1.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.3...amplify-appsync-simulator@1.21.0) (2020-07-07)
 
 

@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.19.3...amplify-e2e-tests@2.21.0) (2020-07-29)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Stack delete condition ([#4465](https://github.com/aws-amplify/amplify-cli/issues/4465)) ([018bbab](https://github.com/aws-amplify/amplify-cli/commit/018bbabab02389f28b9c8e2ea83faacce47c5eb4))
+* [#4950](https://github.com/aws-amplify/amplify-cli/issues/4950) amplify cli fails with checked in local settings ([#4959](https://github.com/aws-amplify/amplify-cli/issues/4959)) ([ba0529a](https://github.com/aws-amplify/amplify-cli/commit/ba0529ac358b6f6028c6dbc4235def312f4625be))
+* /opt folder should be packaged at the root of the zipped dir ([#4835](https://github.com/aws-amplify/amplify-cli/issues/4835)) ([ec8199c](https://github.com/aws-amplify/amplify-cli/commit/ec8199c5ae8d4eda504d5bad2b30567a5e2b4810))
+* function update no longer removes dependsOn array implicitly ([#4938](https://github.com/aws-amplify/amplify-cli/issues/4938)) ([200bbcb](https://github.com/aws-amplify/amplify-cli/commit/200bbcbda4439a144dc299355ea51c5ffd124594))
+* populate API_KEY env var when present ([#4923](https://github.com/aws-amplify/amplify-cli/issues/4923)) ([81231f9](https://github.com/aws-amplify/amplify-cli/commit/81231f98305dd9e37bb64eb30a9c7307bb471ad9))
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([c2e09d7](https://github.com/aws-amplify/amplify-cli/commit/c2e09d73fd1bb461eeace8f4a7addd70a63047ad))
+
+
+
+
+
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.19.3...amplify-e2e-tests@2.20.0) (2020-07-23)
+
+
+### Bug Fixes
+
+* /opt folder should be packaged at the root of the zipped dir ([#4835](https://github.com/aws-amplify/amplify-cli/issues/4835)) ([f4abd69](https://github.com/aws-amplify/amplify-cli/commit/f4abd6918826bf565f157641593fb1d751877713))
+* **amplify-provider-awscloudformation:** Stack delete condition ([#4465](https://github.com/aws-amplify/amplify-cli/issues/4465)) ([aa04e88](https://github.com/aws-amplify/amplify-cli/commit/aa04e88d6efeb826e9820230e1a19d5db5024bad))
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([4639450](https://github.com/aws-amplify/amplify-cli/commit/463945029cfe861f74986d9a8b9af6b827d2063d))
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([b729266](https://github.com/aws-amplify/amplify-cli/commit/b729266b9bb519738ef88125784d72ac428f47e1))
+
+
+
+
+
+## [2.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.19.2...amplify-e2e-tests@2.19.3) (2020-07-18)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix bug for no credential file ([#4310](https://github.com/aws-amplify/amplify-cli/issues/4310)) ([183e201](https://github.com/aws-amplify/amplify-cli/commit/183e20133eb938b596039ea63bd08e1c9b4c84e4)), closes [#4284](https://github.com/aws-amplify/amplify-cli/issues/4284)
+
+
+
+
+
 ## [2.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.19.1...amplify-e2e-tests@2.19.2) (2020-07-15)
 
 **Note:** Version bump only for package amplify-e2e-tests

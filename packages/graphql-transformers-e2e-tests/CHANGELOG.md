@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.6...graphql-transformers-e2e-tests@6.18.8) (2020-07-29)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.18.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.6...graphql-transformers-e2e-tests@6.18.7) (2020-07-23)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.18.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.5...graphql-transformers-e2e-tests@6.18.6) (2020-07-18)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
 ## [6.18.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.4...graphql-transformers-e2e-tests@6.18.5) (2020-07-15)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

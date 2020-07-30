@@ -2,10 +2,10 @@ import { nspawn as spawn, KEY_DOWN_ARROW } from '../../src';
 import * as fs from 'fs-extra';
 import { getCLIPath, updateSchema } from '../../src';
 import { selectRuntime, selectTemplate } from './lambda-function';
-
 import { singleSelect, multiSelect } from '../utils/selectors';
+import _ from 'lodash';
 
-function getSchemaPath(schemaName: string): string {
+export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
 }
 
@@ -23,13 +23,22 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
   });
 }
 
-export function addApiWithoutSchema(cwd: string) {
+interface AddApiOptions {
+  apiName: string;
+}
+
+const defaultOptions: AddApiOptions = {
+  apiName: '\r',
+};
+
+export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = {}) {
+  const options = _.assign(defaultOptions, opts);
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendCarriageReturn()
+      .sendLine(opts.apiName)
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
@@ -40,9 +49,7 @@ export function addApiWithoutSchema(cwd: string) {
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
       .sendLine('n')
-      .wait('Do you want a guided schema creation')
-      .sendLine('y')
-      .wait('What best describes your project')
+      .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
@@ -59,14 +66,15 @@ export function addApiWithoutSchema(cwd: string) {
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string) {
+export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions> = {}) {
+  const options = _.assign(defaultOptions, opts);
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendCarriageReturn()
+      .sendLine(options.apiName)
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
@@ -372,9 +380,7 @@ export function addApi(projectDir: string, settings?: any) {
     chain
       .wait('Do you have an annotated GraphQL schema?')
       .sendLine('n')
-      .wait('Do you want a guided schema creation')
-      .sendLine('y')
-      .wait('What best describes your project')
+      .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
@@ -464,9 +470,7 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
       .sendLine('n')
-      .wait('Do you want a guided schema creation')
-      .sendLine('y')
-      .wait('What best describes your project')
+      .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')

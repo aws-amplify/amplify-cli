@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.0...amplify-nodejs-function-runtime-provider@1.1.2) (2020-07-29)
+
+
+### Bug Fixes
+
+* new json and snapshot ([#4947](https://github.com/aws-amplify/amplify-cli/issues/4947)) ([336858b](https://github.com/aws-amplify/amplify-cli/commit/336858bca104a2f63353e2db4e2d56b19c19a492))
+* support large payload in Node.js functions ([#4906](https://github.com/aws-amplify/amplify-cli/issues/4906)) ([3733a16](https://github.com/aws-amplify/amplify-cli/commit/3733a161ea09472fe52d5fc8a6515a3e4e726338))
+* **amplify-nodejs-function-runtime-provider:** restore console.log ([#4941](https://github.com/aws-amplify/amplify-cli/issues/4941)) ([bc1aa0b](https://github.com/aws-amplify/amplify-cli/commit/bc1aa0b21df3c969f1ddc0f3c7842ae1337fbdba))
+
+
+
+
+
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.0...amplify-nodejs-function-runtime-provider@1.1.1) (2020-07-23)
+
+
+### Bug Fixes
+
+* support large payload in Node.js functions ([#4906](https://github.com/aws-amplify/amplify-cli/issues/4906)) ([2945996](https://github.com/aws-amplify/amplify-cli/commit/2945996eae87462bfd09452e1966604015397a2f))
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.0.6...amplify-nodejs-function-runtime-provider@1.1.0) (2020-07-07)
 
 

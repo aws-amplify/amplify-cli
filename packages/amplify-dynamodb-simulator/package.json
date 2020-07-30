@@ -1,6 +1,6 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "1.14.0",
+  "version": "1.14.2",
   "description": "DynamoDB emulator nodejs wrapper",
   "repository": {
     "type": "git",
@@ -17,8 +17,7 @@
   ],
   "scripts": {
     "build": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
-    "test": "jest",
-    "test-ci": "jest"
+    "test": "jest"
   },
   "dependencies": {
     "aws-sdk": "^2.608.0",

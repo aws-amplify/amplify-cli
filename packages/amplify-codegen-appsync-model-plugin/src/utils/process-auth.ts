@@ -81,7 +81,7 @@ export function processAuthDirective(directives: CodeGenDirectives): AuthDirecti
             operations,
           };
         }
-        return rule;
+        return { ...rule, operations };
       });
 
     return {

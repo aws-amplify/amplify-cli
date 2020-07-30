@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-docs-generator",
-  "version": "2.1.13",
+  "version": "2.1.15",
   "description": "amplify graphql docs generator plugin",
   "repository": {
     "type": "git",
@@ -26,7 +26,6 @@
   },
   "scripts": {
     "test": "jest",
-    "test-ci": "jest --ci -i",
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",

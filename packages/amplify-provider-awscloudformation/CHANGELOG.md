@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.5...amplify-provider-awscloudformation@4.24.0) (2020-07-29)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Stack delete condition ([#4465](https://github.com/aws-amplify/amplify-cli/issues/4465)) ([018bbab](https://github.com/aws-amplify/amplify-cli/commit/018bbabab02389f28b9c8e2ea83faacce47c5eb4))
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+
+
+
+
+
+# [4.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.5...amplify-provider-awscloudformation@4.23.0) (2020-07-23)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Stack delete condition ([#4465](https://github.com/aws-amplify/amplify-cli/issues/4465)) ([aa04e88](https://github.com/aws-amplify/amplify-cli/commit/aa04e88d6efeb826e9820230e1a19d5db5024bad))
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([4639450](https://github.com/aws-amplify/amplify-cli/commit/463945029cfe861f74986d9a8b9af6b827d2063d))
+
+
+
+
+
+## [4.22.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.4...amplify-provider-awscloudformation@4.22.5) (2020-07-18)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix bug for no credential file ([#4310](https://github.com/aws-amplify/amplify-cli/issues/4310)) ([183e201](https://github.com/aws-amplify/amplify-cli/commit/183e20133eb938b596039ea63bd08e1c9b4c84e4)), closes [#4284](https://github.com/aws-amplify/amplify-cli/issues/4284)
+
+
+
+
+
 ## [4.22.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.3...amplify-provider-awscloudformation@4.22.4) (2020-07-15)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

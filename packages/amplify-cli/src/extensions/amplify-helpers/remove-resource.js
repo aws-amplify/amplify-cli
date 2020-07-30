@@ -72,18 +72,21 @@ async function removeResource(context, category, resourceName, questionOptions =
 
   const resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
 
-  return context.amplify.confirmPrompt
-    .run('Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.')
-    .then(async confirm => {
-      if (confirm) {
-        return deleteResourceFiles(context, category, resourceName, resourceDir);
-      }
-    })
-    .catch(err => {
-      context.print.info(err.stack);
-      context.print.error('An error occurred when removing the resources from the local directory');
-      context.usageData.emitError(err);
-    });
+  const confirm =
+    (context.input.options && context.input.options.yes) ||
+    (await context.amplify.confirmPrompt.run(
+      'Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.',
+    ));
+
+  if (!confirm) return;
+
+  try {
+    return deleteResourceFiles(context, category, resourceName, resourceDir);
+  } catch (err) {
+    context.print.info(err.stack);
+    context.print.error('An error occurred when removing the resources from the local directory');
+    context.usageData.emitError(err);
+  }
 }
 
 const deleteResourceFiles = async (context, category, resourceName, resourceDir, force) => {

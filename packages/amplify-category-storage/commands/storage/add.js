@@ -26,6 +26,9 @@ module.exports = {
         const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally`);
         print.info('');
+        print.warning(
+          'If a user is part of a user pool group, run "amplify update storage" to enable IAM group policies for CRUD operations',
+        );
         print.success('Some next steps:');
         print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
         print.info(

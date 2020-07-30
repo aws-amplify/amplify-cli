@@ -104,10 +104,8 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any) {
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
       .sendLine('n')
-      .wait('Do you want a guided schema creation?')
-      .send('y')
       .sendCarriageReturn()
-      .wait('What best describes your project:')
+      .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
@@ -421,11 +419,6 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any) {
       GOOGLE_APP_SECRET,
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
-      OIDC_APP_ID,
-      OIDC_APP_SECRET,
-      OIDC_APP_ISSUER,
-      OIDC_APP_SCOPES,
-      OIDC_APP_MAPPING
     }: any = getSocialProviders(true);
 
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })

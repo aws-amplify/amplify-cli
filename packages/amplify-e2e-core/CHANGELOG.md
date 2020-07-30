@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.2.3...amplify-e2e-core@1.4.0) (2020-07-29)
+
+
+### Bug Fixes
+
+* [#4950](https://github.com/aws-amplify/amplify-cli/issues/4950) amplify cli fails with checked in local settings ([#4959](https://github.com/aws-amplify/amplify-cli/issues/4959)) ([ba0529a](https://github.com/aws-amplify/amplify-cli/commit/ba0529ac358b6f6028c6dbc4235def312f4625be))
+* populate API_KEY env var when present ([#4923](https://github.com/aws-amplify/amplify-cli/issues/4923)) ([81231f9](https://github.com/aws-amplify/amplify-cli/commit/81231f98305dd9e37bb64eb30a9c7307bb471ad9))
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([c2e09d7](https://github.com/aws-amplify/amplify-cli/commit/c2e09d73fd1bb461eeace8f4a7addd70a63047ad))
+
+
+
+
+
+# [1.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.2.3...amplify-e2e-core@1.3.0) (2020-07-23)
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([4639450](https://github.com/aws-amplify/amplify-cli/commit/463945029cfe861f74986d9a8b9af6b827d2063d))
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([b729266](https://github.com/aws-amplify/amplify-cli/commit/b729266b9bb519738ef88125784d72ac428f47e1))
+
+
+
+
+
+## [1.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.2.2...amplify-e2e-core@1.2.3) (2020-07-18)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix bug for no credential file ([#4310](https://github.com/aws-amplify/amplify-cli/issues/4310)) ([183e201](https://github.com/aws-amplify/amplify-cli/commit/183e20133eb938b596039ea63bd08e1c9b4c84e4)), closes [#4284](https://github.com/aws-amplify/amplify-cli/issues/4284)
+
+
+
+
+
 ## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.2.1...amplify-e2e-core@1.2.2) (2020-07-15)
 
 

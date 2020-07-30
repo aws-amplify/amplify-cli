@@ -64,8 +64,7 @@ export async function migrate(context) {
 }
 
 export async function getPermissionPolicies(context, resourceOpsMapping) {
-  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+  const amplifyMeta = context.amplify.getProjectMeta();
   const permissionPolicies = [];
   const resourceAttributes = [];
 
@@ -139,7 +138,14 @@ export async function getInvoker(context: any, params: InvokerParameters): Promi
 }
 
 export function isMockable(context: any, resourceName: string): IsMockableResponse {
-  const { service, dependsOn } = context.amplify.getProjectMeta()[category][resourceName];
+  const resourceValue = _.get(context.amplify.getProjectMeta(), [category, resourceName]);
+  if (!resourceValue) {
+    return {
+      isMockable: false,
+      reason: `Could not find the specified ${category}: ${resourceName}`,
+    };
+  }
+  const { service, dependsOn } = resourceValue;
   const hasLayer =
     service === ServiceName.LambdaFunction &&
     Array.isArray(dependsOn) &&

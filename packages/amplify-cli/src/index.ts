@@ -1,4 +1,6 @@
+import * as fs from 'fs-extra';
 import * as path from 'path';
+import { CLIContextEnvironmentProvider, FeatureFlags } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -51,7 +53,36 @@ export async function run() {
       }
     }
     rewireDeprecatedCommands(input);
+
     const context = constructContext(pluginPlatform, input);
+
+    // Initialize feature flags
+    const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
+      getEnvInfo: context.amplify.getEnvInfo,
+    });
+
+    const getProjectPath = (): string => {
+      try {
+        let { projectPath } = context.amplify.getEnvInfo();
+
+        // Check if the returned path exists, because it is possible that
+        // local-env-info.json is checked in and contains an invalid path
+        // https://github.com/aws-amplify/amplify-cli/issues/4950
+        if (projectPath && !fs.pathExistsSync(projectPath)) {
+          projectPath = '';
+        }
+
+        return projectPath;
+      } catch {
+        return '';
+      }
+    };
+
+    const projectPath = getProjectPath();
+
+    if (projectPath) {
+      await FeatureFlags.initialize(contextEnvironmentProvider, projectPath);
+    }
 
     await attachUsageData(context);
     errorHandler = boundErrorHandler.bind(context);

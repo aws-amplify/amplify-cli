@@ -242,9 +242,11 @@ module.exports = {
 
     // Ignore output directories of typescript project until move to tsc and fixing src locations
     '/packages/amplify-appsync-simulator/lib',
+    '/packages/amplify-category-api/lib',
     '/packages/amplify-category-function/lib',
     '/packages/amplify-*-function-*/lib',
     '/packages/amplify-cli/lib',
+    '/packages/amplify-cli-core/lib',
     '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
     '/packages/amplify-migration-tests/lib',
@@ -256,6 +258,8 @@ module.exports = {
     '/packages/graphql-mapping-template/lib',
     '/packages/graphql-*-transformer/lib',
     '/packages/graphql-transformer-*/lib',
+    '/packages/amplify-headless-interface/lib',
+    '/packages/amplify-util-headless-input/lib',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md'

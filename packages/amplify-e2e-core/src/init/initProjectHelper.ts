@@ -162,16 +162,15 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
       .resumeRecording()
       .wait('region');
 
-      singleSelect(chain, s.region, amplifyRegions);
+    singleSelect(chain, s.region, amplifyRegions);
 
-      chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -193,16 +192,15 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .resumeRecording()
       .wait('region');
 
-      singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
+    singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
 
-      chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -219,6 +217,22 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function amplifyStatus(cwd: string, expectedStatus: string) {
+  return new Promise((resolve, reject) => {
+    let regex = new RegExp(`.*${expectedStatus}*`);
+    spawn(getCLIPath(), ['status'], { cwd, stripColors: true })
+      .wait(regex)
+      .sendLine('\r')
       .run((err: Error) => {
         if (!err) {
           resolve();
