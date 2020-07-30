@@ -60,6 +60,7 @@ interface KeyArguments {
   name?: string;
   fields: string[];
   queryField?: string;
+  type?: 'LSI' | 'GSI';
 }
 
 export class KeyTransformer extends Transformer {
@@ -69,7 +70,11 @@ export class KeyTransformer extends Transformer {
     super(
       'KeyTransformer',
       gql`
-        directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
+        enum KeyType {
+          LSI
+          GSI
+        }
+        directive @key(name: String, fields: [String!]!, queryField: String, type: KeyType ) repeatable on OBJECT
       `
     );
   }
@@ -417,7 +422,7 @@ export class KeyTransformer extends Transformer {
    * @param ctx The transformer context
    */
   private validate = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
-    const directiveArgs = getDirectiveArguments(directive);
+    const directiveArgs: KeyArguments = getDirectiveArguments(directive);
     if (!directiveArgs.name) {
       // 1. Make sure there are no more directives without a name.
       for (const otherDirective of definition.directives.filter(d => d.name.value === 'key')) {
@@ -425,7 +430,7 @@ export class KeyTransformer extends Transformer {
         if (otherDirective !== directive && !otherArgs.name) {
           throw new InvalidDirectiveError(`You may only supply one primary @key on type '${definition.name.value}'.`);
         }
-        // 5. If there is no primary sort key, make sure there are no more LSIs.
+        // 6. If there is no primary sort key, make sure there are no more LSIs.
         const hasPrimarySortKey = directiveArgs.fields.length > 1;
         const primaryHashField = directiveArgs.fields[0];
         const otherHashField = otherArgs.fields[0];
@@ -442,9 +447,13 @@ export class KeyTransformer extends Transformer {
           );
         }
       }
-      // 4. Make sure that a 'queryField' is not included on a primary @key.
+      // 5. Make sure that a 'queryField' is not included on a primary @key.
       if (directiveArgs.queryField) {
         throw new InvalidDirectiveError(`You cannot pass 'queryField' to the primary @key on type '${definition.name.value}'.`);
+      }
+      // 4. Make sure type is not included on a primary @key.
+      if (directiveArgs.type) {
+        throw new InvalidDirectiveError(`You cannnot pass 'type' to the primary @key on type '${definition.name.value}'.`);
       }
     } else {
       // 2. Make sure there are no more directives with the same name.
@@ -537,7 +546,7 @@ export class KeyTransformer extends Transformer {
     const tableLogicalID = ModelResourceIDs.ModelTableResourceID(definition.name.value);
     const tableResource = ctx.getResource(tableLogicalID);
     const primaryKeyDirective = getPrimaryKey(definition);
-    const primaryPartitionKeyName = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields[0] : 'id';
+    const primaryPartitionKey = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields : ['id'];
     if (!tableResource) {
       throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
     } else {
@@ -548,8 +557,16 @@ export class KeyTransformer extends Transformer {
           ProjectionType: 'ALL',
         }),
       };
-      if (primaryPartitionKeyName === ks[0].AttributeName) {
+      if ((primaryPartitionKey[0] === ks[0].AttributeName && args.type !== 'GSI') || args.type === 'LSI') {
         // This is an LSI.
+        // Validate that the attribute being used is the same as the primary
+        if (primaryPartitionKey[0] !== ks[0].AttributeName) {
+          throw new InvalidDirectiveError(`The LSI key '${ks[0].AttributeName}' must use the same hash as the primary key.`);
+        }
+        // Validate that the primary key also has a range length if the KeySchema has a range key
+        if (primaryPartitionKey.length < 2 && ks.length > 1) {
+          throw new InvalidDirectiveError(`The LSI key has more fields defined than the primary key.`);
+        }
         // Add the new secondary index and update the table's attribute definitions.
         tableResource.Properties.LocalSecondaryIndexes = append(
           tableResource.Properties.LocalSecondaryIndexes,
