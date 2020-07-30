@@ -1181,6 +1181,19 @@
         ]
       },
       {
+        "key": "OIDCAdditionalQuestions",
+        "question": "Do you want to configure advanced settings such as setting scope and mapping ?",
+        "type": "confirm",
+        "default": true,
+        "andConditions": [
+          {
+            "key": "authProvidersUserPool",
+            "value": "OIDC",
+            "operator": "includes"
+          }
+        ]
+      },
+      {
         "key": "oidcAppOIDCAuthorizeScopes",
         "question": "Enter authorize scopes used by your application during authentication to authorize access to a user's details, like name and picture as a JSON array (ex. [\"openid\",\"test\"]): ",
         "type": "input",
@@ -1191,6 +1204,11 @@
             "key": "authProvidersUserPool",
             "value": "OIDC",
             "operator": "includes"
+          },
+          {
+            "key": "OIDCAdditionalQuestions",
+            "value": true,
+            "operator": "="
           }
         ],
         "validation": {
@@ -1201,7 +1219,7 @@
       },
       {
         "key": "oidcAppOIDCAttributesMapping",
-        "question": "Enter the expected attributes mapping between your OIDC provider and your Cognito user as a JSON (ex. {\"email\":\"EMAIL\",\"username\":\"sub\"}): ",
+        "question": "Enter the expected attributes mapping between your OIDC provider and your Cognito user as a JSON (ex. {\"email\":\"EMAIL\",\"username\":\"sub\"}) (optional): ",
         "type": "input",
         "required": false,
         "default": "{}",
@@ -1210,6 +1228,11 @@
             "key": "authProvidersUserPool",
             "value": "OIDC",
             "operator": "includes"
+          },
+          {
+            "key": "OIDCAdditionalQuestions",
+            "value": true,
+            "operator": "="
           }
         ],
         "validation": {

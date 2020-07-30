@@ -416,7 +416,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
-        const scopes = el === 'OIDC' ? JSON.parse(answers.oidcAppOIDCAuthorizeScopes) : [];
+        const scopes = el === 'OIDC' && answers.oidcAppOIDCAuthorizeScopes ? JSON.parse(answers.oidcAppOIDCAuthorizeScopes) : ["openid", "email"];
         const maps = el === 'OIDC' && answers.oidcAppOIDCAttributesMapping ? JSON.parse(answers.oidcAppOIDCAttributesMapping) : {};
         attributesForMapping.forEach(a => {
           const attributeKey = attributeProviderMap[a];
