@@ -75,12 +75,15 @@ export function generateLocalEnvInfoFile(context: $TSContext) {
   stateManager.setLocalEnvInfo(projectPath, context.exeInfo.localEnvInfo);
 }
 
-export function generateLocalTagsFile(context) {
-  const { projectPath } = context.exeInfo.localEnvInfo;
-  const tagsArr = context.exeInfo.tags;
-  const tagsFilePath = context.amplify.pathManager.getTagsConfigFilePath(projectPath);
-  const jsonString = JSON.stringify(tagsArr, null, 4);
-  fs.writeFileSync(tagsFilePath, jsonString, 'utf-8');
+function generateLocalTagsFile(context) {
+  // Won't modify on new env
+  if (context.exeInfo.isNewProject) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+    const tagsArr = context.exeInfo.tags;
+    const tagsFilePath = context.amplify.pathManager.getTagsConfigFilePath(projectPath);
+    const jsonString = JSON.stringify(tagsArr, null, 4);
+    fs.writeFileSync(tagsFilePath, jsonString, 'utf-8');
+  }
 }
 
 export function generateAmplifyMetaFile(context: $TSContext) {
@@ -145,7 +148,32 @@ function generateGitIgnoreFile(context: $TSContext) {
   }
 }
 
-function printWelcomeMessage(context: $TSContext) {
+function replaceTags(arr) {
+  let returnedArr = arr;
+
+  returnedArr.forEach(tagObj => {
+    if (
+      tagObj['Value'].includes('{project-env}') ||
+      tagObj['Value'].includes('{project-name') ||
+      tagObj['Value'].includes('{cli-version')
+    ) {
+      const replaceWith = {
+        '{project-name}': 'foobar',
+        '{project-env}': 'dev',
+        '{cli-version}': '4.2.0',
+      };
+
+      tagObj['Value'] = tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
+        return replaceWith[matched];
+      });
+    }
+  });
+
+  // If the value of a tag doesn't contain any of the variables we are looking for, it will return the original tags array value
+  return returnedArr;
+}
+
+function printWelcomeMessage(context) {
   context.print.info('');
   context.print.success('Your project has been successfully initialized and connected to the cloud!');
   context.print.info('');

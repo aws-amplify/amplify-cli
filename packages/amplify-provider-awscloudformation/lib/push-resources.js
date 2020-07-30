@@ -17,11 +17,8 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
-<<<<<<< HEAD
 const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
-=======
 const { isValidJSON, isWithinLimit, checkDuplicates } = require('../../amplify-cli/src/extensions/amplify-helpers/tags-validation');
->>>>>>> feat: complete functionality for tag support
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -296,6 +293,7 @@ function packageResources(context, resources) {
             };
           }
         }
+
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
       });
@@ -423,6 +421,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
   /* eslint-enable */
   const nestedStack = context.amplify.readJsonFile(`${__dirname}/rootStackTemplate.json`);
+
   const { amplifyMeta } = projectDetails;
   let authResourceName;
   let categories = Object.keys(amplifyMeta);
@@ -478,17 +477,12 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
         }
 
         if (resourceDetails.providerMetadata) {
-          // Getting the path to tags from the project details
-          // We can assume that the JSON file is already validated and ready to be parsed with no issues
-          const tagsJsonPath = projectDetails.tags;
-
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
           nestedStack.Resources[resourceKey] = {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
               TemplateURL: templateURL,
               Parameters: parameters,
-              Tags: JSON.parse(fs.readFileSync(tagsJsonPath, 'utf-8')),
             },
           };
         }

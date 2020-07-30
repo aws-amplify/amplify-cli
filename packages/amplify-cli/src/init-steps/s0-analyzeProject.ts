@@ -44,19 +44,19 @@ export async function analyzeProject(context) {
 
   context.exeInfo.metaData = {};
 
-  // Initializing our tags object with some basic project data
+  // Initializing our tags object with the basic variables the user can use inside of tag values
   context.exeInfo.tags = [
     {
-      key: 'user:Stack',
-      value: envName,
+      Key: 'user:Stack',
+      Value: '{project-env}',
     },
     {
-      key: 'user:Application',
-      value: projectName,
+      Key: 'user:Application',
+      Value: '{project-name}',
     },
     {
-      key: 'user:AmplifyCLIVersion',
-      value: context.pluginPlatform.plugins.core[0].packageVersion,
+      Key: 'user:AmplifyCLIVersion',
+      Value: '{cli-version}',
     },
   ];
 
