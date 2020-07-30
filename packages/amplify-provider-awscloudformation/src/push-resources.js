@@ -319,9 +319,13 @@ function packageResources(context, resources) {
         });
 
         if (cfnFiles.length !== 1) {
-          context.print.error('Only one CloudFormation template is allowed in the resource directory');
+          const errorMessage =
+            cfnFiles.length > 1
+              ? 'Only one CloudFormation template is allowed in the resource directory'
+              : 'CloudFormation template is missing in the resource directory';
+          context.print.error(errorMessage);
           context.print.error(resourceDir);
-          throw new Error('Only one CloudFormation template is allowed in the resource directory');
+          throw new Error(errorMessage);
         }
 
         const cfnFile = cfnFiles[0];
