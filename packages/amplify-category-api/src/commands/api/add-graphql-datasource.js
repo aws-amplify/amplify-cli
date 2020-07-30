@@ -113,15 +113,9 @@ module.exports = {
         const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
 
         if (schemaFileExists) {
-          const graphqlSchemaRaw = fs.readFileSync(graphqlSchemaFilePath).toString();
-          try {
-            const currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
-            const concatGraphQLSchemaDoc = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
-            fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
-          } catch (err) {
-            const relativePathToInput = path.relative(process.cwd(), graphqlSchemaRaw);
-            throw new Error(`Could not parse graphql schema \n${relativePathToInput}\n${err.message}`);
-          }
+          const currGraphQLSchemaDoc = readSchema(graphqlSchemaFilePath);
+          const concatGraphQLSchemaDoc = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
+          fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
         } else if (schemaDirectoryExists) {
           const rdsSchemaFilePath = path.join(apiDirPath, 'rds.graphql');
           const concatGraphQLSchemaDoc = mergeTypes([{}, rdsGraphQLSchemaDoc], { all: true });
@@ -173,6 +167,7 @@ module.exports = {
         context.usageData.emitError(err);
       });
   },
+  readSchema,
 };
 
 function datasourceSelectionPrompt(context, supportedDatasources) {
@@ -220,4 +215,16 @@ async function getAwsClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   return await provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
+}
+
+function readSchema(graphqlSchemaFilePath) {
+  const graphqlSchemaRaw = fs.readFileSync(graphqlSchemaFilePath).toString();
+  let currGraphQLSchemaDoc;
+  try {
+    currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
+  } catch (err) {
+    const relativePathToInput = path.relative(process.cwd(), graphqlSchemaRaw);
+    throw new Error(`Could not parse graphql schema \n${relativePathToInput}\n${err.message}`);
+  }
+  return currGraphQLSchemaDoc;
 }
