@@ -312,10 +312,10 @@ function packageResources(context, resources, projectDetails) {
 <<<<<<< HEAD
 =======
 
-        // Adding the tags to the stack resources info
+        //Adding the tags to the stack resources info
         // const tagsJson = projectDetails.tags;
         // context.print.error(tagsJson);
-        // context.print.error(cfnMeta.Tags);
+        // context.print.error(cfnMeta.Resources);
         //cfnMeta.Tags = tagsJson;
 
 >>>>>>> feat: initial version of e2e tests and tags
@@ -439,8 +439,6 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
       providerMetadata.s3TemplateURL = templateURL;
       providerMetadata.logicalId = category + resourceName;
 
-      // context.print.error(providerMetadata);
-
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'providerMetadata', providerMetadata);
     });
 }
@@ -449,6 +447,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
   /* eslint-enable */
   const nestedStack = context.amplify.readJsonFile(`${__dirname}/rootStackTemplate.json`);
+
   const { amplifyMeta } = projectDetails;
   let authResourceName;
   let categories = Object.keys(amplifyMeta);
@@ -504,17 +503,12 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
         }
 
         if (resourceDetails.providerMetadata) {
-          // Getting the tags json file from the project details
-          // We can assume that the JSON file is already validated and ready to be parsed with no issues
-          const tagsJson = projectDetails.tags;
-
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
           nestedStack.Resources[resourceKey] = {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
               TemplateURL: templateURL,
               Parameters: parameters,
-              Tags: tagsJson,
             },
           };
         }

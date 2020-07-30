@@ -44,19 +44,19 @@ async function run(context) {
 
   context.exeInfo.metaData = {};
 
-  // Initializing our tags object with some basic project data
+  // Initializing our tags object with the basic variables the user can use inside of tag values
   context.exeInfo.tags = [
     {
       Key: 'user:Stack',
-      Value: envName,
+      Value: '{project-env}',
     },
     {
       Key: 'user:Application',
-      Value: projectName,
+      Value: '{project-name}',
     },
     {
       Key: 'user:AmplifyCLIVersion',
-      Value: context.pluginPlatform.plugins.core[0].packageVersion,
+      Value: '{cli-version}',
     },
   ];
 

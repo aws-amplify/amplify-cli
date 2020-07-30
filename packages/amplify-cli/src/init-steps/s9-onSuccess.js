@@ -82,11 +82,14 @@ function generateLocalEnvInfoFile(context) {
 }
 
 function generateLocalTagsFile(context) {
-  const { projectPath } = context.exeInfo.localEnvInfo;
-  const tagsArr = context.exeInfo.tags;
-  const tagsFilePath = context.amplify.pathManager.getTagsConfigFilePath(projectPath);
-  const jsonString = JSON.stringify(tagsArr, null, 4);
-  fs.writeFileSync(tagsFilePath, jsonString, 'utf-8');
+  // Won't modify on new env
+  if (context.exeInfo.isNewProject) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+    const tagsArr = context.exeInfo.tags;
+    const tagsFilePath = context.amplify.pathManager.getTagsConfigFilePath(projectPath);
+    const jsonString = JSON.stringify(tagsArr, null, 4);
+    fs.writeFileSync(tagsFilePath, jsonString, 'utf-8');
+  }
 }
 
 function generateAmplifyMetaFile(context) {
@@ -148,6 +151,31 @@ function generateGitIgnoreFile(context) {
 
     gitManager.insertAmplifyIgnore(gitIgnoreFilePath);
   }
+}
+
+function replaceTags(arr) {
+  let returnedArr = arr;
+
+  returnedArr.forEach(tagObj => {
+    if (
+      tagObj['Value'].includes('{project-env}') ||
+      tagObj['Value'].includes('{project-name') ||
+      tagObj['Value'].includes('{cli-version')
+    ) {
+      const replaceWith = {
+        '{project-name}': 'foobar',
+        '{project-env}': 'dev',
+        '{cli-version}': '4.2.0',
+      };
+
+      tagObj['Value'] = tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
+        return replaceWith[matched];
+      });
+    }
+  });
+
+  // If the value of a tag doesn't contain any of the variables we are looking for, it will return the original tags array value
+  return returnedArr;
 }
 
 function printWelcomeMessage(context) {
