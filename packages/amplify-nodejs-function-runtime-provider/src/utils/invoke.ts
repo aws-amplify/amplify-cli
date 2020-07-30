@@ -20,11 +20,15 @@ export function invoke(options: InvokeOptions): Promise<any> {
           console.log(logs);
         }
         const lastLine = lines[lines.length - 1];
-        const result = JSON.parse(lastLine);
-        if (result.error) {
-          reject(result.error);
+        try {
+          const result = JSON.parse(lastLine);
+          if (result.error) {
+            reject(result.error);
+          }
+          resolve(result.result);
+        } catch {
+          resolve(lastLine)
         }
-        resolve(result.result);
       });
       lambdaFn.send(JSON.stringify(options));
     } catch (e) {
