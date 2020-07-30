@@ -78,4 +78,17 @@ describe('amplify add api', () => {
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
   });
+
+  it('init project, run invalid migration when trying to remove an lsi, and check for error', async () => {
+    const projectName = 'removinglsi';
+    const initialSchema = 'migrations_key/initial_schema.graphql';
+    const nextSchema1 = 'migrations/cant_remove_lsi.graphql';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await expect(
+      amplifyPushUpdate(projRoot, /Attempting to remove the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
+  });
 });

@@ -229,7 +229,7 @@ test('ModelConnectionTransformer should fail if partial sort key is passed in co
 
     type Test1
         @model
-        @key(name: "testIndex", fields: ["id", "friendID", "name"])
+        @key(name: "testIndex", fields: ["id", "friendID", "name"], type: GSI)
     {
         id: ID!
         friendID: ID!
@@ -256,7 +256,7 @@ test('ModelConnectionTransformer should accept connection without sort key', () 
 
     type Test1
         @model
-        @key(name: "testIndex", fields: ["id", "friendID", "name"])
+        @key(name: "testIndex", fields: ["id", "friendID", "name"], type: GSI)
     {
         id: ID!
         friendID: ID!
@@ -281,7 +281,7 @@ test('ModelConnectionTransformer should fail if sort key type passed in does not
 
     type Test1
         @model
-        @key(name: "testIndex", fields: ["id", "friendID"])
+        @key(name: "testIndex", fields: ["id", "friendID"], type: GSI)
     {
         id: ID!
         friendID: ID!
@@ -306,7 +306,7 @@ test('ModelConnectionTransformer should fail if partition key type passed in doe
 
     type Test1
         @model
-        @key(name: "testIndex", fields: ["id", "friendID"])
+        @key(name: "testIndex", fields: ["id", "friendID"], type: GSI)
     {
         id: ID!
         friendID: ID!

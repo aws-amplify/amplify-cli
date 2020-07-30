@@ -1,12 +1,13 @@
-import { amplifyPush, amplifyPushUpdate, deleteProject, initJSProjectWithProfile } from 'amplify-e2e-core';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import {
+  amplifyPush,
+  amplifyPushUpdate,
+  deleteProject,
+  initJSProjectWithProfile,
   addApiWithSchema,
   addApiWithSchemaAndConflictDetection,
   addRestApi,
-  updateApiSchema,
-  updateApiWithMultiAuth,
   updateAPIWithResolutionStrategy,
   apiUpdateToggleDataStore,
   addFunction,
@@ -18,7 +19,7 @@ import {
   getProjectMeta,
   getTransformConfig,
 } from 'amplify-e2e-core';
-import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
+import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
 
 describe('amplify add api (GraphQL)', () => {

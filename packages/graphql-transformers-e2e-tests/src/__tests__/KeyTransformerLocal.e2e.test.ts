@@ -1,4 +1,4 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, InvalidDirectiveError } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, Kind, InputObjectTypeDefinitionNode } from 'graphql';
@@ -33,6 +33,80 @@ test('Test that a primary @key with a single field changes the hash key.', () =>
   const getTestField = queryType.fields.find(f => f.name && f.name.value === 'getTest') as FieldDefinitionNode;
   expect(getTestField.arguments).toHaveLength(1);
   expectArguments(getTestField, ['email']);
+});
+
+test('KeyTransformer should generate a global secondary index.', () => {
+  const validSchema = `
+    type Post @model
+      @key(name:"byDateIndex" fields: ["id", "createdAt"], queryField: "byCreatedAt", type: GSI) {
+        id: ID!
+        name: String
+        createdAt: AWSDateTime!
+        updatedAt: AWSDateTime!
+      }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.stacks.Post.Resources.PostTable.Properties.GlobalSecondaryIndexes).toBeDefined();
+  const cfnGSI = out.stacks.Post.Resources.PostTable.Properties.GlobalSecondaryIndexes[0];
+  expect(cfnGSI.IndexName).toEqual('byDateIndex');
+  expect(cfnGSI.KeySchema).toBeDefined();
+  expect(cfnGSI.KeySchema).toEqual(
+    expect.arrayContaining([
+      { AttributeName: 'id', KeyType: 'HASH' },
+      { AttributeName: 'createdAt', KeyType: 'RANGE' },
+    ]),
+  );
+});
+
+test('Test that an lsi @key with a different keyschema than the primary will fail', () => {
+  expect.assertions(2);
+  const invalidSchema = `
+    type Post @model
+    @key(name: "badIndex", fields: ["id","createdAt"], queryField: "badIndexQuery", type: LSI) {
+      id: ID
+      name: String
+      createdAt: AWSDateTime!
+      updatedAt: AWSDateTime!
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  try {
+    transformer.transform(invalidSchema);
+  } catch (err) {
+    expect(err).toBeInstanceOf(InvalidDirectiveError);
+    expect(err).toHaveProperty('message', 'The LSI key has more fields defined than the primary key.');
+  }
+});
+
+test('Test that an lsi @key with different primary hash key will fail', () => {
+  expect.assertions(2);
+  const invalidSchema = `
+    type Post @model
+    @key(name: "badIndex", fields: ["name","createdAt"], queryField: "badIndexQuery", type: LSI) {
+      id: ID
+      name: String
+      createdAt: AWSDateTime!
+      updatedAt: AWSDateTime!
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+  try {
+    transformer.transform(invalidSchema);
+  } catch (err) {
+    expect(err).toBeInstanceOf(InvalidDirectiveError);
+    // The LSI key ${ks[0].AttributeName} must use the same hash as the primary key.
+    expect(err).toHaveProperty('message', `The LSI key 'name' must use the same hash as the primary key.`);
+  }
 });
 
 test('Test that a primary @key with 2 fields changes the hash and sort key.', () => {
@@ -200,7 +274,6 @@ test('Test that a secondary @key with 3 fields changes the hash and sort keys an
   });
 
   const out = transformer.transform(validSchema);
-  console.log(out.schema);
   let tableResource = out.stacks.Test.Resources.TestTable;
   expect(tableResource).toBeDefined();
   const hashKey = tableResource.Properties.KeySchema.find(o => o.KeyType === 'HASH');
