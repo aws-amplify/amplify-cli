@@ -1184,7 +1184,6 @@
         "key": "OIDCAdditionalQuestions",
         "question": "Do you want to configure advanced settings such as setting scope and mapping ?",
         "type": "confirm",
-        "default": true,
         "andConditions": [
           {
             "key": "authProvidersUserPool",

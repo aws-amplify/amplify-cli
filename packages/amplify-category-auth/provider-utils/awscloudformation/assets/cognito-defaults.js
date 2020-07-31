@@ -42,6 +42,7 @@ const userPoolDefaults = projectName => {
     userpoolClientReadAttributes: ['email'],
     userpoolClientLambdaRole: `${projectNameTruncated}_userpoolclient_lambda_role`,
     userpoolClientSetAttributes: false,
+    OIDCAdditionalQuestions: false
   };
 };
 

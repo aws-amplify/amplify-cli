@@ -199,7 +199,7 @@ describe('amplify app console tests', () => {
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
       OIDC_APP_ID,	
-      OIDC_APP_SECRET
+      OIDC_APP_SECRET,
     } = getSocialProviders();
     await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
     await addAuthWithDefaultSocial(projRoot, {});
