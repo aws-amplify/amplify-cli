@@ -63,7 +63,7 @@ jobs:
           command: yarn lint
       - run:
           name: Run tests
-          command: yarn test-ci
+          command: yarn test-ci --maxWorkers=3
       - run:
           name: Collect code coverage
           command: yarn coverage

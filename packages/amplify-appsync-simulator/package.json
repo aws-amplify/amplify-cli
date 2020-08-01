@@ -22,7 +22,7 @@
     "clean": "rimraf ./lib",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
-    "test": "jest"
+    "test": "node --expose-gc ../../node_modules/.bin/jest  --runInBand --logHeapUsage"
   },
   "dependencies": {
     "amplify-velocity-template": "1.3.0",

@@ -19,7 +19,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test-watch": "jest --watch",
-    "test": "jest"
+    "test": "node --expose-gc ../../node_modules/.bin/jest  --runInBand --logHeapUsage"
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^1.12.2",

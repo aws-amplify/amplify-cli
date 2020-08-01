@@ -15,7 +15,7 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest --coverage"
+    "test": "node --expose-gc ../../node_modules/.bin/jest  --runInBand --logHeapUsage  --coverage"
   },
   "dependencies": {
     "amplify-category-auth": "2.18.0",

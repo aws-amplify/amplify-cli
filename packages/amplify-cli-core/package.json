@@ -17,7 +17,7 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "node --expose-gc ../../node_modules/.bin/jest  --runInBand --logHeapUsage",
     "test-ci": "jest --ci -i",
     "build": "tsc",
     "watch": "tsc -w",

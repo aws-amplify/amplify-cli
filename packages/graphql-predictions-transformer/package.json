@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc && cd lambdaFunction && bestzip --force node ../lib/predictionsLambdaFunction.zip predictionsLambda.js",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "node --expose-gc ../../node_modules/.bin/jest  --runInBand --logHeapUsage",
     "clean": "rimraf ./lib"
   },
   "dependencies": {

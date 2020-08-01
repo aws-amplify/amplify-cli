@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "e2e": "jest --runInBand  --forceExit src/__e2e__/*.test.ts",
-    "test": "jest src/__tests__/**/*.test.ts",
+    "test": "node --expose-gc ../../node_modules/.bin/jest src/__tests__/**/*.test.ts --runInBand --logHeapUsage",
     "test-watch": "jest --watch",
     "build": "tsc",
     "build-tests": "tsc --build tsconfig.tests.json",

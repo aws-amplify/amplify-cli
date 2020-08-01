@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "node --expose-gc ../../node_modules/.bin/jest  --runInBand --logHeapUsage"
   },
   "keywords": [
     "amplify",

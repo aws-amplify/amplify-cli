@@ -23,7 +23,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "jest",
+    "test": "node --expose-gc ../../node_modules/.bin/jest  --runInBand --logHeapUsage",
     "postinstall": "node scripts/post-install.js",
     "build": "tsc",
     "watch": "tsc -w",

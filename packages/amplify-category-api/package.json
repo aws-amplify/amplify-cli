@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "node --expose-gc ../../node_modules/.bin/jest  --runInBand --logHeapUsage"
   },
   "dependencies": {
     "amplify-category-auth": "2.18.0",
