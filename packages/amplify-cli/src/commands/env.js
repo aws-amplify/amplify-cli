@@ -20,7 +20,9 @@ module.exports = {
       try {
         commandModule = require(path.normalize(path.join(__dirname, 'env', subcommand)));
       } catch (e) {
-        context.print.warning(`The Amplify CLI can NOT find command: env ${subcommand}`);
+        if (subCommands) {
+          context.print.warning(`The Amplify CLI can NOT find command:  env ${subCommands.slice(0, 3).join(' ')}`);
+        }
         displayHelp(context);
       }
 
