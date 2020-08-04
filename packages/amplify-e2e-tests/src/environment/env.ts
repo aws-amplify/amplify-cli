@@ -41,12 +41,12 @@ export function listEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     let numEnv = settings.numEnv || 1;
     let regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    let chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
       .wait('| Environments |')
       .wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
-      chain = chain.wait(regex);
+      chain.wait(regex);
     }
 
     chain.sendEof().run((err: Error) => {
