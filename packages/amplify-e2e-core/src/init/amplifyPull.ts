@@ -5,14 +5,14 @@ export function amplifyPull(cwd: string, settings: any) {
     const tableHeaderRegex = /\|\sCategory\s+\|\sResource\sname\s+\|\sOperation\s+\|\sProvider\splugin\s+\|/;
     const tableSeperator = /\|(\s-+\s\|){4}/;
 
-    let chain = spawn(getCLIPath(), ['pull'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['pull'], { cwd, stripColors: true })
       .wait('Pre-pull status')
       .wait('Current Environment')
       .wait(tableHeaderRegex)
       .wait(tableSeperator);
 
     if (settings.override) {
-      chain = chain
+      chain
         .wait('Local changes detected')
         .wait('Pulling changes from the cloud will override your local changes')
         .wait('Are you sure you would like to continue')
