@@ -20,7 +20,6 @@ export function amplifyPull(cwd: string, settings: any) {
     }
 
     chain
-      // .wait('Successfully pulled backend environment') // nexpect hates this line for some reason
       .wait('Post-pull status')
       .wait('Current Environment')
       .wait(tableHeaderRegex)
