@@ -343,8 +343,8 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       if (layerMeta === null) {
         throw `Lambda layer ${resourceName} is missing from amplify-meta.json`;
       }
-      layerEnvParams = {};
-      // TODO comment what is happening
+      layerEnvParams = { build: true };
+      // TODO prompt user to read values from other env in team-provider-info.json
       layerEnvParams.layerVersionMap = {
         1: {
           permissions: [{ type: 'private' }],
@@ -359,8 +359,6 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       };
       layerEnvParams.providerContext = providerContext;
     }
-
-    context.print.warning(layerEnvParams);
 
     updateLayerArtifacts(context, layerEnvParams);
   }

@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
-import { categoryName, layerParametersFileName } from '../utils/constants';
+import { categoryName, teamProviderInfoFileName } from '../utils/constants';
 import { category } from '../../../constants';
 import { hashLayerVersionContents } from './packageLayer';
 
@@ -83,23 +83,7 @@ class LayerState implements LayerMetadata {
   constructor(context, storedParams: StoredLayerParameters, layerName: string) {
     this.context = context;
     this.layerName = layerName;
-
-    // If storedParams is undefined, env has changed
-    this.storedParams =
-      storedParams !== undefined
-        ? storedParams
-        : ({
-            runtimes: _.get(context.amplify.getProjectMeta(), ['function', layerName, 'runtimes']),
-            layerVersionMap: {
-              '1': {
-                permissions: [
-                  {
-                    type: 'private',
-                  },
-                ],
-              },
-            },
-          } as StoredLayerParameters);
+    this.storedParams = storedParams;
     this.runtimes = this.storedParams.runtimes;
     Object.entries(this.storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
       this.versionMap.set(Number(versionNumber), new LayerVersionState(versionData));
@@ -256,15 +240,18 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 }
 
+const getStoredLayerState = (context: any, layerName: string) => {
+  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+  const { envName } = context.amplify.getEnvInfo();
+  if (!fs.existsSync(teamProviderInfoPath)) {
+    throw new Error('team-provider-info.json is missing');
+  }
+  const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
+  return _.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], undefined) as StoredLayerParameters;
+};
+
 export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
   return layerName => {
-    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-    const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
-    if (!fs.existsSync(resourceDirPath)) {
-      return undefined;
-    }
-    const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-    const obj = context.amplify.readJsonFile(parametersFilePath)[context.amplify.getEnvInfo().envName] as StoredLayerParameters;
-    return new LayerState(context, obj, layerName);
+    return new LayerState(context, getStoredLayerState(context, layerName), layerName);
   };
 };
