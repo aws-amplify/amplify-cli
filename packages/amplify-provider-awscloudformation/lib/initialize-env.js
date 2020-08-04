@@ -24,8 +24,8 @@ function run(context, providerMetadata) {
             fs.copySync(`${tempDir}/#current-cloud-backend`, backendDir);
           }
           fs.removeSync(tempDir);
-        })
-      )
+        }),
+      ),
     )
     .then(() => new Cloudformation(context))
     .then(cfnItem => cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName))
@@ -47,8 +47,7 @@ function run(context, providerMetadata) {
         });
       });
 
-      const jsonString = JSON.stringify(amplifyMeta, null, 4);
-      fs.writeFileSync(amplifyMetafilePath, jsonString, 'utf8');
+      context.amplify.writeObjectAsJson(amplifyMetafilePath, amplifyMeta, true);
     });
 }
 

@@ -1,7 +1,7 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import { provider, ServiceName, layerParametersFileName, parametersFileName, functionParametersFileName } from './constants';
+import { provider, ServiceName, parametersFileName, functionParametersFileName, teamProviderInfoFileName } from './constants';
 import { category as categoryName } from '../../../constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { LayerParameters, StoredLayerParameters } from './layerParams';
@@ -24,10 +24,10 @@ export function createFunctionResources(context: any, parameters: FunctionParame
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
 
-export const createLayerArtifacts = (context, parameters: LayerParameters): string => {
+export const createLayerArtifacts = (context, parameters: LayerParameters, latestVersion: number = 1): string => {
   const layerDirPath = ensureLayerFolders(context, parameters);
-  createLayerParametersFile(context, parameters, layerDirPath);
-  createParametersFile(context, {}, parameters.layerName, parametersFileName);
+  updateLayerTeamProviderInfo(context, parameters, layerDirPath);
+  createParametersFile(context, { layerVersion: latestVersion }, parameters.layerName, parametersFileName);
   createLayerCfnFile(context, parameters, layerDirPath);
   addLayerToAmplifyMeta(context, parameters);
   return layerDirPath;
@@ -37,19 +37,23 @@ export const createLayerArtifacts = (context, parameters: LayerParameters): stri
 const defaultOpts = {
   layerParams: true,
   cfnFile: true,
-  amplifyMeta: true,
 };
-export const updateLayerArtifacts = (context, parameters: LayerParameters, options: Partial<typeof defaultOpts> = {}): string => {
+export const updateLayerArtifacts = (
+  context,
+  parameters: LayerParameters,
+  latestVersion?: number,
+  options: Partial<typeof defaultOpts> = {},
+): string => {
   options = _.assign(defaultOpts, options);
   const layerDirPath = ensureLayerFolders(context, parameters);
   if (options.layerParams) {
-    createLayerParametersFile(context, parameters, layerDirPath);
+    updateLayerTeamProviderInfo(context, parameters, layerDirPath);
   }
   if (options.cfnFile) {
+    if (latestVersion !== undefined) {
+      createParametersFile(context, { layerVersion: latestVersion }, parameters.layerName, parametersFileName);
+    }
     updateLayerCfnFile(context, parameters, layerDirPath);
-  }
-  if (options.amplifyMeta) {
-    updateLayerInAmplifyMeta(context, parameters);
   }
   return layerDirPath;
 };
@@ -175,26 +179,22 @@ const addLayerToAmplifyMeta = (context, parameters: LayerParameters) =>
 
 const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
   const metaParams = layerParamsToAmplifyMetaParams(parameters);
-  // Info needed in amplify-meta.json for adding layers to Lambda functions
-  // TODO: differentiate between environments
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', metaParams.runtimes);
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'layerVersionMap', metaParams.layerVersionMap);
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', metaParams.build);
 };
 
-const createLayerParametersFile = (context, parameters: LayerParameters | StoredLayerParameters, layerDirPath: string) => {
+const updateLayerTeamProviderInfo = (context, parameters: LayerParameters, layerDirPath: string) => {
   fs.ensureDirSync(layerDirPath);
-  const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
-
-  // Preserve other env's data
-  let layerDataToWrite;
-  if (fs.existsSync(parametersFilePath)) {
-    layerDataToWrite = fs.readJsonSync(parametersFilePath);
-    layerDataToWrite[context.amplify.getEnvInfo().envName] = layerParamsToStoredParams(parameters);
-  } else {
-    layerDataToWrite = { [context.amplify.getEnvInfo().envName]: layerParamsToStoredParams(parameters) };
+  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+  const { envName } = context.amplify.getEnvInfo();
+  if (!fs.existsSync(teamProviderInfoPath)) {
+    throw new Error(`${teamProviderInfoFileName} is missing`);
   }
-  context.amplify.writeObjectAsJson(parametersFilePath, layerDataToWrite, true);
+
+  const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
+  _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, parameters.layerName], layerParamsToStoredParams(parameters));
+  context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
 };
 
 const layerParamsToAmplifyMetaParams = (
