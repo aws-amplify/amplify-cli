@@ -16,6 +16,7 @@ import {
   getAppSyncApi,
   getProjectMeta,
   getTransformConfig,
+  getDDBTable,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -39,14 +40,16 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project and add the simple_model api', async () => {
-    await initJSProjectWithProfile(projRoot, { name: 'simplemodel' });
+    const envName = 'devtest';
+    await initJSProjectWithProfile(projRoot, { name: 'simplemodel', envName });
     await addApiWithSchema(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
+    const region = meta.providers.awscloudformation.Region;
     const { output } = meta.api.simplemodel;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
 
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
@@ -54,6 +57,16 @@ describe('amplify add api (GraphQL)', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    const tableName = `AmplifyDataStore-${graphqlApi.apiId}-${envName}`;
+    const error = { message: null };
+    try {
+      const table = await getDDBTable(tableName, region);
+      expect(table).toBeUndefined();
+    } catch (ex) {
+      Object.assign(error, ex);
+    }
+    expect(error).toBeDefined();
+    expect(error.message).toContain(`${tableName} not found`);
   });
 
   it('inits a project with a simple model and then migrates the api', async () => {

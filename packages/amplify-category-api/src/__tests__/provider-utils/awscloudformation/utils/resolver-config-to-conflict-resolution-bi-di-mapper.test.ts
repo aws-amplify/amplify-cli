@@ -41,7 +41,7 @@ describe('transform ConflictResolution to ResolverConfig', () => {
   });
 
   it('returns an empty object when ConflictResolution is not present', () => {
-    expect(conflictResolutionToResolverConfig(undefined)).toEqual({});
+    expect(conflictResolutionToResolverConfig(undefined)).toEqual(undefined);
   });
 });
 
