@@ -44,6 +44,7 @@ async function getConfiguredAmplifyClient(context, options = {}) {
   }
 
   const config = { ...cred, ...defaultOptions, ...options };
+  config["customUserAgent"] = "amplify-cli";
 
   // this is the "project" config level case, creds and region are explicitly set or retrieved from a profile
   if (config.region) {
