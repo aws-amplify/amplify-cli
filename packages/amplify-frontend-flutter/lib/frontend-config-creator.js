@@ -86,7 +86,7 @@ function getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources)
 
 function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
   const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
-  generateAWSConfigFile(context, newAWSConfig);
+  // generateAWSConfigFile(context, newAWSConfig);
   return context;
 }
 
@@ -159,19 +159,19 @@ function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
   return customConfigs;
 }
 
-function generateAWSConfigFile(context, configOutput) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-  const frontendConfig = projectConfig.config;
-  const srcDirPath = path.join(projectPath, frontendConfig.ResDir);
+// function generateAWSConfigFile(context, configOutput) {
+//   const { amplify } = context;
+//   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+//   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+//   const frontendConfig = projectConfig.config;
+//   const srcDirPath = path.join(projectPath, frontendConfig.ResDir);
 
-  fs.ensureDirSync(srcDirPath);
+//   fs.ensureDirSync(srcDirPath);
 
-  const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
-  const jsonString = JSON.stringify(configOutput, null, 4);
-  fs.writeFileSync(targetFilePath, jsonString, 'utf8');
-}
+//   const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
+//   const jsonString = JSON.stringify(configOutput, null, 4);
+//   fs.writeFileSync(targetFilePath, jsonString, 'utf8');
+// }
 
 function getCognitoConfig(cognitoResources, projectRegion) {
   // There can only be one cognito instance

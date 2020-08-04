@@ -50,7 +50,7 @@ async function confirmConfiguration(context) {
         type: 'input',
         name: 'ResDir',
         message: 'Where do you want to store your configuration file?',
-        default: config.ResDir || './',
+        default: config.ResDir || './lib/',
       },
     ];
     const answers = await inquirer.prompt(configurationSettings);
