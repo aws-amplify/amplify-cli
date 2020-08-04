@@ -1,3 +1,4 @@
+import { CloudFormation } from 'aws-sdk';
 import {
   initJSProjectWithProfile,
   createNewProjectDir,

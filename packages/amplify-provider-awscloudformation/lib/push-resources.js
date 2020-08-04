@@ -303,6 +303,12 @@ function packageResources(context, resources, projectDetails) {
           }
         }
 
+        // Adding the tags to the stack resources info
+        // const tagsJson = projectDetails.tags;
+        // context.print.error(tagsJson);
+        // context.print.error(cfnMeta.Tags);
+        //cfnMeta.Tags = tagsJson;
+
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
       });
@@ -487,12 +493,17 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
         }
 
         if (resourceDetails.providerMetadata) {
+          // Getting the tags json file from the project details
+          // We can assume that the JSON file is already validated and ready to be parsed with no issues
+          const tagsJson = projectDetails.tags;
+
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
           nestedStack.Resources[resourceKey] = {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
               TemplateURL: templateURL,
               Parameters: parameters,
+              Tags: tagsJson,
             },
           };
         }
