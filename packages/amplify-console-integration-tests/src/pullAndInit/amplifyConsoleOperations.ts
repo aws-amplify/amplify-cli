@@ -5,7 +5,11 @@ import { getConfigFromProfile } from '../profile-helper';
 
 export function getConfiguredAmplifyClient() {
   const config = getConfigFromProfile();
-  config["customUserAgent"] = "amplify-cli";
+  if(config["customUserAgent"]) {
+    config["customUserAgent"] += " amplify-cli";
+  } else {
+    config["customUserAgent"] = "amplify-cli";
+  }
   return new Amplify(config);
 }
 
