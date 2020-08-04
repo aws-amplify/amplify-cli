@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
@@ -258,12 +259,15 @@ function packageResources(context, resources) {
         const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
+        const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+        const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
 
         if (resource.service === FunctionServiceName.LambdaLayer) {
-          cfnMeta.Resources.LambdaLayer.Properties.Content = {
-            S3Bucket: s3Bucket,
-            S3Key: s3Key,
-          };
+          _.set(teamProviderInfo, [context.amplify.getEnvInfo().envName, 'categories', 'function', resourceName], {
+            deploymentBucketName: s3Bucket,
+            s3Key,
+          });
+          context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
         } else {
           if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
             cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
@@ -277,8 +281,7 @@ function packageResources(context, resources) {
             };
           }
         }
-        const jsonString = JSON.stringify(cfnMeta, null, '\t');
-        fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+        context.amplify.writeObjectAsJson(cfnFilePath, cfnMeta, true);
       });
   };
 
