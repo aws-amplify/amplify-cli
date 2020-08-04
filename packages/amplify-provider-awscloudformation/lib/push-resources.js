@@ -17,20 +17,13 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
-<<<<<<< HEAD
-<<<<<<< HEAD
 const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
-=======
-const { isValidJSON, isWithinLimit, checkDuplicates } = require('../../amplify-cli/src/extensions/amplify-helpers/tags-validation');
->>>>>>> feat: complete functionality for tag support
-=======
 const {
   isValidJSON,
-  hasValidTags,
   isWithinLimit,
   checkDuplicates,
+  hasValidTags,
 } = require('../../amplify-cli/src/extensions/amplify-helpers/tags-validation');
->>>>>>> feat: initial version of e2e tests and tags
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -309,16 +302,7 @@ function packageResources(context, resources, projectDetails) {
             };
           }
         }
-<<<<<<< HEAD
-=======
 
-        //Adding the tags to the stack resources info
-        // const tagsJson = projectDetails.tags;
-        // context.print.error(tagsJson);
-        // context.print.error(cfnMeta.Resources);
-        //cfnMeta.Tags = tagsJson;
-
->>>>>>> feat: initial version of e2e tests and tags
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
       });

@@ -14,6 +14,8 @@ import { default as updateNotifier } from 'update-notifier';
 const pkg = require('../package.json');
 const notifier = updateNotifier({ pkg }); // defaults to 1 day interval
 
+//const { CLIContextEnvironmentProvider, FeatureFlags } = require('amplify-cli-core');
+
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
 // https://github.com/SBoudrias/Inquirer.js/issues/887
 import { EventEmitter } from 'events';

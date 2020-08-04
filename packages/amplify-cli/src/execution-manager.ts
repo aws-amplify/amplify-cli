@@ -170,21 +170,20 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo) 
     return;
   }
 
-    const pluginModule = require(plugin.packageLocation);
-    if (
-      pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) &&
-      typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function'
-    ) {
-      attachContextExtensions(context, plugin);
+  const pluginModule = require(plugin.packageLocation);
+  if (pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) && typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function') {
+    attachContextExtensions(context, plugin);
 
-      executeAmplifyCommandForPlugin(context, pluginModule);
-    } else {
-      // if the module does not have the executeAmplifyCommand method,
-      // fall back to the old approach by scanning the command folder and locate the command file
-      let commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command!));
-      if (context.input.subCommands && context.input.subCommands.length > 0) {
-        commandFilepath = path.join(commandFilepath, ...context.input.subCommands!);
-      }
+    executeAmplifyCommandForPlugin(context, pluginModule);
+  } else {
+    // if the module does not have the executeAmplifyCommand method,
+    // fall back to the old approach by scanning the command folder and locate the command file
+    let commandFilepath = path.normalize(path.join(plugin.packageLocation, 'commands', plugin.manifest.name, context.input.command!));
+    if (context.input.subCommands && context.input.subCommands.length > 0) {
+      commandFilepath = path.join(commandFilepath, ...context.input.subCommands!);
+    }
+  }
+}
 
 const getHandler = async (pluginInfo: PluginInfo, context: any): Promise<() => Promise<void>> => {
   const pluginModule = await import(pluginInfo.packageLocation);

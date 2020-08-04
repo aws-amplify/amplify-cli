@@ -50,13 +50,9 @@ function getAmplifyDirPath(projectPath) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, amplifyCLIConstants.AmplifyCLIDirName));
   }
-<<<<<<< HEAD
-  throw createNotInitializedError();
-=======
   throw new Error(
     "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify",
   );
->>>>>>> feat: complete functionality for tag support
 }
 
 // ///////////////////level 1
@@ -79,13 +75,9 @@ function getAmplifyRcFilePath(projectPath) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, '.amplifyrc'));
   }
-<<<<<<< HEAD
-  throw createNotInitializedError();
-=======
   throw new Error(
     "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify",
   );
->>>>>>> feat: complete functionality for tag support
 }
 
 function getGitIgnoreFilePath(projectPath) {
@@ -95,13 +87,9 @@ function getGitIgnoreFilePath(projectPath) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, '.gitignore'));
   }
-<<<<<<< HEAD
-  throw createNotInitializedError();
-=======
   throw new Error(
     "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify",
   );
->>>>>>> feat: complete functionality for tag support
 }
 
 // ///////////////////level 2

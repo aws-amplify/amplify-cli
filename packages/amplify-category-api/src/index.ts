@@ -158,8 +158,11 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
       } else {
         context.print.error(`Provider not configured for ${category}: ${resourceName}`);
       }
-    }),
-  );
+    } catch (err) {
+      context.print.error(err); // I wasn't able to run `yarn setup-dev` without getting this error
+    }
+  });
+
   return { permissionPolicies, resourceAttributes };
 }
 
