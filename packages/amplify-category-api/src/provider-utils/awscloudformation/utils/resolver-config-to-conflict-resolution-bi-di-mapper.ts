@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 export const conflictResolutionToResolverConfig = (conflictResolution: ConflictResolution = {}): ResolverConfig => {
   const result: ResolverConfig = {};
+  if (_.isEmpty(conflictResolution)) return undefined;
   if (conflictResolution.defaultResolutionStrategy) {
     result.project = resolutionStrategyToSyncConfig(conflictResolution.defaultResolutionStrategy);
   }
