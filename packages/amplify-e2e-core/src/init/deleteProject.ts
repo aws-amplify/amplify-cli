@@ -12,7 +12,6 @@ export const deleteProject = async (cwd: string, profileConfig?: any) => {
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
       .wait('Are you sure you want to continue?')
       .sendLine('y')
-      .sendCarriageReturn()
       .wait('Project deleted locally.')
       .run((err: Error) => {
         if (!err) {
