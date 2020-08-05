@@ -1235,7 +1235,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - schema-predictions-amplify_e2e_tests:
+      - schema-auth-8-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1258,7 +1258,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - schema-auth-8-amplify_e2e_tests:
+      - schema-auth-2-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
