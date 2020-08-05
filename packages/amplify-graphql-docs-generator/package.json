@@ -34,7 +34,7 @@
   "dependencies": {
     "change-case": "^4.1.1",
     "graphql": "^14.5.8",
-    "handlebars": "4.5.3",
+    "handlebars": "4.7.6",
     "prettier": "^1.19.1",
     "yargs": "^15.1.0"
   },
