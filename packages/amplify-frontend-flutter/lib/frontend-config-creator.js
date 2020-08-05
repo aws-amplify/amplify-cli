@@ -12,11 +12,6 @@ const fileNames = ['queries', 'mutations', 'subscriptions'];
 
 function deleteAmplifyConfig(context) {
   const { srcDirPath, projectPath } = getSrcDir(context);
-  // delete amplify config
-  const awsConfigFilePath = path.join(srcDirPath, constants.awsConfigFilename);
-  if (fs.existsSync(awsConfigFilePath)) {
-    fs.removeSync(awsConfigFilePath);
-  }
   // delete amplify configuration
   const amplifyConfigFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
   if (fs.existsSync(amplifyConfigFilePath)) {
@@ -158,20 +153,6 @@ function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
   });
   return customConfigs;
 }
-
-// function generateAWSConfigFile(context, configOutput) {
-//   const { amplify } = context;
-//   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-//   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
-//   const frontendConfig = projectConfig.config;
-//   const srcDirPath = path.join(projectPath, frontendConfig.ResDir);
-
-//   fs.ensureDirSync(srcDirPath);
-
-//   const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
-//   const jsonString = JSON.stringify(configOutput, null, 4);
-//   fs.writeFileSync(targetFilePath, jsonString, 'utf8');
-// }
 
 function getCognitoConfig(cognitoResources, projectRegion) {
   // There can only be one cognito instance

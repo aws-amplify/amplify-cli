@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const constants = require('./constants');
+const chalk = require('chalk');
 
 async function init(context) {
   normalizeInputParams(context);
@@ -44,6 +45,12 @@ async function confirmConfiguration(context) {
   } else if (!context.exeInfo.inputParams.yes) {
     context.print.info('Please tell us about your project');
     const { config } = context.exeInfo.projectConfig[constants.Label];
+
+    console.log(chalk.red('Flutter project support in the Amplify CLI is experimental.'));
+    console.log(chalk.red('Currenly, the following resource types are supported:'));
+    console.log(chalk.red(' * Auth'));
+    console.log(chalk.red(' * Analytics'));
+    console.log(chalk.red(' * Storage'));
 
     const configurationSettings = [
       {
