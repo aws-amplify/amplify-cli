@@ -1,25 +1,24 @@
 import * as path from 'path';
+import { JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import { Context } from './domain/context';
 import inquirer from './domain/inquirer-helper';
 
 const prevLambdaRuntimeVersions = ['nodejs8.10'];
 const lambdaRuntimeVersion = 'nodejs10.x';
-const jsonIndentation = 4;
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
-  const { pathManager, readJsonFile, constants } = context.amplify;
+  const { pathManager, constants } = context.amplify;
   const projectPath = pathManager.searchProjectRootPath();
   if (projectPath) {
     const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
     if (fs.existsSync(projectConfigFilePath)) {
-      const projectConfig = readJsonFile(projectConfigFilePath);
+      const projectConfig: any = await JSONUtilities.readJson(projectConfigFilePath);
       if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
         await checkLambdaCustomResourceNodeVersion(context, projectPath);
 
         projectConfig.version = constants.PROJECT_CONFIG_VERSION;
-        const jsonString = JSON.stringify(projectConfig, null, jsonIndentation);
-        fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+        await JSONUtilities.writeJson(projectConfigFilePath, projectConfig);
       }
     }
   }

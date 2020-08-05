@@ -407,8 +407,7 @@ function persistLocalEnvConfig(context) {
       fs.ensureDirSync(sharedConfigDirPath);
       const awsSecretsFileName = context.amplify.makeId(10);
       const awsSecretsFilePath = path.join(sharedConfigDirPath, awsSecretsFileName);
-      const jsonString = JSON.stringify(awsSecrets, null, 4);
-      fs.writeFileSync(awsSecretsFilePath, jsonString, 'utf8');
+      context.amplify.writeObjectAsJson(awsSecretsFilePath, awsSecrets, true);
 
       awsInfo.awsConfigFilePath = awsSecretsFilePath;
     }
@@ -424,8 +423,7 @@ function persistLocalEnvConfig(context) {
   }
 
   envAwsInfo[envName] = awsInfo;
-  const jsonString = JSON.stringify(envAwsInfo, null, 4);
-  fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
+  context.amplify.writeObjectAsJson(configInfoFilePath, envAwsInfo, true);
 
   return context;
 }
@@ -489,8 +487,7 @@ function removeProjectConfig(context) {
         configLevel: 'general',
       };
     }
-    const jsonString = JSON.stringify(configInfo, null, 4);
-    fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
+    context.amplify.writeObjectAsJson(configInfoFilePath, configInfo, true);
   }
 }
 

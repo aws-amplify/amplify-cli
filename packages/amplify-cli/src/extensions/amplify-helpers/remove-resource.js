@@ -1,4 +1,4 @@
-const fs = require('fs');
+const { JSONUtilities } = require('amplify-cli-core');
 const path = require('path');
 const inquirer = require('inquirer');
 const pathManager = require('./path-manager');
@@ -114,8 +114,7 @@ const deleteResourceFiles = async (context, category, resourceName, resourceDir,
     delete amplifyMeta[category][resourceName];
   }
 
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  await JSONUtilities.writeJson(amplifyMetaFilePath, amplifyMeta);
 
   // Remove resource directory from backend/
   context.filesystem.remove(resourceDir);

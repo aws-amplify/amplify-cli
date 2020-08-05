@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const pathManager = require('./path-manager');
 const { readJsonFile } = require('./read-json-file');
 

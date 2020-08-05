@@ -1,3 +1,4 @@
+const { JSONUtilities } = require('amplify-cli-core');
 const fs = require('fs-extra');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const S3 = require('../src/aws-utils/aws-s3');
@@ -47,8 +48,7 @@ function run(context, providerMetadata) {
         });
       });
 
-      const jsonString = JSON.stringify(amplifyMeta, null, 4);
-      fs.writeFileSync(amplifyMetafilePath, jsonString, 'utf8');
+      context.amplify.writeObjectAsJson(amplifyMetafilePath, amplifyMeta, true);
     });
 }
 

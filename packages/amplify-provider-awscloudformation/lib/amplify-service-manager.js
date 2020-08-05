@@ -1,3 +1,4 @@
+const { JSONUtilities } = require('amplify-cli-core');
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');

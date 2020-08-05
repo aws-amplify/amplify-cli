@@ -163,8 +163,7 @@ function cacheRoleCredentials(context, roleArn, sessionName, credentials) {
   }
   cacheContents[roleArn] = cacheContents[roleArn] || {};
   cacheContents[roleArn][sessionName] = credentials;
-  const jsonString = JSON.stringify(cacheContents, null, 4);
-  fs.writeFileSync(cacheFilePath, jsonString, 'utf8');
+  context.amplify.writeObjectAsJson(cacheFilePath, cacheContents, true);
 }
 
 function getCachedRoleCredentials(context, roleArn, sessionName) {
@@ -215,8 +214,7 @@ async function resetCache(context, profileName) {
     const cacheContents = context.amplify.readJsonFile(cacheFilePath, 'utf-8');
     if (cacheContents[profileConfig.role_arn]) {
       delete cacheContents[profileConfig.role_arn];
-      const jsonString = JSON.stringify(cacheContents, null, 4);
-      fs.writeFileSync(cacheFilePath, jsonString, 'utf8');
+      context.amplify.writeObjectAsJson(cacheFilePath, cacheContents, true);
       context.print.success('  Cached temp credentials are deleted for the project.');
       context.print.info('');
     } else {

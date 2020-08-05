@@ -13,7 +13,7 @@ function updateProjectConfig(projectPath, label, data) {
 
   projectConfig[label] = data;
 
-  const jsonString = JSON.stringify(projectConfig, null, 4);
+  const jsonString = JSON.stringify(projectConfig, null, 2);
   fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
 }
 

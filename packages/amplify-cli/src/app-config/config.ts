@@ -26,7 +26,7 @@ export function getConfig() {
 
 export function write(context: Context, keyValues: Object) {
   Config.Instance.setValues(keyValues);
-  fs.writeFileSync(getPath(context), JSON.stringify(Config.Instance));
+  context.amplify.writeObjectAsJson(getPath(context), Config.Instance, true);
 }
 
 class Config {

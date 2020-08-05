@@ -1,3 +1,4 @@
+const { JSONUtilities } = require('amplify-cli-core');
 const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
@@ -277,8 +278,7 @@ function packageResources(context, resources) {
             };
           }
         }
-        const jsonString = JSON.stringify(cfnMeta, null, '\t');
-        fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+        context.amplify.writeObjectAsJson(cfnFilePath, cfnMeta, true);
       });
   };
 
@@ -318,8 +318,7 @@ async function updateCloudFormationNestedStack(context, nestedStack, resourcesTo
     });
   }
 
-  const jsonString = JSON.stringify(nestedStack, null, '\t');
-  context.filesystem.write(nestedStackFilepath, jsonString);
+  await JSONUtilities.writeJson(nestedStackFilepath, nestedStack);
 
   const cfnItem = await new Cloudformation(context, userAgentAction);
 

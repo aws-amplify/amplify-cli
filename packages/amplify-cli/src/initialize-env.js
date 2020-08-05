@@ -104,9 +104,7 @@ function populateAmplifyMeta(context, amplifyMeta) {
   Object.assign(amplifyMeta, backendResourceInfo);
 
   const backendMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
-  const jsonString = JSON.stringify(amplifyMeta, null, 4);
-
-  fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
+  context.amplify.writeObjectAsJson(backendMetaFilePath, amplifyMeta, true);
 }
 
 module.exports = {

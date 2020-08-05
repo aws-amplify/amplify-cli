@@ -207,7 +207,7 @@ function getAmplifyMeta(projectPath) {
 function persistAmplifyMeta(amplifyMeta, projectPath) {
   if (amplifyMeta) {
     const amplifyMetafilePath = getAmplifyMetaFilePath(projectPath);
-    const jsonString = JSON.stringify(amplifyMeta, null, 4);
+    const jsonString = JSON.stringify(amplifyMeta, null, 2);
     fs.writeFileSync(amplifyMetafilePath, jsonString, 'utf8');
   }
 }
@@ -220,7 +220,7 @@ function getCurrentAmplifyMeta(projectPath) {
 function persistCurrentAmplifyMeta(currentAmplifyMeta, projectPath) {
   if (currentAmplifyMeta) {
     const currentAmplifyMetafilePath = getCurrentAmplifyMetaFilePath(projectPath);
-    const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
+    const jsonString = JSON.stringify(currentAmplifyMeta, null, 2);
     fs.writeFileSync(currentAmplifyMetafilePath, jsonString, 'utf8');
   }
 }
@@ -257,7 +257,7 @@ function generateNewProjectConfig(projectConfig) {
 function persistProjectConfig(projectConfig, projectPath) {
   if (projectConfig) {
     const projectConfigFilePath = getProjectConfigFilePath(projectPath);
-    const jsonString = JSON.stringify(projectConfig, null, 4);
+    const jsonString = JSON.stringify(projectConfig, null, 2);
     fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
   }
 }
@@ -272,7 +272,7 @@ function generateLocalEnvInfo(projectConfig) {
 
 function persistLocalEnvInfo(localEnvInfo, projectPath) {
   if (localEnvInfo) {
-    const jsonString = JSON.stringify(localEnvInfo, null, 4);
+    const jsonString = JSON.stringify(localEnvInfo, null, 2);
     const localEnvFilePath = getLocalEnvFilePath(projectPath);
     fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
   }
@@ -296,7 +296,7 @@ function generateLocalAwsInfo(projectPath) {
 function persistLocalAwsInfo(localAwsInfo, projectPath) {
   if (localAwsInfo) {
     const dotConfigDirPath = getDotConfigDirPath(projectPath);
-    const jsonString = JSON.stringify(localAwsInfo, null, 4);
+    const jsonString = JSON.stringify(localAwsInfo, null, 2);
     const localAwsInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
     fs.writeFileSync(localAwsInfoFilePath, jsonString, 'utf8');
   }
@@ -308,7 +308,7 @@ function generateTeamProviderInfo(amplifyMeta) {
 
 function persistTeamProviderInfo(teamProviderInfo, projectPath) {
   if (teamProviderInfo) {
-    const jsonString = JSON.stringify(teamProviderInfo, null, 4);
+    const jsonString = JSON.stringify(teamProviderInfo, null, 2);
     const teamProviderFilePath = getProviderInfoFilePath(projectPath);
     fs.writeFileSync(teamProviderFilePath, jsonString, 'utf8');
   }
@@ -340,7 +340,7 @@ function generateBackendConfig(amplifyMeta) {
 
 function persistBackendConfig(backendConfig, projectPath) {
   if (backendConfig) {
-    const jsonString = JSON.stringify(backendConfig, null, 4);
+    const jsonString = JSON.stringify(backendConfig, null, 2);
     const backendConfigFilePath = getBackendConfigFilePath(projectPath);
     fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
   }

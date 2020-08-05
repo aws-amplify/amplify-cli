@@ -1,3 +1,4 @@
+const { JSONUtilities } = require('amplify-cli-core');
 const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
@@ -46,14 +47,13 @@ async function ensureAmplifyMeta(context, amplifyApp, awsConfig) {
   // 1. insert the appId
   // 2. upload the metadata file and the backend config file into the deployment bucket
   const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
-  const currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
+  const currentAmplifyMeta = await JSONUtilities.readJson(currentAmplifyMetaFilePath);
   if (!currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel]) {
     currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyApp.appId;
 
     const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(process.cwd());
-    const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
-    fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+    await JSONUtilities.writeJson(currentAmplifyMetaFilePath, currentAmplifyMeta);
+    await JSONUtilities.writeJson(amplifyMetaFilePath, currentAmplifyMeta);
 
     const { DeploymentBucketName } = currentAmplifyMeta.providers[constants.ProviderName];
     await storeArtifactsForAmplifyService(context, awsConfig, DeploymentBucketName);

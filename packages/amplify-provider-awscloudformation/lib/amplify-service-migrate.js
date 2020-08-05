@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const { JSONUtilities } = require('amplify-cli-core');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
@@ -16,7 +16,7 @@ async function run(context) {
   try {
     projectDetails = context.amplify.getProjectDetails();
     currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
-    currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
+    currentAmplifyMeta = await JSONUtilities.readJson(currentAmplifyMetaFilePath);
     awsConfig = await configurationManager.getAwsConfig(context);
     isProjectFullySetUp = true;
   } catch (e) {
@@ -112,16 +112,13 @@ async function run(context) {
     amplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
 
     const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-    let jsonString = JSON.stringify(amplifyMeta, null, 4);
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+    await JSONUtilities.writeJson(amplifyMetaFilePath, amplifyMeta);
 
     currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
-    jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
-    fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
+    await JSONUtilities.writeJson(currentAmplifyMetaFilePath, currentAmplifyMeta);
 
     const teamProviderInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath();
-    jsonString = JSON.stringify(teamProviderInfo, null, 4);
-    fs.writeFileSync(teamProviderInfoFilePath, jsonString, 'utf8');
+    await JSONUtilities.writeJson(teamProviderInfoFilePath, teamProviderInfo);
 
     await storeCurrentCloudBackend(context);
   }

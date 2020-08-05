@@ -1,4 +1,4 @@
-const fs = require('fs');
+const { JSONUtilities } = require('amplify-cli-core');
 const sequential = require('promise-sequential');
 const { initializeEnv } = require('../../initialize-env');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
@@ -22,9 +22,7 @@ module.exports = {
     const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath();
     const localEnvInfo = getEnvInfo();
     localEnvInfo.envName = envName;
-    const jsonString = JSON.stringify(localEnvInfo, null, 4);
-    fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
-
+    await JSONUtilities.writeJson(localEnvFilePath, localEnvInfo);
     // Setup exeinfo
 
     context.amplify.constructExeInfo(context);

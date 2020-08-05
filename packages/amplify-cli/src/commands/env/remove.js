@@ -1,3 +1,4 @@
+const { JSONUtilities } = require('amplify-cli-core');
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
@@ -50,8 +51,7 @@ module.exports = {
 
         // Remove from team-provider-info
         const envProviderFilepath = context.amplify.pathManager.getProviderInfoFilePath();
-        let jsonString = JSON.stringify(allEnvs, null, '\t');
-        fs.writeFileSync(envProviderFilepath, jsonString, 'utf8');
+        await JSONUtilities.writeJson(envProviderFilepath, allEnvs);
 
         // Remove entry from aws-info
         const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
@@ -59,8 +59,7 @@ module.exports = {
         const awsInfo = readJsonFile(awsInfoFilePath);
         if (awsInfo[envName]) {
           delete awsInfo[envName];
-          jsonString = JSON.stringify(awsInfo, null, '\t');
-          fs.writeFileSync(awsInfoFilePath, jsonString, 'utf8');
+          await JSONUtilities.writeJson(awsInfoFilePath, awsInfo);
         }
 
         await FeatureFlags.removeFeatureFlagConfiguration(false, [envName]);

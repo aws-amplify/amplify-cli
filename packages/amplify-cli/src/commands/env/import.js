@@ -1,3 +1,4 @@
+const { JSONUtilities } = require('amplify-cli-core');
 const fs = require('fs-extra');
 const path = require('path');
 const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
@@ -60,20 +61,18 @@ module.exports = {
     const addNewEnvConfig = () => {
       const envProviderFilepath = context.amplify.pathManager.getProviderInfoFilePath();
       allEnvs[envName] = config;
-      let jsonString = JSON.stringify(allEnvs, null, '\t');
-      fs.writeFileSync(envProviderFilepath, jsonString, 'utf8');
+      await JSONUtilities.writeJson(envProviderFilepath, allEnvs);
 
       const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
       const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
 
       let envAwsInfo = {};
       if (fs.existsSync(configInfoFilePath)) {
-        envAwsInfo = readJsonFile(configInfoFilePath);
+        envAwsInfo = await JSONUtilities.readJson(configInfoFilePath);
       }
 
       envAwsInfo[envName] = awsInfo;
-      jsonString = JSON.stringify(envAwsInfo, null, 4);
-      fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
+      await JSONUtilities.writeJson(configInfoFilePath, envAwsInfo);
 
       context.print.success('Successfully added environment from your project');
     };

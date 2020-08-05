@@ -63,7 +63,7 @@ function saveAllResourceParams(context, data) {
   if (isMigrationContext(context)) return; // no need to serialize team provider
 
   const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath();
-  fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(data, null, 4));
+  context.amplify.writeObjectAsJson(teamProviderInfoFilePath, data, true)
 }
 
 function saveEnvResourceParameters(context, category, resource, parameters) {

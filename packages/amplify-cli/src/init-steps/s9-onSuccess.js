@@ -75,19 +75,18 @@ function generateLocalRuntimeFiles(context) {
 
 function generateLocalEnvInfoFile(context) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
   const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
-  fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+  context.amplify.writeObjectAsJson(localEnvFilePath, context.exeInfo.localEnvInfo, true);
 }
 
 function generateAmplifyMetaFile(context) {
   if (context.exeInfo.isNewEnv) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, 4);
-    const currentBackendMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(projectPath);
-    fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
-    const backendMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
-    fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
+    const { pathManager, writeObjectAsJson } = context.amplify;
+    const currentBackendMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath(projectPath);
+    const backendMetaFilePath = pathManager.getAmplifyMetaFilePath(projectPath);
+    writeObjectAsJson(currentBackendMetaFilePath, context.exeInfo.amplifyMeta, true);
+    writeObjectAsJson(backendMetaFilePath, context.exeInfo.amplifyMeta, true);
   }
 }
 
@@ -102,9 +101,8 @@ function generateProjectConfigFile(context) {
   // won't modify on new env
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
     const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);
-    fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+    context.amplify.writeObjectAsJson(projectConfigFilePath, context.exeInfo.projectConfig, true);
   }
 }
 
@@ -118,16 +116,15 @@ function generateProviderInfoFile(context) {
   } else {
     ({ teamProviderInfo } = context.exeInfo);
   }
-
-  const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-  fs.writeFileSync(providerInfoFilePath, jsonString, 'utf8');
+  context.amplify.writeObjectAsJson(providerInfoFilePath, teamProviderInfo, true);
 }
 
 function generateBackendConfigFile(context) {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
-    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
+    context.amplify.writeObjectAsJson(backendConfigFilePath, {}, true);
+
   }
 }
 

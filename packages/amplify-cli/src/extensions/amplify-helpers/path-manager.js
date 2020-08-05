@@ -1,5 +1,5 @@
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const homedir = require('os').homedir();
 const amplifyCLIConstants = require('./constants.js');
 

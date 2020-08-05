@@ -1,16 +1,14 @@
-const fs = require('fs-extra');
+const { JSONUtilities } = require('amplify-cli-core');
 
 async function run(context) {
   const { projectPath } = context.exeInfo;
   const { amplify } = context;
 
-  let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
   const projectConfigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
-  fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+  await JSONUtilities.writeJson(projectConfigFilePath, context.exeInfo.projectConfig);
 
-  jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
   const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-  fs.writeFileSync(envFilePath, jsonString, 'utf8');
+  await JSONUtilities.writeJson(envFilePath, context.exeInfo.localEnvInfo);
 
   await context.amplify.onCategoryOutputsChange(context);
 

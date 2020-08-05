@@ -1,5 +1,4 @@
-const fs = require('fs');
-
+import { JSONUtilities } from 'amplify-cli-core';
 /**
  * Runs a series of jobs through the templating system.
  *
@@ -20,9 +19,7 @@ async function copyBatch(context, jobs, props, force, writeParams) {
     return confirm(`overwrite ${target}`);
   };
 
-  for (let index = 0; index < jobs.length; index += 1) {
-    // grab the current job
-    const job = jobs[index];
+  for (let job of jobs) {
     // safety check
     if (!job) {
       continue;
@@ -40,8 +37,7 @@ async function copyBatch(context, jobs, props, force, writeParams) {
 
       if (writeParams && job.paramsFile) {
         const params = writeParams && Object.keys(writeParams) && Object.keys(writeParams).length > 0 ? writeParams : props;
-        const jsonString = JSON.stringify(params, null, 4);
-        fs.writeFileSync(job.paramsFile, jsonString, 'utf8');
+        await JSONUtilities.writeJson(job.paramsFile, params);
       }
     }
   }

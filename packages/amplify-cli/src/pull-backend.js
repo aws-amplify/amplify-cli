@@ -41,7 +41,7 @@ function ensureBackendConfigFile(context) {
   const { projectPath } = context.exeInfo.localEnvInfo;
   const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
   if (!fs.existsSync(backendConfigFilePath)) {
-    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
+    context.amplify.writeObjectAsJson(backendConfigFilePath, {}, true);
   }
 }
 

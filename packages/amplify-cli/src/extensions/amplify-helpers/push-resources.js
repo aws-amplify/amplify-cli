@@ -1,3 +1,4 @@
+const { JSONUtilities } = require('amplify-cli-core');
 const fs = require('fs-extra');
 const { getProjectConfig } = require('./get-project-config');
 const { showResourceTable } = require('./resource-status');
@@ -29,9 +30,8 @@ async function pushResources(context, category, resourceName, filteredResources)
 
       if (context.exeInfo.localEnvInfo.envName !== envName) {
         context.exeInfo.localEnvInfo.envName = envName;
-        const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
         const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(context.exeInfo.localEnvInfo.projectPath);
-        fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+        await JSONUtilities.writeJson(localEnvFilePath, context.exeInfo.localEnvInfo);
       }
 
       await initializeEnv(context);

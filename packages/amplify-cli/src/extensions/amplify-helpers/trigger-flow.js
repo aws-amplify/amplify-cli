@@ -1,8 +1,8 @@
+const { JSONUtilities } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const fs = require('fs');
-const fsExtra = require('fs-extra');
+const fs = require('fs-extra');
 const { flattenDeep } = require('lodash');
 const { join } = require('path');
 const { uniq } = require('lodash');
@@ -162,7 +162,7 @@ const updateTrigger = async triggerOptions => {
       const parametersPath = `${projectBackendDirPath}/function/${functionName}`;
       const dirContents = fs.readdirSync(parametersPath);
       if (dirContents.includes('parameters.json')) {
-        fs.writeFileSync(`${parametersPath}/parameters.json`, JSON.stringify({ modules: values.join() }));
+        await JSONUtilities.writeJson(`${parametersPath}/parameters.json`, { modules: values.join() });
       }
 
       await cleanFunctions(key, values, category, context, targetPath);
@@ -402,7 +402,7 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
       } else {
         source = `${pluginPath}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
       }
-      fsExtra.copySync(source, `${targetPath}/${value}.js`);
+      fs.copySync(source, `${targetPath}/${value}.js`);
       await openEditor(context, targetPath, value);
     }
   } catch (e) {
