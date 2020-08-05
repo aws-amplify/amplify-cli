@@ -1,26 +1,81 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Test per-field @auth without model 1`] = `
-"## [Start] Static Group Authorization Checks **
-#set($listContext_isStaticGroupAuthorized = $util.defaultIfNull(
+Object {
+  "Properties": Object {
+    "PolicyDocument": Object {
+      "Statement": Array [
+        Object {
+          "Action": Array [
+            "appsync:GraphQL",
+          ],
+          "Effect": "Allow",
+          "Resource": Array [
+            Object {
+              "Fn::Sub": Array [
+                "arn:aws:appsync:\${AWS::Region}:\${AWS::AccountId}:apis/\${apiId}/types/\${typeName}/fields/\${fieldName}",
+                Object {
+                  "apiId": Object {
+                    "Fn::GetAtt": Array [
+                      "GraphQLAPI",
+                      "ApiId",
+                    ],
+                  },
+                  "fieldName": "listContext",
+                  "typeName": "Query",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      "Version": "2012-10-17",
+    },
+    "Roles": Array [
+      Object {
+        "Ref": "authRoleName",
+      },
+    ],
+  },
+  "Type": "AWS::IAM::ManagedPolicy",
+}
+`;
+
+exports[`Test per-field @auth without model 2`] = `
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## [Start] Static Group Authorization Checks **
+  #set($listContext_isStaticGroupAuthorized = $util.defaultIfNull(
             $listContext_isStaticGroupAuthorized, false))
-## Authorization rule: { allow: groups, groups: [\\"Allowed\\"], groupClaim: \\"cognito:groups\\" } **
-#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
-#set( $allowedGroups = [\\"Allowed\\"] )
-#foreach( $userGroup in $userGroups )
-  #if( $allowedGroups.contains($userGroup) )
-    #set( $listContext_isStaticGroupAuthorized = true )
-    #break
+  ## Authorization rule: { allow: groups, groups: [\\"Allowed\\"], groupClaim: \\"cognito:groups\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Allowed\\"] )
+  #foreach( $userGroup in $userGroups )
+    #if( $allowedGroups.contains($userGroup) )
+      #set( $listContext_isStaticGroupAuthorized = true )
+      #break
+    #end
   #end
-#end
-## [End] Static Group Authorization Checks **
+  ## [End] Static Group Authorization Checks **
 
 
-## [Start] Throw if unauthorized **
-#if( $listContext_isStaticGroupAuthorized == false )
-  $util.unauthorized()
+  ## [Start] Throw if unauthorized **
+  #if( $listContext_isStaticGroupAuthorized == false )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
 #end
-## [End] Throw if unauthorized **"
+## [End] Check authMode and execute owner/group checks **
+
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+}"
 `;
 
 exports[`Test that subscriptions are only generated if the respective mutation operation exists 1`] = `
