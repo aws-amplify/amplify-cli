@@ -1189,6 +1189,7 @@ workflows:
           filters:
             branches:
               only:
+                - frntndFeat
                 - release
                 - master
                 - beta
