@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.22.0...amplify-category-api@2.23.0) (2020-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** added check to read schema in schema dir ([#3871](https://github.com/aws-amplify/amplify-cli/issues/3871)) ([21bd229](https://github.com/aws-amplify/amplify-cli/commit/21bd229b5c15e4ce837da604ec73e7f40076170f)), closes [fixes#3082](https://github.com/fixes/issues/3082)
+* return undefined for empty conflict resolution ([#4982](https://github.com/aws-amplify/amplify-cli/issues/4982)) ([7c5bf1a](https://github.com/aws-amplify/amplify-cli/commit/7c5bf1a36078a345d80ecbf2cea3a067ae1137e1)), closes [#4965](https://github.com/aws-amplify/amplify-cli/issues/4965)
+
+
+### Features
+
+* allow creation of REST API endpoint at root path (/) ([#4649](https://github.com/aws-amplify/amplify-cli/issues/4649)) ([49d8121](https://github.com/aws-amplify/amplify-cli/commit/49d8121ade1f06bf23d511523b88e9dd6c289073)), closes [#3868](https://github.com/aws-amplify/amplify-cli/issues/3868) [#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)
+
+
+
+
+
 # [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.20.5...amplify-category-api@2.22.0) (2020-07-29)
 
 
