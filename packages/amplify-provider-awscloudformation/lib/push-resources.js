@@ -18,7 +18,12 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
-const { isValidJSON, isWithinLimit, checkDuplicates } = require('../../amplify-cli/src/extensions/amplify-helpers/tags-validation');
+const {
+  isValidJSON,
+  isWithinLimit,
+  checkDuplicates,
+  hasValidTags,
+} = require('../../amplify-cli/src/extensions/amplify-helpers/tags-validation');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -41,9 +46,12 @@ async function run(context, resourceDefinition) {
     let projectDetails = context.amplify.getProjectDetails();
 
     validateCfnTemplates(context, resources);
+
+    // This is where we are validating the tags.json file
+    // I placed it so it runs the validation as soon as possible, since I believe it should be one of the first things to do before continuing with the push logic.
     validateTags(context);
 
-    await packageResources(context, resources);
+    await packageResources(context, resources, projectDetails);
 
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
@@ -223,19 +231,20 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
 
 function validateTags(context) {
   const projectDetails = context.amplify.getProjectDetails();
-  const tagsJsonPath = projectDetails.tags;
+  const tagsJson = projectDetails.tags;
 
   try {
-    isValidJSON(tagsJsonPath);
-    isWithinLimit(tagsJsonPath);
-    checkDuplicates(tagsJsonPath);
+    isValidJSON(tagsJson);
+    hasValidTags(tagsJson);
+    isWithinLimit(tagsJson);
+    checkDuplicates(tagsJson);
   } catch (err) {
     context.print.error(`Invalid tags.json file: ${err.message}`);
     throw err;
   }
 }
 
-function packageResources(context, resources) {
+function packageResources(context, resources, projectDetails) {
   // Only build and package resources which are required
   resources = resources.filter(resource => resource.build);
 
@@ -413,6 +422,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
       const providerMetadata = amplifyMeta[category][resourceName].providerMetadata || {};
       providerMetadata.s3TemplateURL = templateURL;
       providerMetadata.logicalId = category + resourceName;
+
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'providerMetadata', providerMetadata);
     });
 }
