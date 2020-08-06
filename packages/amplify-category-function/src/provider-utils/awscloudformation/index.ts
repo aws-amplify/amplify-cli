@@ -1,5 +1,6 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './utils/layerParams';
+import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
 import { ServiceName, provider, parametersFileName } from './utils/constants';
 import { category as categoryName } from '../../constants';
@@ -335,30 +336,21 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
   } else if (service === ServiceName.LambdaLayer) {
     const { envName } = context.amplify.getEnvInfo();
     const layerParamsPath = path.join('amplify', 'backend', categoryName, resourceName, parametersFileName);
-    let layerEnvParams = _.get(context.amplify.readJsonFile(layerParamsPath), envName, null);
-    let providerContext: ProviderContext;
 
-    if (layerEnvParams === null) {
-      const layerMeta = _.get(context.amplify.getProjectMeta(), [categoryName, resourceName], null);
-      if (layerMeta === null) {
-        throw `Lambda layer ${resourceName} is missing from amplify-meta.json`;
-      }
-      layerEnvParams = { build: true };
-      // TODO prompt user to read values from other env in team-provider-info.json
-      layerEnvParams.layerVersionMap = {
-        1: {
-          permissions: [{ type: 'private' }],
-        },
-      };
-      layerEnvParams.layerName = resourceName;
-      layerEnvParams.runtimes = layerMeta.runtimes;
-      providerContext = {
-        provider: layerMeta.providerPlugin,
-        service,
-        projectName: context.amplify.getProjectDetails().projectConfig.projectName,
-      };
-      layerEnvParams.providerContext = providerContext;
-    }
+    // teamProviderParams = runtimes, layerVersionMap
+    const teamProviderParams = await chooseParamsOnEnvInit(context, resourceName);
+
+    const providerContext: ProviderContext = {
+      provider: 'awscloudformation',
+      service,
+      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+    };
+    const layerEnvParams = {
+      build: true,
+      layerName: resourceName,
+      providerContext,
+      ...teamProviderParams,
+    };
 
     updateLayerArtifacts(context, layerEnvParams);
   }

@@ -1,7 +1,8 @@
+import { JSONUtilities } from 'amplify-cli-core';
+import { ListQuestion, prompt } from 'inquirer';
+import _ from 'lodash';
 import uuid from 'uuid';
 import { Permission, LayerPermission } from '../utils/layerParams';
-import _ from 'lodash';
-import { ListQuestion } from 'inquirer';
 
 export interface LayerInputParams {
   layerPermissions?: Permission[];
@@ -151,6 +152,50 @@ export function previousPermissionsQuestion(layerName: string): ListQuestion[] {
         },
       ],
       default: 0,
+    },
+  ];
+}
+
+export async function chooseParamsOnEnvInit(context: any, layerName: string) {
+  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+  const teamProviderInfo = await JSONUtilities.readJson(teamProviderInfoPath);
+  const filteredEnvs = Object.keys(teamProviderInfo).filter(
+    env =>
+      _.has(teamProviderInfo, [env, 'nonCFNdata', 'function', layerName, 'runtimes']) &&
+      _.has(teamProviderInfo, [env, 'nonCFNdata', 'function', layerName, 'layerVersionMap']),
+  );
+  const { envName } = await prompt(chooseParamsOnEnvInitQuestion(layerName, context.amplify.getEnvInfo(), filteredEnvs));
+  const defaultPermission = [{ type: 'private' }];
+  if (envName === undefined) {
+    return {
+      runtimes: [],
+      layerVersionMap: {
+        1: {
+          permissions: defaultPermission,
+        },
+      },
+    };
+  }
+  const layerToCopy = teamProviderInfo[envName].nonCFNdata.function[layerName];
+  const versions = Object.keys(layerToCopy.layerVersionMap || {}).sort((a, b) => Number(b) - Number(a));
+  const permissions = versions.length > 0 ? layerToCopy.layerVersionMap[versions[0]].permissions : defaultPermission;
+  return {
+    runtimes: layerToCopy.runtimes,
+    layerVersionMap: {
+      1: { permissions },
+    },
+  };
+}
+
+function chooseParamsOnEnvInitQuestion(layerName: string, currentEnv: string, filteredEnvs: string[]): ListQuestion[] {
+  const choices = filteredEnvs.map(env => ({ name: env, value: env })).concat([{ name: 'None, use defualt settings', value: undefined }]);
+  return [
+    {
+      type: 'list',
+      name: 'envName',
+      // TODO better wording
+      message: `Adding Lambda layer ${layerName} to ${currentEnv} environment. Choose the environment to clone the layer settings from:`,
+      choices,
     },
   ];
 }
