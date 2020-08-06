@@ -58,7 +58,7 @@ module.exports = {
 
     const allEnvs = context.amplify.getEnvDetails();
 
-    const addNewEnvConfig = () => {
+    const addNewEnvConfig = async () => {
       const envProviderFilepath = context.amplify.pathManager.getProviderInfoFilePath();
       allEnvs[envName] = config;
       await JSONUtilities.writeJson(envProviderFilepath, allEnvs);
@@ -79,16 +79,16 @@ module.exports = {
 
     if (allEnvs.hasOwnProperty(envName)) {
       if (context.parameters.options.yes) {
-        addNewEnvConfig();
+        await addNewEnvConfig();
       } else if (
         await context.amplify.confirmPrompt.run(
           'We found an environment with the same name. Do you want to overwrite the existing environment config?',
         )
       ) {
-        addNewEnvConfig();
+        await addNewEnvConfig();
       }
     } else {
-      addNewEnvConfig();
+      await addNewEnvConfig();
     }
   },
 };

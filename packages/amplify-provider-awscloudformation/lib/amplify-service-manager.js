@@ -63,7 +63,7 @@ async function init(amplifyServiceParams) {
     }
 
     if (teamProviderFilePath && fs.existsSync(teamProviderFilePath)) {
-      const teamProviderInfo = context.amplify.readJsonFile(teamProviderFilePath);
+      const teamProviderInfo = await JSONUtilities.readJson(teamProviderFilePath);
 
       const envList = Object.keys(teamProviderInfo);
 
@@ -176,7 +176,8 @@ async function init(amplifyServiceParams) {
 async function deleteEnv(context, envName, awsConfig) {
   const teamProviderFilePath = context.amplify.pathManager.getProviderInfoFilePath();
   if (fs.existsSync(teamProviderFilePath)) {
-    const teamProviderInfo = context.amplify.readJsonFile(teamProviderFilePath);
+    const teamProviderInfo = await JSONUtilities.readJson(teamProviderFilePath);
+
     if (
       teamProviderInfo[envName] &&
       teamProviderInfo[envName][constants.ProviderName] &&
@@ -294,12 +295,10 @@ async function postPushCheck(context) {
     amplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
 
     const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-    let jsonString = JSON.stringify(amplifyMeta, null, 4);
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+    await JSONUtilities.writeJson(amplifyMetaFilePath, amplifyMeta);
 
     const teamProviderInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath();
-    jsonString = JSON.stringify(teamProviderInfo, null, 4);
-    fs.writeFileSync(teamProviderInfoFilePath, jsonString, 'utf8');
+    await JSONUtilities.writeJson(teamProviderInfoFilePath, teamProviderInfo);
   }
 }
 

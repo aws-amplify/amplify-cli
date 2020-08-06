@@ -1,4 +1,3 @@
-const { JSONUtilities } = require('amplify-cli-core');
 const fs = require('fs-extra');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const S3 = require('../src/aws-utils/aws-s3');
@@ -25,8 +24,8 @@ function run(context, providerMetadata) {
             fs.copySync(`${tempDir}/#current-cloud-backend`, backendDir);
           }
           fs.removeSync(tempDir);
-        })
-      )
+        }),
+      ),
     )
     .then(() => new Cloudformation(context))
     .then(cfnItem => cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName))
