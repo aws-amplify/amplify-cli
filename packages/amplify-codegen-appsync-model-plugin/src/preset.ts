@@ -110,7 +110,7 @@ const generateTypeScriptPreset = (
   models: TypeDefinitionNode[],
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
-  const modelFolder = join(options.baseOutputDir, 'models');
+  const modelFolder = options.baseOutputDir;
   config.push({
     ...options,
     filename: join(modelFolder, 'index.ts'),
@@ -139,7 +139,7 @@ const generateJavasScriptPreset = (
   models: TypeDefinitionNode[],
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
-  const modelFolder = join(options.baseOutputDir, 'models');
+  const modelFolder = options.baseOutputDir;
   config.push({
     ...options,
     filename: join(modelFolder, 'index.js'),
