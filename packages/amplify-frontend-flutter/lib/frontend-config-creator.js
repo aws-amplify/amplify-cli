@@ -3,7 +3,8 @@ const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
 const amplifyConfigHelper = require('./amplify-config-helper');
-
+const readJsonFromDart = require('./read-json-from-dart');
+const writeJsonToDart = require('./write-json-to-dart');
 const FILE_EXTENSION_MAP = {
   graphql: 'graphql',
 };
@@ -56,7 +57,7 @@ function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
   const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
   let amplifyConfig;
   if (fs.existsSync(targetFilePath)) {
-    amplifyConfig = context.amplify.readJsonFromDart(targetFilePath);
+    amplifyConfig = readJsonFromDart(targetFilePath);
   }
 
   // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
