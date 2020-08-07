@@ -107,7 +107,7 @@ async function getModelOutputPath(context) {
     throw new Error('Frontend type is not configured.');
   }
   if(projectConfig.modelgen && projectConfig.modelgen.outputPath){
-    context.print.info('The output path for modelgen is already setup. You can edit the path in .config/project-config.json');
+    context.print.success('\nThe output path for modelgen is already setup. You can edit the path in .config/project-config.json');
     return projectConfig.modelgen.outputPath;
   }
   let defaultPath = '.';
