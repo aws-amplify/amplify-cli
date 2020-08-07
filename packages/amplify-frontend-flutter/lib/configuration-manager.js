@@ -46,7 +46,7 @@ async function confirmConfiguration(context) {
     context.print.info('Please tell us about your project');
     const { config } = context.exeInfo.projectConfig[constants.Label];
 
-    console.log(chalk.green('Flutter project support in the Amplify CLI is in preview status.'));
+    console.log(chalk.green('Flutter project support in the Amplify CLI is in DEVELOPER PREVIEW status.'));
     console.log(chalk.green('Currently, the following resource types are supported:'));
     console.log(chalk.green(' * Auth'));
     console.log(chalk.green(' * Analytics'));

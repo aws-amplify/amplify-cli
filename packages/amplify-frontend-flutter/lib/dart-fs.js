@@ -1,4 +1,5 @@
 const fs = require('fs-extra');
+const path = require('path');
 
 function readJsonFromDart(jsonFilePath, encoding = 'utf8', throwOnError = true) {
   if (!fs.existsSync(jsonFilePath) && !throwOnError) {
@@ -9,6 +10,16 @@ function readJsonFromDart(jsonFilePath, encoding = 'utf8', throwOnError = true) 
   return JSON.parse(jsonValue);
 }
 
+function writeJsonToDart(dest, obj) {
+  const destPath = path.parse(dest).dir;
+  if (!fs.existsSync(destPath)) {
+    fs.mkdirSync(destPath, { recursive: true });
+  }
+  const dartContent = `const amplifyconfig = ''' ${obj}''';`;
+  fs.writeFileSync(dest, dartContent);
+}
+
 module.exports = {
   readJsonFromDart,
+  writeJsonToDart,
 };

@@ -3,8 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
 const amplifyConfigHelper = require('./amplify-config-helper');
-const readJsonFromDart = require('./read-json-from-dart');
-const writeJsonToDart = require('./write-json-to-dart');
+const { readJsonFromDart, writeJsonToDart } = require('./dart-fs');
 const FILE_EXTENSION_MAP = {
   graphql: 'graphql',
 };
@@ -66,7 +65,7 @@ function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
 
   const jsonString = JSON.stringify(amplifyConfig, null, 4);
   // fs.writeFileSync(targetFilePath, jsonString, 'utf8');
-  context.amplify.writeJsonToDart(targetFilePath, jsonString, null);
+  writeJsonToDart(targetFilePath, jsonString, null);
 }
 
 function getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources) {
