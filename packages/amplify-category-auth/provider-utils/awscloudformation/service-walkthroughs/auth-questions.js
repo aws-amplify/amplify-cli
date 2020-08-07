@@ -168,14 +168,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   if (coreAnswers.thirdPartyAuth) {
     identityPoolProviders(coreAnswers, projectType);
   }
-
-  // ask manual trigger flow question
-
-  // if (coreAnswers.authSelections !== 'identityPoolOnly' && !['init', 'checkout'].includes(context.commandName)) {
-  //   if (coreAnswers.useDefault === 'manual') {
-  //     coreAnswers.triggers = await lambdaFlow(context, coreAnswers.triggers);
-  //   }
-  // }
   const isEnvPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   const isEnvCheckout = context.input.command === 'env' && context.input.subCommands[0] === 'checkout';
   const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';

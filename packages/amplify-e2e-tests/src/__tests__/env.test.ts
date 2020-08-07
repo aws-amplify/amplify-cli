@@ -8,6 +8,10 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
+  addAuthWithCustomTrigger,
+  amplifyPushAuth,
+  addAuthWithRecaptchaTrigger,
+  addAuthWithDefaultSocial,
 } from 'amplify-e2e-core';
 import {
   addEnvironment,
@@ -17,6 +21,7 @@ import {
   listEnvironment,
   pullEnvironment,
   removeEnvironment,
+  addEnvironmentHostedUI,
 } from '../environment/env';
 
 async function validate(meta: any) {
@@ -96,5 +101,89 @@ describe.skip('cross project environment commands', () => {
       await deleteProject(projRoot2);
       deleteProjectDir(projRoot2);
     }
+  });
+});
+
+describe('environment commands with Cognito Triggers', () => {
+  let projRoot: string;
+  beforeAll(async () => {
+    projRoot = await createNewProjectDir('env-test');
+    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await addAuthWithCustomTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+  });
+
+  afterAll(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('init a project, add and checkout environment', async () => {
+    await addEnvironment(projRoot, { envName: 'envb' });
+    await listEnvironment(projRoot, { numEnv: 2 });
+    await checkoutEnvironment(projRoot, { envName: 'enva' });
+    const meta = getProjectMeta(projRoot);
+    await validate(meta);
+  });
+  it('init a project, pull environemnt', async () => {
+    await pullEnvironment(projRoot, {});
+    const meta = getProjectMeta(projRoot);
+    await validate(meta);
+  });
+});
+
+describe('environment commands with recaptcha trigger', () => {
+  let projRoot: string;
+  beforeAll(async () => {
+    projRoot = await createNewProjectDir('env-test');
+    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+  });
+
+  afterAll(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('init a project, add and checkout environment', async () => {
+    await addEnvironment(projRoot, { envName: 'envb' });
+    await listEnvironment(projRoot, { numEnv: 2 });
+    await checkoutEnvironment(projRoot, { envName: 'enva' });
+    const meta = getProjectMeta(projRoot);
+    await validate(meta);
+  });
+  it('init a project, pull environemnt', async () => {
+    await pullEnvironment(projRoot, {});
+    const meta = getProjectMeta(projRoot);
+    await validate(meta);
+  });
+});
+
+describe('environment commands with HostedUI params', () => {
+  let projRoot: string;
+  beforeAll(async () => {
+    projRoot = await createNewProjectDir('env-test');
+    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await addAuthWithDefaultSocial(projRoot, {});
+    await amplifyPushAuth(projRoot);
+  });
+
+  afterAll(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('init a project, add and checkout environment', async () => {
+    await addEnvironmentHostedUI(projRoot, { envName: 'envb' });
+    await listEnvironment(projRoot, { numEnv: 2 });
+    const meta = getProjectMeta(projRoot);
+    await validate(meta);
+  });
+
+  it('init a project, pull environemnt', async () => {
+    await pullEnvironment(projRoot, {});
+    const meta = getProjectMeta(projRoot);
+    await validate(meta);
   });
 });
