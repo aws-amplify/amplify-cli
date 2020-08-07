@@ -37,7 +37,7 @@ export function invokeFunction(options: InvokeOptions) {
       },
       fail(error: any) {
         returned = true;
-        reject(_.assign({}, error));
+        reject(error);
       },
       awsRequestId: 'LAMBDA_INVOKE',
       logStreamName: 'LAMBDA_INVOKE',
@@ -91,9 +91,18 @@ export function invokeFunction(options: InvokeOptions) {
 process.on('message', async options => {
   try {
     const result = await invokeFunction(JSON.parse(options));
-    process.send!(JSON.stringify({ result, error: null }));
+    process.stdout.write('\n');
+    process.stdout.write(JSON.stringify({ result, error: null }));
   } catch (error) {
-    process.send!(JSON.stringify({ result: null, error }));
+    process.send!(
+      JSON.stringify({
+        result: null,
+        error: {
+          type: 'Lambda:Unhandled',
+          message: error.message,
+        },
+      }),
+    );
   }
   process.exit(1);
 });

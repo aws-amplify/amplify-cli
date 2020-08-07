@@ -1,11 +1,7 @@
-import {
-  amplifyPublishWithoutUpdate,
-  createReactTestProject,
-  resetBuildCommand,
-} from 'amplify-e2e-core';
+import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
-import { addHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
+import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
 import { deleteProjectDir, getProjectMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -16,14 +12,14 @@ describe('amplify add hosting', () => {
   beforeAll(async () => {
     projRoot = await createReactTestProject();
     await initJSProjectWithProfile(projRoot, {});
-    await addHosting(projRoot);
+    await addDEVHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
   });
 
   afterAll(async () => {
     await removeHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
-    await deleteProject(projRoot, true);
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 
@@ -31,14 +27,14 @@ describe('amplify add hosting', () => {
 
   afterEach(async () => {});
 
-  it('add hosting and push creates correct amplify artifacts', async () => {
+  it('push creates correct amplify artifacts', async () => {
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
     const projectMeta = getProjectMeta(projRoot);
     expect(projectMeta.hosting).toBeDefined();
     expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
   });
 
-  it('publish', async () => {
+  it('publish successfuly', async () => {
     let error;
     try {
       await amplifyPublishWithoutUpdate(projRoot);
@@ -60,5 +56,4 @@ describe('amplify add hosting', () => {
     expect(error.message).toEqual('Process exited with non zero exit code 1');
     resetBuildCommand(projRoot, currentBuildCommand);
   });
-
-})
+});

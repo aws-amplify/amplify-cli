@@ -1,8 +1,10 @@
+import * as fs from 'fs-extra';
 import * as path from 'path';
+import { CLIContextEnvironmentProvider, FeatureFlags } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
-import { constructContext, persistContext } from './context-manager';
+import { constructContext, persistContext, attachUsageData } from './context-manager';
 import { print } from './context-extensions';
 import { executeCommand } from './execution-manager';
 import { Context } from './domain/context';
@@ -20,9 +22,11 @@ EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
 export async function run() {
+  let input = null;
+  let errorHandler = (e: Error) => {};
   try {
     let pluginPlatform = await getPluginPlatform();
-    let input = getCommandLineInput(pluginPlatform);
+    input = getCommandLineInput(pluginPlatform);
     // with non-help command supplied, give notification before execution
     if (input.command !== 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
@@ -48,11 +52,45 @@ export async function run() {
         throw new Error(verificationResult.message);
       }
     }
-
     rewireDeprecatedCommands(input);
+
     const context = constructContext(pluginPlatform, input);
+
+    // Initialize feature flags
+    const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
+      getEnvInfo: context.amplify.getEnvInfo,
+    });
+
+    const getProjectPath = (): string => {
+      try {
+        let { projectPath } = context.amplify.getEnvInfo();
+
+        // Check if the returned path exists, because it is possible that
+        // local-env-info.json is checked in and contains an invalid path
+        // https://github.com/aws-amplify/amplify-cli/issues/4950
+        if (projectPath && !fs.pathExistsSync(projectPath)) {
+          projectPath = '';
+        }
+
+        return projectPath;
+      } catch {
+        return '';
+      }
+    };
+
+    const projectPath = getProjectPath();
+
+    if (projectPath) {
+      await FeatureFlags.initialize(contextEnvironmentProvider, projectPath);
+    }
+
+    await attachUsageData(context);
+    errorHandler = boundErrorHandler.bind(context);
+    process.on('SIGINT', sigIntHandler.bind(context));
     await checkProjectConfigVersion(context);
+    context.usageData.emitInvoke();
     await executeCommand(context);
+    context.usageData.emitSuccess();
     persistContext(context);
     // no command supplied defaults to help, give update notification at end of execution
     if (input.command === 'help') {
@@ -62,6 +100,7 @@ export async function run() {
     return 0;
   } catch (e) {
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
+    errorHandler(e);
     if (e.message) {
       print.error(e.message);
     }
@@ -72,8 +111,16 @@ export async function run() {
   }
 }
 
+function boundErrorHandler(this: Context, e: Error) {
+  this.usageData.emitError(e);
+}
+function sigIntHandler(this: Context, e: any) {
+  this.usageData.emitAbort();
+}
+
 // entry from library call
 export async function execute(input: Input): Promise<number> {
+  let errorHandler = (e: Error) => {};
   try {
     let pluginPlatform = await getPluginPlatform();
     let verificationResult = verifyInput(pluginPlatform, input);
@@ -94,12 +141,18 @@ export async function execute(input: Input): Promise<number> {
       }
     }
 
-    const context = constructContext(pluginPlatform, input);
+    const context = await constructContext(pluginPlatform, input);
+    await attachUsageData(context);
+    errorHandler = boundErrorHandler.bind(context);
+    process.on('SIGINT', sigIntHandler.bind(context));
+    context.usageData.emitInvoke();
     await executeCommand(context);
+    context.usageData.emitSuccess();
     persistContext(context);
     return 0;
   } catch (e) {
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
+    errorHandler(e);
     if (e.message) {
       print.error(e.message);
     }

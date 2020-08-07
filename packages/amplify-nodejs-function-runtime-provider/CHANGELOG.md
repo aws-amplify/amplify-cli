@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.0...amplify-nodejs-function-runtime-provider@1.1.2) (2020-07-29)
+
+
+### Bug Fixes
+
+* new json and snapshot ([#4947](https://github.com/aws-amplify/amplify-cli/issues/4947)) ([336858b](https://github.com/aws-amplify/amplify-cli/commit/336858bca104a2f63353e2db4e2d56b19c19a492))
+* support large payload in Node.js functions ([#4906](https://github.com/aws-amplify/amplify-cli/issues/4906)) ([3733a16](https://github.com/aws-amplify/amplify-cli/commit/3733a161ea09472fe52d5fc8a6515a3e4e726338))
+* **amplify-nodejs-function-runtime-provider:** restore console.log ([#4941](https://github.com/aws-amplify/amplify-cli/issues/4941)) ([bc1aa0b](https://github.com/aws-amplify/amplify-cli/commit/bc1aa0b21df3c969f1ddc0f3c7842ae1337fbdba))
+
+
+
+
+
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.0...amplify-nodejs-function-runtime-provider@1.1.1) (2020-07-23)
+
+
+### Bug Fixes
+
+* support large payload in Node.js functions ([#4906](https://github.com/aws-amplify/amplify-cli/issues/4906)) ([2945996](https://github.com/aws-amplify/amplify-cli/commit/2945996eae87462bfd09452e1966604015397a2f))
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.0.6...amplify-nodejs-function-runtime-provider@1.1.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
+## [1.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.0.5...amplify-nodejs-function-runtime-provider@1.0.6) (2020-06-25)
+
+
+### Bug Fixes
+
+* nodejs staleBuild glob ([#4499](https://github.com/aws-amplify/amplify-cli/issues/4499)) ([bcabc52](https://github.com/aws-amplify/amplify-cli/commit/bcabc528dc79ebfcd128b7e216e889dc61dd38be))
+
+
+
+
+
+## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.0.4...amplify-nodejs-function-runtime-provider@1.0.5) (2020-06-10)
+
+
+### Bug Fixes
+
+* **amplify-nodejs-function-runtime-provider:** unhandled errors ([#4418](https://github.com/aws-amplify/amplify-cli/issues/4418)) ([d28083b](https://github.com/aws-amplify/amplify-cli/commit/d28083b83a4a301980affe5aedef316374f39508))
+
+
+
+
+
 ## [1.0.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.0.3...amplify-nodejs-function-runtime-provider@1.0.4) (2020-05-15)
 
 

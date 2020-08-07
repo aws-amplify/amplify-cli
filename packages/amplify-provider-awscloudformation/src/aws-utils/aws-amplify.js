@@ -14,6 +14,7 @@ const amplifyServiceRegions = [
   'ap-south-1',
   'ap-southeast-1',
   'ap-southeast-2',
+  'ca-central-1',
 ];
 
 async function getConfiguredAmplifyClient(context, options = {}) {

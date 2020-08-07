@@ -528,6 +528,7 @@ describe(`ModelAuthTests`, async () => {
     );
     expect(updateResponse.data.updatePost).toEqual(null);
     expect(updateResponse.errors.length).toEqual(1);
+    expect((updateResponse.errors[0] as any).data).toBeNull();
     expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -615,6 +616,7 @@ describe(`ModelAuthTests`, async () => {
     );
     expect(deleteResponse.data.deletePost).toEqual(null);
     expect(deleteResponse.errors.length).toEqual(1);
+    expect((deleteResponse.errors[0] as any).data).toBeNull();
     expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -762,6 +764,7 @@ describe(`ModelAuthTests`, async () => {
       `);
     expect(req2.data.updateSalary).toEqual(null);
     expect(req2.errors.length).toEqual(1);
+    expect((req2.errors[0] as any).data).toBeNull();
     expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -812,6 +815,7 @@ describe(`ModelAuthTests`, async () => {
       `);
     expect(req2.data.deleteSalary).toEqual(null);
     expect(req2.errors.length).toEqual(1);
+    expect((req2.errors[0] as any).data).toBeNull();
     expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -1012,6 +1016,7 @@ describe(`ModelAuthTests`, async () => {
     console.log(JSON.stringify(req3, null, 4));
     expect(req.data.createSingleGroupProtected.value).toEqual(11);
     expect(req.data.createSingleGroupProtected.value).toEqual(req3.data.getSingleGroupProtected.value);
+    expect((req2.errors[0] as any).data).toBeNull();
     expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -2458,6 +2463,7 @@ describe(`ModelAuthTests`, async () => {
       `);
     console.log(JSON.stringify(ownedByAdminsUnauthed, null, 4));
     expect(ownedByAdminsUnauthed.errors.length).toEqual(1);
+    expect((ownedByAdminsUnauthed.errors[0] as any).data).toBeNull();
     expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 
     const ownedByDevs2 = await GRAPHQL_CLIENT_1.query(`

@@ -156,6 +156,7 @@ describe('Pipeline Resolvers', () => {
           source,
           arguments: args,
           prevResult: 'FN2-RESULT',
+          result: 'FN2-RESULT',
           stash: { exeSeq: ['REQUEST-MAPPING-TEMPLATE', 'fn1', 'fn2'] },
         },
         context,

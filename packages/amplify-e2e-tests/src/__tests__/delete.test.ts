@@ -1,11 +1,5 @@
 import { S3, Amplify } from 'aws-sdk';
-import {
-  initJSProjectWithProfile,
-  initIosProjectWithProfile,
-  initAndroidProjectWithProfile,
-  deleteProject,
-  pullProject,
-} from 'amplify-e2e-core';
+import { initJSProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
@@ -15,8 +9,10 @@ import {
   getAmplifyConfigIOSPath,
   getAWSConfigAndroidPath,
   getAmplifyConfigAndroidPath,
+  bucketNotExists,
+  deleteS3Bucket,
 } from 'amplify-e2e-core';
-import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/add-env';
+import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import { addApiWithoutSchema } from 'amplify-e2e-core';
 import { addCodegen } from '../codegen/add';
 import { addS3 } from 'amplify-e2e-core';
@@ -52,25 +48,6 @@ describe('amplify delete', () => {
     await testDeletion(projRoot, { android: true });
   });
 
-  // it('should not delete amplify app', async () => {
-  //   const projRoot2 = await createNewProjectDir('delete-dep');
-  //   const envName = 'testdelete';
-  //   await initJSProjectWithProfile(projRoot, {});
-  //   await addApiWithoutSchema(projRoot);
-  //   const amplifyMeta = getProjectMeta(projRoot);
-  //   const meta = amplifyMeta.providers.awscloudformation;
-  //   const { AmplifyAppId, Region, StackName, DeploymentBucketName } = meta;
-  //   expect(AmplifyAppId).toBeDefined();
-  //   await createEnv(AmplifyAppId, envName, Region, StackName, DeploymentBucketName);
-  //   await pullProject(projRoot2, { appId: AmplifyAppId, envName });
-  //   await initIosProjectWithProfile(projRoot2, {});
-  //   await deleteProject(projRoot);
-  //   expect(await appExists(AmplifyAppId, Region)).toBeTruthy();
-  //   // clean up
-  //   await deleteProject(projRoot2);
-  //   deleteProjectDir(projRoot2);
-  //   await deleteAmplifyApp(AmplifyAppId, Region);
-  // });
   it('should delete pinpoint project', async () => {
     await initProject(projRoot);
     const pinpointResourceName = await addPinpointAnalytics(projRoot);
@@ -80,6 +57,7 @@ describe('amplify delete', () => {
     let pinpointAppExists = await pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeTruthy();
     await amplifyDelete(projRoot);
+    await timeout(4 * 1000);
     pinpointAppExists = await pinpointAppExist(pintpointAppId);
     expect(pinpointAppExists).toBeFalsy();
   });
@@ -114,7 +92,7 @@ describe('amplify delete', () => {
     const meta = amplifyMeta.providers.awscloudformation;
     const bucketName = meta.DeploymentBucketName;
     expect(await bucketExists(bucketName)).toBeTruthy();
-    await deleteBucket(bucketName);
+    await deleteS3Bucket(bucketName);
     await deleteProject(projRoot);
   });
 });
@@ -132,7 +110,7 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   expect(await bucketExists(deploymentBucketName1)).toBe(true);
   expect(await bucketExists(deploymentBucketName2)).toBe(true);
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(true);
-  await deleteProject(projRoot, true);
+  await deleteProject(projRoot);
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(false);
   expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
   expect(await bucketNotExists(deploymentBucketName2)).toBe(true);
@@ -178,23 +156,6 @@ async function bucketExists(bucket: string) {
   }
 }
 
-async function deleteAmplifyApp(appId, region) {
-  const amplify = new Amplify({ region });
-  await amplify.deleteApp({ appId }).promise();
-}
-
-async function createEnv(appId, envName, region, stackName, deploymentArtifacts) {
-  const amplify = new Amplify({ region });
-  await amplify
-    .createBackendEnvironment({
-      appId,
-      environmentName: envName,
-      stackName,
-      deploymentArtifacts,
-    })
-    .promise();
-}
-
 async function appExists(appId: string, region: string) {
   const amplify = new Amplify({ region });
   try {
@@ -205,59 +166,8 @@ async function appExists(appId: string, region: string) {
   }
 }
 
-async function bucketNotExists(bucket: string) {
-  const s3 = new S3();
-  const params = {
-    Bucket: bucket,
-    $waiter: { maxAttempts: 10, delay: 30 },
-  };
-  try {
-    await s3.waitFor('bucketNotExists', params).promise();
-    return true;
-  } catch (error) {
-    if (error.statusCode === 200) {
-      return false;
-    }
-    throw error;
-  }
-}
-
-async function deleteBucket(bucket: string) {
-  const s3 = new S3();
-  let continuationToken = null;
-  const objectKey = [];
-  let truncated = false;
-  do {
-    const results = await s3
-      .listObjectsV2({
-        Bucket: bucket,
-        ContinuationToken: continuationToken,
-      })
-      .promise();
-    results.Contents.forEach(r => {
-      objectKey.push({ Key: r.Key });
-    });
-
-    continuationToken = results.NextContinuationToken;
-    truncated = results.IsTruncated;
-  } while (truncated);
-  const chunkedResult = _.chunk(objectKey, 1000);
-  const deleteReq = chunkedResult
-    .map(r => {
-      return {
-        Bucket: bucket,
-        Delete: {
-          Objects: r,
-          Quiet: true,
-        },
-      };
-    })
-    .map(delParams => s3.deleteObjects(delParams).promise());
-  await Promise.all(deleteReq);
-  await s3
-    .deleteBucket({
-      Bucket: bucket,
-    })
-    .promise();
-  await bucketNotExists(bucket);
+async function timeout(timeout: number) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, timeout);
+  });
 }

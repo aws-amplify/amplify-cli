@@ -53,7 +53,7 @@ function getSrcDir(context) {
   };
 }
 
-function createAmplifyConfig(context) {
+function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
   const { amplify } = context;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
@@ -68,13 +68,15 @@ function createAmplifyConfig(context) {
     amplifyConfig = context.amplify.readJsonFile(targetFilePath);
   }
 
-  amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig);
+  // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
+  const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
+  amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig, newAWSConfig);
 
   const jsonString = JSON.stringify(amplifyConfig, null, 4);
   fs.writeFileSync(targetFilePath, jsonString, 'utf8');
 }
 
-function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
+function getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources) {
   const newAWSConfig = getAWSConfigObject(amplifyResources);
   const cloudAWSConfig = getAWSConfigObject(cloudAmplifyResources);
   const currentAWSConfig = getCurrentAWSConfig(context);
@@ -82,7 +84,11 @@ function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
   const customConfigs = getCustomConfigs(cloudAWSConfig, currentAWSConfig);
 
   Object.assign(newAWSConfig, customConfigs);
+  return newAWSConfig;
+}
 
+function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
+  const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
   generateAWSConfigFile(context, newAWSConfig);
   return context;
 }

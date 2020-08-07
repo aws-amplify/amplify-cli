@@ -2,7 +2,7 @@ import Connection from 'mqtt-connection';
 import ws from 'ws';
 import steed from 'steed';
 import pino from 'pino';
-import extend from 'extend';
+import { defaultsDeep } from 'lodash';
 import nanoid from 'nanoid';
 import { TrieListener } from './trie-listener';
 import { Client } from './client';
@@ -97,7 +97,7 @@ export class MQTTServer extends EventEmitter {
 
   constructor(options: MQTTServerOptions = {}, private callback = (err: any, data?: any) => {}) {
     super();
-    this.options = extend(true, {}, DEFAULT_OPTIONS, options);
+    this.options = defaultsDeep(options, DEFAULT_OPTIONS);
 
     this._dedupId = 0;
     this.clients = {};

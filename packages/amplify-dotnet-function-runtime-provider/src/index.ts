@@ -17,6 +17,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
               value: dotnetcore31,
               cloudTemplateValue: dotnetcore31,
               defaultHandler: `${contributionRequest.contributionContext.resourceName}::${contributionRequest.contributionContext.resourceName}.${contributionRequest.contributionContext.functionName}::LambdaHandler`,
+              layerExecutablePath: dotnetcore31,
             },
           };
         default:

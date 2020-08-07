@@ -104,6 +104,7 @@ async function remove(context) {
   return amplify.removeResource(context, category, resource).catch(err => {
     context.print.info(err.stack);
     context.print.error(REMOVE_ERROR_MESSAGE);
+    context.usageData.emitError(err);
   });
 }
 

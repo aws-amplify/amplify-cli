@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-notifications",
-  "version": "2.15.6",
+  "version": "2.15.16",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",
@@ -15,11 +15,10 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest --coverage",
-    "test-ci": "jest --ci -i"
+    "test": "jest --coverage"
   },
   "dependencies": {
-    "amplify-category-auth": "2.15.6",
+    "amplify-category-auth": "2.18.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",
     "open": "^7.0.0",

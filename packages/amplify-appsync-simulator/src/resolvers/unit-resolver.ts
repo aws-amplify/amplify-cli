@@ -35,7 +35,7 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
       return requestPayload;
     }
     try {
-      result = await dataLoader.load(requestPayload);
+      result = await dataLoader.load(requestPayload, { source, args, context, info });
     } catch (e) {
       if (requestPayload && requestPayload.version === '2018-05-29') {
         // https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-changelog.html#aws-appsync-resolver-mapping-template-version-2018-05-29

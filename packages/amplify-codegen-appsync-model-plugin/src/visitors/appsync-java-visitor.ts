@@ -8,16 +8,21 @@ import {
   LOADER_IMPORT_PACKAGES,
   CONNECTION_RELATIONSHIP_IMPORTS,
   NON_MODEL_CLASS_IMPORT_PACKAGES,
+  MODEL_AUTH_CLASS_IMPORT_PACKAGES,
 } from '../configs/java-config';
+import { JAVA_TYPE_IMPORT_MAP } from '../scalars';
 import { JavaDeclarationBlock } from '../languages/java-declaration-block';
 import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConfig, RawAppSyncModelConfig } from './appsync-visitor';
 import { CodeGenConnectionType } from '../utils/process-connections';
+import { AuthDirective, AuthStrategy } from '../utils/process-auth';
+import { printWarning } from '../utils/warn';
 
 export class AppSyncModelJavaVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
   TPluginConfig extends ParsedAppSyncModelConfig = ParsedAppSyncModelConfig
 > extends AppSyncModelVisitor<TRawConfig, TPluginConfig> {
   protected additionalPackages: Set<string> = new Set();
+  protected usingAuth: boolean = false;
 
   generate(): string {
     this.processDirectives();
@@ -262,7 +267,16 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generatePackageHeader(isModel: boolean = true): string {
-    const baseImports = isModel ? MODEL_CLASS_IMPORT_PACKAGES : NON_MODEL_CLASS_IMPORT_PACKAGES;
+    let baseImports;
+    if (isModel) {
+      if (this.usingAuth) {
+        baseImports = MODEL_AUTH_CLASS_IMPORT_PACKAGES;
+      } else {
+        baseImports = MODEL_CLASS_IMPORT_PACKAGES;
+      }
+    } else {
+      baseImports = NON_MODEL_CLASS_IMPORT_PACKAGES;
+    }
     const imports = this.generateImportStatements([...Array.from(this.additionalPackages), '', ...baseImports]);
     return [this.generatePackageName(), '', imports].join('\n');
   }
@@ -615,10 +629,8 @@ export class AppSyncModelJavaVisitor<
 
   protected getNativeType(field: CodeGenField): string {
     const nativeType = super.getNativeType(field);
-    if (nativeType.includes('.')) {
-      const classSplit = nativeType.split('.');
-      this.additionalPackages.add(nativeType);
-      return classSplit[classSplit.length - 1];
+    if (Object.keys(JAVA_TYPE_IMPORT_MAP).includes(nativeType)) {
+      this.additionalPackages.add(JAVA_TYPE_IMPORT_MAP[nativeType]);
     }
     return nativeType;
   }
@@ -678,15 +690,23 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateToStringMethod(model: CodeGenModel, declarationBlock: JavaDeclarationBlock): void {
+    const fields = this.getNonConnectedField(model).map(field => {
+      const fieldName = this.getFieldName(field);
+      const fieldGetterName = this.getFieldGetterName(field);
+
+      return '"' + fieldName + '=" + String.valueOf(' + fieldGetterName + '())';
+    });
+
     const body = [
       'return new StringBuilder()',
       `.append("${this.getModelName(model)} {")`,
-      this.getNonConnectedField(model)
-        .map(field => {
-          const fieldName = this.getFieldName(field);
-          const fieldGetterName = this.getFieldGetterName(field);
-
-          return '.append("' + fieldName + '=" + String.valueOf(' + fieldGetterName + '()))';
+      fields
+        .map((field, index) => {
+          let fieldDelimiter = '';
+          if (fields.length - index - 1 !== 0) {
+            fieldDelimiter = ' + ", "';
+          }
+          return '.append(' + field + fieldDelimiter + ')';
         })
         .join('\n'),
       '.append("}")',
@@ -730,13 +750,20 @@ export class AppSyncModelJavaVisitor<
     const annotations: string[] = model.directives.map(directive => {
       switch (directive.name) {
         case 'model':
-          return `ModelConfig(pluralName = "${this.pluralizeModelName(model)}")`;
-          break;
+          const modelArgs: string[] = [];
+          const authDirectives: AuthDirective[] = model.directives.filter(d => d.name === 'auth') as AuthDirective[];
+          const authRules = this.generateAuthRules(authDirectives);
+          modelArgs.push(`pluralName = "${this.pluralizeModelName(model)}"`);
+          if (authRules.length) {
+            this.usingAuth = true;
+            modelArgs.push(`authRules = ${authRules}`);
+          }
+          return `ModelConfig(${modelArgs.join(', ')})`;
         case 'key':
-          const args: string[] = [];
-          args.push(`name = "${directive.arguments.name}"`);
-          args.push(`fields = {${(directive.arguments.fields as string[]).map((f: string) => `"${f}"`).join(',')}}`);
-          return `Index(${args.join(', ')})`;
+          const keyArgs: string[] = [];
+          keyArgs.push(`name = "${directive.arguments.name}"`);
+          keyArgs.push(`fields = {${(directive.arguments.fields as string[]).map((f: string) => `"${f}"`).join(',')}}`);
+          return `Index(${keyArgs.join(', ')})`;
 
         default:
           break;
@@ -744,6 +771,52 @@ export class AppSyncModelJavaVisitor<
       return '';
     });
     return ['SuppressWarnings("all")', ...annotations].filter(annotation => annotation);
+  }
+
+  protected generateAuthRules(authDirectives: AuthDirective[]): string {
+    const operationMapping = {
+      create: 'ModelOperation.CREATE',
+      read: 'ModelOperation.READ',
+      update: 'ModelOperation.UPDATE',
+      delete: 'ModelOperation.DELETE',
+    };
+    const rules: string[] = [];
+    authDirectives.forEach(directive => {
+      directive.arguments?.rules.forEach(rule => {
+        const authRule = [];
+        switch (rule.allow) {
+          case AuthStrategy.owner:
+            authRule.push('allow = AuthStrategy.OWNER');
+            authRule.push(`ownerField = "${rule.ownerField}"`);
+            authRule.push(`identityClaim = "${rule.identityClaim}"`);
+            break;
+          case AuthStrategy.private:
+            authRule.push('allow = AuthStrategy.PRIVATE');
+            break;
+          case AuthStrategy.public:
+            authRule.push('allow = AuthStrategy.PUBLIC');
+            break;
+          case AuthStrategy.groups:
+            authRule.push('allow = AuthStrategy.GROUPS');
+            authRule.push(`groupClaim = "${rule.groupClaim}"`);
+            if (rule.groups) {
+              authRule.push(`groups = { ${rule.groups?.map(group => `"${group}"`).join(', ')} }`);
+            } else {
+              authRule.push(`groupsField = "${rule.groupField}"`);
+            }
+            break;
+          default:
+            printWarning(`Model has auth with authStrategy ${rule.allow} of which is not yet supported`);
+            return;
+        }
+        authRule.push(`operations = { ${rule.operations?.map(op => operationMapping[op]).join(', ')} }`);
+        rules.push(`@AuthRule(${authRule.join(', ')})`);
+      });
+    });
+    if (rules.length) {
+      return ['{', `${indentMultiline(rules.join(',\n'))}`, '}'].join('\n');
+    }
+    return '';
   }
 
   protected generateFieldAnnotations(field: CodeGenField): string[] {
@@ -754,7 +827,16 @@ export class AppSyncModelJavaVisitor<
   }
 
   protected generateModelFieldAnnotation(field: CodeGenField): string {
-    const annotationArgs: string[] = [`targetType="${field.type}"`, !field.isNullable ? 'isRequired = true' : ''].filter(arg => arg);
+    const authDirectives: AuthDirective[] = field.directives.filter(d => d.name === 'auth') as AuthDirective[];
+    const authRules = this.generateAuthRules(authDirectives);
+    if (authRules.length) {
+      this.usingAuth = true;
+    }
+    const annotationArgs: string[] = [
+      `targetType="${field.type}"`,
+      !field.isNullable ? 'isRequired = true' : '',
+      authRules.length ? `authRules = ${authRules}` : '',
+    ].filter(arg => arg);
 
     return `ModelField${annotationArgs.length ? `(${annotationArgs.join(', ')})` : ''}`;
   }

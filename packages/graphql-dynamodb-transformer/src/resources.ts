@@ -19,12 +19,22 @@ import {
   comment,
   forEach,
   and,
+  RESOLVER_VERSION_ID,
 } from 'graphql-mapping-template';
-import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs, SyncResourceIDs } from 'graphql-transformer-common';
+import {
+  ResourceConstants,
+  plurality,
+  graphqlName,
+  toUpper,
+  ModelResourceIDs,
+  SyncResourceIDs,
+  getBaseType,
+} from 'graphql-transformer-common';
 import { plural } from 'pluralize';
 import { SyncConfig, SyncUtils } from 'graphql-transformer-core';
 import Template from 'cloudform-types/types/template';
 import md5 from 'md5';
+import { InputObjectTypeDefinitionNode } from 'graphql';
 
 type MutationResolverInput = {
   type: string;
@@ -374,8 +384,9 @@ export class ResourceFactory {
    * Create a resolver that creates an item in DynamoDB.
    * @param type
    */
-  public makeCreateResolver({ type, nameOverride, syncConfig, timestamps, mutationTypeName = 'Mutation' }: MutationResolverInput) {
+  public makeCreateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation' }: MutationResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type));
+    const isSyncEnabled = syncConfig ? true : false;
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -383,25 +394,6 @@ export class ResourceFactory {
       TypeName: mutationTypeName,
       RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
         compoundExpression([
-          ...(timestamps && (timestamps.createdAtField || timestamps.updatedAtField)
-            ? [set(ref('createdAt'), ref('util.time.nowISO8601()'))]
-            : []),
-          ...(timestamps && timestamps.createdAtField
-            ? [
-                comment(`Automatically set the createdAt timestamp.`),
-                qref(
-                  `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $createdAt))`,
-                ),
-              ]
-            : []),
-          ...(timestamps && timestamps.updatedAtField
-            ? [
-                comment(`Automatically set the updatedAt timestamp.`),
-                qref(
-                  `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $createdAt))`,
-                ),
-              ]
-            : []),
           qref(`$context.args.input.put("__typename", "${type}")`),
           set(
             ref('condition'),
@@ -436,26 +428,51 @@ export class ResourceFactory {
               }),
             ),
           ),
-          DynamoDBMappingTemplate.putItem(
-            {
-              key: ifElse(
-                ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-                raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
-                obj({
-                  id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`),
-                }),
-                true,
-              ),
-              attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
-              condition: ref('util.toJson($condition)'),
-            },
-            syncConfig ? '2018-05-29' : '2017-02-28',
-          ),
+          DynamoDBMappingTemplate.putItem({
+            key: ifElse(
+              ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+              raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
+              obj({
+                id: raw(`$util.dynamodb.toDynamoDBJson($ctx.args.input.id)`),
+              }),
+              true,
+            ),
+            attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
+            condition: ref('util.toJson($condition)'),
+          }),
         ]),
       ),
-      ResponseMappingTemplate: syncConfig ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
+  }
+
+  public initalizeDefaultInputForCreateMutation(input: InputObjectTypeDefinitionNode, timestamps): string {
+    const hasDefaultIdField = input.fields?.find(field => field.name.value === 'id' && ['ID', 'String'].includes(getBaseType(field.type)));
+    return printBlock('Set default values')(
+      compoundExpression([
+        ...(hasDefaultIdField ? [qref(`$context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId()))`)] : []),
+        ...(timestamps && (timestamps.createdAtField || timestamps.updatedAtField)
+          ? [set(ref('createdAt'), ref('util.time.nowISO8601()'))]
+          : []),
+        ...(timestamps && timestamps.createdAtField
+          ? [
+              comment(`Automatically set the createdAt timestamp.`),
+              qref(
+                `$context.args.input.put("${timestamps.createdAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.createdAtField}, $createdAt))`,
+              ),
+            ]
+          : []),
+        ...(timestamps && timestamps.updatedAtField
+          ? [
+              comment(`Automatically set the updatedAt timestamp.`),
+              qref(
+                `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $createdAt))`,
+              ),
+            ]
+          : []),
+      ]),
+    );
   }
 
   public makeUpdateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation', timestamps }: MutationResolverInput) {
@@ -577,7 +594,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
@@ -606,7 +623,7 @@ export class ResourceFactory {
           isSyncEnabled,
         }),
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
     });
   }
 
@@ -629,7 +646,7 @@ export class ResourceFactory {
           nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
         }),
       ),
-      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse()),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(true)),
     });
   }
   /**
@@ -666,17 +683,15 @@ export class ResourceFactory {
             filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
             limit: ref('limit'),
             nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
-            isSyncEnabled,
           }),
         ]),
       ),
-      ResponseMappingTemplate: isSyncEnabled
-        ? print(
-            DynamoDBMappingTemplate.dynamoDBResponse(
-              compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
-            ),
-          )
-        : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(
+        DynamoDBMappingTemplate.dynamoDBResponse(
+          isSyncEnabled,
+          compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+        ),
+      ),
     });
   }
 
@@ -699,7 +714,7 @@ export class ResourceFactory {
           set(
             ref(requestVariable),
             obj({
-              version: isSyncEnabled ? str('2018-05-29') : str('2017-02-28'),
+              version: str(RESOLVER_VERSION_ID),
               limit: ref('limit'),
             }),
           ),
@@ -725,7 +740,7 @@ export class ResourceFactory {
           raw(`$util.toJson($${requestVariable})`),
         ]),
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
     });
   }
 
@@ -844,7 +859,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: isSyncEnabled ? print(DynamoDBMappingTemplate.dynamoDBResponse()) : print(ref('util.toJson($ctx.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }

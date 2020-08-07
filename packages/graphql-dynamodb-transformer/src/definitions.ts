@@ -460,7 +460,7 @@ export function makeModelXConditionInputObject(
 }
 
 export function makeEnumFilterInputObjects(
-  obj: ObjectTypeDefinitionNode,
+  obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
   ctx: TransformerContext,
   supportsConditions: Boolean,
 ): InputObjectTypeDefinitionNode[] {

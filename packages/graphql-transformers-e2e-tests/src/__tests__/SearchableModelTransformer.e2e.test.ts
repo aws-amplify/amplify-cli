@@ -864,9 +864,9 @@ test('test searches with datastore enabled types', async () => {
   await cf.wait(10, () => Promise.resolve());
 
   searchTodoResponse = await searchTodos();
-  expect(searchTodoResponse.data.items.length).toEqual(1);
+  expect(searchTodoResponse.data.searchTodos.items.length).toEqual(1);
   expect(searchTodoResponse.data.searchTodos.items[0].name).toEqual(todoName);
-  expect(searchTodoResponse.data.searchTodo.items[0]._version).toEqual(todoVersion);
+  expect(searchTodoResponse.data.searchTodos.items[0]._version).toEqual(todoVersion);
 });
 
 type TodoInput = {

@@ -1,13 +1,20 @@
 const ora = require('ora');
+const { FeatureFlags } = require('amplify-cli-core');
 const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 const { getFrontendPlugins } = require('./get-frontend-plugins');
 const { getPluginInstance } = require('./get-plugin-instance');
 const { getAmplifyAppId } = require('./get-amplify-appId');
+
 async function deleteProject(context) {
   const confirmation = await getConfirmation(context);
+
   if (confirmation.proceed) {
     const allEnvs = context.amplify.getEnvDetails();
+    const envNames = Object.keys(allEnvs);
+
+    await FeatureFlags.removeFeatureFlagConfiguration(true, envNames);
+
     const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
 
     try {
@@ -25,7 +32,7 @@ async function deleteProject(context) {
         }
       }
     } catch (ex) {
-      spinner.fail(`Project delete failed ${ex.message}`);
+      spinner.fail('Project delete failed');
       throw ex;
     }
     spinner.succeed('Project deleted in the cloud');
@@ -61,6 +68,7 @@ async function getConfirmation(context, env) {
       `Are you sure you want to continue? This CANNOT be undone. (This would delete ${environmentText} of the project from the cloud${
         env ? '' : ' and wipe out all the local files created by Amplify CLI'
       })`,
+      false,
     ),
     // Place holder for later selective deletes
     deleteS3: true,

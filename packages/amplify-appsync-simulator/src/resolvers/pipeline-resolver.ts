@@ -47,7 +47,11 @@ export class AppSyncPipelineResolver extends AppSyncBaseResolver {
     }
 
     // pipeline response mapping template
-    ({ result, errors: templateErrors } = responseMappingTemplate.render({ source, arguments: args, prevResult, stash }, context, info));
+    ({ result, errors: templateErrors } = responseMappingTemplate.render(
+      { source, arguments: args, result: prevResult, prevResult, stash },
+      context,
+      info,
+    ));
     context.appsyncErrors = [...context.appsyncErrors, ...(templateErrors || [])];
     return result;
   }

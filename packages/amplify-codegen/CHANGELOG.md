@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.15...amplify-codegen@2.15.16) (2020-08-06)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [2.15.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.13...amplify-codegen@2.15.15) (2020-07-29)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [2.15.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.13...amplify-codegen@2.15.14) (2020-07-23)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [2.15.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.12...amplify-codegen@2.15.13) (2020-07-15)
+
+
+### Bug Fixes
+
+* codegen spelling mistake ([#4757](https://github.com/aws-amplify/amplify-cli/issues/4757)) ([454fdc0](https://github.com/aws-amplify/amplify-cli/commit/454fdc01f97f74fce337a25efa12950257597174))
+
+
+
+
+
+## [2.15.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.11...amplify-codegen@2.15.12) (2020-07-07)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [2.15.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.10...amplify-codegen@2.15.11) (2020-06-18)
+
+
+### Bug Fixes
+
+* [#4549](https://github.com/aws-amplify/amplify-cli/issues/4549) [#4550](https://github.com/aws-amplify/amplify-cli/issues/4550) init and folder exist checks ([#4553](https://github.com/aws-amplify/amplify-cli/issues/4553)) ([543d531](https://github.com/aws-amplify/amplify-cli/commit/543d5312823783db7794ad574d03d0ca3991c8b5))
+
+
+
+
+
+## [2.15.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.9...amplify-codegen@2.15.10) (2020-06-10)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [2.15.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.8...amplify-codegen@2.15.9) (2020-05-26)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
 ## [2.15.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.7...amplify-codegen@2.15.8) (2020-05-15)
 
 **Note:** Version bump only for package amplify-codegen
