@@ -222,7 +222,7 @@ app.get('/listUsersInGroup', async (req, res, next) => {
 app.post('/signUserOut', async (req, res, next) => {
   /**
    * To prevent rogue actions of users with escalated privilege signing
-   * other users out, we ensure it's the same user maning the call
+   * other users out, we ensure it's the same user making the call
    * Note that this only impacts actions the user can do in User Pools
    * such as updating an attribute, not services consuming the JWT
    */
