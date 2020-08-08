@@ -356,12 +356,12 @@ const learnMoreLoop = async (key, map, metaData: { URL?; name }, question) => {
 };
 
 // get triggerFlow options based on metadata stored in trigger directory;
-export const choicesFromMetadata = (path, selection, isDir?) => {
+export const choicesFromMetadata = (triggerPath: string, selection, isDir?) => {
   const templates = isDir
-    ? fs.readdirSync(path).filter(f => fs.statSync(path.join(path, f)).isDirectory())
-    : fs.readdirSync(path).map(t => t.substring(0, t.length - 3));
+    ? fs.readdirSync(triggerPath).filter(f => fs.statSync(path.join(triggerPath, f)).isDirectory())
+    : fs.readdirSync(triggerPath).map(t => t.substring(0, t.length - 3));
 
-  const metaData = getTriggerMetadata(path, selection);
+  const metaData = getTriggerMetadata(triggerPath, selection);
   const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
   const options: (string | Separator | { name; value })[] = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
   // add learn more w/ seperator
@@ -371,13 +371,13 @@ export const choicesFromMetadata = (path, selection, isDir?) => {
 };
 
 // get metadata from a particular file
-export const getTriggerMetadata = (path, selection) => readJsonFile(`${path}/${selection}.map.json`);
+export const getTriggerMetadata = (triggerPath, selection) => readJsonFile(`${triggerPath}/${selection}.map.json`);
 
 // open customer's text editor
-async function openEditor(context, path, name) {
-  const filePath = `${path}/${name}.js`;
+async function openEditor(context, filePath, name) {
+  const fullPath = `${filePath}/${name}.js`;
   if (await context.amplify.confirmPrompt(`Do you want to edit your ${name} function now?`)) {
-    await context.amplify.openEditor(context, filePath);
+    await context.amplify.openEditor(context, fullPath);
   }
 }
 
@@ -455,8 +455,8 @@ export const getTriggerEnvVariables = (context, trigger, category) => {
   return null;
 };
 
-export const getTriggerEnvInputs = async (context, path, triggerKey, triggerValues, currentEnvVars) => {
-  const metadata = context.amplify.getTriggerMetadata(path, triggerKey);
+export const getTriggerEnvInputs = async (context, triggerPath, triggerKey, triggerValues, currentEnvVars) => {
+  const metadata = context.amplify.getTriggerMetadata(triggerPath, triggerKey);
   const intersection = Object.keys(metadata).filter(value => triggerValues.includes(value));
   const answers = {};
   for (let i = 0; i < intersection.length; i += 1) {
