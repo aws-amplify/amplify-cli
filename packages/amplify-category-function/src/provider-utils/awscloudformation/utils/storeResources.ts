@@ -37,6 +37,7 @@ export const createLayerArtifacts = (context, parameters: LayerParameters, lates
 const defaultOpts = {
   layerParams: true,
   cfnFile: true,
+  amplifyMeta: true,
 };
 export const updateLayerArtifacts = (
   context,
@@ -54,6 +55,9 @@ export const updateLayerArtifacts = (
       createParametersFile(context, { layerVersion: latestVersion }, parameters.layerName, parametersFileName);
     }
     updateLayerCfnFile(context, parameters, layerDirPath);
+  }
+  if (options.amplifyMeta) {
+    updateLayerInAmplifyMeta(context, parameters);
   }
   return layerDirPath;
 };
