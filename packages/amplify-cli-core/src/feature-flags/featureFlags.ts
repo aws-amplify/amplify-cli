@@ -448,5 +448,14 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
     ]);
+
+    this.registerFlag('lambdaLayers', [
+      {
+        name: 'multiEnvLayers',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
   };
 }

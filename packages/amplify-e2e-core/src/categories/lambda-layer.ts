@@ -1,3 +1,4 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
@@ -5,10 +6,16 @@ import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '.
 import { getLayerVersion, listVersions } from '../utils/sdk-calls';
 import { multiSelect } from '../utils/selectors';
 
-type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
+export type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
 
 const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
+
+async function getLayerDataFromTeamProviderInfo(projRoot: string, layerName: string, envName: string) {
+  const teamProviderInfoPath = path.join(projRoot, 'amplify', 'team-provider-info.json');
+  const teamProviderInfo = await JSONUtilities.readJson(teamProviderInfoPath);
+  return _.get(teamProviderInfo, [envName, 'nonCFNdata', 'function', layerName]);
+}
 
 export function validateLayerDir(projRoot: string, layerName: string, runtimes: LayerRuntimes[]): boolean {
   let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', layerName);
@@ -23,30 +30,33 @@ export function validateLayerDir(projRoot: string, layerName: string, runtimes: 
   return validDir;
 }
 
-export function validatePushedVersion(projRoot: string, layerName: string, version: number, permissions: Permission[]): boolean {
-  const layerParametersPath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'layer-parameters.json');
-  if (fs.existsSync(layerParametersPath)) {
-    const layerParameters = fs.readJsonSync(layerParametersPath);
-    let storedPermissions = layerParameters.layerVersionMap[`${version}`].permissions;
-    return _.difference(permissions, storedPermissions) === _.difference(storedPermissions, permissions);
-  }
-  return false;
+export async function validatePushedVersion(
+  projRoot: string,
+  layerName: string,
+  envName: string,
+  version: number,
+  permissions: LayerPermission[],
+) {
+  const layerData = await getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
+  const storedPermissions: LayerPermission[] = _.get(layerData, ['layerVersionMap', `${version}`, 'permissions']);
+  permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
 }
 
-export async function validateLayerMetadata(layerName: string, meta: any) {
+export async function validateLayerMetadata(projRoot: string, layerName: string, meta: any, envName: string) {
   const { Arn: arn, Region: region } = meta.function[layerName].output;
-  const runtimes = meta.function[layerName].runtimes;
+  const localLayerData = await getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
+  const runtimes = localLayerData.runtimes;
   const runtimeValues = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
-  const localVersions = Object.keys(meta.function[layerName].layerVersionMap);
+  const localVersions = Object.keys(localLayerData.layerVersionMap);
 
   expect(arn).toBeDefined();
   expect(region).toBeDefined();
-  const data = await getLayerVersion(arn, region);
-  const { LayerVersions: Versions } = await listVersions(layerName, region);
+  const cloudData = await getLayerVersion(arn, region);
+  const { LayerVersions: Versions } = await listVersions(`${layerName}-${envName}`, region);
   const cloudVersions = Versions.map(version => version.Version);
   expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
-  expect(data.LayerVersionArn).toEqual(arn);
-  expect(data.CompatibleRuntimes).toEqual(runtimeValues);
+  expect(cloudData.LayerVersionArn).toEqual(arn);
+  expect(cloudData.CompatibleRuntimes).toEqual(runtimeValues);
 }
 
 export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false) {
@@ -184,15 +194,15 @@ export function addOptData(projRoot: string, layerName: string): void {
   fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
 }
 
-enum PermissionName {
+export enum LayerPermissionName {
   awsAccounts = 'awsAccounts',
   awsOrg = 'awsOrg',
   private = 'private',
   public = 'public',
 }
 
-interface Permission {
-  type: PermissionName;
+export interface LayerPermission {
+  type: LayerPermissionName;
   accounts?: string[];
   orgs?: string[];
 }
