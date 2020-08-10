@@ -8,6 +8,8 @@ import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
 import { pathManager, stateManager, $TSMeta, $TSAny } from 'amplify-cli-core';
+import { readJsonFile } from require('./read-json-file');
+const { CloudFormation } = require('aws-sdk');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, isLambdaLayer = false) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -60,6 +62,82 @@ function filterResources(resources, filteredResources) {
   });
 
   return resources;
+}
+
+// ! This function has the same body as a function with a similar name on `amplify-provider-awscloudformation/src/aws-cfn.js`, this can probably be refactored later on
+function replaceTagVars(tagsArr, context) {
+  const tagsJson = tagsArr;
+
+  tagsJson.forEach(tagObj => {
+    if (
+      tagObj['Value'].includes('{project-env}') ||
+      tagObj['Value'].includes('{project-name}') ||
+      tagObj['Value'].includes('{cli-version}')
+    ) {
+      const replaceWith = {
+        '{project-name}': context.exeInfo.projectConfig.projectName,
+        '{project-env}': context.exeInfo.localEnvInfo.envName,
+        '{cli-version}': context.pluginPlatform.plugins.core[0].packageVersion,
+      };
+
+      tagObj['Value'] = tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
+        return replaceWith[matched];
+      });
+    }
+  });
+
+  return tagsJson;
+}
+
+// We are assuming that if they are not equal, it means that the user haas changed the tags locally
+// Runs O(n^2) time at worst, but I think it's the easiest way to do so
+// Feel free to corect me if I'm wrong
+// ? Not sure if this is the best name for it
+// ? Decided to have it as a seperate function, since it can easily be used on other situations, since you can't directly compare the key/value pairs by directly grabbing from the cloud and the local file (they aren't in the same order)
+// ! Check edge case if a certain Key from one tag in one array is not found on the second array passed
+function haveChangedKeyValuePairs(arr1, arr2) {
+  let changed = false;
+
+  // Iterate through each key-value pair from the first array
+  arr1.forEach(currObj => {
+    // Grab the key-value pair from the second array that matches with the "Key" field from the first array
+    const otherTag = arr2.find(obj => obj['Key'] === currObj['Key']);
+
+    // Now that we know they have the same key, we check their values - if they don't have the same value, return false
+    if (currObj['Value'] !== otherTag['Value']) changed = true;
+  });
+
+  // Will return true if all key-value pairs are the same
+  return changed;
+}
+
+async function getCloudTags(amplifyMeta) {
+  const meta = amplifyMeta.providers.awscloudformation;
+  const service = new CloudFormation({ region: meta.Region });
+  const cloudStackInfo = (await service.describeStacks({ StackName: meta.StackName }).promise()).Stacks.find(
+    stack => stack.StackName === meta.StackName,
+  );
+
+  return cloudStackInfo.Tags;
+}
+
+async function checkChangesInTags(context) {
+  // Getting the current tags from the local tags.json file
+  const localAmplifyTagsPath = pathManager.getTagsConfigFilePath();
+  const localAmplifyTags = readJsonFile(localAmplifyTagsPath);
+
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+
+  // Getting current tags pushed to the cloud
+  const cloudTags = await getCloudTags(amplifyMeta);
+
+  // If the local tags contain variables, replace them with the real values
+  // ? Check edge case where user could potentially have an updated cli version that differs from the currently pussed {cli-version} value
+  const cleanedLocalAmplifyTags = replaceTagVars(localAmplifyTags, context);
+
+  // Compare each key-value pair from both sides and check if there have been changes
+  return haveChangedKeyValuePairs(cloudTags, cleanedLocalAmplifyTags);
 }
 
 function getAllResources(amplifyMeta, category, resourceName, filteredResources) {
@@ -237,9 +315,17 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     throw error;
   }
 
+<<<<<<< HEAD:packages/amplify-cli/src/extensions/amplify-helpers/resource-status.ts
   let resourcesToBeCreated: any = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeUpdated: any = await getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeDeleted: any = getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
+=======
+  //
+
+  let resourcesToBeCreated = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
+  let resourcesToBeUpdated = await getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
+  let resourcesToBeDeleted = getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
+>>>>>>> feat: inital version for detecting local tag changes:packages/amplify-cli/src/extensions/amplify-helpers/resource-status.js
 
   let allResources: any = getAllResources(amplifyMeta, category, resourceName, filteredResources);
 
@@ -325,3 +411,12 @@ export async function showResourceTable(category, resourceName, filteredResource
   const changedResourceCount = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length;
   return changedResourceCount;
 }
+<<<<<<< HEAD:packages/amplify-cli/src/extensions/amplify-helpers/resource-status.ts
+=======
+
+module.exports = {
+  getResourceStatus,
+  showResourceTable,
+  checkChangesInTags,
+};
+>>>>>>> feat: inital version for detecting local tag changes:packages/amplify-cli/src/extensions/amplify-helpers/resource-status.js
