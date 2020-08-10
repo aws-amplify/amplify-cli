@@ -46,12 +46,12 @@ async function confirmConfiguration(context) {
     context.print.info('Please tell us about your project');
     const { config } = context.exeInfo.projectConfig[constants.Label];
 
-    console.log(chalk.green('Flutter project support in the Amplify CLI is in DEVELOPER PREVIEW status.'));
-    console.log(chalk.green('Currently, the following resource types are supported:'));
-    console.log(chalk.green(' * Auth'));
-    console.log(chalk.green(' * Analytics'));
-    console.log(chalk.green(' * Storage'));
-    console.log(chalk.red('Other categories may not function as expected for Flutter projects.'));
+    context.print.warning('⚠️  Flutter project support in the Amplify CLI is in DEVELOPER PREVIEW status.');
+    context.print.warning('Currently, the following resource types are supported:');
+    context.print.warning(' * Auth');
+    context.print.warning(' * Analytics');
+    context.print.warning(' * Storage');
+    context.print.warning('Other categories may not function as expected for Flutter projects.');
 
     const configurationSettings = [
       {

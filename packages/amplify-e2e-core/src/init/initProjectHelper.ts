@@ -31,6 +31,8 @@ export const amplifyRegions = [
   'ca-central-1',
 ];
 
+const frontends = ['android', 'flutter', 'ios', 'javascript'];
+
 export function initJSProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
@@ -131,30 +133,34 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
 
 export function initFlutterProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
+
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
       .sendLine(s.editor)
-      .wait("Choose the type of app that you're building")
-      .send('j')
-      .send('j')
+      .wait("Choose the type of app that you're building");
+    singleSelect(chain, 'flutter', frontends)
+      .wait('Where do you want to store your configuration file')
       .sendCarriageReturn()
+      .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
       .sendLine('y')
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .sendLine(s.profileName);
+
+    singleSelect(chain, s.region, amplifyRegions);
+
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
