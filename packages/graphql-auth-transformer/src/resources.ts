@@ -719,7 +719,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       const allowedOwnersVariable = `allowedOwners${ruleNumber}`;
       ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
         comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
-        set(ref(allowedOwnersVariable), ref(`${variableToCheck}.${ownerAttribute}`)),
+        set(ref(allowedOwnersVariable), ref(`util.defaultIfNull($${variableToCheck}.${ownerAttribute}, [])`)),
         isUser
           ? // tslint:disable-next-line
             set(
