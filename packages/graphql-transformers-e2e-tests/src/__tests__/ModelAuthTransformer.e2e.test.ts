@@ -30,7 +30,7 @@ import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 
-describe(`ModelAuthTests`, async () => {
+describe(`ModelAuthTests`, () => {
   const cf = new CloudFormationClient('us-west-2');
 
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -2600,14 +2600,25 @@ describe(`ModelAuthTests`, async () => {
   test("Test get and list with 'read' operation set", async () => {
     const response = await GRAPHQL_CLIENT_1.query(
       `mutation {
-          createOwnerReadProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
+          createNoOwner: createOwnerReadProtected(input: { id: "1" content: "Hello, World! - No Owner" }) {
               id
               content
               owner
           }
+          createOwnerReadProtected(input: { id: "2" content: "Hello, World!", owner: "${USERNAME1}" }) {
+              id
+              content
+              owner
+          }
+          createNoOwner2: createOwnerReadProtected(input: { id: "3" content: "Hello, World! - No Owner 2" }) {
+            id
+            content
+            owner
+        }
       }`,
       {},
     );
+
     console.log(response);
     expect(response.data.createOwnerReadProtected.id).toBeDefined();
     expect(response.data.createOwnerReadProtected.content).toEqual('Hello, World!');
@@ -2649,7 +2660,7 @@ describe(`ModelAuthTests`, async () => {
       {},
     );
     console.log(response4);
-    expect(response4.data.listOwnerReadProtecteds.items.length).toBeGreaterThanOrEqual(1);
+    expect(response4.data.listOwnerReadProtecteds.items.length).toEqual(1);
 
     const response5 = await GRAPHQL_CLIENT_2.query(
       `query {
