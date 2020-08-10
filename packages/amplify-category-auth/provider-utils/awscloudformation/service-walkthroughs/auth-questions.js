@@ -168,17 +168,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   if (coreAnswers.thirdPartyAuth) {
     identityPoolProviders(coreAnswers, projectType);
   }
-  const isEnvPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
-  const isEnvCheckout = context.input.command === 'env' && context.input.subCommands[0] === 'checkout';
-  const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
 
-  if (
-    coreAnswers.authSelections !== 'identityPoolOnly' &&
-    context.input.command != 'init' &&
-    !isEnvPulling &&
-    !isEnvCheckout &&
-    !isEnvAdd
-  ) {
+  const isPullOrEnvCommand = context.input.command === 'pull' || context.input.command === 'env';
+  if (coreAnswers.authSelections !== 'identityPoolOnly' && context.input.command != 'init' && !isPullOrEnvCommand) {
     if (coreAnswers.useDefault === 'manual') {
       coreAnswers.triggers = await lambdaFlow(context, coreAnswers.triggers);
     }
