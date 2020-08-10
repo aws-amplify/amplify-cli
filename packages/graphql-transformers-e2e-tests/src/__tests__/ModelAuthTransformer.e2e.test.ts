@@ -2,6 +2,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -172,8 +173,9 @@ describe(`ModelAuthTests`, () => {
           title: String!
           owner: String
       }
-      type OwnerReadProtected @model @auth(rules: [{ allow: owner, operations: [read] }]) {
+      type OwnerReadProtected @model @auth(rules: [{ allow: owner, operations: [read] }]) @key(fields: ["id", "sk"])  {
           id: ID!
+          sk: String!
           content: String
           owner: String
       }
@@ -198,6 +200,7 @@ describe(`ModelAuthTests`, () => {
       transformers: [
         new DynamoDBModelTransformer(),
         new ModelConnectionTransformer(),
+        new KeyTransformer(),
         new ModelAuthTransformer({
           authConfig: {
             defaultAuthentication: {
@@ -2600,17 +2603,17 @@ describe(`ModelAuthTests`, () => {
   test("Test get and list with 'read' operation set", async () => {
     const response = await GRAPHQL_CLIENT_1.query(
       `mutation {
-          createNoOwner: createOwnerReadProtected(input: { id: "1" content: "Hello, World! - No Owner" }) {
+          createNoOwner: createOwnerReadProtected(input: { id: "1", sk: "1", content: "Hello, World! - No Owner" }) {
               id
               content
               owner
           }
-          createOwnerReadProtected(input: { id: "2" content: "Hello, World!", owner: "${USERNAME1}" }) {
+          createOwnerReadProtected(input: { id: "1", sk: "2", content: "Hello, World!", owner: "${USERNAME1}" }) {
               id
               content
               owner
           }
-          createNoOwner2: createOwnerReadProtected(input: { id: "3" content: "Hello, World! - No Owner 2" }) {
+          createNoOwner2: createOwnerReadProtected(input: { id: "1", sk: "3", content: "Hello, World! - No Owner 2" }) {
             id
             content
             owner
@@ -2626,7 +2629,7 @@ describe(`ModelAuthTests`, () => {
 
     const response2 = await GRAPHQL_CLIENT_2.query(
       `query {
-          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}") {
+          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}", sk:"2") {
               id content owner
           }
       }`,
@@ -2638,7 +2641,7 @@ describe(`ModelAuthTests`, () => {
 
     const response3 = await GRAPHQL_CLIENT_1.query(
       `query {
-          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}") {
+          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}", sk:"2") {
               id content owner
           }
       }`,
@@ -2651,7 +2654,7 @@ describe(`ModelAuthTests`, () => {
 
     const response4 = await GRAPHQL_CLIENT_1.query(
       `query {
-          listOwnerReadProtecteds {
+          listOwnerReadProtecteds(id: "1") {
               items {
                   id content owner
               }
