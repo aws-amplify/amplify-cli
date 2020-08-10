@@ -410,7 +410,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
         formatComment
           ? comment(formatComment(rule))
           : comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
-        set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
+        set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, [])`)),
         isUser
           ? // tslint:disable-next-line
             set(
@@ -487,7 +487,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         formatComment
           ? comment(formatComment(rule))
           : comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
-        set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
+        set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, [])`)),
         isUser
           ? // tslint:disable-next-line
             set(
