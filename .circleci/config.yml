@@ -1116,9 +1116,9 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                # - master
                 - graphqlschemae2e
-                - beta
+                # - beta
           requires:
             - build
             - mock_e2e_tests
@@ -1161,7 +1161,7 @@ workflows:
             - test
             - mock_e2e_tests
             - graphql_e2e_tests
-            - integration_test
+            # - integration_test
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
