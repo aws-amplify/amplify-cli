@@ -1,4 +1,5 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
+import { FeatureFlags } from 'amplify-cli-core';
 import { LayerParameters } from './utils/layerParams';
 import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
@@ -333,7 +334,8 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
     }
     return envParams;
-  } else if (service === ServiceName.LambdaLayer) {
+  } else if (FeatureFlags.getBoolean('lambdaLayers.multiEnv') && service === ServiceName.LambdaLayer) {
+    console.log('multiEnvLayers Feature Flag enabled');
     const { envName } = context.amplify.getEnvInfo();
     const layerParamsPath = path.join('amplify', 'backend', categoryName, resourceName, parametersFileName);
 
