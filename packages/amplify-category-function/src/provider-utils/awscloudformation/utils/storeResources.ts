@@ -1,4 +1,5 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
+import { FeatureFlags } from 'amplify-cli-core';
 import path from 'path';
 import fs from 'fs-extra';
 import { provider, ServiceName, parametersFileName, functionParametersFileName, teamProviderInfoFileName } from './constants';
