@@ -29,7 +29,7 @@ import {
   NewLineNode,
   ReturnNode,
   parens,
-  ToNullOrEmptyNode,
+  IsNullOrEmptyNode,
 } from './ast';
 
 const TAB = '  ';
@@ -150,7 +150,7 @@ function printToJson(node: ToJsonNode, indent: string = ''): string {
   return `${indent}$util.toJson(${printExpr(node.expr, '')})`;
 }
 
-function printIsNullOrEmpty(node: ToNullOrEmptyNode, indent: string = ''): string {
+function printIsNullOrEmpty(node: IsNullOrEmptyNode, indent: string = ''): string {
   return `${indent}$util.isNullOrEmpty(${printExpr(node.expr, '')})`;
 }
 

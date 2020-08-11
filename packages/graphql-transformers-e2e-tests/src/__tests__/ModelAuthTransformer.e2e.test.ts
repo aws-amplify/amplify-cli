@@ -2820,90 +2820,6 @@ describe(`ModelAuthTests`, () => {
     expect(response3.data.deleteOwnerCreateUpdateDeleteProtected.owner).toEqual(USERNAME1);
   });
 
-  test('Test authorized user can get Performance with no created stage', async () => {
-    const createPerf = `mutation {
-      create: createPerformance(input: {
-        id: "P3"
-        performer: "Perf #3"
-        description: "desc"
-        time: "2021-11-11T00:00:00Z"
-      }) {
-        id
-        performer
-        description
-        time
-        createdAt
-        updatedAt
-      }
-    }`;
-    
-    const getPerf = `query {
-      g1: getPerformance(id: "P3") {
-        id
-        performer
-        description
-        time
-        stage {
-          id
-          name
-          createdAt
-          updatedAt
-        }
-        createdAt
-        updatedAt
-      }
-    }
-    `;
-
-    const createStage = `mutation {
-      createStage(input: {name: "stage3", id: "003"}) {
-        createdAt
-        id
-        name
-        updatedAt
-      }
-    }`;
-
-    const updatePerf = `mutation {
-      u1: updatePerformance(input: {id: "P3", performanceStageId: "003"}) {
-        createdAt
-        description
-        id
-        performer
-        time
-        updatedAt
-        stage {
-          id
-          name
-        }
-      }
-    }`
-
-    // first make a query to the record 'P3'
-    const response1 = await GRAPHQL_CLIENT_3.query(getPerf, {});
-    expect(response1).toBeDefined();
-    expect(response1.data.g1).toBeNull();
-
-    // create performance and expect stage to be null
-    await GRAPHQL_CLIENT_3.query(createPerf, {});
-    const response2 = await GRAPHQL_CLIENT_3.query(getPerf, {});
-    expect(response2).toBeDefined();
-    expect(response2.data.g1).toBeDefined();
-    expect(response2.data.g1.id).toEqual("P3");
-    expect(response2.data.g1.description).toEqual("desc");
-    expect(response2.data.g1.stage).toBeNull();
-
-    //create stage and then add it to perf should show stage in perf
-    await GRAPHQL_CLIENT_3.query(createStage, {});
-    const response3 = await GRAPHQL_CLIENT_3.query(updatePerf, {});
-    expect(response3).toBeDefined();
-    expect(response3.data.u1).toBeDefined();
-    expect(response3.data.u1.id).toEqual("P3")
-    expect(response3.data.stage).toMatchObject({
-      id: "003",
-      name: "stage3"
-    });
-  });
 
   test('Test allow private combined with groups as Admin and non-admin users', async () => {
     const create = `mutation {
@@ -3083,5 +2999,90 @@ describe(`ModelAuthTests`, () => {
 
     expect(response10.data.deletePerformance).toBeDefined();
     expect(response10.data.deletePerformance.id).toEqual('P1');
+  });
+
+  test('Test authorized user can get Performance with no created stage', async () => {
+    const createPerf = `mutation {
+      create: createPerformance(input: {
+        id: "P3"
+        performer: "Perf #3"
+        description: "desc"
+        time: "2021-11-11T00:00:00Z"
+      }) {
+        id
+        performer
+        description
+        time
+        createdAt
+        updatedAt
+      }
+    }`;
+    
+    const getPerf = `query {
+      g1: getPerformance(id: "P3") {
+        id
+        performer
+        description
+        time
+        stage {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+    }
+    `;
+
+    const createStage = `mutation {
+      createStage(input: {name: "stage3", id: "003"}) {
+        createdAt
+        id
+        name
+        updatedAt
+      }
+    }`;
+
+    const updatePerf = `mutation {
+      u1: updatePerformance(input: {id: "P3", performanceStageId: "003"}) {
+        createdAt
+        description
+        id
+        performer
+        time
+        updatedAt
+        stage {
+          id
+          name
+        }
+      }
+    }`
+
+    // first make a query to the record 'P3'
+    const response1 = await GRAPHQL_CLIENT_1.query(getPerf, {});
+    expect(response1).toBeDefined();
+    expect(response1.data.g1).toBeNull();
+
+    // create performance and expect stage to be null
+    await GRAPHQL_CLIENT_1.query(createPerf, {});
+    const response2 = await GRAPHQL_CLIENT_1.query(getPerf, {});
+    expect(response2).toBeDefined();
+    expect(response2.data.g1).toBeDefined();
+    expect(response2.data.g1.id).toEqual("P3");
+    expect(response2.data.g1.description).toEqual("desc");
+    expect(response2.data.g1.stage).toBeNull();
+
+    //create stage and then add it to perf should show stage in perf
+    await GRAPHQL_CLIENT_1.query(createStage, {});
+    const response3 = await GRAPHQL_CLIENT_1.query(updatePerf, {});
+    expect(response3).toBeDefined();
+    expect(response3.data.u1).toBeDefined();
+    expect(response3.data.u1.id).toEqual("P3")
+    expect(response3.data.u1.stage).toMatchObject({
+      id: "003",
+      name: "stage3"
+    });
   });
 });
