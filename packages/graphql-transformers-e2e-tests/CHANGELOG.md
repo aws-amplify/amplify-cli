@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.9-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.8...graphql-transformers-e2e-tests@6.18.9-beta.0) (2020-08-11)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix null owner auth assignment ([#5045](https://github.com/aws-amplify/amplify-cli/issues/5045)) ([72bdb19](https://github.com/aws-amplify/amplify-cli/commit/72bdb19f83396237d59f33ed968e47e62df5d500)), closes [#5018](https://github.com/aws-amplify/amplify-cli/issues/5018)
+
+
+
+
+
 ## [6.18.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.6...graphql-transformers-e2e-tests@6.18.8) (2020-07-29)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

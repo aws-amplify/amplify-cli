@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.21.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.0...graphql-transformer-core@6.21.1-beta.0) (2020-08-11)
+
+
+### Bug Fixes
+
+* lambda resolver CFN syntax ([#5037](https://github.com/aws-amplify/amplify-cli/issues/5037)) ([79e7374](https://github.com/aws-amplify/amplify-cli/commit/79e7374e940f6a80b7dfaf317b890204ad53b2f1))
+
+
+
+
+
 # [6.21.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.19.5...graphql-transformer-core@6.21.0) (2020-07-29)
 
 
