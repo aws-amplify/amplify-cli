@@ -451,7 +451,7 @@ export class FeatureFlags {
 
     this.registerFlag('lambdaLayers', [
       {
-        name: 'multiEnvLayers',
+        name: 'multiEnv',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
