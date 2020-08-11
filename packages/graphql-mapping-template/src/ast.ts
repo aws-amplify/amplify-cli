@@ -367,6 +367,18 @@ export function toJson(expr: Expression): ToJsonNode {
   };
 }
 
+export type ToNullOrEmptyNode = {
+  kind: 'Util.isNullOrEmpty';
+  expr: Expression;
+};
+
+export function isNullOrEmpty(expr: Expression): ToNullOrEmptyNode {
+  return {
+    kind: 'Util.isNullOrEmpty',
+    expr,
+  }
+}
+
 export type NewLineNode = {
   kind: 'NewLine';
 };
@@ -411,6 +423,7 @@ export type Expression =
   | CommentNode
   | CompoundExpressionNode
   | ToJsonNode
+  | ToNullOrEmptyNode
   | NotNode
   | NewLineNode
   | ReturnNode;
