@@ -20,6 +20,10 @@ const generalDefaults = projectName => ({
   ...roles,
 });
 
+const sharedIdManual = () => ({
+  sharedId: sharedId,
+});
+
 const userPoolDefaults = projectName => {
   const projectNameTruncated = `${projectName.substring(0, 6)}${sharedId}`;
   return {
@@ -96,4 +100,5 @@ module.exports = {
   withSocialDefaults,
   entityKeys,
   roles,
+  sharedIdManual,
 };

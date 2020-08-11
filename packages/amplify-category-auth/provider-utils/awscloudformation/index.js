@@ -122,7 +122,7 @@ async function addResource(context, category, service) {
   return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename)
     .then(async result => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap, generalDefaults, roles } = require(defaultValuesSrc);
+      const { functionMap, generalDefaults, roles, sharedIdManual } = require(defaultValuesSrc);
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
@@ -134,7 +134,7 @@ async function addResource(context, category, service) {
 
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
-      props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
+      props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles, sharedIdManual());
 
       await lambdaTriggers(props, context, null);
 
