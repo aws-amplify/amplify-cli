@@ -169,8 +169,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     identityPoolProviders(coreAnswers, projectType);
   }
 
-  // ask manual trigger flow question
-  if (coreAnswers.authSelections !== 'identityPoolOnly' && !['init', 'checkout'].includes(context.commandName)) {
+  const isPullOrEnvCommand = context.input.command === 'pull' || context.input.command === 'env';
+  if (coreAnswers.authSelections !== 'identityPoolOnly' && context.input.command != 'init' && !isPullOrEnvCommand) {
     if (coreAnswers.useDefault === 'manual') {
       coreAnswers.triggers = await lambdaFlow(context, coreAnswers.triggers);
     }
