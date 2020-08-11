@@ -146,10 +146,12 @@ export function isMockable(context: any, resourceName: string): IsMockableRespon
     };
   }
   const { service, dependsOn } = resourceValue;
-  const hasLayer =
-    service === ServiceName.LambdaFunction &&
-    Array.isArray(dependsOn) &&
-    dependsOn.filter(dependency => dependency.category === 'function').length !== 0;
+  const dependsOnLayers = dependsOn
+    .filter(dependency => dependency.category === 'function')
+    .map(val => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
+    .filter(val => val.service === ServiceName.LambdaLayer);
+
+  const hasLayer = service === ServiceName.LambdaFunction && Array.isArray(dependsOnLayers) && dependsOnLayers.length !== 0;
   if (hasLayer) {
     return {
       isMockable: false,
