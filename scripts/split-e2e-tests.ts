@@ -4,6 +4,7 @@ import { join } from 'path';
 import * as fs from 'fs-extra';
 
 const CONCURRENCY = 3;
+const TEST_ACCOUNT_COUNT = 2;
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-2',
   'us-west-2',
@@ -106,11 +107,13 @@ function splitTests(
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
     const testRegion = AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
+    const testAccount = index % TEST_ACCOUNT_COUNT;
     const newJob = {
       ...job,
       environment: {
         TEST_SUITE: suite,
         CLI_REGION: testRegion,
+        TEST_ACCOUNT: testAccount,
       },
     };
     const newJobName = generateJobName(jobName, suite);
@@ -246,6 +249,7 @@ function saveConfig(config: CircleCIConfig): void {
   const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.safeDump(config)];
   fs.writeFileSync(configFile, output.join('\n'));
 }
+
 function main(): void {
   const config = loadConfig();
   const splitConfig = splitTests(

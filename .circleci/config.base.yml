@@ -640,7 +640,6 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
     jobs:
       - build
       - publish_to_local_registry:
@@ -664,7 +663,7 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
+                - splittests
                 - graphql_e2e_testing
           requires:
             - build
@@ -674,7 +673,7 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
+                - splittests
                 - beta
           requires:
             - build
@@ -684,7 +683,7 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
+                - splittests
                 - beta
           requires:
             - build
@@ -693,7 +692,7 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
+                - splittests
           requires:
             - publish_to_local_registry
       - amplify_migration_tests_latest:
@@ -701,7 +700,7 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
+                - splittests
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -709,7 +708,7 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
+                - splittests
           requires:
             - build
       - amplify_console_integration_tests:
