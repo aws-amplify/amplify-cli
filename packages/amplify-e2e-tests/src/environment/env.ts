@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getSocialProviders } from 'amplify-e2e-core';
 
 export function addEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
@@ -106,6 +106,41 @@ export function pullEnvironment(cwd: string, settings: any) {
         reject(err);
       }
     });
+  });
+}
+
+export function addEnvironmentHostedUI(cwd: string, settings: any) {
+  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders();
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
+      .wait('Do you want to use an existing environment?')
+      .sendLine('n')
+      .wait('Enter a name for the environment')
+      .sendLine(settings.envName)
+      .wait('Do you want to use an AWS profile?')
+      .sendLine('yes')
+      .wait('Please choose the profile you want to use')
+      .sendCarriageReturn()
+      .wait('Enter your Facebook App ID for your OAuth flow:')
+      .sendLine(FACEBOOK_APP_ID)
+      .wait('Enter your Facebook App Secret for your OAuth flow:')
+      .sendLine(FACEBOOK_APP_SECRET)
+      .wait('Enter your Google Web Client ID for your OAuth flow:')
+      .sendLine(GOOGLE_APP_ID)
+      .wait('Enter your Google Web Client Secret for your OAuth flow:')
+      .sendLine(GOOGLE_APP_SECRET)
+      .wait('Enter your Amazon App ID for your OAuth flow:')
+      .sendLine(AMAZON_APP_ID)
+      .wait('Enter your Amazon App Secret for your OAuth flow:')
+      .sendLine(AMAZON_APP_SECRET)
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }
 

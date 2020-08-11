@@ -342,7 +342,9 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
     if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
       const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
       const triggerPath = `${__dirname}/../../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
-      if (context.commandName !== 'checkout') {
+      const isEnvCommand = context.input.command === 'env';
+
+      if (!isEnvCommand) {
         envParams = await context.amplify.getTriggerEnvInputs(
           context,
           triggerPath,

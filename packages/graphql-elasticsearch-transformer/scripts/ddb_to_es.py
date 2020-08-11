@@ -44,7 +44,7 @@ def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_region, 
   ddb_table_name = table_name
   table = dynamodb.Table(ddb_table_name)
   logger.info('table: %s', table)
-  ddb_keys_name = [a['AttributeName'] for a in table.attribute_definitions]
+  ddb_keys_name = [a['AttributeName'] for a in table.key_schema]
   logger.info('ddb_keys_name: %s', ddb_keys_name)
   response = None
 

@@ -2,6 +2,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -30,7 +31,7 @@ import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 
-describe(`ModelAuthTests`, async () => {
+describe(`ModelAuthTests`, () => {
   const cf = new CloudFormationClient('us-west-2');
 
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -172,8 +173,9 @@ describe(`ModelAuthTests`, async () => {
           title: String!
           owner: String
       }
-      type OwnerReadProtected @model @auth(rules: [{ allow: owner, operations: [read] }]) {
+      type OwnerReadProtected @model @auth(rules: [{ allow: owner, operations: [read] }]) @key(fields: ["id", "sk"])  {
           id: ID!
+          sk: String!
           content: String
           owner: String
       }
@@ -198,6 +200,7 @@ describe(`ModelAuthTests`, async () => {
       transformers: [
         new DynamoDBModelTransformer(),
         new ModelConnectionTransformer(),
+        new KeyTransformer(),
         new ModelAuthTransformer({
           authConfig: {
             defaultAuthentication: {
@@ -2600,14 +2603,25 @@ describe(`ModelAuthTests`, async () => {
   test("Test get and list with 'read' operation set", async () => {
     const response = await GRAPHQL_CLIENT_1.query(
       `mutation {
-          createOwnerReadProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
+          createNoOwner: createOwnerReadProtected(input: { id: "1", sk: "1", content: "Hello, World! - No Owner" }) {
               id
               content
               owner
           }
+          createOwnerReadProtected(input: { id: "1", sk: "2", content: "Hello, World!", owner: "${USERNAME1}" }) {
+              id
+              content
+              owner
+          }
+          createNoOwner2: createOwnerReadProtected(input: { id: "1", sk: "3", content: "Hello, World! - No Owner 2" }) {
+            id
+            content
+            owner
+        }
       }`,
       {},
     );
+
     console.log(response);
     expect(response.data.createOwnerReadProtected.id).toBeDefined();
     expect(response.data.createOwnerReadProtected.content).toEqual('Hello, World!');
@@ -2615,7 +2629,7 @@ describe(`ModelAuthTests`, async () => {
 
     const response2 = await GRAPHQL_CLIENT_2.query(
       `query {
-          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}") {
+          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}", sk:"2") {
               id content owner
           }
       }`,
@@ -2627,7 +2641,7 @@ describe(`ModelAuthTests`, async () => {
 
     const response3 = await GRAPHQL_CLIENT_1.query(
       `query {
-          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}") {
+          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}", sk:"2") {
               id content owner
           }
       }`,
@@ -2640,7 +2654,7 @@ describe(`ModelAuthTests`, async () => {
 
     const response4 = await GRAPHQL_CLIENT_1.query(
       `query {
-          listOwnerReadProtecteds {
+          listOwnerReadProtecteds(id: "1") {
               items {
                   id content owner
               }
@@ -2649,7 +2663,7 @@ describe(`ModelAuthTests`, async () => {
       {},
     );
     console.log(response4);
-    expect(response4.data.listOwnerReadProtecteds.items.length).toBeGreaterThanOrEqual(1);
+    expect(response4.data.listOwnerReadProtecteds.items.length).toEqual(1);
 
     const response5 = await GRAPHQL_CLIENT_2.query(
       `query {
