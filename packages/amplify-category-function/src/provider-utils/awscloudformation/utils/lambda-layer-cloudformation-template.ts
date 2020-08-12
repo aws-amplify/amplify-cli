@@ -1,6 +1,7 @@
 import { Fn, DeletionPolicy, Refs } from 'cloudform';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
+import { FeatureFlags } from 'amplify-cli-core';
 import { Permission, LayerParameters, getLayerMetadataFactory, LayerMetadata } from './layerParams';
 
 function generateLayerCfnObjBase() {
@@ -15,18 +16,26 @@ function generateLayerCfnObjBase() {
       env: {
         Type: 'String',
       },
-      s3Key: {
-        Type: 'String',
-      },
-      deploymentBucketName: {
-        Type: 'String',
-      },
     },
     Resources: {},
     Conditions: {
       HasEnvironmentParameter: Fn.Not(Fn.Equals(Fn.Ref('env'), 'NONE')),
     },
   };
+
+  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    _.merge(cfnObj, {
+      Parameters: {
+        s3Key: {
+          Type: 'String',
+        },
+        deploymentBucketName: {
+          Type: 'String',
+        },
+      },
+    });
+  }
+
   return cfnObj;
 }
 
@@ -46,6 +55,10 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
   const POLICY_RETAIN = DeletionPolicy.Retain;
   const latestVersion = layerData.getLatestVersion();
+  const layerName = FeatureFlags.getBoolean('lambdaLayers.multiEnv')
+    ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') })
+    : parameters.layerName;
+
   const layer = new Lambda.LayerVersion({
     CompatibleRuntimes: parameters.runtimes.map(runtime => runtime.cloudTemplateValue),
     Content: {
@@ -53,7 +66,7 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
       S3Key: Fn.Ref('s3Key'),
     },
     Description: Fn.Sub('Lambda layer version ${latestVersion}', { latestVersion: Fn.Ref('layerVersion') }),
-    LayerName: Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }),
+    LayerName: layerName,
   });
   layer.deletionPolicy(POLICY_RETAIN);
   _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });

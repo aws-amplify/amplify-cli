@@ -18,6 +18,7 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
+const { FeatureFlags } = require('amplify-cli-core');
 const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
@@ -263,11 +264,18 @@ function packageResources(context, resources) {
         const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
 
         if (resource.service === FunctionServiceName.LambdaLayer) {
-          _.set(teamProviderInfo, [context.amplify.getEnvInfo().envName, 'categories', 'function', resourceName], {
-            deploymentBucketName: s3Bucket,
-            s3Key,
-          });
-          context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+          if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+            _.set(teamProviderInfo, [context.amplify.getEnvInfo().envName, 'categories', 'function', resourceName], {
+              deploymentBucketName: s3Bucket,
+              s3Key,
+            });
+            context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+          } else {
+            cfnMeta.Resources.LambdaLayer.Properties.Content = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+          }
         } else {
           if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
             cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
