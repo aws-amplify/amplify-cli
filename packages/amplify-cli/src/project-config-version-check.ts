@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as inquirer from 'inquirer';
 import { Context } from './domain/context';
-import inquirer from './domain/inquirer-helper';
+import { ConfirmQuestion } from 'inquirer';
 
 const prevLambdaRuntimeVersions = ['nodejs8.10'];
 const lambdaRuntimeVersion = 'nodejs10.x';
@@ -124,7 +125,7 @@ async function promptForConfirmation(context: Context, filesToUpdate: string[]):
 
   context.print.info('');
 
-  const question = {
+  const question: ConfirmQuestion = {
     type: 'confirm',
     name: 'confirmUpdateNodeVersion',
     message: 'Confirm to update the NodeJS runtime version to 10.x',

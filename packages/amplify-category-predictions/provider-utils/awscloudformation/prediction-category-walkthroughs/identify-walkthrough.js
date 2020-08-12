@@ -35,7 +35,7 @@ const prefixForAdminTrigger = 'protected/predictions/index-faces/';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt.run(
+      await context.amplify.confirmPrompt(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {

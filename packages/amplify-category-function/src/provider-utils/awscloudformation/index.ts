@@ -253,7 +253,7 @@ function printLayerSuccessMessages(context: any, parameters: LayerParameters, ac
 
 async function openEditor(context, category: string, resourceName: string, template: Partial<FunctionTemplate>, displayName = 'local') {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  if (await context.amplify.confirmPrompt.run(`Do you want to edit the ${displayName} lambda function now?`)) {
+  if (await context.amplify.confirmPrompt(`Do you want to edit the ${displayName} lambda function now?`)) {
     let targetFile = '';
 
     // try to load the default editor file from the function template

@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import chalk from 'chalk';
 import { PluginInfo } from '../domain/plugin-info';
 import { PluginPlatform } from '../domain/plugin-platform';
