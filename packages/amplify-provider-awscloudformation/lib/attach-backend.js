@@ -7,6 +7,7 @@ const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const constants = require('./constants');
+const { copy } = require('amplify-cli-core');
 
 async function run(context) {
   await configurationManager.init(context);
@@ -245,8 +246,8 @@ async function downloadBackend(context, backendEnv, awsConfig) {
     });
   });
 
-  fs.copySync(unzippedDirPath, currentCloudBackendDir);
-  fs.copySync(unzippedDirPath, backendDir);
+  await copy(unzippedDirPath, currentCloudBackendDir);
+  await copy(unzippedDirPath, backendDir);
   fs.removeSync(tempDirPath);
 }
 

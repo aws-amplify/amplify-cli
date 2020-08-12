@@ -6,6 +6,7 @@ import { getPackageManager } from '../packageManagerHelpers';
 import { normalizePackageManagerForOS } from '../packageManagerHelpers';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
+import { copy } from 'amplify-cli-core';
 
 export async function preInitSetup(context) {
   if (context.parameters.options.app) {
@@ -99,5 +100,5 @@ async function createAmplifySkeleton() {
   insertAmplifyIgnore(path.join(process.cwd(), '.gitignore'));
   const skeletonLocalDir = path.join(__dirname, '../../templates/amplify-skeleton');
   const skeletonProjectDir = path.join(process.cwd(), '/amplify');
-  await fs.copySync(skeletonLocalDir, skeletonProjectDir);
+  await copy(skeletonLocalDir, skeletonProjectDir);
 }

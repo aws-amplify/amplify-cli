@@ -6,6 +6,7 @@ import { initFrontend } from './attach-backend-steps/a30-initFrontend';
 import { generateFiles } from './attach-backend-steps/a40-generateFiles';
 import { postPullCodeGenCheck } from './amplify-service-helper';
 import { initializeEnv } from './initialize-env';
+import { copy } from 'amplify-cli-core';
 
 const backupAmplifyDirName = 'amplify-backup';
 
@@ -37,7 +38,7 @@ async function onSuccess(context) {
     if (fs.existsSync(backupBackendDirPath)) {
       const backendDirPath = context.amplify.pathManager.getBackendDirPath(projectPath);
       fs.removeSync(backendDirPath);
-      fs.copySync(backupBackendDirPath, backendDirPath);
+      await copy(backupBackendDirPath, backendDirPath);
     }
   }
 

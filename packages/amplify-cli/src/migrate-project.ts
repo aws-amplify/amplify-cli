@@ -24,6 +24,7 @@ import {
   getAmplifyRcFilePath,
 } from './extensions/amplify-helpers/path-manager';
 import { $TSObject } from '.';
+import { copy } from 'amplify-cli-core';
 
 const confirmMigrateMessage =
   'We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?';
@@ -79,7 +80,7 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
   let backupAmplifyDirPath;
   try {
     amplifyDirPath = getAmplifyDirPath(projectPath);
-    backupAmplifyDirPath = backup(amplifyDirPath, projectPath);
+    backupAmplifyDirPath = await backup(amplifyDirPath, projectPath);
     context.migrationInfo = generateMigrationInfo(projectConfig, projectPath);
 
     // Give each category a chance to migrate their respective files
@@ -142,7 +143,7 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
   }
 }
 
-function backup(amplifyDirPath, projectPath) {
+async function backup(amplifyDirPath, projectPath) {
   const backupAmplifyDirName = `${amplifyCLIConstants.AmplifyCLIDirName}-${makeId(5)}`;
   const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
@@ -155,7 +156,7 @@ function backup(amplifyDirPath, projectPath) {
     throw error;
   }
 
-  fs.copySync(amplifyDirPath, backupAmplifyDirPath);
+  await copy(amplifyDirPath, backupAmplifyDirPath);
 
   return backupAmplifyDirPath;
 }

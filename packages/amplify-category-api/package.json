@@ -18,6 +18,7 @@
   "dependencies": {
     "amplify-category-auth": "2.18.1",
     "amplify-category-function": "2.23.1",
+    "amplify-cli-core":"1.2.0",
     "amplify-util-headless-input": "1.2.0",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",

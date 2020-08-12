@@ -9,6 +9,7 @@ import { readJsonFileSync } from '../utils/readJsonFile';
 import { validPluginName } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';
 import { InputQuestion, ConfirmQuestion } from 'inquirer';
+import { copy } from 'amplify-cli-core';
 
 const INDENTATIONSPACE = 4;
 
@@ -78,7 +79,7 @@ async function copyAndUpdateTemplateFiles(context: Context, pluginParentDirPath:
   } else if (pluginType === AmplifyPluginType.provider.toString()) {
     srcDirPath = path.join(__dirname, '../../templates/plugin-template-provider');
   }
-  fs.copySync(srcDirPath, pluginDirPath);
+  await copy(srcDirPath, pluginDirPath);
 
   updatePackageJson(pluginDirPath, pluginName);
   updateAmplifyPluginJson(pluginDirPath, pluginName, pluginType, eventHandlers);

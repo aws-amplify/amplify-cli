@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const extract = require('extract-zip');
 const sequential = require('promise-sequential');
 const APIGateway = require('../src/aws-utils/aws-apigw');
+const { copy } = require('amplify-cli-core');
 
 function downloadAPIModels(context, allResources) {
   const { amplify } = context;
@@ -51,12 +52,12 @@ function extractAPIModel(context, resource, framework) {
             if (err) {
               reject(err);
             }
-            extract(`${tempDir}/${apiName}.zip`, { dir: tempDir }, err => {
+            extract(`${tempDir}/${apiName}.zip`, { dir: tempDir }, async err => {
               if (err) {
                 reject(err);
               }
               // Copy files to src
-              copyFilesToSrc(context, apiName, framework);
+              await copyFilesToSrc(context, apiName, framework);
               fs.removeSync(tempDir);
               resolve();
             });
@@ -66,7 +67,7 @@ function extractAPIModel(context, resource, framework) {
   });
 }
 
-function copyFilesToSrc(context, apiName, framework) {
+async function copyFilesToSrc(context, apiName, framework) {
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const tempDir = `${backendDir}/.temp`;
 
@@ -79,7 +80,7 @@ function copyFilesToSrc(context, apiName, framework) {
 
         fs.ensureDirSync(target);
 
-        fs.copySync(generatedSrc, target);
+        await copy(generatedSrc, target);
       }
       break;
     case 'ios':
@@ -90,7 +91,7 @@ function copyFilesToSrc(context, apiName, framework) {
 
         fs.ensureDirSync(target);
 
-        fs.copySync(generatedSrc, target);
+        await copy(generatedSrc, target);
       }
       break;
     default:

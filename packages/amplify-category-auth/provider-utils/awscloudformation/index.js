@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 const _ = require('lodash');
 const uuid = require('uuid');
 const { existsSync } = require('fs');
-const { copySync } = require('fs-extra');
+const { copy } = require('amplify-cli-core');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
@@ -641,7 +641,7 @@ async function copyS3Assets(context, props) {
   if (confirmationFileNeeded) {
     if (!existsSync(targetDir)) {
       const source = `${__dirname}/triggers/CustomMessage/assets`;
-      copySync(source, `${targetDir}`);
+      await copy(source, `${targetDir}`);
     }
   }
 }

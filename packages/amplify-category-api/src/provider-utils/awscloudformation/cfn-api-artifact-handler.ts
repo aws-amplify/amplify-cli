@@ -18,6 +18,7 @@ import _ from 'lodash';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
+import { copy } from 'amplify-cli-core';
 
 export const getCfnApiArtifactHandler = (context): ApiArtifactHandler => {
   return new CfnApiArtifactHandler(context);
@@ -67,7 +68,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     await writeResolverConfig(serviceConfig.conflictResolution, resourceDir);
 
     // Write the default custom resources stack out to disk.
-    fs.copyFileSync(
+    await copy(
       path.join(rootAssetDir, 'cloudformation-templates', 'defaultCustomResources.json'),
       path.join(resourceDir, stacksDirName, defaultStackName),
     );

@@ -3,6 +3,7 @@ const Cloudformation = require('../src/aws-utils/aws-cfn');
 const S3 = require('../src/aws-utils/aws-s3');
 const { downloadZip, extractZip } = require('./zip-util');
 const { S3BackendZipFileName } = require('./constants');
+const { copy } = require('amplify-cli-core');
 
 function run(context, providerMetadata) {
   if (context.exeInfo && context.exeInfo.isNewEnv) {
@@ -14,19 +15,17 @@ function run(context, providerMetadata) {
   const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   return new S3(context)
-    .then(s3 =>
-      downloadZip(s3, tempDir, S3BackendZipFileName).then(file =>
-        extractZip(tempDir, file).then(unzippeddir => {
-          fs.removeSync(currentCloudBackendDir);
-          fs.copySync(unzippeddir, currentCloudBackendDir);
-          if (context.exeInfo.restoreBackend) {
-            fs.removeSync(backendDir);
-            fs.copySync(`${tempDir}/#current-cloud-backend`, backendDir);
-          }
-          fs.removeSync(tempDir);
-        })
-      )
-    )
+    .then(s3 => downloadZip(s3, tempDir, S3BackendZipFileName))
+    .then(file => extractZip(tempDir, file))
+    .then(async unzippeddir => {
+      fs.removeSync(currentCloudBackendDir);
+      await copy(unzippeddir, currentCloudBackendDir);
+      if (context.exeInfo.restoreBackend) {
+        fs.removeSync(backendDir);
+        await copy(`${tempDir}/#current-cloud-backend`, backendDir);
+      }
+      fs.removeSync(tempDir);
+    })
     .then(() => new Cloudformation(context))
     .then(cfnItem => cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName))
     .then(() => {

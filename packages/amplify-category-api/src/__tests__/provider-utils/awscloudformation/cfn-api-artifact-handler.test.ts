@@ -6,6 +6,7 @@ import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import { category } from '../../../category-constants';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
 import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
+import { copy } from 'amplify-cli-core';
 import {
   getAppSyncResourceName,
   getAppSyncAuthConfig,
@@ -14,6 +15,9 @@ import {
 import _ from 'lodash';
 
 jest.mock('fs-extra');
+jest.mock('amplify-cli-core', () => ({
+  copy: jest.fn(),
+}));
 
 jest.mock('graphql-transformer-core', () => ({
   readTransformerConfiguration: jest.fn(async () => ({})),
@@ -28,6 +32,7 @@ jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', 
 }));
 
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
+const copy_mock = copy as jest.MockedFunction<typeof copy>;
 const writeTransformerConfiguration_mock = writeTransformerConfiguration as jest.MockedFunction<typeof writeTransformerConfiguration>;
 const getAppSyncResourceName_mock = getAppSyncResourceName as jest.MockedFunction<typeof getAppSyncResourceName>;
 const getAppSyncAuthConfig_mock = getAppSyncAuthConfig as jest.MockedFunction<typeof getAppSyncAuthConfig>;
@@ -104,8 +109,8 @@ describe('create artifacts', () => {
 
   it('writes the default custom resources stack', async () => {
     await cfnApiArtifactHandler.createArtifacts(addRequestStub);
-    expect(fs_mock.copyFileSync.mock.calls.length).toBe(1);
-    expect(fs_mock.copyFileSync.mock.calls[0]).toEqual([
+    expect(copy_mock.mock.calls.length).toBe(1);
+    expect(copy_mock.mock.calls[0]).toEqual([
       path.join(rootAssetDir, 'cloudformation-templates', 'defaultCustomResources.json'),
       path.join(backendDirPathStub, category, addRequestStub.serviceConfiguration.apiName, 'stacks', 'CustomResources.json'),
     ]);

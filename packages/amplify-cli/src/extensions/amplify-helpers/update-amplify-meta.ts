@@ -11,6 +11,7 @@ import {
   getBackendDirPath,
   getCurrentCloudBackendDirPath,
 } from './path-manager';
+import { copy } from 'amplify-cli-core';
 
 export function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
   const amplifyMeta = readJsonFile(filePath);
@@ -43,7 +44,7 @@ export function updateAwsMetaFile(filePath, category, resourceName, attribute, v
   return amplifyMeta;
 }
 
-function moveBackendResourcesToCurrentCloudBackend(resources) {
+async function moveBackendResourcesToCurrentCloudBackend(resources) {
   const amplifyMetaFilePath = getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = getCurrentAmplifyMetaFilePath();
   const backendConfigFilePath = getBackendConfigFilePath();
@@ -60,11 +61,11 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 
     fs.ensureDirSync(targetDir);
 
-    fs.copySync(sourceDir, targetDir);
+    await copy(sourceDir, targetDir);
   }
 
-  fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
-  fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
+  await copy(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
+  await copy(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
 }
 
 export function updateamplifyMetaAfterResourceAdd(category, resourceName, options: { dependsOn? } = {}) {
@@ -142,7 +143,7 @@ export async function updateamplifyMetaAfterPush(resources) {
   const jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
-  moveBackendResourcesToCurrentCloudBackend(resources);
+  await moveBackendResourcesToCurrentCloudBackend(resources);
 }
 
 function getHashForResourceDir(dirPath) {

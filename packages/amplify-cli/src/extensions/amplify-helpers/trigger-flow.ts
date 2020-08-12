@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { readJsonFile } from './read-json-file';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import Separator from 'inquirer/lib/objects/separator';
+import { copy } from 'amplify-cli-core';
 
 /** ADD A TRIGGER
  * @function addTrigger
@@ -397,7 +398,7 @@ export const copyFunctions = async (key, value, category, context, targetPath) =
       } else {
         source = `${pluginPath}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
       }
-      fs.copySync(source, `${targetPath}/${value}.js`);
+      await copy(source, `${targetPath}/${value}.js`);
       await openEditor(context, targetPath, value);
     }
   } catch (e) {
