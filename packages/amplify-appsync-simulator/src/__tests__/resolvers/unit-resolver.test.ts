@@ -172,5 +172,20 @@ describe('Unit resolver', () => {
       expect(result).toEqual(REQUEST_TEMPLATE_RESULT.result);
       expect(context.appsyncErrors).toEqual(['request error', 'response error']);
     });
+
+    it('should forward stash from request template to response template', async () => {
+      templates.request.render.mockReturnValue({
+        ...REQUEST_TEMPLATE_RESULT,
+        errors: [],
+        stash: 'TEST STASH',
+      });
+      const result = await resolver.resolve(source, args, context, info);
+      expect(result).toEqual(RESPONSE_TEMPLATE_RESULT);
+      expect(templates.response.render).toHaveBeenCalledWith(
+        { source, arguments: args, result: DATA_FROM_DATA_SOURCE, stash: 'TEST STASH' },
+        context,
+        info,
+      );
+    });
   });
 });
