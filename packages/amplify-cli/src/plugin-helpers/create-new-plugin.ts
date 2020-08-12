@@ -1,6 +1,6 @@
-import path from 'path';
-import fs from 'fs-extra';
-import inquirer from '../domain/inquirer-helper';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import * as inquirer from 'inquirer';
 import { Context } from '../domain/context';
 import { constants } from '../domain/constants';
 import { AmplifyEvent } from '../domain/amplify-event';
@@ -8,6 +8,7 @@ import { AmplifyPluginType } from '../domain/amplify-plugin-type';
 import { readJsonFileSync } from '../utils/readJsonFile';
 import { validPluginName } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';
+import { InputQuestion, ConfirmQuestion } from 'inquirer';
 
 const INDENTATIONSPACE = 4;
 
@@ -28,7 +29,7 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
     // subcommands: ['new', 'name']
     pluginName = context.input.subCommands![1];
   } else if (!yesFlag) {
-    const pluginNameQuestion = {
+    const pluginNameQuestion: InputQuestion = {
       type: 'input',
       name: 'pluginName',
       message: 'What should be the name of the plugin:',
@@ -49,7 +50,7 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
 
   if (fs.existsSync(pluginDirPath) && !yesFlag) {
     context.print.error(`The directory ${pluginName} already exists`);
-    const overwriteQuestion = {
+    const overwriteQuestion: ConfirmQuestion = {
       type: 'confirm',
       name: 'ifOverWrite',
       message: 'Do you want to overwrite it?',

@@ -1,18 +1,18 @@
-import fs from 'fs-extra';
-import pathManager from '../../../../src/extensions/amplify-helpers/path-manager';
+import * as fs from 'fs-extra';
 import { getEnvInfo } from '../../../../src/extensions/amplify-helpers/get-env-info';
 import { readJsonFile } from '../../../../src/extensions/amplify-helpers/read-json-file';
 import { saveEnvResourceParameters } from '../../../../src/extensions/amplify-helpers/envResourceParams';
+import { getProviderInfoFilePath } from '../../../extensions/amplify-helpers/path-manager';
 
 jest.mock('fs-extra');
-jest.mock('../../../../src/extensions/amplify-helpers/path-manager', () => ({getProviderInfoFilePath: jest.fn()}));
-jest.mock('../../../../src/extensions/amplify-helpers/get-env-info', () => ({getEnvInfo: jest.fn()}));
-jest.mock('../../../../src/extensions/amplify-helpers/read-json-file', () => ({readJsonFile: jest.fn()}));
+jest.mock('../../../../src/extensions/amplify-helpers/path-manager', () => ({ getProviderInfoFilePath: jest.fn() }));
+jest.mock('../../../../src/extensions/amplify-helpers/get-env-info', () => ({ getEnvInfo: jest.fn() }));
+jest.mock('../../../../src/extensions/amplify-helpers/read-json-file', () => ({ readJsonFile: jest.fn() }));
 
 beforeAll(() => {
   (fs.existsSync as any).mockReturnValue(true);
-  (getEnvInfo as any).mockReturnValue({envName: 'testEnv'});
-  (pathManager.getProviderInfoFilePath as any).mockReturnValue('test/path');
+  (getEnvInfo as any).mockReturnValue({ envName: 'testEnv' });
+  (getProviderInfoFilePath as any).mockReturnValue('test/path');
 });
 
 test('saveEnvResourceParams appends to existing params', () => {
@@ -30,8 +30,8 @@ test('saveEnvResourceParams appends to existing params', () => {
   };
   (readJsonFile as any).mockReturnValue(existingParams);
 
-  saveEnvResourceParameters(contextStub, 'testCategory', 'testResourceName', {newParam: 'newParamValue'});
-  
+  saveEnvResourceParameters(contextStub, 'testCategory', 'testResourceName', { newParam: 'newParamValue' });
+
   const writeFileSyncMock: any = fs.writeFileSync;
   expect(writeFileSyncMock).toHaveBeenCalled();
   const callParams = writeFileSyncMock.mock.calls[0];

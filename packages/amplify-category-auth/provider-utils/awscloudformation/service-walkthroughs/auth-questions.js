@@ -326,7 +326,7 @@ async function updateAdminQuery(context, userPoolGroupList) {
   let adminGroup;
   // Clone user pool group list
   const userPoolGroupListClone = userPoolGroupList.slice(0);
-  if (await context.amplify.confirmPrompt.run('Do you want to restrict access to the admin queries API to a specific Group')) {
+  if (await context.amplify.confirmPrompt('Do you want to restrict access to the admin queries API to a specific Group')) {
     userPoolGroupListClone.push('Enter a custom group');
 
     const adminGroupAnswer = await inquirer.prompt([

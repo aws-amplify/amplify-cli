@@ -1,4 +1,4 @@
-import os from 'os';
+import * as os from 'os';
 import { Input } from '../input';
 import { getLatestPayloadVersion } from './VersionManager';
 

@@ -1,11 +1,11 @@
-import fs from 'fs-extra';
-import path from 'path';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as inquirer from 'inquirer';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
 import { PluginInfo } from './domain/plugin-info';
-import inquirer from './domain/inquirer-helper';
 import {
   AmplifyEvent,
   AmplifyEventArgs,

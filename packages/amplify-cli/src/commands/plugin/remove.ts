@@ -1,11 +1,12 @@
+import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
 import { removePluginPackage, confirmAndScan } from '../../plugin-manager';
 import { PluginPlatform } from '../../domain/plugin-platform';
 import { constants } from '../../domain/constants';
-import inquirer, { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
+import { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
 import { PluginInfo } from '../../domain/plugin-info';
 
-export async function run(context: Context) {
+export const run = async (context: Context) => {
   const options = new Array<InquirerOption>();
   const { plugins } = context.pluginPlatform;
 
@@ -50,7 +51,7 @@ export async function run(context: Context) {
   } else {
     context.print.console.error('No plugins are found');
   }
-}
+};
 
 async function removeNamedPlugins(pluginPlatform: PluginPlatform, pluginInfos: Array<PluginInfo>) {
   if (pluginInfos.length === 1) {

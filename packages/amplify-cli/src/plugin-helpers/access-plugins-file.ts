@@ -1,6 +1,6 @@
-import path from 'path';
-import os from 'os';
-import fs from 'fs-extra';
+import * as path from 'path';
+import * as os from 'os';
+import * as fs from 'fs-extra';
 import { PluginPlatform } from '../domain/plugin-platform';
 import { constants } from '../domain/constants';
 import { readJsonFile, readJsonFileSync } from '../utils/readJsonFile';
