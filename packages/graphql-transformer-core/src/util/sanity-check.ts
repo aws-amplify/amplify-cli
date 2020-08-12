@@ -36,7 +36,7 @@ export async function check(
     cantAddAndRemoveGSIAtSameTime,
   ];
   // Project rules run on the full set of diffs, the current build, and the next build.
-  const projectRules: ProjectRule[] = [cantHaveMoreThan200Resources, cantAddMultipleGSIAtUpdateTime];
+  const projectRules: ProjectRule[] = [cantHaveMoreThan200Resources, cantMutateMultipleGSIAtUpdateTime];
   if (cloudBackendDirectoryExists && buildDirectoryExists) {
     const current = await loadDiffableProject(currentCloudBackendDir, rootStackName);
     const next = await loadDiffableProject(buildDirectory, rootStackName);
@@ -219,10 +219,10 @@ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: Diffable
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export function cantAddMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) {
+export function cantMutateMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) {
   function throwError(stackName: string, tableName: string) {
     throw new InvalidMigrationError(
-      `Attempting to more than 1 a global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
+      `Attempting to push more than 1 global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
       'You may only add one global secondary index in a single CloudFormation stack update. ',
       'If using @key, include one @key at a time. ' +
         'If using @connection, just add one new @connection which is using @key, run `amplify push`, ',
@@ -231,7 +231,8 @@ export function cantAddMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: Diff
 
   if (diffs) {
     for (const diff of diffs) {
-      let gsiCount: number = 0; // max gsiCount = 1 // for update flow
+      let gsiCountAdded: number = 0; // max gsiCountAdded = 1 // for update flow
+      let gsiCountRemoved: number = 0; // max gsiCountRemoved = 1 // for update flow
       if (
         // implies a field was changed in a GSI after it was created.
         // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes", ... ]
@@ -239,13 +240,16 @@ export function cantAddMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: Diff
         diff.path.length > 6 &&
         diff.path[5] === 'GlobalSecondaryIndexes'
       ) {
-        if (diff.item.kind === 'N' && gsiCount < 1) {
-          gsiCount += 1;
-          if (gsiCount > 1) {
-            const stackName = basename(diff.path[1], '.json');
-            const tableName = diff.path[3];
-            throwError(stackName, tableName);
-          }
+        if (diff.item.kind === 'N' && gsiCountAdded < 1) {
+          gsiCountAdded += 1;
+        }
+        if (diff.item.kind === 'D' && gsiCountRemoved < 1) {
+          gsiCountRemoved += 1;
+        }
+        if (gsiCountAdded > 1 || gsiCountRemoved > 1) {
+          const stackName = basename(diff.path[1], '.json');
+          const tableName = diff.path[3];
+          throwError(stackName, tableName);
         }
       }
     }
