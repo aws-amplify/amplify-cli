@@ -335,7 +335,6 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
     }
     return envParams;
   } else if (FeatureFlags.getBoolean('lambdaLayers.multiEnv') && service === ServiceName.LambdaLayer) {
-    console.log('multiEnvLayers Feature Flag enabled');
     const { envName } = context.amplify.getEnvInfo();
     const layerParamsPath = path.join('amplify', 'backend', categoryName, resourceName, parametersFileName);
 

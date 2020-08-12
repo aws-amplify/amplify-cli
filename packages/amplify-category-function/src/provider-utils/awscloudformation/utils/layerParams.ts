@@ -1,8 +1,9 @@
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
+import { FeatureFlags } from 'amplify-cli-core';
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
-import { categoryName, teamProviderInfoFileName } from '../utils/constants';
+import { categoryName, layerParametersFileName } from '../utils/constants';
 import { category } from '../../../constants';
 import { hashLayerVersionContents } from './packageLayer';
 
@@ -241,13 +242,23 @@ class LayerVersionState implements LayerVersionMetadata {
 }
 
 const getStoredLayerState = (context: any, layerName: string) => {
-  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
-  const { envName } = context.amplify.getEnvInfo();
-  if (!fs.existsSync(teamProviderInfoPath)) {
-    throw new Error('team-provider-info.json is missing');
+  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+    const { envName } = context.amplify.getEnvInfo();
+    if (!fs.existsSync(teamProviderInfoPath)) {
+      throw new Error('team-provider-info.json is missing');
+    }
+    const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
+    return _.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], undefined) as StoredLayerParameters;
+  } else {
+    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+    const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
+    if (!fs.existsSync(resourceDirPath)) {
+      return undefined;
+    }
+    const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
+    return context.amplify.readJsonFile(parametersFilePath) as StoredLayerParameters;
   }
-  const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
-  return _.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], undefined) as StoredLayerParameters;
 };
 
 export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
