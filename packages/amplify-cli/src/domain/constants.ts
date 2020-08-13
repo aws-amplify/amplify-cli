@@ -13,6 +13,7 @@ export const constants = {
   Amplify: 'amplify',
   DotAmplifyDirName: '.amplify',
   AmplifyPrefix: 'amplify-',
+  PackagedNodeModules: 'packaged-node-modules',
   LocalNodeModules: 'cli-local-node-modules',
   ParentDirectory: 'cli-parent-directory',
   GlobalNodeModules: 'global-node-modules',

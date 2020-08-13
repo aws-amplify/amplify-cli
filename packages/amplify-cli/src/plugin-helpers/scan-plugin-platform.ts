@@ -35,6 +35,12 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     await sequential(scanUserLocationTasks);
   }
 
+  // check if the CLI is running as a packaged native executable
+  if (['/snapshot', 'C:\\snapshot'].find(prefix => __dirname.startsWith(prefix))) {
+    // if so, add the packaged node modules path to the plugin scan list
+    pluginPlatform!.pluginDirectories.push(constants.PackagedNodeModules);
+  }
+
   if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
     const scanDirTasks = pluginPlatform!.pluginDirectories.map(directory => async () => {
       directory = normalizePluginDirectory(directory);
@@ -91,15 +97,18 @@ async function addCore(pluginPlatform: PluginPlatform) {
 }
 
 export function normalizePluginDirectory(directory: string): string {
-  let result = directory;
-  if (directory === constants.LocalNodeModules) {
-    result = path.normalize(path.join(__dirname, '../../node_modules'));
-  } else if (directory === constants.ParentDirectory) {
-    result = path.normalize(path.join(__dirname, '../../../'));
-  } else if (directory === constants.GlobalNodeModules) {
-    result = getGlobalNodeModuleDirPath();
+  switch (directory) {
+    case constants.PackagedNodeModules:
+      return path.normalize(path.join(__dirname, '../../../..'));
+    case constants.LocalNodeModules:
+      return path.normalize(path.join(__dirname, '../../node_modules'));
+    case constants.ParentDirectory:
+      return path.normalize(path.join(__dirname, '../../../'));
+    case constants.GlobalNodeModules:
+      return getGlobalNodeModuleDirPath();
+    default:
+      return directory;
   }
-  return result;
 }
 
 function isMatchingNamePattern(pluginPrefixes: string[], pluginDirName: string): boolean {
