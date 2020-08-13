@@ -31,8 +31,6 @@ export const amplifyRegions = [
   'ca-central-1',
 ];
 
-const frontends = ['android', 'flutter', 'ios', 'javascript'];
-
 export function initJSProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
