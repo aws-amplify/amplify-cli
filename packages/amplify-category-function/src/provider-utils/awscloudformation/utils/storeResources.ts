@@ -72,7 +72,9 @@ export const updateLayerArtifacts = (
 };
 
 export function removeLayerAtifacts(context, layerName) {
-  removeLayerFromTeamProviderInfo(context, layerName);
+  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    removeLayerFromTeamProviderInfo(context, layerName);
+  }
 }
 
 // ideally function update should be refactored so this function does not need to be exported
