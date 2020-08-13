@@ -106,12 +106,19 @@ async function getModelOutputPath(context) {
   if(!projectConfig.frontend){
     throw new Error('Frontend type is not configured.');
   }
+<<<<<<< HEAD
 
   if(projectConfig.modelgen && projectConfig.modelgen.outputPath){
     context.print.success('\nThe output path for modelgen is already setup. You can edit the path in .config/project-config.json\n');
     return projectConfig.modelgen.outputPath;
   }
 
+=======
+  if(projectConfig.modelgen && projectConfig.modelgen.outputPath){
+    context.print.success('\nThe output path for modelgen is already setup. You can edit the path in .config/project-config.json');
+    return projectConfig.modelgen.outputPath;
+  }
+>>>>>>> 35c3a36cfe3cb0d6d1a3ca3df4eb6f0b7f32fea0
   let defaultPath = '.';
   switch (projectConfig.frontend) {
     case 'javascript':
@@ -126,6 +133,7 @@ async function getModelOutputPath(context) {
       defaultPath =  'amplify/generated/models';
       break;
   }
+<<<<<<< HEAD
 
   let outputPath = defaultPath;
   if(!context.parameters.options.yes){
@@ -134,6 +142,11 @@ async function getModelOutputPath(context) {
   }
   context.amplify.updateProjectConfig(context.amplify.getEnvInfo().projectPath, 'modelgen', {outputPath: outputPath});
   return outputPath;
+=======
+  const answer =  await askForModelOutputPath(defaultPath);
+  context.amplify.updateProjectConfig(context.amplify.getEnvInfo().projectPath, 'modelgen', answer);
+  return answer.outputPath;
+>>>>>>> 35c3a36cfe3cb0d6d1a3ca3df4eb6f0b7f32fea0
 }
 
 async function askForModelOutputPath(defaultPath){
