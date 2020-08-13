@@ -1,3 +1,6 @@
 #!/usr/bin/env node
-require = require('esm')(module, { cache: false });
+if (!require('amplify-cli-core/lib/is-native').isNative) {
+  // eslint-disable-next-line no-global-assign
+  require = require('esm')(module, { cache: false });
+}
 require('../lib/index').run();

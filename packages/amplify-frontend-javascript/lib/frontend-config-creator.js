@@ -2,6 +2,7 @@ const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
+const { isNative } = require('amplify-cli-core');
 
 const CUSTOM_CONFIG_BLACK_LIST = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
@@ -189,7 +190,17 @@ async function getCurrentAWSExports(context) {
   let awsExports = {};
 
   if (fs.existsSync(targetFilePath)) {
-    awsExports = require(targetFilePath).default;
+    if (isNative) {
+      // if native, we can't load an ES6 module because pkg doesn't support it yet
+      const es5export = 'module.exports = {default: awsmobile};\n';
+      const es6export = 'export default awsmobile;\n';
+      const fileContents = fs.readFileSync(targetFilePath, 'utf-8');
+      fs.writeFileSync(targetFilePath, fileContents.replace(es6export, es5export));
+      awsExports = require(targetFilePath).default;
+      fs.writeFileSync(targetFilePath, fileContents);
+    } else {
+      awsExports = require(targetFilePath).default;
+    }
   }
 
   return awsExports;

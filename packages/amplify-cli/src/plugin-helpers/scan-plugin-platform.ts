@@ -12,6 +12,7 @@ import { twoPluginsAreTheSame } from './compare-plugins';
 import { checkPlatformHealth } from './platform-health-check';
 import { readJsonFileSync } from '../utils/readJsonFile';
 import isChildPath from '../utils/is-child-path';
+import { isNative } from 'amplify-cli-core';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
   pluginPlatform = pluginPlatform || (await readPluginsJsonFile()) || new PluginPlatform();
@@ -35,9 +36,8 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     await sequential(scanUserLocationTasks);
   }
 
-  // check if the CLI is running as a packaged native executable
-  if (['/snapshot', 'C:\\snapshot'].find(prefix => __dirname.startsWith(prefix))) {
-    // if so, add the packaged node modules path to the plugin scan list
+  if (isNative) {
+    // if the cli is running natively, add the packaged node modules path to the plugin scan list
     pluginPlatform!.pluginDirectories.push(constants.PackagedNodeModules);
   }
 
