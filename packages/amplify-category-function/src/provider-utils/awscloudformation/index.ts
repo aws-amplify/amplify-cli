@@ -353,7 +353,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       ...teamProviderParams,
     };
 
-    updateLayerArtifacts(context, layerEnvParams);
+    updateLayerArtifacts(context, layerEnvParams, 1);
   }
 }
 
