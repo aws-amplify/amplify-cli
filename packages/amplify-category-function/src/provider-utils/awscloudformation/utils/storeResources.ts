@@ -197,9 +197,14 @@ const addLayerToAmplifyMeta = (context, parameters: LayerParameters) =>
   context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, layerParamsToAmplifyMetaParams(parameters));
 
 const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
-  const metaParams = layerParamsToAmplifyMetaParams(parameters);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', metaParams.runtimes);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'layerVersionMap', metaParams.layerVersionMap);
+  let metaParams;
+  if (!FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    metaParams = layerParamsToAmplifyMetaParams(parameters) as AmplifyMetaLayerParams & StoredLayerParameters;
+    context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', metaParams.runtimes);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'layerVersionMap', metaParams.layerVersionMap);
+  } else {
+    metaParams = layerParamsToAmplifyMetaParams(parameters);
+  }
   context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', metaParams.build);
 };
 
@@ -239,14 +244,24 @@ const removeLayerFromTeamProviderInfo = (context, layerName) => {
   context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
 };
 
+interface AmplifyMetaLayerParams {
+  providerPlugin: string;
+  service: string;
+  build: boolean;
+}
+
 const layerParamsToAmplifyMetaParams = (
   parameters: LayerParameters,
-): StoredLayerParameters & { providerPlugin: string; service: string; build: boolean } => {
-  return _.assign(layerParamsToStoredParams(parameters), {
+): AmplifyMetaLayerParams | (AmplifyMetaLayerParams & StoredLayerParameters) => {
+  const amplifyMetaParams = {
     providerPlugin: parameters.providerContext.provider,
     service: parameters.providerContext.service,
     build: parameters.build,
-  });
+  };
+  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    return amplifyMetaParams;
+  }
+  return _.assign(layerParamsToStoredParams(parameters), amplifyMetaParams);
 };
 
 const layerParamsToStoredParams = (parameters: LayerParameters | StoredLayerParameters): StoredLayerParameters => ({
