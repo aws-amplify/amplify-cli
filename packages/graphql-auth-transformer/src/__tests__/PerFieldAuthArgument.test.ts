@@ -53,7 +53,7 @@ test('Test that subscriptions are only generated if the respective mutation oper
 test('Test per-field @auth without model', () => {
   const validSchema = `
     type Query {
-      listContext: String @auth(rules: [{ allow: groups, groups: ["Allowed"] }])
+      listContext: String @auth(rules: [{ allow: groups, groups: ["Allowed"] }, { allow: private, provider: iam }])
     }
   `;
 
@@ -65,7 +65,11 @@ test('Test per-field @auth without model', () => {
           defaultAuthentication: {
             authenticationType: 'AMAZON_COGNITO_USER_POOLS',
           },
-          additionalAuthenticationProviders: [],
+          additionalAuthenticationProviders: [
+            {
+              authenticationType: 'AWS_IAM',
+            },
+          ],
         },
       }),
     ],
@@ -74,6 +78,9 @@ test('Test per-field @auth without model', () => {
   const out = transformer.transform(validSchema);
 
   expect(out).toBeDefined();
+  const resources = out.rootStack.Resources;
+  expect(resources['AuthRolePolicy01']).toMatchSnapshot();
+  expect(out.resolvers['Query.listContext.req.vtl']).toContain('#if( $authMode == "userPools" )');
   expect(out.resolvers['Query.listContext.req.vtl']).toContain(
     '## Authorization rule: { allow: groups, groups: ["Allowed"], groupClaim: "cognito:groups" } **',
   );

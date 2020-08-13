@@ -576,9 +576,26 @@ Static group authorization should perform as expected.`,
       const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
       const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
       const throwIfUnauthorizedExpression = this.resources.throwIfStaticGroupUnauthorized(field);
-      const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
 
-      templateParts.push(print(compoundExpression(authCheckExpressions)));
+      // If other authModes (aside from userPools) are included then add the authMode check block
+      // to the start of the resolver
+      const authModesToCheck = new Set<AuthProvider>();
+      const expressions: Array<Expression> = new Array();
+      if (staticGroupAuthorizationRules.find(r => r.provider === 'userPools')) {
+        authModesToCheck.add('userPools');
+      }
+      if (staticGroupAuthorizationRules.find(r => r.provider === 'oidc')) {
+        authModesToCheck.add('oidc');
+      }
+      if (authModesToCheck.size > 0) {
+        const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
+      }
+      const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
+      // Create the authMode if block and add it to the resolver
+      expressions.push(this.resources.getAuthModeCheckWrappedExpression(authModesToCheck, compoundExpression(authCheckExpressions)));
+
+      templateParts.push(print(compoundExpression(expressions)));
     }
 
     // if the field resolver does not exist create it
@@ -590,9 +607,8 @@ Static group authorization should perform as expected.`,
       if (!noneDS) {
         ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource());
       }
-    } else {
-      templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
     }
+    templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
     fieldResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n');
     ctx.setResource(resolverResourceId, fieldResolverResource);
   }
