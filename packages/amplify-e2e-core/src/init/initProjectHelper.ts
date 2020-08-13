@@ -143,9 +143,9 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object) {
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building");
-    singleSelect(chain, 'flutter', frontends)
+      singleSelect(chain, 'flutter', frontends)
       .wait('Where do you want to store your configuration file')
-      .sendCarriageReturn()
+      .sendLine('./lib/')
       .wait('Using default provider  awscloudformation')
       .wait('Do you want to use an AWS profile?')
       .sendLine('y')
