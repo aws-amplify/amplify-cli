@@ -21,10 +21,6 @@ function getAWSConfigIOSPath(projRoot: string): string {
   return path.join(projRoot, 'awsconfiguration.json');
 }
 
-function getAmplifyConfigFlutterPath(projRoot: string): string {
-  return path.join(projRoot, 'lib', 'amplifyconfiguration.dart');
-}
-
 function getProjectMeta(projectRoot: string) {
   const metaFilePath = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
@@ -53,21 +49,14 @@ function getAwsIOSConfig(projectRoot: string) {
   return JSON.parse(fs.readFileSync(configPath, 'utf8'));
 }
 
-function getAwsFlutterConfig(projectRoot: string) {
-  const configPath = getAWSConfigAndroidPath(projectRoot);
-  return JSON.parse(fs.readFileSync(configPath, 'utf8'));
-}
-
 export {
   getProjectMeta,
   getBackendAmplifyMeta,
   getAwsAndroidConfig,
   getAwsIOSConfig,
-  getAwsFlutterConfig,
   getAWSConfigAndroidPath,
   getAmplifyConfigAndroidPath,
   getAmplifyConfigIOSPath,
-  getAmplifyConfigFlutterPath,
   getAWSConfigIOSPath,
   getS3StorageBucketName,
   getAmplifyDirPath,
