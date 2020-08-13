@@ -1,6 +1,6 @@
 import { category as categoryName } from '../../constants';
 import { ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
-import { removeLayerAtifacts } from '../../provider-utils/awscloudformation/utils/storeResources';
+import { removeLayerArtifacts } from '../../provider-utils/awscloudformation/utils/storeResources';
 
 const subcommand = 'remove';
 
@@ -20,7 +20,7 @@ module.exports = {
       })
       .then((resource: { service: string; resourceName: string }) => {
         if (resource.service === ServiceName.LambdaLayer) {
-          removeLayerAtifacts(context, resource.resourceName);
+          removeLayerArtifacts(context, resource.resourceName);
         }
       })
       .catch(err => {
