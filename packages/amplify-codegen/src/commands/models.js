@@ -5,6 +5,8 @@ const gqlCodeGen = require('@graphql-codegen/core');
 
 const appSyncDataStoreCodeGen = require('amplify-codegen-appsync-model-plugin');
 
+const inquirer = require('inquirer');
+
 async function generateModels(context) {
   // steps:
   // 1. Load the schema and validate using transformer
@@ -37,7 +39,7 @@ async function generateModels(context) {
   });
 
   const schemaContent = loadSchema(apiResourcePath);
-  const outputPath = path.join(projectRoot, getModelOutputPath(context));
+  const outputPath = path.join(projectRoot, await getModelOutputPath(context));
   const schema = parse(schemaContent);
   const projectConfig = context.amplify.getProjectConfig();
 
@@ -99,19 +101,48 @@ function loadSchema(apiResourcePath) {
   throw new Error('Could not load the schema');
 }
 
-function getModelOutputPath(context) {
+async function getModelOutputPath(context) {
   const projectConfig = context.amplify.getProjectConfig();
+  if(!projectConfig.frontend){
+    throw new Error('Frontend type is not configured.');
+  }
+
+  if(projectConfig.modelgen && projectConfig.modelgen.outputPath){
+    context.print.success('\nThe output path for modelgen is already setup. You can edit the path in .config/project-config.json\n');
+    return projectConfig.modelgen.outputPath;
+  }
+
+  let defaultPath = '.';
   switch (projectConfig.frontend) {
     case 'javascript':
-      return 'src';
+      defaultPath = 'src/models';
+      break;
     case 'android':
-      return projectConfig.android && projectConfig.android.config && projectConfig.android.config.ResDir
+      defaultPath = projectConfig.android && projectConfig.android.config && projectConfig.android.config.ResDir
         ? path.normalize(path.join(projectConfig.android.config.ResDir, '..', 'java'))
         : path.join('app', 'src', 'main', 'java');
+      break;
     case 'ios':
-      return 'amplify/generated/models';
-    default:
-      return '.';
+      defaultPath =  'amplify/generated/models';
+      break;
   }
+
+  let outputPath = defaultPath;
+  if(!context.parameters.options.yes){
+    const answer = await askForModelOutputPath(defaultPath);
+    outputPath = answer.outputPath;
+  }
+  context.amplify.updateProjectConfig(context.amplify.getEnvInfo().projectPath, 'modelgen', {outputPath: outputPath});
+  return outputPath;
+}
+
+async function askForModelOutputPath(defaultPath){
+  const answer = await inquirer.prompt({
+    type: 'input',
+    name: 'outputPath',
+    message: 'Please type your output path for model',
+    default: defaultPath
+  });
+  return answer;
 }
 module.exports = generateModels;
