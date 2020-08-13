@@ -54,7 +54,6 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   };
   let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
   const POLICY_RETAIN = DeletionPolicy.Retain;
-  const latestVersion = layerData.getLatestVersion();
   const layerName = FeatureFlags.getBoolean('lambdaLayers.multiEnv')
     ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') })
     : parameters.layerName;
