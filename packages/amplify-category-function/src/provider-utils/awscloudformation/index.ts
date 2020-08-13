@@ -1,6 +1,6 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
 import { FeatureFlags } from 'amplify-cli-core';
-import { LayerParameters } from './utils/layerParams';
+import { LayerParameters, StoredLayerParameters } from './utils/layerParams';
 import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
 import { ServiceName, provider, parametersFileName } from './utils/constants';
@@ -335,11 +335,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
     }
     return envParams;
   } else if (FeatureFlags.getBoolean('lambdaLayers.multiEnv') && service === ServiceName.LambdaLayer) {
-    const { envName } = context.amplify.getEnvInfo();
-    const layerParamsPath = path.join('amplify', 'backend', categoryName, resourceName, parametersFileName);
-
-    // teamProviderParams = runtimes, layerVersionMap
-    const teamProviderParams = await chooseParamsOnEnvInit(context, resourceName);
+    const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
 
     const providerContext: ProviderContext = {
       provider: 'awscloudformation',
