@@ -71,7 +71,7 @@ export const updateLayerArtifacts = (
   return layerDirPath;
 };
 
-export function removeLayerAtifacts(context, layerName) {
+export function removeLayerArtifacts(context, layerName) {
   if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
     removeLayerFromTeamProviderInfo(context, layerName);
   }
