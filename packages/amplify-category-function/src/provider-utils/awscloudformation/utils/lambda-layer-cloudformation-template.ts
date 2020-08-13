@@ -140,9 +140,15 @@ function createLayerVersionArn(layerData: LayerMetadata, layerName: string, vers
       return Fn.Ref('LambdaLayer');
     }
   }
-  return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}', {
-    layerName: layerName,
-    env: Fn.Ref('env'),
+  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}', {
+      layerName,
+      env: Fn.Ref('env'),
+      layerVersion: version,
+    });
+  }
+  return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}:${layerVersion}', {
+    layerName,
     layerVersion: version,
   });
 }
