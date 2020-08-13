@@ -164,7 +164,9 @@ export async function chooseParamsOnEnvInit(context: any, layerName: string) {
       _.has(teamProviderInfo, [env, 'nonCFNdata', 'function', layerName, 'runtimes']) &&
       _.has(teamProviderInfo, [env, 'nonCFNdata', 'function', layerName, 'layerVersionMap']),
   );
-  const { envName } = await prompt(chooseParamsOnEnvInitQuestion(layerName, context.amplify.getEnvInfo(), filteredEnvs));
+  const currentEnv = context.amplify.getEnvInfo().envName;
+  context.print.info(`Adding Lambda layer ${layerName} to ${currentEnv} environment.`);
+  const { envName } = await prompt(chooseParamsOnEnvInitQuestion(layerName, filteredEnvs));
   const defaultPermission = [{ type: 'private' }];
   if (envName === undefined) {
     return {
@@ -187,14 +189,15 @@ export async function chooseParamsOnEnvInit(context: any, layerName: string) {
   };
 }
 
-function chooseParamsOnEnvInitQuestion(layerName: string, currentEnv: string, filteredEnvs: string[]): ListQuestion[] {
-  const choices = filteredEnvs.map(env => ({ name: env, value: env })).concat([{ name: 'None, use defualt settings', value: undefined }]);
+function chooseParamsOnEnvInitQuestion(layerName: string, filteredEnvs: string[]): ListQuestion[] {
+  const choices = filteredEnvs
+    .map(env => ({ name: env, value: env }))
+    .concat([{ name: 'Apply default settings (Access level: Only this AWS account, Runtimes: none)', value: undefined }]);
   return [
     {
       type: 'list',
       name: 'envName',
-      // TODO better wording
-      message: `Adding Lambda layer ${layerName} to ${currentEnv} environment. Choose the environment to clone the layer settings from:`,
+      message: `Choose the environment to clone the layer access & runtime settings from:`,
       choices,
     },
   ];
