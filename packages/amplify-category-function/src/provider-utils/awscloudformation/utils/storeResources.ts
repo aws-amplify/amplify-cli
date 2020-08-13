@@ -71,6 +71,10 @@ export const updateLayerArtifacts = (
   return layerDirPath;
 };
 
+export function removeLayerAtifacts(context, layerName) {
+  removeLayerFromTeamProviderInfo(context, layerName);
+}
+
 // ideally function update should be refactored so this function does not need to be exported
 export function saveMutableState(
   context,
@@ -213,6 +217,23 @@ const updateLayerTeamProviderInfo = (context, parameters: LayerParameters, layer
 
   const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
   _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, parameters.layerName], layerParamsToStoredParams(parameters));
+  context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+};
+
+const removeLayerFromTeamProviderInfo = (context, layerName) => {
+  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+  const { envName } = context.amplify.getEnvInfo();
+  if (!fs.existsSync(teamProviderInfoPath)) {
+    throw new Error(`${teamProviderInfoPath} not found.`);
+  }
+  const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
+  _.unset(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName]);
+  if (_.isEqual(_.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName]), {})) {
+    _.unset(teamProviderInfo, [envName, 'nonCFNdata', categoryName]);
+    if (_.isEqual(_.get(teamProviderInfo, [envName, 'nonCFNdata']), {})) {
+      _.unset(teamProviderInfo, [envName, 'nonCFNdata']);
+    }
+  }
   context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
 };
 
