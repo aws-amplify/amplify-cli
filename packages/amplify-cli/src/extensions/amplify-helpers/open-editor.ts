@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import * as childProcess from 'child_process';
+import execa, { sync as execaSync } from 'execa';
 import * as inquirer from 'inquirer';
 import * as envEditor from 'env-editor';
 import { editorSelection } from './editor-selection';
@@ -36,12 +36,12 @@ export async function openEditor(context, filePath, waitToContinue = true) {
 
     try {
       if (!editor.isTerminalEditor) {
-        const subProcess = childProcess.spawn(editorPath || editor.binary, editorArguments, {
+        const subProcess = execa(editorPath || editor.binary, editorArguments, {
           detached: true,
           stdio: 'ignore',
         });
 
-        subProcess.on('error', () => {
+        subProcess.on('error', err => {
           context.print.error(
             `Selected  editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`,
           );
@@ -53,7 +53,7 @@ export async function openEditor(context, filePath, waitToContinue = true) {
           await inquirer.prompt(continueQuestion);
         }
       } else {
-        await childProcess.spawn(editorPath || editor.binary, editorArguments, {
+        await execaSync(editorPath || editor.binary, editorArguments, {
           detached: true,
           stdio: 'inherit',
         });
