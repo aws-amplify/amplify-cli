@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.2...amplify-util-mock@3.24.3-beta.0) (2020-08-14)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** early return if no obj ([#5050](https://github.com/aws-amplify/amplify-cli/issues/5050)) ([ed1f2b3](https://github.com/aws-amplify/amplify-cli/commit/ed1f2b364b50ab3f2b16ddac849c937b239bb499))
+
+
+
+
+
 ## [3.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.1...amplify-util-mock@3.24.2) (2020-08-11)
 
 **Note:** Version bump only for package amplify-util-mock

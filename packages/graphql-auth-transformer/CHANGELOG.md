@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.20.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.20.1...graphql-auth-transformer@6.20.2-beta.0) (2020-08-14)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** add authmode check ([#5014](https://github.com/aws-amplify/amplify-cli/issues/5014)) ([23080c4](https://github.com/aws-amplify/amplify-cli/commit/23080c4406dde488b68c38d01efbb625537894ab)), closes [#3700](https://github.com/aws-amplify/amplify-cli/issues/3700)
+* **graphql-auth-transformer:** early return if no obj ([#5050](https://github.com/aws-amplify/amplify-cli/issues/5050)) ([ed1f2b3](https://github.com/aws-amplify/amplify-cli/commit/ed1f2b364b50ab3f2b16ddac849c937b239bb499))
+
+
+
+
+
 ## [6.20.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.20.0...graphql-auth-transformer@6.20.1) (2020-08-11)
 
 
