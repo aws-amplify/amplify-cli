@@ -112,6 +112,6 @@ describe('amplify function migration', () => {
     );
     await amplifyPushAuth(projRoot, true);
     const meta = getProjectMeta(projRoot);
-    await validateLayerMetadata(layerName, meta);
+    await validateLayerMetadata(projRoot, layerName, meta, 'integtest');
   });
 });
