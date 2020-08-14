@@ -103,11 +103,11 @@ function loadSchema(apiResourcePath) {
 
 async function getModelOutputPath(context) {
   const projectConfig = context.amplify.getProjectConfig();
-  if(!projectConfig.frontend){
+  if(!projectConfig.frontend) {
     throw new Error('Frontend type is not configured.');
   }
 
-  if(projectConfig.modelgen && projectConfig.modelgen.outputPath){
+  if(projectConfig.modelgen && projectConfig.modelgen.outputPath) {
     context.print.success('\nThe output path for modelgen is already setup. You can edit the path in .config/project-config.json\n');
     return projectConfig.modelgen.outputPath;
   }
@@ -128,7 +128,7 @@ async function getModelOutputPath(context) {
   }
 
   let outputPath = defaultPath;
-  if(!context.parameters.options.yes){
+  if(!context.parameters.options.yes) {
     const answer = await askForModelOutputPath(defaultPath);
     outputPath = answer.outputPath;
   }
@@ -136,7 +136,7 @@ async function getModelOutputPath(context) {
   return outputPath;
 }
 
-async function askForModelOutputPath(defaultPath){
+async function askForModelOutputPath(defaultPath) {
   const answer = await inquirer.prompt({
     type: 'input',
     name: 'outputPath',
