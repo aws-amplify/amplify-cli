@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.15.0...graphql-mapping-template@4.15.1) (2020-08-14)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** early return if no obj ([#5050](https://github.com/aws-amplify/amplify-cli/issues/5050)) ([ed1f2b3](https://github.com/aws-amplify/amplify-cli/commit/ed1f2b364b50ab3f2b16ddac849c937b239bb499))
+
+
+
+
+
 # [4.15.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.13.5...graphql-mapping-template@4.15.0) (2020-07-29)
 
 
