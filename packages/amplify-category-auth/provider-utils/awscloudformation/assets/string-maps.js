@@ -386,8 +386,8 @@ const coreAttributes = [
 ];
 
 const attributesRequestMethod = [
-  'GET',
-  'POST'
+  'POST',
+  'GET'
 ]
 
 const appClientReadAttributes = [
@@ -434,7 +434,7 @@ const hostedUIProviders = [
     value: 'LoginWithAmazon',
   },
   {
-    name: 'Custom Open ID Connect',
+    name: 'Open ID Connect (OIDC)',
     value: 'OIDC',
   },
 ];

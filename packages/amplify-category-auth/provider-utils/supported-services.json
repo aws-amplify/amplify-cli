@@ -185,7 +185,6 @@
       },
       {
         "key": "oidcAppId",
-        "prefix": " \n You've opted to allow users to authenticate via OpenID Connect.  If you haven't already, you'll need to go to your OpenID connect provider and create an App ID. \n",
         "question": "Enter your OIDC Client ID for your identity pool: ",
         "required": true,
         "andConditions": [
@@ -1120,7 +1119,6 @@
       },
       {
         "key": "oidcAppIdUserPool",
-        "prefix": " \n You've opted to allow users to authenticate via OpenID Connect.  If you haven't already, you'll need to go to your OIDC provider and create an App ID. \n",
         "question": "Enter your OIDC App ID for your OAuth flow: ",
         "required": true,
         "andConditions": [
@@ -1169,7 +1167,6 @@
         "key": "oidcAppOIDCAttributesRequestMethod",
         "question": "Select your OIDC Attributes Request Method: ",
         "type": "list",
-        "default": "GET",
         "map": "attributesRequestMethod",
         "required": true,
         "andConditions": [
