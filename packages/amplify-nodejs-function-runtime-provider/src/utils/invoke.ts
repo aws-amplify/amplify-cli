@@ -30,6 +30,9 @@ export function invoke(options: InvokeOptions): Promise<any> {
           resolve(lastLine)
         }
       });
+      lambdaFn.catch((err) => {
+        reject(err.message);
+      });
       lambdaFn.send(JSON.stringify(options));
     } catch (e) {
       reject(e);
