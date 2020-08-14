@@ -525,7 +525,8 @@ export class AppSyncModelJavaVisitor<
       const argumentName = this.getStepFunctionArgumentName(field);
       return `.${methodName}(${argumentName})`;
     });
-    const invocations = ['super', indentMultiline(stepBuilderInvocation.join('\n')).trim(), ';'].join('');
+    const invocations =
+      stepBuilderInvocation.length === 0 ? '' : ['super', indentMultiline(stepBuilderInvocation.join('\n')).trim(), ';'].join('');
     const body = [...(isModel ? ['super.id(id);'] : []), invocations].join('\n');
     copyOfBuilderClassDeclaration.addClassMethod(builderName, null, body, constructorArguments, [], 'private');
 
