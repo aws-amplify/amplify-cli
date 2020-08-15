@@ -27,13 +27,15 @@ export class ElasticsearchMappingTemplate {
   /**
    * Create a search item resolver template.
    * @param size the size limit
-   * @param from the next token
+   * @param search_after the next token
+   * @param from the pagination offset
    * @param query the query
    */
   public static searchItem({
     query,
     size,
     search_after,
+    from,
     path,
     sort,
     version = bool(false),
@@ -43,6 +45,7 @@ export class ElasticsearchMappingTemplate {
     query?: ObjectNode | Expression;
     size?: Expression;
     search_after?: Expression | ListNode;
+    from?: Expression;
     version?: BooleanNode;
   }): ObjectNode {
     return obj({
@@ -52,6 +55,7 @@ export class ElasticsearchMappingTemplate {
       params: obj({
         body: raw(`{
                 #if( $context.args.nextToken )"search_after": ${print(search_after)}, #end
+                #if( $context.args.from )"from": ${print(from)}, #end
                 "size": ${print(size)},
                 "sort": ${print(sort)},
                 "version": ${print(version)},
