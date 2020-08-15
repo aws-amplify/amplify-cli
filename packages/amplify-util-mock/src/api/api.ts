@@ -15,6 +15,8 @@ import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db
 import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
+import { keys } from 'lodash';
+import { LambdaFunctionConfig } from '../CFNParser/lambda-resource-processor';
 
 export class APITest {
   private apiName: string;
@@ -193,34 +195,21 @@ export class APITest {
           if (d.type !== 'AWS_LAMBDA') {
             return d;
           }
-          const arn = d.LambdaFunctionArn;
-          const arnParts = arn.split(':');
-          let functionName = arnParts[arnParts.length - 1];
-          if (functionName.endsWith('-${env}')) {
-            functionName = functionName.replace('-${env}', '');
-            const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
-            if (!lambdaConfig) {
-              throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
-            }
-            const envVars = await this.hydrateLambdaEnvVars(context, lambdaConfig.environment, config);
-            const invoker = await getInvoker(context, {
-              resourceName: functionName,
-              handler: lambdaConfig.handler,
-              envVars,
-            });
-            return {
-              ...d,
-              invoke: payload => {
-                return invoker({
-                  event: payload,
-                });
-              },
-            };
-          } else {
-            throw new Error(
-              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://docs.amplify.aws/cli/graphql-transformer/directives#function',
-            );
-          }
+          const lambdaConfig = this.lambdaArnToConfig(d.LambdaFunctionArn, provisionedLambdas);
+          const envVars = await this.hydrateLambdaEnvVars(context, lambdaConfig.environment, config);
+          const invoker = await getInvoker(context, {
+            resourceName: lambdaConfig.name,
+            handler: lambdaConfig.handler,
+            envVars,
+          });
+          return {
+            ...d,
+            invoke: payload => {
+              return invoker({
+                event: payload,
+              });
+            },
+          };
         }),
       ),
     };
@@ -358,4 +347,34 @@ export class APITest {
       dataSources: config.dataSources,
     });
   }
+
+  /**
+   * Attempts to match an arn object against the array of lambdas configured in the project
+   */
+  private lambdaArnToConfig = (arn: any, provisionedLambdas: LambdaFunctionConfig[]): LambdaFunctionConfig => {
+    const errorSuffix =
+      '\nSee https://docs.amplify.aws/cli/graphql-transformer/directives#function for information on how to configure Lambda resolvers.';
+    let searchString = '';
+    if (typeof arn === 'string') {
+      searchString = arn;
+    } else if (typeof arn === 'object' && keys(arn).length === 1) {
+      const funcArr = arn['Fn::GetAtt'] || arn['Fn::Sub'];
+      if (Array.isArray(funcArr) && funcArr.length > 0) {
+        searchString = funcArr[0];
+      } else {
+        throw new Error(`Malformed Lambda ARN [${JSON.stringify(arn)}]${errorSuffix}`);
+      }
+    } else {
+      throw new Error(`Cannot interpret Lambda ARN [${JSON.stringify(arn)}]${errorSuffix}`);
+    }
+    const lambdaConfig = provisionedLambdas.find(funcConfig => searchString.includes(funcConfig.name));
+    if (!lambdaConfig) {
+      throw new Error(
+        `Did not find a Lambda matching ARN [${JSON.stringify(
+          arn,
+        )}] in the project. Local mocking only supports Lambdas that are configured in the project.${errorSuffix}`,
+      );
+    }
+    return lambdaConfig;
+  };
 }
