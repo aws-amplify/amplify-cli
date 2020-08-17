@@ -107,7 +107,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+<<<<<<< HEAD
 ## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.4.0...amplify-e2e-core@1.4.1) (2020-08-06)
+=======
+## [1.4.1-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.4.0...amplify-e2e-core@1.4.1-frntndFeat.0) (2020-08-06)
+>>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-e2e-core
 

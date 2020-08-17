@@ -3,7 +3,11 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<<<<<<< HEAD
 ## [3.24.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.15...amplify-util-mock@3.24.16) (2020-10-17)
+=======
+## [3.24.1-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.1-frntndFeat.0...amplify-util-mock@3.24.1-flutter-preview.0) (2020-08-17)
+>>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-util-mock
 
@@ -11,6 +15,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+<<<<<<< HEAD
 ## [3.24.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.14...amplify-util-mock@3.24.15) (2020-10-15)
 
 **Note:** Version bump only for package amplify-util-mock
@@ -141,6 +146,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [3.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.0...amplify-util-mock@3.24.1) (2020-08-06)
+=======
+## [3.24.1-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.0...amplify-util-mock@3.24.1-frntndFeat.0) (2020-08-06)
+>>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-util-mock
 

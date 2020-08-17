@@ -3,7 +3,11 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<<<<<<< HEAD
 ## [2.18.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.6...amplify-migration-tests@2.18.7) (2020-10-17)
+=======
+## [2.17.15-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.15-frntndFeat.0...amplify-migration-tests@2.17.15-flutter-preview.0) (2020-08-17)
+>>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-migration-tests
 
@@ -11,6 +15,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+<<<<<<< HEAD
 ## [2.18.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.5...amplify-migration-tests@2.18.6) (2020-10-09)
 
 **Note:** Version bump only for package amplify-migration-tests
@@ -95,6 +100,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [2.17.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.14...amplify-migration-tests@2.17.15) (2020-08-06)
+=======
+## [2.17.15-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.14...amplify-migration-tests@2.17.15-frntndFeat.0) (2020-08-06)
+>>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-migration-tests
 
