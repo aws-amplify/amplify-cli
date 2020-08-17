@@ -93,9 +93,13 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
 
 function iteratorQuestion(input, question, context) {
   if (context.updatingAuth[input.iterator]) {
+    let iteratorValues = context.updatingAuth[input.iterator];
+    if(input.iterator === 'oidcAuthorizeScopes') {
+      iteratorValues = iteratorValues[0].split(' ');
+    }
     question = Object.assign(
       {
-        choices: context.updatingAuth[input.iterator].map(i => ({
+        choices: iteratorValues.map(i => ({
           name: i,
           value: i,
         })),

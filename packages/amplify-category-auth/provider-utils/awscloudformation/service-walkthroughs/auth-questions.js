@@ -79,7 +79,11 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
       answer[questionObj.key] &&
       answer[questionObj.key].length > 0
     ) {
+      if(questionObj.iterator === 'oidcAuthorizeScopes') {
+        context.updatingAuth[questionObj.iterator] = context.updatingAuth[questionObj.iterator][0].split(' ');
+      }
       const replacementArray = context.updatingAuth[questionObj.iterator];
+
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
         questionObj.validation = questionObj.iteratorValidation;
         const newValue = await inquirer.prompt({
@@ -416,8 +420,22 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
-        const scopes = el === 'OIDC' && answers.oidcAppOIDCAuthorizeScopes ? JSON.parse(answers.oidcAppOIDCAuthorizeScopes) : ["openid", "email"];
-        const maps = el === 'OIDC' && answers.oidcAppOIDCAttributesMapping ? JSON.parse(answers.oidcAppOIDCAttributesMapping) : {};
+        let scopes = [];
+        let maps = {};
+        let oidc_issuer = undefined;
+        let attributes_request_method = undefined;
+        if(el === 'OIDC') {
+          oidc_issuer = answers.oidcAppOIDCIssuer;
+          attributes_request_method = answers.oidcAppOIDCAttributesRequestMethod;
+          if (answers.oidcAuthorizeScopes && coreAnswers.newOIDCAuthorizeScopes) {
+            scopes = answers.oidcAuthorizeScopes.concat(coreAnswers.newOIDCAuthorizeScopes);
+          } else if (coreAnswers.newOIDCAuthorizeScopes) {
+            scopes = coreAnswers.newOIDCAuthorizeScopes;
+          } else {
+            scopes = ["openid", "email"];
+          }
+          const maps = answers.oidcAppOIDCAttributesMapping ? JSON.parse(answers.oidcAppOIDCAttributesMapping) : {};
+        }
         attributesForMapping.forEach(a => {
           const attributeKey = attributeProviderMap[a];
           if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
@@ -435,9 +453,9 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
         return {
           ProviderName: el,
           authorize_scopes: scopes.join(delimmiter),
-          oidc_issuer:  el === 'OIDC' ? answers.oidcAppOIDCIssuer : undefined,
-          attributes_request_method: el === 'OIDC' ? answers.oidcAppOIDCAttributesRequestMethod: undefined,
-          AttributeMapping: maps,
+          oidc_issuer:  oidc_issuer,
+          attributes_request_method: attributes_request_method,
+          attribute_mapping: maps,
         };
       }),
     );
@@ -492,7 +510,7 @@ function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
       AllowedOAuthFlows,
       AllowedOAuthScopes,
       CallbackURLs,
-      LogoutURLs,
+      LogoutURLs
     });
   }
 

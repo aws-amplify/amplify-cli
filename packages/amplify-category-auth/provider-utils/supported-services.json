@@ -1190,11 +1190,10 @@
         ]
       },
       {
-        "key": "oidcAppOIDCAuthorizeScopes",
-        "question": "Enter authorize scopes used by your application during authentication to authorize access to a user's details, like name and picture as a JSON array (ex. [\"openid\",\"test\"]): ",
-        "type": "input",
-        "required": false,
-        "default": "[\"openid\"]",
+        "key": "newOIDCAuthorizeScopes",
+        "question": "Enter a new authorized scope:",
+        "required": true,
+        "addAnotherLoop": "additional scope",
         "andConditions": [
           {
             "key": "authProvidersUserPool",
@@ -1205,13 +1204,68 @@
             "key": "OIDCAdditionalQuestions",
             "value": true,
             "operator": "="
+          },
+          {
+            "preventEdit": "exists",
+            "key": "oidcAuthorizeScopes"
+          },
+          {
+            "preventEdit": "existsInCurrent",
+            "key": "oidcAuthorizeScopes"
           }
-        ],
-        "validation": {
+        ]
+      },
+      {
+        "key": "EditScopes",
+        "question": "Which scopes do you want to edit ?",
+        "type": "multiselect",
+        "iterator": "oidcAuthorizeScopes",
+        "iteratorValidation": {
           "operator": "regex",
-          "value": "\\[\\]|^\\[((\"(\\w*\\s*)+\")(\\,\"(\\w*\\s*)+\")*)\\]",
-          "onErrorMsg": "The value must be a valid JSON array without spaces."
-        }
+          "value": ".*",
+          "onErrorMsg": "The value must be a valid string or url."
+        },
+        "andConditions": [
+          {
+            "key": "oidcAuthorizeScopes",
+            "operator": "exists"
+          },
+          {
+            "onCreate": "never"
+          }
+        ]
+      },
+      {
+        "key": "addOIDCAuthorizeScopeOnUpdate",
+        "question": "Do you want to add additional scopes ?",
+        "required": true,
+        "type": "confirm",
+        "andConditions": [
+          {
+            "onCreate": "never"
+          },
+          {
+            "preventEdit": "existsInCurrent",
+            "key": "newOIDCAuthorizeScopes"
+          }
+        ]
+      },
+      {
+        "key": "newOIDCAuthorizeScopes",
+        "question": "Enter your new additional scope:",
+        "required": true,
+        "concatKey": "oidcAuthorizeScopes",
+        "addAnotherLoop": "additional scope",
+        "andConditions": [
+          {
+            "key": "addOIDCAuthorizeScopeOnUpdate",
+            "value": true,
+            "operator": "="
+          },
+          {
+            "onCreate": "never"
+          }
+        ]
       },
       {
         "key": "oidcAppOIDCAttributesMapping",
