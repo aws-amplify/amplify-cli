@@ -1,6 +1,6 @@
 {
   "name": "amplify-velocity-template",
-  "version": "1.3.0",
+  "version": "1.3.1-frntndFeat.0",
   "description": "Velocity Template Language(VTL) for JavaScript",
   "repository": {
     "type": "git",
@@ -36,7 +36,6 @@
     "coveralls": "~3.0.9",
     "growl": "^1.10.5",
     "istanbul": "~0.4.5",
-    "jade": "^1.11.0",
     "jison": ">=0.4",
     "mocha": ">=7.0.0",
     "mocha-lcov-reporter": "1.3.0",
