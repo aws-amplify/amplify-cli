@@ -80,8 +80,7 @@ function getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources)
 }
 
 function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
-  const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
-  // generateAWSConfigFile(context, newAWSConfig);
+  getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
   return context;
 }
 
@@ -103,10 +102,10 @@ function getAWSConfigObject(amplifyResources) {
         Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
         break;
       case 'S3':
-        Object.assign(configOutput, getS3Config(serviceResourceMapping[service], projectRegion));
+        Object.assign(configOutput, getS3Config(serviceResourceMapping[service]));
         break;
       case 'Pinpoint':
-        Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
+        Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service]));
         break;
       case 'DynamoDB':
         Object.assign(configOutput, getDynamoDBConfig(serviceResourceMapping[service], projectRegion));
@@ -115,10 +114,10 @@ function getAWSConfigObject(amplifyResources) {
         Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
         break;
       case 'Lex':
-        Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
+        Object.assign(configOutput, getLexConfig(serviceResourceMapping[service]));
         break;
       case 'Sumerian':
-        Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
+        Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service]));
         break;
       default:
         break;
