@@ -1,6 +1,16 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
+function getFeatureFlagConfig(projRoot: string) {
+  const featureFlagPath = path.join(projRoot, 'amplify.json');
+  return JSON.parse(fs.readFileSync(featureFlagPath, 'utf8'));
+}
+
+function updateFeatureFlagConfig(projRoot: string, config: Object) {
+  const featureFlagPath = path.join(projRoot, 'amplify.json');
+  fs.writeFileSync(featureFlagPath, config);
+}
+
 function getAWSConfigAndroidPath(projRoot: string): string {
   return path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
 }
@@ -60,4 +70,6 @@ export {
   getAWSConfigIOSPath,
   getS3StorageBucketName,
   getAmplifyDirPath,
+  getFeatureFlagConfig,
+  updateFeatureFlagConfig
 };

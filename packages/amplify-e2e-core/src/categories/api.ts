@@ -139,9 +139,12 @@ export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: st
   });
 }
 
-export function updateApiSchema(cwd: string, projectName: string, schemaName: string) {
+export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate: boolean = false) {
   const testSchemaPath = getSchemaPath(schemaName);
-  const schemaText = fs.readFileSync(testSchemaPath).toString();
+  let schemaText = fs.readFileSync(testSchemaPath).toString();
+  if (forceUpdate) {
+    schemaText += '  ';
+  }
   updateSchema(cwd, projectName, schemaText);
 }
 
