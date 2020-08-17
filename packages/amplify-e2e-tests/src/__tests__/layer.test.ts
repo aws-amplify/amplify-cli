@@ -20,6 +20,7 @@ import {
   validatePushedVersion,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
+import { addEnvironment, listEnvironment } from '../environment/env';
 
 describe('amplify add lambda layer', () => {
   let projRoot: string;
@@ -108,7 +109,7 @@ describe('amplify add lambda layer', () => {
     await validateLayerMetadata(projRoot, settings.layerName, getProjectMeta(projRoot), envName);
   });
 
-  it('init a project, add/push layer, change layer content, push layer using previous permissions', async () => {
+  it('init a project, add/push layer, change layer content, push layer using previous permissions, add new env, push layer in new env', async () => {
     const [shortId] = uuid().split('-');
     const settings = {
       runtimes: ['nodejs'],
@@ -126,5 +127,12 @@ describe('amplify add lambda layer', () => {
     await amplifyPushLayer(projRoot);
     await validatePushedVersion(projRoot, settings.layerName, envName, 2, expectedPerms);
     await validateLayerMetadata(projRoot, settings.layerName, getProjectMeta(projRoot), envName);
+
+    const newEnvName = 'layertest';
+    await addEnvironment(projRoot, { envName: newEnvName, numLayers: 1 });
+    await listEnvironment(projRoot, { numEnv: 2 });
+    await amplifyPushAuth(projRoot);
+    await validatePushedVersion(projRoot, settings.layerName, newEnvName, 1, expectedPerms);
+    await validateLayerMetadata(projRoot, settings.layerName, getProjectMeta(projRoot), newEnvName);
   });
 });
