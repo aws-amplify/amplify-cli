@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 const constants = require('./constants');
-const chalk = require('chalk');
 
 async function init(context) {
   normalizeInputParams(context);
@@ -46,12 +45,11 @@ async function confirmConfiguration(context) {
     context.print.info('Please tell us about your project');
     const { config } = context.exeInfo.projectConfig[constants.Label];
 
-    context.print.warning('⚠️  Flutter project support in the Amplify CLI is in DEVELOPER PREVIEW status.');
-    context.print.warning('Currently, the following resource types are supported:');
+    context.print.warning('⚠️  Flutter project support in the Amplify CLI is in DEVELOPER PREVIEW.');
+    context.print.warning('Only the following categories are supported:');
     context.print.warning(' * Auth');
     context.print.warning(' * Analytics');
     context.print.warning(' * Storage');
-    context.print.warning('Other categories may not function as expected for Flutter projects.');
 
     const configurationSettings = [
       {
