@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.18-flutter-preview.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.18-frntndFeat.0...amplify-console-integration-tests@1.2.18-flutter-preview.0) (2020-08-17)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [1.2.18-frntndFeat.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.17...amplify-console-integration-tests@1.2.18-frntndFeat.0) (2020-08-06)
 
 **Note:** Version bump only for package amplify-console-integration-tests

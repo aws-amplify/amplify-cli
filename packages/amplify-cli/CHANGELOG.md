@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.26.1-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.26.1-frntndFeat.0...@aws-amplify/cli@4.26.1-flutter-preview.0) (2020-08-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [4.26.1-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.26.0...@aws-amplify/cli@4.26.1-frntndFeat.0) (2020-08-06)
 
 

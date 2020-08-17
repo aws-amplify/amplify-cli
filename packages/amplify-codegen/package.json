@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "2.15.16-frntndFeat.0",
+  "version": "2.15.16-flutter-preview.0",
   "description": "amplify code generator",
   "repository": {
     "type": "git",

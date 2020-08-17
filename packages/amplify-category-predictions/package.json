@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-predictions",
-  "version": "2.4.8-frntndFeat.0",
+  "version": "2.4.8-flutter-preview.0",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
   "dependencies": {
     "amplify-category-auth": "2.18.0",
     "amplify-category-function": "2.23.0",
-    "amplify-provider-awscloudformation": "4.24.1-frntndFeat.0",
+    "amplify-provider-awscloudformation": "4.24.1-flutter-preview.0",
     "aws-sdk": "^2.608.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
