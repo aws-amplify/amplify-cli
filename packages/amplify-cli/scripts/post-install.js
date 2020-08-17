@@ -25,6 +25,8 @@ console.log(chalk.green('Android Getting Started - https://docs.amplify.aws/star
 console.log(EOL);
 console.log(chalk.green('iOS Getting Started - https://docs.amplify.aws/start/q/integration/ios'));
 console.log(EOL);
+console.log(chalk.green('Flutter Getting Started - https://docs.amplify.aws/start/q/integration/flutter'));
+console.log(EOL);
 
 console.log(
   chalk.blue(
