@@ -210,7 +210,6 @@ export class GraphQLTransform {
     this.transformers = options.transformers;
     this.stackMappingOverrides = options.stackMapping || {};
     this.transformConfig = options.transformConfig || {};
-    // check if this is an sync enabled project
   }
 
   /**
@@ -250,6 +249,7 @@ export class GraphQLTransform {
 
     // Transformer version is populated, store it in the transformer context, to make it accessible to transformers
     context.setTransformerVersion(this.transformConfig.Version!);
+    context.setTransfromerFeatureFlags(this.transformConfig.FeatureFlags!);
 
     for (const transformer of this.transformers) {
       if (isFunction(transformer.before)) {

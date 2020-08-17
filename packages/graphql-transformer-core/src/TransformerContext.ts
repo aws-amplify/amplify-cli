@@ -113,6 +113,8 @@ export class TransformerContext {
 
   private transformerVersion: Number;
 
+  private featureFlags: Record<string, string | number | boolean>;
+
   constructor(inputSDL: string) {
     const doc: DocumentNode = parse(inputSDL);
     for (const def of doc.definitions) {
@@ -719,6 +721,15 @@ export class TransformerContext {
 
   public getTransformerVersion(): Number {
     return this.transformerVersion;
+  }
+
+  public setTransfromerFeatureFlags(featureFlags: Record<string, string | number | boolean>) {
+    this.featureFlags = featureFlags;
+  }
+
+  public getTransformerFeatureFlag(key: string): string | number | boolean | null {
+    if (!(key in this.featureFlags)) return null;
+    return this.featureFlags[key];
   }
 
   public isProjectUsingDataStore(): boolean {

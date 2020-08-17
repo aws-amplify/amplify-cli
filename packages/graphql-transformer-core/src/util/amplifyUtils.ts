@@ -15,6 +15,7 @@ const PARAMETERS_FILE_NAME = 'parameters.json';
 export interface ProjectOptions {
   projectDirectory?: string;
   transformersFactory: Function;
+  featureFlags?: Record<string, string | number | boolean>;
   transformersFactoryArgs: object[];
   currentCloudBackendDirectory: string;
   rootStackFileName?: string;

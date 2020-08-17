@@ -91,6 +91,10 @@ export interface TransformConfig {
    */
   Version?: number;
   /**
+   * A record flags so the transformer can determine which features to enable/disable
+   */
+  FeatureFlags?: Record<string, string | number | boolean>
+  /**
    * A flag added to keep a track of a change noted in elasticsearch
    */
   ElasticsearchWarning?: boolean;
@@ -226,7 +230,14 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
     }
   }
 
-  const config = await loadConfig(projectDirectory);
+  let config = await loadConfig(projectDirectory);
+  // add feature flags if they exist
+  if (opts?.featureFlags) {
+    config = {
+      ...config,
+      FeatureFlags: opts.featureFlags
+    };
+  }
   return {
     functions,
     pipelineFunctions,

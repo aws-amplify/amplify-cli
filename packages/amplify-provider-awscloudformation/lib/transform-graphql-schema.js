@@ -182,7 +182,7 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
     writeToConfig = true;
   }
   // Add the warning as noted in the elasticsearch
-  if (!localTransformerConfig.warningESMessage) {
+  if (!localTransformerConfig.ElasticsearchWarning) {
     localTransformerConfig.ElasticsearchWarning = true;
     writeToConfig = true;
   }
