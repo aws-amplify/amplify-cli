@@ -170,6 +170,7 @@ async function guessPlatform() {
     javascript: 'amplify-frontend-javascript',
     android: 'amplify-frontend-android',
     ios: 'amplify-frontend-ios',
+    flutter: 'amplify-frontend-flutter',
   };
 
   let suitableFrontend;

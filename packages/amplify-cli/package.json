@@ -189,6 +189,11 @@
         "type": "util",
         "packageName": "amplify-codegen"
       },
+      "flutter": {
+        "name": "flutter",
+        "type": "frontend",
+        "packageName": "amplify-frontend-flutter"
+      },
       "android": {
         "name": "android",
         "type": "frontend",
