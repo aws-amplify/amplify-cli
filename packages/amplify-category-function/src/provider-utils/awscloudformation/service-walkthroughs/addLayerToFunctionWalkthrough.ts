@@ -1,3 +1,4 @@
+import { FeatureFlags, JSONUtilities } from 'amplify-cli-core';
 import { FunctionParameters, FunctionRuntime, LambdaLayer, FunctionDependency } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 import { askLayerSelection, askCustomArnQuestion, askLayerOrderQuestion } from '../utils/addLayerToFunctionUtils';
@@ -25,12 +26,24 @@ export const addLayersToFunctionWalkthrough = async (
   }
 
   let askArnQuestion: boolean;
-  ({ lambdaLayers, dependsOn, askArnQuestion } = await askLayerSelection(
-    getLayerMetadataFactory(context),
-    context.amplify.getProjectMeta(),
-    runtime.value,
-    previousSelections,
-  ));
+  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    const teamProviderInfo = await JSONUtilities.readJson(context.amplify.pathManager.getProviderInfoFilePath());
+    const layerData = teamProviderInfo[context.amplify.getEnvInfo().envName].nonCFNdata.function;
+
+    ({ lambdaLayers, dependsOn, askArnQuestion } = await askLayerSelection(
+      getLayerMetadataFactory(context),
+      layerData,
+      runtime.value,
+      previousSelections,
+    ));
+  } else {
+    ({ lambdaLayers, dependsOn, askArnQuestion } = await askLayerSelection(
+      getLayerMetadataFactory(context),
+      context.amplify.getProjectMeta(),
+      runtime.value,
+      previousSelections,
+    ));
+  }
 
   if (askArnQuestion) {
     lambdaLayers = lambdaLayers.concat(await askCustomArnQuestion(lambdaLayers.length, previousSelections));
