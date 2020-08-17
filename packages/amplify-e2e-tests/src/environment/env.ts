@@ -2,7 +2,7 @@ import { nspawn as spawn, getCLIPath, getSocialProviders } from 'amplify-e2e-cor
 
 export function addEnvironment(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')
@@ -10,15 +10,19 @@ export function addEnvironment(cwd: string, settings: any) {
       .wait('Do you want to use an AWS profile?')
       .sendLine('yes')
       .wait('Please choose the profile you want to use')
-      .sendCarriageReturn()
-      .wait('Initialized your environment successfully.')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .sendCarriageReturn();
+
+    for (let i = 0; i < settings.numLayers || 0; ++i) {
+      chain.wait('Choose the environment to clone the layer access & runtime settings from:').sendCarriageReturn(); // Choose first env in list
+    }
+
+    chain.wait('Initialized your environment successfully.').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
