@@ -12,7 +12,7 @@ import {
   bucketNotExists,
   deleteS3Bucket,
 } from 'amplify-e2e-core';
-import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/add-env';
+import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import { addApiWithoutSchema } from 'amplify-e2e-core';
 import { addCodegen } from '../codegen/add';
 import { addS3 } from 'amplify-e2e-core';

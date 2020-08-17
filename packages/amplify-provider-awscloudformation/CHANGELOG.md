@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.24.1-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.0...amplify-provider-awscloudformation@4.24.1-frntndFeat.0) (2020-08-06)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 # [4.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.5...amplify-provider-awscloudformation@4.24.0) (2020-07-29)
 
 
