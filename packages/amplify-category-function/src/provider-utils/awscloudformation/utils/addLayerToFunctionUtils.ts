@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { FeatureFlags } from 'amplify-cli-core';
 import { FunctionRuntime, FunctionDependency, LambdaLayer, ProjectLayer, ExternalLayer } from 'amplify-function-plugin-interface';
 import { category } from '../../..';
 import { ServiceName } from './constants';
@@ -17,23 +18,28 @@ const layerARNRegex = /^arn:[a-zA-Z0-9-]+:lambda:[a-zA-Z0-9-]+:\d{12}:layer:[a-z
  * Asks the customer to select from project layers and/or custom layer ARNs.
  *
  * Returns an array of LambdaLayer objects and a dependsOn array containing layers in the project
- * @param amplifyMeta current amplify meta (used to fetch layers currently in the project)
+ * @param functionData when the lambdaLayers.multiEnv FF is turned off, functionData is the current amplify meta (used to fetch layers currently in the project), when it's on, the a portion of the team-provider-info object is passed in
  * @param runtimeValue runtime value of the function being modified (used to filter layers by supported runtime)
  * @param previousSelections previous layers added to the function (used to populate default selections)
  */
 export const askLayerSelection = async (
   layerMetadataFactory: LayerMetadataFactory,
-  amplifyMeta,
+  functionData,
   runtimeValue: string,
   previousSelections: LambdaLayer[] = [],
 ): Promise<{ lambdaLayers: LambdaLayer[]; dependsOn: FunctionDependency[]; askArnQuestion: boolean }> => {
   const lambdaLayers: LambdaLayer[] = [];
   const dependsOn: FunctionDependency[] = [];
 
-  const functionMeta = _.get(amplifyMeta, [category]) || {};
-  const layerOptions = _.keys(functionMeta)
-    .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
-    .filter(key => isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes)); // filter by compatible runtimes
+  let layerOptions;
+  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    layerOptions = _.keys(functionData).filter(key => isRuntime(runtimeValue).inRuntimes(functionData[key].runtimes)); // filter by compatible runtimes
+  } else {
+    const functionMeta = _.get(functionData, [category]) || {};
+    layerOptions = _.keys(functionMeta)
+      .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
+      .filter(key => isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes)); // filter by compatible runtimes
+  }
 
   if (layerOptions.length === 0) {
     return {
