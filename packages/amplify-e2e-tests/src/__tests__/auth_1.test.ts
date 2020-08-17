@@ -1,8 +1,10 @@
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import {
   initJSProjectWithProfile,
   initAndroidProjectWithProfile,
   initIosProjectWithProfile,
+  initFlutterProjectWithProfile,
   deleteProject,
   amplifyPushAuth,
   amplifyPush,
@@ -163,5 +165,16 @@ describe('amplify add auth...', () => {
     expect(defineFunction).toBeDefined();
     expect(verifyFunction).toBeDefined();
     expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual('dummykey');
+  });
+
+  it('...should init a Flutter project and add auth with defaults', async () => {
+    await initFlutterProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    expect(userPool.UserPool).toBeDefined();
+    expect(fs.existsSync(path.join(projRoot, 'lib', 'amplifyconfiguration.dart'))).toBe(true);
   });
 });

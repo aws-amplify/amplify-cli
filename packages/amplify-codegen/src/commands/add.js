@@ -39,7 +39,7 @@ async function add(context, apiId = null) {
   const schemaPath = ['schema.graphql', 'schema.json'].map(p => path.join(process.cwd(), p)).find(p => fs.existsSync(p));
   if (withoutInit && !schemaPath) {
     throw Error(
-      `Please download schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`
+      `Please download schema.graphql or schema.json and place in ${process.cwd()} before adding codegen when not in an amplify project`,
     );
   }
   // Grab the frontend
