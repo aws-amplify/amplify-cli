@@ -29,16 +29,13 @@ const backendDirPath = 'randomvalue';
 
 const layerName = 'randomLayer';
 
-const amplifyMetaStub = {
-  function: {
-    aLayer: {
-      service: ServiceName.LambdaLayer,
-      runtimes: [
-        {
-          value: runtimeValue,
-        },
-      ],
-    },
+const functionDataStub = {
+  aLayer: {
+    runtimes: [
+      {
+        value: runtimeValue,
+      },
+    ],
   },
 };
 
@@ -50,14 +47,18 @@ const previousSelectionsStub: LambdaLayer[] = [
   },
 ];
 
+const featureFlagsStub: any = {
+  getBoolean: (flag: string) => flag === 'lambdaLayers.multiEnv',
+};
+
 describe('layer selection question', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('returns empty and prompts for arns when no layers available', async () => {
-    const amplifyMetaStub = {};
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue);
+    const functionDataStub = {};
+    const result = await askLayerSelection(layerMetadataFactory_stub, functionDataStub, runtimeValue, [], featureFlagsStub);
     expect(result.lambdaLayers).toStrictEqual([]);
     expect(result.dependsOn).toStrictEqual([]);
     expect(result.askArnQuestion).toBe(true);
@@ -68,7 +69,13 @@ describe('layer selection question', () => {
       layerSelections: [],
     }));
 
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
+    const result = await askLayerSelection(
+      layerMetadataFactory_stub,
+      functionDataStub,
+      runtimeValue,
+      previousSelectionsStub,
+      featureFlagsStub,
+    );
     expect((inquirer_mock.prompt.mock.calls[0][0] as CheckboxQuestion).choices[1].checked).toBe(true);
   });
 
@@ -77,7 +84,7 @@ describe('layer selection question', () => {
       layerSelections: [provideExistingARNsPrompt],
     }));
 
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue);
+    const result = await askLayerSelection(layerMetadataFactory_stub, functionDataStub, runtimeValue, [], featureFlagsStub);
     expect(result.askArnQuestion).toBe(true);
   });
 
@@ -89,7 +96,7 @@ describe('layer selection question', () => {
       versionSelection: 2,
     }));
 
-    await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
+    await askLayerSelection(layerMetadataFactory_stub, functionDataStub, runtimeValue, previousSelectionsStub, featureFlagsStub);
     expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('2');
   });
 
@@ -101,7 +108,7 @@ describe('layer selection question', () => {
       versionSelection: 2,
     }));
 
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue);
+    const result = await askLayerSelection(layerMetadataFactory_stub, functionDataStub, runtimeValue, [], featureFlagsStub);
     const expectedLambdaLayers: LambdaLayer[] = [
       {
         type: 'ProjectLayer',
