@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
+import { stateManager } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -48,9 +49,8 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
     });
 
     if (candidatesAreAllCategoryPlugins && candidatesAllHaveTheSameName) {
-      const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-      if (fs.existsSync(amplifyMetaFilePath)) {
-        const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+      if (stateManager.isMetaFileExists()) {
+        const amplifyMeta = stateManager.getMeta();
 
         const servicesSetInMeta = new Set<string>(Object.keys(amplifyMeta[pluginName] || {}));
         const pluginWithMatchingServices: PluginInfo[] = [];

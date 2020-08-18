@@ -105,7 +105,7 @@ export class FeatureFlags {
 
     const configFileName = path.join(FeatureFlags.instance.projectPath, amplifyConfigFileName);
 
-    let config = await JSONUtilities.readJson<{ [key: string]: any }>(configFileName, {
+    let config = JSONUtilities.readJson<{ [key: string]: any }>(configFileName, {
       throwIfNotExist: false,
       preserveComments: true,
     });
@@ -117,7 +117,7 @@ export class FeatureFlags {
         features: newProject ? FeatureFlags.getNewProjectDefaults() : FeatureFlags.getExistingProjectDefaults(),
       };
 
-      await JSONUtilities.writeJson(configFileName, config, {
+      JSONUtilities.writeJson(configFileName, config, {
         keepComments: true,
       });
     }

@@ -2,18 +2,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { hashElement } from 'folder-hash';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
-import { readJsonFile } from './read-json-file';
-import {
-  getAmplifyMetaFilePath,
-  getCurrentAmplifyMetaFilePath,
-  getBackendConfigFilePath,
-  getCurrentBackendConfigFilePath,
-  getBackendDirPath,
-  getCurrentCloudBackendDirPath,
-} from './path-manager';
+import { JSONUtilities, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
 
-export function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
-  const amplifyMeta = readJsonFile(filePath);
+export function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timestamp) {
+  const amplifyMeta = JSONUtilities.readJson<$TSMeta>(filePath);
 
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
@@ -32,27 +24,26 @@ export function updateAwsMetaFile(filePath, category, resourceName, attribute, v
   } else {
     amplifyMeta[category][resourceName][attribute] = value;
   }
-  if (timeStamp) {
-    amplifyMeta[category][resourceName].lastPushTimeStamp = timeStamp;
+  if (timestamp) {
+    amplifyMeta[category][resourceName].lastPushTimeStamp = timestamp;
   }
 
-  const jsonString = JSON.stringify(amplifyMeta, null, 4);
-
-  fs.writeFileSync(filePath, jsonString, 'utf8');
+  JSONUtilities.writeJson(filePath, amplifyMeta);
 
   return amplifyMeta;
 }
 
 function moveBackendResourcesToCurrentCloudBackend(resources) {
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
-  const amplifyCloudMetaFilePath = getCurrentAmplifyMetaFilePath();
-  const backendConfigFilePath = getBackendConfigFilePath();
-  const backendConfigCloudFilePath = getCurrentBackendConfigFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
+  const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
+  const backendConfigFilePath = pathManager.getBackendConfigFilePath();
+  const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
 
   for (let i = 0; i < resources.length; i += 1) {
-    const sourceDir = path.normalize(path.join(getBackendDirPath(), resources[i].category, resources[i].resourceName));
-
-    const targetDir = path.normalize(path.join(getCurrentCloudBackendDirPath(), resources[i].category, resources[i].resourceName));
+    const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resources[i].category, resources[i].resourceName));
+    const targetDir = path.normalize(
+      path.join(pathManager.getCurrentCloudBackendDirPath(), resources[i].category, resources[i].resourceName),
+    );
 
     if (fs.pathExistsSync(targetDir)) {
       fs.removeSync(targetDir);
@@ -68,8 +59,8 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 }
 
 export function updateamplifyMetaAfterResourceAdd(category, resourceName, options: { dependsOn? } = {}) {
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+  const amplifyMeta = stateManager.getMeta();
+
   if (options.dependsOn) {
     checkForCyclicDependencies(category, resourceName, options.dependsOn);
   }
@@ -82,16 +73,15 @@ export function updateamplifyMetaAfterResourceAdd(category, resourceName, option
   }
   amplifyMeta[category][resourceName] = {};
   amplifyMeta[category][resourceName] = options;
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+  stateManager.setMeta(undefined, amplifyMeta);
 
   updateBackendConfigAfterResourceAdd(category, resourceName, options);
 }
 
 export function updateProvideramplifyMeta(providerName, options) {
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
+  const amplifyMeta = stateManager.getMeta();
 
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
   if (!amplifyMeta.providers) {
     amplifyMeta.providers = {};
     amplifyMeta.providers[providerName] = {};
@@ -103,18 +93,19 @@ export function updateProvideramplifyMeta(providerName, options) {
     amplifyMeta.providers[providerName][key] = options[key];
   });
 
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  stateManager.setMeta(undefined, amplifyMeta);
 }
 
 export function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute, value) {
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
-  // let amplifyCloudMetaFilePath = getCurrentAmplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const currentTimestamp = new Date();
+
   if (attribute === 'dependsOn') {
     checkForCyclicDependencies(category, resourceName, value);
   }
+
   const updatedMeta = updateAwsMetaFile(amplifyMetaFilePath, category, resourceName, attribute, value, currentTimestamp);
+
   if (['dependsOn', 'service'].includes(attribute)) {
     updateBackendConfigAfterResourceUpdate(category, resourceName, attribute, value);
   }
@@ -123,14 +114,11 @@ export function updateamplifyMetaAfterResourceUpdate(category, resourceName, att
 }
 
 export async function updateamplifyMetaAfterPush(resources) {
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
-
+  const amplifyMeta = stateManager.getMeta();
   const currentTimestamp = new Date();
-  let sourceDir;
 
   for (let i = 0; i < resources.length; i += 1) {
-    sourceDir = path.normalize(path.join(getBackendDirPath(), resources[i].category, resources[i].resourceName));
+    const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resources[i].category, resources[i].resourceName));
     const hashDir = await getHashForResourceDir(sourceDir);
 
     /*eslint-disable */
@@ -139,8 +127,7 @@ export async function updateamplifyMetaAfterPush(resources) {
     /* eslint-enable */
   }
 
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  stateManager.setMeta(undefined, amplifyMeta);
 
   moveBackendResourcesToCurrentCloudBackend(resources);
 }
@@ -154,48 +141,44 @@ function getHashForResourceDir(dirPath) {
 }
 
 export function updateamplifyMetaAfterBuild(resource) {
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+  const amplifyMeta = stateManager.getMeta();
   const currentTimestamp = new Date();
+
   /*eslint-disable */
   amplifyMeta[resource.category][resource.resourceName].lastBuildTimeStamp = currentTimestamp;
   /* eslint-enable */
 
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  stateManager.setMeta(undefined, amplifyMeta);
 }
 
 export function updateAmplifyMetaAfterPackage(resource, zipFilename) {
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+  const amplifyMeta = stateManager.getMeta();
   const currentTimestamp = new Date();
+
   /*eslint-disable */
   amplifyMeta[resource.category][resource.resourceName].lastPackageTimeStamp = currentTimestamp;
   amplifyMeta[resource.category][resource.resourceName].distZipFilename = zipFilename;
   /* eslint-enable */
 
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  stateManager.setMeta(undefined, amplifyMeta);
 }
 
 export function updateamplifyMetaAfterResourceDelete(category, resourceName) {
-  const amplifyMetaFilePath = getCurrentAmplifyMetaFilePath();
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+  const currentMeta = stateManager.getCurrentMeta();
 
-  const resourceDir = path.normalize(path.join(getCurrentCloudBackendDirPath(), category, resourceName));
+  const resourceDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
 
-  if (amplifyMeta[category] && amplifyMeta[category][resourceName] !== undefined) {
-    delete amplifyMeta[category][resourceName];
+  if (currentMeta[category] && currentMeta[category][resourceName] !== undefined) {
+    delete currentMeta[category][resourceName];
   }
 
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  stateManager.setCurrentMeta(undefined, currentMeta);
+
   fs.removeSync(resourceDir);
 }
 
 function checkForCyclicDependencies(category, resourceName, dependsOn: [{ category; resourceName }]) {
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+  const amplifyMeta = stateManager.getMeta();
   let cyclicDependency: Boolean = false;
 
   if (dependsOn) {

@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import uuid from 'uuid';
 import _ from 'lodash';
+import { JSONUtilities } from 'amplify-cli-core';
 
 import { Context } from '../domain/context';
 import { getPath } from './getPath';
@@ -9,7 +10,7 @@ export function init(context: Context) {
   const configPath = getPath(context);
   if (fs.existsSync(configPath)) {
     try {
-      const savedConfig = JSON.parse(fs.readFileSync(configPath, { encoding: 'utf-8' }));
+      const savedConfig = JSONUtilities.readJson(configPath);
       Config.Instance.setValues(savedConfig);
       return getConfig();
     } catch (ex) {
@@ -26,18 +27,23 @@ export function getConfig() {
 
 export function write(context: Context, keyValues: Object) {
   Config.Instance.setValues(keyValues);
-  fs.writeFileSync(getPath(context), JSON.stringify(Config.Instance));
+
+  JSONUtilities.writeJson(getPath(context), Config.Instance);
 }
 
 class Config {
   usageDataConfig: UsageDataConfig;
+
   private static instance: Config;
+
   public static get Instance(): Config {
     if (!this.instance) {
       this.instance = new Config();
     }
+
     return this.instance;
   }
+
   private constructor() {
     this.usageDataConfig = new UsageDataConfig();
   }
@@ -50,6 +56,7 @@ class Config {
 class UsageDataConfig {
   installationUuid: String;
   isUsageTrackingEnabled: boolean;
+
   constructor() {
     this.installationUuid = uuid.v4();
     this.isUsageTrackingEnabled = true;

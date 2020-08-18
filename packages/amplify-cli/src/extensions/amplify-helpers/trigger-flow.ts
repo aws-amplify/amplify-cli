@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { readJsonFile } from './read-json-file';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import Separator from 'inquirer/lib/objects/separator';
 
@@ -68,7 +68,7 @@ export const addTrigger = async triggerOptions => {
     functionName,
     resourceName: functionName,
     parentStack,
-    triggerEnvs: JSON.stringify(triggerEnvs[key]),
+    triggerEnvs: JSONUtilities.stringify(triggerEnvs[key]),
     triggerIndexPath,
     triggerPackagePath,
     triggerDir,
@@ -141,7 +141,7 @@ export const updateTrigger = async triggerOptions => {
         parentResource,
         functionName,
         parentStack,
-        triggerEnvs: JSON.stringify(triggerEnvs[key]),
+        triggerEnvs: JSONUtilities.stringify(triggerEnvs[key]),
         triggerIndexPath,
         triggerPackagePath,
         triggerDir,
@@ -157,10 +157,10 @@ export const updateTrigger = async triggerOptions => {
         await copyFunctions(key, values[v], category, context, targetPath);
       }
       const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-      const parametersPath = `${projectBackendDirPath}/function/${functionName}`;
+      const parametersPath = path.join(projectBackendDirPath, 'function', functionName);
       const dirContents = fs.readdirSync(parametersPath);
       if (dirContents.includes('parameters.json')) {
-        fs.writeFileSync(`${parametersPath}/parameters.json`, JSON.stringify({ modules: values.join() }));
+        JSONUtilities.writeJson(path.join(parametersPath, 'parameters.json'), { modules: values.join() });
       }
 
       await cleanFunctions(key, values, category, context, targetPath);
@@ -308,7 +308,7 @@ export const triggerFlow = async (context, resource, category, previousTriggers 
  */
 export const getTriggerPermissions = async (context, triggers, category) => {
   let permissions = [];
-  const parsedTriggers = JSON.parse(triggers);
+  const parsedTriggers = JSONUtilities.parse<$TSAny>(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
 
   const pluginPath = context.amplify.getCategoryPluginInfo(context, category).packageLocation;
@@ -325,7 +325,7 @@ export const getTriggerPermissions = async (context, triggers, category) => {
     }
   }
 
-  return permissions.map(i => JSON.stringify(i));
+  return permissions.map(i => JSONUtilities.stringify(i));
 };
 
 // helper function to show help text and redisplay question if 'learn more' is selected
@@ -371,7 +371,7 @@ export const choicesFromMetadata = (triggerPath: string, selection, isDir?) => {
 };
 
 // get metadata from a particular file
-export const getTriggerMetadata = (triggerPath, selection) => readJsonFile(`${triggerPath}/${selection}.map.json`);
+export const getTriggerMetadata = (triggerPath, selection): $TSAny => JSONUtilities.readJson(`${triggerPath}/${selection}.map.json`);
 
 // open customer's text editor
 async function openEditor(context, filePath, name) {

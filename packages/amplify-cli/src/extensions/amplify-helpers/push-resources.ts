@@ -5,7 +5,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { readJsonFile } from './read-json-file';
+import { stateManager } from 'amplify-cli-core';
 
 /*
 context: Object // Required
@@ -21,17 +21,17 @@ export async function pushResources(context, category, resourceName, filteredRes
     if (allEnvs.findIndex(env => env === envName) !== -1) {
       context.exeInfo = {};
       context.exeInfo.forcePush = false;
-      const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
-      if (fs.existsSync(projectConfigFilePath)) {
-        context.exeInfo.projectConfig = readJsonFile(projectConfigFilePath);
-      }
+
+      context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {
+        throwIfNotExist: false,
+      });
+
       context.exeInfo.localEnvInfo = getEnvInfo();
 
       if (context.exeInfo.localEnvInfo.envName !== envName) {
         context.exeInfo.localEnvInfo.envName = envName;
-        const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
-        const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(context.exeInfo.localEnvInfo.projectPath);
-        fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+
+        stateManager.setLocalEnvInfo(context.exeInfo.localEnvInfo.projectPath, context.exeInfo.localEnvInfo);
       }
 
       await initializeEnv(context);
@@ -57,8 +57,7 @@ export async function pushResources(context, category, resourceName, filteredRes
   if (continueToPush) {
     try {
       // Get current-cloud-backend's amplify-meta
-      const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
-      const currentAmplifyMeta = readJsonFile(currentAmplifyMetaFilePath);
+      const currentAmplifyMeta = stateManager.getCurrentMeta();
 
       await providersPush(context, category, resourceName, filteredResources);
       await onCategoryOutputsChange(context, currentAmplifyMeta);

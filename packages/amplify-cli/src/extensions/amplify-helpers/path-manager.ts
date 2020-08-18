@@ -108,10 +108,6 @@ export function getCurrentBackendConfigFilePath(projectPath?) {
   return path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.BackendConfigFileName));
 }
 
-export function getPluginConfigFilePath(projectPath?) {
-  return path.normalize(path.join(getDotConfigDirPath(projectPath), amplifyCLIConstants.PluginConfigFileName));
-}
-
 export function getAmplifyMetaFilePath(projectPath?) {
   return path.normalize(path.join(getBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));
 }

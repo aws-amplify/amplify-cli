@@ -1,6 +1,4 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { readJsonFile } from '../../extensions/amplify-helpers/read-json-file';
+import { JSONUtilities, stateManager } from 'amplify-cli-core';
 
 export const run = async context => {
   const envName = context.parameters.options.name;
@@ -10,9 +8,12 @@ export const run = async context => {
   }
 
   let config;
+
   try {
-    config = JSON.parse(context.parameters.options.config);
+    config = JSONUtilities.parse(context.parameters.options.config);
+
     let awsCF = config.awscloudformation;
+
     if (
       !(
         config.hasOwnProperty('awscloudformation') &&
@@ -42,9 +43,10 @@ export const run = async context => {
   }
 
   let awsInfo;
+
   if (context.parameters.options.awsInfo) {
     try {
-      awsInfo = JSON.parse(context.parameters.options.awsInfo);
+      awsInfo = JSONUtilities.parse(context.parameters.options.awsInfo);
     } catch (e) {
       context.print.error(
         'You must pass in the AWS credential info in an object format for intializating your environment using the --awsInfo flag',
@@ -56,22 +58,17 @@ export const run = async context => {
   const allEnvs = context.amplify.getEnvDetails();
 
   const addNewEnvConfig = () => {
-    const envProviderFilepath = context.amplify.pathManager.getProviderInfoFilePath();
     allEnvs[envName] = config;
-    let jsonString = JSON.stringify(allEnvs, null, '\t');
-    fs.writeFileSync(envProviderFilepath, jsonString, 'utf8');
+    stateManager.setTeamProviderInfo(undefined, allEnvs);
 
-    const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-    const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
-
-    let envAwsInfo = {};
-    if (fs.existsSync(configInfoFilePath)) {
-      envAwsInfo = readJsonFile(configInfoFilePath);
-    }
+    const envAwsInfo = stateManager.getLocalAWSInfo(undefined, {
+      throwIfNotExist: false,
+      default: {},
+    });
 
     envAwsInfo[envName] = awsInfo;
-    jsonString = JSON.stringify(envAwsInfo, null, 4);
-    fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
+
+    stateManager.setLocalAWSInfo(undefined, envAwsInfo);
 
     context.print.success('Successfully added environment from your project');
   };

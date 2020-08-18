@@ -3,13 +3,13 @@ import * as path from 'path';
 import * as hjson from 'hjson';
 
 export class JSONUtilities {
-  public static readJson = async <T>(
+  public static readJson = <T>(
     fileName: string,
     options?: {
       throwIfNotExist?: boolean;
       preserveComments?: boolean;
     },
-  ): Promise<T | undefined> => {
+  ): T | undefined => {
     if (!fileName) {
       throw new Error(`'fileName' argument missing`);
     }
@@ -28,7 +28,7 @@ export class JSONUtilities {
       }
     }
 
-    const content = await fs.readFile(fileName, 'utf8');
+    const content = fs.readFileSync(fileName, 'utf8');
 
     const data = JSONUtilities.parse<T>(content, {
       preserveComments: mergedOptions.preserveComments,
@@ -37,14 +37,14 @@ export class JSONUtilities {
     return data as T;
   };
 
-  public static writeJson = async (
+  public static writeJson = (
     fileName: string,
     data: any,
     options?: {
       minify?: boolean;
       keepComments?: boolean;
     },
-  ): Promise<void> => {
+  ): void => {
     if (!fileName) {
       throw new Error(`'fileName' argument missing`);
     }
@@ -66,9 +66,9 @@ export class JSONUtilities {
 
     // Create nested directories if needed
     const dirPath = path.dirname(fileName);
-    await fs.ensureDir(dirPath);
+    fs.ensureDirSync(dirPath);
 
-    await fs.writeFile(fileName, jsonString, 'utf8');
+    fs.writeFileSync(fileName, jsonString, 'utf8');
   };
 
   public static parse = <T>(
@@ -123,12 +123,16 @@ export class JSONUtilities {
     if (mergedOptions.minify) {
       jsonString = JSON.stringify(data);
     } else {
-      jsonString = hjson.stringify(data, {
-        space: 2,
-        separator: true,
-        quotes: 'all',
-        keepWsc: mergedOptions.keepComments,
-      });
+      // Temporarily fallback to builtin stringify until 'undefined' serialization can be solved with hjson
+      // This only affects comment roundtripping what we don't use explicitly anywhere yet.
+      jsonString = JSON.stringify(data, null, 2);
+      // jsonString = hjson.stringify(data, {
+      //   bracesSameLine: true,
+      //   space: 2,
+      //   separator: true,
+      //   quotes: 'all',
+      //   keepWsc: mergedOptions.keepComments,
+      // });
     }
 
     return jsonString;

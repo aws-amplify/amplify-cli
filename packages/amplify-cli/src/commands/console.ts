@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
 import open from 'open';
+import { stateManager } from 'amplify-cli-core';
 
 const providerName = 'awscloudformation';
 
@@ -7,19 +7,21 @@ export const run = async context => {
   let consoleUrl = getDefaultURL();
 
   try {
-    const localEnvInfoFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-    if (fs.existsSync(localEnvInfoFilePath)) {
-      const teamProviderInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath();
-      if (fs.existsSync(teamProviderInfoFilePath)) {
-        const localEnvInfo = context.amplify.readJsonFile(localEnvInfoFilePath);
-        const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoFilePath);
-        const { envName } = localEnvInfo;
-        const { AmplifyAppId } = teamProviderInfo[envName][providerName];
+    const localEnvInfo = stateManager.getLocalEnvInfo(undefined, {
+      throwIfNotExist: false,
+      default: {},
+    });
 
-        if (envName && AmplifyAppId) {
-          consoleUrl = constructStatusURL(AmplifyAppId, envName);
-        }
-      }
+    const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
+      throwIfNotExist: false,
+      default: {},
+    });
+
+    const { envName } = localEnvInfo;
+    const { AmplifyAppId } = teamProviderInfo[envName][providerName];
+
+    if (envName && AmplifyAppId) {
+      consoleUrl = constructStatusURL(AmplifyAppId, envName);
     }
   } catch (e) {
     context.print.error(e.message);

@@ -1,20 +1,18 @@
-import * as fs from 'fs-extra';
 import { pullBackend } from '../pull-backend';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
+import { stateManager } from 'amplify-cli-core';
 
 export const run = async context => {
   const inputParams = constructInputParams(context);
+  const projcetPath = process.cwd();
 
-  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
-  if (fs.existsSync(currentAmplifyMetaFilePath)) {
+  if (stateManager.isCurrentMetaFileExists(projcetPath)) {
     const { appId: inputAppId, envName: inputEnvName } = inputParams.amplify;
+    const teamProviderInfo = stateManager.getTeamProviderInfo(projcetPath);
+    const { envName } = stateManager.getLocalEnvInfo(projcetPath);
 
-    const teamProviderInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(process.cwd());
-    const localEnvInfoFilePath = context.amplify.pathManager.getLocalEnvFilePath(process.cwd());
-    const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoFilePath);
-    const { envName } = context.amplify.readJsonFile(localEnvInfoFilePath);
     const { AmplifyAppId } = teamProviderInfo[envName].awscloudformation;
     const localEnvNames = Object.keys(teamProviderInfo);
 
