@@ -107,7 +107,7 @@ async function getModelOutputPath(context) {
     throw new Error('Frontend type is not configured.');
   }
 
-  if(projectConfig.modelgen && projectConfig.modelgen.outputPath) {
+  if(projectConfig.modelgen && projectConfig.modelgen.outputPath && !context.parameters.options.configpath) {
     context.print.success('\nThe output path for modelgen is already setup. You can edit the path in .config/project-config.json\n');
     return projectConfig.modelgen.outputPath;
   }
@@ -128,7 +128,7 @@ async function getModelOutputPath(context) {
   }
 
   let outputPath = defaultPath;
-  if(!context.parameters.options.yes) {
+  if(context.parameters.options.configpath) {
     const answer = await askForModelOutputPath(defaultPath);
     outputPath = answer.outputPath;
   }
@@ -140,7 +140,7 @@ async function askForModelOutputPath(defaultPath) {
   const answer = await inquirer.prompt({
     type: 'input',
     name: 'outputPath',
-    message: 'Please type your output path for model',
+    message: 'Please type your relative output path for model',
     default: defaultPath
   });
   return answer;
