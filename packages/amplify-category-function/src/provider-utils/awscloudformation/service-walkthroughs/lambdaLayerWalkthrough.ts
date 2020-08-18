@@ -74,14 +74,14 @@ export async function updateLayerWalkthrough(
   await layerState.syncVersions();
 
   // runtime question
-  if (await context.amplify.confirmPrompt.run('Do you want to update the compatible runtimes?', false)) {
+  if (await context.amplify.confirmPrompt('Do you want to update the compatible runtimes?', false)) {
     const runtimeReturn = await runtimeWalkthrough(context, parameters as LayerParameters);
     layerState.updateCompatibleRuntimes(runtimeReturn.map(val => val.runtime));
   }
 
   let layerInputParameters: LayerInputParams = {};
 
-  if (await context.amplify.confirmPrompt.run('Do you want to adjust layer version permissions?', true)) {
+  if (await context.amplify.confirmPrompt('Do you want to adjust layer version permissions?', true)) {
     // select layer version
     const selectedVersion = Number((await inquirer.prompt(layerVersionQuestion(layerState.listVersions()))).layerVersion as string);
 

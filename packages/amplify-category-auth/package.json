@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.18.0",
+  "version": "2.18.2",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-category-function": "2.23.0",
+    "amplify-category-function": "2.23.2",
     "aws-sdk": "^2.608.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",

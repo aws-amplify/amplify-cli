@@ -20,7 +20,7 @@ export const addLayersToFunctionWalkthrough = async (
   let dependsOn: FunctionDependency[] = [];
 
   // ask initial confirmation
-  if (!(await context.amplify.confirmPrompt.run(confirmationPrompt, false))) {
+  if (!(await context.amplify.confirmPrompt(confirmationPrompt, false))) {
     return { lambdaLayers: previousSelections, dependsOn };
   }
 

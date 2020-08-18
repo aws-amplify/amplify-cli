@@ -1,4 +1,4 @@
-import { initEnv } from '../../src';
+import { initEnv, isMockable } from '../../src';
 import sequential from 'promise-sequential';
 
 jest.mock('promise-sequential');
@@ -50,5 +50,87 @@ describe('function category provider', () => {
       expect(sequential_mock.mock.calls.length).toBe(1);
       expect(sequential_mock.mock.calls[0][0].length).toBe(2);
     });
+  });
+});
+
+describe('mock function', () => {
+  it('mock function with layers', async () => {
+    const contextStub = {
+      amplify: {
+        getProjectMeta: () => ({
+          function: {
+            issue4992d7983625: {
+              build: true,
+              providerPlugin: 'awscloudformation',
+              service: 'Lambda',
+              dependsOn: [
+                {
+                  category: 'function',
+                  resourceName: 'demofunction',
+                },
+                {
+                  category: 'function',
+                  resourceName: 'demolayer',
+                },
+              ],
+            },
+            demofunction: {
+              build: true,
+              providerPlugin: 'awscloudformation',
+              service: 'Lambda',
+              dependsOn: [],
+            },
+            demolayer: {
+              build: true,
+              providerPlugin: 'awscloudformation',
+              service: 'LambdaLayer',
+              dependsOn: [],
+            },
+          },
+        }),
+      },
+    };
+    const resourceName = 'issue4992d7983625';
+    expect(isMockable(contextStub, resourceName)).toMatchSnapshot();
+  });
+
+  it('mock function with functions', async () => {
+    const contextStub = {
+      amplify: {
+        getProjectMeta: () => ({
+          function: {
+            issue4992d7983625: {
+              build: true,
+              providerPlugin: 'awscloudformation',
+              service: 'Lambda',
+              dependsOn: [
+                {
+                  category: 'function',
+                  resourceName: 'demofunction',
+                },
+                {
+                  category: 'function',
+                  resourceName: 'demolayer',
+                },
+              ],
+            },
+            demofunction: {
+              build: true,
+              providerPlugin: 'awscloudformation',
+              service: 'Lambda',
+              dependsOn: [],
+            },
+            demolayer: {
+              build: true,
+              providerPlugin: 'awscloudformation',
+              service: 'Lambda',
+              dependsOn: [],
+            },
+          },
+        }),
+      },
+    };
+    const resourceName = 'issue4992d7983625';
+    expect(isMockable(contextStub, resourceName)).toMatchSnapshot();
   });
 });

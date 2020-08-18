@@ -169,8 +169,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     identityPoolProviders(coreAnswers, projectType);
   }
 
-  // ask manual trigger flow question
-  if (coreAnswers.authSelections !== 'identityPoolOnly' && !['init', 'checkout'].includes(context.commandName)) {
+  const isPullOrEnvCommand = context.input.command === 'pull' || context.input.command === 'env';
+  if (coreAnswers.authSelections !== 'identityPoolOnly' && context.input.command != 'init' && !isPullOrEnvCommand) {
     if (coreAnswers.useDefault === 'manual') {
       coreAnswers.triggers = await lambdaFlow(context, coreAnswers.triggers);
     }
@@ -326,7 +326,7 @@ async function updateAdminQuery(context, userPoolGroupList) {
   let adminGroup;
   // Clone user pool group list
   const userPoolGroupListClone = userPoolGroupList.slice(0);
-  if (await context.amplify.confirmPrompt.run('Do you want to restrict access to the admin queries API to a specific Group')) {
+  if (await context.amplify.confirmPrompt('Do you want to restrict access to the admin queries API to a specific Group')) {
     userPoolGroupListClone.push('Enter a custom group');
 
     const adminGroupAnswer = await inquirer.prompt([

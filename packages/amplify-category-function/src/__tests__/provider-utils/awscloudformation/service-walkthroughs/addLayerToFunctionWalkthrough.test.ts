@@ -16,9 +16,7 @@ const confirmPromptFalse_mock = jest.fn(() => false);
 const confirmPromptTrue_mock = jest.fn(() => true);
 const getContextStubWith = (prompt: jest.Mock) => ({
   amplify: {
-    confirmPrompt: {
-      run: prompt,
-    },
+    confirmPrompt: prompt,
     getProjectMeta: () => {},
     pathManager: {
       getBackendDirPath: () => {},

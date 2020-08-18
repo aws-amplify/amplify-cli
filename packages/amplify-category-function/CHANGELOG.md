@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.1...amplify-category-function@2.23.2) (2020-08-14)
+
+
+### Bug Fixes
+
+* Added check to stop prompts for cognito triggers while using env commands ([#5039](https://github.com/aws-amplify/amplify-cli/issues/5039)) ([744dbc4](https://github.com/aws-amplify/amplify-cli/commit/744dbc42e847e273160caf3672365391f055191b))
+* change depends on logic to separate functions from layers ([#5064](https://github.com/aws-amplify/amplify-cli/issues/5064)) ([3903156](https://github.com/aws-amplify/amplify-cli/commit/3903156a4c6b8e5925c2b3c44769db8d1adc4cea))
+
+
+
+
+
+## [2.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.0...amplify-category-function@2.23.1) (2020-08-11)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 # [2.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.21.5...amplify-category-function@2.23.0) (2020-07-29)
 
 

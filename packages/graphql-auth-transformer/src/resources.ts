@@ -26,6 +26,8 @@ import {
   newline,
   methodCall,
   RESOLVER_VERSION_ID,
+  isNullOrEmpty,
+  ret
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
 import GraphQLApi, {
@@ -719,7 +721,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       const allowedOwnersVariable = `allowedOwners${ruleNumber}`;
       ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
         comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
-        set(ref(allowedOwnersVariable), ref(`${variableToCheck}.${ownerAttribute}`)),
+        set(ref(allowedOwnersVariable), ref(`util.defaultIfNull($${variableToCheck}.${ownerAttribute}, [])`)),
         isUser
           ? // tslint:disable-next-line
             set(
@@ -775,6 +777,13 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       raw('$util.unauthorized()'),
     );
     return block('Throw if unauthorized', [ifUnauthThrow]);
+  }
+
+  public returnIfEmpty(objectPath: string): Expression {
+    return iff(
+      isNullOrEmpty(ref(objectPath)),
+      ret()
+    );
   }
 
   public throwIfStaticGroupUnauthorized(field?: FieldDefinitionNode): Expression {
