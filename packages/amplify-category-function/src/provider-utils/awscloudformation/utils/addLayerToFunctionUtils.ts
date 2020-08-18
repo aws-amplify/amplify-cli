@@ -27,12 +27,13 @@ export const askLayerSelection = async (
   functionData,
   runtimeValue: string,
   previousSelections: LambdaLayer[] = [],
+  featureFlags = FeatureFlags,
 ): Promise<{ lambdaLayers: LambdaLayer[]; dependsOn: FunctionDependency[]; askArnQuestion: boolean }> => {
   const lambdaLayers: LambdaLayer[] = [];
   const dependsOn: FunctionDependency[] = [];
 
   let layerOptions;
-  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+  if (featureFlags.getBoolean('lambdaLayers.multiEnv')) {
     layerOptions = _.keys(functionData).filter(key => isRuntime(runtimeValue).inRuntimes(functionData[key].runtimes)); // filter by compatible runtimes
   } else {
     const functionMeta = _.get(functionData, [category]) || {};
