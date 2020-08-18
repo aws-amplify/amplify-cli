@@ -8,11 +8,7 @@ async function askDeployType() {
       type: 'list',
       name: 'anwser',
       message: constants.DEPLOY_TYPE_QUESTION,
-      choices: [
-        constants.DEPLOY_TYPE_QUESTION_CICD,
-        constants.DEPLOY_TYPE_QUESTION_MANUAL,
-        constants.LEARN_MORE,
-      ],
+      choices: [constants.DEPLOY_TYPE_QUESTION_CICD, constants.DEPLOY_TYPE_QUESTION_MANUAL, constants.LEARN_MORE],
       default: constants.DEPLOY_TYPE_QUESTION_MANUAL,
     },
   ]);
@@ -37,10 +33,9 @@ async function askViewAppQuestion() {
 }
 
 async function askServeQuestion(type) {
-  if (type === constants.TYPE_CICD) {
+  if (type === pluginConstants.TYPE_CICD) {
     return askConfirmQuestion(constants.APP_CICD_SERVE_QUESTION);
   }
-  return askConfirmQuestion(constants.APP_MANUAL_SERVE_QUESTION);
 }
 
 async function askConfigureAppQuestion() {
