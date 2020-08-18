@@ -20,8 +20,6 @@ export class StateManager {
 
     const data = this.getData<$TSMeta>(filePath, mergedOptions);
 
-    console.log(`GetMeta (${filePath}): ${JSON.stringify(data, null, 2)}`);
-
     return data;
   };
 
@@ -35,8 +33,6 @@ export class StateManager {
     };
 
     const data = this.getData<$TSMeta>(filePath, mergedOptions);
-
-    console.log(`GetCurrentMeta (${filePath}): ${JSON.stringify(data, null, 2)}`);
 
     return data;
   };
@@ -128,15 +124,11 @@ export class StateManager {
   setMeta = (projectPath: string | undefined, meta: $TSMeta): void => {
     const filePath = pathManager.getAmplifyMetaFilePath(projectPath);
 
-    console.log(`SetMeta (${filePath}): ${JSON.stringify(meta, null, 2)}`);
-
     JSONUtilities.writeJson(filePath, meta);
   };
 
   setCurrentMeta = (projectPath: string | undefined, meta: $TSMeta): void => {
     const filePath = pathManager.getCurrentAmplifyMetaFilePath(projectPath);
-
-    console.log(`SetCurrentMeta (${filePath}): ${JSON.stringify(meta, null, 2)}`);
 
     JSONUtilities.writeJson(filePath, meta);
   };
