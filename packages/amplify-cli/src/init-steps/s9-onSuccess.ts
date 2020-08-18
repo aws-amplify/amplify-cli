@@ -8,7 +8,6 @@ import { initializeEnv } from '../initialize-env';
 
 export async function onSuccess(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const { amplify } = context;
 
   const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
   const dotConfigDirPath = pathManager.getDotConfigDirPath(projectPath);
@@ -104,11 +103,6 @@ function generateTeamProviderInfoFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
   let teamProviderInfo = {};
-
-  const persistedTeamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
-    throwIfNotExist: false,
-    default: {},
-  });
 
   if (stateManager.isTeamProviderInfoExists(projectPath)) {
     teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {

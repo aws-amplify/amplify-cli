@@ -1,4 +1,3 @@
-import * as fs from 'fs-extra';
 import { getProjectConfig } from './get-project-config';
 import { showResourceTable } from './resource-status';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
