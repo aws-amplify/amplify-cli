@@ -95,5 +95,6 @@ describe('load minimal lambda Config', () => {
       },
     };
     expect(loadMinimalLambdaConfig(contextStub, resourceName, params)).toBeDefined();
+    expect(loadMinimalLambdaConfig(contextStub, resourceName, params)).toEqual(config);
   });
 });
