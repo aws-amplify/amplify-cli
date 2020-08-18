@@ -10,8 +10,11 @@ export function loadMinimalLambdaConfig(context: any, resourceName: string, para
   if (projectMeta.function[resourceName].dependsOn) {
     extendedParams = projectMeta.function[resourceName].dependsOn.reduce((ini, depend) => {
       depend.attributes.forEach(attribute => {
-        const val = projectMeta[depend.category][depend.resourceName].output[attribute];
-        ini[depend.category + depend.resourceName + attribute] = val;
+        const dependsOnResourceMeta = projectMeta[depend.category][depend.resourceName];
+        if (dependsOnResourceMeta.output !== undefined) {
+          const val = dependsOnResourceMeta.output[attribute];
+          ini[depend.category + depend.resourceName + attribute] = val;
+        }
       });
       return ini;
     }, {});
