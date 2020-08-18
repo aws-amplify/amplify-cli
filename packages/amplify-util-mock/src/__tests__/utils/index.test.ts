@@ -1,6 +1,7 @@
 import { describe } from 'jest-circus';
 import { _isUnsupportedJavaVersion } from '../../utils';
 import { fail } from 'assert';
+import semver = require('semver/preload');
 
 type JavaCondition = {
   name: string;
@@ -58,6 +59,14 @@ OpenJDK 64-Bit Server VM 18.9 (build 11+28, mixed mode)`,
       versionString: `openjdk version "11" 2018-09-25
 OpenJDK Runtime Environment 18.9 (build 11+28)
 OpenJDK 64-Bit Server VM 18.9 (build 11+28, mixed mode)`,
+    },
+    {
+      javaOpts: null,
+      name: '11.0.0-librca',
+      unsupported: false,
+      versionString: `openjdk version "11-BellSoft" 2018-09-25
+OpenJDK Runtime Environment (build 11-BellSoft+0)
+OpenJDK 64-Bit Server VM (build 11-BellSoft+0, mixed mode)`,
     },
     {
       javaOpts: null,

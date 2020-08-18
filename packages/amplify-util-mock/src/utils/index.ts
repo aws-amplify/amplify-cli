@@ -35,10 +35,15 @@ export const checkJavaVersion = async context => {
 };
 
 function isUnsupportedJavaVersion(stderr: string | null): boolean {
-  const regex = /(\d+\.)(\d+\.)(\d)/g;
-  const versionString: string = stderr ? stderr.split(/\r?\n/)[0] : '';
-  const version = versionString.match(regex);
-  return version == null && !semver.satisfies(version[0], minJavaVersion);
+  const regex = /version "(\d+)(\.(\d+\.)(\d))?/g;
+  const versionStrings: Array<string> = stderr ? stderr.split(/\r?\n/) : [''];
+  const mayVersion = versionStrings.map(line => line.match(regex)).find(v => v != null);
+  if (mayVersion === undefined) {
+    return true;
+  }
+  const version = mayVersion[0].replace('version "', '');
+  const semVer = version.match(/^\d+$/g) === null ? version : `${version}.0.0`;
+  return !semver.satisfies(semVer, minJavaVersion);
 }
 
 export const _isUnsupportedJavaVersion: (stderr: string | null) => boolean = isUnsupportedJavaVersion;
