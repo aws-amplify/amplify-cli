@@ -1,18 +1,25 @@
-import fs from 'fs';
-import fsExtra from 'fs-extra';
-import { getEnvInfo } from '../../../../lib/extensions/amplify-helpers/get-env-info';
+import * as fs from 'fs-extra';
+import { getEnvInfo } from '../../../../src/extensions/amplify-helpers/get-env-info';
+import { readJsonFile } from '../../../../src/extensions/amplify-helpers/read-json-file';
+import { getLocalEnvFilePath } from '../../../../src/extensions/amplify-helpers/path-manager';
 
-describe('get-env-info helper: ', () => {
-  it('...should return info when env file exists', () => {
-    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-    jest.spyOn(fsExtra, 'readFileSync').mockReturnValue('{"test": true}');
-    expect(getEnvInfo()).toHaveProperty('test', true);
-  });
+jest.mock('fs-extra');
+jest.mock('../../../../src/extensions/amplify-helpers/read-json-file', () => ({ readJsonFile: jest.fn() }));
+jest.mock('../../../../src/extensions/amplify-helpers/path-manager', () => ({ getLocalEnvFilePath: jest.fn() }));
 
-  it('...should throw UndeterminedEnvironmentError when env file does not exist', () => {
-    jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    expect(() => {
-      getEnvInfo();
-    }).toThrow();
-  });
+beforeAll(() => {
+  (getLocalEnvFilePath as any).mockReturnValue('test/path');
+  (readJsonFile as any).mockReturnValue({ test: true });
+});
+
+test('Return env file info', () => {
+  (fs.existsSync as any).mockReturnValue(true);
+  expect(getEnvInfo()).toHaveProperty('test', true);
+});
+
+test('Throw UndeterminedEnvironmentError', () => {
+  (fs.existsSync as any).mockReturnValue(false);
+  expect(() => {
+    getEnvInfo();
+  }).toThrow();
 });
