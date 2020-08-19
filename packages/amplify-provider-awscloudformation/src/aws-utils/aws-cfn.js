@@ -189,28 +189,20 @@ class CloudFormation {
   }
 
   replaceTagVars(tagsArr) {
-    const tagsJson = tagsArr;
     const { context } = this;
 
-    tagsJson.forEach(tagObj => {
-      if (
-        tagObj['Value'].includes('{project-env}') ||
-        tagObj['Value'].includes('{project-name}') ||
-        tagObj['Value'].includes('{cli-version}')
-      ) {
-        const replaceWith = {
-          '{project-name}': context.exeInfo.projectConfig.projectName,
-          '{project-env}': context.exeInfo.localEnvInfo.envName,
-          '{cli-version}': context.pluginPlatform.plugins.core[0].packageVersion,
-        };
+    const replaceWith = {
+      '{project-name}': context.exeInfo.projectConfig.projectName,
+      '{project-env}': context.exeInfo.localEnvInfo.envName,
+      '{cli-version}': context.pluginPlatform.plugins.core[0].packageVersion,
+    };
 
-        tagObj['Value'] = tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
-          return replaceWith[matched];
-        });
-      }
-    });
-
-    return tagsJson;
+    return tagsArr.map(tagObj => ({
+      ...tagObj,
+      Value: tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
+        return replaceWith[matched];
+      }),
+    }));
   }
 
   updateResourceStack(dir, cfnFile) {

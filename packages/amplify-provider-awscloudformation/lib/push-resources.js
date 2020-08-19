@@ -18,12 +18,6 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
-const {
-  isValidJSON,
-  isWithinLimit,
-  checkDuplicates,
-  hasValidTags,
-} = require('../../amplify-cli/src/extensions/amplify-helpers/tags-validation');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -46,10 +40,6 @@ async function run(context, resourceDefinition) {
     let projectDetails = context.amplify.getProjectDetails();
 
     validateCfnTemplates(context, resources);
-
-    // This is where we are validating the tags.json file
-    // I placed it so it runs the validation as soon as possible, since I believe it should be one of the first things to do before continuing with the push logic.
-    validateTags(context);
 
     await packageResources(context, resources, projectDetails);
 
@@ -226,21 +216,6 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
         throw err;
       }
     }
-  }
-}
-
-function validateTags(context) {
-  const projectDetails = context.amplify.getProjectDetails();
-  const tagsJson = projectDetails.tags;
-
-  try {
-    isValidJSON(tagsJson);
-    hasValidTags(tagsJson);
-    isWithinLimit(tagsJson);
-    checkDuplicates(tagsJson);
-  } catch (err) {
-    context.print.error(`Invalid tags.json file: ${err.message}`);
-    throw err;
   }
 }
 

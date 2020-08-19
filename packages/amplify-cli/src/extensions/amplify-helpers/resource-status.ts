@@ -65,29 +65,23 @@ function filterResources(resources, filteredResources) {
 }
 
 // ! This function has the same body as a function with a similar name on `amplify-provider-awscloudformation/src/aws-cfn.js`, this can probably be refactored later on
-function replaceTagVars(tagsArr, context) {
-  const tagsJson = tagsArr;
+function replaceTagVars(tagsArr, tagVarMetadata) {
+  const replaceWith = {
+    '{project-name}': tagVarMetadata.name,
+    '{project-env}': tagVarMetadata.env,
+    '{cli-version}': tagVarMetadata.cli,
+  };
 
-  tagsJson.forEach(tagObj => {
-    if (
-      tagObj['Value'].includes('{project-env}') ||
-      tagObj['Value'].includes('{project-name}') ||
-      tagObj['Value'].includes('{cli-version}')
-    ) {
-      const replaceWith = {
-        '{project-name}': context.exeInfo.projectConfig.projectName,
-        '{project-env}': context.exeInfo.localEnvInfo.envName,
-        '{cli-version}': context.pluginPlatform.plugins.core[0].packageVersion,
-      };
-
-      tagObj['Value'] = tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
-        return replaceWith[matched];
-      });
-    }
-  });
-
-  return tagsJson;
+  return tagsArr.map(tagObj => ({
+    ...tagObj,
+    Value: tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
+      return replaceWith[matched];
+    }),
+  }));
 }
+
+// {project-name} -> tags-project
+// tags-project
 
 // We are assuming that if they are not equal, it means that the user haas changed the tags locally
 // Runs O(n^2) time at worst, but I think it's the easiest way to do so
@@ -103,8 +97,13 @@ function haveChangedKeyValuePairs(arr1, arr2) {
     // Grab the key-value pair from the second array that matches with the "Key" field from the first array
     const otherTag = arr2.find(obj => obj['Key'] === currObj['Key']);
 
-    // Now that we know they have the same key, we check their values - if they don't have the same value, return false
-    if (currObj['Value'] !== otherTag['Value']) changed = true;
+    // If a tag wasn't found it means that tags changed either on the cloud or locally
+    if (!otherTag) {
+      changed = true;
+    } else {
+      // Now that we know they have the same key, we check their values - if they don't have the same value, return false
+      if (currObj['Value'] !== otherTag['Value']) changed = true;
+    }
   });
 
   // Will return true if all key-value pairs are the same
@@ -121,7 +120,7 @@ async function getCloudTags(amplifyMeta) {
   return cloudStackInfo.Tags;
 }
 
-async function checkChangesInTags(context) {
+async function checkChangesInTags(tagVarMetadata) {
   // Getting the current tags from the local tags.json file
   const localAmplifyTagsPath = pathManager.getTagsConfigFilePath();
   const localAmplifyTags = readJsonFile(localAmplifyTagsPath);
@@ -134,10 +133,10 @@ async function checkChangesInTags(context) {
 
   // If the local tags contain variables, replace them with the real values
   // ? Check edge case where user could potentially have an updated cli version that differs from the currently pussed {cli-version} value
-  const cleanedLocalAmplifyTags = replaceTagVars(localAmplifyTags, context);
+  const cleanedLocalAmplifyTags = replaceTagVars(localAmplifyTags, tagVarMetadata);
 
   // Compare each key-value pair from both sides and check if there have been changes
-  return haveChangedKeyValuePairs(cloudTags, cleanedLocalAmplifyTags);
+  return haveChangedKeyValuePairs(cleanedLocalAmplifyTags, cloudTags);
 }
 
 function getAllResources(amplifyMeta, category, resourceName, filteredResources) {
@@ -315,17 +314,9 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     throw error;
   }
 
-<<<<<<< HEAD:packages/amplify-cli/src/extensions/amplify-helpers/resource-status.ts
   let resourcesToBeCreated: any = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeUpdated: any = await getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeDeleted: any = getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
-=======
-  //
-
-  let resourcesToBeCreated = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
-  let resourcesToBeUpdated = await getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
-  let resourcesToBeDeleted = getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
->>>>>>> feat: inital version for detecting local tag changes:packages/amplify-cli/src/extensions/amplify-helpers/resource-status.js
 
   let allResources: any = getAllResources(amplifyMeta, category, resourceName, filteredResources);
 
@@ -411,12 +402,3 @@ export async function showResourceTable(category, resourceName, filteredResource
   const changedResourceCount = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length;
   return changedResourceCount;
 }
-<<<<<<< HEAD:packages/amplify-cli/src/extensions/amplify-helpers/resource-status.ts
-=======
-
-module.exports = {
-  getResourceStatus,
-  showResourceTable,
-  checkChangesInTags,
-};
->>>>>>> feat: inital version for detecting local tag changes:packages/amplify-cli/src/extensions/amplify-helpers/resource-status.js

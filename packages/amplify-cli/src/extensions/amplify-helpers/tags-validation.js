@@ -32,8 +32,8 @@ function hasValidTags(json) {
     if (!currObjKeys.includes('Key') || !currObjKeys.includes('Value'))
       throw new Error('Make sure to follow the correct key-value format. Check tags.json file for example.');
 
-    // Last check : If the key or value pair (or both) contain an empty string (it seems to already handle that case through the checkDuplicates() method, but the return statement can be confusing for the user)
-    if (currObj[0] === '' || currObj[1] === '') throw new Error('You cannot use empty strings as tag keys and/or values.');
+    // Last check : If the key contains an empty string (it seems to already handle that case through the checkDuplicates() method, but the return statement can be confusing for the user)
+    if (currObj[0] === '') throw new Error('You cannot use empty strings as tag keys.');
   }
 
   // returns true if the file includes only valid tags

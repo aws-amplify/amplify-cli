@@ -1,4 +1,3 @@
-<<<<<<< HEAD:packages/amplify-cli/src/extensions/amplify-helpers/push-resources.ts
 import { getProjectConfig } from './get-project-config';
 import { showResourceTable } from './resource-status';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
@@ -6,16 +5,7 @@ import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
 import { stateManager } from 'amplify-cli-core';
-=======
-const fs = require('fs-extra');
-const { getProjectConfig } = require('./get-project-config');
-const { showResourceTable, checkChangesInTags } = require('./resource-status');
-const { onCategoryOutputsChange } = require('./on-category-outputs-change');
-const { initializeEnv } = require('../../initialize-env');
-const { getProviderPlugins } = require('./get-provider-plugins');
-const { getEnvInfo } = require('./get-env-info');
-const { readJsonFile } = require('./read-json-file');
->>>>>>> feat: inital version for detecting local tag changes:packages/amplify-cli/src/extensions/amplify-helpers/push-resources.js
+import { isValidJSON, isWithinLimit, checkDuplicates, hasValidTags } from './tags-validation'
 
 /*
 context: Object // Required
@@ -51,17 +41,26 @@ export async function pushResources(context, category, resourceName, filteredRes
     }
   }
 
-  // ! changed this from 'const' to 'let', since it makes it easire when it comes to checking changes in the local tags file
+  // This is where we are validating the tags.json file
+  // I placed it so it runs the validation as soon as possible, since I believe it should be one of the first things to do before continuing with the push logic.
+  validateTags(context);
+
+  const tagVarMetadata = {
+    name: context.exeInfo.projectConfig.projectName,
+    env: context.exeInfo.localEnvInfo.envName,
+    cli: context.pluginPlatform.plugins.core[0].packageVersion,
+  };
+
   let hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
   // Check if there have been changes in the local tags file
-  let haveTagsChanged = await checkChangesInTags(context);
+  // let haveTagsChanged = await checkChangesInTags(tagVarMetadata);
 
-  // if there are changes in the local tags file, let the user push to the cloud
-  if (haveTagsChanged) {
-    hasChanges += 1;
-    context.print.info('\nChanges in the local tags.json file detected\n');
-  }
+  // if there are changes in the local tags file, let the user know
+  // if (haveTagsChanged) {
+  //   hasChanges += 1;
+  //   context.print.info('\nChanges in the local tags.json file detected\n');
+  // }
 
   // no changes detected
   if (!hasChanges && !context.exeInfo.forcePush) {
@@ -117,3 +116,26 @@ export async function storeCurrentCloudBackend(context) {
 
   await Promise.all(providerPromises);
 }
+<<<<<<< HEAD:packages/amplify-cli/src/extensions/amplify-helpers/push-resources.ts
+=======
+
+function validateTags(context) {
+  const projectDetails = context.amplify.getProjectDetails();
+  const tagsJson = projectDetails.tags;
+
+  try {
+    isValidJSON(tagsJson);
+    hasValidTags(tagsJson);
+    isWithinLimit(tagsJson);
+    checkDuplicates(tagsJson);
+  } catch (err) {
+    context.print.error(`Invalid tags.json file: ${err.message}`);
+    throw err;
+  }
+}
+
+module.exports = {
+  pushResources,
+  storeCurrentCloudBackend,
+};
+>>>>>>> feat: initial implementation for pushing to cloud:packages/amplify-cli/src/extensions/amplify-helpers/push-resources.js
