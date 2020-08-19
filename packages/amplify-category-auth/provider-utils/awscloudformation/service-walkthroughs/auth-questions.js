@@ -19,6 +19,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   let userPoolGroupList = context.amplify.getUserPoolGroupList(context);
   let adminQueryGroup;
 
+  // LOAD POTENTIAL PREVIOUS RESPONSES
   handleUpdates(context, coreAnswers);
 
   // QUESTION LOOP
@@ -79,19 +80,28 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
       answer[questionObj.key] &&
       answer[questionObj.key].length > 0
     ) {
-      if(questionObj.iterator === 'oidcAuthorizeScopes') {
-        context.updatingAuth[questionObj.iterator] = context.updatingAuth[questionObj.iterator][0].split(' ');
-      }
-      const replacementArray = context.updatingAuth[questionObj.iterator];
+      if (questionObj.iterator.endsWith('oidcAttributesMapping')) {
+        const map = context.updatingAuth && context.updatingAuth['oidcAttributesMapping'] ? JSON.parse(context.updatingAuth['oidcAttributesMapping']) : {};
+        for (let t = 0; t < answer[questionObj.key].length; t += 1) {
+          const response = await inquirer.prompt({
+            name: 'oidcProviderAttributeName',
+            message: `Map cognito attribute ${answer[questionObj.key][t]} to `,
+          });
+          map[answer[questionObj.key][t]] = response.oidcProviderAttributeName;
+        }
+        coreAnswers.oidcAttributesMapping = map;
+      } else {
+        const replacementArray = context.updatingAuth[questionObj.iterator];
 
-      for (let t = 0; t < answer[questionObj.key].length; t += 1) {
-        questionObj.validation = questionObj.iteratorValidation;
-        const newValue = await inquirer.prompt({
-          name: 'updated',
-          message: `Update ${answer[questionObj.key][t]}`,
-          validate: amplify.inputValidation(questionObj),
-        });
-        replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue.updated);
+        for (let t = 0; t < answer[questionObj.key].length; t += 1) {
+          questionObj.validation = questionObj.iteratorValidation;
+          const newValue = await inquirer.prompt({
+            name: 'updated',
+            message: `Update ${answer[questionObj.key][t]}`,
+            validate: amplify.inputValidation(questionObj),
+          });
+          replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue.updated);
+        }
       }
       j += 1;
       // ADD-ANOTHER BLOCK
@@ -427,29 +437,40 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
         if(el === 'OIDC') {
           oidc_issuer = answers.oidcAppOIDCIssuer;
           attributes_request_method = answers.oidcAppOIDCAttributesRequestMethod;
+          // from update auth with additional scope added
           if (answers.oidcAuthorizeScopes && coreAnswers.newOIDCAuthorizeScopes) {
             scopes = answers.oidcAuthorizeScopes.concat(coreAnswers.newOIDCAuthorizeScopes);
+          // from add auth
           } else if (coreAnswers.newOIDCAuthorizeScopes) {
             scopes = coreAnswers.newOIDCAuthorizeScopes;
           } else {
-            scopes = ["openid", "email"];
+            // from add auth without specific scope or update without scope added
+            scopes = answers.oidcAuthorizeScopes ? answers.oidcAuthorizeScopes : ["openid"];
           }
-          const maps = answers.oidcAppOIDCAttributesMapping ? JSON.parse(answers.oidcAppOIDCAttributesMapping) : {};
-        }
-        attributesForMapping.forEach(a => {
-          const attributeKey = attributeProviderMap[a];
-          if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
-            if (scopes.indexOf(attributeKey[`${el.toLowerCase()}`].scope) === -1) {
-              scopes.push(attributeKey[`${el.toLowerCase()}`].scope);
+          try {
+            // from update auth => previous data loaded from file as escaped string
+            maps = JSON.parse(answers.oidcAttributesMapping);
+          } catch (e) {
+            //from add auth
+            maps = answers.oidcAttributesMapping ? answers.oidcAttributesMapping : {};
+          }
+        } else {
+          attributesForMapping.forEach(a => {
+            const attributeKey = attributeProviderMap[a];
+            if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
+              if (scopes.indexOf(attributeKey[`${el.toLowerCase()}`].scope) === -1) {
+                scopes.push(attributeKey[`${el.toLowerCase()}`].scope);
+              }
             }
-          }
-          if (el === 'Google' && !scopes.includes('openid')) {
-            scopes.unshift('openid');
-          }
-          if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].attr) {
-            maps[a] = attributeKey[`${el.toLowerCase()}`].attr;
-          }
-        });
+            if (el === 'Google' && !scopes.includes('openid')) {
+              scopes.unshift('openid');
+            }
+            if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].attr) {
+              maps[a] = attributeKey[`${el.toLowerCase()}`].attr;
+            }
+          });
+        }
+
         return {
           ProviderName: el,
           authorize_scopes: scopes.join(delimmiter),
@@ -542,9 +563,12 @@ function parseOAuthCreds(providers, metadata, envCreds) {
         providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
         providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
         if(el === 'OIDC') {
-          providerKeys[`${el.toLowerCase()}AppOIDCIssuer`] = creds.oidc_issuer;
+          providerKeys[`${el.toLowerCase()}AppOIDCIssuer`] = provider.oidc_issuer;
+          providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(' ');
+          providerKeys[`${el.toLowerCase()}AttributesMapping`] = JSON.stringify(provider.attribute_mapping);
+        } else {
+          providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
         }
-        providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
       } catch (e) {
         return null;
       }
@@ -556,7 +580,7 @@ function parseOAuthCreds(providers, metadata, envCreds) {
 }
 
 /*
-  Handle updates
+  Handle updates: loading existing responses from parameters.json and team provider info into context.updatingAuth
 */
 function handleUpdates(context, coreAnswers) {
   if (context.updatingAuth && context.updatingAuth.triggers) {
@@ -574,6 +598,7 @@ function handleUpdates(context, coreAnswers) {
     /* eslint-disable */
     const oAuthCreds = parseOAuthCreds(authProvidersUserPool, hostedUIProviderMeta, hostedUIProviderCreds);
     /* eslint-enable */
+
     context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
 

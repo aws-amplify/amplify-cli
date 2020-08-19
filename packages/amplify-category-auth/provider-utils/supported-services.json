@@ -93,7 +93,7 @@
       },
       {
         "key": "allowUnauthenticatedIdentities",
-        "question": "Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM)",
+        "question": "Allow unauthenticated logins? (Provides mappingd down permissions that you can control via AWS IAM)",
         "type": "list",
         "map": "booleanOptions",
         "learnMore": "If you select 'yes', your identity pool will provide temporary AWS credentials for unauthenticated guest users.",
@@ -1232,6 +1232,11 @@
           },
           {
             "onCreate": "never"
+          },
+          {
+            "key": "OIDCAdditionalQuestions",
+            "value": true,
+            "operator": "="
           }
         ]
       },
@@ -1247,6 +1252,11 @@
           {
             "preventEdit": "existsInCurrent",
             "key": "newOIDCAuthorizeScopes"
+          },
+          {
+            "key": "OIDCAdditionalQuestions",
+            "value": true,
+            "operator": "="
           }
         ]
       },
@@ -1264,15 +1274,23 @@
           },
           {
             "onCreate": "never"
+          },
+          {
+            "key": "OIDCAdditionalQuestions",
+            "value": true,
+            "operator": "="
           }
         ]
       },
       {
-        "key": "oidcAppOIDCAttributesMapping",
-        "question": "Enter the expected attributes mapping between your OIDC provider and your Cognito user as a JSON (ex. {\"email\":\"EMAIL\",\"username\":\"sub\"}) (optional): ",
-        "type": "input",
-        "required": false,
-        "default": "{}",
+        "key": "newOIDCMapping",
+        "question": "Which mappings do you want to add ?",
+        "required": true,
+        "type": "multiselect",
+        "map": "coreAttributes",
+        "iterator": "oidcAttributesMapping",
+        "requiredOptions": ["usernameAttributes"],
+        "requiredOptionsMsg": "You have already selected the following attributes as required for this User Pool.  They are writeable by default:",
         "andConditions": [
           {
             "key": "authProvidersUserPool",
@@ -1283,13 +1301,81 @@
             "key": "OIDCAdditionalQuestions",
             "value": true,
             "operator": "="
+          },
+          {
+            "preventEdit": "exists",
+            "key": "oidcAttributesMapping"
+          },
+          {
+            "preventEdit": "existsInCurrent",
+            "key": "oidcAttributesMapping"
           }
-        ],
-        "validation": {
+        ]
+      },
+      {
+        "key": "EditMappings",
+        "question": "Which mappings do you want to edit ?",
+        "type": "multiselect",
+        "iterator": "oidcAttributesMapping",
+        "iteratorValidation": {
           "operator": "regex",
-          "value": "^$|^({(\"\\w*\\s*\"):(\"\\w*\\s*\"))(\\,(\"\\w*\\s*\"):(\"\\w*\\s*\"))*}",
-          "onErrorMsg": "The value must be a valid JSON object without spaces."
-        }
+          "value": ".*",
+          "onErrorMsg": "The value must be a valid string."
+        },
+        "andConditions": [
+          {
+            "key": "oidcAttributesMapping",
+            "operator": "exists"
+          },
+          {
+            "onCreate": "never"
+          },
+          {
+            "key": "OIDCAdditionalQuestions",
+            "value": true,
+            "operator": "="
+          }
+        ]
+      },
+      {
+        "key": "addOIDCMappingOnUpdate",
+        "question": "Do you want to add extra mappings ?",
+        "required": true,
+        "type": "confirm",
+        "andConditions": [
+          {
+            "onCreate": "never"
+          },
+          {
+            "key": "OIDCAdditionalQuestions",
+            "value": true,
+            "operator": "="
+          }
+        ]
+      },
+      {
+    
+          "key": "newOIDCMapping",
+          "question": "Which extra mappings do you want to add ?",
+          "required": true,
+          "type": "multiselect",
+          "map": "coreAttributes",
+          "iterator": "extraoidcAttributesMapping",
+        "andConditions": [
+          {
+            "key": "addOIDCMappingOnUpdate",
+            "value": true,
+            "operator": "="
+          },
+          {
+            "onCreate": "never"
+          },
+          {
+            "key": "OIDCAdditionalQuestions",
+            "value": true,
+            "operator": "="
+          }
+        ]
       },
       {
         "key": "loginwithamazonAppIdUserPool",

@@ -40,7 +40,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   };
 
   if (input.type && ['list', 'multiselect'].includes(input.type)) {
-    if (context.updatingAuth && input.iterator) {
+    if (context.updatingAuth && input.iterator && input.iterator !== 'extraoidcAttributesMapping') {
       question = iteratorQuestion(input, question, context);
       // if selecting existing value to edit it's not require to validate inputs
       question.validate = () => true;
@@ -94,8 +94,9 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
 function iteratorQuestion(input, question, context) {
   if (context.updatingAuth[input.iterator]) {
     let iteratorValues = context.updatingAuth[input.iterator];
-    if(input.iterator === 'oidcAuthorizeScopes') {
-      iteratorValues = iteratorValues[0].split(' ');
+    if(input.iterator === 'oidcAttributesMapping') {
+      // loaded from previous answers as escaped string. so parsing it
+      iteratorValues = Object.keys(JSON.parse(context.updatingAuth['oidcAttributesMapping']));
     }
     question = Object.assign(
       {
@@ -119,6 +120,7 @@ function iteratorQuestion(input, question, context) {
 }
 
 function getRequiredOptions(input, question, getAllMaps, context, currentAnswers) {
+
   const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
   const sourceArray = uniq(flatten(input.requiredOptions.map(i => sourceValues[i] || [])));
   const requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => sourceArray.includes(x.value)) : [];
@@ -141,7 +143,7 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const { requiredAttributes } = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
     if (requiredAttributes) {
-      const attrMap = getAllMaps().attributeProviderMap;
+      const attrMap = getAllMaps(context).attributeProviderMap;
       requiredAttributes.forEach(attr => {
         choices.forEach(choice => {
           choice.missingAttributes = [];
@@ -159,6 +161,7 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
     question = Object.assign({ choices }, question);
   }
   if (input.filter === 'attributes') {
+    console.log(`filter attributes`)
     let choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     choices = JSON.parse(JSON.stringify(choices));
     const attrMap = getAllMaps().attributeProviderMap;
