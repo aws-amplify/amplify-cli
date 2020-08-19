@@ -1,4 +1,4 @@
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, parse, DocumentNode, Kind } from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, parse, DocumentNode, Kind, InputValueDefinitionNode, NamedTypeNode } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
@@ -341,12 +341,21 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
+    const subscriptionType = getObjectType(schemaDoc, 'Subscription');
 
     const fields = [...queryType.fields, ...mutationType.fields];
 
     for (const field of fields) {
       expect(field.directives.length === 1);
       expect(field.directives.find(d => d.name.value === userPoolsDirectiveName)).toBeDefined();
+    }
+
+    // Check that owner is required when only using owner auth rules
+    for (const field of subscriptionType.fields) {
+      expect(field.arguments).toHaveLength(1);
+      let arg: InputValueDefinitionNode = field.arguments[0];
+      expect(arg.name.value).toEqual('owner');
+      expect(arg.type.kind).toEqual(Kind.NON_NULL_TYPE);
     }
 
     // Check that resolvers containing the authMode check block
@@ -367,6 +376,7 @@ describe('Type directive transformation tests', () => {
     const schemaDoc = parse(out.schema);
     const queryType = getObjectType(schemaDoc, 'Query');
     const mutationType = getObjectType(schemaDoc, 'Mutation');
+    const subscriptionType = getObjectType(schemaDoc, 'Subscription');
 
     expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']);
     expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']);
@@ -374,6 +384,19 @@ describe('Type directive transformation tests', () => {
     expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools');
     expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools');
     expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools');
+
+    const onCreate = getField(subscriptionType, 'onCreatePost');
+    expectMultiple(onCreate, ['aws_subscribe', 'aws_api_key', 'aws_cognito_user_pools']);
+    expectMultiple(getField(subscriptionType, 'onUpdatePost'), ['aws_subscribe', 'aws_api_key', 'aws_cognito_user_pools']);
+    expectMultiple(getField(subscriptionType, 'onDeletePost'), ['aws_subscribe', 'aws_api_key', 'aws_cognito_user_pools']);
+    expect(onCreate.arguments).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: expect.objectContaining({ value: 'owner' }),
+          type: expect.objectContaining({ kind: 'NamedType' }),
+        }),
+      ]),
+    );
   });
 
   test(`'public' with IAM provider adds policy for Unauth role`, () => {
