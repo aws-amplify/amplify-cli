@@ -32,8 +32,14 @@ function getBackendAmplifyMeta(projectRoot: string) {
 }
 
 function getProjectTags(projectRoot: string) {
-  const tagsFilePath = path.join(projectRoot, 'amplify', 'tags.json');
-  return JSON.parse(fs.readFileSync(tagsFilePath, 'utf8'));
+  // Makes sure that the tags file is a valid JSON
+  // ? Not sure if this is the best way to go, since I'm not seeing the other files do something similar for error handling
+  try {
+    const tagsFilePath = path.join(projectRoot, 'amplify', 'tags.json');
+    return JSON.parse(fs.readFileSync(tagsFilePath, 'utf8'));
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 function getS3StorageBucketName(projectRoot: string) {
