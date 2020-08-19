@@ -2,6 +2,7 @@ import { existsSync } from 'fs-extra';
 import { InvokeOptions } from './invokeOptions';
 import path from 'path';
 import _ from 'lodash';
+import exit from 'exit';
 
 //  copied from amplify-util-mock with slight modifications
 
@@ -104,5 +105,5 @@ process.on('message', async options => {
       }),
     );
   }
-  process.exit(1);
+  exit(1);
 });
