@@ -36,8 +36,10 @@ describe('tags-validation:', () => {
   describe('case: tags-validation receives a tags.json file with an empty object', () => {
     const json = JSON.parse('[{ "Key": "user:Stack", "Value": "dev" }, { "Key": "user:Application", "Value": "foobar" }, {}]');
 
-    it('tags-validation should throw an error stating that there cannot be empty tag objects in the tags.json file', () => {
-      expect(() => hasValidTags(json)).toThrowError(new Error('Invalid empty tag object found'));
+    it('tags-validation should throw an error stating that its an invalid format', () => {
+      expect(() => hasValidTags(json)).toThrowError(
+        new Error('Make sure to follow the correct key-value format. Check tags.json file for example'),
+      );
     });
   });
 
@@ -46,7 +48,7 @@ describe('tags-validation:', () => {
 
     it('tags-validation should throw an error stating that the an object in the tags.json has incomplete data', () => {
       expect(() => hasValidTags(json)).toThrowError(
-        new Error('Make sure to follow the correct key-value format. Check tags.json file for example.'),
+        new Error('Make sure to follow the correct key-value format. Check tags.json file for example'),
       );
     });
   });
