@@ -132,7 +132,17 @@ async function getModelOutputPath(context) {
     const answer = await askForModelOutputPath(defaultPath);
     outputPath = answer.outputPath;
   }
-  context.amplify.updateProjectConfig(context.amplify.getEnvInfo().projectPath, 'modelgen', {outputPath: outputPath});
+
+  //Get the project root directory
+  let projectRoot;
+  try {
+    context.amplify.getProjectMeta();
+    projectRoot = context.amplify.getEnvInfo().projectPath;
+  } catch (e) {
+    projectRoot = process.cwd();
+  }
+  context.amplify.updateProjectConfig(projectRoot, 'modelgen', {outputPath: outputPath});
+
   return outputPath;
 }
 
