@@ -200,6 +200,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     }
   });
   cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(
+    context,
     functionParameters.lambdaLayers,
     context.amplify.getEnvInfo().envName,
   );

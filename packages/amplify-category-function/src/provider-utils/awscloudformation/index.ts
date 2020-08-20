@@ -1,6 +1,5 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
-import { FeatureFlags } from 'amplify-cli-core';
-import { LayerParameters, StoredLayerParameters } from './utils/layerParams';
+import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './utils/layerParams';
 import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
 import { ServiceName, provider, parametersFileName } from './utils/constants';
@@ -334,7 +333,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
     }
     return envParams;
-  } else if (FeatureFlags.getBoolean('lambdaLayers.multiEnv') && service === ServiceName.LambdaLayer) {
+  } else if (isMultiEnvLayer(context, resourceName) && service === ServiceName.LambdaLayer) {
     const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
 
     const providerContext: ProviderContext = {
