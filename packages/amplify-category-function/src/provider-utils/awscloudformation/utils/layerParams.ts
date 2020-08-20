@@ -1,7 +1,6 @@
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
-import { FeatureFlags } from 'amplify-cli-core';
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 import { categoryName, layerParametersFileName } from '../utils/constants';
 import { category } from '../../../constants';
@@ -242,7 +241,7 @@ class LayerVersionState implements LayerVersionMetadata {
 }
 
 const getStoredLayerState = (context: any, layerName: string) => {
-  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+  if (isMultiEnvLayer(context, layerName)) {
     const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
     const { envName } = context.amplify.getEnvInfo();
     if (!fs.existsSync(teamProviderInfoPath)) {
@@ -284,3 +283,8 @@ export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
     return new LayerState(context, getStoredLayerState(context, layerName), layerName);
   };
 };
+
+export function isMultiEnvLayer(context: any, layerName: string) {
+  const layerParametersPath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, layerName, layerParametersFileName);
+  return !fs.existsSync(layerParametersPath);
+}

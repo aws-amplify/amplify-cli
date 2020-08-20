@@ -1,10 +1,9 @@
 import { Fn, DeletionPolicy, Refs } from 'cloudform';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
-import { FeatureFlags } from 'amplify-cli-core';
-import { Permission, LayerParameters, getLayerMetadataFactory, LayerMetadata } from './layerParams';
+import { isMultiEnvLayer, Permission, LayerParameters, getLayerMetadataFactory, LayerMetadata } from './layerParams';
 
-function generateLayerCfnObjBase() {
+function generateLayerCfnObjBase(multiEnvLayer: boolean) {
   const cfnObj = {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda layer resource stack creation using Amplify CLI',
@@ -23,7 +22,7 @@ function generateLayerCfnObjBase() {
     },
   };
 
-  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+  if (multiEnvLayer) {
     _.merge(cfnObj, {
       Parameters: {
         s3Key: {
@@ -43,6 +42,7 @@ function generateLayerCfnObjBase() {
  * generates CFN for Layer and Layer permissions when updating layerVersion
  */
 export function generateLayerCfnObj(context, parameters: LayerParameters) {
+  const multiEnvLayer = isMultiEnvLayer(context, parameters.layerName);
   const layerData = getLayerMetadataFactory(context)(parameters.layerName);
   const outputObj = {
     Outputs: {
@@ -52,11 +52,9 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
       Region: { Value: Refs.Region },
     },
   };
-  let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
+  let cfnObj = { ...generateLayerCfnObjBase(multiEnvLayer), ...outputObj };
   const POLICY_RETAIN = DeletionPolicy.Retain;
-  const layerName = FeatureFlags.getBoolean('lambdaLayers.multiEnv')
-    ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') })
-    : parameters.layerName;
+  const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
 
   const layer = new Lambda.LayerVersion({
     CompatibleRuntimes: parameters.runtimes.map(runtime => runtime.cloudTemplateValue),
@@ -72,16 +70,22 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
 
   cfnObj.Resources['LambdaLayer'] = layer;
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
-    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
+    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build, multiEnvLayer);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   });
   return cfnObj;
 }
 
-function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, isContentUpdated: boolean) {
+function assignLayerPermissions(
+  layerData: LayerMetadata,
+  version: string,
+  layerName: string,
+  isContentUpdated: boolean,
+  multiEnvLayer: boolean,
+) {
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
-    LayerVersionArn: createLayerVersionArn(layerData, layerName, version, isContentUpdated),
+    LayerVersionArn: createLayerVersionArn(layerData, layerName, version, isContentUpdated, multiEnvLayer),
   };
 
   const result = [];
@@ -132,7 +136,13 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
   return result;
 }
 
-function createLayerVersionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean) {
+function createLayerVersionArn(
+  layerData: LayerMetadata,
+  layerName: string,
+  version: string,
+  isContentUpdated: boolean,
+  multiEnvLayer: boolean,
+) {
   //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
   if (isContentUpdated) {
     // if runtime/Content updated
@@ -140,7 +150,7 @@ function createLayerVersionArn(layerData: LayerMetadata, layerName: string, vers
       return Fn.Ref('LambdaLayer');
     }
   }
-  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+  if (multiEnvLayer) {
     return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}', {
       layerName,
       env: Fn.Ref('env'),
