@@ -1,31 +1,30 @@
-import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { getEnvInfo } from './get-env-info';
-import { readJsonFile } from './read-json-file';
-import { getProviderInfoFilePath } from './path-manager';
+import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
 
 const CATEGORIES = 'categories';
 
-function isMigrationContext(context) {
+function isMigrationContext(context: $TSContext) {
   return 'migrationInfo' in context;
 }
 
-function getCurrentEnvName(context) {
+function getCurrentEnvName(context: $TSContext) {
   if (isMigrationContext(context)) {
     return context.migrationInfo.localEnvInfo.envName;
   }
   return getEnvInfo().envName;
 }
 
-function loadAllResourceParameters(context) {
+function loadAllResourceParameters(context: $TSContext) {
   try {
     if (isMigrationContext(context)) {
       return context.migrationInfo.teamProviderInfo;
     }
-    const teamProviderInfoFilePath = getProviderInfoFilePath();
-    if (fs.existsSync(teamProviderInfoFilePath)) {
-      return readJsonFile(teamProviderInfoFilePath);
-    }
+
+    return stateManager.getTeamProviderInfo(undefined, {
+      throwIfNotExist: false,
+      default: {},
+    });
   } catch (e) {
     return {};
   }
@@ -59,14 +58,13 @@ function removeObjectRecursively(obj, keys) {
   }
 }
 
-function saveAllResourceParams(context, data) {
+function saveAllResourceParams(context: $TSContext, data: $TSObject) {
   if (isMigrationContext(context)) return; // no need to serialize team provider
 
-  const teamProviderInfoFilePath = getProviderInfoFilePath();
-  fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(data, null, 4));
+  stateManager.setTeamProviderInfo(undefined, data);
 }
 
-export function saveEnvResourceParameters(context, category, resource, parameters) {
+export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters: $TSObject) {
   const allParams = loadAllResourceParameters(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category]);
@@ -74,7 +72,7 @@ export function saveEnvResourceParameters(context, category, resource, parameter
   saveAllResourceParams(context, allParams);
 }
 
-export function loadEnvResourceParameters(context, category, resource) {
+export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
   const allParams = loadAllResourceParameters(context);
   try {
     const currentEnv = getCurrentEnvName(context);
@@ -84,7 +82,7 @@ export function loadEnvResourceParameters(context, category, resource) {
   }
 }
 
-export function removeResourceParameters(context, category, resource) {
+export function removeResourceParameters(context: $TSContext, category: string, resource: string) {
   const allParams = loadAllResourceParameters(context);
   const currentEnv = getCurrentEnvName(context);
   removeObjectRecursively(allParams, [currentEnv, CATEGORIES, category, resource]);

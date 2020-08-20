@@ -1,24 +1,21 @@
-import * as fs from 'fs-extra';
 import { getEnvInfo } from './get-env-info';
-import { readJsonFile } from './read-json-file';
-import { getProjectConfigFilePath, getAmplifyMetaFilePath, getProviderInfoFilePath } from './path-manager';
+import { stateManager } from 'amplify-cli-core';
 
 export function getProjectDetails() {
-  const projectConfigFilePath = getProjectConfigFilePath();
-  const projectConfig = readJsonFile(projectConfigFilePath);
+  const projectConfig = stateManager.getProjectConfig();
 
   let amplifyMeta = {};
-  const amplifyMetaFilePath = getAmplifyMetaFilePath();
-  if (fs.existsSync(amplifyMetaFilePath)) {
-    amplifyMeta = readJsonFile(amplifyMetaFilePath);
+
+  if (stateManager.metaFileExists()) {
+    amplifyMeta = stateManager.getMeta();
   }
 
   const localEnvInfo = getEnvInfo();
 
   let teamProviderInfo = {};
-  const teamProviderFilePath = getProviderInfoFilePath();
-  if (fs.existsSync(teamProviderFilePath)) {
-    teamProviderInfo = readJsonFile(teamProviderFilePath);
+
+  if (stateManager.teamProviderInfoExists()) {
+    teamProviderInfo = stateManager.getTeamProviderInfo();
   }
 
   return {

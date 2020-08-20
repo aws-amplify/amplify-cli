@@ -4,7 +4,7 @@ import * as inquirer from 'inquirer';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
-import { readJsonFile } from '../extensions/amplify-helpers/read-json-file';
+import { stateManager } from 'amplify-cli-core';
 
 export async function analyzeProject(context) {
   if (!context.parameters.options.app) {
@@ -15,13 +15,13 @@ export async function analyzeProject(context) {
   const projectName = await getProjectName(context);
   const envName = await getEnvName(context);
 
-  let defaultEditor = getDefaultEditor(context);
+  let defaultEditor = getDefaultEditor();
 
   if (!defaultEditor) {
     defaultEditor = await getEditor(context);
   }
 
-  context.exeInfo.isNewEnv = isNewEnv(context, envName);
+  context.exeInfo.isNewEnv = isNewEnv(envName);
 
   if ((context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || context.parameters.options.forcePush) {
     context.exeInfo.forcePush = true;
@@ -51,9 +51,12 @@ export async function analyzeProject(context) {
 async function getProjectName(context) {
   let projectName;
   const projectPath = process.cwd();
+
   if (!context.exeInfo.isNewProject) {
-    const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);
-    ({ projectName } = readJsonFile(projectConfigFilePath));
+    const projectConfig = stateManager.getProjectConfig(projectPath);
+
+    projectName = projectConfig.projectName;
+
     return projectName;
   }
 
@@ -61,6 +64,7 @@ async function getProjectName(context) {
     projectName = normalizeProjectName(context.exeInfo.inputParams.amplify.projectName);
   } else {
     projectName = normalizeProjectName(path.basename(projectPath));
+
     if (!context.exeInfo.inputParams.yes) {
       const projectNameQuestion: inquirer.InputQuestion = {
         type: 'input',
@@ -69,7 +73,9 @@ async function getProjectName(context) {
         default: projectName,
         validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
       };
+
       const answer = await inquirer.prompt(projectNameQuestion);
+
       projectName = answer.inputProjectName;
     }
   }
@@ -155,16 +161,16 @@ async function getEnvName(context) {
   return envName;
 }
 
-function isNewEnv(context, envName) {
+function isNewEnv(envName) {
   let newEnv = true;
   const projectPath = process.cwd();
-  const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
+  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
+    throwIfNotExist: false,
+    default: {},
+  });
 
-  if (fs.existsSync(providerInfoFilePath)) {
-    const envProviderInfo = readJsonFile(providerInfoFilePath);
-    if (envProviderInfo[envName]) {
-      newEnv = false;
-    }
+  if (teamProviderInfo[envName]) {
+    newEnv = false;
   }
 
   return newEnv;
@@ -180,13 +186,12 @@ function isNewProject(context) {
   return newProject;
 }
 
-function getDefaultEditor(context) {
-  let defaultEditor;
+function getDefaultEditor() {
   const projectPath = process.cwd();
-  const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
-  if (fs.existsSync(localEnvFilePath)) {
-    ({ defaultEditor } = readJsonFile(localEnvFilePath));
-  }
+  const localEnvInfo = stateManager.getLocalEnvInfo(projectPath, {
+    throwIfNotExist: false,
+    default: {},
+  });
 
-  return defaultEditor;
+  return localEnvInfo.defaultEditor;
 }

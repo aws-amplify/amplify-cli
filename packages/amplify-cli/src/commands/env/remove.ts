@@ -1,8 +1,5 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import ora from 'ora';
-import { FeatureFlags } from 'amplify-cli-core';
-import { readJsonFile } from '../../extensions/amplify-helpers/read-json-file';
+import { FeatureFlags, stateManager } from 'amplify-cli-core';
 import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
 
 export const run = async context => {
@@ -47,21 +44,20 @@ export const run = async context => {
       spinner.succeed('Successfully removed environment from the cloud');
 
       // Remove from team-provider-info
-      const envProviderFilepath = context.amplify.pathManager.getProviderInfoFilePath();
-      let jsonString = JSON.stringify(allEnvs, null, '\t');
-      fs.writeFileSync(envProviderFilepath, jsonString, 'utf8');
+      stateManager.setTeamProviderInfo(undefined, allEnvs);
 
       // Remove entry from aws-info
-      const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-      const awsInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
-      const awsInfo = readJsonFile(awsInfoFilePath);
+      const awsInfo = stateManager.getLocalAWSInfo();
+
       if (awsInfo[envName]) {
         delete awsInfo[envName];
-        jsonString = JSON.stringify(awsInfo, null, '\t');
-        fs.writeFileSync(awsInfoFilePath, jsonString, 'utf8');
+
+        stateManager.setLocalAWSInfo(undefined, awsInfo);
       }
 
-      await FeatureFlags.removeFeatureFlagConfiguration(false, [envName]);
+      if (FeatureFlags.isInitialized()) {
+        await FeatureFlags.removeFeatureFlagConfiguration(false, [envName]);
+      }
 
       context.print.success('Successfully removed environment from your project locally');
     }

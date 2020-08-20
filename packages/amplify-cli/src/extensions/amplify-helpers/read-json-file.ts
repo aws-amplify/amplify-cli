@@ -1,15 +1,8 @@
-import * as fs from 'fs-extra';
+//TODO Remove this whole function once read-json removed from everywhere
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
-function stripBOM(content) {
-  if (content.charCodeAt(0) === 0xfeff) {
-    content = content.slice(1);
-  }
-  return content;
-}
-
-export function readJsonFile(jsonFilePath, encoding = 'utf8', throwOnError = true) {
-  if (!fs.existsSync(jsonFilePath) && !throwOnError) {
-    return undefined;
-  }
-  return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
+export function readJsonFile(jsonFilePath, encoding = 'utf8', throwOnError = true): $TSAny {
+  return JSONUtilities.readJson(jsonFilePath, {
+    throwIfNotExist: throwOnError,
+  });
 }

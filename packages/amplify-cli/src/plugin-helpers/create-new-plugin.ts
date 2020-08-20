@@ -5,10 +5,10 @@ import { Context } from '../domain/context';
 import { constants } from '../domain/constants';
 import { AmplifyEvent } from '../domain/amplify-event';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
-import { readJsonFileSync } from '../utils/readJsonFile';
 import { validPluginName } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';
 import { InputQuestion, ConfirmQuestion } from 'inquirer';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 const INDENTATIONSPACE = 4;
 
@@ -194,20 +194,22 @@ events might be added or removed in future releases.');
 
 function updatePackageJson(pluginDirPath: string, pluginName: string): void {
   const filePath = path.join(pluginDirPath, 'package.json');
-  const packageJson = readJsonFileSync(filePath);
+  const packageJson = JSONUtilities.readJson<$TSAny>(filePath);
+
   packageJson.name = pluginName;
-  const jsonString = JSON.stringify(packageJson, null, INDENTATIONSPACE);
-  fs.writeFileSync(filePath, jsonString, 'utf8');
+
+  JSONUtilities.writeJson(filePath, packageJson);
 }
 
 function updateAmplifyPluginJson(pluginDirPath: string, pluginName: string, pluginType: string, eventHandlers: string[]): void {
   const filePath = path.join(pluginDirPath, constants.MANIFEST_FILE_NAME);
-  const amplifyPluginJson = readJsonFileSync(filePath);
+  const amplifyPluginJson = JSONUtilities.readJson<$TSAny>(filePath);
+
   amplifyPluginJson.name = pluginName;
   amplifyPluginJson.type = pluginType;
   amplifyPluginJson.eventHandlers = eventHandlers;
-  const jsonString = JSON.stringify(amplifyPluginJson, null, INDENTATIONSPACE);
-  fs.writeFileSync(filePath, jsonString, 'utf8');
+
+  JSONUtilities.writeJson(filePath, amplifyPluginJson);
 }
 
 function updateEventHandlersFolder(pluginDirPath: string, eventHandlers: string[]): void {

@@ -6,8 +6,9 @@ import { onFailure } from '../config-steps/c9-onFailure';
 import { onSuccess } from '../config-steps/c9-onSuccess';
 import { normalizeInputParams } from '../input-params-manager';
 import { write } from '../app-config';
+import { Context } from '../domain/context';
 
-export const run = async context => {
+export const run = async (context: Context) => {
   if (context.parameters.options['usage-data-off']) {
     write(context, { usageDataConfig: { isUsageTrackingEnabled: false } });
     context.print.success('Usage Data has been turned off');
@@ -25,6 +26,7 @@ export const run = async context => {
 
   if (context.parameters.first === 'project') {
     constructExeInfo(context);
+
     try {
       await analyzeProject(context);
       await configFrontendHandler(context);
@@ -36,7 +38,7 @@ export const run = async context => {
   }
 };
 
-function constructExeInfo(context) {
+function constructExeInfo(context: Context) {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = normalizeInputParams(context);
 }

@@ -1,18 +1,17 @@
 import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
+import { pathManager, stateManager, $TSContext } from 'amplify-cli-core';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
-import { readJsonFile } from '../extensions/amplify-helpers/read-json-file';
 
-export async function generateFiles(context) {
+export async function generateFiles(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const { amplify } = context;
 
-  const amplifyDirPath = amplify.pathManager.getAmplifyDirPath(projectPath);
-  const dotConfigDirPath = amplify.pathManager.getDotConfigDirPath(projectPath);
-  const backendDirPath = amplify.pathManager.getBackendDirPath(projectPath);
-  const currentBackendDirPath = amplify.pathManager.getCurrentCloudBackendDirPath(projectPath);
+  const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
+  const dotConfigDirPath = pathManager.getDotConfigDirPath(projectPath);
+  const backendDirPath = pathManager.getBackendDirPath(projectPath);
+  const currentBackendDirPath = pathManager.getCurrentCloudBackendDirPath(projectPath);
 
   fs.ensureDirSync(amplifyDirPath);
   fs.ensureDirSync(dotConfigDirPath);
@@ -37,47 +36,44 @@ export async function generateFiles(context) {
 
   await sequential(providerOnSuccessTasks);
 
-  const currentAmplifyMetafilePath = amplify.pathManager.getCurrentAmplifyMetaFilePath();
-  let currentAmplifyMeta = {};
-  if (fs.existsSync(currentAmplifyMetafilePath)) {
-    currentAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);
-  }
+  const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
+    throwIfNotExist: false,
+    default: {},
+  });
+
   await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
 
   return context;
 }
 
-function generateLocalRuntimeFiles(context) {
+function generateLocalRuntimeFiles(context: $TSContext) {
   generateLocalEnvInfoFile(context);
 }
 
-export function generateLocalEnvInfoFile(context) {
+function generateLocalEnvInfoFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
-  const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
-  fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+
+  stateManager.setLocalEnvInfo(projectPath, context.exeInfo.localEnvInfo);
 }
 
-function generateNonRuntimeFiles(context) {
+function generateNonRuntimeFiles(context: $TSContext) {
   generateProjectConfigFile(context);
   generateBackendConfigFile(context);
-  generateProviderInfoFile(context);
+  generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
 }
 
-function generateProjectConfigFile(context) {
+function generateProjectConfigFile(context: $TSContext) {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
-    const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);
-    fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+
+    stateManager.setProjectConfig(projectPath, context.exeInfo.projectConfig);
   }
 }
 
-function generateProviderInfoFile(context) {
+function generateTeamProviderInfoFile(context: $TSContext) {
   const { projectPath, envName } = context.exeInfo.localEnvInfo;
   const { existingTeamProviderInfo, teamProviderInfo } = context.exeInfo;
-  const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
 
   if (existingTeamProviderInfo) {
     if (existingTeamProviderInfo[envName]) {
@@ -85,28 +81,27 @@ function generateProviderInfoFile(context) {
         teamProviderInfo[envName] = teamProviderInfo[envName] || {};
         teamProviderInfo[envName].categories = existingTeamProviderInfo[envName].categories;
       }
+
       delete existingTeamProviderInfo[envName];
     }
+
     Object.assign(teamProviderInfo, existingTeamProviderInfo);
   }
 
-  const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-  fs.writeFileSync(providerInfoFilePath, jsonString, 'utf8');
+  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 }
 
-function generateBackendConfigFile(context) {
+function generateBackendConfigFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
-  if (!fs.existsSync(backendConfigFilePath)) {
-    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
-  }
+
+  stateManager.setBackendConfig(projectPath, {});
 }
 
-function generateGitIgnoreFile(context) {
+function generateGitIgnoreFile(context: $TSContext) {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
-    const gitIgnoreFilePath = context.amplify.pathManager.getGitIgnoreFilePath(projectPath);
+    const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projectPath);
 
     insertAmplifyIgnore(gitIgnoreFilePath);
   }

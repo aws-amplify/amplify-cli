@@ -6,15 +6,8 @@ import { print } from './print';
 import { hashElement } from 'folder-hash';
 import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
-import { readJsonFile } from './read-json-file';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
-import {
-  getAmplifyMetaFilePath,
-  getCurrentAmplifyMetaFilePath,
-  getBackendConfigFilePath,
-  getCurrentCloudBackendDirPath,
-  getBackendDirPath,
-} from './path-manager';
+import { pathManager, stateManager, $TSMeta, $TSAny } from 'amplify-cli-core';
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, isLambdaLayer = false) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -22,9 +15,9 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     return false;
   }
 
-  const localBackendDir = path.normalize(path.join(getBackendDirPath(), category, resourceName));
+  const localBackendDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
 
-  const cloudBackendDir = path.normalize(path.join(getCurrentCloudBackendDirPath(), category, resourceName));
+  const cloudBackendDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
 
   if (!fs.existsSync(localBackendDir)) {
     return false;
@@ -225,16 +218,14 @@ async function asyncForEach(array, callback) {
 
 export async function getResourceStatus(category?, resourceName?, providerName?, filteredResources?) {
   const amplifyProjectInitStatus = getCloudInitStatus();
-  let amplifyMeta;
-  let currentamplifyMeta = {};
+  let amplifyMeta: $TSAny;
+  let currentamplifyMeta: $TSMeta = {};
+
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
-    const amplifyMetaFilePath = getAmplifyMetaFilePath();
-    amplifyMeta = readJsonFile(amplifyMetaFilePath);
-    const currentamplifyMetaFilePath = getCurrentAmplifyMetaFilePath();
-    currentamplifyMeta = readJsonFile(currentamplifyMetaFilePath);
+    amplifyMeta = stateManager.getMeta();
+    currentamplifyMeta = stateManager.getCurrentMeta();
   } else if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
-    const backendConfigFilePath = getBackendConfigFilePath();
-    amplifyMeta = readJsonFile(backendConfigFilePath);
+    amplifyMeta = stateManager.getBackendConfig();
   } else {
     const error = new Error(
       "You are not working inside a valid Amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project, or 'amplify pull' to pull down an existing project.",
@@ -273,6 +264,7 @@ export async function showResourceTable(category, resourceName, filteredResource
   const amplifyProjectInitStatus = getCloudInitStatus();
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
     const { envName } = getEnvInfo();
+
     print.info('');
     print.info(`${chalk.green('Current Environment')}: ${envName}`);
     print.info('');

@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { CLIContextEnvironmentProvider, FeatureFlags } from 'amplify-cli-core';
+import { CLIContextEnvironmentProvider, FeatureFlags, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -11,14 +11,9 @@ import { Context } from './domain/context';
 import { constants } from './domain/constants';
 import { checkProjectConfigVersion } from './project-config-version-check';
 import { default as updateNotifier } from 'update-notifier';
-import { readJsonFile } from './extensions/amplify-helpers/read-json-file';
 
-const pkg = readJsonFile(path.join(__dirname, '..', 'package.json'));
+const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
 const notifier = updateNotifier({ pkg }); // defaults to 1 day interval
-
-export type $TSAny = any;
-export type $TSContext = any;
-export type $TSObject = Record<string, $TSAny>;
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
 // https://github.com/SBoudrias/Inquirer.js/issues/887

@@ -1,16 +1,15 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import inquirer, { InputQuestion } from 'inquirer';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getEnvInfo } from '../extensions/amplify-helpers/get-env-info';
-import { readJsonFile } from '../extensions/amplify-helpers/read-json-file';
+import { stateManager } from 'amplify-cli-core';
 
 export async function analyzeProject(context) {
-  const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
-  if (fs.existsSync(projectConfigFilePath)) {
-    context.exeInfo.projectConfig = readJsonFile(projectConfigFilePath);
-  }
+  context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {
+    throwIfNotExist: false,
+  });
+
   context.exeInfo.localEnvInfo = getEnvInfo();
 
   const projectPath = process.cwd();

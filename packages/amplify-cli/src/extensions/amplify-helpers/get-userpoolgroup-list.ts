@@ -1,21 +1,17 @@
 import * as path from 'path';
+import { pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 export function getUserPoolGroupList(context) {
   let userPoolGroupList = [];
-  let existingGroups;
 
-  const userGroupParamsPath = path.join(
-    context.amplify.pathManager.getBackendDirPath(),
-    'auth',
-    'userPoolGroups',
-    'user-pool-group-precedence.json',
-  );
+  const userGroupParamsPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
 
   try {
-    existingGroups = context.amplify.readJsonFile(userGroupParamsPath);
+    const existingGroups = JSONUtilities.readJson<$TSAny>(userGroupParamsPath);
+
     userPoolGroupList = existingGroups.map(e => e.groupName);
-  } catch (e) {
-    existingGroups = null;
+  } catch {
+    // intentionally left blank
   }
 
   return userPoolGroupList;

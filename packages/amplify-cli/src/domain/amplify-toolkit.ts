@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { $TSAny } from 'amplify-cli-core';
 
 export class AmplifyToolkit {
   private _buildResources: any;
@@ -15,12 +16,12 @@ export class AmplifyToolkit {
   private _getAllCategoryPluginInfo: any;
   private _getFrontendPlugins: any;
   private _getEnvDetails: any;
-  private _getEnvInfo: any;
+  private _getEnvInfo?: () => $TSAny;
   private _getProviderPlugins: any;
   private _getPluginInstance: any;
   private _getProjectConfig: any;
-  private _getProjectDetails: any;
-  private _getProjectMeta: any;
+  private _getProjectDetails?: () => $TSAny;
+  private _getProjectMeta?: () => $TSAny;
   private _getResourceStatus: any;
   private _getResourceOutputs: any;
   private _getWhen: any;
@@ -144,9 +145,9 @@ export class AmplifyToolkit {
     this._getEnvDetails = this._getEnvDetails || require(path.join(this._amplifyHelpersDirPath, 'get-env-details')).getEnvDetails;
     return this._getEnvDetails;
   }
-  get getEnvInfo(): any {
+  get getEnvInfo(): () => $TSAny {
     this._getEnvInfo = this._getEnvInfo || require(path.join(this._amplifyHelpersDirPath, 'get-env-info')).getEnvInfo;
-    return this._getEnvInfo;
+    return this._getEnvInfo!;
   }
   get getPluginInstance(): any {
     this._getPluginInstance =
@@ -158,14 +159,14 @@ export class AmplifyToolkit {
       this._getProjectConfig || require(path.join(this._amplifyHelpersDirPath, 'get-project-config')).getProjectConfig;
     return this._getProjectConfig;
   }
-  get getProjectDetails(): any {
+  get getProjectDetails(): () => $TSAny {
     this._getProjectDetails =
       this._getProjectDetails || require(path.join(this._amplifyHelpersDirPath, 'get-project-details')).getProjectDetails;
-    return this._getProjectDetails;
+    return this._getProjectDetails!;
   }
-  get getProjectMeta(): any {
+  get getProjectMeta(): () => $TSAny {
     this._getProjectMeta = this._getProjectMeta || require(path.join(this._amplifyHelpersDirPath, 'get-project-meta')).getProjectMeta;
-    return this._getProjectMeta;
+    return this._getProjectMeta!;
   }
   get getResourceStatus(): any {
     this._getResourceStatus =

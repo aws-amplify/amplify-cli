@@ -10,11 +10,11 @@ import { verifyPlugin } from './verify-plugin';
 import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file';
 import { twoPluginsAreTheSame } from './compare-plugins';
 import { checkPlatformHealth } from './platform-health-check';
-import { readJsonFileSync } from '../utils/readJsonFile';
 import isChildPath from '../utils/is-child-path';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
-  pluginPlatform = pluginPlatform || (await readPluginsJsonFile()) || new PluginPlatform();
+  pluginPlatform = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
 
   pluginPlatform!.plugins = new PluginCollection();
 
@@ -58,7 +58,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
   }
 
   pluginPlatform!.lastScanTime = new Date();
-  await writePluginsJsonFile(pluginPlatform!);
+  writePluginsJsonFile(pluginPlatform!);
 
   await checkPlatformHealth(pluginPlatform);
 
@@ -70,8 +70,8 @@ export function getCorePluginDirPath(): string {
 }
 
 export function getCorePluginVersion(): string {
-  const packageJsonFilePath = path.normalize(path.join(__dirname, '../../package.json'));
-  const packageJson = readJsonFileSync(packageJsonFilePath);
+  const packageJsonFilePath = path.normalize(path.join(__dirname, '..', '..', 'package.json'));
+  const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
   return packageJson.version;
 }
 

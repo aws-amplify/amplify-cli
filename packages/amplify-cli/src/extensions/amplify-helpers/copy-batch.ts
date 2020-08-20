@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import { JSONUtilities } from 'amplify-cli-core';
 
 /**
  * Runs a series of jobs through the templating system.
@@ -40,8 +40,8 @@ export async function copyBatch(context, jobs, props, force, writeParams) {
 
       if (writeParams && job.paramsFile) {
         const params = writeParams && Object.keys(writeParams) && Object.keys(writeParams).length > 0 ? writeParams : props;
-        const jsonString = JSON.stringify(params, null, 4);
-        fs.writeFileSync(job.paramsFile, jsonString, 'utf8');
+
+        JSONUtilities.writeJson(job.paramsFile, params);
       }
     }
   }

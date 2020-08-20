@@ -1,22 +1,19 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getResourceOutputs } from './get-resource-outputs';
-import { readJsonFile } from './read-json-file';
 import sequential from 'promise-sequential';
-import { getProjectConfigFilePath } from './path-manager';
+import { stateManager } from 'amplify-cli-core';
 
 export async function onCategoryOutputsChange(context, cloudAmplifyMeta?, localMeta?) {
   if (!cloudAmplifyMeta) {
-    const currentAmplifyMetafilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath();
-    if (fs.existsSync(currentAmplifyMetafilePath)) {
-      cloudAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);
-    } else {
-      cloudAmplifyMeta = {};
-    }
+    cloudAmplifyMeta = stateManager.getCurrentMeta(undefined, {
+      throwIfNotExist: false,
+      default: {},
+    });
   }
 
-  const projectConfigFilePath = getProjectConfigFilePath();
-  const projectConfig = readJsonFile(projectConfigFilePath);
+  const projectConfig = stateManager.getProjectConfig();
+
   if (projectConfig.frontend) {
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontendHandlerModule = require(frontendPlugins[projectConfig.frontend]);

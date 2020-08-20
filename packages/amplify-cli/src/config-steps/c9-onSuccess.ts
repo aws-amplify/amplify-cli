@@ -1,16 +1,10 @@
-import * as fs from 'fs-extra';
+import { stateManager } from 'amplify-cli-core';
 
 export async function onSuccess(context) {
   const { projectPath } = context.exeInfo;
-  const { amplify } = context;
 
-  let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
-  const projectConfigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
-  fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
-
-  jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
-  const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-  fs.writeFileSync(envFilePath, jsonString, 'utf8');
+  stateManager.setProjectConfig(projectPath, context.exeInfo.projectConfig);
+  stateManager.setLocalEnvInfo(undefined, context.exeInfo.localEnvInfo);
 
   await context.amplify.onCategoryOutputsChange(context);
 

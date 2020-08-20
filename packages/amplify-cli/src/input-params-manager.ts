@@ -1,3 +1,5 @@
+import { JSONUtilities } from 'amplify-cli-core';
+
 export function normalizeInputParams(context) {
   const inputParams = {};
   Object.keys(context.parameters.options).forEach(key => {
@@ -28,7 +30,7 @@ function normalizeKey(key) {
 function normalizeValue(key, value) {
   let normalizedValue = value;
   try {
-    normalizedValue = JSON.parse(value);
+    normalizedValue = JSONUtilities.parse(value);
   } catch (e) {
     // do nothing, allow plain string as input parameter.
   }
