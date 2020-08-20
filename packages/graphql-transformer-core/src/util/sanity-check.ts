@@ -222,28 +222,28 @@ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: Diffable
 export function cantMutateMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) {
   function throwError(stackName: string, tableName: string) {
     throw new InvalidMigrationError(
-      `Attempting to push more than 1 global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
-      'You may only add one global secondary index in a single CloudFormation stack update. ',
+      `Attempting to mutate more than 1 global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
+      'You may only mutate one global secondary index in a single CloudFormation stack update. ',
       'If using @key, include one @key at a time. ' +
         'If using @connection, just add one new @connection which is using @key, run `amplify push`, ',
     );
   }
 
   if (diffs) {
+    let gsiCountAdded: number = 0; // max gsiCountAdded = 1 // for update flow
+    let gsiCountRemoved: number = 0; // max gsiCountRemoved = 1 // for update flow
     for (const diff of diffs) {
-      let gsiCountAdded: number = 0; // max gsiCountAdded = 1 // for update flow
-      let gsiCountRemoved: number = 0; // max gsiCountRemoved = 1 // for update flow
       if (
         // implies a field was changed in a GSI after it was created.
         // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes", ... ]
         diff.kind === 'A' &&
-        diff.path.length > 6 &&
+        diff.path.length >= 6 &&
         diff.path[5] === 'GlobalSecondaryIndexes'
       ) {
-        if (diff.item.kind === 'N' && gsiCountAdded < 1) {
+        if (diff.item.kind === 'N') {
           gsiCountAdded += 1;
         }
-        if (diff.item.kind === 'D' && gsiCountRemoved < 1) {
+        if (diff.item.kind === 'D') {
           gsiCountRemoved += 1;
         }
         if (gsiCountAdded > 1 || gsiCountRemoved > 1) {
