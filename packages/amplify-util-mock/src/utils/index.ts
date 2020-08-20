@@ -10,6 +10,7 @@ export { hydrateAllEnvVars } from './lambda/hydrate-env-vars';
 import * as which from 'which';
 import * as execa from 'execa';
 import * as semver from 'semver';
+
 const minJavaVersion = '>=1.8 <= 2.0 ||  >=8.0';
 
 export const checkJavaVersion = async context => {
@@ -27,12 +28,22 @@ export const checkJavaVersion = async context => {
     context.print.error(`java failed, exit code was ${result.exitCode}`);
   }
 
-  const regex = /(\d+\.)(\d+\.)(\d)/g;
   // Java prints version to stderr
-  const versionString: string = result.stderr ? result.stderr.split(/\r?\n/)[0] : '';
-  const version = versionString.match(regex);
-
-  if (version == null && !semver.satisfies(version[0], minJavaVersion)) {
+  if (isUnsupportedJavaVersion(result.stderr)) {
     context.print.warning(`Update java to 8+`);
   }
 };
+
+function isUnsupportedJavaVersion(stderr: string | null): boolean {
+  const regex = /version "(\d+)(\.(\d+\.)(\d))?/g;
+  const versionStrings: Array<string> = stderr ? stderr.split(/\r?\n/) : [''];
+  const mayVersion = versionStrings.map(line => line.match(regex)).find(v => v != null);
+  if (mayVersion === undefined) {
+    return true;
+  }
+  const version = mayVersion[0].replace('version "', '');
+  const semVer = version.match(/^\d+$/g) === null ? version : `${version}.0.0`;
+  return !semver.satisfies(semVer, minJavaVersion);
+}
+
+export const _isUnsupportedJavaVersion: (stderr: string | null) => boolean = isUnsupportedJavaVersion;
