@@ -20,6 +20,9 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
+  "dependencies": {
+    "amplify-function-plugin-interface": "1.4.0"
+  },
   "devDependencies": {
     "@types/node": "^10.17.13"
   }

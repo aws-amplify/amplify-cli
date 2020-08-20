@@ -8,6 +8,12 @@
       "provider": "awscloudformation",
       "services": ["Lambda"],
       "runtime": "swift"
-    }
+    },
+    "templates": [
+      {
+        "name": "Hello World",
+        "value": "hello-world"
+      }
+    ]
   }
 }
