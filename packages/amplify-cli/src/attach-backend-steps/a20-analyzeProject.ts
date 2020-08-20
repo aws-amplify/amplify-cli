@@ -1,10 +1,9 @@
-import * as fs from 'fs-extra';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
-import { readJsonFile } from '../extensions/amplify-helpers/read-json-file';
+import { stateManager } from 'amplify-cli-core';
 
 export async function analyzeProject(context) {
-  let defaultEditor = getDefaultEditor(context);
+  let defaultEditor = getDefaultEditor();
 
   if (!defaultEditor) {
     defaultEditor = await getEditor(context);
@@ -36,13 +35,12 @@ async function getEditor(context) {
   return editor;
 }
 
-function getDefaultEditor(context) {
-  let defaultEditor;
+function getDefaultEditor() {
   const projectPath = process.cwd();
-  const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
-  if (fs.existsSync(localEnvFilePath)) {
-    ({ defaultEditor } = readJsonFile(localEnvFilePath));
-  }
+  const localEnvInfo = stateManager.getLocalEnvInfo(projectPath, {
+    throwIfNotExist: false,
+    default: {},
+  });
 
-  return defaultEditor;
+  return localEnvInfo.defaultEditor;
 }

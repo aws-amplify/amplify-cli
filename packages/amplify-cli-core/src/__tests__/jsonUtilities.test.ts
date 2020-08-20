@@ -17,10 +17,10 @@ describe('JSONUtilities tests', () => {
     bar: 1,
   };
 
-  test('readJson successfully reads file', async () => {
+  test('readJson successfully reads file', () => {
     const fileName = path.join(__dirname, 'testFiles', 'test.json');
 
-    const data = await JSONUtilities.readJson(fileName);
+    const data = JSONUtilities.readJson(fileName);
 
     expect(data).toMatchObject({
       foo: 'bar',
@@ -28,10 +28,10 @@ describe('JSONUtilities tests', () => {
     });
   });
 
-  test('readJson successfully reads file with BOM', async () => {
+  test('readJson successfully reads file with BOM', () => {
     const fileName = path.join(__dirname, 'testFiles', 'testWithBOM.json');
 
-    const data = await JSONUtilities.readJson(fileName);
+    const data = JSONUtilities.readJson(fileName);
 
     expect(data).toMatchObject({
       foo: 'bar',
@@ -39,39 +39,39 @@ describe('JSONUtilities tests', () => {
     });
   });
 
-  test('readJson throws error when fileName is not specified', async () => {
-    await expect(async () => {
-      const _ = await JSONUtilities.readJson((undefined as unknown) as string);
-    }).rejects.toThrowError(`'fileName' argument missing`);
+  test('readJson throws error when fileName is not specified', () => {
+    expect(() => {
+      const _ = JSONUtilities.readJson((undefined as unknown) as string);
+    }).toThrowError(`'fileName' argument missing`);
   });
 
-  test('readJson throws error for non-existing file', async () => {
-    await expect(async () => {
-      const _ = await JSONUtilities.readJson('/test.json');
-    }).rejects.toThrowError(`File at path: '/test.json' does not exist`);
+  test('readJson throws error for non-existing file', () => {
+    expect(() => {
+      const _ = JSONUtilities.readJson('/test.json');
+    }).toThrowError(`File at path: '/test.json' does not exist`);
   });
 
-  test('readJson does not throw error for non-existing file when flag specified', async () => {
-    const data = await JSONUtilities.readJson('/test.json', {
+  test('readJson does not throw error for non-existing file when flag specified', () => {
+    const data = JSONUtilities.readJson('/test.json', {
       throwIfNotExist: false,
     });
 
     expect(data).toBeUndefined();
   });
 
-  test('writeJson successfully writes file and creating nested directories', async () => {
-    const osTempDir = await fs.realpath(os.tmpdir());
+  test('writeJson successfully writes file and creating nested directories', () => {
+    const osTempDir = fs.realpathSync(os.tmpdir());
     const topTempDir = path.join(osTempDir, `amp-${uuid()}`);
     const nestedTempDir = path.join(topTempDir, 'f1', 'f2');
     const fileName = path.join(nestedTempDir, 'test.json');
 
     try {
-      await JSONUtilities.writeJson(fileName, defaultData);
+      JSONUtilities.writeJson(fileName, defaultData);
 
       // Test if overwrite succeeds as well
-      await JSONUtilities.writeJson(fileName, defaultData);
+      JSONUtilities.writeJson(fileName, defaultData);
 
-      const data = await JSONUtilities.readJson(fileName);
+      const data = JSONUtilities.readJson(fileName);
 
       expect(data).toMatchObject({
         foo: 'bar',
@@ -82,16 +82,16 @@ describe('JSONUtilities tests', () => {
     }
   });
 
-  test('writeJson throws error when fileName is not specified', async () => {
-    await expect(async () => {
-      const _ = await JSONUtilities.writeJson((undefined as unknown) as string, (undefined as unknown) as string);
-    }).rejects.toThrowError(`'fileName' argument missing`);
+  test('writeJson throws error when fileName is not specified', () => {
+    expect(() => {
+      const _ = JSONUtilities.writeJson((undefined as unknown) as string, (undefined as unknown) as string);
+    }).toThrowError(`'fileName' argument missing`);
   });
 
-  test('writeJson throws error when data is not specified', async () => {
-    await expect(async () => {
-      const _ = await JSONUtilities.writeJson('test.json', (undefined as unknown) as string);
-    }).rejects.toThrowError(`'data' argument missing`);
+  test('writeJson throws error when data is not specified', () => {
+    expect(() => {
+      const _ = JSONUtilities.writeJson('test.json', (undefined as unknown) as string);
+    }).toThrowError(`'data' argument missing`);
   });
 
   test('JSON parse returns object', () => {
@@ -113,7 +113,7 @@ describe('JSONUtilities tests', () => {
     });
   });
 
-  test('JSON roundtrip preserve comments', () => {
+  test.skip('JSON roundtrip preserve comments', () => {
     const data = JSONUtilities.parse(jsonString, { preserveComments: true });
     const roundtrippedString = JSONUtilities.stringify(data, {
       keepComments: true,

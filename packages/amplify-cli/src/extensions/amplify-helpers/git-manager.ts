@@ -4,16 +4,17 @@ import * as os from 'os';
 const amplifyMark = '#amplify';
 const amplifyMarkRegExp = new RegExp(`^${amplifyMark}`);
 
-export function insertAmplifyIgnore(gitIgnoreFilePath) {
+export function insertAmplifyIgnore(gitIgnoreFilePath: string): void {
   if (fs.existsSync(gitIgnoreFilePath)) {
     removeAmplifyIgnore(gitIgnoreFilePath);
+
     fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreAppendString());
   } else {
     fs.writeFileSync(gitIgnoreFilePath, getGitIgnoreAppendString().trim());
   }
 }
 
-export function removeAmplifyIgnore(gitIgnoreFilePath) {
+function removeAmplifyIgnore(gitIgnoreFilePath: string): void {
   if (fs.existsSync(gitIgnoreFilePath)) {
     let newGitIgnoreString = '';
     const gitIgnoreStringArray = fs.readFileSync(gitIgnoreFilePath, 'utf8').split(os.EOL);
@@ -22,6 +23,7 @@ export function removeAmplifyIgnore(gitIgnoreFilePath) {
 
     for (let i = 0; i < gitIgnoreStringArray.length; i++) {
       const newLine = gitIgnoreStringArray[i].trim();
+
       if (isInRemoval) {
         if (newLine.length === 0) {
           isInRemoval = false;
@@ -34,6 +36,7 @@ export function removeAmplifyIgnore(gitIgnoreFilePath) {
     }
 
     newGitIgnoreString = newGitIgnoreString.trim();
+
     fs.writeFileSync(gitIgnoreFilePath, newGitIgnoreString);
   }
 }

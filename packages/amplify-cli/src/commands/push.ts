@@ -1,8 +1,7 @@
 import sequential from 'promise-sequential';
 import ora from 'ora';
-import { readJsonFile } from '../extensions/amplify-helpers/read-json-file';
+import { $TSObject, stateManager } from 'amplify-cli-core';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
-import { $TSObject } from '..';
 
 const spinner = ora('');
 
@@ -16,9 +15,10 @@ async function syncCurrentCloudBackend(context) {
 
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
     const amplifyMeta: $TSObject = {};
-    amplifyMeta.providers = readJsonFile(providerInfoFilePath)[currentEnv];
+    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
+
+    amplifyMeta.providers = teamProviderInfo[currentEnv];
 
     const providerPlugins = getProviderPlugins(context);
 

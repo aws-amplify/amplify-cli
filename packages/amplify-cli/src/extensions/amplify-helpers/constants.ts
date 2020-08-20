@@ -4,7 +4,6 @@ export const amplifyCLIConstants = {
   DotConfigamplifyCLISubDirName: '.config',
   BackendamplifyCLISubDirName: 'backend',
   CurrentCloudBackendamplifyCLISubDirName: '#current-cloud-backend',
-  PluginConfigFileName: 'plugin-config.json',
   ProjectConfigFileName: 'project-config.json',
   amplifyMetaFileName: 'amplify-meta.json',
   BrandName: 'Amplify Framework',

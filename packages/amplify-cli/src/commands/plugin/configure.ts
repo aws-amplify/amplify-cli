@@ -4,7 +4,7 @@ import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
 import { PluginPlatform } from '../../domain/plugin-platform';
 import { constants } from '../../domain/constants';
-import { writePluginsJsonFileSync } from '../../plugin-helpers/access-plugins-file';
+import { writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 import { scan } from '../../plugin-manager';
 import {
@@ -52,7 +52,7 @@ export const run = async (context: Context): Promise<PluginPlatform> => {
     }
   } while (answer.selection !== exit);
 
-  writePluginsJsonFileSync(pluginPlatform);
+  writePluginsJsonFile(pluginPlatform);
 
   return scan(pluginPlatform);
 };

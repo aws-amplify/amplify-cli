@@ -18,6 +18,7 @@
   "dependencies": {
     "amplify-category-auth": "2.18.3",
     "amplify-category-predictions": "2.4.11",
+    "amplify-cli-core": "1.2.0",
     "amplify-codegen": "2.15.17",
     "archiver": "^3.1.1",
     "aws-sdk": "^2.608.0",

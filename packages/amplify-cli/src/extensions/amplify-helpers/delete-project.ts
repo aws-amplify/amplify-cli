@@ -13,7 +13,9 @@ export async function deleteProject(context) {
     const allEnvs = context.amplify.getEnvDetails();
     const envNames = Object.keys(allEnvs);
 
-    await FeatureFlags.removeFeatureFlagConfiguration(true, envNames);
+    if (FeatureFlags.isInitialized()) {
+      await FeatureFlags.removeFeatureFlagConfiguration(true, envNames);
+    }
 
     const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
 

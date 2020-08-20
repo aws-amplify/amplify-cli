@@ -1,8 +1,8 @@
-import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from '../../extensions/amplify-helpers/get-provider-plugins';
 import { getEnvInfo } from '../../extensions/amplify-helpers/get-env-info';
+import { stateManager } from 'amplify-cli-core';
 
 export const run = async context => {
   const envName = context.parameters.first;
@@ -17,11 +17,9 @@ export const run = async context => {
 
   // Set the current env to the environment name provided
 
-  const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath();
   const localEnvInfo = getEnvInfo();
   localEnvInfo.envName = envName;
-  const jsonString = JSON.stringify(localEnvInfo, null, 4);
-  fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+  stateManager.setLocalEnvInfo(undefined, localEnvInfo);
 
   // Setup exeinfo
 

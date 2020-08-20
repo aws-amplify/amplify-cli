@@ -1,10 +1,8 @@
-import { readJsonFile } from './read-json-file';
-import { getAmplifyMetaFilePath } from './path-manager';
+import { stateManager } from 'amplify-cli-core';
 
 export function getResourceOutputs(amplifyMeta) {
   if (!amplifyMeta) {
-    const amplifyMetaFilePath = getAmplifyMetaFilePath();
-    amplifyMeta = readJsonFile(amplifyMetaFilePath);
+    amplifyMeta = stateManager.getMeta();
   }
 
   // Build the provider object
