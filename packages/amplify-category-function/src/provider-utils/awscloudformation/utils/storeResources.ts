@@ -1,11 +1,10 @@
-import { FeatureFlags } from 'amplify-cli-core';
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import { functionParametersFileName, layerParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { category as categoryName } from '../../../constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
-import { LayerParameters, StoredLayerParameters } from './layerParams';
+import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layerParams';
 import _ from 'lodash';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 
@@ -27,7 +26,7 @@ export function createFunctionResources(context: any, parameters: FunctionParame
 
 export const createLayerArtifacts = (context, parameters: LayerParameters, latestVersion: number = 1): string => {
   const layerDirPath = ensureLayerFolders(context, parameters);
-  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+  if (isMultiEnvLayer(context, parameters.layerName)) {
     updateLayerTeamProviderInfo(context, parameters, layerDirPath);
   } else {
     createLayerParametersFile(context, parameters, layerDirPath);
@@ -53,7 +52,7 @@ export const updateLayerArtifacts = (
   options = _.assign(defaultOpts, options);
   const layerDirPath = ensureLayerFolders(context, parameters);
   if (options.layerParams) {
-    if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+    if (isMultiEnvLayer(context, parameters.layerName)) {
       updateLayerTeamProviderInfo(context, parameters, layerDirPath);
     } else {
       createLayerParametersFile(context, parameters, layerDirPath);
@@ -72,7 +71,7 @@ export const updateLayerArtifacts = (
 };
 
 export function removeLayerArtifacts(context, layerName) {
-  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+  if (isMultiEnvLayer(context, layerName)) {
     removeLayerFromTeamProviderInfo(context, layerName);
   }
 }
@@ -151,7 +150,7 @@ function copyTemplateFiles(context: any, parameters: FunctionParameters | Functi
 
   const copyJobParams: any = parameters;
   if ('lambdaLayers' in parameters) {
-    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(parameters.lambdaLayers, context.amplify.getEnvInfo().envName);
+    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(context, parameters.lambdaLayers, context.amplify.getEnvInfo().envName);
     copyJobParams.lambdaLayersCFNArray = layerCFNValues;
   }
   context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, false);

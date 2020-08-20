@@ -18,8 +18,7 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
-const { FeatureFlags } = require('amplify-cli-core');
-const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
+const { isMultiEnvLayer, packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -264,7 +263,7 @@ function packageResources(context, resources) {
         const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
 
         if (resource.service === FunctionServiceName.LambdaLayer) {
-          if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
+          if (isMultiEnvLayer(context, resourceName)) {
             _.set(teamProviderInfo, [context.amplify.getEnvInfo().envName, 'categories', 'function', resourceName], {
               deploymentBucketName: s3Bucket,
               s3Key,
