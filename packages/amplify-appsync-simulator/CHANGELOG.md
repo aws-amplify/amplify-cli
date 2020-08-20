@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.1...amplify-appsync-simulator@1.23.2) (2020-08-20)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** fix returning null on nonexistent fields ([#5093](https://github.com/aws-amplify/amplify-cli/issues/5093)) ([a0439db](https://github.com/aws-amplify/amplify-cli/commit/a0439db462e8189d7b158472f269326e2c6bdb8d)), closes [#5003](https://github.com/aws-amplify/amplify-cli/issues/5003)
+
+
+
+
+
 ## [1.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.0...amplify-appsync-simulator@1.23.1) (2020-08-06)
 
 **Note:** Version bump only for package amplify-appsync-simulator
