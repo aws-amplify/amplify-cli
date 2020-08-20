@@ -374,4 +374,33 @@ describe('AppSyncModelVisitor', () => {
       });
     });
   });
+
+  describe('One to Many connection with no nullable and non nullable fields', () => {
+    const schema = /* GraphQL */ `
+      type Todo @model {
+        id: ID!
+        tasks: [task] @connection(name: "TodoTasks")
+      }
+
+      type task @model {
+        id: ID
+        todo: Todo @connection(name: "TodoTasks")
+        time: AWSTime
+        createdOn: AWSDate
+      }
+    `;
+    it('should generate class for one side of the connection', () => {
+      const visitor = getVisitor(schema, 'Todo');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class for many side of the connection', () => {
+      const visitor = getVisitor(schema, 'task');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+  });
 });
