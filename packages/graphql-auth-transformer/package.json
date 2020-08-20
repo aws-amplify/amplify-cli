@@ -1,6 +1,6 @@
 {
   "name": "graphql-auth-transformer",
-  "version": "6.20.2",
+  "version": "6.20.3-beta.0",
   "description": "Implements the @auth directive for the appsync model transform.",
   "repository": {
     "type": "git",

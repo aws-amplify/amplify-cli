@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.4.1...amplify-console-hosting@1.4.2-beta.0) (2020-08-20)
+
+
+### Bug Fixes
+
+* **amplify-console-hosting:** fix the cicd hosting serve ([#5126](https://github.com/aws-amplify/amplify-cli/issues/5126)) ([2a61f47](https://github.com/aws-amplify/amplify-cli/commit/2a61f47b369fc767436ed2182f6708e4c7b728b8)), closes [#5080](https://github.com/aws-amplify/amplify-cli/issues/5080)
+
+
+
+
+
 ## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.4.0...amplify-console-hosting@1.4.1) (2020-07-15)
 
 

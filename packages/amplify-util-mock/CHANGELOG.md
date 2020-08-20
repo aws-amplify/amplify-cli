@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.3...amplify-util-mock@3.24.4-beta.0) (2020-08-20)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** fix returning null on nonexistent fields ([#5093](https://github.com/aws-amplify/amplify-cli/issues/5093)) ([a0439db](https://github.com/aws-amplify/amplify-cli/commit/a0439db462e8189d7b158472f269326e2c6bdb8d)), closes [#5003](https://github.com/aws-amplify/amplify-cli/issues/5003)
+* **amplify-util-mock:** update Java version check logic ([dc28a0e](https://github.com/aws-amplify/amplify-cli/commit/dc28a0e770ae78a4d37138b76d3c22bae4679c6a)), closes [#5044](https://github.com/aws-amplify/amplify-cli/issues/5044)
+
+
+
+
+
 ## [3.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.2...amplify-util-mock@3.24.3) (2020-08-14)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.3...amplify-codegen-appsync-model-plugin@1.20.4-beta.0) (2020-08-20)
+
+
+### Bug Fixes
+
+* bug in CopyofBuilder class with no nullable and non nullable fields ([#5108](https://github.com/aws-amplify/amplify-cli/issues/5108)) ([646435a](https://github.com/aws-amplify/amplify-cli/commit/646435adf35ab057f8c19b35eb86bab077a36a80))
+
+
+
+
+
 ## [1.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.2...amplify-codegen-appsync-model-plugin@1.20.3) (2020-08-06)
 
 **Note:** Version bump only for package amplify-codegen-appsync-model-plugin

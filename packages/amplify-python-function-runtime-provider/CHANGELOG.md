@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.2.1...amplify-python-function-runtime-provider@1.2.2-beta.0) (2020-08-20)
+
+
+### Bug Fixes
+
+* trim process stdout in python runtime provider ([#5135](https://github.com/aws-amplify/amplify-cli/issues/5135)) ([dc23ce3](https://github.com/aws-amplify/amplify-cli/commit/dc23ce31da4892172e70292c29c005e75bba7494))
+
+
+
+
+
 ## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.2.0...amplify-python-function-runtime-provider@1.2.1) (2020-07-14)
 
 

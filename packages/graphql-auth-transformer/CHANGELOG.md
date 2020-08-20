@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.20.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.20.2...graphql-auth-transformer@6.20.3-beta.0) (2020-08-20)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** allow optional owner arg on multi auth ([#4719](https://github.com/aws-amplify/amplify-cli/issues/4719)) ([fd0a4bc](https://github.com/aws-amplify/amplify-cli/commit/fd0a4bcfbf8532cb3e13438923a1e03f7260ef26)), closes [#4638](https://github.com/aws-amplify/amplify-cli/issues/4638)
+
+
+
+
+
 ## [6.20.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.20.1...graphql-auth-transformer@6.20.2) (2020-08-14)
 
 
