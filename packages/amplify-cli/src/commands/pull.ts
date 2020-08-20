@@ -8,7 +8,7 @@ export const run = async context => {
   const inputParams = constructInputParams(context);
   const projcetPath = process.cwd();
 
-  if (stateManager.isCurrentMetaFileExists(projcetPath)) {
+  if (stateManager.currentMetaFileExists(projcetPath)) {
     const { appId: inputAppId, envName: inputEnvName } = inputParams.amplify;
     const teamProviderInfo = stateManager.getTeamProviderInfo(projcetPath);
     const { envName } = stateManager.getLocalEnvInfo(projcetPath);

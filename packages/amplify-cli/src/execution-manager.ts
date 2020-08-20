@@ -49,7 +49,7 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
     });
 
     if (candidatesAreAllCategoryPlugins && candidatesAllHaveTheSameName) {
-      if (stateManager.isMetaFileExists()) {
+      if (stateManager.metaFileExists()) {
         const amplifyMeta = stateManager.getMeta();
 
         const servicesSetInMeta = new Set<string>(Object.keys(amplifyMeta[pluginName] || {}));

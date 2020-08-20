@@ -19,7 +19,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
     if (!currentAmplifyMeta) {
       // Get current-cloud-backend's amplify-meta
-      if (stateManager.isCurrentMetaFileExists()) {
+      if (stateManager.currentMetaFileExists()) {
         currentAmplifyMeta = stateManager.getCurrentMeta();
       }
     }

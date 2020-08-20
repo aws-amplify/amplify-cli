@@ -9,7 +9,7 @@ export type GetOptions<T> = {
 };
 
 export class StateManager {
-  isMetaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getAmplifyMetaFilePath(projectPath));
+  metaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getAmplifyMetaFilePath(projectPath));
 
   getMeta = (projectPath?: string, options?: GetOptions<$TSMeta>): $TSMeta => {
     const filePath = pathManager.getAmplifyMetaFilePath(projectPath);
@@ -23,7 +23,7 @@ export class StateManager {
     return data;
   };
 
-  isCurrentMetaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getCurrentAmplifyMetaFilePath(projectPath));
+  currentMetaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getCurrentAmplifyMetaFilePath(projectPath));
 
   getCurrentMeta = (projectPath?: string, options?: GetOptions<$TSMeta>): $TSMeta => {
     const filePath = pathManager.getCurrentAmplifyMetaFilePath(projectPath);
@@ -37,7 +37,7 @@ export class StateManager {
     return data;
   };
 
-  isTeamProviderInfoExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getTeamProviderInfoFilePath(projectPath));
+  teamProviderInfoExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getTeamProviderInfoFilePath(projectPath));
 
   getTeamProviderInfo = (projectPath?: string, options?: GetOptions<$TSTeamProviderInfo>): $TSTeamProviderInfo => {
     const filePath = pathManager.getTeamProviderInfoFilePath(projectPath);
@@ -49,7 +49,7 @@ export class StateManager {
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
   };
 
-  isLocalEnvInfoExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getLocalEnvFilePath(projectPath));
+  localEnvInfoExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getLocalEnvFilePath(projectPath));
 
   getLocalEnvInfo = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
     const filePath = pathManager.getLocalEnvFilePath(projectPath);

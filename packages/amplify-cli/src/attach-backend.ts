@@ -55,7 +55,7 @@ async function onSuccess(context: $TSContext) {
     const confirmKeepCodebase = await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);
 
     if (confirmKeepCodebase) {
-      if (stateManager.isCurrentMetaFileExists()) {
+      if (stateManager.currentMetaFileExists()) {
         await initializeEnv(context, stateManager.getCurrentMeta());
       }
 
@@ -74,7 +74,7 @@ async function onSuccess(context: $TSContext) {
       context.print.info('');
     }
   } else {
-    if (stateManager.isCurrentMetaFileExists()) {
+    if (stateManager.currentMetaFileExists()) {
       await initializeEnv(context, stateManager.getCurrentMeta());
     }
   }

@@ -10,7 +10,7 @@ class UndeterminedEnvironmentError extends Error {
 }
 
 export function getEnvInfo() {
-  if (stateManager.isLocalEnvInfoExists()) {
+  if (stateManager.localEnvInfoExists()) {
     return stateManager.getLocalEnvInfo();
   } else {
     // EnvInfo is required by all the callers so we can safely throw here

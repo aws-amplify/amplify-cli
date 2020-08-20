@@ -104,7 +104,7 @@ function generateTeamProviderInfoFile(context: $TSContext) {
 
   let teamProviderInfo = {};
 
-  if (stateManager.isTeamProviderInfoExists(projectPath)) {
+  if (stateManager.teamProviderInfoExists(projectPath)) {
     teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
       throwIfNotExist: false,
       default: {},

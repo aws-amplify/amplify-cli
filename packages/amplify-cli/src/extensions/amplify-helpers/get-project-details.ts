@@ -6,7 +6,7 @@ export function getProjectDetails() {
 
   let amplifyMeta = {};
 
-  if (stateManager.isMetaFileExists()) {
+  if (stateManager.metaFileExists()) {
     amplifyMeta = stateManager.getMeta();
   }
 
@@ -14,7 +14,7 @@ export function getProjectDetails() {
 
   let teamProviderInfo = {};
 
-  if (stateManager.isTeamProviderInfoExists()) {
+  if (stateManager.teamProviderInfoExists()) {
     teamProviderInfo = stateManager.getTeamProviderInfo();
   }
 
