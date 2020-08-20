@@ -1,5 +1,5 @@
-import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import { FeatureFlags } from 'amplify-cli-core';
+import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
 import { functionParametersFileName, layerParametersFileName, parametersFileName, provider, ServiceName } from './constants';
@@ -193,19 +193,19 @@ function updateLayerCfnFile(context, parameters: LayerParameters, layerDirPath: 
   );
 }
 
-const addLayerToAmplifyMeta = (context, parameters: LayerParameters) =>
-  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, layerParamsToAmplifyMetaParams(parameters));
+const writeParametersToAmplifyMeta = (context, layerName: string, parameters) => {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  _.set(amplifyMeta, ['function', layerName], parameters);
+  context.amplify.writeObjectAsJson(context.amplify.pathManager.getAmplifyMetaFilePath(), amplifyMeta, true);
+};
+
+const addLayerToAmplifyMeta = (context, parameters: LayerParameters) => {
+  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, amplifyMetaAndBackendParams(parameters));
+  writeParametersToAmplifyMeta(context, parameters.layerName, layerParamsToAmplifyMetaParams(parameters));
+};
 
 const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
-  let metaParams;
-  if (!FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
-    metaParams = layerParamsToAmplifyMetaParams(parameters) as AmplifyMetaLayerParams & StoredLayerParameters;
-    context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', metaParams.runtimes);
-    context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'layerVersionMap', metaParams.layerVersionMap);
-  } else {
-    metaParams = layerParamsToAmplifyMetaParams(parameters);
-  }
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', metaParams.build);
+  writeParametersToAmplifyMeta(context, parameters.layerName, layerParamsToAmplifyMetaParams(parameters));
 };
 
 const createLayerParametersFile = (context, parameters: LayerParameters | StoredLayerParameters, layerDirPath: string) => {
@@ -244,24 +244,21 @@ const removeLayerFromTeamProviderInfo = (context, layerName) => {
   context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
 };
 
-interface AmplifyMetaLayerParams {
+interface LayerMetaAndBackendConfigParams {
   providerPlugin: string;
   service: string;
   build: boolean;
 }
 
-const layerParamsToAmplifyMetaParams = (
-  parameters: LayerParameters,
-): AmplifyMetaLayerParams | (AmplifyMetaLayerParams & StoredLayerParameters) => {
-  const amplifyMetaParams = {
-    providerPlugin: parameters.providerContext.provider,
-    service: parameters.providerContext.service,
-    build: parameters.build,
-  };
-  if (FeatureFlags.getBoolean('lambdaLayers.multiEnv')) {
-    return amplifyMetaParams;
-  }
-  return _.assign(layerParamsToStoredParams(parameters), amplifyMetaParams);
+const amplifyMetaAndBackendParams = (parameters: LayerParameters): LayerMetaAndBackendConfigParams => ({
+  providerPlugin: parameters.providerContext.provider,
+  service: parameters.providerContext.service,
+  build: parameters.build,
+});
+
+const layerParamsToAmplifyMetaParams = (parameters: LayerParameters): LayerMetaAndBackendConfigParams & StoredLayerParameters => {
+  const amplifyMetaBackendParams = amplifyMetaAndBackendParams(parameters);
+  return _.assign(layerParamsToStoredParams(parameters), amplifyMetaBackendParams);
 };
 
 const layerParamsToStoredParams = (parameters: LayerParameters | StoredLayerParameters): StoredLayerParameters => ({
