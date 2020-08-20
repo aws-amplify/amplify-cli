@@ -1,6 +1,7 @@
 import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
 import { checkDependencies } from './utils/deps';
 import { buildResource } from './utils/build';
+import { packageResource } from './utils/package';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -18,7 +19,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
       };
     },
     checkDependencies: async runtimeValue => checkDependencies(runtimeValue),
-    package: async request => ({}), // Stubbed.
+    package: async request => packageResource(request, context),
     build: async request => buildResource(request),
     invoke: async request => ({}), // Stubbed.
   };
