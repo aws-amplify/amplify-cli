@@ -1290,7 +1290,6 @@
         "map": "coreAttributes",
         "iterator": "oidcAttributesMapping",
         "requiredOptions": ["usernameAttributes"],
-        "requiredOptionsMsg": "You have already selected the following attributes as required for this User Pool.  They are writeable by default:",
         "andConditions": [
           {
             "key": "authProvidersUserPool",

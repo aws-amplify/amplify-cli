@@ -123,14 +123,16 @@ function getRequiredOptions(input, question, getAllMaps, context, currentAnswers
 
   const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
   const sourceArray = uniq(flatten(input.requiredOptions.map(i => sourceValues[i] || [])));
-  const requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => sourceArray.includes(x.value)) : [];
+  let requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => sourceArray.includes(x.value)) : [];
+  requiredOptions = requiredOptions.map(opt => {opt.checked = true; opt.disabled = 'Required'; return opt;});
   const trueOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => !sourceArray.includes(x.value)) : [];
   const msg =
-    requiredOptions && requiredOptions.length > 0
+    requiredOptions && requiredOptions.length > 0 && input.requiredOptionsMsg
       ? `--- ${input.requiredOptionsMsg} ${requiredOptions.map(t => t.name).join(', ')}   ---`
       : '';
+  const displayedRequiredOptions = msg === '' ? requiredOptions : [new inquirer.Separator(msg)];
   question = Object.assign(question, {
-    choices: [new inquirer.Separator(msg), ...trueOptions],
+    choices: [...displayedRequiredOptions, ...trueOptions],
     filter: userInput => {
       return userInput.concat(...requiredOptions.map(z => z.value));
     },

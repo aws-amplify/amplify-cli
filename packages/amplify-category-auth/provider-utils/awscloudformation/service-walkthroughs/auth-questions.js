@@ -85,7 +85,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
         for (let t = 0; t < answer[questionObj.key].length; t += 1) {
           const response = await inquirer.prompt({
             name: 'oidcProviderAttributeName',
-            message: `Map cognito attribute ${answer[questionObj.key][t]} to `,
+            message: `Which OIDC provider’s attribute should map to Cognito’s "${chalkpipe(null, chalk.green)(answer[questionObj.key][t])}" attribute?`,
           });
           map[answer[questionObj.key][t]] = response.oidcProviderAttributeName;
         }
