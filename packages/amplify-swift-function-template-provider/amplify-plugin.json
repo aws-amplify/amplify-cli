@@ -1,0 +1,13 @@
+{
+  "name": "functionTemplate",
+  "type": "util",
+  "commands": [],
+  "eventHandlers": [],
+  "functionTemplate": {
+    "conditions": {
+      "provider": "awscloudformation",
+      "services": ["Lambda"],
+      "runtime": "swift"
+    }
+  }
+}
