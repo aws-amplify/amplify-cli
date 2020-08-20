@@ -32,7 +32,13 @@ export function majMinPyVersion(pyVersion: string): string {
 // opts are passed directly to the exec command
 export async function execAsStringPromise(command: string, opts?: ExecOptions): Promise<string> {
   try {
-    return (await execa.command(command, opts)).stdout;
+    let stdout = (await execa.command(command, opts)).stdout;
+
+    if (stdout) {
+      stdout = stdout.trim();
+    }
+
+    return stdout;
   } catch (err) {
     throw new Error(`Recieved error [${err}] running command [${command}]`);
   }
