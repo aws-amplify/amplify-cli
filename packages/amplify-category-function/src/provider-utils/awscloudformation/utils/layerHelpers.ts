@@ -2,6 +2,7 @@ import { JSONUtilities } from 'amplify-cli-core';
 import { ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
 import uuid from 'uuid';
+import { categoryName } from './constants';
 import { Permission, LayerPermission } from '../utils/layerParams';
 
 export interface LayerInputParams {
@@ -161,10 +162,13 @@ export async function chooseParamsOnEnvInit(context: any, layerName: string) {
   const teamProviderInfo = await JSONUtilities.readJson(teamProviderInfoPath);
   const filteredEnvs = Object.keys(teamProviderInfo).filter(
     env =>
-      _.has(teamProviderInfo, [env, 'nonCFNdata', 'function', layerName, 'runtimes']) &&
-      _.has(teamProviderInfo, [env, 'nonCFNdata', 'function', layerName, 'layerVersionMap']),
+      _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'runtimes']) &&
+      _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'layerVersionMap']),
   );
   const currentEnv = context.amplify.getEnvInfo().envName;
+  if (filteredEnvs.includes(currentEnv)) {
+    return _.get(teamProviderInfo, [currentEnv, 'nonCFNdata', categoryName, layerName]);
+  }
   context.print.info(`Adding Lambda layer ${layerName} to ${currentEnv} environment.`);
   const { envName } = await prompt(chooseParamsOnEnvInitQuestion(layerName, filteredEnvs));
   const defaultPermission = [{ type: 'private' }];

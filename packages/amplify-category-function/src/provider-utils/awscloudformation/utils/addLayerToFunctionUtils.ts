@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { FeatureFlags } from 'amplify-cli-core';
 import { FunctionRuntime, FunctionDependency, LambdaLayer, ProjectLayer, ExternalLayer } from 'amplify-function-plugin-interface';
 import { category } from '../../..';
 import { ServiceName } from './constants';
@@ -27,20 +26,14 @@ export const askLayerSelection = async (
   functionData,
   runtimeValue: string,
   previousSelections: LambdaLayer[] = [],
-  featureFlags = FeatureFlags,
 ): Promise<{ lambdaLayers: LambdaLayer[]; dependsOn: FunctionDependency[]; askArnQuestion: boolean }> => {
   const lambdaLayers: LambdaLayer[] = [];
   const dependsOn: FunctionDependency[] = [];
 
-  let layerOptions;
-  if (featureFlags.getBoolean('lambdaLayers.multiEnv')) {
-    layerOptions = _.keys(functionData).filter(key => isRuntime(runtimeValue).inRuntimes(functionData[key].runtimes)); // filter by compatible runtimes
-  } else {
-    const functionMeta = _.get(functionData, [category]) || {};
-    layerOptions = _.keys(functionMeta)
-      .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
-      .filter(key => isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes)); // filter by compatible runtimes
-  }
+  const functionMeta = _.get(functionData, [category]) || {};
+  const layerOptions = _.keys(functionMeta)
+    .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
+    .filter(key => isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes)); // filter by compatible runtimes
 
   if (layerOptions.length === 0) {
     return {
