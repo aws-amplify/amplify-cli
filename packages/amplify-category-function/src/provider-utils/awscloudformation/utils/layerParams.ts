@@ -249,7 +249,25 @@ const getStoredLayerState = (context: any, layerName: string) => {
       throw new Error('team-provider-info.json is missing');
     }
     const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
-    return _.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], undefined) as StoredLayerParameters;
+    let layerState: StoredLayerParameters = _.get(
+      teamProviderInfo,
+      [envName, 'nonCFNdata', categoryName, layerName],
+      undefined,
+    ) as StoredLayerParameters;
+
+    // In case of `amplify pull`, team-provider-info won't be populated at first
+    if (layerState === undefined) {
+      layerState = _.get(context.amplify.getProjectMeta(), [categoryName, layerName], undefined);
+
+      if (layerState === undefined) {
+        throw new Error('Local layer state missing from team-provider-info.json and amplify-meta.json');
+      }
+
+      _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], layerState);
+      context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+    }
+
+    return layerState;
   } else {
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
     const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
