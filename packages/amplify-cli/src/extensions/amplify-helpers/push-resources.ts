@@ -51,7 +51,7 @@ export async function pushResources(context, category, resourceName, filteredRes
     cli: context.pluginPlatform.plugins.core[0].packageVersion,
   };
 
-  let hasChanges = await showResourceTable(category, resourceName, filteredResources);
+  const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
   // Check if there have been changes in the local tags file
   // let haveTagsChanged = await checkChangesInTags(tagVarMetadata);

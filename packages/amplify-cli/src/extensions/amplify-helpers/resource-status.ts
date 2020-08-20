@@ -65,20 +65,20 @@ function filterResources(resources, filteredResources) {
 }
 
 // ! This function has the same body as a function with a similar name on `amplify-provider-awscloudformation/src/aws-cfn.js`, this can probably be refactored later on
-function replaceTagVars(tagsArr, tagVarMetadata) {
-  const replaceWith = {
-    '{project-name}': tagVarMetadata.name,
-    '{project-env}': tagVarMetadata.env,
-    '{cli-version}': tagVarMetadata.cli,
-  };
+// function replaceTagVars(tagsArr, tagVarMetadata) {
+//   const replaceWith = {
+//     '{project-name}': tagVarMetadata.name,
+//     '{project-env}': tagVarMetadata.env,
+//     '{cli-version}': tagVarMetadata.cli,
+//   };
 
-  return tagsArr.map(tagObj => ({
-    ...tagObj,
-    Value: tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
-      return replaceWith[matched];
-    }),
-  }));
-}
+//   return tagsArr.map(tagObj => ({
+//     ...tagObj,
+//     Value: tagObj['Value'].replace(/{project-name}|{project-env}|{cli-version}/g, function(matched) {
+//       return replaceWith[matched];
+//     }),
+//   }));
+// }
 
 // {project-name} -> tags-project
 // tags-project
@@ -89,55 +89,55 @@ function replaceTagVars(tagsArr, tagVarMetadata) {
 // ? Not sure if this is the best name for it
 // ? Decided to have it as a seperate function, since it can easily be used on other situations, since you can't directly compare the key/value pairs by directly grabbing from the cloud and the local file (they aren't in the same order)
 // ! Check edge case if a certain Key from one tag in one array is not found on the second array passed
-function haveChangedKeyValuePairs(arr1, arr2) {
-  let changed = false;
+// function haveChangedKeyValuePairs(arr1, arr2) {
+//   let changed = false;
 
-  // Iterate through each key-value pair from the first array
-  arr1.forEach(currObj => {
-    // Grab the key-value pair from the second array that matches with the "Key" field from the first array
-    const otherTag = arr2.find(obj => obj['Key'] === currObj['Key']);
+//   // Iterate through each key-value pair from the first array
+//   arr1.forEach(currObj => {
+//     // Grab the key-value pair from the second array that matches with the "Key" field from the first array
+//     const otherTag = arr2.find(obj => obj['Key'] === currObj['Key']);
 
-    // If a tag wasn't found it means that tags changed either on the cloud or locally
-    if (!otherTag) {
-      changed = true;
-    } else {
-      // Now that we know they have the same key, we check their values - if they don't have the same value, return false
-      if (currObj['Value'] !== otherTag['Value']) changed = true;
-    }
-  });
+//     // If a tag wasn't found it means that tags changed either on the cloud or locally
+//     if (!otherTag) {
+//       changed = true;
+//     } else {
+//       // Now that we know they have the same key, we check their values - if they don't have the same value, return false
+//       if (currObj['Value'] !== otherTag['Value']) changed = true;
+//     }
+//   });
 
-  // Will return true if all key-value pairs are the same
-  return changed;
-}
+//   // Will return true if all key-value pairs are the same
+//   return changed;
+// }
 
-async function getCloudTags(amplifyMeta) {
-  const meta = amplifyMeta.providers.awscloudformation;
-  const service = new CloudFormation({ region: meta.Region });
-  const cloudStackInfo = (await service.describeStacks({ StackName: meta.StackName }).promise()).Stacks.find(
-    stack => stack.StackName === meta.StackName,
-  );
+// async function getCloudTags(amplifyMeta) {
+//   const meta = amplifyMeta.providers.awscloudformation;
+//   const service = new CloudFormation({ region: meta.Region });
+//   const cloudStackInfo = (await service.describeStacks({ StackName: meta.StackName }).promise()).Stacks.find(
+//     stack => stack.StackName === meta.StackName,
+//   );
 
-  return cloudStackInfo.Tags;
-}
+//   return cloudStackInfo.Tags;
+// }
 
-async function checkChangesInTags(tagVarMetadata) {
-  // Getting the current tags from the local tags.json file
-  const localAmplifyTagsPath = pathManager.getTagsConfigFilePath();
-  const localAmplifyTags = readJsonFile(localAmplifyTagsPath);
+// async function checkChangesInTags(tagVarMetadata) {
+//   // Getting the current tags from the local tags.json file
+//   const localAmplifyTagsPath = pathManager.getTagsConfigFilePath();
+//   const localAmplifyTags = readJsonFile(localAmplifyTagsPath);
 
-  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+//   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
+//   const amplifyMeta = readJsonFile(amplifyMetaFilePath);
 
-  // Getting current tags pushed to the cloud
-  const cloudTags = await getCloudTags(amplifyMeta);
+//   // Getting current tags pushed to the cloud
+//   const cloudTags = await getCloudTags(amplifyMeta);
 
-  // If the local tags contain variables, replace them with the real values
-  // ? Check edge case where user could potentially have an updated cli version that differs from the currently pussed {cli-version} value
-  const cleanedLocalAmplifyTags = replaceTagVars(localAmplifyTags, tagVarMetadata);
+//   // If the local tags contain variables, replace them with the real values
+//   // ? Check edge case where user could potentially have an updated cli version that differs from the currently pussed {cli-version} value
+//   const cleanedLocalAmplifyTags = replaceTagVars(localAmplifyTags, tagVarMetadata);
 
-  // Compare each key-value pair from both sides and check if there have been changes
-  return haveChangedKeyValuePairs(cleanedLocalAmplifyTags, cloudTags);
-}
+//   // Compare each key-value pair from both sides and check if there have been changes
+//   return haveChangedKeyValuePairs(cleanedLocalAmplifyTags, cloudTags);
+// }
 
 function getAllResources(amplifyMeta, category, resourceName, filteredResources) {
   let resources: any[] = [];
