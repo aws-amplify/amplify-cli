@@ -41,7 +41,7 @@ async function run(context, resourceDefinition) {
 
     validateCfnTemplates(context, resources);
 
-    await packageResources(context, resources, projectDetails);
+    await packageResources(context, resources);
 
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
@@ -219,7 +219,7 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
   }
 }
 
-function packageResources(context, resources, projectDetails) {
+function packageResources(context, resources) {
   // Only build and package resources which are required
   resources = resources.filter(resource => resource.build);
 
