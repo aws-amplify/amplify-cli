@@ -122,6 +122,26 @@ describe('JSONUtilities tests', () => {
     expect(jsonString).toEqual(roundtrippedString);
   });
 
+  test('JSON parse returns successfully for non-string parameters', () => {
+    const result1 = JSONUtilities.parse((true as unknown) as string);
+    expect(result1).toBe(true);
+
+    const result2 = JSONUtilities.parse((false as unknown) as string);
+    expect(result2).toBe(false);
+
+    const result3 = JSONUtilities.parse((12345 as unknown) as string);
+    expect(result3).toBe(12345);
+
+    const result4 = JSONUtilities.parse((12345.67 as unknown) as string);
+    expect(result4).toBe(12345.67);
+
+    const result5 = JSONUtilities.parse(('12345' as unknown) as string);
+    expect(result5).toBe(12345);
+
+    const result6 = JSONUtilities.parse(('12345.67' as unknown) as string);
+    expect(result6).toBe(12345.67);
+  });
+
   test('stringify compatible with builtin JSON.stringify', () => {
     const data = JSONUtilities.parse(jsonString);
     const hjsonString = JSONUtilities.stringify(data);
@@ -141,7 +161,13 @@ describe('JSONUtilities tests', () => {
   test('JSON parse throws error when jsonString is undefined', () => {
     expect(() => {
       const _ = JSONUtilities.parse((undefined as unknown) as string);
-    }).toThrowError(`'jsonString' argument missing`);
+    }).toThrowError(`'jsonString' argument missing or empty`);
+  });
+
+  test('JSON parse throws error when jsonString is empty string', () => {
+    expect(() => {
+      const _ = JSONUtilities.parse('');
+    }).toThrowError(`'jsonString' argument missing or empty`);
   });
 
   test('JSON stringify throws error when data is undefined', () => {

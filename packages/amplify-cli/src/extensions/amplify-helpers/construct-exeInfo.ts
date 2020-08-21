@@ -7,6 +7,8 @@ export function constructExeInfo(context) {
 
   Object.keys(context.parameters.options).forEach(key => {
     const normalizedKey = normalizeKey(key);
+    //TODO: refaftor argument validation to make sure only JSON is parsed, and not other values
+    // preferably it should be done during argument validation in the future
     context.exeInfo.inputParams[normalizedKey] = JSONUtilities.parse(context.parameters.options[key]);
   });
 }
