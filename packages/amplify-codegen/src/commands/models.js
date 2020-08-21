@@ -103,9 +103,6 @@ function loadSchema(apiResourcePath) {
 
 async function getModelOutputPath(context) {
   const projectConfig = context.amplify.getProjectConfig();
-  if(!projectConfig.frontend) {
-    throw new Error('Frontend type is not configured.');
-  }
 
   if(projectConfig.modelgen && projectConfig.modelgen.outputPath && !context.parameters.options.configpath) {
     context.print.success('\nThe output path for modelgen is already setup. You can edit the path in .config/project-config.json\n');
