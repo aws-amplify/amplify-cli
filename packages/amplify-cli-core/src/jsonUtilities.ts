@@ -77,8 +77,8 @@ export class JSONUtilities {
       preserveComments?: boolean;
     },
   ): T => {
-    if (!jsonString || jsonString.trim().length === 0) {
-      throw new Error("'jsonString' argument missing");
+    if (jsonString === undefined || (typeof jsonString === 'string' && jsonString.trim().length === 0)) {
+      throw new Error("'jsonString' argument missing or empty");
     }
 
     const mergedOptions = {
@@ -86,16 +86,24 @@ export class JSONUtilities {
       ...options,
     };
 
-    let cleanString = jsonString;
+    let data: T;
 
-    // Strip BOM if input has it
-    if (cleanString.charCodeAt(0) === 0xfeff) {
-      cleanString = cleanString.slice(1);
+    // By type definition we don't allow any value other than string, but to preserve JSON.parse behavior,
+    // which is against the MDN docs we support handling of non-string types like boolean and number.
+    if (typeof jsonString === 'string') {
+      let cleanString = jsonString;
+
+      // Strip BOM if input has it
+      if (cleanString.charCodeAt(0) === 0xfeff) {
+        cleanString = cleanString.slice(1);
+      }
+
+      data = hjson.parse(cleanString, {
+        keepWsc: mergedOptions.preserveComments,
+      });
+    } else {
+      return (jsonString as unknown) as T;
     }
-
-    const data = hjson.parse(cleanString, {
-      keepWsc: mergedOptions.preserveComments,
-    });
 
     return data as T;
   };
