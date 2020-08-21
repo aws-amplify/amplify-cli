@@ -6,12 +6,11 @@ describe('amplify key force push', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('api-key-cli-migration');
-    console.log(projRoot);
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('init project, add key and migrate with force push', async () => {
