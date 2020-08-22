@@ -22,6 +22,6 @@ export type BaseInitPromptResults = {
   inputProjectName: string;
   inputEnvName: string;
   editorSelected: string;
-  selectFrontendName: string;
+  frontendSelected: string;
   providerSelected: string[];
 };
