@@ -106,7 +106,10 @@ beforeAll(async () => {
         project: DProject @connection(name: "DProjectDTeam")
     }
 
-    type Model1 @model(subscriptions: null) @key(fields: ["id", "sort" ])
+    type Model1
+    @model(subscriptions: null)
+    @key(fields: ["id", "sort"])
+    @key(name: "byName", fields: ["name", "id"])
     {
         id: ID!
         sort: Int!
@@ -116,15 +119,25 @@ beforeAll(async () => {
     {
         id: ID!
         connection: Model1 @connection(sortField: "modelOneSort")
-        modelOneSort: Int!
+        modelOneSort: Int
+    }
+
+    type Model3 @model(subscriptions: null)
+    {
+      id: ID!
+      connectionPK: ID
+      connectionSort: Int
+      connectionSK: String
+      connection: Model1 @connection(keyField:"connectionPK", sortField: "connectionSort")
+      connections: [Model1] @connection(keyName: "byName", fields: ["connectionSK"])
     }
     `;
 
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
-      new ModelConnectionTransformer(),
       new KeyTransformer(),
+      new ModelConnectionTransformer(),
       new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
@@ -513,4 +526,159 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
   expect(item.connection).toBeDefined();
   expect(item.connection.id).toEqual('M11');
   expect(item.connection.sort).toEqual(10);
+});
+
+test('Connection with null sort key returns null when getting a single item', async () => {
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M11 {
+        createModel1(input: {id: "Null-M11", sort: 10, name: "M1-1"}) {
+            id
+            name
+            sort
+        }
+    }
+    `,
+    {},
+  );
+
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M21 {
+        createModel2(input: {id: "Null-M21", model2ConnectionId: "Null-M11"}) {
+            id
+        }
+    }
+    `,
+    {},
+  );
+
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M31 {
+        createModel3(input: {id: "Null-M31", connectionPK: "Null-M11"}) {
+            id
+            connectionPK
+        }
+    }
+    `,
+    {},
+  );
+
+  const queryResponse = await GRAPHQL_CLIENT.query(
+    `
+    query Query {
+        getModel2(id: "Null-M21") {
+            id
+            connection {
+                id
+            }
+        }
+    }
+    `,
+    {},
+  );
+  expect(queryResponse.data.getModel2).toBeDefined();
+  const item = queryResponse.data.getModel2;
+  expect(item.id).toEqual('Null-M21');
+  expect(item.connection).toEqual(null);
+
+  const queryResponse2 = await GRAPHQL_CLIENT.query(
+    `
+    query Query {
+        getModel3(id: "Null-M31") {
+            id
+            connection {
+                id
+            }
+        }
+    }
+    `,
+    {},
+  );
+  expect(queryResponse2.data.getModel3).toBeDefined();
+  const item2 = queryResponse2.data.getModel3;
+  expect(item2.id).toEqual('Null-M31');
+  expect(item2.connection).toEqual(null);
+});
+
+test('Connection with null partition key returns null when getting a list of items', async () => {
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M11 {
+        createModel1(input: {id: "Null-List-M11", sort: 909, name: "Null-List-M1-1"}) {
+            id
+            name
+            sort
+        }
+    }
+    `,
+    {},
+  );
+
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M31 {
+        createModel3(input: {id: "Null-List-M31", connectionSort: 909, connectionSK: "Null-List-M1-1"}) {
+            id
+            connectionSK
+        }
+    }
+    `,
+    {},
+  );
+
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M32 {
+        createModel3(input: {id: "Null-List-M32", connectionPK: "Null-List-M11"}) {
+            id
+            connectionPK
+        }
+    }
+    `,
+    {},
+  );
+
+  const queryResponse = await GRAPHQL_CLIENT.query(
+    `
+    query Query {
+        getModel3(id: "Null-List-M32") {
+            id
+            connections {
+              items {
+                id
+              }
+            }
+        }
+    }
+    `,
+    {},
+  );
+  expect(queryResponse.data.getModel3).toBeDefined();
+  const item = queryResponse.data.getModel3;
+  expect(item.id).toEqual('Null-List-M32');
+  expect(item.connections.items.length).toEqual(0);
+
+  const queryResponse2 = await GRAPHQL_CLIENT.query(
+    `
+    query Query {
+        getModel3(id: "Null-List-M31") {
+            id
+            connections {
+              items {
+                id
+                name
+              }
+            }
+        }
+    }
+    `,
+    {},
+  );
+  expect(queryResponse2.data.getModel3).toBeDefined();
+  const item2 = queryResponse2.data.getModel3;
+  expect(item2.id).toEqual('Null-List-M31');
+  expect(item2.connections.items.length).toEqual(1);
+  expect(item2.connections.items[0].id).toEqual('Null-List-M11');
 });

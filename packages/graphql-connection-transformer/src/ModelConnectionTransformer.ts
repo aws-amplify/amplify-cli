@@ -71,15 +71,14 @@ function validateKeyField(field: FieldDefinitionNode): void {
  * @param field: the field to be checked.
  */
 function validateKeyFieldConnectionWithKey(field: FieldDefinitionNode, ctx: TransformerContext): void {
-  const isNonNull = isNonNullType(field.type);
   const isAList = isListType(field.type);
   const isAScalarOrEnum = isScalarOrEnum(field.type, ctx.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[]);
 
   // The only valid key fields are single non-null fields.
-  if (!isAList && isNonNull && isAScalarOrEnum) {
+  if (!isAList && isAScalarOrEnum) {
     return;
   }
-  throw new InvalidDirectiveError(`All fields provided to an @connection must be non-null scalar or enum fields.`);
+  throw new InvalidDirectiveError(`All fields provided to an @connection must be scalar or enum fields.`);
 }
 
 /**
