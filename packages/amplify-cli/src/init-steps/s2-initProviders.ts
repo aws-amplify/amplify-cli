@@ -2,6 +2,7 @@ import * as inquirer from 'inquirer';
 import sequential from 'promise-sequential';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { normalizeProviderName } from '../input-params-manager';
+import { providersMultiSelect } from '../prompts';
 
 export async function initProviders(context) {
   const providerPlugins = getProviderPlugins(context);
@@ -45,15 +46,7 @@ async function getProviders(context, providerPlugins) {
       context.print.info(`Using default provider  ${providerPluginList[0]}`);
       providers.push(providerPluginList[0]);
     } else {
-      const selectProviders: inquirer.CheckboxQuestion = {
-        type: 'checkbox',
-        name: 'selectedProviders',
-        message: 'Select the backend providers.',
-        choices: providerPluginList,
-        default: providerPluginList[0],
-      };
-      const answer = await inquirer.prompt(selectProviders);
-      providers = answer.selectedProviders;
+      providers = await providersMultiSelect(providerPluginList, providerPluginList[0]);
     }
   }
   return providers;

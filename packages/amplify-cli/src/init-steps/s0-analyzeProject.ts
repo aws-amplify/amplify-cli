@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as inquirer from 'inquirer';
-import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
+import * as inquirer from 'inquirer'; } 
+import { normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
+import { normalizeEditor, editorSelect, projectNameInput, envNameInput, envNameSelect, INVALID_ENV_NAME_MSG } from '../prompts';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
 import { stateManager } from 'amplify-cli-core';
@@ -66,17 +67,7 @@ async function getProjectName(context) {
     projectName = normalizeProjectName(path.basename(projectPath));
 
     if (!context.exeInfo.inputParams.yes) {
-      const projectNameQuestion: inquirer.InputQuestion = {
-        type: 'input',
-        name: 'inputProjectName',
-        message: 'Enter a name for the project',
-        default: projectName,
-        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
-      };
-
-      const answer = await inquirer.prompt(projectNameQuestion);
-
-      projectName = answer.inputProjectName;
+      projectName = await projectNameInput(projectName, isProjectNameValid);
     }
   }
 
@@ -90,7 +81,7 @@ async function getEditor(context) {
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
     editor = normalizeEditor(context.exeInfo.inputParams.amplify.defaultEditor);
   } else if (!context.exeInfo.inputParams.yes) {
-    editor = await editorSelection(editor);
+    editor = await editorSelect(editor);
   }
 
   return editor;
@@ -103,8 +94,6 @@ async function getEnvName(context) {
   const isEnvNameValid = inputEnvName => {
     return /^[a-z]{2,10}$/.test(inputEnvName);
   };
-
-  const INVALID_ENV_NAME_MSG = 'Environment name must be between 2 and 10 characters, and lowercase only.';
 
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.envName) {
     if (isEnvNameValid(context.exeInfo.inputParams.amplify.envName)) {
@@ -123,16 +112,7 @@ async function getEnvName(context) {
     if (isNewProject(context) || !context.amplify.getAllEnvs().includes('dev')) {
       defaultEnvName = 'dev';
     }
-
-    const envNameQuestion: inquirer.InputQuestion = {
-      type: 'input',
-      name: 'envName',
-      message: 'Enter a name for the environment',
-      default: defaultEnvName,
-      validate: input => (!isEnvNameValid(input) ? INVALID_ENV_NAME_MSG : true),
-    };
-
-    ({ envName } = await inquirer.prompt(envNameQuestion));
+    envName = await envNameInput(defaultEnvName, isEnvNameValid);
   };
 
   if (isNewProject(context)) {
@@ -142,14 +122,7 @@ async function getEnvName(context) {
 
     if (allEnvs.length > 0) {
       if (await context.amplify.confirmPrompt('Do you want to use an existing environment?')) {
-        const envQuestion: inquirer.ListQuestion = {
-          type: 'list',
-          name: 'envName',
-          message: 'Choose the environment you would like to use:',
-          choices: allEnvs,
-        };
-
-        ({ envName } = await inquirer.prompt(envQuestion));
+        envName = await envNameSelect(allEnvs);
       } else {
         await newEnvQuestion();
       }
