@@ -9,11 +9,19 @@ export const convertLambdaLayerMetaToLayerCFNArray = (
   input: LambdaLayer[],
   env: string,
 ): (string | { 'Fn::Sub': string })[] => {
-  return input.map(layer => (layer.type === 'ProjectLayer' ? convertProjectLayer(context, layer, env) : layer.arn));
+  return input.map(layer => {
+    if (layer.type === 'ProjectLayer') {
+      if (isMultiEnvLayer(context, layer.resourceName)) {
+        return convertProjectLayer(layer, env);
+      }
+      return convertProjectLayer(layer, undefined);
+    }
+    return layer.arn;
+  });
 };
 
-const convertProjectLayer = (context: any, layer: ProjectLayer, env: string) => {
-  if (isMultiEnvLayer(context, layer.resourceName)) {
+const convertProjectLayer = (layer: ProjectLayer, env: string) => {
+  if (env) {
     return {
       'Fn::Sub': `arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:layer:${layer.resourceName}-${env}:${layer.version}`,
     };

@@ -1,8 +1,8 @@
-import sequential from 'promise-sequential';
+import _ from 'lodash';
 import ora from 'ora';
+import sequential from 'promise-sequential';
 import { stateManager, $TSMeta, $TSContext } from 'amplify-cli-core';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
-
 const spinner = ora('');
 
 export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $TSMeta) {
@@ -15,7 +15,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     const amplifyMeta: $TSMeta = {};
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
 
-    amplifyMeta.providers = teamProviderInfo[currentEnv];
+    amplifyMeta.providers = _.pick(teamProviderInfo[currentEnv], 'awscloudformation');
 
     if (!currentAmplifyMeta) {
       // Get current-cloud-backend's amplify-meta

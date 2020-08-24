@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
+import { JSONUtilities } from 'amplify-cli-core';
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 import { categoryName, layerParametersFileName } from '../utils/constants';
 import { category } from '../../../constants';
@@ -80,10 +81,10 @@ class LayerState implements LayerMetadata {
 
   private storedParams: StoredLayerParameters;
   private newVersionHash: string;
-  constructor(context, storedParams: StoredLayerParameters, layerName: string) {
+  constructor(context, layerName: string) {
     this.context = context;
     this.layerName = layerName;
-    this.storedParams = storedParams;
+    this.storedParams = getStoredLayerState(context, layerName);
     this.runtimes = this.storedParams.runtimes;
     Object.entries(this.storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
       this.versionMap.set(Number(versionNumber), new LayerVersionState(versionData));
@@ -240,6 +241,17 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 }
 
+export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
+  return layerName => {
+    return new LayerState(context, layerName);
+  };
+};
+
+export function isMultiEnvLayer(context: any, layerName: string) {
+  const layerParametersPath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, layerName, layerParametersFileName);
+  return !fs.existsSync(layerParametersPath);
+}
+
 const getStoredLayerState = (context: any, layerName: string) => {
   if (isMultiEnvLayer(context, layerName)) {
     const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
@@ -247,7 +259,7 @@ const getStoredLayerState = (context: any, layerName: string) => {
     if (!fs.existsSync(teamProviderInfoPath)) {
       throw new Error('team-provider-info.json is missing');
     }
-    const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
+    const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath) as StoredLayerParameters;
     let layerState: StoredLayerParameters = _.get(
       teamProviderInfo,
       [envName, 'nonCFNdata', categoryName, layerName],
@@ -263,7 +275,7 @@ const getStoredLayerState = (context: any, layerName: string) => {
       }
 
       _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], layerState);
-      context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+      JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
     }
 
     return layerState;
@@ -274,17 +286,6 @@ const getStoredLayerState = (context: any, layerName: string) => {
       return undefined;
     }
     const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-    return context.amplify.readJsonFile(parametersFilePath) as StoredLayerParameters;
+    return JSONUtilities.readJson(parametersFilePath) as StoredLayerParameters;
   }
 };
-
-export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
-  return layerName => {
-    return new LayerState(context, getStoredLayerState(context, layerName), layerName);
-  };
-};
-
-export function isMultiEnvLayer(context: any, layerName: string) {
-  const layerParametersPath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, layerName, layerParametersFileName);
-  return !fs.existsSync(layerParametersPath);
-}
