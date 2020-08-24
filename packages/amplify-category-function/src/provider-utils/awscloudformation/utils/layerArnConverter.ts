@@ -14,13 +14,13 @@ export const convertLambdaLayerMetaToLayerCFNArray = (
       if (isMultiEnvLayer(context, layer.resourceName)) {
         return convertProjectLayer(layer, env);
       }
-      return convertProjectLayer(layer, undefined);
+      return convertProjectLayer(layer);
     }
     return layer.arn;
   });
 };
 
-const convertProjectLayer = (layer: ProjectLayer, env: string) => {
+const convertProjectLayer = (layer: ProjectLayer, env?: string) => {
   if (env) {
     return {
       'Fn::Sub': `arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:layer:${layer.resourceName}-${env}:${layer.version}`,
