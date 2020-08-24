@@ -4,24 +4,32 @@ export * from './frontend-handler';
 export * from './project-name';
 export * from './providers';
 
-export type BasePrompt = {
-  // required
-  type: string;
-  name: string;
-  message: string;
+type validatorFunction = (input: string) => boolean;
 
-  // optional
-  skip?: boolean;
+export class InputPrompt {
+  name: string | (() => string);
+  type: string | (() => string);
+  message: string | (() => string) | (() => Promise<string>);
   initial?: string;
-  format?: Function;
-  result?: Function;
-  validate?: Function;
-};
+  validate?: (input: string) => string | true;
+  constructor(promptName: string, promptMessage: string, initialInput: string, validator: validatorFunction, invalidMessage: string) {
+    this.type = 'input';
+    (this.name = promptName),
+      (this.message = promptMessage),
+      (this.initial = initialInput),
+      (this.validate = input => validator(input) || invalidMessage);
+  }
+}
 
-export type BaseInitPromptResults = {
-  inputProjectName: string;
-  inputEnvName: string;
-  editorSelected: string;
-  frontendSelected: string;
-  providerSelected: string[];
-};
+export class SelectPrompt {
+  name: string | (() => string);
+  type: string | (() => string);
+  message: string | (() => string) | (() => Promise<string>);
+  choices: string[];
+  initial?: string;
+  validate?: (input: string) => string | true;
+  constructor(promptName, promptMessage, choicesSelect, initialSelect?) {
+    this.type = 'select';
+    (this.name = promptName), (this.message = promptMessage), (this.choices = choicesSelect), (this.initial = initialSelect);
+  }
+}
