@@ -94,7 +94,9 @@ function generateTeamProviderInfoFile(context: $TSContext) {
 function generateBackendConfigFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
-  stateManager.setBackendConfig(projectPath, {});
+  if (!stateManager.backendConfigFileExists(projectPath)) {
+    stateManager.setBackendConfig(projectPath, {});
+  }
 }
 
 function generateGitIgnoreFile(context: $TSContext) {
