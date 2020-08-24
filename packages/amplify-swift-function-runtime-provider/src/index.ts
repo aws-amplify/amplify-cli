@@ -13,7 +13,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
         runtime: {
           name: 'Swift',
           value: 'swift',
-          cloudTemplateValue: 'custom', // Stubbed. Not sure if this is correct?
+          cloudTemplateValue: 'provided',
           defaultHandler: 'index.handler', // Stubbed. Not sure if this is correct?
         },
       };
