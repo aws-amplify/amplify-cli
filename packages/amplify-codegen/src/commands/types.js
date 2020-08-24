@@ -36,6 +36,12 @@ async function generateTypes(context, forceDownloadSchema, withoutInit = false, 
       ({ projectPath } = context.amplify.getEnvInfo());
     }
 
+    if (context.input.command === 'types') {
+      await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+        forceCompile: true,
+      });
+    }
+
     try {
       projects.forEach(async cfg => {
         const { generatedFileName } = cfg.amplifyExtension || {};

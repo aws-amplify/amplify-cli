@@ -47,6 +47,10 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
     ({ projectPath } = context.amplify.getEnvInfo());
   }
 
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+    forceCompile: true,
+  });
+
   let downloadPromises;
   if (!withoutInit) {
     downloadPromises = projects.map(

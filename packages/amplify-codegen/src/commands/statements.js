@@ -33,6 +33,13 @@ async function generateStatements(context, forceDownloadSchema, maxDepth, withou
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
+
+  if (context.input.command === 'statements') {
+    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+      forceCompile: true,
+    });
+  }
+
   for (const cfg of projects) {
     const includeFiles = path.join(projectPath, cfg.includes[0]);
     const opsGenDirectory = cfg.amplifyExtension.docsFilePath
