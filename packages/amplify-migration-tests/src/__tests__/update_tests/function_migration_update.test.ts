@@ -114,4 +114,21 @@ describe('amplify function migration', () => {
     const meta = getProjectMeta(projRoot);
     await validateLayerMetadata(projRoot, layerName, meta, 'integtest');
   });
+
+  it('Add a layer, upgrade cli, update and push', async () => {
+    const [shortId] = uuid().split('-');
+    await initJSProjectWithProfile(projRoot, {});
+    const layerName = `test${shortId}`;
+    const layerSettings = {
+      layerName,
+      versionChanged: true,
+      runtimes: ['nodejs'],
+    };
+    await addLayer(projRoot, layerSettings);
+    await amplifyPushAuth(projRoot);
+    await updateLayer(projRoot, { ...layerSettings, runtimes: ['python'], numLayers: 1, permissions: [] }, true);
+    await amplifyPushAuth(projRoot, true);
+    const meta = getProjectMeta(projRoot);
+    await validateLayerMetadata(projRoot, layerName, meta, 'integtest');
+  });
 });

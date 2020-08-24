@@ -1,3 +1,4 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
@@ -26,11 +27,7 @@ export function createFunctionResources(context: any, parameters: FunctionParame
 
 export const createLayerArtifacts = (context, parameters: LayerParameters, latestVersion: number = 1): string => {
   const layerDirPath = ensureLayerFolders(context, parameters);
-  if (isMultiEnvLayer(context, parameters.layerName)) {
-    updateLayerTeamProviderInfo(context, parameters, layerDirPath);
-  } else {
-    createLayerParametersFile(context, parameters, layerDirPath);
-  }
+  updateLayerState(context, parameters, layerDirPath);
   createParametersFile(context, { layerVersion: latestVersion }, parameters.layerName, parametersFileName);
   createLayerCfnFile(context, parameters, layerDirPath);
   addLayerToAmplifyMeta(context, parameters);
@@ -52,11 +49,7 @@ export const updateLayerArtifacts = (
   options = _.assign(defaultOpts, options);
   const layerDirPath = ensureLayerFolders(context, parameters);
   if (options.layerParams) {
-    if (isMultiEnvLayer(context, parameters.layerName)) {
-      updateLayerTeamProviderInfo(context, parameters, layerDirPath);
-    } else {
-      createLayerParametersFile(context, parameters, layerDirPath);
-    }
+    updateLayerState(context, parameters, layerDirPath);
   }
   if (options.cfnFile) {
     if (latestVersion !== undefined) {
@@ -108,6 +101,14 @@ export function saveCFNParameters(
       CloudWatchRule: parameters.cloudwatchRule,
     };
     createParametersFile(context, params, parameters.resourceName, parametersFileName);
+  }
+}
+
+function updateLayerState(context: any, parameters: LayerParameters, layerDirPath: string) {
+  if (isMultiEnvLayer(context, parameters.layerName)) {
+    updateLayerTeamProviderInfo(context, parameters, layerDirPath);
+  } else {
+    createLayerParametersFile(context, parameters, layerDirPath);
   }
 }
 
@@ -177,25 +178,23 @@ function ensureLayerRuntimeFolder(layerDirPath: string, runtime) {
 }
 
 function createLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
-  context.amplify.writeObjectAsJson(
+  JSONUtilities.writeJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
     generateLayerCfnObj(context, parameters),
-    true,
   );
 }
 
 function updateLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
-  context.amplify.writeObjectAsJson(
+  JSONUtilities.writeJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
     generateLayerCfnObj(context, parameters),
-    true,
   );
 }
 
 const writeParametersToAmplifyMeta = (context, layerName: string, parameters) => {
   const amplifyMeta = context.amplify.getProjectMeta();
   _.set(amplifyMeta, ['function', layerName], parameters);
-  context.amplify.writeObjectAsJson(context.amplify.pathManager.getAmplifyMetaFilePath(), amplifyMeta, true);
+  JSONUtilities.writeJson(context.amplify.pathManager.getAmplifyMetaFilePath(), amplifyMeta);
 };
 
 const addLayerToAmplifyMeta = (context, parameters: LayerParameters) => {
@@ -210,7 +209,7 @@ const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
 const createLayerParametersFile = (context, parameters: LayerParameters | StoredLayerParameters, layerDirPath: string) => {
   fs.ensureDirSync(layerDirPath);
   const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
-  context.amplify.writeObjectAsJson(parametersFilePath, layerParamsToStoredParams(parameters), true);
+  JSONUtilities.writeJson(parametersFilePath, layerParamsToStoredParams(parameters));
 };
 
 const updateLayerTeamProviderInfo = (context, parameters: LayerParameters, layerDirPath: string) => {
@@ -223,7 +222,7 @@ const updateLayerTeamProviderInfo = (context, parameters: LayerParameters, layer
 
   const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
   _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, parameters.layerName], layerParamsToStoredParams(parameters));
-  context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+  JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
 };
 
 const removeLayerFromTeamProviderInfo = (context, layerName) => {
@@ -232,15 +231,15 @@ const removeLayerFromTeamProviderInfo = (context, layerName) => {
   if (!fs.existsSync(teamProviderInfoPath)) {
     throw new Error(`${teamProviderInfoPath} not found.`);
   }
-  const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
+  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
   _.unset(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName]);
-  if (_.isEqual(_.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName]), {})) {
+  if (_.isEmpty(_.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName]))) {
     _.unset(teamProviderInfo, [envName, 'nonCFNdata', categoryName]);
-    if (_.isEqual(_.get(teamProviderInfo, [envName, 'nonCFNdata']), {})) {
+    if (_.isEmpty(_.get(teamProviderInfo, [envName, 'nonCFNdata']))) {
       _.unset(teamProviderInfo, [envName, 'nonCFNdata']);
     }
   }
-  context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+  JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
 };
 
 interface LayerMetaAndBackendConfigParams {
@@ -267,9 +266,9 @@ const layerParamsToStoredParams = (parameters: LayerParameters | StoredLayerPara
 
 function createParametersFile(context, parameters, resourceName, parametersFileName) {
   const parametersFilePath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, resourceName, parametersFileName);
-  const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
+  const currentParameters = JSONUtilities.readJson(parametersFilePath, { throwIfNotExist: false }) || ({} as any);
   delete currentParameters.mutableParametersState; // this field was written in error in a previous version of the cli
-  context.amplify.writeObjectAsJson(parametersFilePath, { ...currentParameters, ...parameters }, true);
+  JSONUtilities.writeJson(parametersFilePath, { ...currentParameters, ...parameters });
 }
 
 function buildParametersFileObj(
