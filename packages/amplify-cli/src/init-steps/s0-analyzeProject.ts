@@ -54,10 +54,6 @@ export async function analyzeProject(context) {
       Key: 'user:Application',
       Value: '{project-name}',
     },
-    {
-      Key: 'user:AmplifyCLIVersion',
-      Value: '{cli-version}',
-    },
   ];
 
   return context;

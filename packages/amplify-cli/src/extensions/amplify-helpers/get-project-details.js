@@ -21,7 +21,7 @@ function getProjectDetails() {
     teamProviderInfo = readJsonFile(teamProviderFilePath);
   }
 
-  let tags;
+  let tags = [];
   const tagsFilePath = pathManager.getTagsConfigFilePath();
   if (fs.existsSync(tagsFilePath)) {
     tags = readJsonFile(tagsFilePath);

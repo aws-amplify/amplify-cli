@@ -5,7 +5,7 @@ import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
 import { stateManager } from 'amplify-cli-core';
-import { isValidJSON, isWithinLimit, checkDuplicates, hasValidTags } from './tags-validation'
+import { isValidJSON, isWithinLimit, checkDuplicates, hasValidTags } from './tags-validation';
 
 /*
 context: Object // Required
@@ -116,12 +116,10 @@ export async function storeCurrentCloudBackend(context) {
 
   await Promise.all(providerPromises);
 }
-<<<<<<< HEAD:packages/amplify-cli/src/extensions/amplify-helpers/push-resources.ts
-=======
 
 function validateTags(context) {
-  const projectDetails = context.amplify.getProjectDetails();
-  const tagsJson = projectDetails.tags;
+  const tagsPath = context.amplify.pathManager.getTagsConfigFilePath();
+  const tagsJson = context.amplify.readJsonFile(tagsPath);
 
   try {
     isValidJSON(tagsJson);
@@ -133,9 +131,3 @@ function validateTags(context) {
     throw err;
   }
 }
-
-module.exports = {
-  pushResources,
-  storeCurrentCloudBackend,
-};
->>>>>>> feat: initial implementation for pushing to cloud:packages/amplify-cli/src/extensions/amplify-helpers/push-resources.js

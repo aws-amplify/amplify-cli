@@ -194,7 +194,6 @@ class CloudFormation {
     const replaceWith = {
       '{project-name}': context.exeInfo.projectConfig.projectName,
       '{project-env}': context.exeInfo.localEnvInfo.envName,
-      '{cli-version}': context.pluginPlatform.plugins.core[0].packageVersion,
     };
 
     return tagsArr.map(tagObj => ({
@@ -238,6 +237,8 @@ class CloudFormation {
         const cfnModel = this.cfn;
         const { context } = this;
         const self = this;
+        const tagsPath = context.amplify.pathManager.getTagsConfigFilePath();
+        const tagsJson = context.amplify.readJsonFile(tagsPath);
 
         this.eventStartTime = new Date();
         return new Promise((resolve, reject) => {
@@ -261,7 +262,7 @@ class CloudFormation {
                     ParameterValue: unauthRoleName,
                   },
                 ],
-                Tags: this.replaceTagVars(projectDetails.tags),
+                Tags: this.replaceTagVars(tagsJson),
               };
 
               cfnModel.updateStack(cfnParentStackParams, updateErr => {

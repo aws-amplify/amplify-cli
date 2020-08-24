@@ -97,7 +97,7 @@ export function getLocalEnvFilePath(projectPath?) {
 }
 
 export function getTagsConfigFilePath(projectPath) {
-  return path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.TagsConfigFileName));
+  return path.normalize(path.join(getBackendDirPath(projectPath), amplifyCLIConstants.TagsConfigFileName));
 }
 
 export function getProviderInfoFilePath(projectPath?) {

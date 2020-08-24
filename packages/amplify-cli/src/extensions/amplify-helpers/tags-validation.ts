@@ -1,4 +1,4 @@
-function isValidJSON(json) {
+export function isValidJSON(json: { Key: string; Value: string }[]) {
   const stringJson = JSON.stringify(json);
 
   // We can assume that the file exists, since we already checked when retrieving the project details
@@ -17,7 +17,7 @@ function isValidJSON(json) {
   is valid, since that already sends an error directly through the
   console before anything else
 */
-function hasValidTags(json) {
+export function hasValidTags(json: { Key: string; Value: string }[]) {
   Object.values(json).map(tag => {
     // First check : If tag object has a "Key" and "Value" text
     if (!Object.keys(tag).includes('Key') || !Object.keys(tag).includes('Value'))
@@ -31,7 +31,7 @@ function hasValidTags(json) {
   return true;
 }
 
-function isWithinLimit(json) {
+export function isWithinLimit(json: { Key: string; Value: string }[]) {
   const nOfItems = Object.keys(json).length;
 
   if (nOfItems > 50) throw new Error('Tag limit exceeded (50 tags max)');
@@ -40,7 +40,7 @@ function isWithinLimit(json) {
 }
 
 // Returns an error if two or more "Key" values are used more than once
-function checkDuplicates(json) {
+export function checkDuplicates(json: { Key: string; Value: string }[]) {
   // Using Set so we have quick access to the .has() function that comes with it
   let set = new Set();
 
@@ -56,10 +56,3 @@ function checkDuplicates(json) {
   // Gets returned if we don't have any duplicates
   return true;
 }
-
-module.exports = {
-  isValidJSON,
-  hasValidTags,
-  isWithinLimit,
-  checkDuplicates,
-};

@@ -8,8 +8,6 @@ import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
 import { pathManager, stateManager, $TSMeta, $TSAny } from 'amplify-cli-core';
-import { readJsonFile } from require('./read-json-file');
-const { CloudFormation } = require('aws-sdk');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, isLambdaLayer = false) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
