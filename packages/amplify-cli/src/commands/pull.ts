@@ -6,12 +6,12 @@ import { stateManager } from 'amplify-cli-core';
 
 export const run = async context => {
   const inputParams = constructInputParams(context);
-  const projcetPath = process.cwd();
+  const projectPath = process.cwd();
 
-  if (stateManager.currentMetaFileExists(projcetPath)) {
+  if (stateManager.currentMetaFileExists(projectPath)) {
     const { appId: inputAppId, envName: inputEnvName } = inputParams.amplify;
-    const teamProviderInfo = stateManager.getTeamProviderInfo(projcetPath);
-    const { envName } = stateManager.getLocalEnvInfo(projcetPath);
+    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
+    const { envName } = stateManager.getLocalEnvInfo(projectPath);
 
     const { AmplifyAppId } = teamProviderInfo[envName].awscloudformation;
     const localEnvNames = Object.keys(teamProviderInfo);
