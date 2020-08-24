@@ -6,6 +6,7 @@
     "strict": false // because some files were converted from js
   },
   "references": [
-    {"path": "../amplify-function-plugin-interface"}
+    {"path": "../amplify-function-plugin-interface"},
+    {"path": "../amplify-cli-core"}
   ]
 }

@@ -72,6 +72,7 @@ export async function updateLayerWalkthrough(
   // load the current layer state
   const layerState: LayerMetadata = getLayerMetadataFactory(context)(parameters.layerName);
   await layerState.syncVersions();
+  parameters.runtimes = layerState.runtimes || [];
 
   // runtime question
   if (await context.amplify.confirmPrompt('Do you want to update the compatible runtimes?', false)) {

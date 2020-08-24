@@ -159,7 +159,7 @@ export function previousPermissionsQuestion(layerName: string): ListQuestion[] {
 
 export async function chooseParamsOnEnvInit(context: any, layerName: string) {
   const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
-  const teamProviderInfo = await JSONUtilities.readJson(teamProviderInfoPath);
+  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
   const filteredEnvs = Object.keys(teamProviderInfo).filter(
     env =>
       _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'runtimes']) &&
@@ -183,8 +183,8 @@ export async function chooseParamsOnEnvInit(context: any, layerName: string) {
     };
   }
   const layerToCopy = teamProviderInfo[envName].nonCFNdata.function[layerName];
-  const versions = Object.keys(layerToCopy.layerVersionMap || {}).sort((a, b) => Number(b) - Number(a));
-  const permissions = versions.length > 0 ? layerToCopy.layerVersionMap[versions[0]].permissions : defaultPermission;
+  const latestVersion = Math.max(...Object.keys(layerToCopy.layerVersionMap || {}).map(v => Number(v)));
+  const permissions = latestVersion ? layerToCopy.layerVersionMap[latestVersion].permissions : defaultPermission;
   return {
     runtimes: layerToCopy.runtimes,
     layerVersionMap: {

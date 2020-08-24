@@ -337,7 +337,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
     const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
 
     const providerContext: ProviderContext = {
-      provider: 'awscloudformation',
+      provider,
       service,
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };

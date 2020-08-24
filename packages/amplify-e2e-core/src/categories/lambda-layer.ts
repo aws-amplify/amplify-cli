@@ -11,9 +11,9 @@ export type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'pyt
 const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
 
-async function getLayerDataFromTeamProviderInfo(projRoot: string, layerName: string, envName: string) {
+function getLayerDataFromTeamProviderInfo(projRoot: string, layerName: string, envName: string) {
   const teamProviderInfoPath = path.join(projRoot, 'amplify', 'team-provider-info.json');
-  const teamProviderInfo = await JSONUtilities.readJson(teamProviderInfoPath);
+  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
   return _.get(teamProviderInfo, [envName, 'nonCFNdata', 'function', layerName]);
 }
 
@@ -30,14 +30,14 @@ export function validateLayerDir(projRoot: string, layerName: string, runtimes: 
   return validDir;
 }
 
-export async function validatePushedVersion(
+export function validatePushedVersion(
   projRoot: string,
   layerName: string,
   envName: string,
   version: number,
   permissions: LayerPermission[],
 ) {
-  const layerData = await getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
+  const layerData = getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
   const storedPermissions: LayerPermission[] = _.get(layerData, ['layerVersionMap', `${version}`, 'permissions']);
   permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
 }
@@ -112,9 +112,9 @@ export function removeLayer(cwd: string) {
   });
 }
 
-export function updateLayer(cwd: string, settings?: any) {
+export function updateLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false) {
   return new Promise((resolve, reject) => {
-    const chain: ExecutionContext = spawn(getCLIPath(), ['update', 'function'], { cwd, stripColors: true })
+    const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn(); // Layer
