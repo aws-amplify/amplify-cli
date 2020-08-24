@@ -9,7 +9,7 @@ type validatorFunction = (input: string) => boolean;
 export class InputPrompt {
   name: string | (() => string);
   type: string | (() => string);
-  message: string | (() => string) | (() => Promise<string>);
+  message: string | (() => string);
   initial?: string;
   validate?: (input: string) => string | true;
   constructor(promptName: string, promptMessage: string, initialInput: string, validator: validatorFunction, invalidMessage: string) {
@@ -24,7 +24,7 @@ export class InputPrompt {
 export class SelectPrompt {
   name: string | (() => string);
   type: string | (() => string);
-  message: string | (() => string) | (() => Promise<string>);
+  message: string | (() => string);
   choices: string[];
   initial?: string;
   validate?: (input: string) => string | true;
