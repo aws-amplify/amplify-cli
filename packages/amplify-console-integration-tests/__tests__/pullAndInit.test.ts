@@ -175,8 +175,8 @@ describe('amplify app console tests', () => {
   });
   afterEach(async () => {
     if (!fs.existsSync(getAmplifyDirPath(projRoot)) && stackName && AmplifyAppID) {
-      deleteAmplifyStack(stackName);
-      deleteConsoleApp(AmplifyAppID);
+      await deleteAmplifyStack(stackName);
+      await deleteConsoleApp(AmplifyAppID);
     } else {
       await deleteProject(projRoot, getConfigFromProfile());
     }

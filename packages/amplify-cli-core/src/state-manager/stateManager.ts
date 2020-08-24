@@ -81,6 +81,8 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  backendConfigFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getBackendConfigFilePath(projectPath));
+
   getBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
     const filePath = pathManager.getBackendConfigFilePath(projectPath);
     const mergedOptions = {
