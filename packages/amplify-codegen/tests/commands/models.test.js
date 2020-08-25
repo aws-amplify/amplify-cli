@@ -31,7 +31,7 @@ const MOCK_SCHEMA = 'SCHEMA.GRAPHQL';
 const MOCK_RESOURCE_NAME = 'MOCK_RESOURCE_NAME';
 const MOCK_BACKEND_PATH = 'MOCK_BACKEND_PATH';
 const MOCK_RESOURCES = {
-    allResources:[
+    allResources: [
         {
             service: 'AppSync',
             providerPlugin: 'awscloudformation',
