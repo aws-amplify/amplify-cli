@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "strict": false, // because some files were converted from js
+    "allowJs": true
+  },
+  "exclude": [
+    "coverage",
+    "lib",
+    "resources",
+    "provider-utils/awscloudformation/triggers",
+    "src/__tests__",
+  ],
+}

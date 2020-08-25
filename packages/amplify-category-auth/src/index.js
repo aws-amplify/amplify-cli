@@ -17,12 +17,12 @@ const {
 } = require('./provider-utils/awscloudformation');
 
 const { transformUserPoolGroupSchema } = require('./utils/transform-user-pool-group');
+const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
   const { amplify } = context;
-  const servicesMetadata = amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
-
+  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
   if (Object.keys(existingAuth).length > 0) {
@@ -332,4 +332,5 @@ module.exports = {
   executeAmplifyCommand,
   handleAmplifyEvent,
   prePushAuthHook,
+  uploadFiles,
 };

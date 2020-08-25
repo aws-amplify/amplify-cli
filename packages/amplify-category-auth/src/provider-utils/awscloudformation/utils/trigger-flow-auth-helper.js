@@ -1,3 +1,7 @@
+const path = require('path');
+
+const triggerAssetRoot = path.resolve(path.join(__dirname, '../../../../provider-utils/awscloudformation/triggers'));
+
 /**
  * @function
  * @param {object} context CLI context
@@ -57,7 +61,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           triggerTemplate: `${keys[t]}.json.ejs`,
           triggerPackage: `${keys[t]}.package.json`,
           triggerEventPath: `${keys[t]}.event.json`,
-          triggerDir: `${__dirname}/../triggers/${keys[t]}`,
+          triggerDir: path.join(triggerAssetRoot, keys[t]),
           parentResource: authResourceName,
           skipEdit: true,
         };
@@ -75,7 +79,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           parentStack: 'auth',
           targetPath,
           triggerTemplate: `${keys[t]}.json.ejs`,
-          triggerDir: `${__dirname}/../triggers/${keys[t]}`,
+          triggerDir: path.join(triggerAssetRoot, keys[t]),
           parentResource: authResourceName,
           skipEdit: true,
         };
@@ -100,8 +104,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
 
 // saving input-based trigger env variables to the team-provider
 const triggerEnvParams = async (context, key, value, functionName, currentEnvVars) => {
-  const triggerPath = `${__dirname}/../triggers/${key}`;
-  const envs = await context.amplify.getTriggerEnvInputs(context, triggerPath, key, value, currentEnvVars);
+  const envs = await context.amplify.getTriggerEnvInputs(context, path.join(triggerAssetRoot, key), key, value, currentEnvVars);
   context.amplify.saveEnvResourceParameters(context, 'function', functionName, envs);
 };
 
