@@ -277,7 +277,6 @@ function packageResources(context, resources) {
             };
           }
         }
-
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
       });

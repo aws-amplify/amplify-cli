@@ -148,7 +148,7 @@ function generateGitIgnoreFile(context: $TSContext) {
   }
 }
 
-function printWelcomeMessage(context) {
+function printWelcomeMessage(context: $TSContext) {
   context.print.info('');
   context.print.success('Your project has been successfully initialized and connected to the cloud!');
   context.print.info('');
