@@ -102,7 +102,7 @@ describe('command - models', () => {
     });
 
     it('should ask for the output path if configpath flag is passed', async () => {
-        MOCK_CONTEXT.parameters.options.configpath = true;
+        MOCK_CONTEXT.parameters.options.configPath = true;
         MOCK_CONTEXT.amplify.getProjectConfig.mockReturnValue({frontend: MOCK_SDK});
         inquirer.prompt.mockReturnValue({outputPath: MOCK_OUTPUT_PATH});
         await generateModels(MOCK_CONTEXT);

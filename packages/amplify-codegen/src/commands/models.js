@@ -104,8 +104,8 @@ function loadSchema(apiResourcePath) {
 async function getModelOutputPath(context) {
   const projectConfig = context.amplify.getProjectConfig();
 
-  if(projectConfig.modelgen && projectConfig.modelgen.outputPath && !context.parameters.options.configpath) {
-    context.print.success('\nThe output path for modelgen is already setup. You can edit the path in .config/project-config.json\n');
+  if(projectConfig.modelgen && projectConfig.modelgen.outputPath && !context.parameters.options.configPath) {
+    context.print.success('\nThe output path for modelgen is already configured. You can edit the path in .config/project-config.json\n');
     return projectConfig.modelgen.outputPath;
   }
 
@@ -125,7 +125,7 @@ async function getModelOutputPath(context) {
   }
 
   let outputPath = defaultPath;
-  if(context.parameters.options.configpath) {
+  if(context.parameters.options.configPath) {
     const answer = await askForModelOutputPath(defaultPath);
     outputPath = answer.outputPath;
   }
@@ -147,7 +147,7 @@ async function askForModelOutputPath(defaultPath) {
   const answer = await inquirer.prompt({
     type: 'input',
     name: 'outputPath',
-    message: 'Please type your relative output path for model',
+    message: 'Enter the path to the directory where models will be output. The path should be relative to the project root',
     default: defaultPath
   });
   return answer;
