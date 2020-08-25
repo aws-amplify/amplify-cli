@@ -770,28 +770,28 @@ async function createAdminAuthFunction(context, authResourceName, functionName, 
 
   const copyJobs = [
     {
-      dir: pluginDir,
-      template: path.join(adminAuthAssetRoot, 'admin-auth-app.js'),
+      dir: adminAuthAssetRoot,
+      template: 'admin-auth-app.js',
       target: `${targetDir}/function/${functionName}/src/app.js`,
     },
     {
-      dir: pluginDir,
-      template: path.join(adminAuthAssetRoot, 'admin-auth-cognitoActions.js'),
+      dir: adminAuthAssetRoot,
+      template: 'admin-auth-cognitoActions.js',
       target: `${targetDir}/function/${functionName}/src/cognitoActions.js`,
     },
     {
-      dir: pluginDir,
-      template: path.join(adminAuthAssetRoot, 'admin-auth-index.js'),
+      dir: adminAuthAssetRoot,
+      template: 'admin-auth-index.js',
       target: `${targetDir}/function/${functionName}/src/index.js`,
     },
     {
-      dir: pluginDir,
-      template: path.join(adminAuthAssetRoot, 'admin-auth-package.json'),
+      dir: adminAuthAssetRoot,
+      template: 'admin-auth-package.json',
       target: `${targetDir}/function/${functionName}/src/package.json`,
     },
     {
-      dir: pluginDir,
-      template: path.join(adminAuthAssetRoot, 'admin-queries-function-template.json.ejs'),
+      dir: adminAuthAssetRoot,
+      template: 'admin-queries-function-template.json.ejs',
       target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
     },
   ];
