@@ -88,7 +88,6 @@ function serviceQuestions(context, defaultValuesFilename, stringMapFilename, ser
 async function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
 
   const copyJobs = [
     {
