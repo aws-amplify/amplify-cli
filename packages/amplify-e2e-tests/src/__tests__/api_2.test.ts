@@ -1,6 +1,9 @@
 import { amplifyPush, amplifyPushUpdate, deleteProject, initJSProjectWithProfile } from 'amplify-e2e-core';
 import * as path from 'path';
 import { existsSync } from 'fs';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import gql from 'graphql-tag';
+
 import {
   addApiWithSchema,
   addApiWithSchemaAndConflictDetection,
@@ -21,6 +24,11 @@ import {
 import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 import _ from 'lodash';
 
+// to deal with bug in cognito-identity-js
+(global as any).fetch = require('node-fetch');
+// to deal with subscriptions in node env
+(global as any).WebSocket = require('ws');
+
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
   beforeEach(async () => {
@@ -33,6 +41,94 @@ describe('amplify add api (GraphQL)', () => {
       await deleteProject(projRoot);
     }
     deleteProjectDir(projRoot);
+  });
+
+  it('init a project with conflict detection enabled and a schema with @key, test update mutation', async () => {
+    const name = `keyconflictdetection`;
+    await initJSProjectWithProfile(projRoot, { name });
+    await addApiWithSchemaAndConflictDetection(projRoot, 'key-conflict-detection.graphql');
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const region = meta['providers']['awscloudformation']['Region'] as string;
+    const { output } = meta.api[name];
+    const url = output.GraphQLAPIEndpointOutput as string;
+    const apiKey = output.GraphQLAPIKeyOutput as string;
+    
+    const appSyncClient = new AWSAppSyncClient({
+      url,
+      region,
+      disableOffline: true,
+      auth: {
+        type: AUTH_TYPE.API_KEY,
+        apiKey,
+      },
+    });
+    
+    const createMutation = /* GraphQL */ `
+      mutation CreateNote(
+        $input: CreateNoteInput!
+        $condition: ModelNoteConditionInput
+      ) {
+        createNote(input: $input, condition: $condition) {
+          noteId
+          note
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+    const createInput = {
+      input:{
+        noteId: '1',
+        note: 'initial note'
+      }
+    };
+    const createResult = await appSyncClient.mutate({
+      mutation: gql(createMutation),
+      fetchPolicy: 'no-cache',
+      variables: createInput,
+    })
+
+    const updateMutation = /* GraphQL */ `
+      mutation UpdateNote(
+        $input: UpdateNoteInput!
+        $condition: ModelNoteConditionInput
+      ) {
+        updateNote(input: $input, condition: $condition) {
+          noteId
+          note
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+    const updateInput = {
+      input: {
+        noteId: createResult.data.createNote.noteId,
+        note: 'note updated',
+        _version: createResult.data.createNote._version
+      },
+    };
+
+    const updateResult = await appSyncClient.mutate({
+      mutation: gql(updateMutation),
+      fetchPolicy: 'no-cache',
+      variables: updateInput,
+    })
+
+    expect(updateResult.data).toBeDefined();
+    expect(updateResult.data.updateNote).toBeDefined();
+    expect(updateResult.data.updateNote.noteId).toEqual(createResult.data.createNote.noteId);
+    expect(updateResult.data.updateNote.note).not.toEqual(createResult.data.createNote.note);
+    expect(updateResult.data.updateNote._version).not.toEqual(createResult.data.createNote._version);
+    expect(updateResult.data.updateNote.note).toEqual(updateInput.input.note);
   });
 
   it('init a project with conflict detection enabled and toggle disable', async () => {
