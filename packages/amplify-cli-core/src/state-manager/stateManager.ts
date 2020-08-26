@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import { pathManager } from './pathManager';
 import { $TSMeta, $TSTeamProviderInfo, $TSAny } from '..';
 import { JSONUtilities } from '../jsonUtilities';
+import { Tag, ReadValidateTags } from '../tags';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -36,6 +37,10 @@ export class StateManager {
 
     return data;
   };
+
+  getProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getTagFilePath(projectPath));
+
+  getCurrentProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getCurrentTagFilePath(projectPath));
 
   teamProviderInfoExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getTeamProviderInfoFilePath(projectPath));
 
@@ -103,6 +108,11 @@ export class StateManager {
     const filePath = pathManager.getLocalAWSInfoFilePath(projectPath);
 
     JSONUtilities.writeJson(filePath, localAWSInfo);
+  };
+
+  setProjectFileTags = (projectPath: string | undefined, tags: Tag[]): void => {
+    const tagFilePath = pathManager.getTagFilePath(projectPath);
+    JSONUtilities.writeJson(tagFilePath, tags);
   };
 
   setProjectConfig = (projectPath: string | undefined, projectConfig: $TSAny): void => {

@@ -7,7 +7,7 @@ import { hashElement } from 'folder-hash';
 import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
-import { pathManager, stateManager, $TSMeta, $TSAny } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSMeta, $TSAny, Tag } from 'amplify-cli-core';
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, isLambdaLayer = false) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -251,13 +251,29 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     resourcesToBeDeleted = resourcesToBeDeleted.filter(resource => resource.providerPlugin === providerName);
     allResources = allResources.filter(resource => resource.providerPlugin === providerName);
   }
-
+  const tagsUpdated = compareTags(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
   return {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeDeleted,
+    tagsUpdated,
     allResources,
   };
+}
+
+function compareTags(tags: Tag[], currenTags: Tag[]): boolean {
+  if (tags.length !== currenTags.length) return true;
+  const tagMap = new Map(tags.map(tag => [tag.Key, tag.Value]));
+  if (
+    _.some(currenTags, tag => {
+      if (tagMap.has(tag.Key)) {
+        if (tagMap.get(tag.Key) === tag.Value) return false;
+      }
+    })
+  )
+    return true;
+
+  return false;
 }
 
 export async function showResourceTable(category, resourceName, filteredResources) {
@@ -270,7 +286,7 @@ export async function showResourceTable(category, resourceName, filteredResource
     print.info('');
   }
 
-  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = await getResourceStatus(
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources, tagsUpdated } = await getResourceStatus(
     category,
     resourceName,
     undefined,
@@ -321,7 +337,11 @@ export async function showResourceTable(category, resourceName, filteredResource
   const { table } = print;
 
   table(tableOptions, { format: 'markdown' });
+  if (tagsUpdated) {
+    print.info('Resource Tags Update Detected');
+  }
+  const changedResourceCount =
+    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length + tagsUpdated ? 1 : 0;
 
-  const changedResourceCount = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length;
   return changedResourceCount;
 }

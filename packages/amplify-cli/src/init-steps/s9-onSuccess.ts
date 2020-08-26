@@ -66,6 +66,7 @@ export async function onSuccess(context: $TSContext) {
 function generateLocalRuntimeFiles(context: $TSContext) {
   generateLocalEnvInfoFile(context);
   generateAmplifyMetaFile(context);
+  generateLocalTagsFile(context);
 }
 
 export function generateLocalEnvInfoFile(context: $TSContext) {
@@ -74,7 +75,24 @@ export function generateLocalEnvInfoFile(context: $TSContext) {
   stateManager.setLocalEnvInfo(projectPath, context.exeInfo.localEnvInfo);
 }
 
-function generateAmplifyMetaFile(context: $TSContext) {
+function generateLocalTagsFile(context) {
+  if (context.exeInfo.isNewProject) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+    const tags = [
+      {
+        Key: 'user:Stack',
+        Value: '{project-env}',
+      },
+      {
+        Key: 'user:Application',
+        Value: '{project-name}',
+      },
+    ];
+    stateManager.setProjectFileTags(projectPath, tags);
+  }
+}
+
+export function generateAmplifyMetaFile(context: $TSContext) {
   if (context.exeInfo.isNewEnv) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 

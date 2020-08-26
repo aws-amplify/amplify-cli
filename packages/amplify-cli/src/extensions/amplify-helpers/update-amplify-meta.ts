@@ -38,6 +38,8 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
   const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
+  const tagFilePath = pathManager.getTagFilePath();
+  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
 
   for (let i = 0; i < resources.length; i += 1) {
     const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resources[i].category, resources[i].resourceName));
@@ -56,6 +58,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
+  fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
 }
 
 export function updateamplifyMetaAfterResourceAdd(category, resourceName, options: { dependsOn? } = {}) {

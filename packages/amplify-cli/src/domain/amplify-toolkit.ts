@@ -64,6 +64,7 @@ export class AmplifyToolkit {
   private _deleteAllTriggers: any;
   private _deleteDeselectedTriggers: any;
   private _dependsOnBlock: any;
+  private _getTags: any;
   private _getTriggerMetadata: any;
   private _getTriggerPermissions: any;
   private _getTriggerEnvVariables: any;
@@ -369,6 +370,10 @@ export class AmplifyToolkit {
   get dependsOnBlock(): any {
     this._dependsOnBlock = this._dependsOnBlock || require(path.join(this._amplifyHelpersDirPath, 'trigger-flow')).dependsOnBlock;
     return this._dependsOnBlock;
+  }
+  get getTags(): any {
+    this._getTags = this._getTags || require(path.join(this._amplifyHelpersDirPath, 'get-tags')).getTags;
+    return this._getTags;
   }
   get getTriggerMetadata(): any {
     this._getTriggerMetadata =
