@@ -16,6 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@graphql-tools/merge": "^6.0.18",
     "amplify-category-auth": "2.18.3",
     "amplify-category-function": "2.23.3",
     "amplify-util-headless-input": "1.2.0",
@@ -25,7 +26,6 @@
     "graphql-relational-schema-transformer": "2.15.13",
     "graphql-transformer-core": "6.21.2",
     "inquirer": "^7.0.3",
-    "merge-graphql-schemas": "^1.7.6",
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "uuid": "^3.4.0"
