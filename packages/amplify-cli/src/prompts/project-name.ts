@@ -2,10 +2,11 @@ import { prompt } from 'enquirer';
 import { InputPrompt } from '../prompts';
 
 const inputQuestionName = 'inputProjectName';
-export const PROJECT_NAME_MESSAGE = 'Enter a name for the project';
-export const INVALID_PROJECT_NAME_MESSAGE = 'Project name should be between 3 and 20 characters and alphanumeric';
+const PROJECT_NAME_MESSAGE = 'Enter a name for the project';
+// const PROJECT_NAME_MESSAGE = 'Project name';
+const INVALID_PROJECT_NAME_MESSAGE = 'Project name should be between 3 and 20 characters and alphanumeric';
 
-export function constructProjectNameQuestion(initialProjectName, isProjectNameValid) {
+function constructProjectNameQuestion(initialProjectName, isProjectNameValid) {
   const projectNameQuestion = new InputPrompt(
     inputQuestionName,
     PROJECT_NAME_MESSAGE,
@@ -18,6 +19,6 @@ export function constructProjectNameQuestion(initialProjectName, isProjectNameVa
 
 export async function projectNameInput(initialProjectName, isProjectNameValid) {
   const projectNameQuestion = constructProjectNameQuestion(initialProjectName, isProjectNameValid);
-  const answer = await prompt(projectNameQuestion);
-  return answer[inputQuestionName];
+  const answer = projectNameQuestion[inputQuestionName];
+  return answer;
 }

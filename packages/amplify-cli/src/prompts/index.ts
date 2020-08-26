@@ -27,7 +27,6 @@ export class SelectPrompt {
   message: string | (() => string);
   choices: string[];
   initial?: string;
-  validate?: (input: string) => string | true;
   constructor(promptName, promptMessage, choicesSelect, initialSelect?) {
     this.type = 'select';
     (this.name = promptName), (this.message = promptMessage), (this.choices = choicesSelect), (this.initial = initialSelect);
