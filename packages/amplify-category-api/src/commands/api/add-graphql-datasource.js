@@ -115,11 +115,10 @@ module.exports = {
         if (schemaFileExists) {
           const currGraphQLSchemaDoc = readSchema(graphqlSchemaFilePath);
           const concatGraphQLSchemaDoc = mergeTypeDefs([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
-          fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
+          fs.writeFileSync(graphqlSchemaFilePath, graphql.print(concatGraphQLSchemaDoc), 'utf8');
         } else if (schemaDirectoryExists) {
-          const rdsSchemaFilePath = path.join(apiDirPath, 'rds.graphql');
-          const concatGraphQLSchemaDoc = mergeTypeDefs([{}, rdsGraphQLSchemaDoc], { all: true });
-          fs.writeFileSync(rdsSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
+          const rdsSchemaFilePath = path.join(schemaDirectoryPath, 'rds.graphql');
+          fs.writeFileSync(rdsSchemaFilePath, graphql.print(rdsGraphQLSchemaDoc), 'utf8');
         } else {
           throw new Error(`Could not find a schema in either ${graphqlSchemaFilePath} or schema directory at ${schemaDirectoryPath}`);
         }
