@@ -842,13 +842,13 @@ async function createAdminAuthAPI(context, authResourceName, functionName, opera
 
   const copyJobs = [
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-queries-api-template.json.ejs',
+      dir: adminAuthAssetRoot,
+      template: 'admin-queries-api-template.json.ejs',
       target: `${targetDir}/api/${apiName}/admin-queries-cloudformation-template.json`,
     },
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-queries-api-params.json',
+      dir: adminAuthAssetRoot,
+      template: 'admin-queries-api-params.json',
       target: `${targetDir}/api/${apiName}/parameters.json`,
     },
   ];
@@ -882,4 +882,5 @@ module.exports = {
   console,
   getPermissionPolicies,
   removeDeprecatedProps,
+  cfnTemplateRoot,
 };
