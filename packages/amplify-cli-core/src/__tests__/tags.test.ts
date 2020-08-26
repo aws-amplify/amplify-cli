@@ -14,8 +14,6 @@ describe('tags-validation:', () => {
   });
 
   describe('case: tags-validation receives a JSON file that contains more than 50 key-value pairs', () => {
-    const jsonObj: any = [];
-
     const json = [
       { Key: 'user:Stack', Value: 'dev', key: 'notgood' },
       { Key: 'user:Application', Value: 'foobar' },
@@ -28,17 +26,17 @@ describe('tags-validation:', () => {
   });
 
   describe('case: tags-validation receives a JSON file that contains more than 50 key-value pairs', () => {
-    const jsonObj: any = [];
+    const jsonObjects: any = [];
 
     for (let i = 0; i < 55; i++) {
-      jsonObj.push({
+      jsonObjects.push({
         Key: `user:key${i}`,
         Value: `value${i}`,
       });
     }
 
     it('tags-validation should throw an error stating that the tags.json file has exceeded the tags amount limit', () => {
-      expect(() => validate(jsonObj)).toThrowError(new Error('No. of tags cannot exceed 50'));
+      expect(() => validate(jsonObjects)).toThrowError(new Error('No. of tags cannot exceed 50'));
     });
   });
 });

@@ -75,7 +75,7 @@ export function generateLocalEnvInfoFile(context: $TSContext) {
   stateManager.setLocalEnvInfo(projectPath, context.exeInfo.localEnvInfo);
 }
 
-function generateLocalTagsFile(context) {
+function generateLocalTagsFile(context: $TSContext) {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const tags = [

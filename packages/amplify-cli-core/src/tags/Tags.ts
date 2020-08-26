@@ -20,11 +20,11 @@ export function ReadValidateTags(tagsFilePath: string): Tag[] {
 }
 
 export function validate(tags: Tag[]): void {
-  const set = new Set(['Key', 'Value']);
+  const allowedKeySet = new Set(['Key', 'Value']);
 
   //check if Tags have the right format
   _.each(tags, tags => {
-    if (_.some(Object.keys(tags), r => !set.has(r))) throw new Error('Tag thould be of type Key: string, Value: string');
+    if (_.some(Object.keys(tags), r => !allowedKeySet.has(r))) throw new Error('Tag thould be of type Key: string, Value: string');
   });
 
   //check if Tag Key is repeated
