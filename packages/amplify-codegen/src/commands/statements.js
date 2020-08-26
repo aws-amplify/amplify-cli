@@ -34,12 +34,6 @@ async function generateStatements(context, forceDownloadSchema, maxDepth, withou
     return;
   }
 
-  if (context.input.command === 'statements') {
-    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-      forceCompile: true,
-    });
-  }
-
   for (const cfg of projects) {
     const includeFiles = path.join(projectPath, cfg.includes[0]);
     const opsGenDirectory = cfg.amplifyExtension.docsFilePath
@@ -48,6 +42,11 @@ async function generateStatements(context, forceDownloadSchema, maxDepth, withou
     const schemaPath = path.join(projectPath, cfg.schema);
     let region;
     let frontend;
+    if (context.input.command === 'statements' && !schemaPath.endsWith('.json') && fs.existsSync(schemaPath)) {
+      await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+        forceCompile: true,
+      });
+    }
     if (!withoutInit) {
       ({ region } = cfg.amplifyExtension);
       await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);

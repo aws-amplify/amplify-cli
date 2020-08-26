@@ -2,6 +2,7 @@ const glob = require('glob-all');
 const path = require('path');
 const { generate } = require('amplify-graphql-types-generator');
 const Ora = require('ora');
+const fs = require('fs-extra');
 
 const constants = require('../constants');
 const loadConfig = require('../codegen-config');
@@ -36,12 +37,6 @@ async function generateTypes(context, forceDownloadSchema, withoutInit = false, 
       ({ projectPath } = context.amplify.getEnvInfo());
     }
 
-    if (context.input.command === 'types') {
-      await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-        forceCompile: true,
-      });
-    }
-
     try {
       projects.forEach(async cfg => {
         const { generatedFileName } = cfg.amplifyExtension || {};
@@ -57,6 +52,12 @@ async function generateTypes(context, forceDownloadSchema, withoutInit = false, 
         });
         const schemaPath = path.join(projectPath, cfg.schema);
         const target = cfg.amplifyExtension.codeGenTarget;
+
+        if (context.input.command === 'types' && !schemaPath.endsWith('.json') && fs.existsSync(schemaPath)) {
+          await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+            forceCompile: true,
+          });
+        }
 
         const outputPath = path.join(projectPath, generatedFileName);
         let region;
