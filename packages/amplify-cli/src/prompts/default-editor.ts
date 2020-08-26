@@ -44,20 +44,3 @@ export async function editorSelect(editors = defaultEditors, initialEditor?) {
   const { editorSelected } = await prompt(editorPrompt);
   return editorSelected;
 }
-
-export function normalizeEditor(editor) {
-  let normalizedEditor = editor;
-  if (normalizedEditor) {
-    normalizedEditor = normalizedEditor.toLowerCase();
-
-    if (normalizedEditor === 'idea14ce') {
-      normalizedEditor = 'intellij';
-    } else if (normalizedEditor === 'code') {
-      normalizedEditor = 'vscode';
-    }
-
-    normalizedEditor = defaultEditors.findIndex(editorEntry => editorEntry.value === normalizedEditor) > -1 ? normalizedEditor : undefined;
-  }
-
-  return normalizedEditor;
-}

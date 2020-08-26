@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as inquirer from 'inquirer'; } 
+import * as inquirer from 'inquirer';
 import { normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
-import { normalizeEditor, editorSelect, projectNameInput, envNameInput, envNameSelect, INVALID_ENV_NAME_MSG } from '../prompts';
+import { editorSelect, projectNameInput, envNameInput, envNameSelect, INVALID_ENV_NAME_MSG } from '../prompts';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
 import { stateManager } from 'amplify-cli-core';
