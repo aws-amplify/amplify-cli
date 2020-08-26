@@ -3006,16 +3006,6 @@
     pascal-case "3.1.1"
     tslib "1.10.0"
 
-"@graphql-toolkit/common@0.10.4":
-  version "0.10.4"
-  resolved "https://registry.npmjs.org/@graphql-toolkit/common/-/common-0.10.4.tgz#7785f2a3f14559d0778859c49f4442078c196695"
-  integrity sha512-HQ3HaxCqX+UE8y/0h7LMDBBGSIKJxY/gaQesaksvE2Y+N4NpSWdiW6HpOcgXfC2HGf9yM0hEdsERzzL8z3mbHQ==
-  dependencies:
-    aggregate-error "3.0.1"
-    camel-case "4.1.1"
-    graphql-tools "5.0.0"
-    lodash "4.17.15"
-
 "@graphql-toolkit/common@0.10.7":
   version "0.10.7"
   resolved "https://registry.npmjs.org/@graphql-toolkit/common/-/common-0.10.7.tgz#e5d4ddeae080c4f7357bc7d6a8d02e75578e9bd1"
@@ -3062,14 +3052,6 @@
     unixify "1.0.0"
     valid-url "1.0.9"
 
-"@graphql-toolkit/file-loading@0.10.4":
-  version "0.10.4"
-  resolved "https://registry.npmjs.org/@graphql-toolkit/file-loading/-/file-loading-0.10.4.tgz#50e8933e44b17853544c1fe63350df93f33a5e80"
-  integrity sha512-oUmy/sO3BJfax85pVKI7FZ6TWrViNuWXoJkRM293YV9bKGuYU9TgqZoHyM+oEqWO5ruXCL/nCdw3cIBau+rSNA==
-  dependencies:
-    globby "11.0.0"
-    unixify "1.0.0"
-
 "@graphql-toolkit/graphql-file-loader@^0.10.6":
   version "0.10.7"
   resolved "https://registry.npmjs.org/@graphql-toolkit/graphql-file-loader/-/graphql-file-loader-0.10.7.tgz#496e49712def12449b339739d3583ed1bda7a24f"
@@ -3093,16 +3075,6 @@
   dependencies:
     "@graphql-toolkit/common" "0.9.7"
     relay-compiler "8.0.0"
-
-"@graphql-toolkit/schema-merging@0.10.4":
-  version "0.10.4"
-  resolved "https://registry.npmjs.org/@graphql-toolkit/schema-merging/-/schema-merging-0.10.4.tgz#2428590a531a33e9fe03be27cce9030f1c4c044b"
-  integrity sha512-naL6reYBuILLMrkMfKz0lOLL0kl6gGYnaaywnO/Dgp9F4NeAxDdAs5CV6Fy9NO5OzePFP58Dnc4sh2RyYrrFJg==
-  dependencies:
-    "@graphql-toolkit/common" "0.10.4"
-    deepmerge "4.2.2"
-    graphql-tools "5.0.0"
-    tslib "1.11.1"
 
 "@graphql-toolkit/schema-merging@0.10.7":
   version "0.10.7"
@@ -3133,6 +3105,31 @@
     graphql-tools "5.0.0"
     tslib "1.11.2"
     valid-url "1.0.9"
+
+"@graphql-tools/merge@^6.0.18":
+  version "6.0.18"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/merge/-/merge-6.0.18.tgz#d105e16c6f5f874ddfdba3f3f4a2f676a6d2d04a"
+  integrity sha512-XAFbqMyXsExnuzgr5+JQC8mxsYp0aGIR0m+GbleQDZSlqDOL2maF5xM3dGOOkguz0Paa7ei/5UfnMXyRU3cW/w==
+  dependencies:
+    "@graphql-tools/schema" "6.0.18"
+    "@graphql-tools/utils" "6.0.18"
+    tslib "~2.0.0"
+
+"@graphql-tools/schema@6.0.18":
+  version "6.0.18"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/schema/-/schema-6.0.18.tgz#243eb370e4cded00767202bbabf0893f65c3f5b9"
+  integrity sha512-xrScjRX9pTSVxqiSkx7Hn/9rzxLweysINa5Pkirdkv5lJY4e0Db53osur0nG/+SJyUmIN70tUtuhEZq4Ezr/PA==
+  dependencies:
+    "@graphql-tools/utils" "6.0.18"
+    tslib "~2.0.0"
+
+"@graphql-tools/utils@6.0.18":
+  version "6.0.18"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-6.0.18.tgz#bba960f0ab327c8304089d41da0b7a3e00fe430f"
+  integrity sha512-8ntYuXJucBtjViOYljeKBzScfpVTnv7BfqIPU/WJ65h6nXD+qf8fMUR1C4MpCUeFvSjMiDSB5Z4enJmau/9D3A==
+  dependencies:
+    "@ardatan/aggregate-error" "0.0.1"
+    camel-case "4.1.1"
 
 "@graphql-tools/utils@^6.0.0":
   version "6.0.16"
@@ -15220,15 +15217,6 @@ merge-descriptors@1.0.1:
   resolved "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
   integrity sha1-sAqqVW3YtEVoFQ7J0blT8/kMu2E=
 
-merge-graphql-schemas@^1.7.6:
-  version "1.7.8"
-  resolved "https://registry.npmjs.org/merge-graphql-schemas/-/merge-graphql-schemas-1.7.8.tgz#11a0a672a38a61d988c09ffdebe1bd4f8418de48"
-  integrity sha512-C3EJ1i86OjmbcCT524wVPRl17M5VZzgyh9kIGYAlYnAILX+7xfh8cCbMKfehh9n4opZg6CtcPogCiVZ6PB2NyQ==
-  dependencies:
-    "@graphql-toolkit/file-loading" "0.10.4"
-    "@graphql-toolkit/schema-merging" "0.10.4"
-    tslib "1.11.1"
-
 merge-options@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/merge-options/-/merge-options-1.0.1.tgz#2a64b24457becd4e4dc608283247e94ce589aa32"
@@ -20755,11 +20743,6 @@ tslib@1.10.0:
   version "1.10.0"
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
-
-tslib@1.11.1:
-  version "1.11.1"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-1.11.1.tgz#eb15d128827fbee2841549e171f45ed338ac7e35"
-  integrity sha512-aZW88SY8kQbU7gpV19lN24LtXh/yD4ZZg6qieAJDDg+YBsJcSmLGK9QpnUjAKVG/xefmvJGd1WUmfpT/g6AJGA==
 
 tslib@1.11.2:
   version "1.11.2"
