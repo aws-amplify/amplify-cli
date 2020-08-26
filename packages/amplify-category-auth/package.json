@@ -9,12 +9,13 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "keywords": [
     "amplify",
     "aws"
   ],
   "scripts": {
+    "build": "tsc",
     "test": "jest",
     "test-watch": "jest --watch"
   },
@@ -35,9 +36,14 @@
   },
   "jest": {
     "collectCoverage": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
     "testURL": "http://localhost",
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
+      "ts",
+      "tsx",
       "js",
       "jsx",
       "json",

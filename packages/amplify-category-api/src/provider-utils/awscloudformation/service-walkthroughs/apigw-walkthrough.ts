@@ -275,7 +275,7 @@ async function askPrivacy(context, answers, currentPath) {
 
         const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
         // getting requirement satisfaction map
-        const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+        const satisfiedRequirements = await checkRequirements(apiRequirements, context);
         // checking to see if any requirements are unsatisfied
         const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
@@ -297,7 +297,7 @@ async function askPrivacy(context, answers, currentPath) {
         allowUnauthenticatedIdentities = true;
         const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
         // getting requirement satisfaction map
-        const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+        const satisfiedRequirements = await checkRequirements(apiRequirements, context);
         // checking to see if any requirements are unsatisfied
         const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
@@ -319,7 +319,7 @@ async function askPrivacy(context, answers, currentPath) {
 
       const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
       // getting requirement satisfaction map
-      const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+      const satisfiedRequirements = await checkRequirements(apiRequirements, context);
       // checking to see if any requirements are unsatisfied
       const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
