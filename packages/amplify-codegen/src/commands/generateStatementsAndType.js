@@ -7,6 +7,7 @@ const constants = require('../constants');
 const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../utils');
 const path = require('path');
 const fs = require('fs-extra');
+const ensureSchemaCompiled = require('../utils/ensureSchemaCompiled');
 
 async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
   let withoutInit = false;
@@ -47,11 +48,7 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
     ({ projectPath } = context.amplify.getEnvInfo());
   }
 
-  if (!project.schema.endsWith('.json') && fs.existsSync(path.join(projectPath, project.schema))){
-    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-      forceCompile: true,
-    });
-  }
+  await ensureSchemaCompiled(context, path.join(projectPath, project.schema));
 
   let downloadPromises;
   if (!withoutInit) {

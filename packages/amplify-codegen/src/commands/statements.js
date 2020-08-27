@@ -5,7 +5,7 @@ const { generate } = require('amplify-graphql-docs-generator');
 
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
-const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
+const { ensureIntrospectionSchema, ensureSchemaCompiled, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateStatements(context, forceDownloadSchema, maxDepth, withoutInit = false, decoupleFrontend = '') {
   try {
@@ -42,10 +42,8 @@ async function generateStatements(context, forceDownloadSchema, maxDepth, withou
     const schemaPath = path.join(projectPath, cfg.schema);
     let region;
     let frontend;
-    if (context.input.command === 'statements' && !schemaPath.endsWith('.json') && fs.existsSync(schemaPath)) {
-      await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-        forceCompile: true,
-      });
+    if (context.input.command === 'statements') {
+      await ensureSchemaCompiled(context, schemaPath);
     }
     if (!withoutInit) {
       ({ region } = cfg.amplifyExtension);

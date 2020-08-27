@@ -15,6 +15,10 @@ const MOCK_CONTEXT = {
     getEnvInfo: jest.fn(),
     getProjectMeta: jest.fn(),
     executeProviderUtils: jest.fn(),
+    readJsonFile: jest.fn(),
+    pathManager: {
+      getAmplifyMetaFilePath: jest.fn(),
+    },
   },
   input: {},
 };
@@ -57,6 +61,7 @@ describe('command - generateStatementsAndTypes', () => {
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
     MOCK_CONTEXT.amplify.getEnvInfo.mockReturnValue({ projectPath: MOCK_PROJECT_ROOT });
+    MOCK_CONTEXT.amplify.readJsonFile.mockReturnValue({});
     getAppSyncAPIDetails.mockReturnValue(MOCK_APIS);
   });
 
