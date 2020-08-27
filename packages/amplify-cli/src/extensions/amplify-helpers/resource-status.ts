@@ -340,8 +340,7 @@ export async function showResourceTable(category, resourceName, filteredResource
   if (tagsUpdated) {
     print.info('Resource Tags Update Detected');
   }
-  const changedResourceCount =
-    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length + tagsUpdated ? 1 : 0;
+  const resourceChanged = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length > 0 || tagsUpdated;
 
-  return changedResourceCount;
+  return resourceChanged;
 }
