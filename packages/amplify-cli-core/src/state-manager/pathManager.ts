@@ -17,6 +17,7 @@ const PathConstants = {
   GitIgnoreFileName: '.gitignore',
   ProjectConfigFileName: 'project-config.json',
   AmplifyMetaFileName: 'amplify-meta.json',
+  TagsFileName: 'tags.json',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
@@ -67,6 +68,12 @@ export class PathManager {
 
   getBackendConfigFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.BackendConfigFileName]);
+
+  getTagFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.TagsFileName]);
+
+  getCurrentTagFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName, PathConstants.TagsFileName]);
 
   getCurrentAmplifyMetaFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [

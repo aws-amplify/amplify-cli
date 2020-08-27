@@ -16,6 +16,7 @@ export const amplifyCLIConstants = {
   LocalEnvFileName: 'local-env-info.json',
   ProviderInfoFileName: 'team-provider-info.json',
   BackendConfigFileName: 'backend-config.json',
+  TagsFileName: 'tags.json',
   PROJECT_CONFIG_VERSION: '3.0',
   BreadcrumbsFileName: 'amplify.state',
 };

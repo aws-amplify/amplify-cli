@@ -5,6 +5,7 @@ export * from './feature-flags';
 export * from './jsonUtilities';
 export * from './jsonValidationError';
 export * from './state-manager';
+export * from './tags';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

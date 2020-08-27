@@ -26,6 +26,11 @@ function getProjectMeta(projectRoot: string) {
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 }
 
+function getProjectTags(projectRoot: string) {
+  const metaFilePath = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'tags.json');
+  return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
+}
+
 function getBackendAmplifyMeta(projectRoot: string) {
   const metaFilePath = path.join(projectRoot, 'amplify', 'backend', 'amplify-meta.json');
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
@@ -51,6 +56,7 @@ function getAwsIOSConfig(projectRoot: string) {
 
 export {
   getProjectMeta,
+  getProjectTags,
   getBackendAmplifyMeta,
   getAwsAndroidConfig,
   getAwsIOSConfig,
