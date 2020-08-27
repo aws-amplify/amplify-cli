@@ -160,10 +160,8 @@ export function previousPermissionsQuestion(layerName: string): ListQuestion[] {
 export async function chooseParamsOnEnvInit(context: any, layerName: string) {
   const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
   const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
-  const filteredEnvs = Object.keys(teamProviderInfo).filter(
-    env =>
-      _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'runtimes']) &&
-      _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'layerVersionMap']),
+  const filteredEnvs = Object.keys(teamProviderInfo).filter(env =>
+    _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'layerVersionMap']),
   );
   const currentEnv = context.amplify.getEnvInfo().envName;
   if (filteredEnvs.includes(currentEnv)) {
