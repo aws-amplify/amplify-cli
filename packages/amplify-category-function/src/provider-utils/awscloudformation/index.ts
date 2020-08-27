@@ -11,6 +11,7 @@ import {
   createLayerArtifacts,
   updateLayerArtifacts,
 } from './utils/storeResources';
+import { getLayerRuntimes } from './utils/layerRuntimes';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
 import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
@@ -342,13 +343,14 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
     const layerEnvParams = {
+      ...teamProviderParams,
       build: true,
       layerName: resourceName,
       providerContext,
-      ...teamProviderParams,
+      runtimes: getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), resourceName),
     };
 
-    updateLayerArtifacts(context, layerEnvParams, 1);
+    updateLayerArtifacts(context, layerEnvParams, 1, { layerParams: false });
   }
 }
 

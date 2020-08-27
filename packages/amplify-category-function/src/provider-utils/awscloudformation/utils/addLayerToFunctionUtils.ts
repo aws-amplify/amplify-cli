@@ -1,10 +1,12 @@
 import _ from 'lodash';
+import path from 'path';
 import { FunctionRuntime, FunctionDependency, LambdaLayer, ProjectLayer, ExternalLayer } from 'amplify-function-plugin-interface';
 import { category } from '../../..';
 import { ServiceName } from './constants';
 import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
 import enquirer from 'enquirer';
 import { LayerMetadataFactory } from './layerParams';
+import { getLayerRuntimes } from './layerRuntimes';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
@@ -26,6 +28,7 @@ export const askLayerSelection = async (
   amplifyMeta,
   runtimeValue: string,
   previousSelections: LambdaLayer[] = [],
+  backendDir: string,
 ): Promise<{ lambdaLayers: LambdaLayer[]; dependsOn: FunctionDependency[]; askArnQuestion: boolean }> => {
   const lambdaLayers: LambdaLayer[] = [];
   const dependsOn: FunctionDependency[] = [];
@@ -33,7 +36,10 @@ export const askLayerSelection = async (
   const functionMeta = _.get(amplifyMeta, [category]) || {};
   const layerOptions = _.keys(functionMeta)
     .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
-    .filter(key => isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes)); // filter by compatible runtimes
+    .filter(key => {
+      // filter by compatible runtimes
+      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(backendDir, key));
+    });
 
   if (layerOptions.length === 0) {
     return {
