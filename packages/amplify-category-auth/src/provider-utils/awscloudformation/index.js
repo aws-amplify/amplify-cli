@@ -121,7 +121,7 @@ async function addResource(context, category, service) {
   projectName = projectName.replace(disallowedChars, '');
 
   return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata)
-    .then(async result => {
+    .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap, generalDefaults, roles } = require(defaultValuesSrc);
 
@@ -349,7 +349,7 @@ async function updateConfigOnEnvInit(context, category, service) {
   // ask only env specific questions
   let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, service);
 
-  // headless mode
+  // legacy headless mode (only supports init)
   if (isInHeadlessMode(context)) {
     const envParams = {};
     let mergedValues;
@@ -603,7 +603,7 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-async function lambdaTriggers(coreAnswers, context, previouslySaved) {
+async function lambdaTriggers(coreAnswers: { [x: string]: any;  }, context: { amplify: { getTriggerPermissions: (arg0: any, arg1: any, arg2: string, arg3: any) => any; pathManager: { getBackendDirPath: () => any; }; deleteAllTriggers: (arg0: any, arg1: any, arg2: any, arg3: any) => any; dependsOnBlock: (arg0: any, arg1: string[], arg2: string) => any; }; }, previouslySaved: {} | null) {
   const { handleTriggers } = require('./utils/trigger-flow-auth-helper');
   let triggerKeyValues = {};
 
@@ -647,7 +647,7 @@ async function copyS3Assets(context, props) {
   }
 }
 
-async function verificationBucketName(current, previous) {
+async function verificationBucketName(current, previous?) {
   if (current.triggers && current.triggers.CustomMessage && current.triggers.CustomMessage.includes('verification-link')) {
     const name = previous ? previous.resourceName : current.resourceName;
     current.verificationBucketName = `${name.toLowerCase()}verificationbucket`;

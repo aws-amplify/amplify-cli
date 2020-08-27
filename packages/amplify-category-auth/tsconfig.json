@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "strict": false, // because some files were converted from js
+    "strict": false, // packaged converted from js
+    "noImplicitAny": true,
     "allowJs": true
   },
   "exclude": [
@@ -13,4 +14,7 @@
     "provider-utils/awscloudformation/triggers",
     "src/__tests__",
   ],
+  "references": [
+    {"path": "../amplify-headless-interface"}
+  ]
 }

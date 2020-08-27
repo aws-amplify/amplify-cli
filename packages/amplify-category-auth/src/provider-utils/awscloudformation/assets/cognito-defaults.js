@@ -32,7 +32,7 @@ const userPoolDefaults = projectName => {
     smsVerificationMessage: 'Your verification code is {####}',
     emailVerificationSubject: 'Your verification code',
     emailVerificationMessage: 'Your verification code is {####}',
-    defaultPasswordPolicy: booleanOptions.find(b => b.value === false).value,
+    defaultPasswordPolicy: false,
     passwordPolicyMinLength: 8,
     passwordPolicyCharacters: [],
     requiredAttributes: ['email'],

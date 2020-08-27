@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "amplify-category-function": "2.24.0",
+    "amplify-headless-interface": "1.2.0",
     "aws-sdk": "^2.608.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
