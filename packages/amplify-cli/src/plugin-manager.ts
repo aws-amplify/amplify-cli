@@ -1,6 +1,7 @@
+import * as inquirer from 'inquirer';
 import { PluginPlatform } from './domain/plugin-platform';
 import { PluginInfo } from './domain/plugin-info';
-import { readPluginsJsonFileSync, writePluginsJsonFileSync } from './plugin-helpers/access-plugins-file';
+import { readPluginsJsonFile, writePluginsJsonFile } from './plugin-helpers/access-plugins-file';
 import {
   scanPluginPlatform,
   getCorePluginDirPath,
@@ -12,7 +13,6 @@ import createNewPlugin from './plugin-helpers/create-new-plugin';
 import { AddPluginResult, AddPluginError } from './domain/add-plugin-result';
 import { twoPluginsAreTheSame } from './plugin-helpers/compare-plugins';
 import { AmplifyEvent } from './domain/amplify-event';
-import inquirer from './domain/inquirer-helper';
 import { constants } from './domain/constants';
 import { print } from './context-extensions';
 
@@ -24,7 +24,8 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
   // 3. re-scan if needed.
   // 4. write to update the plugins.json file if re-scan is performed
   // 5. return the pluginsInfo object
-  let pluginPlatform = readPluginsJsonFileSync();
+  let pluginPlatform = readPluginsJsonFile();
+
   if (pluginPlatform) {
     if (isCoreMatching(pluginPlatform)) {
       const lastScanTime = new Date(pluginPlatform.lastScanTime);
@@ -203,7 +204,8 @@ export const addPluginPackage = async (pluginPlatform: PluginPlatform, pluginDir
     }
 
     // write the plugins.json file
-    writePluginsJsonFileSync(pluginPlatform);
+    writePluginsJsonFile(pluginPlatform);
+
     result.isAdded = true;
   } else {
     result.error = AddPluginError.FailedVerification;
@@ -246,5 +248,6 @@ export function removePluginPackage(pluginPlatform: PluginPlatform, pluginInfo: 
     pluginPlatform.excluded[pluginInfo.manifest.name] = pluginPlatform.excluded[pluginInfo.manifest.name] || [];
     pluginPlatform.excluded[pluginInfo.manifest.name].push(pluginInfo);
   }
-  writePluginsJsonFileSync(pluginPlatform);
+
+  writePluginsJsonFile(pluginPlatform);
 }

@@ -6,6 +6,7 @@ import redactInput from './identifiable-input-regex';
 import { UsageDataPayload } from './UsageDataPayload';
 import { getUrl } from './getUsageDataUrl';
 import { IUsageData } from './IUsageData';
+import { JSONUtilities } from 'amplify-cli-core';
 
 export class UsageData implements IUsageData {
   sessionUuid: String;
@@ -53,7 +54,9 @@ export class UsageData implements IUsageData {
 
   async send(payload: UsageDataPayload) {
     return new Promise<void>((resolve, _) => {
-      const data = JSON.stringify(payload);
+      const data: string = JSONUtilities.stringify(payload, {
+        minify: true,
+      })!;
       const req = https.request({
         hostname: this.url.hostname,
         port: this.url.port,

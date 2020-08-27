@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { CLIContextEnvironmentProvider, FeatureFlags } from 'amplify-cli-core';
+import { CLIContextEnvironmentProvider, FeatureFlags, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -11,7 +11,8 @@ import { Context } from './domain/context';
 import { constants } from './domain/constants';
 import { checkProjectConfigVersion } from './project-config-version-check';
 import { default as updateNotifier } from 'update-notifier';
-const pkg = require('../package.json');
+
+const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
 const notifier = updateNotifier({ pkg }); // defaults to 1 day interval
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
@@ -22,11 +23,10 @@ EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
 export async function run() {
-  let input = null;
   let errorHandler = (e: Error) => {};
   try {
     let pluginPlatform = await getPluginPlatform();
-    input = getCommandLineInput(pluginPlatform);
+    let input = getCommandLineInput(pluginPlatform);
     // with non-help command supplied, give notification before execution
     if (input.command !== 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
@@ -164,7 +164,9 @@ export async function execute(input: Input): Promise<number> {
 }
 
 export async function executeAmplifyCommand(context: Context) {
-  const commandPath = path.normalize(path.join(__dirname, 'commands', context.input.command!));
-  const commandModule = require(commandPath);
-  await commandModule.run(context);
+  if (context.input.command) {
+    const commandPath = path.normalize(path.join(__dirname, 'commands', context.input.command));
+    const commandModule = await import(commandPath);
+    await commandModule.run(context);
+  }
 }

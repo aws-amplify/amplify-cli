@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.20.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.20.2...graphql-auth-transformer@6.20.3) (2020-08-20)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** allow optional owner arg on multi auth ([#4719](https://github.com/aws-amplify/amplify-cli/issues/4719)) ([fd0a4bc](https://github.com/aws-amplify/amplify-cli/commit/fd0a4bcfbf8532cb3e13438923a1e03f7260ef26)), closes [#4638](https://github.com/aws-amplify/amplify-cli/issues/4638)
+
+
+
+
+
+## [6.20.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.20.1...graphql-auth-transformer@6.20.2) (2020-08-14)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** add authmode check ([#5014](https://github.com/aws-amplify/amplify-cli/issues/5014)) ([23080c4](https://github.com/aws-amplify/amplify-cli/commit/23080c4406dde488b68c38d01efbb625537894ab)), closes [#3700](https://github.com/aws-amplify/amplify-cli/issues/3700)
+* **graphql-auth-transformer:** early return if no obj ([#5050](https://github.com/aws-amplify/amplify-cli/issues/5050)) ([ed1f2b3](https://github.com/aws-amplify/amplify-cli/commit/ed1f2b364b50ab3f2b16ddac849c937b239bb499))
+
+
+
+
+
+## [6.20.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.20.0...graphql-auth-transformer@6.20.1) (2020-08-11)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix null owner auth assignment ([#5045](https://github.com/aws-amplify/amplify-cli/issues/5045)) ([72bdb19](https://github.com/aws-amplify/amplify-cli/commit/72bdb19f83396237d59f33ed968e47e62df5d500)), closes [#5018](https://github.com/aws-amplify/amplify-cli/issues/5018)
+
+
+
+
+
 # [6.20.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.18.6...graphql-auth-transformer@6.20.0) (2020-07-29)
 
 

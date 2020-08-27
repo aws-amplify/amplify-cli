@@ -253,7 +253,7 @@ function printLayerSuccessMessages(context: any, parameters: LayerParameters, ac
 
 async function openEditor(context, category: string, resourceName: string, template: Partial<FunctionTemplate>, displayName = 'local') {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  if (await context.amplify.confirmPrompt.run(`Do you want to edit the ${displayName} lambda function now?`)) {
+  if (await context.amplify.confirmPrompt(`Do you want to edit the ${displayName} lambda function now?`)) {
     let targetFile = '';
 
     // try to load the default editor file from the function template
@@ -342,7 +342,9 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
     if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
       const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
       const triggerPath = `${__dirname}/../../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
-      if (context.commandName !== 'checkout') {
+      const isEnvCommand = context.input.command === 'env';
+
+      if (!isEnvCommand) {
         envParams = await context.amplify.getTriggerEnvInputs(
           context,
           triggerPath,

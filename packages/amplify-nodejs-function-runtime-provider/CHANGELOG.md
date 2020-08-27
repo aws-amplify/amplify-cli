@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.2...amplify-nodejs-function-runtime-provider@1.1.3) (2020-08-20)
+
+
+### Bug Fixes
+
+* **amplify-nodejs-function-runtime-provider:** truncated results ([#5107](https://github.com/aws-amplify/amplify-cli/issues/5107)) ([8f2607c](https://github.com/aws-amplify/amplify-cli/commit/8f2607cadfe3bf71c9b17847c3d6947998dfa76c))
+
+
+
+
+
 ## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.0...amplify-nodejs-function-runtime-provider@1.1.2) (2020-07-29)
 
 

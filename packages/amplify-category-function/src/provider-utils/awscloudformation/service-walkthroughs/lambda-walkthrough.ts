@@ -40,7 +40,7 @@ export async function createWalkthrough(
   // ask template selection questions and merge in results
   templateParameters = merge(templateParameters, await templateWalkthrough(context, templateParameters));
 
-  if (await context.amplify.confirmPrompt.run('Do you want to access other resources in this project from your Lambda function?')) {
+  if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
     templateParameters = merge(templateParameters, await askExecRolePermissionsQuestions(context, templateParameters.functionName));
   }
 
@@ -99,9 +99,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const currentParameters = loadFunctionParameters(context, resourceDirPath);
 
   if (
-    await context.amplify.confirmPrompt.run(
-      'Do you want to update the Lambda function permissions to access other resources in this project?',
-    )
+    await context.amplify.confirmPrompt('Do you want to update the Lambda function permissions to access other resources in this project?')
   ) {
     merge(functionParameters, await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions));
 

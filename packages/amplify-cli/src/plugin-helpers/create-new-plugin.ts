@@ -1,13 +1,14 @@
-import path from 'path';
-import fs from 'fs-extra';
-import inquirer from '../domain/inquirer-helper';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import * as inquirer from 'inquirer';
 import { Context } from '../domain/context';
 import { constants } from '../domain/constants';
 import { AmplifyEvent } from '../domain/amplify-event';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
-import { readJsonFileSync } from '../utils/readJsonFile';
 import { validPluginName } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';
+import { InputQuestion, ConfirmQuestion } from 'inquirer';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 const INDENTATIONSPACE = 4;
 
@@ -28,7 +29,7 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
     // subcommands: ['new', 'name']
     pluginName = context.input.subCommands![1];
   } else if (!yesFlag) {
-    const pluginNameQuestion = {
+    const pluginNameQuestion: InputQuestion = {
       type: 'input',
       name: 'pluginName',
       message: 'What should be the name of the plugin:',
@@ -49,7 +50,7 @@ async function getPluginName(context: Context, pluginParentDirPath: string): Pro
 
   if (fs.existsSync(pluginDirPath) && !yesFlag) {
     context.print.error(`The directory ${pluginName} already exists`);
-    const overwriteQuestion = {
+    const overwriteQuestion: ConfirmQuestion = {
       type: 'confirm',
       name: 'ifOverWrite',
       message: 'Do you want to overwrite it?',
@@ -193,20 +194,22 @@ events might be added or removed in future releases.');
 
 function updatePackageJson(pluginDirPath: string, pluginName: string): void {
   const filePath = path.join(pluginDirPath, 'package.json');
-  const packageJson = readJsonFileSync(filePath);
+  const packageJson = JSONUtilities.readJson<$TSAny>(filePath);
+
   packageJson.name = pluginName;
-  const jsonString = JSON.stringify(packageJson, null, INDENTATIONSPACE);
-  fs.writeFileSync(filePath, jsonString, 'utf8');
+
+  JSONUtilities.writeJson(filePath, packageJson);
 }
 
 function updateAmplifyPluginJson(pluginDirPath: string, pluginName: string, pluginType: string, eventHandlers: string[]): void {
   const filePath = path.join(pluginDirPath, constants.MANIFEST_FILE_NAME);
-  const amplifyPluginJson = readJsonFileSync(filePath);
+  const amplifyPluginJson = JSONUtilities.readJson<$TSAny>(filePath);
+
   amplifyPluginJson.name = pluginName;
   amplifyPluginJson.type = pluginType;
   amplifyPluginJson.eventHandlers = eventHandlers;
-  const jsonString = JSON.stringify(amplifyPluginJson, null, INDENTATIONSPACE);
-  fs.writeFileSync(filePath, jsonString, 'utf8');
+
+  JSONUtilities.writeJson(filePath, amplifyPluginJson);
 }
 
 function updateEventHandlersFolder(pluginDirPath: string, eventHandlers: string[]): void {

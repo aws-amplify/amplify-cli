@@ -6,7 +6,9 @@ import { SyncConfigLAMBDA, SyncConfigOPTIMISTIC, SyncConfigSERVER } from './tran
 type SyncConfig = {
   ConflictDetection: string;
   ConflictHandler: string;
-  LambdaConflictHandlerArn?: any;
+  LambdaConflictHandlerConfig?: {
+    LambdaConflictHandlerArn?: any;
+  };
 };
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -93,7 +95,7 @@ export module SyncUtils {
     });
   }
   export function syncLambdaArnResource({ name, region }: { name: string; region?: string }) {
-    const env = 'env;';
+    const env = 'env';
     const substitutions = {};
     if (referencesEnv(name)) {
       substitutions[env] = Fn.Ref(ResourceConstants.PARAMETERS.Env);
@@ -101,7 +103,7 @@ export module SyncUtils {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Sub(lambdaArnKey(name, region), substitutions),
-      Fn.Sub(lambdaArnKey(removeEnvReference(name), region), {})
+      Fn.Sub(lambdaArnKey(removeEnvReference(name), region), {}),
     );
   }
   export function lambdaArnKey(name: string, region?: string) {
@@ -119,7 +121,7 @@ export module SyncUtils {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Join(separator, [...listToJoin, Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
-      Fn.Join(separator, listToJoin)
+      Fn.Join(separator, listToJoin),
     );
   }
   export function syncLambdaIAMRole({ name, region }: { name: string; region?: string }) {
@@ -135,7 +137,7 @@ export module SyncUtils {
           // tslint:disable-next-line: no-magic-numbers
           name.slice(0, 37), // max of 64. 64-26-38 = 0
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
-        ])
+        ]),
       ),
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
@@ -205,7 +207,9 @@ export module SyncUtils {
       ConflictHandler: syncConfig.ConflictHandler,
     };
     if (isLambdaSyncConfig(syncConfig)) {
-      resolverObj.LambdaConflictHandlerArn = syncLambdaArnResource(syncConfig.LambdaConflictHandler);
+      resolverObj.LambdaConflictHandlerConfig = {
+        LambdaConflictHandlerArn: syncLambdaArnResource(syncConfig.LambdaConflictHandler),
+      };
     }
     return resolverObj;
   }

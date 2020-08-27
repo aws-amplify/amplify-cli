@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.2...amplify-e2e-tests@2.21.3) (2020-08-14)
+
+
+### Bug Fixes
+
+* Added check to stop prompts for cognito triggers while using env commands ([#5039](https://github.com/aws-amplify/amplify-cli/issues/5039)) ([744dbc4](https://github.com/aws-amplify/amplify-cli/commit/744dbc42e847e273160caf3672365391f055191b))
+
+
+
+
+
+## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.1...amplify-e2e-tests@2.21.2) (2020-08-11)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.0...amplify-e2e-tests@2.21.1) (2020-08-06)
+
+
+### Bug Fixes
+
+* return undefined for empty conflict resolution ([#4982](https://github.com/aws-amplify/amplify-cli/issues/4982)) ([7c5bf1a](https://github.com/aws-amplify/amplify-cli/commit/7c5bf1a36078a345d80ecbf2cea3a067ae1137e1)), closes [#4965](https://github.com/aws-amplify/amplify-cli/issues/4965)
+
+
+
+
+
 # [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.19.3...amplify-e2e-tests@2.21.0) (2020-07-29)
 
 

@@ -1,10 +1,10 @@
-import fs from 'fs-extra';
-import os from 'os';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
 import { PluginPlatform } from '../../domain/plugin-platform';
-import inquirer from '../../domain/inquirer-helper';
 import { constants } from '../../domain/constants';
-import { writePluginsJsonFileSync } from '../../plugin-helpers/access-plugins-file';
+import { writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 import { scan } from '../../plugin-manager';
 import {
@@ -17,7 +17,7 @@ import {
 const MINPREFIXLENGTH = 2;
 const MAXPREFIXLENGTH = 20;
 
-export async function run(context: Context): Promise<PluginPlatform> {
+export const run = async (context: Context): Promise<PluginPlatform> => {
   const { pluginPlatform } = context;
   const pluginDirectories = 'scannable plugin directories';
   const pluginPrefixes = 'scannable plugin prefixes';
@@ -52,10 +52,10 @@ export async function run(context: Context): Promise<PluginPlatform> {
     }
   } while (answer.selection !== exit);
 
-  writePluginsJsonFileSync(pluginPlatform);
+  writePluginsJsonFile(pluginPlatform);
 
   return scan(pluginPlatform);
-}
+};
 
 async function configurePluginDirectories(context: Context, pluginPlatform: PluginPlatform) {
   displayPluginDirectories(context, pluginPlatform);

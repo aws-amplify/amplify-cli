@@ -1,7 +1,7 @@
-import os from 'os';
-import path from 'path';
+import * as os from 'os';
+import * as path from 'path';
 import { Context } from '../domain/context';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 
 export function getPath(context: Context) {
   const executable = path.basename(context.input.argv[1]);

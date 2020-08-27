@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.27.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.27.2...@aws-amplify/cli@4.27.3) (2020-08-20)
+
+
+### Bug Fixes
+
+* **cli:** open editor in windows ([#5091](https://github.com/aws-amplify/amplify-cli/issues/5091)) ([33995eb](https://github.com/aws-amplify/amplify-cli/commit/33995eb98cf0b893262db5c4f6e8a803492e2d8a)), closes [#5028](https://github.com/aws-amplify/amplify-cli/issues/5028)
+
+
+
+
+
+## [4.27.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.27.1...@aws-amplify/cli@4.27.2) (2020-08-14)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.27.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.27.0...@aws-amplify/cli@4.27.1) (2020-08-11)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [4.27.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.26.0...@aws-amplify/cli@4.27.0) (2020-08-06)
+
+
+### Features
+
+* add check for extra command line args provided with amplify delete ([#4802](https://github.com/aws-amplify/amplify-cli/issues/4802)) ([46351a1](https://github.com/aws-amplify/amplify-cli/commit/46351a17dcc3067ace51673f403efb7be2e31228)), closes [#4115](https://github.com/aws-amplify/amplify-cli/issues/4115)
+
+
+
+
+
 # [4.26.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.24.3...@aws-amplify/cli@4.26.0) (2020-07-29)
 
 

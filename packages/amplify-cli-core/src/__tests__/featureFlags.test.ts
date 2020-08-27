@@ -36,7 +36,7 @@ describe('feature flags', () => {
         await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, tempProjectDir);
         await FeatureFlags.ensureDefaultFeatureFlags(true);
 
-        const updatedConfig = await JSONUtilities.readJson<any>(projectConfigFileName);
+        const updatedConfig = JSONUtilities.readJson<any>(projectConfigFileName);
 
         expect(updatedConfig.usageTracking).toBeDefined();
         expect(updatedConfig.features).toMatchObject(FeatureFlags.getNewProjectDefaults());

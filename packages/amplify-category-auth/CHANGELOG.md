@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.18.2...amplify-category-auth@2.18.3) (2020-08-20)
+
+
+### Bug Fixes
+
+* admin queries typo ([#5038](https://github.com/aws-amplify/amplify-cli/issues/5038)) ([1f37437](https://github.com/aws-amplify/amplify-cli/commit/1f374373061fff59b97e0f7ab3b3b84d1412416e))
+
+
+
+
+
+## [2.18.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.18.1...amplify-category-auth@2.18.2) (2020-08-14)
+
+
+### Bug Fixes
+
+* Added check to stop prompts for cognito triggers while using env commands ([#5039](https://github.com/aws-amplify/amplify-cli/issues/5039)) ([744dbc4](https://github.com/aws-amplify/amplify-cli/commit/744dbc42e847e273160caf3672365391f055191b))
+
+
+
+
+
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.18.0...amplify-category-auth@2.18.1) (2020-08-11)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
 # [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.16.5...amplify-category-auth@2.18.0) (2020-07-29)
 
 

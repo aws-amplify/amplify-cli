@@ -25,6 +25,7 @@ export const legacyAddResource = async (serviceWalkthroughPromise: Promise<any>,
     if (answers.customCfnFile) {
       cfnFilename = answers.customCfnFile;
     }
+    addPolicyResourceNameToPaths(answers.paths);
     copyCfnTemplate(context, category, answers, cfnFilename);
 
     const parameters = { ...answers };
@@ -66,4 +67,15 @@ export const copyCfnTemplate = (context, category, options, cfnFilename) => {
 
   // copy over the files
   return context.amplify.copyBatch(context, copyJobs, options, true, false);
+};
+
+const addPolicyResourceNameToPaths = paths => {
+  if (Array.isArray(paths)) {
+    paths.forEach(p => {
+      const pathName = p.name;
+      if (typeof pathName === 'string') {
+        p.policyResourceName = pathName.replace(/{[a-zA-Z0-9\-]+}/g, '*');
+      }
+    });
+  }
 };

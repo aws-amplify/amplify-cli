@@ -2175,6 +2175,376 @@ public final class Location {
 "
 `;
 
+exports[`AppSyncModelVisitor One to Many connection with no nullable and non nullable fields should generate class for many side of the connection 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+import com.amplifyframework.core.model.annotations.BelongsTo;
+import com.amplifyframework.core.model.temporal.Temporal;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the task type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"tasks\\")
+public final class task implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField TODO = field(\\"taskTodoId\\");
+  public static final QueryField TIME = field(\\"time\\");
+  public static final QueryField CREATED_ON = field(\\"createdOn\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"Todo\\") @BelongsTo(targetName = \\"taskTodoId\\", type = Todo.class) Todo todo;
+  private final @ModelField(targetType=\\"AWSTime\\") Temporal.Time time;
+  private final @ModelField(targetType=\\"AWSDate\\") Temporal.Date createdOn;
+  public String getId() {
+      return id;
+  }
+  
+  public Todo getTodo() {
+      return todo;
+  }
+  
+  public Temporal.Time getTime() {
+      return time;
+  }
+  
+  public Temporal.Date getCreatedOn() {
+      return createdOn;
+  }
+  
+  private task(String id, Todo todo, Temporal.Time time, Temporal.Date createdOn) {
+    this.id = id;
+    this.todo = todo;
+    this.time = time;
+    this.createdOn = createdOn;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      task task = (task) obj;
+      return ObjectsCompat.equals(getId(), task.getId()) &&
+              ObjectsCompat.equals(getTodo(), task.getTodo()) &&
+              ObjectsCompat.equals(getTime(), task.getTime()) &&
+              ObjectsCompat.equals(getCreatedOn(), task.getCreatedOn());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getTodo())
+      .append(getTime())
+      .append(getCreatedOn())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"task {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"todo=\\" + String.valueOf(getTodo()) + \\", \\")
+      .append(\\"time=\\" + String.valueOf(getTime()) + \\", \\")
+      .append(\\"createdOn=\\" + String.valueOf(getCreatedOn()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static task justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new task(
+      id,
+      null,
+      null,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      todo,
+      time,
+      createdOn);
+  }
+  public interface BuildStep {
+    task build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep todo(Todo todo);
+    BuildStep time(Temporal.Time time);
+    BuildStep createdOn(Temporal.Date createdOn);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private Todo todo;
+    private Temporal.Time time;
+    private Temporal.Date createdOn;
+    @Override
+     public task build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new task(
+          id,
+          todo,
+          time,
+          createdOn);
+    }
+    
+    @Override
+     public BuildStep todo(Todo todo) {
+        this.todo = todo;
+        return this;
+    }
+    
+    @Override
+     public BuildStep time(Temporal.Time time) {
+        this.time = time;
+        return this;
+    }
+    
+    @Override
+     public BuildStep createdOn(Temporal.Date createdOn) {
+        this.createdOn = createdOn;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, Todo todo, Temporal.Time time, Temporal.Date createdOn) {
+      super.id(id);
+      super.todo(todo)
+        .time(time)
+        .createdOn(createdOn);
+    }
+    
+    @Override
+     public CopyOfBuilder todo(Todo todo) {
+      return (CopyOfBuilder) super.todo(todo);
+    }
+    
+    @Override
+     public CopyOfBuilder time(Temporal.Time time) {
+      return (CopyOfBuilder) super.time(time);
+    }
+    
+    @Override
+     public CopyOfBuilder createdOn(Temporal.Date createdOn) {
+      return (CopyOfBuilder) super.createdOn(createdOn);
+    }
+  }
+  
+}
+"
+`;
+
+exports[`AppSyncModelVisitor One to Many connection with no nullable and non nullable fields should generate class for one side of the connection 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+import com.amplifyframework.core.model.annotations.HasMany;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the Todo type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"Todos\\")
+public final class Todo implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"task\\") @HasMany(associatedWith = \\"todo\\", type = task.class) List<task> tasks = null;
+  public String getId() {
+      return id;
+  }
+  
+  public List<task> getTasks() {
+      return tasks;
+  }
+  
+  private Todo(String id) {
+    this.id = id;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      Todo todo = (Todo) obj;
+      return ObjectsCompat.equals(getId(), todo.getId());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"Todo {\\")
+      .append(\\"id=\\" + String.valueOf(getId()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static Todo justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new Todo(
+      id
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id);
+  }
+  public interface BuildStep {
+    Todo build();
+    BuildStep id(String id) throws IllegalArgumentException;
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    @Override
+     public Todo build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new Todo(
+          id);
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id) {
+      super.id(id);
+      
+    }
+  }
+  
+}
+"
+`;
+
 exports[`AppSyncModelVisitor Should generate a class a model with all optional fields 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 

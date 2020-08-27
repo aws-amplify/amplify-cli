@@ -1,4 +1,4 @@
-const { uploadFiles } = require('../../amplify-category-auth/provider-utils/awscloudformation/utils/trigger-file-uploader');
+const { uploadFiles } = require('amplify-category-auth');
 
 async function uploadAuthTriggerFiles(context, toBeCreated, toBeUpdated) {
   const newAuth = toBeCreated.find(a => a.service === 'Cognito');
