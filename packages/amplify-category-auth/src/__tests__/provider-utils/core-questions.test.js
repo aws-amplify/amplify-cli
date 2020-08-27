@@ -218,6 +218,7 @@ describe('When generating auth questions...', () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions3';
       input.requiredOptions = ['mappedOptions2'];
+      input.requiredOptionsMsg = 'required';
       currentAnswers.mappedOptions2 = 'value2';
       input.type = 'list';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
@@ -228,6 +229,7 @@ describe('When generating auth questions...', () => {
     it('should remove required options from the choices presented to the user (updatingAuth variant)', () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions3';
+      input.requiredOptionsMsg = 'required';
       input.requiredOptions = ['mappedOptions2'];
       Object.assign(mockContext, { updatingAuth: { mappedOptions2: 'value2' } });
       input.type = 'list';
