@@ -2,7 +2,6 @@ const glob = require('glob-all');
 const path = require('path');
 const { generate } = require('amplify-graphql-types-generator');
 const Ora = require('ora');
-const fs = require('fs-extra');
 
 const constants = require('../constants');
 const loadConfig = require('../codegen-config');
