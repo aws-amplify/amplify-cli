@@ -1379,7 +1379,7 @@ export const supportedServices = {
         type: "multiselect",
         map: "coreAttributes",
         iterator: "oidcAttributesMapping",
-        requiredOptions: ["usernameAttributes"],
+        requiredOptions: ["usernameAttributes", "requiredAttributes"],
         andConditions: [
           {
             key: "OIDCAdditionalMapping",

@@ -201,11 +201,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   // formatting oAuthMetaData
   structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
 
-  if (coreAnswers.usernameAttributes && !Array.isArray(coreAnswers.usernameAttributes)) {
-    if (coreAnswers.usernameAttributes === 'username') {
+  if (coreAnswers.usernameAttributes) {
+    if (coreAnswers.usernameAttributes.includes('username')) {
       delete coreAnswers.usernameAttributes;
-    } else {
-      coreAnswers.usernameAttributes = coreAnswers.usernameAttributes.split();
     }
   }
 

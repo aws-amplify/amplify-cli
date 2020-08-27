@@ -92,6 +92,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
 }
 
 function iteratorQuestion(input, question, context) {
+  console.log(`iterator questions`);
   if (context.updatingAuth[input.iterator]) {
     let iteratorValues = context.updatingAuth[input.iterator];
     if(input.iterator === 'oidcAttributesMapping') {
@@ -120,7 +121,6 @@ function iteratorQuestion(input, question, context) {
 }
 
 function getRequiredOptions(input, question, getAllMaps, context, currentAnswers) {
-
   const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
   const sourceArray = uniq(flatten(input.requiredOptions.map(i => sourceValues[i] || [])));
   let requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => sourceArray.includes(x.value)) : [];
@@ -149,7 +149,7 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
       requiredAttributes.forEach(attr => {
         choices.forEach(choice => {
           choice.missingAttributes = [];
-          if (!attrMap[attr] || !attrMap[attr][`${choice.value.toLowerCase()}`].attr) {
+          if ((!attrMap[attr] || !attrMap[attr][`${choice.value.toLowerCase()}`].attr) && choice.value !== 'OIDC') {
             choice.missingAttributes = choice.missingAttributes.length < 1 ? [attr] : choice.missingAttributes.concat(attr);
             const newList = choice.missingAttributes.join(', ');
             choice.disabled = `Your userpool is configured to require ${newList.substring(
@@ -163,7 +163,6 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
     question = Object.assign({ choices }, question);
   }
   if (input.filter === 'attributes') {
-    console.log(`filter attributes`)
     let choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     choices = JSON.parse(JSON.stringify(choices));
     const attrMap = getAllMaps().attributeProviderMap;

@@ -450,19 +450,19 @@ const authorizeScopes = [
 const signInOptions = [
   {
     name: 'Username',
-    value: 'username',
+    value: ['username'],
   },
   {
     name: 'Email',
-    value: 'email',
+    value: ['email'],
   },
   {
     name: 'Phone Number',
-    value: 'phone_number',
+    value: ['phone_number'],
   },
   {
     name: 'Email or Phone Number',
-    value: 'email, phone_number',
+    value: ['email', 'phone_number'],
   },
   ...learnMoreOption,
 ];
