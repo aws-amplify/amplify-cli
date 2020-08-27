@@ -255,265 +255,6 @@ export const supportedServices = {
         ],
       },
       {
-        key: "oidcAppIdUserPool",
-        question: "Enter your OIDC App ID for your OAuth flow: ",
-        required: true,
-        andConditions: [
-          {
-            key: "authProvidersUserPool",
-            value: "OIDC",
-            operator: "includes"
-          }
-        ]
-      },
-      {
-        key: "oidcAppSecretUserPool",
-        question: "Enter your OIDC App Secret for your OAuth flow (optional): ",
-        required: false,
-        andConditions: [
-          {
-            key: "authProvidersUserPool",
-            value: "OIDC",
-            operator: "includes"
-          }
-        ],
-        validation: {
-          operator: "regex",
-          value: ".*",
-          onErrorMsg: "The value can be anything."
-        }
-      },
-      {
-        key: "oidcAppOIDCIssuer",
-        question: "Enter your OIDC Issuer url: ",
-        required: true,
-        andConditions: [
-          {
-            key: "authProvidersUserPool",
-            value: "OIDC",
-            operator: "includes"
-          }
-        ],
-        validation: {
-          operator: "regex",
-          value: "^(((?!http://(?!localhost))([a-zA-Z0-9.]{1,})://([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,}))|(?!http)(?!https)([a-zA-Z0-9.]{1,})://)$",
-          onErrorMsg: "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
-        }
-      },
-      {
-        key: "oidcAppOIDCAttributesRequestMethod",
-        question: "Select your OIDC Attributes Request Method: ",
-        type: "list",
-        map: "attributesRequestMethod",
-        required: true,
-        andConditions: [
-          {
-            key: "authProvidersUserPool",
-            value: "OIDC",
-            operator: "includes"
-          }
-        ]
-      },
-      {
-        key: "OIDCAdditionalQuestions",
-        question: "Do you want to configure advanced settings such as setting scope and mapping ?",
-        type: "confirm",
-        andConditions: [
-          {
-            key: "authProvidersUserPool",
-            value: "OIDC",
-            operator: "includes"
-          }
-        ]
-      },
-      {
-        key: "newOIDCAuthorizeScopes",
-        question: "Enter a new authorized scope:",
-        required: true,
-        addAnotherLoop: "additional scope",
-        andConditions: [
-          {
-            key: "authProvidersUserPool",
-            value: "OIDC",
-            operator: "includes"
-          },
-          {
-            key: "OIDCAdditionalQuestions",
-            value: true,
-            operator: "="
-          },
-          {
-            preventEdit: "exists",
-            key: "oidcAuthorizeScopes"
-          },
-          {
-            preventEdit: "existsInCurrent",
-            key: "oidcAuthorizeScopes"
-          }
-        ]
-      },
-      {
-        key: "EditScopes",
-        question: "Which scopes do you want to edit ?",
-        type: "multiselect",
-        iterator: "oidcAuthorizeScopes",
-        iteratorValidation: {
-          operator: "regex",
-          value: ".*",
-          onErrorMsg: "The value must be a valid string or url."
-        },
-        andConditions: [
-          {
-            key: "oidcAuthorizeScopes",
-            operator: "exists"
-          },
-          {
-            onCreate: "never"
-          },
-          {
-            key: "OIDCAdditionalQuestions",
-            value: true,
-            operator: "="
-          }
-        ]
-      },
-      {
-        key: "addOIDCAuthorizeScopeOnUpdate",
-        question: "Do you want to add additional scopes ?",
-        required: true,
-        type: "confirm",
-        andConditions: [
-          {
-            onCreate: "never"
-          },
-          {
-            preventEdit: "existsInCurrent",
-            key: "newOIDCAuthorizeScopes"
-          },
-          {
-            key: "OIDCAdditionalQuestions",
-            value: true,
-            operator: "="
-          }
-        ]
-      },
-      {
-        key: "newOIDCAuthorizeScopes",
-        question: "Enter your new additional scope:",
-        required: true,
-        concatKey: "oidcAuthorizeScopes",
-        addAnotherLoop: "additional scope",
-        andConditions: [
-          {
-            key: "addOIDCAuthorizeScopeOnUpdate",
-            value: true,
-            operator: "="
-          },
-          {
-            onCreate: "never"
-          },
-          {
-            key: "OIDCAdditionalQuestions",
-            value: true,
-            operator: "="
-          }
-        ]
-      },
-      {
-        key: "newOIDCMapping",
-        question: "Which mappings do you want to add ?",
-        required: true,
-        type: "multiselect",
-        map: "coreAttributes",
-        iterator: "oidcAttributesMapping",
-        requiredOptions: ["usernameAttributes"],
-        andConditions: [
-          {
-            key: "authProvidersUserPool",
-            value: "OIDC",
-            operator: "includes"
-          },
-          {
-            key: "OIDCAdditionalQuestions",
-            value: true,
-            operator: "="
-          },
-          {
-            preventEdit: "exists",
-            key: "oidcAttributesMapping"
-          },
-          {
-            preventEdit: "existsInCurrent",
-            key: "oidcAttributesMapping"
-          }
-        ]
-      },
-      {
-        key: "EditMappings",
-        question: "Which mappings do you want to edit ?",
-        type: "multiselect",
-        iterator: "oidcAttributesMapping",
-        iteratorValidation: {
-          operator: "regex",
-          value: ".*",
-          onErrorMsg: "The value must be a valid string."
-        },
-        andConditions: [
-          {
-            key: "oidcAttributesMapping",
-            operator: "exists"
-          },
-          {
-            onCreate: "never"
-          },
-          {
-            key: "OIDCAdditionalQuestions",
-            value: true,
-            operator: "="
-          }
-        ]
-      },
-      {
-        key: "addOIDCMappingOnUpdate",
-        question: "Do you want to add extra mappings ?",
-        required: true,
-        type: "confirm",
-        andConditions: [
-          {
-            onCreate: "never"
-          },
-          {
-            key: "OIDCAdditionalQuestions",
-            value: true,
-            operator: "="
-          }
-        ]
-      },
-      {
-
-          key: "newOIDCMapping",
-          question: "Which extra mappings do you want to add ?",
-          required: true,
-          type: "multiselect",
-          map: "coreAttributes",
-          iterator: "extraoidcAttributesMapping",
-        andConditions: [
-          {
-            key: "addOIDCMappingOnUpdate",
-            value: true,
-            operator: "="
-          },
-          {
-            onCreate: "never"
-          },
-          {
-            key: "OIDCAdditionalQuestions",
-            value: true,
-            operator: "="
-          }
-        ]
-      },
-      {
         key: 'userPoolName',
         question: 'Please provide a name for your user pool:',
         required: true,
@@ -1434,6 +1175,245 @@ export const supportedServices = {
             operator: 'includes',
           },
         ],
+      },
+      {
+        key: "oidcAppIdUserPool",
+        question: "Enter your OIDC App ID for your OAuth flow: ",
+        required: true,
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ]
+      },
+      {
+        key: "oidcAppSecretUserPool",
+        question: "Enter your OIDC App Secret for your OAuth flow (optional): ",
+        required: false,
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ],
+        validation: {
+          operator: "regex",
+          value: ".*",
+          onErrorMsg: "The value can be anything."
+        }
+      },
+      {
+        key: "oidcAppOIDCIssuer",
+        question: "Enter your OIDC Issuer url: ",
+        required: true,
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ],
+        validation: {
+          operator: "regex",
+          value: "^(((?!http://(?!localhost))([a-zA-Z0-9.]{1,})://([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,}))|(?!http)(?!https)([a-zA-Z0-9.]{1,})://)$",
+          onErrorMsg: "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
+        }
+      },
+      {
+        key: "oidcAppOIDCAttributesRequestMethod",
+        question: "Select your OIDC Attributes Request Method: ",
+        type: "list",
+        map: "attributesRequestMethod",
+        required: true,
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ]
+      },
+      {
+        key: "EditScopeConfirmation",
+        question: "Do you want to edit current scopes ?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+          {
+            key: "oidcAuthorizeScopes",
+            operator: "exists"
+          },
+          {
+                  key: 'updateFlow',
+                  value: 'providers',
+                  operator: '=',
+                }
+        ]
+      },
+      {
+        key: "EditScopes",
+        question: "Which scopes do you want to edit ?",
+        type: "multiselect",
+        iterator: "oidcAuthorizeScopes",
+        iteratorValidation: {
+          operator: "regex",
+          value: ".*",
+          onErrorMsg: "The value must be a valid string or url."
+        },
+        andConditions: [
+          {
+            key: "oidcAuthorizeScopes",
+            operator: "exists"
+          },
+          {
+            onCreate: "never"
+          },
+          {
+            key: "EditScopeConfirmation",
+            value: true,
+            operator: "="
+          }
+        ]
+      },
+      {
+        key: "OIDCAdditionalScope",
+        question: "Do you want to add additional scopes ?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ]
+      },
+      {
+        key: "newOIDCAuthorizeScopes",
+        question: "Enter a new authorized scope:",
+        required: true,
+        addAnotherLoop: "additional scope",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+          {
+            key: "OIDCAdditionalScope",
+            value: true,
+            operator: "="
+          },
+          {
+            preventEdit: "existsInCurrent",
+            key: "oidcAuthorizeScopes"
+          }
+        ]
+      },
+      {
+        key: "EditMappingConfirmation",
+        question: "Do you want to edit current attribute mapping ?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+          {
+            key: "oidcAttributesMapping",
+            operator: "exists"
+          },
+          {
+            onCreate: "never"
+          },
+        ]
+      },
+      {
+        key: "EditMappings",
+        question: "Which mappings do you want to edit ?",
+        type: "multiselect",
+        iterator: "oidcAttributesMapping",
+        iteratorValidation: {
+          operator: "regex",
+          value: ".*",
+          onErrorMsg: "The value must be a valid string."
+        },
+        andConditions: [
+          {
+            key: "oidcAttributesMapping",
+            operator: "exists"
+          },
+          {
+            onCreate: "never"
+          },
+          {
+            key: "EditMappingConfirmation",
+            value: true,
+            operator: "="
+          }
+        ]
+      },
+      {
+        key: "OIDCAdditionalMapping",
+        question: "Do you want to add specific attribute mapping ?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+        ]
+      },
+      {
+        key: "newOIDCMapping",
+        question: "Which mappings do you want to add ?",
+        required: true,
+        type: "multiselect",
+        map: "coreAttributes",
+        iterator: "oidcAttributesMapping",
+        requiredOptions: ["usernameAttributes"],
+        andConditions: [
+          {
+            key: "OIDCAdditionalMapping",
+            value: true,
+            operator: "="
+          },
+          {
+            preventEdit: 'exists',
+            key: 'oidcAttributesMapping',
+          },
+          {
+            preventEdit: 'existsInCurrent',
+            key: 'oidcAttributesMapping',
+          },
+        ]
+      },
+  {
+
+          key: "newOIDCMapping",
+          question: "Which extra mappings do you want to add ?",
+          required: true,
+          type: "multiselect",
+          map: "coreAttributes",
+          iterator: "extraoidcAttributesMapping",
+        andConditions: [
+          {
+            key: "OIDCAdditionalMapping",
+            value: true,
+            operator: "="
+          },
+          {
+            onCreate: "never"
+          }
+        ]
       },
     ],
     cfnFilename: 'auth-template.yml.ejs',
