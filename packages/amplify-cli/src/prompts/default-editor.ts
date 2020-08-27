@@ -1,7 +1,9 @@
-import { prompt } from 'enquirer';
+import { executePrompt, SelectPrompt } from 'amplify-cli-core';
 import { normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
 
-export const defaultEditors = [
+const EDITOR_SELECT_MESSAGE = 'Choose your default editor:';
+
+const defaultEditors = [
   {
     name: 'Visual Studio Code',
     value: 'vscode',
@@ -32,15 +34,15 @@ export const defaultEditors = [
   },
 ];
 
-export async function editorSelect(editors = defaultEditors, initialEditor?) {
+function constructEditorQuestion(editors, initialEditor?) {
   const normalizedInitialEditor = normalizeEditor(initialEditor);
-  const editorPrompt = {
-    type: 'select',
-    name: 'editorSelected',
-    message: 'Choose your default editor:',
-    initial: normalizedInitialEditor,
-    choices: editors,
-  };
-  const { editorSelected } = await prompt(editorPrompt);
-  return editorSelected;
+  const editorQuestionName = 'selectEditor';
+  const editorQuestion = new SelectPrompt(editorQuestionName, EDITOR_SELECT_MESSAGE, editors, normalizedInitialEditor);
+  return editorQuestion;
+}
+
+export async function editorSelect(editors = defaultEditors, initialEditor?) {
+  const editorQuestion = constructEditorQuestion(editors, initialEditor);
+  const answer = await executePrompt(editorQuestion);
+  return answer;
 }

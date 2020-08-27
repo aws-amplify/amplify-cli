@@ -1,24 +1,24 @@
-import { prompt } from 'enquirer';
-import { InputPrompt } from '../prompts';
+import { executePrompt, InputPrompt } from 'amplify-cli-core';
 
-const inputQuestionName = 'inputProjectName';
-const PROJECT_NAME_MESSAGE = 'Enter a name for the project';
+const PROJECT_NAME_INPUT_MESSAGE = 'Enter a name for the project';
 // const PROJECT_NAME_MESSAGE = 'Project name';
 const INVALID_PROJECT_NAME_MESSAGE = 'Project name should be between 3 and 20 characters and alphanumeric';
 
 function constructProjectNameQuestion(initialProjectName, isProjectNameValid) {
-  const projectNameQuestion = new InputPrompt(
-    inputQuestionName,
-    PROJECT_NAME_MESSAGE,
+  const projectQuestionName = 'inputProjectName';
+
+  const projectQuestion = new InputPrompt(
+    projectQuestionName,
+    PROJECT_NAME_INPUT_MESSAGE,
     initialProjectName,
     isProjectNameValid,
     INVALID_PROJECT_NAME_MESSAGE,
   );
-  return projectNameQuestion;
+  return projectQuestion;
 }
 
 export async function projectNameInput(initialProjectName, isProjectNameValid) {
-  const projectNameQuestion = constructProjectNameQuestion(initialProjectName, isProjectNameValid);
-  const answer = projectNameQuestion[inputQuestionName];
+  const projectQuestion = constructProjectNameQuestion(initialProjectName, isProjectNameValid);
+  const answer = await executePrompt(projectQuestion);
   return answer;
 }

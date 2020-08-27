@@ -4,6 +4,7 @@ export * from './cliEnvironmentProvider';
 export * from './feature-flags';
 export * from './jsonUtilities';
 export * from './jsonValidationError';
+export * from './prompts';
 export * from './state-manager';
 
 // Temporary types until we can finish full type definition across the whole CLI
