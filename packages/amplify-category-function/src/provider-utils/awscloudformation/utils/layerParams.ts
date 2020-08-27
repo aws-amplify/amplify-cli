@@ -6,6 +6,7 @@ import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interf
 import { categoryName, layerParametersFileName } from '../utils/constants';
 import { category } from '../../../constants';
 import { hashLayerVersionContents } from './packageLayer';
+import { getLayerRuntimes } from './layerRuntimes';
 
 export type LayerVersionMap = Record<number, Pick<LayerVersionMetadata, 'permissions' | 'hash'>>;
 
@@ -19,7 +20,7 @@ export type LayerParameters = {
   build: boolean;
 };
 
-export type StoredLayerParameters = Pick<LayerParameters, 'runtimes' | 'layerVersionMap'>;
+export type StoredLayerParameters = Pick<Partial<LayerParameters>, 'runtimes' | 'layerVersionMap'>;
 
 export enum Permission {
   private = 'private',
@@ -85,7 +86,7 @@ class LayerState implements LayerMetadata {
     this.context = context;
     this.layerName = layerName;
     this.storedParams = getStoredLayerState(context, layerName);
-    this.runtimes = this.storedParams.runtimes;
+    this.runtimes = getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName);
     Object.entries(this.storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
       this.versionMap.set(Number(versionNumber), new LayerVersionState(versionData));
     });

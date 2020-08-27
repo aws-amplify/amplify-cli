@@ -11,12 +11,6 @@ export type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'pyt
 const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
 
-function getLayerDataFromTeamProviderInfo(projRoot: string, layerName: string, envName: string) {
-  const teamProviderInfoPath = path.join(projRoot, 'amplify', 'team-provider-info.json');
-  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
-  return _.get(teamProviderInfo, [envName, 'nonCFNdata', 'function', layerName]);
-}
-
 export function validateLayerDir(projRoot: string, layerName: string, runtimes: LayerRuntimes[]): boolean {
   let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', layerName);
   let validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
@@ -44,8 +38,8 @@ export function validatePushedVersion(
 
 export async function validateLayerMetadata(projRoot: string, layerName: string, meta: any, envName: string) {
   const { Arn: arn, Region: region } = meta.function[layerName].output;
-  const localLayerData = await getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
-  const runtimes = localLayerData.runtimes;
+  const localLayerData = getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
+  const runtimes = getLayerRuntimes(projRoot, layerName);
   const runtimeValues = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
   const localVersions = Object.keys(localLayerData.layerVersionMap);
 
@@ -149,6 +143,34 @@ export function updateLayer(cwd: string, settings?: any, testingWithLatestCodeba
   });
 }
 
+export function addOptData(projRoot: string, layerName: string): void {
+  fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
+}
+
+export enum LayerPermissionName {
+  awsAccounts = 'awsAccounts',
+  awsOrg = 'awsOrg',
+  private = 'private',
+  public = 'public',
+}
+
+export interface LayerPermission {
+  type: LayerPermissionName;
+  accounts?: string[];
+  orgs?: string[];
+}
+
+function getLayerDataFromTeamProviderInfo(projRoot: string, layerName: string, envName: string) {
+  const teamProviderInfoPath = path.join(projRoot, 'amplify', 'team-provider-info.json');
+  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
+  return _.get(teamProviderInfo, [envName, 'nonCFNdata', 'function', layerName]);
+}
+
+function getLayerRuntimes(projRoot: string, layerName: string) {
+  const runtimesFilePath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'layer-runtimes.json');
+  return JSONUtilities.readJson(runtimesFilePath);
+}
+
 function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
   return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
 }
@@ -177,8 +199,8 @@ function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, act
     .wait('Next steps:')
     .wait('Move your libraries to the following folder:');
 
-  for (let i = 0; i < settings.runtimes.length; ++i) {
-    const { displayName, path } = getLayerRuntimeInfo(settings.runtimes[i]);
+  for (let runtime of settings.runtimes) {
+    const { displayName, path } = getLayerRuntimeInfo(runtime);
     const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.layerName}/${path}`;
     chain.wait(layerRuntimeDir);
   }
@@ -188,21 +210,4 @@ function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, act
     .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
     .wait('"amplify push" - builds all of your local backend resources and provisions them in the cloud')
     .sendEof();
-}
-
-export function addOptData(projRoot: string, layerName: string): void {
-  fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
-}
-
-export enum LayerPermissionName {
-  awsAccounts = 'awsAccounts',
-  awsOrg = 'awsOrg',
-  private = 'private',
-  public = 'public',
-}
-
-export interface LayerPermission {
-  type: LayerPermissionName;
-  accounts?: string[];
-  orgs?: string[];
 }
