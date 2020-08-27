@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as inquirer from 'inquirer';
-import { normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
+import { editors, normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
 import { editorSelect, projectNameInput, envNameInput, envNameSelect, INVALID_ENV_NAME_MSG } from '../prompts';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
@@ -81,7 +80,7 @@ async function getEditor(context) {
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
     editor = normalizeEditor(context.exeInfo.inputParams.amplify.defaultEditor);
   } else if (!context.exeInfo.inputParams.yes) {
-    editor = await editorSelect(editor);
+    editor = await editorSelect(editors, editor);
   }
 
   return editor;

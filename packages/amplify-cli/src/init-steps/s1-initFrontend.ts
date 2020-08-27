@@ -1,4 +1,3 @@
-import * as inquirer from 'inquirer';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
 import { frontendSelect } from '../prompts';

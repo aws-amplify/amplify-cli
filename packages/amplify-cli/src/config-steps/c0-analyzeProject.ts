@@ -1,6 +1,6 @@
 import * as path from 'path';
-import inquirer, { InputQuestion } from 'inquirer';
-import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
+import { editors, normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
+import { projectNameInput, editorSelect } from '../prompts';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getEnvInfo } from '../extensions/amplify-helpers/get-env-info';
 import { stateManager } from 'amplify-cli-core';
@@ -31,15 +31,7 @@ async function configureProjectName(context) {
       projectName = normalizeProjectName(path.basename(projectPath));
     }
     if (!context.exeInfo.inputParams.yes) {
-      const projectNameQuestion: InputQuestion<{ inputProjectName: string }> = {
-        type: 'input',
-        name: 'inputProjectName',
-        message: 'Enter a name for the project',
-        default: projectName,
-        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
-      };
-      const answer = await inquirer.prompt(projectNameQuestion);
-      projectName = answer.inputProjectName;
+      projectName = await projectNameInput(projectName, isProjectNameValid);
     }
   }
 
@@ -51,7 +43,7 @@ async function configureEditor(context) {
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
     defaultEditor = normalizeEditor(context.exeInfo.inputParams.amplify.editor);
   } else if (!context.exeInfo.inputParams.yes) {
-    defaultEditor = await editorSelection(defaultEditor);
+    defaultEditor = await editorSelect(editors, defaultEditor);
   }
 
   Object.assign(context.exeInfo.localEnvInfo, { defaultEditor });

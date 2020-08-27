@@ -1,4 +1,3 @@
-import * as inquirer from 'inquirer';
 import sequential from 'promise-sequential';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { normalizeProviderName } from '../input-params-manager';
