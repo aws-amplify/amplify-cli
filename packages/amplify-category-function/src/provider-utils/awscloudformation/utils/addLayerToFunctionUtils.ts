@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import path from 'path';
 import { FunctionRuntime, FunctionDependency, LambdaLayer, ProjectLayer, ExternalLayer } from 'amplify-function-plugin-interface';
 import { category } from '../../..';
 import { ServiceName } from './constants';
