@@ -336,6 +336,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
     return envParams;
   } else if (isMultiEnvLayer(context, resourceName) && service === ServiceName.LambdaLayer) {
     const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
+    const { envName } = context.amplify.getEnvInfo();
 
     const providerContext: ProviderContext = {
       provider,
@@ -350,7 +351,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
       runtimes: getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), resourceName),
     };
 
-    updateLayerArtifacts(context, layerEnvParams, 1, { layerParams: false });
+    updateLayerArtifacts(context, layerEnvParams, 1);
   }
 }
 
