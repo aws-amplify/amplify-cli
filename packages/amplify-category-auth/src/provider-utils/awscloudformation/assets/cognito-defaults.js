@@ -56,7 +56,7 @@ const identityPoolDefaults = projectName => {
   // eslint-disable-line
   return {
     identityPoolName: `${projectName}_identitypool_${sharedId}`,
-    allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
+    allowUnauthenticatedIdentities: false,
   };
 };
 

@@ -3,6 +3,7 @@
  */
 export interface AddAuthRequest {
   version: 1;
+  resourceName?: string;
   serviceConfiguration: CognitoServiceConfiguration;
 }
 
@@ -43,22 +44,17 @@ export interface CognitoIdentityPoolConfiguration {
    */
   identityPoolName?: string;
   unauthenticatedLogin?: boolean;
-  identitySocialFederation?: {
-    facebook?: {
-      facebookAppId: string;
-    };
-    google?: {
-      googleClientId: string;
-    };
-    amazon?: {
-      amazonAppId: string;
-    };
-  };
+  identitySocialFederation?: CognitoIdentitySocialFederation[];
+}
+
+export interface CognitoIdentitySocialFederation {
+  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON';
+  clientId: string;
 }
 
 export interface CognitoUserPoolConfiguration {
   signinMethod: CognitoUserPoolSigninMethod;
-  requiredSignupInformation: CognitoUserProperty[];
+  requiredSignupAttributes: CognitoUserProperty[];
   userPoolName?: string;
   userPoolGroups?: CognitoUserPoolGroup[];
   adminQueries?: CognitoAdminQueries;
@@ -90,7 +86,7 @@ export interface CognitoOAuthConfiguration {
 }
 
 export interface CognitoSocialProviderConfiguration {
-  provider: 'FACEBOOK' | 'GOOGLE' | 'LOGIN_WITH_AMAZON',
+  provider: 'FACEBOOK' | 'GOOGLE' | 'LOGIN_WITH_AMAZON';
   clientId: string;
   clientSecret: string;
 }
