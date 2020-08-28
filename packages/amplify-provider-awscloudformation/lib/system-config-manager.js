@@ -55,8 +55,8 @@ function setProfile(awsConfig, profileName) {
   }
 
   fs.writeFileSync(credentialsFilePath, ini.stringify(credentials));
-  fs.writeFileSync(configFilePath, ini.stringify(config));
   ensureCredentialsFilePermission();
+  fs.writeFileSync(configFilePath, ini.stringify(config));
 }
 
 async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
