@@ -251,7 +251,11 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     resourcesToBeDeleted = resourcesToBeDeleted.filter(resource => resource.providerPlugin === providerName);
     allResources = allResources.filter(resource => resource.providerPlugin === providerName);
   }
-  const tagsUpdated = compareTags(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
+  let tagsUpdated = compareTags(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
+  // if tags updated but no resource to apply tags, ignore tags updated
+  if (allResources.filter(resource => resource.category === 'provider').length === 0) {
+    tagsUpdated = false;
+  }
   return {
     resourcesToBeCreated,
     resourcesToBeUpdated,
@@ -338,7 +342,7 @@ export async function showResourceTable(category, resourceName, filteredResource
 
   table(tableOptions, { format: 'markdown' });
   if (tagsUpdated) {
-    print.info('Resource Tags Update Detected');
+    print.info('\nTag Changes Detected');
   }
   const resourceChanged = resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length > 0 || tagsUpdated;
 
