@@ -38,7 +38,6 @@ async function addUserToGroup(username, groupname) {
   }
 }
 
-
 async function removeUserFromGroup(username, groupname) {
   const params = {
     GroupName: groupname,
@@ -79,7 +78,6 @@ async function confirmUserSignUp(username) {
   }
 }
 
-
 async function disableUser(username) {
   const params = {
     UserPoolId: userPoolId,
@@ -98,7 +96,6 @@ async function disableUser(username) {
   }
 }
 
-
 async function enableUser(username) {
   const params = {
     UserPoolId: userPoolId,
@@ -116,7 +113,6 @@ async function enableUser(username) {
     throw err;
   }
 }
-
 
 async function getUser(username) {
   const params = {
@@ -158,7 +154,6 @@ async function listUsers(Limit, PaginationToken) {
   }
 }
 
-
 async function listGroupsForUser(username, Limit, NextToken) {
   const params = {
     UserPoolId: userPoolId,
@@ -175,12 +170,8 @@ async function listGroupsForUser(username, Limit, NextToken) {
      * We are filtering out the results that seem to be innapropriate for client applications
      * to prevent any informaiton disclosure. Customers can modify if they have the need.
      */
-    result.Groups.forEach((val) => {
-      delete val.UserPoolId,
-      delete val.LastModifiedDate,
-      delete val.CreationDate,
-      delete val.Precedence,
-      delete val.RoleArn;
+    result.Groups.forEach(val => {
+      delete val.UserPoolId, delete val.LastModifiedDate, delete val.CreationDate, delete val.Precedence, delete val.RoleArn;
     });
 
     return result;
@@ -189,7 +180,6 @@ async function listGroupsForUser(username, Limit, NextToken) {
     throw err;
   }
 }
-
 
 async function listUsersInGroup(groupname, Limit, NextToken) {
   const params = {

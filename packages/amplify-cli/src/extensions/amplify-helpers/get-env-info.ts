@@ -1,6 +1,4 @@
-import * as fs from 'fs-extra';
-import { readJsonFile } from './read-json-file';
-import { getLocalEnvFilePath } from './path-manager';
+import { stateManager } from 'amplify-cli-core';
 
 class UndeterminedEnvironmentError extends Error {
   constructor() {
@@ -12,14 +10,10 @@ class UndeterminedEnvironmentError extends Error {
 }
 
 export function getEnvInfo() {
-  const envFilePath = getLocalEnvFilePath();
-  let envInfo: { envName?; defaultEditor? } = {};
-  if (fs.existsSync(envFilePath)) {
-    envInfo = readJsonFile(envFilePath);
+  if (stateManager.localEnvInfoExists()) {
+    return stateManager.getLocalEnvInfo();
   } else {
     // EnvInfo is required by all the callers so we can safely throw here
     throw new UndeterminedEnvironmentError();
   }
-
-  return envInfo;
 }

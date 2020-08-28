@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { JSONUtilities } from 'amplify-cli-core';
 
 export const run = async context => {
   const { envName } = context.amplify.getEnvInfo();
@@ -6,7 +7,7 @@ export const run = async context => {
   if (context.parameters.options.details) {
     const allEnvs = context.amplify.getEnvDetails();
     if (context.parameters.options.json) {
-      context.print.fancy(JSON.stringify(allEnvs, null, 4));
+      context.print.fancy(JSONUtilities.stringify(allEnvs));
       return;
     }
     Object.keys(allEnvs).forEach(env => {
@@ -34,7 +35,7 @@ export const run = async context => {
   } else {
     const allEnvs = context.amplify.getAllEnvs();
     if (context.parameters.options.json) {
-      context.print.fancy(JSON.stringify({ envs: allEnvs }, null, 4));
+      context.print.fancy(JSONUtilities.stringify({ envs: allEnvs }));
       return;
     }
     const { table } = context.print;

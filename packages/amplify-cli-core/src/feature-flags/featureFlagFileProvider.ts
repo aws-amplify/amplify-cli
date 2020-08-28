@@ -50,7 +50,7 @@ export class FeatureFlagFileProvider implements FeatureFlagValueProvider {
   };
 
   private loadConfig = async (fileName: string): Promise<FeatureFlagsEntry | undefined> => {
-    const configFileData = await JSONUtilities.readJson<{ features: FeatureFlagsEntry }>(fileName, {
+    const configFileData = JSONUtilities.readJson<{ features: FeatureFlagsEntry }>(fileName, {
       throwIfNotExist: false,
     });
 

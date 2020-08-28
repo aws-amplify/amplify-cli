@@ -1,34 +1,23 @@
 import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
-import { CLIContextEnvironmentProvider, FeatureFlags } from 'amplify-cli-core';
+import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext } from 'amplify-cli-core';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { initializeEnv } from '../initialize-env';
-import { readJsonFile } from '../extensions/amplify-helpers/read-json-file';
 
-export async function onSuccess(context) {
+export async function onSuccess(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const { amplify } = context;
 
-  const amplifyDirPath = amplify.pathManager.getAmplifyDirPath(projectPath);
-  const dotConfigDirPath = amplify.pathManager.getDotConfigDirPath(projectPath);
-  const backendDirPath = amplify.pathManager.getBackendDirPath(projectPath);
-  const currentBackendDirPath = amplify.pathManager.getCurrentCloudBackendDirPath(projectPath);
+  const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
+  const dotConfigDirPath = pathManager.getDotConfigDirPath(projectPath);
+  const backendDirPath = pathManager.getBackendDirPath(projectPath);
+  const currentBackendDirPath = pathManager.getCurrentCloudBackendDirPath(projectPath);
 
   fs.ensureDirSync(amplifyDirPath);
   fs.ensureDirSync(dotConfigDirPath);
   fs.ensureDirSync(backendDirPath);
   fs.ensureDirSync(currentBackendDirPath);
-
-  // Get current-cloud-backend's amplify-meta
-  const currentAmplifyMetafilePath = amplify.pathManager.getCurrentAmplifyMetaFilePath();
-
-  let currentAmplifyMeta = {};
-
-  if (fs.existsSync(currentAmplifyMetafilePath)) {
-    currentAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);
-  }
 
   const providerPlugins = getProviderPlugins(context);
   const providerOnSuccessTasks: (() => Promise<any>)[] = [];
@@ -61,6 +50,12 @@ export async function onSuccess(context) {
 
   await sequential(providerOnSuccessTasks);
 
+  // Get current-cloud-backend's amplify-meta
+  const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
+    throwIfNotExist: false,
+    default: {},
+  });
+
   await initializeEnv(context, currentAmplifyMeta);
 
   if (!context.parameters.options.app) {
@@ -68,80 +63,98 @@ export async function onSuccess(context) {
   }
 }
 
-function generateLocalRuntimeFiles(context) {
+function generateLocalRuntimeFiles(context: $TSContext) {
   generateLocalEnvInfoFile(context);
   generateAmplifyMetaFile(context);
+  generateLocalTagsFile(context);
 }
 
-export function generateLocalEnvInfoFile(context) {
+export function generateLocalEnvInfoFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
-  const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
-  fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+
+  stateManager.setLocalEnvInfo(projectPath, context.exeInfo.localEnvInfo);
 }
 
-function generateAmplifyMetaFile(context) {
-  if (context.exeInfo.isNewEnv) {
+function generateLocalTagsFile(context: $TSContext) {
+  if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, 4);
-    const currentBackendMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(projectPath);
-    fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
-    const backendMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
-    fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
+    const tags = [
+      {
+        Key: 'user:Stack',
+        Value: '{project-env}',
+      },
+      {
+        Key: 'user:Application',
+        Value: '{project-name}',
+      },
+    ];
+    stateManager.setProjectFileTags(projectPath, tags);
   }
 }
 
-function generateNonRuntimeFiles(context) {
+export function generateAmplifyMetaFile(context: $TSContext) {
+  if (context.exeInfo.isNewEnv) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+
+    stateManager.setCurrentMeta(projectPath, context.exeInfo.amplifyMeta);
+    stateManager.setMeta(projectPath, context.exeInfo.amplifyMeta);
+  }
+}
+
+function generateNonRuntimeFiles(context: $TSContext) {
   generateProjectConfigFile(context);
   generateBackendConfigFile(context);
-  generateProviderInfoFile(context);
+  generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
 }
 
-function generateProjectConfigFile(context) {
+function generateProjectConfigFile(context: $TSContext) {
   // won't modify on new env
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
-    const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);
-    fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+
+    stateManager.setProjectConfig(projectPath, context.exeInfo.projectConfig);
   }
 }
 
-function generateProviderInfoFile(context) {
+function generateTeamProviderInfoFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
+
   let teamProviderInfo = {};
-  const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
-  if (fs.existsSync(providerInfoFilePath)) {
-    teamProviderInfo = readJsonFile(providerInfoFilePath);
+
+  if (stateManager.teamProviderInfoExists(projectPath)) {
+    teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
+      throwIfNotExist: false,
+      default: {},
+    });
+
     Object.assign(teamProviderInfo, context.exeInfo.teamProviderInfo);
   } else {
     ({ teamProviderInfo } = context.exeInfo);
   }
 
-  const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-  fs.writeFileSync(providerInfoFilePath, jsonString, 'utf8');
+  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 }
 
-function generateBackendConfigFile(context) {
+function generateBackendConfigFile(context: $TSContext) {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
-    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
+
+    stateManager.setBackendConfig(projectPath, {});
   }
 }
 
-function generateGitIgnoreFile(context) {
+function generateGitIgnoreFile(context: $TSContext) {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
-    const gitIgnoreFilePath = context.amplify.pathManager.getGitIgnoreFilePath(projectPath);
+    const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projectPath);
 
     insertAmplifyIgnore(gitIgnoreFilePath);
   }
 }
 
-function printWelcomeMessage(context) {
+function printWelcomeMessage(context: $TSContext) {
   context.print.info('');
   context.print.success('Your project has been successfully initialized and connected to the cloud!');
   context.print.info('');

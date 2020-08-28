@@ -9,8 +9,6 @@ const { copySync } = require('fs-extra');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
-let serviceMetadata;
-
 // Todo: move these to supported service.json
 
 const ENV_SPECIFIC_PARAMS = [
@@ -76,7 +74,11 @@ const privateKeys = [
   'additionalQuestions',
 ];
 
-function serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename) {
+const resourcesRoot = path.normalize(path.join(__dirname, '../../../resources'));
+const adminAuthAssetRoot = path.join(resourcesRoot, 'adminAuth');
+const cfnTemplateRoot = path.join(resourcesRoot, 'cloudformation-templates');
+
+function serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
@@ -86,12 +88,11 @@ function serviceQuestions(context, defaultValuesFilename, stringMapFilename, ser
 async function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
 
   const copyJobs = [
     {
-      dir: pluginDir,
-      template: `cloudformation-templates/${cfnFilename}`,
+      dir: cfnTemplateRoot,
+      template: cfnFilename,
       target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.yml`,
       paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
     },
@@ -113,13 +114,13 @@ function saveResourceParameters(context, providerName, category, resource, param
 
 async function addResource(context, category, service) {
   let props = {};
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = require('../supported-services').supportedServices[service];
   const { cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, provider } = serviceMetadata;
   let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
   const disallowedChars = /[^A-Za-z0-9]+/g;
   projectName = projectName.replace(disallowedChars, '');
 
-  return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename)
+  return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata)
     .then(async result => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap, generalDefaults, roles } = require(defaultValuesSrc);
@@ -238,10 +239,10 @@ async function updateUserPoolGroups(context, resourceName, userPoolGroupList) {
 async function updateResource(context, category, serviceResult) {
   const { service, resourceName } = serviceResult;
   let props = {};
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = require('../supported-services').supportedServices[service];
   const { cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, provider } = serviceMetadata;
 
-  return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename)
+  return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata)
     .then(async result => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap } = require(defaultValuesSrc);
@@ -339,7 +340,7 @@ async function updateResource(context, category, serviceResult) {
 }
 
 async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`).Cognito;
+  const srvcMetaData = require('../supported-services').supportedServices.Cognito;
   const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = srvcMetaData;
 
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
@@ -409,7 +410,7 @@ async function migrate(context) {
   if (!Object.keys(existingAuth).length > 0) {
     return;
   }
-  const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
+  const servicesMetadata = require('../supported-services').supportedServices;
   const { provider, cfnFilename, defaultValuesFilename } = servicesMetadata.Cognito;
   const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
 
@@ -589,7 +590,7 @@ async function openIdentityPoolConsole(context, region, identityPoolId) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = require('../supported-services').supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
@@ -769,28 +770,28 @@ async function createAdminAuthFunction(context, authResourceName, functionName, 
 
   const copyJobs = [
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-auth-app.js',
+      dir: adminAuthAssetRoot,
+      template: 'admin-auth-app.js',
       target: `${targetDir}/function/${functionName}/src/app.js`,
     },
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-auth-cognitoActions.js',
+      dir: adminAuthAssetRoot,
+      template: 'admin-auth-cognitoActions.js',
       target: `${targetDir}/function/${functionName}/src/cognitoActions.js`,
     },
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-auth-index.js',
+      dir: adminAuthAssetRoot,
+      template: 'admin-auth-index.js',
       target: `${targetDir}/function/${functionName}/src/index.js`,
     },
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-auth-package.json',
+      dir: adminAuthAssetRoot,
+      template: 'admin-auth-package.json',
       target: `${targetDir}/function/${functionName}/src/package.json`,
     },
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-queries-function-template.json.ejs',
+      dir: adminAuthAssetRoot,
+      template: 'admin-queries-function-template.json.ejs',
       target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
     },
   ];
@@ -841,13 +842,13 @@ async function createAdminAuthAPI(context, authResourceName, functionName, opera
 
   const copyJobs = [
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-queries-api-template.json.ejs',
+      dir: adminAuthAssetRoot,
+      template: 'admin-queries-api-template.json.ejs',
       target: `${targetDir}/api/${apiName}/admin-queries-cloudformation-template.json`,
     },
     {
-      dir: pluginDir,
-      template: './assets/adminAuth/admin-queries-api-params.json',
+      dir: adminAuthAssetRoot,
+      template: 'admin-queries-api-params.json',
       target: `${targetDir}/api/${apiName}/parameters.json`,
     },
   ];
@@ -881,4 +882,5 @@ module.exports = {
   console,
   getPermissionPolicies,
   removeDeprecatedProps,
+  cfnTemplateRoot,
 };

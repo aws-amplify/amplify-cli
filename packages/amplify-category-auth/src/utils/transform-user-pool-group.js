@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const { cfnTemplateRoot } = require('../provider-utils/awscloudformation');
 
 async function transformUserPoolGroupSchema(context) {
   const resourceDirPath = path.join(
@@ -42,8 +43,8 @@ async function transformUserPoolGroupSchema(context) {
 
   const copyJobs = [
     {
-      dir: __dirname,
-      template: '../provider-utils/awscloudformation/cloudformation-templates/user-pool-group-template.json.ejs',
+      dir: cfnTemplateRoot,
+      template: 'user-pool-group-template.json.ejs',
       target: path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'template.json'),
     },
   ];

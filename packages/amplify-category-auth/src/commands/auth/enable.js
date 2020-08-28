@@ -10,7 +10,7 @@ module.exports = {
   alias: ['add'],
   run: async context => {
     const { amplify } = context;
-    const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
+    const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
 
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
@@ -43,14 +43,16 @@ module.exports = {
         let customAuthConfigured = false;
         if (authParameters.triggers) {
           const triggers = JSON.parse(authParameters.triggers);
+
           customAuthConfigured =
-            triggers.DefineAuthChallenge &&
+            !!triggers.DefineAuthChallenge &&
             triggers.DefineAuthChallenge.length > 0 &&
-            triggers.CreateAuthChallenge &&
+            !!triggers.CreateAuthChallenge &&
             triggers.CreateAuthChallenge.length > 0 &&
-            triggers.VerifyAuthChallengeResponse &&
+            !!triggers.VerifyAuthChallengeResponse &&
             triggers.VerifyAuthChallengeResponse.length > 0;
         }
+
         options.customAuth = customAuthConfigured;
 
         amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);

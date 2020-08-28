@@ -17,12 +17,12 @@ const {
 } = require('./provider-utils/awscloudformation');
 
 const { transformUserPoolGroupSchema } = require('./utils/transform-user-pool-group');
+const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
   const { amplify } = context;
-  const servicesMetadata = amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
-
+  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
   if (Object.keys(existingAuth).length > 0) {
@@ -66,7 +66,7 @@ async function add(context) {
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
-  const serviceMetadata = amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
+  const serviceMetadata = require('./provider-utils/supported-services').supportedServices;
   const { cfnFilename, provider } = serviceMetadata.Cognito;
   const authExists = amplify.getProjectDetails().amplifyMeta.auth && Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;
@@ -332,4 +332,5 @@ module.exports = {
   executeAmplifyCommand,
   handleAmplifyEvent,
   prePushAuthHook,
+  uploadFiles,
 };

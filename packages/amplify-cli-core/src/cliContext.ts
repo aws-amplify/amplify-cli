@@ -1,3 +1,5 @@
+import { $TSAny } from '.';
+
 export interface CLIContext {
-  getEnvInfo: () => any;
+  getEnvInfo: () => $TSAny;
 }
