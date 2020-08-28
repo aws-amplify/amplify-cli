@@ -19,11 +19,3 @@ export const saveLayerRuntimes = (layerDirPath: string, layerName: string, runti
 
   JSONUtilities.writeJson(runtimesFilePath, runtimes);
 };
-
-// function createRuntimesFile(runtimesFilePath: string, runtimes: LayerRuntime[]): void {
-//   JSONUtilities.writeJson(runtimesFilePath, runtimes);
-// }
-
-// function readRuntimesFile(runtimesFilePath: string): LayerRuntime[] {
-//   return JSONUtilities.readJson(runtimesFilePath) as any;
-// }
