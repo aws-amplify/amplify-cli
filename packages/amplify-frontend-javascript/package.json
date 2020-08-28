@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "chalk": "^3.0.0",
+    "execa": "^4.0.0",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
     "inquirer": "^7.0.3",

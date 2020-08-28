@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const { spawn } = require('child_process');
+const { command: executeCommand } = require('execa');
 const constants = require('./constants');
 
 function run(context) {
@@ -11,11 +11,7 @@ function run(context) {
       throw new Error('Missing start command');
     }
 
-    let args = startCommand.split(/\s+/);
-    const command = args[0];
-    args = args.slice(1);
-
-    const serveExecution = spawn(command, args, { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+    const serveExecution = executeCommand(startCommand, { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
     serveExecution.on('exit', code => {
