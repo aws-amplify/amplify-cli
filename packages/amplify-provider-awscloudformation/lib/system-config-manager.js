@@ -56,6 +56,7 @@ function setProfile(awsConfig, profileName) {
 
   fs.writeFileSync(credentialsFilePath, ini.stringify(credentials));
   fs.writeFileSync(configFilePath, ini.stringify(config));
+  ensureCredentialsFilePermission();
 }
 
 async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
@@ -90,6 +91,10 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   }
 
   return awsConfig;
+}
+
+function ensureCredentialsFilePermission() {
+  fs.chmodSync(credentialsFilePath, '600');
 }
 
 async function getRoleCredentials(context, profileName, profileConfig) {
@@ -253,6 +258,7 @@ function getProfileConfig(profileName) {
 function getProfileCredentials(profileName) {
   let profileCredentials;
   if (fs.existsSync(credentialsFilePath)) {
+    ensureCredentialsFilePermission();
     const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
 
     Object.keys(credentials).forEach(key => {
