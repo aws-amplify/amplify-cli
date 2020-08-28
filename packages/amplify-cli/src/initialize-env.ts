@@ -30,7 +30,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
     const categoryInitializationTasks: (() => Promise<any>)[] = [];
 
-    const initializedCategories = Object.keys(context.amplify.getProjectMeta());
+    const initializedCategories = Object.keys(stateManager.getMeta());
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
 
@@ -82,8 +82,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     }
 
     if (context.exeInfo.forcePush) {
-      for (let i = 0; i < context.exeInfo.projectConfig.providers.length; i += 1) {
-        const provider = context.exeInfo.projectConfig.providers[i];
+      for (let provider of context.exeInfo.projectConfig.providers) {
         const providerModule = require(providerPlugins[provider]);
         const resourceDefiniton = await context.amplify.getResourceStatus(undefined, undefined, provider);
         providerPushTasks.push(() => providerModule.pushResources(context, resourceDefiniton));

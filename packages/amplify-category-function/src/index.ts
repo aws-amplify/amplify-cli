@@ -2,6 +2,7 @@ import path from 'path';
 import { category } from './constants';
 export { category } from './constants';
 import { FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
@@ -94,7 +95,8 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
 
 export async function initEnv(context) {
   const { amplify } = context;
-  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(category);
+  const { envName } = amplify.getEnvInfo();
+  const { allResources, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(category);
 
   // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
   const resourceCategoryFilter = resource => resource.category === category;
@@ -109,9 +111,33 @@ export async function initEnv(context) {
     const { resourceName, service } = functionResource;
     return async () => {
       const config = await updateConfigOnEnvInit(context, resourceName, service);
-      context.amplify.saveEnvResourceParameters(context, category, resourceName, config);
+      amplify.saveEnvResourceParameters(context, category, resourceName, config);
     };
   });
+
+  // Handle amplify pull --appId from empty directory for layer resources
+  const teamProviderInfo = stateManager.getTeamProviderInfo();
+  // Need to fetch layerVersionMap from #current-cloud-backend, since amplifyMeta
+  // gets regenerated in intialize-env.ts in the amplify-cli package
+  const currentAmplifyMeta = stateManager.getCurrentMeta();
+  const amplifyMeta = stateManager.getMeta();
+
+  const layerResources = allResources
+    .filter(resourceCategoryFilter)
+    .filter(r => ![...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated].includes(r))
+    .filter(r => r.service === ServiceName.LambdaLayer)
+    .forEach(r => {
+      const layerName = r.resourceName;
+      const lvmPath = [category, layerName, 'layerVersionMap'];
+      if (!_.has(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath])) {
+        const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
+        _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+        _.set(amplifyMeta, lvmPath, currentVersionMap);
+      }
+    });
+
+  stateManager.setMeta(undefined, amplifyMeta);
+  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 
   await sequential(functionTasks);
 }

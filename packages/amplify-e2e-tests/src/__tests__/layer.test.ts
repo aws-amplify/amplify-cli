@@ -1,12 +1,14 @@
 import {
   addLayer,
   addOptData,
+  amplifyPull,
   amplifyPushAuth,
   amplifyPushLayer,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
+  getAppId,
   getLayerVersion,
   getProjectMeta,
   LayerPermission,
@@ -134,5 +136,34 @@ describe('amplify add lambda layer', () => {
     await checkoutEnvironment(projRoot, { envName });
     await validatePushedVersion(projRoot, settings.layerName, envName, 1, expectedPerms);
     await validateLayerMetadata(projRoot, settings.layerName, getProjectMeta(projRoot), newEnvName);
+  });
+
+  it('tests amplify pull on project with layer', async () => {
+    const [shortId] = uuid().split('-');
+    const settings = {
+      runtimes: ['nodejs'],
+      layerName: `testlayer${shortId}`,
+      versionChanged: false,
+      numLayers: 1,
+    };
+    const expectedPerms: LayerPermission[] = [{ type: LayerPermissionName.private }];
+    await addLayer(projRoot, settings);
+    await amplifyPushAuth(projRoot);
+    await validatePushedVersion(projRoot, settings.layerName, envName, 1, expectedPerms);
+    let projRoot2;
+    try {
+      projRoot2 = await createNewProjectDir('import-env-test2');
+      await amplifyPull(projRoot2, { override: false, emptyDir: true, appId: getAppId(projRoot) });
+      addOptData(projRoot2, settings.layerName);
+      await amplifyPushAuth(projRoot2);
+      await validatePushedVersion(projRoot2, settings.layerName, envName, 2, expectedPerms);
+    } catch (e) {
+      throw e;
+      console.error(e);
+    } finally {
+      deleteProjectDir(projRoot2);
+    }
+    await amplifyPull(projRoot, {});
+    await validatePushedVersion(projRoot, settings.layerName, envName, 2, expectedPerms);
   });
 });
