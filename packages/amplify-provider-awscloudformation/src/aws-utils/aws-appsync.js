@@ -1,18 +1,10 @@
 const aws = require('./aws.js');
-const configurationManager = require('../configuration-manager');
+const { CreateService } = require('./aws-service-creator.js');
 
 class AppSync {
   constructor(context, options = {}) {
     return (async () => {
-      let cred = {};
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // could not load the creds
-      }
-
-      this.context = context;
-      this.appSync = new aws.AppSync({ ...cred, ...options });
+      this.appSync = await CreateService(context, aws.AppSync, options);
       return this;
     })();
   }

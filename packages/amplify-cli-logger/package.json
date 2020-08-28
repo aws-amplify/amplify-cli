@@ -1,0 +1,26 @@
+{
+  "name": "amplify-cli-logger",
+  "version": "1.0.0",
+  "description": "Amplify CLI Logger",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws-amplify/amplify-cli.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws-amplify/amplify-cli/issues"
+  },
+  "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
+  "dependencies": {
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.0"
+  }
+}

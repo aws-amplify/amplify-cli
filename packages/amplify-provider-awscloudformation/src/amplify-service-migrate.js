@@ -4,6 +4,8 @@ const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const { storeCurrentCloudBackend } = require('./push-resources');
 const constants = require('./constants');
+const { fileLogger } = require('../src/utils/aws-logger');
+const logger = fileLogger('amplify-service-migrate');
 
 async function run(context) {
   let projectDetails;
@@ -54,8 +56,13 @@ async function run(context) {
   const { inputParams } = context.exeInfo;
   if (inputParams.amplify && inputParams.amplify.appId) {
     const amplifyAppId = inputParams.amplify.appId;
-
+    const log = logger('run.amplifyClient.getApp', [
+      {
+        appId: amplifyAppId,
+      },
+    ]);
     try {
+      log();
       const getAppResult = await amplifyClient
         .getApp({
           appId: amplifyAppId,
@@ -63,6 +70,7 @@ async function run(context) {
         .promise();
       context.print.info(`Amplify AppID found: ${amplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
     } catch (e) {
+      log(e);
       context.print.error(
         `Amplify AppID: ${amplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       );
@@ -73,6 +81,12 @@ async function run(context) {
     let backendEnvs = [];
     let listEnvResponse = {};
     do {
+      logger('run.amplifyClient.listBackendEnvironments', [
+        {
+          appId: amplifyAppId,
+          nextToken: listEnvResponse.nextToken,
+        },
+      ])();
       listEnvResponse = await amplifyClient
         .listBackendEnvironments({
           appId: amplifyAppId,
@@ -92,18 +106,28 @@ async function run(context) {
         stackName: StackName,
         deploymentArtifacts: DeploymentBucketName,
       };
-      await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+      const log = logger('run.amplifyClient.createBackendEnvironment', [createEnvParams]);
+      log();
+      try {
+        await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+      } catch (ex) {
+        log(ex);
+      }
     } else {
       // If env is already in the app, verify the the stack name match
       const getEnvParams = {
         appId: amplifyAppId,
         environmentName: envName,
       };
+      const log = logger('run.amplifyClient.getBackendEnvironment', [getEnvParams]);
+      log();
       const { backendEnvironment } = await amplifyClient.getBackendEnvironment(getEnvParams).promise();
       if (StackName !== backendEnvironment.stackName) {
         const message = `Stack name mismatch for the backend environment ${envName}. Local: ${StackName}, Amplify: ${backendEnvironment.stackName}`;
         context.print.error(message);
-        throw new Error(message);
+        const e = new Error(message);
+        log(e);
+        throw e;
       }
     }
 

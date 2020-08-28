@@ -1,6 +1,6 @@
 const aws = require('aws-sdk');
 const proxyAgent = require('proxy-agent');
-const configurationManager = require('../configuration-manager');
+const { CreateService } = require('./aws-service-creator');
 
 const amplifyServiceRegions = [
   'us-east-1',
@@ -18,16 +18,9 @@ const amplifyServiceRegions = [
 ];
 
 async function getConfiguredAmplifyClient(context, options = {}) {
-  let cred = {};
   let defaultOptions = {};
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const envVarEndpoint = process.env.AWS_AMPLIFY_ENDPOINT;
-
-  try {
-    cred = await configurationManager.loadConfiguration(context);
-  } catch (e) {
-    // ignore missing config
-  }
 
   if (envVarEndpoint) {
     defaultOptions = {
@@ -43,12 +36,12 @@ async function getConfiguredAmplifyClient(context, options = {}) {
     });
   }
 
-  const config = { ...cred, ...defaultOptions, ...options };
+  const config = { ...defaultOptions, ...options };
 
   // this is the "project" config level case, creds and region are explicitly set or retrieved from a profile
   if (config.region) {
     if (amplifyServiceRegions.includes(config.region)) {
-      return new aws.Amplify(config);
+      return await CreateService(context, aws.Amplify, config);
     }
     return undefined;
   }

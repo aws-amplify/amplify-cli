@@ -87,7 +87,8 @@
     "promise-sequential": "^1.1.1",
     "semver": "^7.1.1",
     "update-notifier": "^4.1.0",
-    "which": "^2.0.2"
+    "which": "^2.0.2",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/folder-hash": "^3.3.0",

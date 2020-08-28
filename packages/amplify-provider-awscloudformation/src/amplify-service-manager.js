@@ -6,6 +6,8 @@ const { S3 } = require('./aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const constants = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
+const { fileLogger } = require('../src/utils/aws-logger');
+const logger = fileLogger('amplify-service-manager');
 
 async function init(amplifyServiceParams) {
   const { context, awsConfig, projectName, envName, stackName } = amplifyServiceParams;
@@ -35,7 +37,14 @@ async function init(amplifyServiceParams) {
 
   if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.appId) {
     const inputAmplifyAppId = context.exeInfo.inputParams.amplify.appId;
+    const log = logger('init.amplifyClient.getApp', [
+      {
+        appId: inputAmplifyAppId,
+      },
+    ]);
+
     try {
+      log();
       const getAppResult = await amplifyClient
         .getApp({
           appId: inputAmplifyAppId,
@@ -44,6 +53,7 @@ async function init(amplifyServiceParams) {
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
+      log(e);
       context.print.error(
         `Amplify AppID: ${inputAmplifyAppId} not found. Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
       );
@@ -82,7 +92,17 @@ async function init(amplifyServiceParams) {
       if (appIdsInTheSameLocalProjectAndRegion.length > 0) {
         let apps = [];
         let listAppsResponse = {};
+
         do {
+          logger({
+            module: 'init.amplifyClient.listApps',
+            args: [
+              {
+                nextToken: listAppsResponse.nextToken,
+                maxResults: 25,
+              },
+            ],
+          })();
           listAppsResponse = await amplifyClient
             .listApps({
               nextToken: listAppsResponse.nextToken,
@@ -110,12 +130,16 @@ async function init(amplifyServiceParams) {
       name: projectName,
       environmentVariables: { _LIVE_PACKAGE_UPDATES: '[{"pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]' },
     };
+    const log = logger('init.amplifyClient.createApp', [createAppParams]);
+
     try {
       if (amplifyAppCreationEnabled()) {
+        log()
         const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
         amplifyAppId = createAppResponse.app.appId;
       }
     } catch (e) {
+      log(e);
       if (e.code === 'LimitExceededException') {
         // Do nothing
       } else if (
@@ -138,7 +162,15 @@ async function init(amplifyServiceParams) {
   }
 
   let needToCreateNewBackendEnv = false;
+  const log = logger('init.amplifyClient.getBackendEnvironment', [
+    {
+      appId: amplifyAppId,
+      environmentName: envName,
+    },
+  ]);
+
   try {
+    log();
     const { backendEnvironment } = await amplifyClient
       .getBackendEnvironment({
         appId: amplifyAppId,
@@ -153,6 +185,7 @@ async function init(amplifyServiceParams) {
       needToCreateNewBackendEnv = true;
     }
   } catch (e) {
+    log(e);
     needToCreateNewBackendEnv = true;
   }
 
@@ -164,7 +197,14 @@ async function init(amplifyServiceParams) {
       stackName,
       deploymentArtifacts: deploymentBucketName,
     };
-    await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+    const log = logger('init.amplifyClient.getBackendEnvironment', [createEnvParams]);
+    try {
+      log();
+      await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+    } catch (ex) {
+      log(ex);
+      throw ex;
+    }
   }
 
   return {
@@ -199,7 +239,14 @@ async function deleteEnv(context, envName, awsConfig) {
         appId: amplifyAppId,
         environmentName: envName,
       };
-      await amplifyClient.deleteBackendEnvironment(deleteEnvParams).promise();
+      const log = logger('deleteEnv.amplifyClient.deleteBackendEnvironment', [deleteEnvParams]);
+      try {
+        log();
+        await amplifyClient.deleteBackendEnvironment(deleteEnvParams).promise();
+      } catch (ex) {
+        log(ex);
+        throw ex;
+      }
     }
   }
 }
@@ -259,13 +306,15 @@ async function postPushCheck(context) {
           name: projectConfig.projectName,
           environmentVariables: { _LIVE_PACKAGE_UPDATES: '[{"pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]' },
         };
-
+        const log = logger('postPushCheck.amplifyClient.createApp', [createAppParams]);
         try {
           if (amplifyAppCreationEnabled()) {
+            log()
             const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
             amplifyAppId = createAppResponse.app.appId;
           }
         } catch (e) {
+          log(e);
           if (e.code === 'LimitExceededException') {
             // Do nothing
           } else if (
@@ -289,8 +338,14 @@ async function postPushCheck(context) {
         stackName: teamProviderInfo[envName][constants.ProviderName].StackName,
         deploymentArtifacts: teamProviderInfo[envName][constants.ProviderName].DeploymentBucketName,
       };
-
-      await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+      const log = logger('postPushCheck.amplifyClient.createBackendEnvironment', [createEnvParams]);
+      try {
+        log();
+        await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+      } catch (ex) {
+        log(ex);
+        throw ex;
+      }
     }
 
     teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
@@ -357,6 +412,12 @@ async function searchAmplifyService(amplifyClient, stackName) {
 
   let listAppsResponse = {};
   do {
+    logger('searchAmplifyService.amplifyClient.listApps', [
+      {
+        nextToken: listAppsResponse.nextToken,
+        maxResults: 25,
+      },
+    ])();
     listAppsResponse = await amplifyClient
       .listApps({
         nextToken: listAppsResponse.nextToken,
@@ -370,6 +431,12 @@ async function searchAmplifyService(amplifyClient, stackName) {
     for (let i = 0; i < listAppsResponse.apps.length; i++) {
       let listEnvResponse = {};
       do {
+        logger('searchAmplifyService.amplifyClient.listBackendEnvironments', [
+          {
+            appId: listAppsResponse.apps[i].appId,
+            nextToken: listEnvResponse.nextToken,
+          },
+        ])();
         listEnvResponse = await amplifyClient
           .listBackendEnvironments({
             appId: listAppsResponse.apps[i].appId,
@@ -415,7 +482,14 @@ async function uploadFile(s3, filePath, key) {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    await s3.uploadFile(s3Params);
+    const log = logger('s3.uploadFile', [{ Key: key }]);
+    try {
+      log();
+      await s3.uploadFile(s3Params);
+    } catch (ex) {
+      log(ex);
+      throw ex;
+    }
   }
 }
 

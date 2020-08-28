@@ -21,10 +21,8 @@ try {
   delete process.env.AWS_SDK_LOAD_CONFIG;
   aws = require('aws-sdk');
 }
-
 const proxyAgent = require('proxy-agent');
-const configurationManager = require('../configuration-manager');
-
+const configurationManager = require('../../lib/configuration-manager');
 aws.configureWithCreds = async context => {
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const config = await configurationManager.loadConfiguration(context, aws);
@@ -39,8 +37,6 @@ aws.configureWithCreds = async context => {
       },
     });
   }
-
   return aws;
 };
-
 module.exports = aws;

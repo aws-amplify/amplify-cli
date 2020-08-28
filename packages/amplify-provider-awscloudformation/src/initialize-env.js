@@ -7,6 +7,8 @@ const Cloudformation = require('./aws-utils/aws-cfn');
 const { S3 } = require('./aws-utils/aws-s3');
 const { downloadZip, extractZip } = require('./zip-util');
 const { S3BackendZipFileName } = require('./constants');
+const { fileLogger } = require('../src/utils/aws-logger');
+const logger = fileLogger('initialize-env');
 
 async function run(context, providerMetadata) {
   if (context.exeInfo && context.exeInfo.isNewEnv) {

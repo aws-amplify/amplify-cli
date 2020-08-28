@@ -1,17 +1,11 @@
 const aws = require('./aws.js');
-const configurationManager = require('../configuration-manager');
+const { CreateService } = require('./aws-service-creator.js');
 
 class Lambda {
   constructor(context, options = {}) {
     return (async () => {
-      let cred;
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // ignore missing config
-      }
       this.context = context;
-      this.lambda = new aws.Lambda({ ...cred, ...options });
+      this.lambda = await CreateService(context, aws.Lambda, options);
       return this;
     })();
   }
