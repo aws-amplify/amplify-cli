@@ -18,6 +18,7 @@ import { getInvoker } from 'amplify-category-function';
 import { keys } from 'lodash';
 import { LambdaFunctionConfig } from '../CFNParser/lambda-resource-processor';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
+import { timeConstrainedInvoker } from '../func';
 
 export class APITest {
   private apiName: string;
@@ -206,9 +207,12 @@ export class APITest {
           return {
             ...d,
             invoke: payload => {
-              return invoker({
-                event: payload,
-              });
+              return timeConstrainedInvoker(
+                invoker({
+                  event: payload,
+                }),
+                context.input.options,
+              );
             },
           };
         }),
