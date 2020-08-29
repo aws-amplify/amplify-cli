@@ -150,16 +150,17 @@ describe('amplify add lambda layer', () => {
     await addLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
     await validatePushedVersion(projRoot, settings.layerName, envName, 1, expectedPerms);
+    const appId = getAppId(projRoot);
+    expect(appId).toBeDefined();
     let projRoot2;
     try {
       projRoot2 = await createNewProjectDir('import-env-test2');
-      await amplifyPull(projRoot2, { override: false, emptyDir: true, appId: getAppId(projRoot) });
+      await amplifyPull(projRoot2, { override: false, emptyDir: true, appId });
       addOptData(projRoot2, settings.layerName);
       await amplifyPushAuth(projRoot2);
       await validatePushedVersion(projRoot2, settings.layerName, envName, 2, expectedPerms);
     } catch (e) {
       throw e;
-      console.error(e);
     } finally {
       deleteProjectDir(projRoot2);
     }
