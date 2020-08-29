@@ -156,6 +156,7 @@ describe('amplify add lambda layer', () => {
     try {
       projRoot2 = await createNewProjectDir('import-env-test2');
       await amplifyPull(projRoot2, { override: false, emptyDir: true, appId });
+      await validatePushedVersion(projRoot2, settings.layerName, envName, 1, expectedPerms);
       addOptData(projRoot2, settings.layerName);
       await amplifyPushAuth(projRoot2);
       await validatePushedVersion(projRoot2, settings.layerName, envName, 2, expectedPerms);

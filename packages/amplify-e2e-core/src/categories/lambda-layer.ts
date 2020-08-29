@@ -6,7 +6,7 @@ import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '.
 import { getLayerVersion, listVersions } from '../utils/sdk-calls';
 import { multiSelect } from '../utils/selectors';
 
-export type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
+export type LayerRuntimes = 'nodejs' | 'python';
 
 const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
@@ -177,12 +177,6 @@ function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
 
 function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   switch (runtime) {
-    case 'dotnetcore3.1':
-      return { displayName: '.NET Core 3.1', path: path.join('lib', runtime) };
-    case 'go1.x':
-      return { displayName: 'Go', path: path.join('lib', runtime) };
-    case 'java':
-      return { displayName: 'Java', path: path.join('lib', runtime, 'lib') };
     case 'nodejs':
       return { displayName: 'NodeJS', path: path.join('lib', runtime, 'node_modules') };
     case 'python':

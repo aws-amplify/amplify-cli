@@ -115,10 +115,10 @@ export async function initEnv(context) {
     };
   });
 
-  // Handle amplify pull --appId from empty directory for layer resources
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
+  // Handle amplify pull for already pushed layer versions
   // Need to fetch layerVersionMap from #current-cloud-backend, since amplifyMeta
   // gets regenerated in intialize-env.ts in the amplify-cli package
+  const teamProviderInfo = stateManager.getTeamProviderInfo();
   const currentAmplifyMeta = stateManager.getCurrentMeta();
   const amplifyMeta = stateManager.getMeta();
   const changedResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
@@ -130,12 +130,8 @@ export async function initEnv(context) {
       const layerName = r.resourceName;
       const lvmPath = [category, layerName, 'layerVersionMap'];
       const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
-      if (!_.has(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath])) {
-        _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
-      }
-      if (!_.has(amplifyMeta, lvmPath)) {
-        _.set(amplifyMeta, lvmPath, currentVersionMap);
-      }
+      _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+      _.set(amplifyMeta, lvmPath, currentVersionMap);
     });
 
   stateManager.setMeta(undefined, amplifyMeta);
