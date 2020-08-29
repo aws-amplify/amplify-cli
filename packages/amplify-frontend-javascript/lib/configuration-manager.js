@@ -7,7 +7,7 @@ const constants = require('./constants');
 async function init(context) {
   normalizeInputParams(context);
   const framework = guessFramework(context, context.exeInfo.localEnvInfo.projectPath);
-  const config = frameworkConfigMapping[framework];
+  const config = frameworkConfigMapping.getProjectConfiguration(framework, context.exeInfo.localEnvInfo.projectPath);
   context.exeInfo.projectConfig[constants.Label] = {
     framework,
     config,

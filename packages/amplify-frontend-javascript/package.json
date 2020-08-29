@@ -16,6 +16,7 @@
     "aws"
   ],
   "dependencies": {
+    "amplify-cli-core": "1.2.0",
     "chalk": "^3.0.0",
     "execa": "^4.0.0",
     "fs-extra": "^8.1.0",
