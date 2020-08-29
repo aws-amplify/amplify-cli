@@ -336,13 +336,13 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
     return envParams;
   } else if (isMultiEnvLayer(context, resourceName) && service === ServiceName.LambdaLayer) {
     const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
-    const { envName } = context.amplify.getEnvInfo();
 
     const providerContext: ProviderContext = {
       provider,
       service,
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
+
     const layerEnvParams = {
       ...teamProviderParams,
       build: true,

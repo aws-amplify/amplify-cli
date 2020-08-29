@@ -121,17 +121,19 @@ export async function initEnv(context) {
   // gets regenerated in intialize-env.ts in the amplify-cli package
   const currentAmplifyMeta = stateManager.getCurrentMeta();
   const amplifyMeta = stateManager.getMeta();
-
-  const layerResources = allResources
+  const changedResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
+  allResources
     .filter(resourceCategoryFilter)
-    .filter(r => ![...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated].includes(r))
+    .filter(r => !changedResources.includes(r))
     .filter(r => r.service === ServiceName.LambdaLayer)
     .forEach(r => {
       const layerName = r.resourceName;
       const lvmPath = [category, layerName, 'layerVersionMap'];
+      const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
       if (!_.has(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath])) {
-        const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
         _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+      }
+      if (!_.has(amplifyMeta, lvmPath)) {
         _.set(amplifyMeta, lvmPath, currentVersionMap);
       }
     });

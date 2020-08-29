@@ -1,5 +1,4 @@
 import { getCLIPath, nspawn as spawn } from '../../src';
-import { initJSProjectWithProfile } from '../init';
 
 export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDir?: boolean; appId?: string }) {
   return new Promise((resolve, reject) => {
