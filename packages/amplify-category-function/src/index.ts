@@ -10,6 +10,7 @@ import _ from 'lodash';
 export { packageLayer, hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 
 export async function add(context, providerName, service, parameters) {
@@ -130,7 +131,9 @@ export async function initEnv(context) {
       const layerName = r.resourceName;
       const lvmPath = [category, layerName, 'layerVersionMap'];
       const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
-      _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+      if (isMultiEnvLayer(context, layerName)) {
+        _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+      }
       _.set(amplifyMeta, lvmPath, currentVersionMap);
     });
 
