@@ -1,8 +1,8 @@
-import sequential from 'promise-sequential';
+import _ from 'lodash';
 import ora from 'ora';
+import sequential from 'promise-sequential';
 import { stateManager, $TSMeta, $TSContext } from 'amplify-cli-core';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
-
 const spinner = ora('');
 
 export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $TSMeta) {
@@ -15,7 +15,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     const amplifyMeta: $TSMeta = {};
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
 
-    amplifyMeta.providers = teamProviderInfo[currentEnv];
+    amplifyMeta.providers = _.pick(teamProviderInfo[currentEnv], 'awscloudformation');
 
     if (!currentAmplifyMeta) {
       // Get current-cloud-backend's amplify-meta
@@ -30,7 +30,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
     const categoryInitializationTasks: (() => Promise<any>)[] = [];
 
-    const initializedCategories = Object.keys(context.amplify.getProjectMeta());
+    const initializedCategories = Object.keys(stateManager.getMeta());
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
 
@@ -82,8 +82,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     }
 
     if (context.exeInfo.forcePush) {
-      for (let i = 0; i < context.exeInfo.projectConfig.providers.length; i += 1) {
-        const provider = context.exeInfo.projectConfig.providers[i];
+      for (let provider of context.exeInfo.projectConfig.providers) {
         const providerModule = require(providerPlugins[provider]);
         const resourceDefiniton = await context.amplify.getResourceStatus(undefined, undefined, provider);
         providerPushTasks.push(() => providerModule.pushResources(context, resourceDefiniton));

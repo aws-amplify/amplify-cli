@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
@@ -17,7 +18,7 @@ const { loadResourceParameters } = require('../src/resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
-const { packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
+const { isMultiEnvLayer, packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -258,12 +259,22 @@ function packageResources(context, resources) {
         const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
+        const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+        const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
 
         if (resource.service === FunctionServiceName.LambdaLayer) {
-          cfnMeta.Resources.LambdaLayer.Properties.Content = {
-            S3Bucket: s3Bucket,
-            S3Key: s3Key,
-          };
+          if (isMultiEnvLayer(context, resourceName)) {
+            _.set(teamProviderInfo, [context.amplify.getEnvInfo().envName, 'categories', 'function', resourceName], {
+              deploymentBucketName: s3Bucket,
+              s3Key,
+            });
+            context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+          } else {
+            cfnMeta.Resources.LambdaLayer.Properties.Content = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+          }
         } else {
           if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
             cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
@@ -277,8 +288,7 @@ function packageResources(context, resources) {
             };
           }
         }
-        const jsonString = JSON.stringify(cfnMeta, null, '\t');
-        fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+        context.amplify.writeObjectAsJson(cfnFilePath, cfnMeta, true);
       });
   };
 

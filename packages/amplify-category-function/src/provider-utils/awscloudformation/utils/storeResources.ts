@@ -1,12 +1,14 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
-import path from 'path';
+import _ from 'lodash';
 import fs from 'fs-extra';
-import { provider, ServiceName, layerParametersFileName, parametersFileName, functionParametersFileName } from './constants';
+import path from 'path';
+import { functionParametersFileName, layerParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { category as categoryName } from '../../../constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
-import { LayerParameters, StoredLayerParameters } from './layerParams';
-import _ from 'lodash';
+import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layerParams';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
+import { saveLayerRuntimes } from './layerRuntimes';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
@@ -24,10 +26,10 @@ export function createFunctionResources(context: any, parameters: FunctionParame
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
 
-export const createLayerArtifacts = (context, parameters: LayerParameters): string => {
+export const createLayerArtifacts = (context, parameters: LayerParameters, latestVersion: number = 1): string => {
   const layerDirPath = ensureLayerFolders(context, parameters);
-  createLayerParametersFile(context, parameters, layerDirPath);
-  createParametersFile(context, {}, parameters.layerName, parametersFileName);
+  updateLayerState(context, parameters, layerDirPath);
+  createParametersFile(context, { layerVersion: latestVersion }, parameters.layerName, parametersFileName);
   createLayerCfnFile(context, parameters, layerDirPath);
   addLayerToAmplifyMeta(context, parameters);
   return layerDirPath;
@@ -39,13 +41,21 @@ const defaultOpts = {
   cfnFile: true,
   amplifyMeta: true,
 };
-export const updateLayerArtifacts = (context, parameters: LayerParameters, options: Partial<typeof defaultOpts> = {}): string => {
+export const updateLayerArtifacts = (
+  context,
+  parameters: LayerParameters,
+  latestVersion?: number,
+  options: Partial<typeof defaultOpts> = {},
+): string => {
   options = _.assign(defaultOpts, options);
   const layerDirPath = ensureLayerFolders(context, parameters);
   if (options.layerParams) {
-    createLayerParametersFile(context, parameters, layerDirPath);
+    updateLayerState(context, parameters, layerDirPath);
   }
   if (options.cfnFile) {
+    if (latestVersion !== undefined) {
+      createParametersFile(context, { layerVersion: latestVersion }, parameters.layerName, parametersFileName);
+    }
     updateLayerCfnFile(context, parameters, layerDirPath);
   }
   if (options.amplifyMeta) {
@@ -53,6 +63,12 @@ export const updateLayerArtifacts = (context, parameters: LayerParameters, optio
   }
   return layerDirPath;
 };
+
+export function removeLayerArtifacts(context, layerName) {
+  if (isMultiEnvLayer(context, layerName)) {
+    removeLayerFromTeamProviderInfo(context, layerName);
+  }
+}
 
 // ideally function update should be refactored so this function does not need to be exported
 export function saveMutableState(
@@ -86,6 +102,15 @@ export function saveCFNParameters(
       CloudWatchRule: parameters.cloudwatchRule,
     };
     createParametersFile(context, params, parameters.resourceName, parametersFileName);
+  }
+}
+
+function updateLayerState(context: any, parameters: LayerParameters, layerDirPath: string) {
+  if (isMultiEnvLayer(context, parameters.layerName)) {
+    updateLayerTeamProviderInfo(context, parameters, layerDirPath);
+    saveLayerRuntimes(layerDirPath, parameters.layerName, parameters.runtimes);
+  } else {
+    createLayerParametersFile(context, parameters, layerDirPath, isMultiEnvLayer(context, parameters.layerName));
   }
 }
 
@@ -128,7 +153,7 @@ function copyTemplateFiles(context: any, parameters: FunctionParameters | Functi
 
   const copyJobParams: any = parameters;
   if ('lambdaLayers' in parameters) {
-    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(parameters.lambdaLayers);
+    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(context, parameters.lambdaLayers, context.amplify.getEnvInfo().envName);
     copyJobParams.lambdaLayersCFNArray = layerCFNValues;
   }
   context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, false);
@@ -155,57 +180,122 @@ function ensureLayerRuntimeFolder(layerDirPath: string, runtime) {
 }
 
 function createLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
-  context.amplify.writeObjectAsJson(
+  JSONUtilities.writeJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
     generateLayerCfnObj(context, parameters),
-    true,
   );
 }
 
 function updateLayerCfnFile(context, parameters: LayerParameters, layerDirPath: string) {
-  context.amplify.writeObjectAsJson(
+  JSONUtilities.writeJson(
     path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
     generateLayerCfnObj(context, parameters),
-    true,
   );
 }
 
-const addLayerToAmplifyMeta = (context, parameters: LayerParameters) =>
-  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, layerParamsToAmplifyMetaParams(parameters));
+const writeParametersToAmplifyMeta = (context, layerName: string, parameters) => {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  _.set(amplifyMeta, ['function', layerName], parameters);
+  JSONUtilities.writeJson(context.amplify.pathManager.getAmplifyMetaFilePath(), amplifyMeta);
+};
+
+const addLayerToAmplifyMeta = (context, parameters: LayerParameters) => {
+  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.layerName, amplifyMetaAndBackendParams(parameters));
+  writeParametersToAmplifyMeta(
+    context,
+    parameters.layerName,
+    layerParamsToAmplifyMetaParams(parameters, isMultiEnvLayer(context, parameters.layerName)),
+  );
+};
 
 const updateLayerInAmplifyMeta = (context, parameters: LayerParameters) => {
-  const metaParams = layerParamsToAmplifyMetaParams(parameters);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'runtimes', metaParams.runtimes);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'layerVersionMap', metaParams.layerVersionMap);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, parameters.layerName, 'build', metaParams.build);
+  writeParametersToAmplifyMeta(
+    context,
+    parameters.layerName,
+    layerParamsToAmplifyMetaParams(parameters, isMultiEnvLayer(context, parameters.layerName)),
+  );
 };
 
-const createLayerParametersFile = (context, parameters: LayerParameters | StoredLayerParameters, layerDirPath: string) => {
+const createLayerParametersFile = (
+  context,
+  parameters: LayerParameters | StoredLayerParameters,
+  layerDirPath: string,
+  isMultiEnv: boolean,
+) => {
   fs.ensureDirSync(layerDirPath);
   const parametersFilePath = path.join(layerDirPath, layerParametersFileName);
-  context.amplify.writeObjectAsJson(parametersFilePath, layerParamsToStoredParams(parameters), true);
+  JSONUtilities.writeJson(parametersFilePath, layerParamsToStoredParams(parameters, isMultiEnv));
 };
+
+const updateLayerTeamProviderInfo = (context, parameters: LayerParameters, layerDirPath: string) => {
+  fs.ensureDirSync(layerDirPath);
+  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+  const { envName } = context.amplify.getEnvInfo();
+  if (!fs.existsSync(teamProviderInfoPath)) {
+    throw new Error(`${teamProviderInfoPath} not found.`);
+  }
+
+  const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
+  _.set(
+    teamProviderInfo,
+    [envName, 'nonCFNdata', categoryName, parameters.layerName],
+    layerParamsToStoredParams(parameters, isMultiEnvLayer(context, parameters.layerName)),
+  );
+  JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
+};
+
+const removeLayerFromTeamProviderInfo = (context, layerName) => {
+  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+  const { envName } = context.amplify.getEnvInfo();
+  if (!fs.existsSync(teamProviderInfoPath)) {
+    throw new Error(`${teamProviderInfoPath} not found.`);
+  }
+  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
+  _.unset(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName]);
+  if (_.isEmpty(_.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName]))) {
+    _.unset(teamProviderInfo, [envName, 'nonCFNdata', categoryName]);
+    if (_.isEmpty(_.get(teamProviderInfo, [envName, 'nonCFNdata']))) {
+      _.unset(teamProviderInfo, [envName, 'nonCFNdata']);
+    }
+  }
+  JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
+};
+
+interface LayerMetaAndBackendConfigParams {
+  providerPlugin: string;
+  service: string;
+  build: boolean;
+}
+
+const amplifyMetaAndBackendParams = (parameters: LayerParameters): LayerMetaAndBackendConfigParams => ({
+  providerPlugin: parameters.providerContext.provider,
+  service: parameters.providerContext.service,
+  build: parameters.build,
+});
 
 const layerParamsToAmplifyMetaParams = (
   parameters: LayerParameters,
-): StoredLayerParameters & { providerPlugin: string; service: string; build: boolean } => {
-  return _.assign(layerParamsToStoredParams(parameters), {
-    providerPlugin: parameters.providerContext.provider,
-    service: parameters.providerContext.service,
-    build: parameters.build,
-  });
+  isMultiEnv: boolean,
+): LayerMetaAndBackendConfigParams & StoredLayerParameters => {
+  const amplifyMetaBackendParams = amplifyMetaAndBackendParams(parameters);
+  return _.assign(layerParamsToStoredParams(parameters, isMultiEnv), amplifyMetaBackendParams);
 };
 
-const layerParamsToStoredParams = (parameters: LayerParameters | StoredLayerParameters): StoredLayerParameters => ({
-  runtimes: (parameters.runtimes || []).map(runtime => _.pick(runtime, 'value', 'name', 'layerExecutablePath', 'cloudTemplateValue')),
-  layerVersionMap: parameters.layerVersionMap,
-});
+const layerParamsToStoredParams = (parameters: LayerParameters | StoredLayerParameters, isMultiEnv: boolean): StoredLayerParameters => {
+  const storedParams: StoredLayerParameters = { layerVersionMap: parameters.layerVersionMap };
+  if (!isMultiEnv) {
+    storedParams.runtimes = (parameters.runtimes || []).map(runtime =>
+      _.pick(runtime, 'value', 'name', 'layerExecutablePath', 'cloudTemplateValue'),
+    );
+  }
+  return storedParams;
+};
 
 function createParametersFile(context, parameters, resourceName, parametersFileName) {
   const parametersFilePath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, resourceName, parametersFileName);
-  const currentParameters = context.amplify.readJsonFile(parametersFilePath, undefined, false) || {};
+  const currentParameters = JSONUtilities.readJson(parametersFilePath, { throwIfNotExist: false }) || ({} as any);
   delete currentParameters.mutableParametersState; // this field was written in error in a previous version of the cli
-  context.amplify.writeObjectAsJson(parametersFilePath, { ...currentParameters, ...parameters }, true);
+  JSONUtilities.writeJson(parametersFilePath, { ...currentParameters, ...parameters });
 }
 
 function buildParametersFileObj(

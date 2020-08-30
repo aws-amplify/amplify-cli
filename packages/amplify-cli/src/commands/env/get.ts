@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { JSONUtilities } from 'amplify-cli-core';
+import { printEnvInfo } from '../helpers/envUtils';
 
 export const run = async context => {
   const envName = context.parameters.options.name;
@@ -27,20 +28,7 @@ export const run = async context => {
       envFound = true;
       context.print.info('');
       context.print.info(chalk.red(env));
-      context.print.info('--------------');
-
-      Object.keys(allEnvs[env]).forEach(provider => {
-        context.print.info(`Provider: ${provider}`);
-
-        Object.keys(allEnvs[env][provider]).forEach(providerAttr => {
-          context.print.info(`${providerAttr}: ${allEnvs[env][provider][providerAttr]}`);
-        });
-
-        context.print.info('--------------');
-        context.print.info('');
-      });
-
-      context.print.info('');
+      printEnvInfo(context, env, allEnvs);
     }
   });
 

@@ -9,6 +9,7 @@ import { FunctionDependency } from 'amplify-function-plugin-interface';
 import { ServiceName, provider } from './constants';
 import { previousPermissionsQuestion } from './layerHelpers';
 import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata } from './layerParams';
+import { getLayerRuntimes } from './layerRuntimes';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
 import globby from 'globby';
@@ -19,10 +20,10 @@ export async function packageLayer(context, resource: Resource) {
 }
 
 async function zipLayer(context, resource: Resource) {
-  const layerName = resource.resourceName;
-  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
   const zipFilename = 'latest-build.zip';
-  const distDir = path.join(resourcePath, 'dist');
+  const layerName = resource.resourceName;
+  const layerDirPath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
+  const distDir = path.join(layerDirPath, 'dist');
   fs.ensureDirSync(distDir);
   const destination = path.join(distDir, zipFilename);
   const zip = archiver.create('zip');
@@ -43,8 +44,8 @@ async function zipLayer(context, resource: Resource) {
       reject(new Error('Failed to zip code.'));
     });
 
-    const libGlob = glob.sync(path.join(resourcePath, 'lib', '*'));
-    const optPath = path.join(resourcePath, 'opt');
+    const libGlob = glob.sync(path.join(layerDirPath, 'lib', '*'));
+    const optPath = path.join(layerDirPath, 'opt');
 
     let conflicts: string[] = [];
     libGlob.forEach(lib => {
@@ -79,8 +80,8 @@ async function zipLayer(context, resource: Resource) {
 async function ensureLayerVersion(context: any, layerName: string) {
   const layerState = getLayerMetadataFactory(context)(layerName);
   const isNewVersion = await layerState.syncVersions();
+  const latestVersion = layerState.getLatestVersion();
   if (isNewVersion) {
-    const latestVersion = layerState.getLatestVersion();
     context.print.success(`Content changes in Lambda layer ${layerName} detected. Layer version increased to ${latestVersion}`);
     context.print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
     await setNewVersionPermissions(context, layerName, layerState);
@@ -95,9 +96,10 @@ async function ensureLayerVersion(context: any, layerName: string) {
       service: ServiceName.LambdaLayer,
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     },
+    runtimes: getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName),
   };
   const layerParameters: LayerParameters = { ...storedParams, ...additionalLayerParams };
-  updateLayerArtifacts(context, layerParameters, { cfnFile: isNewVersion });
+  updateLayerArtifacts(context, layerParameters, latestVersion, { cfnFile: isNewVersion });
 }
 
 async function setNewVersionPermissions(context: any, layerName: string, layerState: LayerMetadata) {
