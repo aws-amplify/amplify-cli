@@ -13,6 +13,7 @@ import {
 } from 'graphql';
 import { GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
+import { getBaseType } from 'graphql-transformer-common';
 
 test('Test DynamoDBModelTransformer validation happy case', () => {
   const validSchema = `
@@ -591,6 +592,57 @@ test(`V5 transformer snapshot test`, () => {
 test(`Current version transformer snapshot test`, () => {
   const schema = transformerVersionSnapshot(TRANSFORM_CURRENT_VERSION);
   expect(schema).toMatchSnapshot();
+});
+
+test('DynmoDB transformer should add default primary key when not defined', () => {
+  const validSchema = `
+  type Post @model{
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toBeDefined();
+  const schema = parse(result.schema);
+
+  const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+  ) as InputObjectTypeDefinitionNode | undefined;
+  expect(createPostInput).toBeDefined();
+  const defaultIdField: InputValueDefinitionNode = createPostInput.fields.find(f => f.name.value === 'id');
+  expect(defaultIdField).toBeDefined();
+  expect(getBaseType(defaultIdField.type)).toEqual('ID');
+});
+
+test('DynmoDB transformer should add not default primary key when ID is defined', () => {
+  const validSchema = `
+  type Post @model{
+    id: Int
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toBeDefined();
+  const schema = parse(result.schema);
+
+  const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+  ) as InputObjectTypeDefinitionNode | undefined;
+  expect(createPostInput).toBeDefined();
+  const defaultIdField: InputValueDefinitionNode = createPostInput.fields.find(f => f.name.value === 'id');
+  expect(defaultIdField).toBeDefined();
+  expect(getBaseType(defaultIdField.type)).toEqual('Int');
+  // It should not add default value for ctx.arg.id as id is of type Int
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
 });
 
 function transformerVersionSnapshot(version: number): string {

@@ -116,6 +116,10 @@ export class KeyTransformer extends Transformer {
   private updateSchema = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
     this.updateQueryFields(definition, directive, ctx);
     this.updateInputObjects(definition, directive, ctx);
+    const isPrimaryKey = this.isPrimaryKey(directive);
+    if (isPrimaryKey) {
+      this.removeAutoCreatedPrimaryKey(definition, directive, ctx);
+    }
   };
 
   /**
@@ -193,6 +197,19 @@ export class KeyTransformer extends Transformer {
         ctx.mapResourceToStack(definition.name.value, queryResolverId);
         ctx.setResource(queryResolverId, queryResolver);
       }
+    }
+  };
+
+  private removeAutoCreatedPrimaryKey = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
+    const schemaHasIdField = definition.fields.find(f => f.name.value === 'id');
+    if (!schemaHasIdField) {
+      const obj = ctx.getObject(definition.name.value);
+      const fields = obj.fields.filter(f => f.name.value !== 'id');
+      const newObj: ObjectTypeDefinitionNode = {
+        ...obj,
+        fields,
+      };
+      ctx.updateObject(newObj);
     }
   };
 
@@ -351,10 +368,15 @@ export class KeyTransformer extends Transformer {
     if (this.isPrimaryKey(directive)) {
       const directiveArgs: KeyArguments = getDirectiveArguments(directive);
 
-      // There is no need to update the create Input as fields that can be in the index have to be non-nullable (which is enforece by
-      // @key directive). The @model transformer generates the createXInput where non-nullable fields  are
-      // also non-nullables in the input types as wekk. Only exception to this is when these fields can be automatically populated
-      // like id, createdAt and updatedAt, which will automatically get default value
+      const hasIdField = definition.fields.find(f => f.name.value === 'id');
+      if (!hasIdField) {
+        const createInput = ctx.getType(
+          ModelResourceIDs.ModelCreateInputObjectName(definition.name.value),
+        ) as InputObjectTypeDefinitionNode;
+        if (createInput) {
+          ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
+        }
+      }
 
       const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
       if (updateInput) {
@@ -720,6 +742,18 @@ function replaceUpdateInput(
 
       return f;
     }),
+  };
+}
+
+// Remove the id field added by @model transformer
+function replaceCreateInput(
+  definition: ObjectTypeDefinitionNode,
+  input: InputObjectTypeDefinitionNode,
+  keyFields: string[],
+): InputObjectTypeDefinitionNode {
+  return {
+    ...input,
+    fields: input.fields.filter(f => f.name.value !== 'id'),
   };
 }
 
