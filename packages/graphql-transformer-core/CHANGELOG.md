@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.21.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.2...graphql-transformer-core@6.21.3) (2020-08-31)
+
+
+### Bug Fixes
+
+* Validation check when mutating more than 1 GSI in update flow ([#5141](https://github.com/aws-amplify/amplify-cli/issues/5141)) ([4faaba0](https://github.com/aws-amplify/amplify-cli/commit/4faaba0509467aad03db11709175f4a3071459ae))
+
+
+
+
+
 ## [6.21.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.1...graphql-transformer-core@6.21.2) (2020-08-14)
 
 **Note:** Version bump only for package graphql-transformer-core
