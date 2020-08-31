@@ -1,4 +1,5 @@
-import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
+import { normalizeEditor, editors } from '../extensions/amplify-helpers/editor-selection';
+import { editorSelect } from '../prompts';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
 import { stateManager } from 'amplify-cli-core';
 
@@ -29,7 +30,7 @@ async function getEditor(context) {
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
     editor = normalizeEditor(context.exeInfo.inputParams.amplify.defaultEditor);
   } else if (!context.exeInfo.inputParams.yes) {
-    editor = await editorSelection(editor);
+    editor = await editorSelect(editors, editor);
   }
 
   return editor;

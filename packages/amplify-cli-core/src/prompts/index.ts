@@ -1,6 +1,14 @@
 import { prompt } from 'enquirer';
 
-type validatorFunction = (input: string) => boolean;
+export type validatorFunction = (input: string) => boolean;
+
+export interface Choice {
+  name: string;
+  message?: string;
+  value?: string;
+  hint?: string;
+  disabled?: boolean | string;
+}
 
 export async function executePrompt(promptQuestion: InputPrompt | SelectPrompt) {
   const answer: any = await prompt(promptQuestion);
@@ -25,12 +33,16 @@ export class InputPrompt {
 
 export class SelectPrompt {
   name: string;
-  type: string;
+  type = 'select';
   message: string;
-  choices: string[];
+  choices: string[] | Choice[];
   initial?: string;
-  constructor(promptName: string, promptMessage: string, choicesSelect: string[], initialSelect?: string) {
-    this.type = 'select';
+
+  constructor(promptName: string, promptMessage: string, choicesSelect: string[] | Choice[], initialSelect?: string) {
     (this.name = promptName), (this.message = promptMessage), (this.choices = choicesSelect), (this.initial = initialSelect);
   }
+}
+
+export class MultiSelectPrompt extends SelectPrompt {
+  type = 'multiselect';
 }

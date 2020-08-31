@@ -1,13 +1,15 @@
-import { prompt } from 'enquirer';
+import { executePrompt, MultiSelectPrompt, Choice } from 'amplify-cli-core';
 
-export async function providersMultiSelect(providerPluginList, defaultProvider?) {
-  const providerPrompt = {
-    type: 'multiselect',
-    name: 'providerSelected',
-    message: 'Select the backend providers.',
-    choices: providerPluginList,
-    initial: defaultProvider,
-  };
-  const answer: { providerSelected: string[] } = await prompt(providerPrompt);
-  return answer.providerSelected;
+const PROVIDER_SELECT_MESSAGE = 'Select the backend providers.';
+
+function constructProviderMultiSelectQuestion(providerPluginList: string[] | Choice[], defaultProvider?: string): MultiSelectPrompt {
+  const providerQuestionName = 'multiSelectProvider';
+  const providerQuestion = new MultiSelectPrompt(providerQuestionName, PROVIDER_SELECT_MESSAGE, providerPluginList, defaultProvider);
+  return providerQuestion;
+}
+
+export async function providersMultiSelect(providerPluginList: string[] | Choice[], defaultProvider?: string): Promise<string[]> {
+  const providerQuestion = constructProviderMultiSelectQuestion(providerPluginList, defaultProvider);
+  const answer = await executePrompt(providerQuestion);
+  return answer;
 }

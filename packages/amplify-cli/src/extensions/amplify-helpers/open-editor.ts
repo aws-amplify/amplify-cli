@@ -2,7 +2,8 @@ import * as fs from 'fs-extra';
 import execa, { sync as execaSync } from 'execa';
 import * as inquirer from 'inquirer';
 import * as envEditor from 'env-editor';
-import { editorSelection } from './editor-selection';
+import { editors } from './editor-selection';
+import { editorSelect } from '../../prompts';
 import { getEnvInfo } from './get-env-info';
 
 export async function openEditor(context, filePath, waitToContinue = true) {
@@ -15,7 +16,7 @@ export async function openEditor(context, filePath, waitToContinue = true) {
   // Check if default editor is chosen in init step
   const { defaultEditor } = getEnvInfo();
 
-  const editorSelected = defaultEditor || (await editorSelection());
+  const editorSelected = defaultEditor || (await editorSelect(editors));
 
   if (editorSelected !== 'none') {
     const editorArguments: string[] = [];
