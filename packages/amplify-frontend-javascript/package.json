@@ -22,6 +22,7 @@
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
     "inquirer": "^7.0.3",
+    "lodash": "^4.17.19",
     "promise-sequential": "^1.1.1"
   }
 }

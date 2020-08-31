@@ -1,5 +1,5 @@
 const path = require('path');
-const fs = require('fs-extra');
+const _ = require('lodash');
 const { JSONUtilities } = require('amplify-cli-core');
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
@@ -56,23 +56,20 @@ const defaultConfig = {
 function getAngularConfig(projectRoot) {
   const angularConfigFile = path.join(projectRoot, 'angular.json');
   const angularProjectConfig = JSONUtilities.readJson(angularConfigFile, { throwIfNotExist: false });
-  let dist = 'dist';
-  if (angularProjectConfig && angularProjectConfig.projects && Object.keys(angularProjectConfig.projects).length) {
-    const { defaultProject } = angularProjectConfig;
-    const projectConfig = angularProjectConfig.projects[defaultProject];
-    dist =
-      (projectConfig &&
-        projectConfig.architect &&
-        projectConfig.architect.build &&
-        projectConfig.architect.build.options &&
-        projectConfig.architect.build.options.outputPath) ||
-      'dist';
-  }
+  const dist = _.get(angularProjectConfig, [
+    'projects',
+    angularProjectConfig.defaultProject,
+    'architect',
+    'build',
+    'options',
+    'outputPath',
+  ]);
   return {
     ...angularConfig,
     DistributionDir: dist,
   };
 }
+
 export function getProjectConfiguration(framework, projectRoot) {
   switch (framework) {
     case 'angular':
@@ -90,4 +87,8 @@ export function getProjectConfiguration(framework, projectRoot) {
     default:
       return defaultConfig;
   }
+}
+
+export function getSupportedFrameworks() {
+  return ['angular', 'ember', 'ionic', 'react', 'react-native', 'vue', 'none'];
 }
