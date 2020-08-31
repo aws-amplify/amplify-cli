@@ -2,6 +2,9 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as which from 'which';
 
+const packageJson = 'package.json';
+const packageJsonDir = path.join(process.cwd(), packageJson);
+
 /**
  * Determine the package manager of the current project
  *
@@ -10,8 +13,6 @@ import * as which from 'which';
 export async function getPackageManager() {
   const yarnLock = './yarn.lock';
   const yarnLockDir = path.join(process.cwd(), yarnLock);
-  const packageJson = './package.json';
-  const packageJsonDir = path.join(process.cwd(), packageJson);
   if (fs.existsSync(yarnLockDir)) {
     // Check that yarn is installed for the user
     if (which.sync('yarn', { nothrow: true }) || which.sync('yarn.cmd', { nothrow: true })) {
@@ -22,6 +23,29 @@ export async function getPackageManager() {
     return 'npm';
   }
   return undefined;
+}
+
+/**
+ * Determine the starting command of the current project
+ *
+ * @return {string} 'serve' or 'start'
+ */
+export async function getPackageManagerCommand() {
+  let scripts;
+  if (fs.existsSync(packageJsonDir)) {
+    const pjson = fs.readFileSync(packageJsonDir);
+    if (pjson['scripts']) {
+      scripts = pjson['scripts'];
+    }
+  }
+
+  if (scripts['start']) {
+    return 'start';
+  } else if (scripts['serve']) {
+    return 'serve';
+  } else {
+    throw new Error('initialize script was not found');
+  }
 }
 
 /**
