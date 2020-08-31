@@ -33,10 +33,9 @@ export async function getPackageManager() {
 export async function getPackageManagerCommand() {
   let scripts;
   if (fs.existsSync(packageJsonDir)) {
-    const pjson = fs.readFileSync(packageJsonDir);
-    if (pjson['scripts']) {
-      scripts = pjson['scripts'];
-    }
+    const pjson = fs.readFileSync(packageJsonDir).toString();
+    const parsedPjson = JSON.parse(pjson);
+    scripts = parsedPjson['scripts'];
   }
 
   if (scripts['start']) {
