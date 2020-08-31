@@ -7,7 +7,7 @@ const constants = require('./constants');
 async function init(context) {
   normalizeInputParams(context);
   const framework = guessFramework(context, context.exeInfo.localEnvInfo.projectPath);
-  const config = frameworkConfigMapping[framework];
+  const config = frameworkConfigMapping.getProjectConfiguration(framework, context.exeInfo.localEnvInfo.projectPath);
   context.exeInfo.projectConfig[constants.Label] = {
     framework,
     config,
@@ -82,13 +82,16 @@ async function confirmFramework(context) {
       type: 'list',
       name: 'framework',
       message: 'What javascript framework are you using',
-      choices: Object.keys(frameworkConfigMapping),
+      choices: frameworkConfigMapping.getSupportedFrameworks(),
       default: context.exeInfo.projectConfig[constants.Label].framework,
     };
     const answers = await inquirer.prompt(frameworkComfirmation);
     if (context.exeInfo.projectConfig[constants.Label].framework !== answers.framework) {
       context.exeInfo.projectConfig[constants.Label].framework = answers.framework;
-      context.exeInfo.projectConfig[constants.Label].config = frameworkConfigMapping[answers.framework];
+      context.exeInfo.projectConfig[constants.Label].config = frameworkConfigMapping.getProjectConfiguration(
+        answers.framework,
+        context.exeInfo.localEnvInfo.projectPath,
+      );
     }
   }
 }
