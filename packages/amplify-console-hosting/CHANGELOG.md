@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.4.2...amplify-console-hosting@1.4.3-beta.0) (2020-08-31)
+
+
+### Bug Fixes
+
+* **amplify-frontend-javascript:** use execa for spawning child process ([#5150](https://github.com/aws-amplify/amplify-cli/issues/5150)) ([28b1832](https://github.com/aws-amplify/amplify-cli/commit/28b183272eb26afe3f38fe27e909405b277ef534)), closes [#4626](https://github.com/aws-amplify/amplify-cli/issues/4626)
+
+
+
+
+
 ## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.4.1...amplify-console-hosting@1.4.2) (2020-08-20)
 
 

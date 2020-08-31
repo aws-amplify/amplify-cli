@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.4...amplify-codegen-appsync-model-plugin@1.20.5-beta.0) (2020-08-31)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
 ## [1.20.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.3...amplify-codegen-appsync-model-plugin@1.20.4) (2020-08-20)
 
 

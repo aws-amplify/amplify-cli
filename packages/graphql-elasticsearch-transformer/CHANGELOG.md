@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.13-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.12...graphql-elasticsearch-transformer@4.7.13-beta.0) (2020-08-31)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** to support non string key in es ([#5180](https://github.com/aws-amplify/amplify-cli/issues/5180)) ([b119344](https://github.com/aws-amplify/amplify-cli/commit/b1193446ff3503311a043dfc23dd6c30fcaa94ed)), closes [#5140](https://github.com/aws-amplify/amplify-cli/issues/5140)
+
+
+
+
+
 ## [4.7.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.11...graphql-elasticsearch-transformer@4.7.12) (2020-08-14)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

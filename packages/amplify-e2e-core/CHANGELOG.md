@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.4.3...amplify-e2e-core@1.5.0-beta.0) (2020-08-31)
+
+
+### Features
+
+* resource Tagging Support ([#5178](https://github.com/aws-amplify/amplify-cli/issues/5178)) ([e34226d](https://github.com/aws-amplify/amplify-cli/commit/e34226dde30d7d345e3cc2e72e187b242a09c389))
+
+
+
+
+
 ## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.4.2...amplify-e2e-core@1.4.3) (2020-08-14)
 
 **Note:** Version bump only for package amplify-e2e-core

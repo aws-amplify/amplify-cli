@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.18.3...amplify-category-auth@2.18.4-beta.0) (2020-08-31)
+
+
+### Bug Fixes
+
+* update auth supported services path ([#5184](https://github.com/aws-amplify/amplify-cli/issues/5184)) ([f8ff81d](https://github.com/aws-amplify/amplify-cli/commit/f8ff81da52f7a5376b5a36bdfed20d973b301f0f))
+
+
+
+
+
 ## [2.18.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.18.2...amplify-category-auth@2.18.3) (2020-08-20)
 
 
