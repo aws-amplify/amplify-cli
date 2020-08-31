@@ -1137,6 +1137,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - lambda-layers
           requires:
             - build
       - amplify_migration_tests_latest:
@@ -1145,6 +1146,7 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
+                - lambda-layers
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -1153,6 +1155,7 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
+                - lambda-layers
           requires:
             - build
       - amplify_console_integration_tests:
@@ -1200,6 +1203,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - lambda-layers
       - api_1-amplify_e2e_tests:
           filters: &ref_2
             branches:
