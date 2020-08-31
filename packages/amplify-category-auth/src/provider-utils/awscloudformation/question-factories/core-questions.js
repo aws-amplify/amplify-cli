@@ -92,7 +92,6 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
 }
 
 function iteratorQuestion(input, question, context) {
-  console.log(`iterator questions`);
   if (context.updatingAuth[input.iterator]) {
     let iteratorValues = context.updatingAuth[input.iterator];
     if(input.iterator === 'oidcAttributesMapping') {
@@ -124,7 +123,9 @@ function getRequiredOptions(input, question, getAllMaps, context, currentAnswers
   const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
   const sourceArray = uniq(flatten(input.requiredOptions.map(i => sourceValues[i] || [])));
   let requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => sourceArray.includes(x.value)) : [];
-  requiredOptions = requiredOptions.map(opt => {opt.checked = true; opt.disabled = 'Required'; return opt;});
+  if(input.key === 'newOIDCMapping') {
+    requiredOptions = requiredOptions.map(opt => {opt.checked = true; opt.disabled = 'Required'; return opt;});
+  }
   const trueOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => !sourceArray.includes(x.value)) : [];
   const msg =
     requiredOptions && requiredOptions.length > 0 && input.requiredOptionsMsg
