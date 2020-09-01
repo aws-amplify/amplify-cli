@@ -14,9 +14,9 @@ export const getResourceSynthesizer = (context: any, cfnFilename: string, provid
 ) => {
   await lambdaTriggers(request, context, null);
   await createUserPoolGroups(context, request.resourceName, request.userPoolGroupList);
-  await addAdminAuth(context, request.resourceName, 'add', request.adminQueryGroup);
+  await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
   await copyCfnTemplate(context, category, request, cfnFilename);
-  saveResourceParameters(context, provider, category, request.resourceName, request, ENV_SPECIFIC_PARAMS);
+  saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
   await copyS3Assets(context, request);
   return request;
 };

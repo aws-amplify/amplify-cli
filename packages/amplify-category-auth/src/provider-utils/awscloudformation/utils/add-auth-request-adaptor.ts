@@ -33,7 +33,7 @@ export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestion
  * Converts an AddAuthRequest into the existing serviceQuestions output format
  * @param request
  */
-export const addAuthRequestAdaptorFactory: AddAuthRequestAdaptorFactory = projectType => ({
+export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({
   serviceConfiguration: cognitoConfig,
   resourceName,
 }): ServiceQuestionsResult => {
@@ -48,7 +48,7 @@ export const addAuthRequestAdaptorFactory: AddAuthRequestAdaptorFactory = projec
     authSelections: cognitoConfig.includeIdentityPool ? 'identityPoolAndUserPool' : 'userPoolOnly',
     userPoolName: userPoolConfig.userPoolName,
     usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
-    userPoolGroups: userPoolConfig.userPoolGroups?.length > 0,
+    userPoolGroups: (userPoolConfig.userPoolGroups?.length || 0) > 0,
     userPoolGroupList: (userPoolConfig.userPoolGroups || []).map(group => group.groupName), // TODO may need to map "customPolicy"
     userpoolClientRefreshTokenValidity: userPoolConfig.refreshTokenPeriod,
     userpoolClientReadAttributes: (userPoolConfig.readAttributes || []).map(att => att.toLowerCase()),
@@ -104,7 +104,11 @@ const socialProviderMap = (
 };
 
 const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration | undefined, projectType: string): IdentityPoolResult => {
-  if (!idPoolConfig) return undefined;
+  if (!idPoolConfig)
+    return {
+      thirdPartyAuth: false,
+      authProviders: [],
+    };
   type AppIds = Pick<IdentityPoolResult, 'facebookAppId' | 'googleClientId' | 'googleIos' | 'googleAndroid' | 'amazonAppId'>;
   const result = {
     identityPoolName: idPoolConfig.identityPoolName,
@@ -113,7 +117,7 @@ const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration | undefi
     authProviders: (idPoolConfig.identitySocialFederation || [])
       .map(socialFed => socialFed.provider)
       .map(toTitleCase)
-      .map(provider => authProviderList.find(ap => ap.name === provider))
+      .map(provider => authProviderList.find(ap => ap.name === provider)!)
       .map(ap => ap.value),
     // convert the list of social federation configs into individual key: client id pairs
     ...(idPoolConfig?.identitySocialFederation || []).reduce(
@@ -126,7 +130,7 @@ const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration | undefi
   return result;
 };
 
-const passwordPolicyMap = (pwPolicy: CognitoPasswordPolicy): PasswordPolicyResult => {
+const passwordPolicyMap = (pwPolicy?: CognitoPasswordPolicy): PasswordPolicyResult => {
   if (!pwPolicy) return {};
   return {
     passwordPolicyMinLength: pwPolicy.minimumLength,
@@ -134,7 +138,7 @@ const passwordPolicyMap = (pwPolicy: CognitoPasswordPolicy): PasswordPolicyResul
   };
 };
 
-const adminQueriesMap = (adminQueries: CognitoAdminQueries): AdminQueriesResult => {
+const adminQueriesMap = (adminQueries?: CognitoAdminQueries): AdminQueriesResult => {
   return {
     adminQueries: !!adminQueries,
     adminQueryGroup: adminQueries?.permissions.groupName,
@@ -161,18 +165,22 @@ const passwordConstraintMap: Record<CognitoPasswordConstraint, PasswordPolicy> =
   [CognitoPasswordConstraint.REQUIRE_UPPERCASE]: 'Requires Uppercase',
 };
 
-const passwordRecoveryMap = (pwRecoveryConfig: CognitoPasswordRecoveryConfiguration): PasswordRecoveryResult => {
+const passwordRecoveryMap = (pwRecoveryConfig?: CognitoPasswordRecoveryConfiguration): PasswordRecoveryResult => {
   switch (pwRecoveryConfig?.deliveryMethod) {
     case 'SMS':
       return {
         smsVerificationMessage: pwRecoveryConfig?.smsMessage,
         autoVerifiedAttributes: ['phone_number'],
       };
-    default:
+    case 'EMAIL':
       return {
         emailVerificationMessage: pwRecoveryConfig?.emailMessage,
         emailVerificationSubject: pwRecoveryConfig?.emailSubject,
         autoVerifiedAttributes: ['email'],
+      };
+    default:
+      return {
+        autoVerifiedAttributes: [],
       };
   }
 };

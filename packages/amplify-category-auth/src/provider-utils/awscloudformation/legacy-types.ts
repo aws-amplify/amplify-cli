@@ -9,11 +9,11 @@ export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
 
 export interface ServiceQuestionsBaseResult {
   serviceName: string;
-  resourceName: string;
+  resourceName?: string;
   useDefault: 'manual';
   requiredAttributes: string[];
   authSelections: 'userPoolOnly' | 'identityPoolAndUserPool';
-  userPoolName: string;
+  userPoolName?: string;
   usernameAttributes?: UsernameAttributes;
   userPoolGroups: boolean;
   userPoolGroupList?: string[];

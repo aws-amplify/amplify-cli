@@ -15,7 +15,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
     projectName,
   )(request)
     .then(getResourceSynthesizer(context, cfnFilename, provider))
-    .then(request => request.resourceName)
+    .then(request => request.resourceName!)
     .then(getPostAddAuthMetaUpdater(context, { service: request.serviceName, providerName: provider }))
     .then(getPostAddAuthMessagePrinter(context))
     .catch(err => {
