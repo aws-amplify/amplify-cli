@@ -103,7 +103,8 @@ const socialProviderMap = (
   return result;
 };
 
-const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration, projectType: string): IdentityPoolResult => {
+const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration | undefined, projectType: string): IdentityPoolResult => {
+  if (!idPoolConfig) return undefined;
   type AppIds = Pick<IdentityPoolResult, 'facebookAppId' | 'googleClientId' | 'googleIos' | 'googleAndroid' | 'amazonAppId'>;
   const result = {
     identityPoolName: idPoolConfig.identityPoolName,
@@ -115,7 +116,7 @@ const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration, project
       .map(provider => authProviderList.find(ap => ap.name === provider))
       .map(ap => ap.value),
     // convert the list of social federation configs into individual key: client id pairs
-    ...(idPoolConfig.identitySocialFederation || []).reduce(
+    ...(idPoolConfig?.identitySocialFederation || []).reduce(
       (acc, it): AppIds => merge(acc, { [socialFederationKeyMap(it.provider, projectType)]: it.clientId }),
       {} as AppIds,
     ),
@@ -164,13 +165,13 @@ const passwordRecoveryMap = (pwRecoveryConfig: CognitoPasswordRecoveryConfigurat
   switch (pwRecoveryConfig?.deliveryMethod) {
     case 'SMS':
       return {
-        smsVerificationMessage: pwRecoveryConfig.smsMessage,
+        smsVerificationMessage: pwRecoveryConfig?.smsMessage,
         autoVerifiedAttributes: ['phone_number'],
       };
     default:
       return {
-        emailVerificationMessage: pwRecoveryConfig.emailMessage,
-        emailVerificationSubject: pwRecoveryConfig.emailSubject,
+        emailVerificationMessage: pwRecoveryConfig?.emailMessage,
+        emailVerificationSubject: pwRecoveryConfig?.emailSubject,
         autoVerifiedAttributes: ['email'],
       };
   }

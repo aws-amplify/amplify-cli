@@ -3,7 +3,7 @@
  */
 export interface AddAuthRequest {
   version: 1;
-  resourceName?: string;
+  resourceName: string;
   serviceConfiguration: CognitoServiceConfiguration;
 }
 

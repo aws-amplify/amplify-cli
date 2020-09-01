@@ -21,6 +21,7 @@ const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigge
 const { validateAddAuthRequest } = require('amplify-util-headless-input');
 const { addAuthRequestAdaptorFactory } = require('./provider-utils/awscloudformation/utils/add-auth-request-adaptor-factory');
 const { getAddAuthHandler } = require('./provider-utils/awscloudformation/handlers/get-add-auth-handler');
+const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/enforce-single-auth-resource');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -318,6 +319,7 @@ async function executeAmplifyCommand(context) {
 const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
   switch (context.input.command) {
     case 'add':
+      if (projectHasAuth(context)) return;
       await validateAddAuthRequest(headlessPayload)
         .then(addAuthRequestAdaptorFactory(context.amplify.getProjectConfig().frontend))
         .then(getAddAuthHandler(context));

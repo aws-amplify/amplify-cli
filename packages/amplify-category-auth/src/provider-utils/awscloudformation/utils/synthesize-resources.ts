@@ -4,7 +4,8 @@ import fs, { existsSync, copySync } from 'fs-extra';
 import uuid from 'uuid';
 import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot, ENV_SPECIFIC_PARAMS } from '../constants';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-import { category } from '../../..';
+
+const category = 'auth';
 
 // returns a function that sythesizes the resources from ServiceQuestionsResult object.
 // this function returns the object unchanged for .then() chaining
@@ -22,7 +23,7 @@ export const getResourceSynthesizer = (context: any, cfnFilename: string, provid
 
 // the below functions should be non-exported, but they are exported for now because the update flow still uses them individually
 export const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: any) => {
-  const { handleTriggers } = require('./utils/trigger-flow-auth-helper');
+  const { handleTriggers } = require('./trigger-flow-auth-helper');
   let triggerKeyValues = {};
 
   if (coreAnswers.triggers) {
