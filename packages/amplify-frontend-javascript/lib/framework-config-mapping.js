@@ -56,21 +56,18 @@ const defaultConfig = {
 function getAngularConfig(projectRoot) {
   const angularConfigFile = path.join(projectRoot, 'angular.json');
   const angularProjectConfig = JSONUtilities.readJson(angularConfigFile, { throwIfNotExist: false });
-  const dist = _.get(angularProjectConfig, [
-    'projects',
-    angularProjectConfig.defaultProject,
-    'architect',
-    'build',
-    'options',
-    'outputPath',
-  ]);
+  const dist = _.get(
+    angularProjectConfig,
+    ['projects', angularProjectConfig.defaultProject, 'architect', 'build', 'options', 'outputPath'],
+    'dist',
+  );
   return {
     ...angularConfig,
     DistributionDir: dist,
   };
 }
 
-export function getProjectConfiguration(framework, projectRoot) {
+function getProjectConfiguration(framework, projectRoot) {
   switch (framework) {
     case 'angular':
       return getAngularConfig(projectRoot);
@@ -89,6 +86,11 @@ export function getProjectConfiguration(framework, projectRoot) {
   }
 }
 
-export function getSupportedFrameworks() {
+function getSupportedFrameworks() {
   return ['angular', 'ember', 'ionic', 'react', 'react-native', 'vue', 'none'];
 }
+
+module.exports = {
+  getSupportedFrameworks,
+  getProjectConfiguration,
+};
