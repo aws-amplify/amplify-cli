@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as which from 'which';
 import * as _ from 'lodash';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { JSONUtilities } from 'amplify-cli-core';
 
 const packageJson = 'package.json';
 const packageJsonDir = path.join(process.cwd(), packageJson);
