@@ -24,7 +24,7 @@ function setProfile(awsConfig, profileName) {
   if (fs.existsSync(configFilePath)) {
     makeFileOwnerReadWrite(configFilePath);
     config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
-  } 
+  }
 
   let isCredSet = false;
   Object.keys(credentials).forEach(key => {
