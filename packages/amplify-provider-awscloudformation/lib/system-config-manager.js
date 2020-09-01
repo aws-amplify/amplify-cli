@@ -19,18 +19,12 @@ function setProfile(awsConfig, profileName) {
   if (fs.existsSync(credentialsFilePath)) {
     makeFileOwnerReadWrite(credentialsFilePath);
     credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
-  } else {
-    const fd = fs.openSync(credentialsFilePath, 'w', 0o600);
-    fs.closeSync(fd);
   }
 
   if (fs.existsSync(configFilePath)) {
     makeFileOwnerReadWrite(configFilePath);
     config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
-  } else {
-    const fd = fs.openSync(configFilePath, 'w', 0o600);
-    fs.closeSync(fd);
-  }
+  } 
 
   let isCredSet = false;
   Object.keys(credentials).forEach(key => {
@@ -62,9 +56,9 @@ function setProfile(awsConfig, profileName) {
       region: awsConfig.region,
     };
   }
-
-  fs.writeFileSync(credentialsFilePath, ini.stringify(credentials));
-  fs.writeFileSync(configFilePath, ini.stringify(config));
+  
+  fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), {mode: 0o600});
+  fs.writeFileSync(configFilePath, ini.stringify(config), {mode: 0o600});
 }
 
 async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
