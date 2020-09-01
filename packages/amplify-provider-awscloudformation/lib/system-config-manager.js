@@ -20,14 +20,16 @@ function setProfile(awsConfig, profileName) {
     makeFileOwnerReadWrite(credentialsFilePath);
     credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
   } else {
-    fs.openSync(credentialsFilePath, 'w', 0o600);
+    const fd = fs.openSync(credentialsFilePath, 'w', 0o600);
+    fs.closeSync(fd);
   }
 
   if (fs.existsSync(configFilePath)) {
     makeFileOwnerReadWrite(configFilePath);
     config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
   } else {
-    fs.openSync(configFilePath, 'w', 0o600);
+    const fd = fs.openSync(configFilePath, 'w', 0o600);
+    fs.closeSync(fd);
   }
 
   let isCredSet = false;
