@@ -1318,7 +1318,7 @@ export const supportedServices = {
       },
       {
         key: "EditMappingConfirmation",
-        question: "Do you want to edit current attribute mapping ?",
+        question: "Do you want to edit current attributes mapping ?",
         type: "confirm",
         andConditions: [
           {
@@ -1355,6 +1355,50 @@ export const supportedServices = {
           },
           {
             key: "EditMappingConfirmation",
+            value: true,
+            operator: "="
+          }
+        ]
+      },
+      {
+        key: "RemoveMappingConfirmation",
+        question: "Do you want to remove some attributes mapping ?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+          {
+            key: "oidcAttributesMapping",
+            operator: "exists"
+          },
+          {
+            onCreate: "never"
+          },
+        ]
+      },
+      {
+        key: "RemoveMappings",
+        question: "Which mappings do you want to remove ?",
+        type: "multiselect",
+        iterator: "oidcAttributesMapping",
+        iteratorValidation: {
+          operator: "regex",
+          value: ".*",
+          onErrorMsg: "The value must be a valid string."
+        },
+        andConditions: [
+          {
+            key: "oidcAttributesMapping",
+            operator: "exists"
+          },
+          {
+            onCreate: "never"
+          },
+          {
+            key: "RemoveMappingConfirmation",
             value: true,
             operator: "="
           }

@@ -81,16 +81,26 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
       answer[questionObj.key].length > 0
     ) {
       if (questionObj.iterator.endsWith('oidcAttributesMapping')) {
-        const map = context.updatingAuth && context.updatingAuth['oidcAttributesMapping'] ? JSON.parse(context.updatingAuth['oidcAttributesMapping']) : {};
+        // Get data from existing entries loaded from stack parameters.json
+        let map = context.updatingAuth && context.updatingAuth['oidcAttributesMapping'] ? JSON.parse(context.updatingAuth['oidcAttributesMapping']) : {};
         for (let t = 0; t < answer[questionObj.key].length; t += 1) {
           let currentValue = map[answer[questionObj.key][t]] ? `(current value: ${map[answer[questionObj.key][t]]})`: '';
-          const response = await inquirer.prompt({
-            name: 'oidcProviderAttributeName',
-            message: `Which OIDC provider’s attribute should map to Cognito’s "${chalkpipe(null, chalk.green)(answer[questionObj.key][t])}" attribute? ${currentValue}`,
-          });
-          map[answer[questionObj.key][t]] = response.oidcProviderAttributeName;
+          if(questionObj.key === 'RemoveMappings') {
+            delete map[answer[questionObj.key][t]]
+          } else {
+            const response = await inquirer.prompt({
+              name: 'oidcProviderAttributeName',
+              message: `Which OIDC provider’s attribute should map to Cognito’s "${chalkpipe(null, chalk.green)(answer[questionObj.key][t])}" attribute? ${currentValue}`,
+            });
+            map[answer[questionObj.key][t]] = response.oidcProviderAttributeName;
+          }
         }
-        coreAnswers.oidcAttributesMapping = map;
+        // Override current data to take changes into account
+        coreAnswers.oidcAttributesMapping = {};
+        Object.assign(coreAnswers.oidcAttributesMapping, map);
+        if (context.updatingAuth) {
+          context.updatingAuth['oidcAttributesMapping'] = JSON.stringify(map);
+        }
       } else {
         const replacementArray = context.updatingAuth[questionObj.iterator];
 
