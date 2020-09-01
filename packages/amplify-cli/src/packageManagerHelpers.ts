@@ -1,11 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as which from 'which';
+import * as _ from 'lodash';
 import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 const packageJson = 'package.json';
 const packageJsonDir = path.join(process.cwd(), packageJson);
 
+const initializationScripts = ['start', 'serve'];
 const MISSING_SCRIPTS_ERROR = new Error(
   'Did not find a "start" or "serve" initialization script. Add a package.json file in the root of the project with one of these scripts.',
 );
@@ -36,23 +38,13 @@ export async function getPackageManager() {
  * @return {string} 'serve' or 'start'
  */
 export async function getPackageManagerCommand() {
-  let scripts;
-  if (fs.existsSync(packageJsonDir)) {
-    const pjson = fs.readFileSync(packageJsonDir).toString();
-    const parsedPjson = JSONUtilities.parse<$TSAny>(pjson);
-    scripts = parsedPjson['scripts'];
-    if (scripts) {
-      if (scripts['start']) {
-        return 'start';
-      } else if (scripts['serve']) {
-        return 'serve';
-      } else {
-        throw MISSING_SCRIPTS_ERROR;
-      }
-    } else {
+  const scripts = _.get(JSONUtilities.readJson(packageJsonDir, { throwIfNotExist: false }), 'scripts');
+  return (
+    _.keys(scripts).find(scriptName => initializationScripts.includes(scriptName)) ||
+    (() => {
       throw MISSING_SCRIPTS_ERROR;
-    }
-  }
+    })()
+  );
 }
 
 /**
