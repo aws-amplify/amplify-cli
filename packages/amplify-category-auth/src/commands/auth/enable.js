@@ -1,4 +1,4 @@
-const { projectHasAuth } = require('../../provider-utils/awscloudformation/utils/enforce-single-auth-resource');
+const { projectHasAuth } = require('../../provider-utils/awscloudformation/utils/project-has-auth');
 
 const subcommand = 'enable';
 const category = 'auth';

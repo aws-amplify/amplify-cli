@@ -1,6 +1,11 @@
 import path from 'path';
-
-// copied from commands/enable.js
+/**
+ * Factory function that returns a function that updates Amplify meta files after adding auth resource assets
+ *
+ * refactored from commands/enable.js
+ * @param context The amplify context
+ * @param resultMetadata The metadata from the service selection prompt
+ */
 export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { service: string; providerName: string }) => (
   resourceName: string,
 ): string => {

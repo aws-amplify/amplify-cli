@@ -23,7 +23,7 @@ const {
   getAddAuthRequestAdaptor: addAuthRequestAdaptorFactory,
 } = require('./provider-utils/awscloudformation/utils/add-auth-request-adaptor-factory');
 const { getAddAuthHandler } = require('./provider-utils/awscloudformation/handlers/get-add-auth-handler');
-const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/enforce-single-auth-resource');
+const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -318,6 +318,11 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
+/**
+ * Entry point for headless commands
+ * @param {any} context The amplify context object
+ * @param {string} headlessPayload The serialized payload from the platform
+ */
 const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
   switch (context.input.command) {
     case 'add':

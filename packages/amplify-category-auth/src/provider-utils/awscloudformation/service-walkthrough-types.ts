@@ -1,3 +1,5 @@
+// Some convenience types for the existing service walkthrough logic
+
 export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
   OAuthResult &
   SocialProviderResult &

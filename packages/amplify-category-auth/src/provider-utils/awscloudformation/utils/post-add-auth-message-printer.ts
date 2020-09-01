@@ -1,3 +1,7 @@
+/**
+ * A factory function that returns a function that prints the "success message" after adding auth
+ * @param context The amplify context
+ */
 export const getPostAddAuthMessagePrinter = (context: any) => (resourceName: string) => {
   const { print } = context;
   print.success(`Successfully added resource ${resourceName} locally`);

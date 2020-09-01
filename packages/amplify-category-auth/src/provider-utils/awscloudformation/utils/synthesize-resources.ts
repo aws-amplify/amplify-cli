@@ -1,4 +1,4 @@
-import { ServiceQuestionsResult } from '../legacy-types';
+import { ServiceQuestionsResult } from '../service-walkthrough-types';
 import path from 'path';
 import fs, { existsSync, copySync } from 'fs-extra';
 import uuid from 'uuid';
@@ -7,8 +7,13 @@ import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 
 const category = 'auth';
 
-// returns a function that sythesizes the resources from ServiceQuestionsResult object.
-// this function returns the object unchanged for .then() chaining
+/**
+ * Factory function that returns a function that synthesizes all resources based on a ServiceQuestionsResult request.
+ * The function returns the request unchanged to enable .then() chaining
+ * @param context The amplify context
+ * @param cfnFilename The template cfnFilename
+ * @param provider The cloud provider name
+ */
 export const getResourceSynthesizer = (context: any, cfnFilename: string, provider: string) => async (
   request: Readonly<ServiceQuestionsResult>,
 ) => {
@@ -21,7 +26,13 @@ export const getResourceSynthesizer = (context: any, cfnFilename: string, provid
   return request;
 };
 
-// the below functions should be non-exported, but they are exported for now because the update flow still uses them individually
+/**
+ * The functions below should not be exported, but they are for now because the update flow still uses them individually
+ * Once the update flow is also refactored, they will be internal to this file
+ *
+ * They are refactored with minimal modification from awscloudformation/indes.js
+ */
+
 export const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: any) => {
   const { handleTriggers } = require('./trigger-flow-auth-helper');
   let triggerKeyValues = {};

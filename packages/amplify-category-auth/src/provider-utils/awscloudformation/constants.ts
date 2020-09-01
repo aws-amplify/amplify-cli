@@ -1,5 +1,6 @@
 import path from 'path';
 
+// path constants
 export const resourcesRoot = path.normalize(path.join(__dirname, '../../../resources'));
 export const adminAuthAssetRoot = path.join(resourcesRoot, 'adminAuth');
 export const cfnTemplateRoot = path.join(resourcesRoot, 'cloudformation-templates');

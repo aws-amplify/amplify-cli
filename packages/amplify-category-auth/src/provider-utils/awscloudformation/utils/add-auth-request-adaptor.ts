@@ -24,14 +24,14 @@ import {
   PasswordPolicy,
   PasswordRecoveryResult,
   UsernameAttributes,
-} from '../legacy-types';
+} from '../service-walkthrough-types';
 
 export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
 
 export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestionsResult;
 /**
- * Converts an AddAuthRequest into the existing serviceQuestions output format
- * @param request
+ * Factory function that returns a function to convert an AddAuthRequest into the existing ServiceQuestionsResult output format
+ * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
 export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({
   serviceConfiguration: cognitoConfig,
@@ -62,6 +62,7 @@ export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectTyp
   };
 };
 
+// converts the oauth config to the existing format
 const oauthMap = (oauthConfig?: CognitoOAuthConfiguration, requiredAttributes: string[] = []): OAuthResult & SocialProviderResult => {
   if (!oauthConfig) return { hostedUI: false };
   return {
@@ -75,6 +76,7 @@ const oauthMap = (oauthConfig?: CognitoOAuthConfiguration, requiredAttributes: s
   };
 };
 
+// converts the oauth social provider config to the existing format
 const socialProviderMap = (
   socialConfig: CognitoSocialProviderConfiguration[] = [],
   requiredAttributes: string[] = [],
@@ -103,6 +105,7 @@ const socialProviderMap = (
   return result;
 };
 
+// converts the identity pool config to the existing format
 const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration | undefined, projectType: string): IdentityPoolResult => {
   if (!idPoolConfig)
     return {
@@ -130,6 +133,7 @@ const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration | undefi
   return result;
 };
 
+// converts the password policy to the existing format
 const passwordPolicyMap = (pwPolicy?: CognitoPasswordPolicy): PasswordPolicyResult => {
   if (!pwPolicy) return {};
   return {
@@ -138,6 +142,7 @@ const passwordPolicyMap = (pwPolicy?: CognitoPasswordPolicy): PasswordPolicyResu
   };
 };
 
+// converts admin queries config to existing format
 const adminQueriesMap = (adminQueries?: CognitoAdminQueries): AdminQueriesResult => {
   return {
     adminQueries: !!adminQueries,
@@ -145,6 +150,7 @@ const adminQueriesMap = (adminQueries?: CognitoAdminQueries): AdminQueriesResult
   };
 };
 
+// converts mfa config to existing format
 const mfaMap = (mfaConfig: CognitoMFAConfiguration = { mode: 'OFF' }): MfaResult => {
   if (mfaConfig.mode === 'OFF') {
     return {
@@ -158,13 +164,7 @@ const mfaMap = (mfaConfig: CognitoMFAConfiguration = { mode: 'OFF' }): MfaResult
   };
 };
 
-const passwordConstraintMap: Record<CognitoPasswordConstraint, PasswordPolicy> = {
-  [CognitoPasswordConstraint.REQUIRE_LOWERCASE]: 'Requires Lowercase',
-  [CognitoPasswordConstraint.REQUIRE_DIGIT]: 'Requires Numbers',
-  [CognitoPasswordConstraint.REQUIRE_SYMBOL]: 'Requires Symbols',
-  [CognitoPasswordConstraint.REQUIRE_UPPERCASE]: 'Requires Uppercase',
-};
-
+// converts password recovery config to existing format
 const passwordRecoveryMap = (pwRecoveryConfig?: CognitoPasswordRecoveryConfiguration): PasswordRecoveryResult => {
   switch (pwRecoveryConfig?.deliveryMethod) {
     case 'SMS':
@@ -185,6 +185,13 @@ const passwordRecoveryMap = (pwRecoveryConfig?: CognitoPasswordRecoveryConfigura
   }
 };
 
+const passwordConstraintMap: Record<CognitoPasswordConstraint, PasswordPolicy> = {
+  [CognitoPasswordConstraint.REQUIRE_LOWERCASE]: 'Requires Lowercase',
+  [CognitoPasswordConstraint.REQUIRE_DIGIT]: 'Requires Numbers',
+  [CognitoPasswordConstraint.REQUIRE_SYMBOL]: 'Requires Symbols',
+  [CognitoPasswordConstraint.REQUIRE_UPPERCASE]: 'Requires Uppercase',
+};
+
 const mfaTypeMap: Record<'SMS' | 'TOTP', 'SMS Text Message' | 'TOTP'> = {
   SMS: 'SMS Text Message',
   TOTP: 'TOTP',
@@ -197,12 +204,14 @@ const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes
   [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: 'email, phone_number',
 };
 
+// converts a word like tHiS to This
 const toTitleCase = (word: string): string =>
   word
     .charAt(0)
     .toUpperCase()
     .concat(word.slice(1).toLowerCase());
 
+// converts A_STRING_LIKE_THIS into AStringLikeThis
 const upperSnakeCaseToUpperCamelCase = (str: string): string =>
   str
     .toLowerCase()

@@ -1,9 +1,13 @@
-import { ServiceQuestionsResult } from '../legacy-types';
-import { getAddAuthDefaultsApplier } from '../utils/apply-add-auth-defaults';
+import { ServiceQuestionsResult } from '../service-walkthrough-types';
+import { getAddAuthDefaultsApplier } from '../utils/add-auth-defaults-applier';
 import { getResourceSynthesizer } from '../utils/synthesize-resources';
 import { getPostAddAuthMetaUpdater } from '../utils/post-add-auth-meta-update';
 import { getPostAddAuthMessagePrinter } from '../utils/post-add-auth-message-printer';
 
+/**
+ * Factory function that returns a ServiceQuestionsResult consumer that handles all of the resource generation logic
+ * @param context The amplify context
+ */
 export const getAddAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
   const serviceMetadata = require('../../supported-services').supportedServices[request.serviceName];
   const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
