@@ -16,7 +16,7 @@ export type CognitoServiceConfiguration = BaseCognitoServiceConfiguration & (NoC
  * Configuration that applies to all Cognito configuration
  */
 export interface BaseCognitoServiceConfiguration {
-  serviceName: 'cognito';
+  serviceName: 'Cognito';
   userPoolConfiguration: CognitoUserPoolConfiguration;
 }
 

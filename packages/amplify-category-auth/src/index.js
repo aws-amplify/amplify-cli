@@ -16,8 +16,11 @@ const {
   removeDeprecatedProps,
 } = require('./provider-utils/awscloudformation');
 
-const { transformUserPoolGroupSchema } = require('./utils/transform-user-pool-group');
+const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
+const { validateAddAuthRequest } = require('amplify-util-headless-input');
+const { addAuthRequestAdaptorFactory } = require('./provider-utils/awscloudformation/utils/add-auth-request-adaptor-factory');
+const { getAddAuthHandler } = require('./provider-utils/awscloudformation/handlers/get-add-auth-handler');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -40,7 +43,7 @@ async function add(context) {
         context.print.error('Provider not configured for this category');
         return;
       }
-      return providerController.addResource(context, category, result.service);
+      return providerController.addResource(context, result.service);
     })
     .then(resourceName => {
       const options = {
@@ -312,6 +315,18 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
+const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
+  switch (context.input.command) {
+    case 'add':
+      await validateAddAuthRequest(headlessPayload)
+        .then(addAuthRequestAdaptorFactory(context.amplify.getProjectConfig().frontend))
+        .then(getAddAuthHandler(context));
+      return;
+    default:
+      context.print.error(`Headless mode for ${context.input.command} auth is not implemented yet`);
+  }
+};
+
 async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
@@ -330,7 +345,9 @@ module.exports = {
   console,
   getPermissionPolicies,
   executeAmplifyCommand,
+  executeAmplifyHeadlessCommand,
   handleAmplifyEvent,
   prePushAuthHook,
   uploadFiles,
+  category,
 };

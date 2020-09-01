@@ -30,7 +30,7 @@ module.exports = {
           context.print.error('Provider not configured for this category');
           return;
         }
-        return providerController.addResource(context, category, result.service);
+        return providerController.addResource(context, result.service);
       })
       .then(resourceName => {
         const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
