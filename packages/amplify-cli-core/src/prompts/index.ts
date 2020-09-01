@@ -10,7 +10,7 @@ export interface Choice {
   disabled?: boolean | string;
 }
 
-export async function executePrompt(promptQuestion: InputPrompt | SelectPrompt) {
+export async function executePrompt(promptQuestion: InputPrompt | SelectPrompt): Promise<string | string[]> {
   const answer: any = await prompt(promptQuestion);
   // logging possible here
   return answer[promptQuestion.name];
