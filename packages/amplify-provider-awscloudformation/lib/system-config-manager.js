@@ -17,10 +17,17 @@ function setProfile(awsConfig, profileName) {
   let credentials = {};
   let config = {};
   if (fs.existsSync(credentialsFilePath)) {
+    makeFileOwnerReadWrite(credentialsFilePath);
     credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
+  } else {
+    fs.openSync(credentialsFilePath, 'w', 0o600);
   }
+
   if (fs.existsSync(configFilePath)) {
+    makeFileOwnerReadWrite(configFilePath);
     config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
+  } else {
+    fs.openSync(configFilePath, 'w', 0o600);
   }
 
   let isCredSet = false;
@@ -55,7 +62,6 @@ function setProfile(awsConfig, profileName) {
   }
 
   fs.writeFileSync(credentialsFilePath, ini.stringify(credentials));
-  makeFileOwnerReadWrite(credentialsFilePath);
   fs.writeFileSync(configFilePath, ini.stringify(config));
 }
 
@@ -244,6 +250,7 @@ function getCacheFilePath(context) {
 function getProfileConfig(profileName) {
   let profileConfig;
   if (fs.existsSync(configFilePath)) {
+    makeFileOwnerReadWrite(configFilePath);
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
     Object.keys(config).forEach(key => {
       const keyName = key.replace('profile', '').trim();
@@ -297,6 +304,7 @@ function getProfileRegion(profileName) {
 function getNamedProfiles() {
   let namedProfiles;
   if (fs.existsSync(configFilePath)) {
+    makeFileOwnerReadWrite(configFilePath);
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
     namedProfiles = {};
     Object.keys(config).forEach(key => {
