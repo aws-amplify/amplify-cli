@@ -83,9 +83,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
       if (questionObj.iterator.endsWith('oidcAttributesMapping')) {
         const map = context.updatingAuth && context.updatingAuth['oidcAttributesMapping'] ? JSON.parse(context.updatingAuth['oidcAttributesMapping']) : {};
         for (let t = 0; t < answer[questionObj.key].length; t += 1) {
+          let currentValue = map[answer[questionObj.key][t]] ? `(current value: ${map[answer[questionObj.key][t]]})`: '';
           const response = await inquirer.prompt({
             name: 'oidcProviderAttributeName',
-            message: `Which OIDC provider’s attribute should map to Cognito’s "${chalkpipe(null, chalk.green)(answer[questionObj.key][t])}" attribute?`,
+            message: `Which OIDC provider’s attribute should map to Cognito’s "${chalkpipe(null, chalk.green)(answer[questionObj.key][t])}" attribute? ${currentValue}`,
           });
           map[answer[questionObj.key][t]] = response.oidcProviderAttributeName;
         }
