@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.3...amplify-e2e-tests@2.22.0) (2020-08-31)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** fix [@key](https://github.com/key) issue when datastore enabled ([#5175](https://github.com/aws-amplify/amplify-cli/issues/5175)) ([d58c4aa](https://github.com/aws-amplify/amplify-cli/commit/d58c4aa6ba07859a6fec250df281649bb17548e9)), closes [#4355](https://github.com/aws-amplify/amplify-cli/issues/4355)
+* Validation check when mutating more than 1 GSI in update flow ([#5141](https://github.com/aws-amplify/amplify-cli/issues/5141)) ([4faaba0](https://github.com/aws-amplify/amplify-cli/commit/4faaba0509467aad03db11709175f4a3071459ae))
+
+
+### Features
+
+* resource Tagging Support ([#5178](https://github.com/aws-amplify/amplify-cli/issues/5178)) ([e34226d](https://github.com/aws-amplify/amplify-cli/commit/e34226dde30d7d345e3cc2e72e187b242a09c389))
+
+
+
+
+
 ## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.2...amplify-e2e-tests@2.21.3) (2020-08-14)
 
 

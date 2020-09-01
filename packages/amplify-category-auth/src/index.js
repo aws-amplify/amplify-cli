@@ -66,7 +66,7 @@ async function add(context) {
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
-  const serviceMetadata = amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
+  const serviceMetadata = require('./provider-utils/supported-services').supportedServices;
   const { cfnFilename, provider } = serviceMetadata.Cognito;
   const authExists = amplify.getProjectDetails().amplifyMeta.auth && Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;

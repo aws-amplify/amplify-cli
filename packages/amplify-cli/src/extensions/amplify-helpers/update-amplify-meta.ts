@@ -58,7 +58,10 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
-  fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
+  // if project hasn't been initialized after tags has been released
+  if (fs.existsSync(tagFilePath)) {
+    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
+  }
 }
 
 export function updateamplifyMetaAfterResourceAdd(category, resourceName, options: { dependsOn? } = {}) {

@@ -2,6 +2,10 @@ const aws = require('./aws.js');
 const _ = require('lodash');
 const providerName = require('../../lib/constants').ProviderName;
 const configurationManager = require('../../lib/configuration-manager');
+const fs = require('fs-extra');
+const ora = require('ora');
+
+const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 class S3 {
   constructor(context, options = {}) {
     return (async () => {
@@ -39,11 +43,31 @@ class S3 {
       ...s3Params,
       ...this.uploadState.s3Params,
     };
+    let uploadTask = null;
+    const spinner = new ora('Uploading Files...');
+    spinner.start();
+    if (
+      (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
+      (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
+    ) {
+      uploadTask = this.s3.upload(augmentedS3Params);
+      uploadTask.on('httpUploadProgress', max => {
+        spinner.text = `Uploading Files...${Math.round((max.loaded / max.total) * 100)}%`;
+      });
+    } else {
+      uploadTask = this.s3.putObject(augmentedS3Params);
+    }
 
-    return this.s3
-      .putObject(augmentedS3Params)
+    return uploadTask
       .promise()
-      .then(() => this.uploadState.s3Params.Bucket);
+      .catch(ex => {
+        spinner.stop();
+        throw ex;
+      })
+      .then(() => {
+        spinner.stop();
+        return this.uploadState.s3Params.Bucket;
+      });
   }
 
   getFile(s3Params, envName = this.context.amplify.getEnvInfo().envName) {
@@ -81,6 +105,7 @@ class S3 {
       }
     });
   }
+
   getAllObjectKeys(bucketName, continuationToken = null) {
     return new Promise((resolve, reject) => {
       this.s3

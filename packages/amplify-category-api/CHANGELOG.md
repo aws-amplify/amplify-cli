@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.3...amplify-category-api@2.23.4) (2020-08-31)
+
+
+### Bug Fixes
+
+* sub * for path parms in CFN policy ([#5092](https://github.com/aws-amplify/amplify-cli/issues/5092)) ([2942688](https://github.com/aws-amplify/amplify-cli/commit/29426884968314122b65a24b2f9658a618bf9120))
+
+
+
+
+
 ## [2.23.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.2...amplify-category-api@2.23.3) (2020-08-20)
 
 **Note:** Version bump only for package amplify-category-api
