@@ -56,7 +56,7 @@ function setProfile(awsConfig, profileName) {
       region: awsConfig.region,
     };
   }
-  
+
   fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), {mode: 0o600});
   fs.writeFileSync(configFilePath, ini.stringify(config), {mode: 0o600});
 }
