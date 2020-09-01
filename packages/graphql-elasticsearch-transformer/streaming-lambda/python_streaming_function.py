@@ -132,7 +132,7 @@ def compute_doc_index(keys_raw, deserializer, formatIndex=False):
                 key, deserializer.deserialize(keys_raw[key])))
         else:
             index.append(deserializer.deserialize(keys_raw[key]))
-    return '|'.join(index)
+    return '|'.join(map(str,index))
 
 def _lambda_handler(event, context):
     logger.debug('Event: %s', event)

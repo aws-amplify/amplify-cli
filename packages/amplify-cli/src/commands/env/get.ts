@@ -1,22 +1,26 @@
 import chalk from 'chalk';
+import { JSONUtilities } from 'amplify-cli-core';
 
 export const run = async context => {
   const envName = context.parameters.options.name;
+
   if (!envName) {
     context.print.error('You must pass in the name of the environment using the --name flag');
     process.exit(1);
   }
-  let envFound = false;
+
   const allEnvs = context.amplify.getEnvDetails();
 
   if (context.parameters.options.json) {
     if (allEnvs[envName]) {
-      context.print.fancy(JSON.stringify(allEnvs[envName], null, 4));
+      context.print.fancy(JSONUtilities.stringify(allEnvs[envName]));
     } else {
-      context.print.fancy(JSON.stringify({ error: `No environment found with name: '${envName}'` }, null, 4));
+      context.print.fancy(JSONUtilities.stringify({ error: `No environment found with name: '${envName}'` }));
     }
     return;
   }
+
+  let envFound = false;
 
   Object.keys(allEnvs).forEach(env => {
     if (env === envName) {

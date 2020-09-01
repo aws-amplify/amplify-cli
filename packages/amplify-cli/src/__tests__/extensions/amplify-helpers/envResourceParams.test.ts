@@ -1,18 +1,19 @@
 import * as fs from 'fs-extra';
 import { getEnvInfo } from '../../../../src/extensions/amplify-helpers/get-env-info';
-import { readJsonFile } from '../../../../src/extensions/amplify-helpers/read-json-file';
 import { saveEnvResourceParameters } from '../../../../src/extensions/amplify-helpers/envResourceParams';
-import { getProviderInfoFilePath } from '../../../extensions/amplify-helpers/path-manager';
+import { pathManager, stateManager, $TSContext } from 'amplify-cli-core';
 
 jest.mock('fs-extra');
-jest.mock('../../../../src/extensions/amplify-helpers/path-manager', () => ({ getProviderInfoFilePath: jest.fn() }));
+jest.mock('amplify-cli-core', () => ({
+  pathManager: { getTeamProviderInfoFilePath: jest.fn() },
+  stateManager: { getTeamProviderInfo: jest.fn(), setTeamProviderInfo: jest.fn() },
+}));
 jest.mock('../../../../src/extensions/amplify-helpers/get-env-info', () => ({ getEnvInfo: jest.fn() }));
-jest.mock('../../../../src/extensions/amplify-helpers/read-json-file', () => ({ readJsonFile: jest.fn() }));
 
 beforeAll(() => {
   (fs.existsSync as any).mockReturnValue(true);
   (getEnvInfo as any).mockReturnValue({ envName: 'testEnv' });
-  (getProviderInfoFilePath as any).mockReturnValue('test/path');
+  (pathManager.getTeamProviderInfoFilePath as any).mockReturnValue('test/path');
 });
 
 test('saveEnvResourceParams appends to existing params', () => {
@@ -28,14 +29,14 @@ test('saveEnvResourceParams appends to existing params', () => {
       },
     },
   };
-  (readJsonFile as any).mockReturnValue(existingParams);
+  (stateManager.getTeamProviderInfo as any).mockReturnValue(existingParams);
 
-  saveEnvResourceParameters(contextStub, 'testCategory', 'testResourceName', { newParam: 'newParamValue' });
+  saveEnvResourceParameters((contextStub as unknown) as $TSContext, 'testCategory', 'testResourceName', { newParam: 'newParamValue' });
 
-  const writeFileSyncMock: any = fs.writeFileSync;
-  expect(writeFileSyncMock).toHaveBeenCalled();
-  const callParams = writeFileSyncMock.mock.calls[0];
-  expect(callParams[0]).toEqual('test/path');
+  const setTeamProviderInfoMock: any = stateManager.setTeamProviderInfo;
+  expect(setTeamProviderInfoMock).toHaveBeenCalled();
+  const callParams = setTeamProviderInfoMock.mock.calls[0];
+  //expect(callParams[0]).toEqual('test/path');
   const expectedParams = {
     testEnv: {
       categories: {
@@ -48,5 +49,5 @@ test('saveEnvResourceParams appends to existing params', () => {
       },
     },
   };
-  expect(JSON.parse(callParams[1])).toEqual(expectedParams);
+  expect(callParams[1]).toEqual(expectedParams);
 });

@@ -198,6 +198,8 @@ class CloudFormation {
     const authRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName : '';
     const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
 
+    const Tags = this.context.amplify.getTags();
+
     if (!stackName) {
       throw new Error('Project stack has not been created yet. Use amplify init to initialize the project.');
     }
@@ -221,7 +223,6 @@ class CloudFormation {
         const cfnModel = this.cfn;
         const { context } = this;
         const self = this;
-
         this.eventStartTime = new Date();
         return new Promise((resolve, reject) => {
           this.describeStack(cfnStackCheckParams)
@@ -244,6 +245,7 @@ class CloudFormation {
                     ParameterValue: unauthRoleName,
                   },
                 ],
+                Tags,
               };
 
               cfnModel.updateStack(cfnParentStackParams, updateErr => {

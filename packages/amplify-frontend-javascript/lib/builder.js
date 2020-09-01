@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const { spawn } = require('child_process');
+const { command: executeCommand } = require('execa');
 const constants = require('./constants');
 
 function run(context) {
@@ -11,11 +11,7 @@ function run(context) {
       throw new Error('Missing build command');
     }
 
-    let args = buildCommand.split(/\s+/);
-    const command = normalizeCommand(args[0]);
-    args = args.slice(1);
-
-    const buildExecution = spawn(command, args, { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+    const buildExecution = executeCommand(buildCommand, { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
     buildExecution.on('exit', code => {
@@ -36,23 +32,6 @@ function run(context) {
       }
     });
   });
-}
-
-function normalizeCommand(command) {
-  let result = command;
-  const isOnWindows = /^win/.test(process.platform);
-  if (isOnWindows) {
-    if (command === 'npm') {
-      result = 'npm.cmd';
-    } else if (command === 'yarn') {
-      result = 'yarn.cmd';
-    }
-  } else if (command === 'npm.cmd') {
-    result = 'npm';
-  } else if (command === 'yarn.cmd') {
-    result = 'yarn';
-  }
-  return result;
 }
 
 module.exports = {

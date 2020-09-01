@@ -2,7 +2,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { PluginInfo } from '../domain/plugin-info';
 import { PluginPlatform } from '../domain/plugin-platform';
-import { readJsonFileSync } from '../utils/readJsonFile';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 export type PluginDescription = {
   name: string;
@@ -92,7 +92,7 @@ function isMatching(pluginDescription: PluginDescription, pluginInfo: PluginInfo
 
 export function getOfficialPlugins() {
   const packageJsonFilePath = path.normalize(path.join(__dirname, '../../package.json'));
-  const packageJson = readJsonFileSync(packageJsonFilePath);
+  const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
   const { officialPlugins } = packageJson.amplify;
 
   const dependencies: { [key: string]: string } = packageJson.dependencies;

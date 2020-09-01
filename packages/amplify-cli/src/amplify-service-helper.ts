@@ -1,7 +1,7 @@
+import { $TSObject, $TSContext } from 'amplify-cli-core';
 import { normalizeInputParams } from './input-params-manager';
-import { $TSObject } from '.';
 
-export function constructInputParams(context) {
+export function constructInputParams(context: $TSContext) {
   const inputParams: $TSObject = normalizeInputParams(context);
 
   if (inputParams.appId) {
@@ -22,6 +22,6 @@ export function constructInputParams(context) {
   return inputParams;
 }
 
-export async function postPullCodeGenCheck(context) {
+export async function postPullCodeGenCheck(context: $TSContext) {
   context.print.info('');
 }

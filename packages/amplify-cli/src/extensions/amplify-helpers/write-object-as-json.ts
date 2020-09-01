@@ -1,10 +1,8 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
+//TODO Remove this whole function once write-object-as-json removed from everywhere
+import { JSONUtilities } from 'amplify-cli-core';
 
 export function writeObjectAsJson(dest, obj, pretty) {
-  const destPath = path.parse(dest).dir;
-  if (!fs.existsSync(destPath)) {
-    fs.mkdirSync(destPath, { recursive: true });
-  }
-  fs.writeFileSync(dest, JSON.stringify(obj, undefined, pretty ? 2 : undefined));
+  JSONUtilities.writeJson(dest, obj, {
+    minify: !pretty,
+  });
 }

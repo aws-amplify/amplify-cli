@@ -1,6 +1,5 @@
-const { spawn } = require('child_process');
 const chalk = require('chalk');
-
+const { command: executeCommand } = require('execa');
 const fs = require('fs-extra');
 const archiver = require('archiver');
 
@@ -34,10 +33,7 @@ function run(command, projectDirectory) {
   }
 
   return new Promise((resolve, reject) => {
-    let args = command.split(/\s+/);
-    const cmd = args[0];
-    args = args.slice(1);
-    const execution = spawn(cmd, args, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
+    const execution = executeCommand(command, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
     execution.on('exit', code => {

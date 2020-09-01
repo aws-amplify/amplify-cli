@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { JSONUtilities } from 'amplify-cli-core';
 import { Context } from '../domain/context';
 
 export const run = async (context: Context) => {
@@ -16,7 +17,7 @@ export const run = async (context: Context) => {
     })
     .catch(err => {
       context.print.error(`Error executing command amplify plugin ${subCommand}`);
-      context.print.error(err.message || err.stack || JSON.stringify(err));
+      context.print.error(err.message || err.stack || JSONUtilities.stringify(err));
       context.usageData.emitError(err);
       process.exit(1);
     });

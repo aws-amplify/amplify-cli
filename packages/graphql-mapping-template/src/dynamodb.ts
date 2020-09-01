@@ -216,7 +216,7 @@ export class DynamoDBMappingTemplate {
       ifElse(
         ref(objectKeyVariable),
         compoundExpression([
-          set(ref('keyFields'), list([])),
+          set(ref('keyFields'), isSyncEnabled ? list([str('_version'), str('_deleted'), str('_lastChangedAt')]) : list([])),
           forEach(ref('entry'), ref(`${objectKeyVariable}.entrySet()`), [qref('$keyFields.add("$entry.key")')]),
         ]),
         set(ref('keyFields'), list(keyFields)),

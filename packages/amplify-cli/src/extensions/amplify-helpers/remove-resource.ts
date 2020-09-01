@@ -1,37 +1,43 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import * as pathManager from './path-manager';
+import _ from 'lodash';
+import { stateManager, $TSContext, pathManager } from 'amplify-cli-core';
 import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
 import { removeResourceParameters } from './envResourceParams';
-import _ from 'lodash';
 
-export async function forceRemoveResource(context, category, name, dir) {
-  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+export async function forceRemoveResource(context: $TSContext, category, name, dir) {
+  const amplifyMeta = stateManager.getMeta();
+
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');
     process.exit(1);
-    return;
   }
+
   if (!context || !category || !name || !dir) {
     context.print.error('Unable to force removal of resource: missing parameters');
     process.exit(1);
-    return;
   }
+
   context.print.info(`Removing resource ${name}...`);
   let response;
+
   try {
     response = await deleteResourceFiles(context, category, name, dir, true);
   } catch (e) {
     context.print.error('Unable to force removal of resource: error deleting files');
   }
+
   return response;
 }
 
-export async function removeResource(context, category, resourceName, questionOptions: { serviceSuffix?; serviceDeletionInfo?: [] } = {}) {
-  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+export async function removeResource(
+  context: $TSContext,
+  category,
+  resourceName,
+  questionOptions: { serviceSuffix?; serviceDeletionInfo?: [] } = {},
+) {
+  const amplifyMeta = stateManager.getMeta();
+
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');
     process.exit(1);
@@ -61,11 +67,13 @@ export async function removeResource(context, category, resourceName, questionOp
       },
     ];
     const answer = await inquirer.prompt(question);
+
     resourceName = answer.resource;
   }
 
   context.print.info('');
   let service = _.get(amplifyMeta, [category, resourceName, 'service']);
+
   if (_.has(questionOptions, ['serviceDeletionInfo', service])) {
     context.print.info(questionOptions.serviceDeletionInfo![service]);
   }
@@ -90,8 +98,7 @@ export async function removeResource(context, category, resourceName, questionOp
 }
 
 const deleteResourceFiles = async (context, category, resourceName, resourceDir, force?) => {
-  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+  const amplifyMeta = stateManager.getMeta();
   if (!force) {
     const { allResources } = await context.amplify.getResourceStatus();
     allResources.forEach(resourceItem => {
@@ -114,8 +121,7 @@ const deleteResourceFiles = async (context, category, resourceName, resourceDir,
     delete amplifyMeta[category][resourceName];
   }
 
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  stateManager.setMeta(undefined, amplifyMeta);
 
   // Remove resource directory from backend/
   context.filesystem.remove(resourceDir);

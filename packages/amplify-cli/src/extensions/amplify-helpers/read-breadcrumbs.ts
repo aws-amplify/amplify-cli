@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { JSONUtilities } from 'amplify-cli-core';
 
 export function readBreadcrumbs(context, category, resourceName) {
   const breadcrumbsPath = path.join(
@@ -7,7 +8,10 @@ export function readBreadcrumbs(context, category, resourceName) {
     resourceName,
     context.amplify.constants.BreadcrumbsFileName,
   );
-  let breadcrumbs = context.amplify.readJsonFile(breadcrumbsPath, undefined, false);
+  let breadcrumbs = JSONUtilities.readJson(breadcrumbsPath, {
+    throwIfNotExist: false,
+  });
+
   if (!breadcrumbs) {
     breadcrumbs = {
       pluginId: 'amplify-nodejs-function-runtime-provider',
@@ -15,6 +19,7 @@ export function readBreadcrumbs(context, category, resourceName) {
       defaultEditorFile: 'src/index.js',
       useLegacyBuild: true,
     };
+
     context.amplify.leaveBreadcrumbs(context, category, resourceName, breadcrumbs);
   }
   return breadcrumbs;

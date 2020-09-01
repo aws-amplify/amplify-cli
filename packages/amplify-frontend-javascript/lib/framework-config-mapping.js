@@ -1,3 +1,7 @@
+const path = require('path');
+const _ = require('lodash');
+const { JSONUtilities } = require('amplify-cli-core');
+
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 
 const reactConfig = {
@@ -49,12 +53,42 @@ const defaultConfig = {
   StartCommand: `${npm} run-script start`,
 };
 
-module.exports = {
-  angular: angularConfig,
-  ember: emberConfig,
-  ionic: ionicConfig,
-  react: reactConfig,
-  'react-native': reactNativeConfig,
-  vue: vueConfig,
-  none: defaultConfig,
-};
+function getAngularConfig(projectRoot) {
+  const angularConfigFile = path.join(projectRoot, 'angular.json');
+  const angularProjectConfig = JSONUtilities.readJson(angularConfigFile, { throwIfNotExist: false });
+  const dist = _.get(angularProjectConfig, [
+    'projects',
+    angularProjectConfig.defaultProject,
+    'architect',
+    'build',
+    'options',
+    'outputPath',
+  ]);
+  return {
+    ...angularConfig,
+    DistributionDir: dist,
+  };
+}
+
+export function getProjectConfiguration(framework, projectRoot) {
+  switch (framework) {
+    case 'angular':
+      return getAngularConfig(projectRoot);
+    case 'ember':
+      return emberConfig;
+    case 'ionic':
+      return ionicConfig;
+    case 'react':
+      return reactConfig;
+    case 'react-native':
+      return reactNativeConfig;
+    case 'vue':
+      return vueConfig;
+    default:
+      return defaultConfig;
+  }
+}
+
+export function getSupportedFrameworks() {
+  return ['angular', 'ember', 'ionic', 'react', 'react-native', 'vue', 'none'];
+}

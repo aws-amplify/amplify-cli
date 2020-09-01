@@ -2,48 +2,34 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
+import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { makeId } from './extensions/amplify-helpers/make-id';
 import { amplifyCLIConstants } from './extensions/amplify-helpers/constants';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
-import { readJsonFile } from './extensions/amplify-helpers/read-json-file';
 import { run as push } from './commands/push';
 
 const spinner = ora('');
-
-import {
-  searchProjectRootPath,
-  getAmplifyDirPath,
-  getDotConfigDirPath,
-  getProjectConfigFilePath,
-  getAmplifyMetaFilePath,
-  getCurrentAmplifyMetaFilePath,
-  getLocalEnvFilePath,
-  getProviderInfoFilePath,
-  getBackendConfigFilePath,
-  getGitIgnoreFilePath,
-  getAmplifyRcFilePath,
-} from './extensions/amplify-helpers/path-manager';
-import { $TSObject } from '.';
 
 const confirmMigrateMessage =
   'We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?';
 const secondConfirmMessage =
   'The CLI would be modifying your Amplify backend configuration files as a part of the migration process, hence we highly recommend backing up your existing local project before moving ahead. Are you sure you want to continue?';
 
-export async function migrateProject(context) {
-  const projectPath = searchProjectRootPath();
+export async function migrateProject(context: $TSContext) {
+  const projectPath = pathManager.findProjectRoot();
   if (!projectPath) {
     // New project, hence not able to find the amplify dir
     return;
   }
 
-  const projectConfigFilePath = getProjectConfigFilePath(projectPath);
-  const projectConfig = readJsonFile(projectConfigFilePath);
+  const projectConfig = stateManager.getProjectConfig(projectPath);
+
   // First level check
   // New projects also don't have projectPaths
   if (!projectConfig.projectPath) {
     return;
   }
+
   if (projectConfig.version !== amplifyCLIConstants.PROJECT_CONFIG_VERSION) {
     if (await context.prompt.confirm(confirmMigrateMessage)) {
       const infoMessage =
@@ -74,11 +60,11 @@ export async function migrateProject(context) {
   }
 }
 
-async function migrateFrom0To1(context, projectPath, projectConfig) {
+async function migrateFrom0To1(context: $TSContext, projectPath, projectConfig) {
   let amplifyDirPath;
   let backupAmplifyDirPath;
   try {
-    amplifyDirPath = getAmplifyDirPath(projectPath);
+    amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
     backupAmplifyDirPath = backup(amplifyDirPath, projectPath);
     context.migrationInfo = generateMigrationInfo(projectConfig, projectPath);
 
@@ -120,29 +106,32 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
         throw e;
       }
     }
+
     removeAmplifyRCFile(projectPath);
     updateGitIgnoreFile(projectPath);
+
     spinner.succeed('Migrated your project successfully.');
+
     context.print.warning(
       "If you have added functions or interactions category to your project, please check the 'Auto-migration' section at https://github.com/aws-amplify/docs/blob/master/cli/migrate.md",
     );
+
     // Run the `amplify push` flow
-    try {
-      await push(context);
-    } catch (e) {
-      throw e;
-    }
+    await push(context);
   } catch (e) {
     spinner.fail('There was an error migrating your project.');
+
     rollback(amplifyDirPath, backupAmplifyDirPath);
+
     context.print.info('migration operations are rolled back.');
+
     throw e;
   } finally {
     cleanUp(backupAmplifyDirPath);
   }
 }
 
-function backup(amplifyDirPath, projectPath) {
+function backup(amplifyDirPath: string, projectPath: string) {
   const backupAmplifyDirName = `${amplifyCLIConstants.AmplifyCLIDirName}-${makeId(5)}`;
   const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
@@ -177,8 +166,8 @@ function generateMigrationInfo(projectConfig, projectPath) {
     initVersion: projectConfig.version,
     newVersion: amplifyCLIConstants.PROJECT_CONFIG_VERSION,
   };
-  migrationInfo.amplifyMeta = getAmplifyMeta(projectPath);
-  migrationInfo.currentAmplifyMeta = getCurrentAmplifyMeta(projectPath);
+  migrationInfo.amplifyMeta = stateManager.getMeta(projectPath);
+  migrationInfo.currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
   migrationInfo.projectConfig = generateNewProjectConfig(projectConfig);
   migrationInfo.localEnvInfo = generateLocalEnvInfo(projectConfig);
   migrationInfo.localAwsInfo = generateLocalAwsInfo(projectPath);
@@ -189,38 +178,24 @@ function generateMigrationInfo(projectConfig, projectPath) {
 }
 
 function persistMigrationContext(migrationInfo) {
-  persistAmplifyMeta(migrationInfo.amplifyMeta, migrationInfo.projectPath);
-  persistCurrentAmplifyMeta(migrationInfo.currentAmplifyMeta, migrationInfo.projectPath);
-  persistProjectConfig(migrationInfo.projectConfig, migrationInfo.projectPath);
-  persistLocalEnvInfo(migrationInfo.localEnvInfo, migrationInfo.projectPath);
-  persistLocalAwsInfo(migrationInfo.localAwsInfo, migrationInfo.projectPath);
-  persistTeamProviderInfo(migrationInfo.teamProviderInfo, migrationInfo.projectPath);
-  persistBackendConfig(migrationInfo.backendConfig, migrationInfo.projectPath);
-}
+  stateManager.setMeta(migrationInfo.projectPath, migrationInfo.amplifyMeta);
+  stateManager.setCurrentMeta(migrationInfo.projectPath, migrationInfo.currentAmplifyMeta);
+  stateManager.setProjectConfig(migrationInfo.projectPath, migrationInfo.projectConfig);
 
-function getAmplifyMeta(projectPath) {
-  const amplifyMetafilePath = getAmplifyMetaFilePath(projectPath);
-  return readJsonFile(amplifyMetafilePath);
-}
-
-function persistAmplifyMeta(amplifyMeta, projectPath) {
-  if (amplifyMeta) {
-    const amplifyMetafilePath = getAmplifyMetaFilePath(projectPath);
-    const jsonString = JSON.stringify(amplifyMeta, null, 4);
-    fs.writeFileSync(amplifyMetafilePath, jsonString, 'utf8');
+  if (migrationInfo.localEnvInfo) {
+    stateManager.setLocalEnvInfo(migrationInfo.projectPath, migrationInfo.localEnvInfo);
   }
-}
 
-function getCurrentAmplifyMeta(projectPath) {
-  const currentAmplifyMetafilePath = getCurrentAmplifyMetaFilePath(projectPath);
-  return readJsonFile(currentAmplifyMetafilePath);
-}
+  if (migrationInfo.localAwsInfo) {
+    stateManager.setLocalAWSInfo(migrationInfo.projectPath, migrationInfo.localAwsInfo);
+  }
 
-function persistCurrentAmplifyMeta(currentAmplifyMeta, projectPath) {
-  if (currentAmplifyMeta) {
-    const currentAmplifyMetafilePath = getCurrentAmplifyMetaFilePath(projectPath);
-    const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
-    fs.writeFileSync(currentAmplifyMetafilePath, jsonString, 'utf8');
+  if (migrationInfo.teamProviderInfo) {
+    stateManager.setTeamProviderInfo(migrationInfo.projectPath, migrationInfo.teamProviderInfo);
+  }
+
+  if (migrationInfo.backendConfig) {
+    stateManager.setBackendConfig(migrationInfo.projectPath, migrationInfo.backendConfig);
   }
 }
 
@@ -253,14 +228,6 @@ function generateNewProjectConfig(projectConfig) {
   return newProjectConfig;
 }
 
-function persistProjectConfig(projectConfig, projectPath) {
-  if (projectConfig) {
-    const projectConfigFilePath = getProjectConfigFilePath(projectPath);
-    const jsonString = JSON.stringify(projectConfig, null, 4);
-    fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
-  }
-}
-
 function generateLocalEnvInfo(projectConfig) {
   return {
     projectPath: projectConfig.projectPath,
@@ -269,64 +236,46 @@ function generateLocalEnvInfo(projectConfig) {
   };
 }
 
-function persistLocalEnvInfo(localEnvInfo, projectPath) {
-  if (localEnvInfo) {
-    const jsonString = JSON.stringify(localEnvInfo, null, 4);
-    const localEnvFilePath = getLocalEnvFilePath(projectPath);
-    fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
-  }
-}
-
 function generateLocalAwsInfo(projectPath) {
   let newAwsInfo;
 
-  const dotConfigDirPath = getDotConfigDirPath(projectPath);
-  const awsInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
+  const awsInfoFilePath = path.join(pathManager.getDotConfigDirPath(projectPath), 'aws-info.json');
+
   if (fs.existsSync(awsInfoFilePath)) {
-    const awsInfo = readJsonFile(awsInfoFilePath);
+    const awsInfo = JSONUtilities.readJson<$TSAny>(awsInfoFilePath);
+
     awsInfo.configLevel = 'project'; // Old version didn't support "General" configuation
+
     newAwsInfo = { NONE: awsInfo };
+
     fs.removeSync(awsInfoFilePath);
   }
 
   return newAwsInfo;
 }
 
-function persistLocalAwsInfo(localAwsInfo, projectPath) {
-  if (localAwsInfo) {
-    const dotConfigDirPath = getDotConfigDirPath(projectPath);
-    const jsonString = JSON.stringify(localAwsInfo, null, 4);
-    const localAwsInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
-    fs.writeFileSync(localAwsInfoFilePath, jsonString, 'utf8');
-  }
-}
-
 function generateTeamProviderInfo(amplifyMeta) {
   return { NONE: amplifyMeta.providers };
 }
 
-function persistTeamProviderInfo(teamProviderInfo, projectPath) {
-  if (teamProviderInfo) {
-    const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-    const teamProviderFilePath = getProviderInfoFilePath(projectPath);
-    fs.writeFileSync(teamProviderFilePath, jsonString, 'utf8');
-  }
-}
-
 function generateBackendConfig(amplifyMeta) {
   const backendConfig = {};
+
   Object.keys(amplifyMeta).forEach(category => {
     if (category !== 'providers') {
       backendConfig[category] = {};
+
       Object.keys(amplifyMeta[category]).forEach(resourceName => {
         backendConfig[category][resourceName] = {};
         backendConfig[category][resourceName].service = amplifyMeta[category][resourceName].service;
         backendConfig[category][resourceName].providerPlugin = amplifyMeta[category][resourceName].providerPlugin;
         backendConfig[category][resourceName].dependsOn = amplifyMeta[category][resourceName].dependsOn;
         backendConfig[category][resourceName].build = amplifyMeta[category][resourceName].build;
+
         // For AppSync we need to store the securityType output as well
         if (amplifyMeta[category][resourceName].service === 'AppSync') {
           backendConfig[category][resourceName].output = {};
+
           if (amplifyMeta[category][resourceName].output) {
             backendConfig[category][resourceName].output.securityType = amplifyMeta[category][resourceName].output.securityType;
           }
@@ -334,23 +283,17 @@ function generateBackendConfig(amplifyMeta) {
       });
     }
   });
+
   return backendConfig;
 }
 
-function persistBackendConfig(backendConfig, projectPath) {
-  if (backendConfig) {
-    const jsonString = JSON.stringify(backendConfig, null, 4);
-    const backendConfigFilePath = getBackendConfigFilePath(projectPath);
-    fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
-  }
-}
-
 function removeAmplifyRCFile(projectPath) {
-  const amplifyRcFilePath = getAmplifyRcFilePath(projectPath);
+  const amplifyRcFilePath = pathManager.getAmplifyRcFilePath(projectPath);
   fs.removeSync(amplifyRcFilePath);
 }
 
 function updateGitIgnoreFile(projectPath) {
-  const gitIgnoreFilePath = getGitIgnoreFilePath(projectPath);
+  const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projectPath);
+
   insertAmplifyIgnore(gitIgnoreFilePath);
 }

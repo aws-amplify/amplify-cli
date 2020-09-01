@@ -56,17 +56,19 @@ async function run(context) {
 
     const spinner = ora();
     spinner.start('Initializing project in the cloud...');
-    return new Cloudformation(context, 'init', awsConfig)
-      .then(cfnItem => cfnItem.createResourceStack(params))
-      .then(stackDescriptionData => {
-        processStackCreationData(context, amplifyAppId, stackDescriptionData);
-        spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
-        return context;
-      })
-      .catch(e => {
-        spinner.fail('Root stack creation failed');
-        throw e;
-      });
+
+    try {
+      const cfnItem = await new Cloudformation(context, 'init', awsConfig);
+      const stackDescriptionData = await cfnItem.createResourceStack(params);
+
+      processStackCreationData(context, amplifyAppId, stackDescriptionData);
+      spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
+
+      return context;
+    } catch (e) {
+      spinner.fail('Root stack creation failed');
+      throw e;
+    }
   } else if (
     // This part of the code is invoked by the `amplify init --appId xxx` command
     // on projects that are already fully setup by `amplify init` with the Amplify CLI version prior to 4.0.0.
@@ -84,23 +86,25 @@ async function run(context) {
 }
 
 function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
-  const metaData = {};
+  const metadata = {};
   const { Outputs } = stackDescriptiondata.Stacks[0];
   Outputs.forEach(element => {
-    metaData[element.OutputKey] = element.OutputValue;
+    metadata[element.OutputKey] = element.OutputValue;
   });
-  metaData[constants.AmplifyAppIdLabel] = amplifyAppId;
+  if (amplifyAppId) {
+    metadata[constants.AmplifyAppIdLabel] = amplifyAppId;
+  }
 
   context.exeInfo.amplifyMeta = {};
   if (!context.exeInfo.amplifyMeta.providers) {
     context.exeInfo.amplifyMeta.providers = {};
   }
-  context.exeInfo.amplifyMeta.providers[constants.ProviderName] = metaData;
+  context.exeInfo.amplifyMeta.providers[constants.ProviderName] = metadata;
 
   if (context.exeInfo.isNewEnv) {
     const { envName } = context.exeInfo.localEnvInfo;
     context.exeInfo.teamProviderInfo[envName] = {};
-    context.exeInfo.teamProviderInfo[envName][constants.ProviderName] = metaData;
+    context.exeInfo.teamProviderInfo[envName][constants.ProviderName] = metadata;
   }
 }
 

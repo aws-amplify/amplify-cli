@@ -1,13 +1,10 @@
-import * as fs from 'fs-extra';
-import { readJsonFile } from './read-json-file';
-import { getProviderInfoFilePath } from './path-manager';
+import { stateManager } from 'amplify-cli-core';
 
 export function getEnvDetails() {
-  const envProviderFilePath = getProviderInfoFilePath();
-  let envProviderInfo = {};
-  if (fs.existsSync(envProviderFilePath)) {
-    envProviderInfo = readJsonFile(envProviderFilePath);
-  }
+  const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
+    throwIfNotExist: false,
+    default: {},
+  });
 
-  return envProviderInfo;
+  return teamProviderInfo;
 }

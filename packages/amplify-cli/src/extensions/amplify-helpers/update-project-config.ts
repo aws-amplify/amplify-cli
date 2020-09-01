@@ -1,18 +1,12 @@
-import * as fs from 'fs-extra';
-import { getProjectConfigFilePath } from './path-manager';
-import { readJsonFile } from './read-json-file';
+import { stateManager, $TSAny } from 'amplify-cli-core';
 
-export function updateProjectConfig(projectPath, label, data) {
-  let projectConfig;
-  const projectConfigFilePath = getProjectConfigFilePath(projectPath);
-  if (fs.existsSync(projectConfigFilePath)) {
-    projectConfig = readJsonFile(projectConfigFilePath);
-  } else {
-    projectConfig = {};
-  }
+export function updateProjectConfig(projectPath: string | undefined, label: string, data: $TSAny) {
+  let projectConfig = stateManager.getProjectConfig(projectPath, {
+    throwIfNotExist: false,
+    default: {},
+  });
 
   projectConfig[label] = data;
 
-  const jsonString = JSON.stringify(projectConfig, null, 4);
-  fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+  stateManager.setProjectConfig(projectPath, projectConfig);
 }

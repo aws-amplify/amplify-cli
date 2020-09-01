@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.18.2",
+  "version": "2.18.4",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -9,17 +9,18 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "keywords": [
     "amplify",
     "aws"
   ],
   "scripts": {
+    "build": "tsc",
     "test": "jest",
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-category-function": "2.23.2",
+    "amplify-category-function": "2.23.4",
     "aws-sdk": "^2.608.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
@@ -35,9 +36,14 @@
   },
   "jest": {
     "collectCoverage": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
     "testURL": "http://localhost",
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
+      "ts",
+      "tsx",
       "js",
       "jsx",
       "json",

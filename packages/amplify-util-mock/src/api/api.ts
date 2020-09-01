@@ -15,6 +15,9 @@ import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db
 import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
+import { keys } from 'lodash';
+import { LambdaFunctionConfig } from '../CFNParser/lambda-resource-processor';
+import { lambdaArnToConfig } from './lambda-arn-to-config';
 
 export class APITest {
   private apiName: string;
@@ -193,34 +196,21 @@ export class APITest {
           if (d.type !== 'AWS_LAMBDA') {
             return d;
           }
-          const arn = d.LambdaFunctionArn;
-          const arnParts = arn.split(':');
-          let functionName = arnParts[arnParts.length - 1];
-          if (functionName.endsWith('-${env}')) {
-            functionName = functionName.replace('-${env}', '');
-            const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
-            if (!lambdaConfig) {
-              throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
-            }
-            const envVars = await this.hydrateLambdaEnvVars(context, lambdaConfig.environment, config);
-            const invoker = await getInvoker(context, {
-              resourceName: functionName,
-              handler: lambdaConfig.handler,
-              envVars,
-            });
-            return {
-              ...d,
-              invoke: payload => {
-                return invoker({
-                  event: payload,
-                });
-              },
-            };
-          } else {
-            throw new Error(
-              'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://docs.amplify.aws/cli/graphql-transformer/directives#function',
-            );
-          }
+          const lambdaConfig = lambdaArnToConfig(d.LambdaFunctionArn, provisionedLambdas);
+          const envVars = await this.hydrateLambdaEnvVars(context, lambdaConfig.environment, config);
+          const invoker = await getInvoker(context, {
+            resourceName: lambdaConfig.name,
+            handler: lambdaConfig.handler,
+            envVars,
+          });
+          return {
+            ...d,
+            invoke: payload => {
+              return invoker({
+                event: payload,
+              });
+            },
+          };
         }),
       ),
     };
