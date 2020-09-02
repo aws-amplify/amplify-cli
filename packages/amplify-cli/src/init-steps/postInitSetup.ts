@@ -1,6 +1,5 @@
 import { execSync } from 'child_process';
-import { getPackageManager } from '../packageManagerHelpers';
-import { normalizePackageManagerForOS } from '../packageManagerHelpers';
+import { getPackageManager, normalizePackageManagerForOS, getPackageManagerCommand } from '../packageManagerHelpers';
 
 export async function postInitSetup(context) {
   if (context.parameters.options.app) {
@@ -28,7 +27,8 @@ export async function postInitSetup(context) {
 async function runPackage() {
   const packageManager = await getPackageManager();
   const normalizedPackageManager = await normalizePackageManagerForOS(packageManager);
+  const packageCommand = await getPackageManagerCommand();
   if (normalizedPackageManager) {
-    execSync(`${normalizedPackageManager} start`, { stdio: 'inherit' });
+    execSync(`${normalizedPackageManager} ${packageCommand}`, { stdio: 'inherit' });
   }
 }
