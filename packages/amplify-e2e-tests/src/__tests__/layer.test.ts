@@ -1,5 +1,6 @@
 import {
   addLayer,
+  addFunction,
   addOptData,
   amplifyPull,
   amplifyPushAuth,
@@ -157,6 +158,12 @@ describe('amplify add lambda layer', () => {
       projRoot2 = await createNewProjectDir('import-env-test2');
       await amplifyPull(projRoot2, { override: false, emptyDir: true, appId });
       await validatePushedVersion(projRoot2, settings.layerName, envName, 1, expectedPerms);
+
+      // Push new resource with no change to the layer
+      await addFunction(projRoot2, { functionTemplate: 'Hello World' }, 'nodejs');
+      await amplifyPushAuth(projRoot2);
+
+      // Push a new layer version
       addOptData(projRoot2, settings.layerName);
       await amplifyPushAuth(projRoot2);
       await validatePushedVersion(projRoot2, settings.layerName, envName, 2, expectedPerms);

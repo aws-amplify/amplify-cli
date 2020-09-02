@@ -133,6 +133,8 @@ export async function initEnv(context) {
       const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
       if (isMultiEnvLayer(context, layerName)) {
         _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+        const s3Bucket = _.get(currentAmplifyMeta, [category, layerName, 's3Bucket'], {});
+        _.set(teamProviderInfo, [envName, 'categories', category, layerName], s3Bucket);
       }
       _.set(amplifyMeta, lvmPath, currentVersionMap);
     });

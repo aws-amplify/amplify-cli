@@ -19,6 +19,7 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { isMultiEnvLayer, packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
+const { stateManager } = require('amplify-cli-core');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -257,18 +258,22 @@ function packageResources(context, resources) {
 
         const cfnFile = cfnFiles[0];
         const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
-        const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
-        const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoPath);
 
         if (resource.service === FunctionServiceName.LambdaLayer) {
           if (isMultiEnvLayer(context, resourceName)) {
+            const amplifyMeta = stateManager.getMeta();
+            const teamProviderInfo = stateManager.getTeamProviderInfo();
             _.set(teamProviderInfo, [context.amplify.getEnvInfo().envName, 'categories', 'function', resourceName], {
               deploymentBucketName: s3Bucket,
               s3Key,
             });
-            context.amplify.writeObjectAsJson(teamProviderInfoPath, teamProviderInfo, true);
+            _.set(amplifyMeta, ['function', resourceName, 's3Bucket'], {
+              deploymentBucketName: s3Bucket,
+              s3Key,
+            });
+            stateManager.setMeta(undefined, amplifyMeta);
+            stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
           } else {
             cfnMeta.Resources.LambdaLayer.Properties.Content = {
               S3Bucket: s3Bucket,
