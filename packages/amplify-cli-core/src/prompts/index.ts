@@ -36,6 +36,10 @@ export class InputPrompt extends BasePrompt {
   }
 }
 
+export class PasswordPrompt extends InputPrompt {
+  type = 'password';
+}
+
 export class SelectPrompt extends BasePrompt {
   type = 'select';
   choices: string[] | Choice[];
