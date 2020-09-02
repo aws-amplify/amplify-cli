@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.19.12-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.19.11...graphql-dynamodb-transformer@6.19.12-beta.0) (2020-09-02)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** support model without id ([#4570](https://github.com/aws-amplify/amplify-cli/issues/4570)) ([7cb0648](https://github.com/aws-amplify/amplify-cli/commit/7cb064874d95527882eb58b1a18fa99dd2377ca7))
+
+
+
+
+
 ## [6.19.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.19.10...graphql-dynamodb-transformer@6.19.11) (2020-08-31)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
