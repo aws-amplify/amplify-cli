@@ -14,11 +14,22 @@ const defaultSettings = {
   profileName: '\r',
 };
 
+export type FrontendConfig = {
+  frontend: string;
+  framework: string;
+  config: {
+    SourceDir: string;
+    DistributionDir: string;
+    BuildCommand: string;
+    StartCommand: string;
+  };
+};
 export function headlessPull(
   projectRootDirPath: string,
   amplifyParam: Object,
   providersParam: Object,
   categoryConfig?: Object,
+  frontendConfig?: FrontendConfig,
 ): Promise<void> {
   const pullCommand: string[] = [
     'pull',
@@ -30,6 +41,7 @@ export function headlessPull(
     '--yes',
   ];
   if (categoryConfig) pullCommand.push(...['--categories', JSON.stringify(categoryConfig)]);
+  if (frontendConfig) pullCommand.push('--frontend', JSON.stringify(frontendConfig));
   return new Promise((resolve, reject) => {
     spawn(util.getCLIPath(), pullCommand, { cwd: projectRootDirPath, stripColors: true }).run((err: Error) => {
       if (!err) {
