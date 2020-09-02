@@ -11,7 +11,7 @@ const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const { stateManager } = require('amplify-cli-core');
 const { CreateService } = require('./aws-service-creator.js');
-const { fileLogger } = require('../utils/aws-logger');
+const { fileLogger, logStackEvents } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
@@ -171,11 +171,8 @@ class CloudFormation {
 
   getStackEvents(stackName) {
     const self = this;
-    const log = logger('getStackEvents.cfnModel.describeStackEvents', [
-      {
-        StackName: stackName,
-      },
-    ]);
+    const describeStackEventsArgs = { StackName: stackName };
+    const log = logger('getStackEvents.cfnModel.describeStackEvents', [describeStackEventsArgs]);
     log();
     return this.cfn
       .describeStackEvents({ StackName: stackName })
@@ -463,7 +460,7 @@ function showEvents(events) {
     const e = events.map(ev => {
       const res = {};
       const { ResourceStatus: resourceStatus } = ev;
-
+      logStackEvents(`${ev.ResourceStatus} ${ev.LogicalResourceId} ${ev.ResourceType} ${ev.ResourceStatusReason || ''} (${ev.Timestamp})`);
       let colorFn = chalk.reset;
       if (CNF_ERROR_STATUS.includes(resourceStatus)) {
         colorFn = chalk.red;
@@ -478,12 +475,12 @@ function showEvents(events) {
       });
       return res;
     });
-    console.log(
-      columnify(e, {
-        columns: COLUMNS,
-        showHeaders: false,
-      }),
-    );
+
+    const formattedEvents = columnify(e, {
+      columns: COLUMNS,
+      showHeaders: false,
+    });
+    console.log(formattedEvents);
   }
 }
 

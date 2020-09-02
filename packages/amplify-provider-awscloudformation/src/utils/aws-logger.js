@@ -1,11 +1,11 @@
 const { logger } = require('amplify-cli-logger');
 
-export const fileLogger = file => (crumb, args) => err => {
-  if (err) {
+export const fileLogger = file => (crumb, args) => error => {
+  if (error) {
     logError({
       mod: `${file}.${crumb}`,
       args,
-      err,
+      error,
     });
   } else {
     logInfo({
@@ -14,6 +14,14 @@ export const fileLogger = file => (crumb, args) => err => {
     });
   }
 };
+
+export function logStackEvents(events) {
+  logger.logInfo({
+    module: events,
+    isStackEvent: true,
+    args: [],
+  });
+}
 
 const logInfo = ({ mod, args }) => {
   logger.logInfo({
