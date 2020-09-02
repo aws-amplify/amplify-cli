@@ -7,7 +7,9 @@ module.exports = {
   name: subcommand,
   alias: ['add'],
   run: async context => {
-    if (projectHasAuth(context)) return;
+    if (projectHasAuth(context)) {
+      return;
+    }
     const { amplify } = context;
     const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata).then(result => {

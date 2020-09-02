@@ -19,9 +19,7 @@ const {
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
 const { validateAddAuthRequest } = require('amplify-util-headless-input');
-const {
-  getAddAuthRequestAdaptor: addAuthRequestAdaptorFactory,
-} = require('./provider-utils/awscloudformation/utils/add-auth-request-adaptor-factory');
+const { getAddAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/add-auth-request-adaptor');
 const { getAddAuthHandler } = require('./provider-utils/awscloudformation/handlers/get-add-auth-handler');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 
@@ -326,13 +324,16 @@ async function executeAmplifyCommand(context) {
 const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
   switch (context.input.command) {
     case 'add':
-      if (projectHasAuth(context)) return;
+      if (projectHasAuth(context)) {
+        return;
+      }
       await validateAddAuthRequest(headlessPayload)
-        .then(addAuthRequestAdaptorFactory(context.amplify.getProjectConfig().frontend))
+        .then(getAddAuthRequestAdaptor(context.amplify.getProjectConfig().frontend))
         .then(getAddAuthHandler(context));
       return;
     default:
       context.print.error(`Headless mode for ${context.input.command} auth is not implemented yet`);
+      return;
   }
 };
 

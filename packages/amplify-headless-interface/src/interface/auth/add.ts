@@ -178,5 +178,5 @@ export enum CognitoUserProperty {
 
 export enum CognitoUserPropertyVerified {
   EMAIL_VERIFIED = 'EMAIL_VERIFIED',
-  PHONE_NUMBER_REVIFIED = 'PHONE_NUMBER_VERIFIED',
+  PHONE_NUMBER_VERIFIED = 'PHONE_NUMBER_VERIFIED',
 }

@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 
 // path constants
 export const resourcesRoot = path.normalize(path.join(__dirname, '../../../resources'));

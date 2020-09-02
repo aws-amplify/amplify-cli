@@ -25,6 +25,7 @@ import {
   PasswordRecoveryResult,
   UsernameAttributes,
 } from '../service-walkthrough-types';
+import { pascalCase } from 'change-case';
 
 export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
 
@@ -81,7 +82,7 @@ const socialProviderMap = (
   socialConfig: CognitoSocialProviderConfiguration[] = [],
   requiredAttributes: string[] = [],
 ): SocialProviderResult => {
-  const authProvidersUserPool = socialConfig.map(sc => sc.provider).map(upperSnakeCaseToUpperCamelCase);
+  const authProvidersUserPool = socialConfig.map(sc => sc.provider).map(provider => pascalCase(provider));
   const result: ReturnType<typeof socialProviderMap> = {
     authProvidersUserPool,
     ...userPoolProviders(authProvidersUserPool, { requiredAttributes }),
@@ -119,7 +120,7 @@ const identityPoolMap = (idPoolConfig: CognitoIdentityPoolConfiguration | undefi
     thirdPartyAuth: !!idPoolConfig.identitySocialFederation,
     authProviders: (idPoolConfig.identitySocialFederation || [])
       .map(socialFed => socialFed.provider)
-      .map(toTitleCase)
+      .map(provider => pascalCase(provider))
       .map(provider => authProviderList.find(ap => ap.name === provider)!)
       .map(ap => ap.value),
     // convert the list of social federation configs into individual key: client id pairs
@@ -204,20 +205,6 @@ const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes
   [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: 'email, phone_number',
 };
 
-// converts a word like tHiS to This
-const toTitleCase = (word: string): string =>
-  word
-    .charAt(0)
-    .toUpperCase()
-    .concat(word.slice(1).toLowerCase());
-
-// converts A_STRING_LIKE_THIS into AStringLikeThis
-const upperSnakeCaseToUpperCamelCase = (str: string): string =>
-  str
-    .toLowerCase()
-    .replace(/(^\w|_\w)/g, group => group.toUpperCase()) // upper case first letter and any letter after an underscore
-    .replace(/_/g, ''); // remove underscores
-
 const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', projectType: string): string => {
   switch (provider) {
     case 'FACEBOOK':
@@ -230,8 +217,12 @@ const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', proj
           return 'googleIos';
         case 'android':
           return 'googleAndroid';
-        default:
+        case 'javascript':
           return 'googleClientId';
+        default:
+          throw new Error(`Unknown project type [${projectType}] when mapping federation type`);
       }
+    default:
+      throw new Error(`Unknown social federation provider [${provider}]`);
   }
 };

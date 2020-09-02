@@ -38,6 +38,7 @@
         }
     },
     "required": [
+        "resourceName",
         "serviceConfiguration",
         "version"
     ],

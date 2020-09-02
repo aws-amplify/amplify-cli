@@ -1,9 +1,10 @@
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
-import path from 'path';
-import fs, { existsSync, copySync } from 'fs-extra';
+import * as path from 'path';
+import { existsSync, copySync } from 'fs-extra';
 import uuid from 'uuid';
 import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot, ENV_SPECIFIC_PARAMS } from '../constants';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { pathManager, JSONUtilities } from 'amplify-cli-core';
 
 const category = 'auth';
 
@@ -39,7 +40,7 @@ export const lambdaTriggers = async (coreAnswers: any, context: any, previouslyS
 
   if (coreAnswers.triggers) {
     triggerKeyValues = await handleTriggers(context, coreAnswers, previouslySaved);
-    coreAnswers.triggers = triggerKeyValues ? JSON.stringify(triggerKeyValues) : '{}';
+    coreAnswers.triggers = triggerKeyValues ? JSONUtilities.stringify(triggerKeyValues) : '{}';
 
     if (triggerKeyValues) {
       coreAnswers.parentStack = { Ref: 'AWS::StackId' };
@@ -48,7 +49,7 @@ export const lambdaTriggers = async (coreAnswers: any, context: any, previouslyS
     // determine permissions needed for each trigger module
     coreAnswers.permissions = await context.amplify.getTriggerPermissions(context, coreAnswers.triggers, 'auth', coreAnswers.resourceName);
   } else if (previouslySaved) {
-    const targetDir = context.amplify.pathManager.getBackendDirPath();
+    const targetDir = pathManager.getBackendDirPath();
     Object.keys(previouslySaved).forEach(p => {
       delete coreAnswers[p];
     });
@@ -75,14 +76,9 @@ export const createUserPoolGroups = async (context: any, resourceName: any, user
       });
     }
 
-    const userPoolGroupFile = path.join(
-      context.amplify.pathManager.getBackendDirPath(),
-      'auth',
-      'userPoolGroups',
-      'user-pool-group-precedence.json',
-    );
+    const userPoolGroupFile = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
 
-    const userPoolGroupParams = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'parameters.json');
+    const userPoolGroupParams = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'parameters.json');
 
     /* eslint-disable */
     const groupParams = {
@@ -95,8 +91,8 @@ export const createUserPoolGroups = async (context: any, resourceName: any, user
     };
     /* eslint-enable */
 
-    fs.outputFileSync(userPoolGroupParams, JSON.stringify(groupParams, null, 4));
-    fs.outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
+    JSONUtilities.writeJson(userPoolGroupParams, groupParams);
+    JSONUtilities.writeJson(userPoolGroupFile, userPoolGroupPrecedenceList);
 
     context.amplify.updateamplifyMetaAfterResourceAdd('auth', 'userPoolGroups', {
       service: 'Cognito-UserPool-Groups',
@@ -136,8 +132,7 @@ export const createAdminAuthFunction = async (
   adminGroup: string,
   operation: 'update' | 'add',
 ) => {
-  const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
+  const targetDir = path.join(pathManager.getBackendDirPath(), 'function', functionName);
   let lambdaGroupVar = adminGroup;
 
   const dependsOn = [];
@@ -164,27 +159,27 @@ export const createAdminAuthFunction = async (
     {
       dir: adminAuthAssetRoot,
       template: 'admin-auth-app.js',
-      target: `${targetDir}/function/${functionName}/src/app.js`,
+      target: path.join(targetDir, 'src/app.js'),
     },
     {
       dir: adminAuthAssetRoot,
       template: 'admin-auth-cognitoActions.js',
-      target: `${targetDir}/function/${functionName}/src/cognitoActions.js`,
+      target: path.join(targetDir, 'src/cognitoActions.js'),
     },
     {
       dir: adminAuthAssetRoot,
       template: 'admin-auth-index.js',
-      target: `${targetDir}/function/${functionName}/src/index.js`,
+      target: path.join(targetDir, 'src/index.js'),
     },
     {
       dir: adminAuthAssetRoot,
       template: 'admin-auth-package.json',
-      target: `${targetDir}/function/${functionName}/src/package.json`,
+      target: path.join(targetDir, 'src/package.json'),
     },
     {
       dir: adminAuthAssetRoot,
       template: 'admin-queries-function-template.json.ejs',
-      target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
+      target: path.join(targetDir, `${functionName}-cloudformation-template.json`),
     },
   ];
 
@@ -208,9 +203,8 @@ export const createAdminAuthFunction = async (
 };
 
 export const createAdminAuthAPI = async (context: any, authResourceName: string, functionName: string, operation: 'update' | 'add') => {
-  const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
   const apiName = 'AdminQueries';
+  const targetDir = path.join(pathManager.getBackendDirPath(), 'api', apiName);
   const dependsOn = [];
 
   dependsOn.push(
@@ -236,12 +230,12 @@ export const createAdminAuthAPI = async (context: any, authResourceName: string,
     {
       dir: adminAuthAssetRoot,
       template: 'admin-queries-api-template.json.ejs',
-      target: `${targetDir}/api/${apiName}/admin-queries-cloudformation-template.json`,
+      target: path.join(targetDir, 'admin-queries-cloudformation-template.json'),
     },
     {
       dir: adminAuthAssetRoot,
       template: 'admin-queries-api-params.json',
-      target: `${targetDir}/api/${apiName}/parameters.json`,
+      target: path.join(targetDir, 'parameters.json'),
     },
   ];
 
@@ -264,15 +258,14 @@ export const createAdminAuthAPI = async (context: any, authResourceName: string,
 };
 
 export const copyCfnTemplate = async (context: any, category: string, options: any, cfnFilename: string) => {
-  const { amplify } = context;
-  const targetDir = amplify.pathManager.getBackendDirPath();
+  const targetDir = path.join(pathManager.getBackendDirPath(), category, options.resourceName);
 
   const copyJobs = [
     {
       dir: cfnTemplateRoot,
       template: cfnFilename,
-      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.yml`,
-      paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
+      target: path.join(targetDir, `${options.resourceName}-cloudformation-template.yml`),
+      paramsFile: path.join(targetDir, 'parameters.json'),
     },
   ];
 
@@ -327,9 +320,8 @@ export const removeDeprecatedProps = (props: any) => {
 };
 
 export const copyS3Assets = async (context: any, props: any) => {
-  const targetDir = `${context.amplify.pathManager.getBackendDirPath()}/auth/${props.resourceName}/assets`;
-
-  const triggers = props.triggers ? JSON.parse(props.triggers) : null;
+  const targetDir = path.join(pathManager.getBackendDirPath(), 'auth', props.resourceName, 'assets');
+  const triggers = props.triggers ? JSONUtilities.parse<any>(props.triggers) : null;
   const confirmationFileNeeded = props.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');
   if (confirmationFileNeeded) {
     if (!existsSync(targetDir)) {

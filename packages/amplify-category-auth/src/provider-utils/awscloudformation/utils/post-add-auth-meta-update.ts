@@ -1,4 +1,5 @@
-import path from 'path';
+import * as path from 'path';
+import { JSONUtilities } from 'amplify-cli-core';
 /**
  * Factory function that returns a function that updates Amplify meta files after adding auth resource assets
  *
@@ -14,7 +15,7 @@ export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { servic
     providerPlugin: resultMetadata.providerName,
   };
   const resourceDirPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
-  const authParameters = context.amplify.readJsonFile(resourceDirPath);
+  const authParameters = JSONUtilities.readJson<{ dependsOn: any[]; triggers: string; identityPoolName: string }>(resourceDirPath)!;
 
   if (authParameters.dependsOn) {
     options.dependsOn = authParameters.dependsOn;
@@ -22,7 +23,7 @@ export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { servic
 
   let customAuthConfigured = false;
   if (authParameters.triggers) {
-    const triggers = JSON.parse(authParameters.triggers);
+    const triggers = JSONUtilities.parse<any>(authParameters.triggers);
 
     customAuthConfigured =
       !!triggers.DefineAuthChallenge &&
