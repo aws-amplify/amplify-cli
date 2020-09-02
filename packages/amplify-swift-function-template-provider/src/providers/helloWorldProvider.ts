@@ -5,7 +5,7 @@ import path from 'path';
 const pathToTemplateFiles = path.join(templateRoot, 'hello-world');
 
 export const provideHelloWorld = async (): Promise<FunctionTemplateParameters> => {
-  const files = ['Package.swift', 'main.swift'];
+  const files = ['Package.swift.ejs', 'main.swift'];
   const handlerSource = path.join('Sources', 'example', 'main.swift');
 
   return {
@@ -14,7 +14,7 @@ export const provideHelloWorld = async (): Promise<FunctionTemplateParameters> =
       sourceFiles: files,
       defaultEditorFile: handlerSource,
       destMap: {
-        'Package.swift': path.join('Package.swift'),
+        'Package.swift.ejs': path.join('Package.swift'),
         'main.swift': path.join('Sources', 'example', 'main.swift'),
       },
     },

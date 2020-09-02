@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "example",
+    name: "<%= props.resourceName %>",
     platforms: [
         .macOS(.v10_13),
     ],
     products: [
-        .executable(name: "example", targets: ["example"]),
+        .executable(name: "<%= props.resourceName %>", targets: ["<%= props.resourceName %>"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -20,7 +20,7 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "example",
+            name: "<%= props.resourceName %>",
             dependencies: [
                 .product(name: "AWSLambdaRuntime", package: "swift-aws-lambda-runtime")
             ]),
