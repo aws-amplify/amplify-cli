@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.25.0...amplify-provider-awscloudformation@4.25.1) (2020-09-02)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** include region configure url ([#5196](https://github.com/aws-amplify/amplify-cli/issues/5196)) ([44fdf95](https://github.com/aws-amplify/amplify-cli/commit/44fdf9583185463873b4ce67bee77f7b00e8cfdf)), closes [#4735](https://github.com/aws-amplify/amplify-cli/issues/4735)
+
+
+
+
+
 # [4.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.4...amplify-provider-awscloudformation@4.25.0) (2020-08-31)
 
 
