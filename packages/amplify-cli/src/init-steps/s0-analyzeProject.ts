@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { editors, normalizeEditor } from '../extensions/amplify-helpers/editor-selection';
-import { editorSelect, projectNameInput, envNameInput, envNameSelect, INVALID_ENV_NAME_MSG } from '../prompts';
+import { editorSelect, projectNameInput, envNameInput, envNameSelect, INVALID_ENV_NAME_MESSAGE } from '../prompts';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
 import { stateManager } from 'amplify-cli-core';
@@ -99,7 +99,7 @@ async function getEnvName(context) {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    context.print.error(INVALID_ENV_NAME_MSG);
+    context.print.error(INVALID_ENV_NAME_MESSAGE);
     process.exit(1);
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.error('Environment name missing');

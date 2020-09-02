@@ -10,36 +10,38 @@ export interface Choice {
   disabled?: boolean | string;
 }
 
-export async function executePrompt(promptQuestion: InputPrompt | SelectPrompt): Promise<string | string[]> {
-  const answer: any = await prompt(promptQuestion);
-  // logging possible here
-  return answer[promptQuestion.name];
-}
-
-export class InputPrompt {
+class BasePrompt {
   name: string;
-  type: string;
+  type = 'base';
   message: string;
   initial?: string;
-  validate?: (input: string) => string | true;
-  constructor(promptName: string, promptMessage: string, initialInput: string, validator: validatorFunction, invalidMessage: string) {
-    this.type = 'input';
-    (this.name = promptName),
-      (this.message = promptMessage),
-      (this.initial = initialInput),
-      (this.validate = input => validator(input) || invalidMessage);
+  constructor(name: string, message: string, initial?: string) {
+    this.name = name;
+    this.message = message;
+    this.initial = initial;
+  }
+  public async run(logging: boolean = false) {
+    const answer: any = await prompt(this);
+    // logging possible here
+    return answer[this.name];
   }
 }
 
-export class SelectPrompt {
-  name: string;
-  type = 'select';
-  message: string;
-  choices: string[] | Choice[];
-  initial?: string;
+export class InputPrompt extends BasePrompt {
+  type = 'input';
+  validate?: (input: string) => string | true;
+  constructor(name: string, message: string, initial: string, validator: validatorFunction, invalidMessage: string) {
+    super(name, message, initial);
+    this.validate = input => validator(input) || invalidMessage;
+  }
+}
 
-  constructor(promptName: string, promptMessage: string, choicesSelect: string[] | Choice[], initialSelect?: string) {
-    (this.name = promptName), (this.message = promptMessage), (this.choices = choicesSelect), (this.initial = initialSelect);
+export class SelectPrompt extends BasePrompt {
+  type = 'select';
+  choices: string[] | Choice[];
+  constructor(name: string, message: string, choices: string[] | Choice[], initial?: string) {
+    super(name, message, initial);
+    this.choices = choices;
   }
 }
 
