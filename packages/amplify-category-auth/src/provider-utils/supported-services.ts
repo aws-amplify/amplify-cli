@@ -1237,8 +1237,8 @@ export const supportedServices = {
         ]
       },
       {
-        key: "EditScopeConfirmation",
-        question: "Do you want to edit current scopes ?",
+        key: "RemoveScopeConfirmation",
+        question: "Do you want to remove any specified scopes ?",
         type: "confirm",
         andConditions: [
           {
@@ -1258,15 +1258,10 @@ export const supportedServices = {
         ]
       },
       {
-        key: "EditScopes",
-        question: "Which scopes do you want to edit ?",
+        key: "RemoveScopes",
+        question: "Which scopes do you want to remove ?",
         type: "multiselect",
         iterator: "oidcAuthorizeScopes",
-        iteratorValidation: {
-          operator: "regex",
-          value: ".*",
-          onErrorMsg: "The value must be a valid string or url."
-        },
         andConditions: [
           {
             key: "oidcAuthorizeScopes",
@@ -1276,7 +1271,7 @@ export const supportedServices = {
             onCreate: "never"
           },
           {
-            key: "EditScopeConfirmation",
+            key: "RemoveScopeConfirmation",
             value: true,
             operator: "="
           }

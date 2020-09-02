@@ -101,17 +101,22 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
         if (context.updatingAuth) {
           context.updatingAuth['oidcAttributesMapping'] = JSON.stringify(map);
         }
-      } else {
+      }
+      else {
         const replacementArray = context.updatingAuth[questionObj.iterator];
 
         for (let t = 0; t < answer[questionObj.key].length; t += 1) {
           questionObj.validation = questionObj.iteratorValidation;
-          const newValue = await inquirer.prompt({
-            name: 'updated',
-            message: `Update ${answer[questionObj.key][t]}`,
-            validate: amplify.inputValidation(questionObj),
-          });
-          replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue.updated);
+          if (questionObj.key === 'RemoveScopes') {
+            replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1);
+          } else {
+            const newValue = await inquirer.prompt({
+              name: 'updated',
+              message: `Update ${answer[questionObj.key][t]}`,
+              validate: amplify.inputValidation(questionObj),
+            });
+            replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue.updated);
+          }
         }
       }
       j += 1;
