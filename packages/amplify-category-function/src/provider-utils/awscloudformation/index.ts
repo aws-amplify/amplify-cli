@@ -117,7 +117,7 @@ export async function addFunctionResource(
   print.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
-  return completeParams.functionName;
+  return completeParams.resourceName;
 }
 
 export async function addLayerResource(
