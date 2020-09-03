@@ -2,7 +2,6 @@ const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
 const ini = require('ini');
-const os = require('os');
 const inquirer = require('inquirer');
 const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
