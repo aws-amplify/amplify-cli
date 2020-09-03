@@ -1224,7 +1224,7 @@ export const supportedServices = {
       },
       {
         key: "oidcAppOIDCAttributesRequestMethod",
-        question: "Select your OIDC Attributes Request Method: ",
+        question: "Select your OIDC Attributes Request Method:",
         type: "list",
         map: "attributesRequestMethod",
         required: true,
@@ -1238,7 +1238,7 @@ export const supportedServices = {
       },
       {
         key: "RemoveScopeConfirmation",
-        question: "Do you want to remove any specified scopes ?",
+        question: "Do you want to remove any auth scopes?",
         type: "confirm",
         andConditions: [
           {
@@ -1259,7 +1259,7 @@ export const supportedServices = {
       },
       {
         key: "RemoveScopes",
-        question: "Which scopes do you want to remove ?",
+        question: "Which scopes do you want to remove?",
         type: "multiselect",
         iterator: "oidcAuthorizeScopes",
         andConditions: [
@@ -1279,7 +1279,7 @@ export const supportedServices = {
       },
       {
         key: "OIDCAdditionalScope",
-        question: "Do you want to add additional scopes ?",
+        question: "Do you want to add auth scopes?",
         type: "confirm",
         andConditions: [
           {
@@ -1291,7 +1291,7 @@ export const supportedServices = {
       },
       {
         key: "newOIDCAuthorizeScopes",
-        question: "Enter a new authorized scope:",
+        question: "Enter auth scope:",
         required: true,
         addAnotherLoop: "additional scope",
         andConditions: [
@@ -1313,7 +1313,7 @@ export const supportedServices = {
       },
       {
         key: "EditMappingConfirmation",
-        question: "Do you want to edit current attributes mapping ?",
+        question: "Do you want to edit attribute mappings?",
         type: "confirm",
         andConditions: [
           {
@@ -1332,7 +1332,7 @@ export const supportedServices = {
       },
       {
         key: "EditMappings",
-        question: "Which mappings do you want to edit ?",
+        question: "Which attribute mappings do you want to edit?",
         type: "multiselect",
         iterator: "oidcAttributesMapping",
         iteratorValidation: {
@@ -1357,7 +1357,7 @@ export const supportedServices = {
       },
       {
         key: "RemoveMappingConfirmation",
-        question: "Do you want to remove some attributes mapping ?",
+        question: "Do you want to remove any attribute mappings?",
         type: "confirm",
         andConditions: [
           {
@@ -1376,7 +1376,7 @@ export const supportedServices = {
       },
       {
         key: "RemoveMappings",
-        question: "Which mappings do you want to remove ?",
+        question: "Which attribute mappings do you want to remove?",
         type: "multiselect",
         iterator: "oidcAttributesMapping",
         iteratorValidation: {
@@ -1401,7 +1401,7 @@ export const supportedServices = {
       },
       {
         key: "OIDCAdditionalMapping",
-        question: "Do you want to add specific attribute mapping ?",
+        question: "Do you want to add attribute mappings?",
         type: "confirm",
         andConditions: [
           {
@@ -1413,7 +1413,7 @@ export const supportedServices = {
       },
       {
         key: "newOIDCMapping",
-        question: "Which mappings do you want to add ?",
+        question: "Which attribute mappings do you want to add?",
         required: true,
         type: "multiselect",
         map: "coreAttributes",
@@ -1438,7 +1438,7 @@ export const supportedServices = {
   {
 
           key: "newOIDCMapping",
-          question: "Which extra mappings do you want to add ?",
+          question: "Which attribute mappings do you want to add?",
           required: true,
           type: "multiselect",
           map: "coreAttributes",
