@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { CLIContextEnvironmentProvider, FeatureFlags, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { CLIContextEnvironmentProvider, FeatureFlags, JSONUtilities, pathManager, $TSAny } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -32,6 +32,10 @@ export async function run() {
       // Checks for available update, defaults to a 1 day interval for notification
       notifier.notify({ defer: false, isGlobal: true });
     }
+
+    verifyFilePermissions(pathManager.getCredentialsFilePath());
+    verifyFilePermissions(pathManager.getConfigFilePath());
+
     let verificationResult = verifyInput(pluginPlatform, input);
 
     // invalid input might be because plugin platform might have been updated,
@@ -108,6 +112,12 @@ export async function run() {
       print.info(e.stack);
     }
     process.exit(1);
+  }
+}
+
+function verifyFilePermissions(filePath) {
+  if (fs.existsSync(filePath) && (fs.statSync(filePath).mode & 0o777) === 0o644) {
+    fs.chmodSync(filePath, '600');
   }
 }
 
