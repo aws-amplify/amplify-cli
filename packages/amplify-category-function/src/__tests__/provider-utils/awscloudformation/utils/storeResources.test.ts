@@ -1,5 +1,15 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import { LambdaLayer } from 'amplify-function-plugin-interface';
 import { saveMutableState } from '../../../../provider-utils/awscloudformation/utils/storeResources';
+
+jest.mock('amplify-cli-core', () => ({
+  JSONUtilities: {
+    readJson: jest.fn(),
+    writeJson: jest.fn(),
+  },
+}));
+
+const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 
 describe('save mutable state', () => {
   beforeEach(() => {
@@ -11,8 +21,6 @@ describe('save mutable state', () => {
       pathManager: {
         getBackendDirPath: () => 'backendDir',
       },
-      writeObjectAsJson: jest.fn(),
-      readJsonFile: jest.fn(() => ({})),
     },
   };
 
@@ -29,11 +37,11 @@ describe('save mutable state', () => {
     };
 
     saveMutableState(context_stub, input);
-    expect(context_stub.amplify.writeObjectAsJson.mock.calls[0][1]).toMatchSnapshot();
+    expect(JSONUtilities_mock.writeJson.mock.calls[0][1]).toMatchSnapshot();
   });
 
   it('removes mutableParametersState from the existing file if present', () => {
-    context_stub.amplify.readJsonFile.mockImplementationOnce(() => ({
+    JSONUtilities_mock.readJson.mockImplementationOnce(() => ({
       lambdaLayers: [],
       permissions: {
         something: 'a value',
@@ -55,6 +63,6 @@ describe('save mutable state', () => {
       resourceName: 'testResourceName',
     };
     saveMutableState(context_stub, input);
-    expect(context_stub.amplify.writeObjectAsJson.mock.calls[0][1]).toMatchSnapshot();
+    expect(JSONUtilities_mock.writeJson.mock.calls[0][1]).toMatchSnapshot();
   });
 });
