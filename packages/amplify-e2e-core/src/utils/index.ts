@@ -5,6 +5,7 @@ import { config } from 'dotenv';
 
 export * from './api';
 export * from './appsync';
+export * from './getAppId';
 export * from './headless';
 export * from './nexpect';
 export * from './pinpoint';

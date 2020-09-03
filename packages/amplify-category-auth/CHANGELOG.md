@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.18.4...amplify-category-auth@2.18.5) (2020-09-03)
+
+
+### Bug Fixes
+
+* change trigger assets path ([#5223](https://github.com/aws-amplify/amplify-cli/issues/5223)) ([f3eb615](https://github.com/aws-amplify/amplify-cli/commit/f3eb615a40bdb279938f9722d32468833d20f7b0))
+
+
+
+
+
 ## [2.18.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.18.3...amplify-category-auth@2.18.4) (2020-08-31)
 
 
