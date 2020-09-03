@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.4...amplify-category-function@2.23.5-beta.0) (2020-09-03)
+
+
+### Bug Fixes
+
+* returns resourname instead of function ([#5208](https://github.com/aws-amplify/amplify-cli/issues/5208)) ([44c2d3d](https://github.com/aws-amplify/amplify-cli/commit/44c2d3d35cfdea3a7e206e852d17332d42fd2f0d))
+
+
+
+
+
 ## [2.23.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.3...amplify-category-function@2.23.4) (2020-08-31)
 
 **Note:** Version bump only for package amplify-category-function
