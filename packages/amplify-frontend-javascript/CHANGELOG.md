@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.16.0...amplify-frontend-javascript@2.16.1) (2020-09-03)
+
+
+### Bug Fixes
+
+* revert frontend files ([#5231](https://github.com/aws-amplify/amplify-cli/issues/5231)) ([381cb4e](https://github.com/aws-amplify/amplify-cli/commit/381cb4e191f247b06208f5d71eee248b7501ef22))
+
+
+
+
+
 # [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.15.5...amplify-frontend-javascript@2.16.0) (2020-09-02)
 
 
