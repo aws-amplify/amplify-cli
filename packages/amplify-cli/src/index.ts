@@ -116,6 +116,7 @@ export async function run() {
 }
 
 function verifyFilePermissions(filePath) {
+  // eslint-disable-next-line no-bitwise
   if (fs.existsSync(filePath) && (fs.statSync(filePath).mode & 0o777) === 0o644) {
     fs.chmodSync(filePath, '600');
   }
