@@ -641,7 +641,7 @@ async function copyS3Assets(context, props) {
   const confirmationFileNeeded = props.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');
   if (confirmationFileNeeded) {
     if (!existsSync(targetDir)) {
-      const source = `${__dirname}/triggers/CustomMessage/assets`;
+      const source = path.join(__dirname, `../../../provider-utils/awscloudformation/triggers/CustomMessage/assets`);
       copySync(source, `${targetDir}`);
     }
   }
