@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.18...amplify-migration-tests@2.18.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
 ## [2.17.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.17...amplify-migration-tests@2.17.18) (2020-08-31)
 
 **Note:** Version bump only for package amplify-migration-tests
