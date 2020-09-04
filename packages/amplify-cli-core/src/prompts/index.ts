@@ -11,15 +11,8 @@ export interface Choice {
 }
 
 class BasePrompt {
-  name: string;
   type = 'base';
-  message: string;
-  initial?: string;
-  constructor(name: string, message: string, initial?: string) {
-    this.name = name;
-    this.message = message;
-    this.initial = initial;
-  }
+  constructor(public name: string, public message: string, public initial?: string) {}
   public async run(logging: boolean = false) {
     const answer: any = await prompt(this);
     // logging possible here
@@ -42,10 +35,8 @@ export class PasswordPrompt extends InputPrompt {
 
 export class SelectPrompt extends BasePrompt {
   type = 'select';
-  choices: string[] | Choice[];
-  constructor(name: string, message: string, choices: string[] | Choice[], initial?: string) {
+  constructor(name: string, message: string, public choices: string[] | Choice[], initial?: string) {
     super(name, message, initial);
-    this.choices = choices;
   }
 }
 
