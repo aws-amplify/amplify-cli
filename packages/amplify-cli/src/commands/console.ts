@@ -18,10 +18,10 @@ export const run = async context => {
     });
 
     const { envName } = localEnvInfo;
-    const { AmplifyAppId } = teamProviderInfo[envName][providerName];
+    const { Region, AmplifyAppId } = teamProviderInfo[envName][providerName];
 
     if (envName && AmplifyAppId) {
-      consoleUrl = constructStatusURL(AmplifyAppId, envName);
+      consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
     }
   } catch (e) {
     context.print.error(e.message);
@@ -31,8 +31,8 @@ export const run = async context => {
   open(consoleUrl, { wait: false });
 };
 
-function constructStatusURL(appId, envName) {
-  const prodURL = `https://console.aws.amazon.com/amplify/home#/${appId}/YmFja2VuZA/${envName}`; // eslint-disable-line
+function constructStatusURL(region, appId, envName) {
+  const prodURL = `https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/YmFja2VuZA/${envName}`;
   return prodURL;
 }
 
