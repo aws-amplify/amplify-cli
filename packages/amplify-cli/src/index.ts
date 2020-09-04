@@ -33,8 +33,8 @@ export async function run() {
       notifier.notify({ defer: false, isGlobal: true });
     }
 
-    verifyFilePermissions(pathManager.getCredentialsFilePath());
-    verifyFilePermissions(pathManager.getConfigFilePath());
+    ensureFilePermissions(pathManager.getAWScredentialsFilePath());
+    ensureFilePermissions(pathManager.getAWSconfigFilePath());
 
     let verificationResult = verifyInput(pluginPlatform, input);
 
@@ -115,7 +115,7 @@ export async function run() {
   }
 }
 
-function verifyFilePermissions(filePath) {
+function ensureFilePermissions(filePath) {
   // eslint-disable-next-line no-bitwise
   if (fs.existsSync(filePath) && (fs.statSync(filePath).mode & 0o777) === 0o644) {
     fs.chmodSync(filePath, '600');

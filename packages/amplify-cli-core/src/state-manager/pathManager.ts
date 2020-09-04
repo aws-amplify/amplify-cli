@@ -5,8 +5,8 @@ import { homedir } from 'os';
 const PathConstants = {
   // in home directory
   DotAwsDir: '.aws',
-  Credentials: 'credentials',
-  Config: 'config',
+  AWScredentials: 'credentials',
+  AWSconfig: 'config',
 
   // in project root
   AmplifyDirName: 'amplify',
@@ -96,9 +96,9 @@ export class PathManager {
 
   getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAwsDir));
 
-  getCredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.Credentials));
+  getAWScredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWScredentials));
 
-  getConfigFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.Config));
+  getAWSconfigFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSconfig));
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {
