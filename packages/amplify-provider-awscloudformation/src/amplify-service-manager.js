@@ -94,15 +94,12 @@ async function init(amplifyServiceParams) {
         let listAppsResponse = {};
 
         do {
-          logger({
-            module: 'init.amplifyClient.listApps',
-            args: [
-              {
-                nextToken: listAppsResponse.nextToken,
-                maxResults: 25,
-              },
-            ],
-          })();
+          logger('init.amplifyClient.listApps', [
+            {
+              nextToken: listAppsResponse.nextToken,
+              maxResults: 25,
+            },
+          ])();
           listAppsResponse = await amplifyClient
             .listApps({
               nextToken: listAppsResponse.nextToken,

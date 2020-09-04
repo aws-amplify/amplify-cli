@@ -1,16 +1,17 @@
 import { Input } from './domain/input';
 import { pathManager } from 'amplify-cli-core';
 import { logger } from 'amplify-cli-logger';
-
+import path from 'path';
+import { constants } from './domain/constants';
 export function conditionalLoggingInit(input: Input): void {
-  let path = pathManager.findProjectRoot();
-  if (!path && input.command) {
+  let projectPath = pathManager.findProjectRoot();
+  if (!projectPath && input.command) {
     if (['pull', 'init'].includes(input.command)) {
-      path = process.cwd();
+      projectPath = path.join(process.cwd(), constants.Amplify);
     }
   }
 
-  if (path) {
-    logger.projectLocalLogInit(path);
+  if (projectPath) {
+    logger.projectLocalLogInit(projectPath);
   }
 }
