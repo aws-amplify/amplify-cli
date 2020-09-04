@@ -206,7 +206,7 @@ async function remove(context) {
 }
 
 function printInfo(context) {
-  const url = 'https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html';
+  const url = 'https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html';
   context.print.info('');
   context.print.info('For more information on AWS Profiles, see:');
   context.print.info(chalk.green(url));
