@@ -1293,7 +1293,7 @@ export const supportedServices = {
         key: "newOIDCAuthorizeScopes",
         question: "Enter auth scope:",
         required: true,
-        addAnotherLoop: "additional scope",
+        addAnotherLoop: "auth scope",
         andConditions: [
           {
             key: "authProvidersUserPool",
@@ -1437,7 +1437,7 @@ export const supportedServices = {
       },
   {
 
-          key: "newOIDCMapping",
+          key: "newOIDCMappingOnUpdate",
           question: "Which attribute mappings do you want to add?",
           required: true,
           type: "multiselect",
