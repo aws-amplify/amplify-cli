@@ -68,7 +68,7 @@ export const buildResourceInternal = async (
   const outDir = path.join(request.srcRoot, buildDir);
 
   const isWindows = /^win/.test(process.platform);
-  const executableName = isWindows === true ? MAIN_BINARY_WIN : MAIN_BINARY;
+  const executableName = isWindows && forLocalInvoke ? MAIN_BINARY_WIN : MAIN_BINARY;
   const executablePath = path.join(outDir, executableName);
 
   // For local invoke we've to use the build timestamp of the binary built
