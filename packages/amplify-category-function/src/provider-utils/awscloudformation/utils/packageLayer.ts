@@ -8,7 +8,15 @@ import { hashElement } from 'folder-hash';
 import { FunctionDependency } from 'amplify-function-plugin-interface';
 import { ServiceName, provider } from './constants';
 import { previousPermissionsQuestion } from './layerHelpers';
-import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata } from './layerParams';
+import {
+  getLayerMetadataFactory,
+  isMultiEnvLayer,
+  Permission,
+  PrivateLayer,
+  LayerParameters,
+  LayerMetadata,
+  LayerRuntime,
+} from './layerParams';
 import { getLayerRuntimes } from './layerRuntimes';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
@@ -88,7 +96,16 @@ async function ensureLayerVersion(context: any, layerName: string) {
   }
   await layerState.setNewVersionHash(); // "finialize" the latest layer version
   const storedParams = layerState.toStoredLayerParameters();
-  const additionalLayerParams = {
+  const additionalLayerParams: {
+    layerName: string;
+    build: boolean;
+    providerContext: {
+      provider: string;
+      service: string;
+      projectName: string;
+    };
+    runtimes?: LayerRuntime[];
+  } = {
     layerName,
     build: true,
     providerContext: {
@@ -96,9 +113,13 @@ async function ensureLayerVersion(context: any, layerName: string) {
       service: ServiceName.LambdaLayer,
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     },
-    runtimes: getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName),
   };
-  const layerParameters: LayerParameters = { ...storedParams, ...additionalLayerParams };
+
+  if (isMultiEnvLayer(context, layerName)) {
+    additionalLayerParams.runtimes = getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName);
+  }
+
+  const layerParameters = { ...storedParams, ...additionalLayerParams } as LayerParameters;
   updateLayerArtifacts(context, layerParameters, latestVersion, { cfnFile: isNewVersion });
 }
 
