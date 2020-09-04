@@ -1,4 +1,4 @@
-import { InputPrompt, SelectPrompt, Choice } from 'amplify-cli-core';
+import { SelectPrompt, Choice } from 'amplify-cli-core';
 
 const PROMPT_NAME = 'select';
 const PROMPT_MESSAGE = "Choose the type of app that you're building";
