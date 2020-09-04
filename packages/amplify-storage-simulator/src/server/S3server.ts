@@ -182,10 +182,6 @@ export class StorageServer extends EventEmitter {
         }
 
         ListBucketResult[LIST_CONTENT].push({
-          //   paramsPath: request.params.path,
-          // file: file,
-          // originalDir: originalDir,
-          // dirPath: dirPath,
           Key: request.params.path + keyName,
           LastModified: new Date(fs.statSync(file).mtime).toISOString(),
           Size: fs.statSync(file).size,
