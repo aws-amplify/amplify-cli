@@ -1323,7 +1323,8 @@ export const supportedServices = {
           },
           {
             key: "oidcAttributesMapping",
-            operator: "exists"
+            operator: "!=",
+            value: '{}'
           },
           {
             onCreate: "never"
@@ -1367,7 +1368,8 @@ export const supportedServices = {
           },
           {
             key: "oidcAttributesMapping",
-            operator: "exists"
+            operator: "!=",
+            value: '{}'
           },
           {
             onCreate: "never"
