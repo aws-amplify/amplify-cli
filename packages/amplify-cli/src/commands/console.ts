@@ -32,7 +32,7 @@ export const run = async context => {
 };
 
 function constructStatusURL(region, appId, envName) {
-  const prodURL = `https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/YmFja2VuZA/${envName}`;
+  const prodURL = `https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/YmFja2VuZA/${envName}`; // eslint-disable-line
   return prodURL;
 }
 
