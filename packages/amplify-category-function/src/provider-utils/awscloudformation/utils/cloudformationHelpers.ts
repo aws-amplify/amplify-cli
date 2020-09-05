@@ -1,9 +1,9 @@
 import { category as categoryName } from '../../../constants';
 
-export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults) {
+export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults, amplifyMeta) {
   const currentResources = [];
   const newResources = [];
-  const deletedResources = [];
+  let deletedResources = [];
 
   if (currentDefaults.permissions) {
     Object.keys(currentDefaults.permissions).forEach(category => {
@@ -26,9 +26,24 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
       deletedResources.push(resourceName);
     }
   });
+  const appsyncTableSuffix = '@model(appsync)';
+
+  const deleteAppSyncTableResources = deletedResources.filter(resource => resource.includes(appsyncTableSuffix.toUpperCase()));
+  deletedResources = deletedResources.filter(resource => !resource.includes(appsyncTableSuffix.toUpperCase()));
+  deleteAppSyncTableResources.forEach(table => {
+    const appsyncResourceName =
+      'api' in amplifyMeta ? Object.keys(amplifyMeta.api).find(key => amplifyMeta.api[key].service === 'AppSync') : undefined;
+    const replacementTableSuffix = `:${appsyncTableSuffix.toUpperCase()}_`;
+    const modelEnvPrefix = `API_${appsyncResourceName.toUpperCase()}_${table
+      .replace(replacementTableSuffix, 'TABLE')
+      .replace('STORAGE_', '')}`;
+    const modelEnvNameKey = `${modelEnvPrefix}_NAME`;
+    const modelEnvArnKey = `${modelEnvPrefix}_ARN`;
+    deletedResources.push(modelEnvNameKey);
+    deletedResources.push(modelEnvArnKey);
+  });
 
   const toBeDeletedEnvVariables = [];
-
   Object.keys(oldCFNEnvVariables).forEach(envVar => {
     for (let i = 0; i < deletedResources.length; i += 1) {
       if (envVar.includes(deletedResources[i])) {

@@ -156,6 +156,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
       currentParameters,
       functionParameters.environmentMap,
       functionParameters.mutableParametersState,
+      context.amplify.getProjectMeta(),
     );
 
     context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
