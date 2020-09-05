@@ -28,7 +28,7 @@ export function parseUrl(request, route: String) {
   }
 
   if (request.method === 'GET') {
-    if (request.query.prefix !== undefined || (temp[1] === '' && temp[0] === '')) {
+    if (request.query.prefix !== undefined || (temp[1] === '' && temp[0] === '') || (temp[1] === '/' && temp[0] === '')) {
       request.method = 'LIST';
     }
   }
