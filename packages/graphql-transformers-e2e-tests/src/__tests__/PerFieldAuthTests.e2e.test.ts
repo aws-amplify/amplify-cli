@@ -107,7 +107,7 @@ beforeAll(async () => {
   const validSchema = `
     # Owners may update their owned records.
     # Admins may create Employee records.
-    # Any authenticated user may view Employee ids & emails.
+    # Any authenticated user may view Employee ids & e_mails.
     # Owners and members of "Admin" group may see employee salaries.
     # Owners of "Admin" group may create and update employee salaries.
     type Employee @model (
@@ -115,7 +115,7 @@ beforeAll(async () => {
             level: public
         }
     ) @auth(rules: [
-        { allow: owner, ownerField: "email", operations: [update] },
+        { allow: owner, ownerField: "e_mail", operations: [update] },
         { allow: groups, groups: ["Admin"], operations: [create,update,delete]}
     ]) {
         id: ID!
@@ -127,22 +127,23 @@ beforeAll(async () => {
         # That means that both the @auth on Object AND the @auth on the field must
         # be satisfied.
 
-        # Owners & "Admin"s may view employee email addresses. Only "Admin"s may create/update.
+        # Owners & "Admin"s may view employee e_mail addresses. Only "Admin"s may create/update.
         # TODO: { allow: authenticated } would be useful here so that any employee could view.
-        email: String @auth(rules: [
+        # Should also allow creation of underscore fields
+        e_mail: String @auth(rules: [
             { allow: groups, groups: ["Admin"], operations: [create, update, read]}
-            { allow: owner, ownerField: "email", operations: [read]}
+            { allow: owner, ownerField: "e_mail", operations: [read]}
         ])
 
         # The owner & "Admin"s may view the salary. Only "Admins" may create/update.
         salary: Int @auth(rules: [
             { allow: groups, groups: ["Admin"], operations: [create, update, read]}
-            { allow: owner, ownerField: "email", operations: [read]}
+            { allow: owner, ownerField: "e_mail", operations: [read]}
         ])
 
         # The delete operation means you cannot update the value to "null" or "undefined".
         # Since delete operations are at the object level, this actually adds auth rules to the update mutation.
-        notes: String @auth(rules: [{ allow: owner, ownerField: "email", operations: [delete] }])
+        notes: String @auth(rules: [{ allow: owner, ownerField: "e_mail", operations: [delete] }])
     }
 
     type Student @model
@@ -276,23 +277,23 @@ afterAll(async () => {
 test('Test that only Admins can create Employee records.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
-        createEmployee(input: { email: "user2@test.com", salary: 100 }) {
+        createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
     {},
   );
   console.log(createUser1);
-  expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
+  expect(createUser1.data.createEmployee.e_mail).toEqual('user2@test.com');
   expect(createUser1.data.createEmployee.salary).toEqual(100);
 
   const tryToCreateAsNonAdmin = await GRAPHQL_CLIENT_2.query(
     `mutation {
-        createEmployee(input: { email: "user2@test.com", salary: 101 }) {
+        createEmployee(input: { e_mail: "user2@test.com", salary: 101 }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
@@ -304,9 +305,9 @@ test('Test that only Admins can create Employee records.', async () => {
 
   const tryToCreateAsNonAdmin2 = await GRAPHQL_CLIENT_3.query(
     `mutation {
-        createEmployee(input: { email: "user2@test.com", salary: 101 }) {
+        createEmployee(input: { e_mail: "user2@test.com", salary: 101 }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
@@ -317,12 +318,12 @@ test('Test that only Admins can create Employee records.', async () => {
   expect(tryToCreateAsNonAdmin2.errors).toHaveLength(1);
 });
 
-test('Test that only Admins may update salary & email.', async () => {
+test('Test that only Admins may update salary & e_mail.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
-        createEmployee(input: { email: "user2@test.com", salary: 100 }) {
+        createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
@@ -331,14 +332,14 @@ test('Test that only Admins may update salary & email.', async () => {
   console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
-  expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
+  expect(createUser1.data.createEmployee.e_mail).toEqual('user2@test.com');
   expect(createUser1.data.createEmployee.salary).toEqual(100);
 
   const tryToUpdateAsNonAdmin = await GRAPHQL_CLIENT_2.query(
     `mutation {
         updateEmployee(input: { id: "${employeeId}", salary: 101 }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
@@ -350,9 +351,9 @@ test('Test that only Admins may update salary & email.', async () => {
 
   const tryToUpdateAsNonAdmin2 = await GRAPHQL_CLIENT_2.query(
     `mutation {
-        updateEmployee(input: { id: "${employeeId}", email: "someonelese@gmail.com" }) {
+        updateEmployee(input: { id: "${employeeId}", e_mail: "someonelese@gmail.com" }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
@@ -364,9 +365,9 @@ test('Test that only Admins may update salary & email.', async () => {
 
   const tryToUpdateAsNonAdmin3 = await GRAPHQL_CLIENT_3.query(
     `mutation {
-        updateEmployee(input: { id: "${employeeId}", email: "someonelese@gmail.com" }) {
+        updateEmployee(input: { id: "${employeeId}", e_mail: "someonelese@gmail.com" }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
@@ -378,39 +379,39 @@ test('Test that only Admins may update salary & email.', async () => {
 
   const updateAsAdmin = await GRAPHQL_CLIENT_1.query(
     `mutation {
-        updateEmployee(input: { id: "${employeeId}", email: "someonelese@gmail.com" }) {
+        updateEmployee(input: { id: "${employeeId}", e_mail: "someonelese@gmail.com" }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
     {},
   );
   console.log(updateAsAdmin);
-  expect(updateAsAdmin.data.updateEmployee.email).toEqual('someonelese@gmail.com');
+  expect(updateAsAdmin.data.updateEmployee.e_mail).toEqual('someonelese@gmail.com');
   expect(updateAsAdmin.data.updateEmployee.salary).toEqual(100);
 
   const updateAsAdmin2 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         updateEmployee(input: { id: "${employeeId}", salary: 99 }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
     {},
   );
   console.log(updateAsAdmin2);
-  expect(updateAsAdmin2.data.updateEmployee.email).toEqual('someonelese@gmail.com');
+  expect(updateAsAdmin2.data.updateEmployee.e_mail).toEqual('someonelese@gmail.com');
   expect(updateAsAdmin2.data.updateEmployee.salary).toEqual(99);
 });
 
 test('Test that owners may update their bio.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
-        createEmployee(input: { email: "user2@test.com", salary: 100 }) {
+        createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
             id
-            email
+            e_mail
             salary
         }
     }`,
@@ -419,14 +420,14 @@ test('Test that owners may update their bio.', async () => {
   console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
-  expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
+  expect(createUser1.data.createEmployee.e_mail).toEqual('user2@test.com');
   expect(createUser1.data.createEmployee.salary).toEqual(100);
 
   const tryToUpdateAsNonAdmin = await GRAPHQL_CLIENT_2.query(
     `mutation {
         updateEmployee(input: { id: "${employeeId}", bio: "Does cool stuff." }) {
             id
-            email
+            e_mail
             salary
             bio
         }
@@ -435,16 +436,16 @@ test('Test that owners may update their bio.', async () => {
   );
   console.log(tryToUpdateAsNonAdmin);
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.bio).toEqual('Does cool stuff.');
-  expect(tryToUpdateAsNonAdmin.data.updateEmployee.email).toEqual('user2@test.com');
+  expect(tryToUpdateAsNonAdmin.data.updateEmployee.e_mail).toEqual('user2@test.com');
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.salary).toEqual(100);
 });
 
 test('Test that everyone may view employee bios.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
-        createEmployee(input: { email: "user3@test.com", salary: 100, bio: "Likes long walks on the beach" }) {
+        createEmployee(input: { e_mail: "user3@test.com", salary: 100, bio: "Likes long walks on the beach" }) {
             id
-            email
+            e_mail
             salary
             bio
         }
@@ -454,7 +455,7 @@ test('Test that everyone may view employee bios.', async () => {
   console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
-  expect(createUser1.data.createEmployee.email).toEqual('user3@test.com');
+  expect(createUser1.data.createEmployee.e_mail).toEqual('user3@test.com');
   expect(createUser1.data.createEmployee.salary).toEqual(100);
   expect(createUser1.data.createEmployee.bio).toEqual('Likes long walks on the beach');
 
@@ -462,15 +463,15 @@ test('Test that everyone may view employee bios.', async () => {
     `query {
         getEmployee(id: "${employeeId}") {
             id
-            email
+            e_mail
             bio
         }
     }`,
     {},
   );
   console.log(getAsNonAdmin);
-  // Should not be able to view the email as the non owner
-  expect(getAsNonAdmin.data.getEmployee.email).toBeNull();
+  // Should not be able to view the e_mail as the non owner
+  expect(getAsNonAdmin.data.getEmployee.e_mail).toBeNull();
   // Should be able to view the bio.
   expect(getAsNonAdmin.data.getEmployee.bio).toEqual('Likes long walks on the beach');
   expect(getAsNonAdmin.errors).toHaveLength(1);
@@ -501,9 +502,9 @@ test('Test that everyone may view employee bios.', async () => {
 test('Test that only owners may "delete" i.e. update the field to null.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
-        createEmployee(input: { email: "user3@test.com", salary: 200, notes: "note1" }) {
+        createEmployee(input: { e_mail: "user3@test.com", salary: 200, notes: "note1" }) {
             id
-            email
+            e_mail
             salary
             notes
         }
@@ -513,7 +514,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
   console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
-  expect(createUser1.data.createEmployee.email).toEqual('user3@test.com');
+  expect(createUser1.data.createEmployee.e_mail).toEqual('user3@test.com');
   expect(createUser1.data.createEmployee.salary).toEqual(200);
   expect(createUser1.data.createEmployee.notes).toEqual('note1');
 
