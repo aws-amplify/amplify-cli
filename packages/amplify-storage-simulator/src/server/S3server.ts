@@ -119,7 +119,7 @@ export class StorageServer extends EventEmitter {
     } else {
       // fixup the keyname for proper error message since it is normalized for the given platform
       // remove the leading path separator and replace the remaining ones.
-      let keyName = request.params.path.replace('\\', '/');
+      let keyName = request.params.path.replaceAll('\\', '/');
       if (keyName.startsWith('/')) {
         keyName = keyName.slice(1);
       }
@@ -166,7 +166,7 @@ export class StorageServer extends EventEmitter {
       // We have to normalize glob returned filenames to make sure deriving the keyname will work under every OS.
       const normalizedFile = path.normalize(file);
       // Remove directory portion, cut starting slash, replace backslash with slash.
-      let keyName = normalizedFile.replace(dirPath, '').replace('\\', '/');
+      let keyName = normalizedFile.replace(dirPath, '').replaceAll('\\', '/');
       if (keyName.startsWith('/')) {
         keyName = keyName.slice(1);
       }
