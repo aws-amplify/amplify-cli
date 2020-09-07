@@ -420,7 +420,7 @@ async function askDefaultAuthQuestion(context) {
   };
 }
 
-async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
+export async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
   if (await context.prompt.confirm('Configure additional auth types?')) {
     authConfig.additionalAuthenticationProviders = [];
     // Get additional auth configured
@@ -447,6 +447,16 @@ async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) 
       const config = await askAuthQuestions(authProvider, context, true);
 
       authConfig.additionalAuthenticationProviders.push(config);
+    }
+  } else {
+    const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+    if (
+      !_.isUndefined(currentAuthConfig.additionalAuthenticationProviders) &&
+      !_.isEmpty(currentAuthConfig.additionalAuthenticationProviders)
+    ) {
+      authConfig.additionalAuthenticationProviders = currentAuthConfig.additionalAuthenticationProviders.filter(
+        p => p.authenticationType !== defaultAuthType,
+      );
     }
   }
 
