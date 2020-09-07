@@ -2,8 +2,10 @@ import winston, { Logger, format } from 'winston';
 import winstonDailyRotateFile from 'winston-daily-rotate-file';
 import { constants } from './constants';
 import { IAmplifyLogger } from './IAmplifyLogger';
+import { JSONUtilities } from 'amplify-cli-core';
 import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath } from './getLogFilePath';
 import { LocalProjectData, LogPayload, LogErrorPayload } from './Types';
+import { Redactor } from './Redactor';
 
 export class AmplifyLogger implements IAmplifyLogger {
   logger: Logger;
@@ -34,7 +36,7 @@ export class AmplifyLogger implements IAmplifyLogger {
       return `${format}(${info.args
         .map((arg: any) => {
           if (arg) {
-            return JSON.stringify(arg).replace(/\d{12}/gm, s => 'xxxxxxxx' + s.slice(7, 11));
+            return Redactor(JSONUtilities.stringify(arg, { minify: true }));
           } else {
             return arg;
           }

@@ -7,11 +7,11 @@ export function conditionalLoggingInit(input: Input): void {
   let projectPath = pathManager.findProjectRoot();
   if (!projectPath && input.command) {
     if (['pull', 'init'].includes(input.command)) {
-      projectPath = path.join(process.cwd(), constants.Amplify);
+      projectPath = process.cwd();
     }
   }
 
   if (projectPath) {
-    logger.projectLocalLogInit(projectPath);
+    logger.projectLocalLogInit(path.join(projectPath, constants.Amplify));
   }
 }
