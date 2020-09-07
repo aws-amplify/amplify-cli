@@ -10,7 +10,7 @@ export interface Choice {
   disabled?: boolean | string;
 }
 
-class BasePrompt {
+abstract class BasePrompt {
   type = 'base';
   constructor(public name: string, public message: string, public initial?: string) {}
   public async run(logging: boolean = false) {
