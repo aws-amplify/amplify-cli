@@ -6,15 +6,20 @@ import { JSONUtilities } from 'amplify-cli-core';
 import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath } from './getLogFilePath';
 import { LocalProjectData, LogPayload, LogErrorPayload } from './Types';
 import { Redactor } from './Redactor';
+import fs from 'fs';
 
 export class AmplifyLogger implements IAmplifyLogger {
   logger: Logger;
   format: winston.Logform.Format;
   localProjectData!: LocalProjectData;
   disabledAmplifyLogging: boolean = !!process.env.AMPLIFY_CLI_DISABLE_LOGGING;
+  options: any = {
+    mode: 0o600,
+  };
   constructor() {
     this.logger = winston.createLogger();
     this.format = format.combine(format.timestamp(), format.splat(), format.printf(this.formatter));
+    fs.constants.O_RDWR;
     if (!this.disabledAmplifyLogging) {
       this.logger.add(
         new winstonDailyRotateFile({
@@ -24,6 +29,7 @@ export class AmplifyLogger implements IAmplifyLogger {
           maxFiles: `${constants.MAX_FILE_DAYS}d`,
           handleExceptions: false,
           format: this.format,
+          options: this.options,
         }),
       );
     }
@@ -65,6 +71,7 @@ export class AmplifyLogger implements IAmplifyLogger {
           maxFiles: `${constants.MAX_FILE_DAYS}d`,
           handleExceptions: false,
           format: this.format,
+          options: this.options,
         }),
       );
     }
