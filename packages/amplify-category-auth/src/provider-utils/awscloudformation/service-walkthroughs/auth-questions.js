@@ -227,6 +227,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     ...coreAnswers,
     userPoolGroupList,
     adminQueryGroup,
+    serviceName: 'Cognito',
   };
 }
 
@@ -777,4 +778,5 @@ module.exports = {
   parseOAuthCreds,
   structureoAuthMetaData,
   getIAMPolicies,
+  identityPoolProviders,
 };

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { join, normalize } from 'path';
-import { readFile, unlink, statSync, ensureFileSync, writeFileSync, existsSync } from 'fs-extra';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import xml from 'xml';
 import * as bodyParser from 'body-parser';
 import * as convert from 'xml-js';
@@ -108,15 +108,22 @@ export class StorageServer extends EventEmitter {
   }
 
   private async handleRequestGet(request, response) {
-    const filePath = normalize(join(this.localDirectoryPath, request.params.path));
-    if (existsSync(filePath)) {
-      readFile(filePath, (err, data) => {
+    const filePath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
+    if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
+      fs.readFile(filePath, (err, data) => {
         if (err) {
           console.log('error');
         }
         response.send(data);
       });
     } else {
+      // fixup the keyname for proper error message since it is normalized for the given platform
+      // remove the leading path separator and replace the remaining ones.
+      let keyName = request.params.path.replace(/\\/g, '/');
+      if (keyName.startsWith('/')) {
+        keyName = keyName.slice(1);
+      }
+      response.set('Content-Type', 'text/xml');
       response.status(404);
       response.send(
         o2x({
@@ -124,7 +131,7 @@ export class StorageServer extends EventEmitter {
           Error: {
             Code: 'NoSuchKey',
             Message: 'The specified key does not exist.',
-            Key: request.params.path,
+            Key: keyName,
             RequestId: '',
             HostId: '',
           },
@@ -149,24 +156,35 @@ export class StorageServer extends EventEmitter {
     let startAfter = request.query.startAfter || '';
     let keyCount = 0;
     // getting folders recursively
-    const dirPath = normalize(join(this.localDirectoryPath, request.params.path) + '/');
+    const dirPath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
 
-    const files = glob.sync(dirPath + '/**/*');
+    const files = glob.sync('**/*', {
+      cwd: dirPath,
+      absolute: true,
+    });
     for (const file of files) {
+      // We have to normalize glob returned filenames to make sure deriving the keyname will work under every OS.
+      const normalizedFile = path.normalize(file);
+      // Remove directory portion, cut starting slash, replace backslash with slash.
+      let keyName = normalizedFile.replace(dirPath, '').replace(/\\/g, '/');
+      if (keyName.startsWith('/')) {
+        keyName = keyName.slice(1);
+      }
+
       if (delimiter !== '' && util.checkfile(file, prefix, delimiter)) {
         ListBucketResult[LIST_COMMOM_PREFIXES].push({
-          prefix: request.params.path + file.split(dirPath)[1],
+          prefix: request.params.path + keyName,
         });
       }
-      if (!statSync(file).isDirectory()) {
+      if (!fs.statSync(file).isDirectory()) {
         if (keyCount === maxKeys) {
           break;
         }
 
         ListBucketResult[LIST_CONTENT].push({
-          Key: request.params.path + file.split(dirPath)[1],
-          LastModified: new Date(statSync(file).mtime).toISOString(),
-          Size: statSync(file).size,
+          Key: request.params.path + keyName,
+          LastModified: new Date(fs.statSync(file).mtime).toISOString(),
+          Size: fs.statSync(file).size,
           ETag: etag(file),
           StorageClass: 'STANDARD',
         });
@@ -193,10 +211,11 @@ export class StorageServer extends EventEmitter {
   }
 
   private async handleRequestDelete(request, response) {
-    const filePath = join(this.localDirectoryPath, request.params.path);
-    if (existsSync(filePath)) {
-      unlink(filePath, err => {
+    const filePath = path.join(this.localDirectoryPath, request.params.path);
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath, err => {
         if (err) throw err;
+        response.set('Content-Type', 'text/xml');
         response.send(xml(convert.json2xml(JSON.stringify(request.params.id + 'was deleted'))));
       });
     } else {
@@ -205,28 +224,30 @@ export class StorageServer extends EventEmitter {
   }
 
   private async handleRequestPut(request, response) {
-    const directoryPath = normalize(join(String(this.localDirectoryPath), String(request.params.path)));
-    ensureFileSync(directoryPath);
+    const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
+    fs.ensureFileSync(directoryPath);
     // strip signature in android , returns same buffer for other clients
     var new_data = util.stripChunkSignature(request.body);
     // loading data in map for each part
     if (request.query.partNumber !== undefined) {
       this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
     } else {
-      writeFileSync(directoryPath, new_data);
+      fs.writeFileSync(directoryPath, new_data);
       // event trigger  to differentitiate between multipart and normal put
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
     }
+    response.set('Content-Type', 'text/xml');
     response.send(xml(convert.json2xml(JSON.stringify('upload success'))));
   }
 
   private async handleRequestPost(request, response) {
-    const directoryPath = normalize(join(String(this.localDirectoryPath), String(request.params.path)));
+    const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
     if (request.query.uploads !== undefined) {
       let id = uuid();
       this.uploadIds.push(id);
       this.upload_bufferMap[id] = {};
+      response.set('Content-Type', 'text/xml');
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
@@ -257,18 +278,19 @@ export class StorageServer extends EventEmitter {
         }),
       );
       let buf = Buffer.concat(arr);
-      writeFileSync(directoryPath, buf);
+      fs.writeFileSync(directoryPath, buf);
       // event trigger for multipart post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
     } else {
-      const directoryPath = normalize(join(String(this.localDirectoryPath), String(request.params.path)));
-      ensureFileSync(directoryPath);
+      const directoryPath = path.normalize(path.join(String(this.localDirectoryPath), String(request.params.path)));
+      fs.ensureFileSync(directoryPath);
       var new_data = util.stripChunkSignature(request.body);
-      writeFileSync(directoryPath, new_data);
+      fs.writeFileSync(directoryPath, new_data);
       // event trigger for normal post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
+      response.set('Content-Type', 'text/xml');
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
@@ -284,7 +306,7 @@ export class StorageServer extends EventEmitter {
   }
   // build eevent obj for s3 trigger
   private createEvent(request) {
-    const filePath = normalize(join(this.localDirectoryPath, request.params.path));
+    const filePath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
     let eventObj = {};
     eventObj[EVENT_RECORDS] = [];
 
@@ -308,7 +330,7 @@ export class StorageServer extends EventEmitter {
       },
       object: {
         key: request.params.path,
-        size: statSync(filePath).size,
+        size: fs.statSync(filePath).size,
         eTag: etag(filePath),
         versionId: '096fKKXTRTtl3on89fVO.nfljtsv6qko',
       },

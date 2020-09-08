@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.22.0...amplify-e2e-tests@2.23.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
 # [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.3...amplify-e2e-tests@2.22.0) (2020-08-31)
 
 

@@ -30,6 +30,7 @@ export const addLayersToFunctionWalkthrough = async (
     context.amplify.getProjectMeta(),
     runtime.value,
     previousSelections,
+    context.amplify.pathManager.getBackendDirPath(),
   ));
 
   if (askArnQuestion) {

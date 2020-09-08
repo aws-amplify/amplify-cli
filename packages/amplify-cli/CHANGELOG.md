@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.29.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.28.2...@aws-amplify/cli@4.29.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
+## [4.28.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.28.1...@aws-amplify/cli@4.28.2) (2020-09-03)
+
+
+### Bug Fixes
+
+* support serve script ([#5211](https://github.com/aws-amplify/amplify-cli/issues/5211)) ([cc71f5a](https://github.com/aws-amplify/amplify-cli/commit/cc71f5a3561e3a5a163bb04bb56144a3f23971db))
+
+
+
+
+
+## [4.28.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.28.0...@aws-amplify/cli@4.28.1) (2020-09-02)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [4.28.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.27.3...@aws-amplify/cli@4.28.0) (2020-08-31)
 
 

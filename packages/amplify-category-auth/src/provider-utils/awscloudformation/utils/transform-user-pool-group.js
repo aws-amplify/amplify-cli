@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { cfnTemplateRoot } = require('../provider-utils/awscloudformation');
+const { cfnTemplateRoot } = require('../constants');
 
 async function transformUserPoolGroupSchema(context) {
   const resourceDirPath = path.join(

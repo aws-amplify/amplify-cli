@@ -199,7 +199,11 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
       }
     }
   });
-  cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(functionParameters.lambdaLayers);
+  cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(
+    context,
+    functionParameters.lambdaLayers,
+    context.amplify.getEnvInfo().envName,
+  );
   context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
 
   return functionParameters;

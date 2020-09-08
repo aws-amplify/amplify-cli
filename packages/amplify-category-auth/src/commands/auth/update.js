@@ -1,6 +1,6 @@
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
-const { transformUserPoolGroupSchema } = require('../../utils/transform-user-pool-group');
+const { transformUserPoolGroupSchema } = require('../../provider-utils/awscloudformation/utils/transform-user-pool-group');
 const path = require('path');
 
 const subcommand = 'update';
