@@ -1,5 +1,4 @@
 const { loadConfiguration } = require('../../lib/configuration-manager');
-const { logger } = require('amplify-cli-logger');
 export async function CreateService(context, service, options = {}, cred) {
   let credentials = {};
   if (cred) {
