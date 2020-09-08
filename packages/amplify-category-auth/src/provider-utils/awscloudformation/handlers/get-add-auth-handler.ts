@@ -5,7 +5,8 @@ import { getPostAddAuthMetaUpdater } from '../utils/post-add-auth-meta-update';
 import { getPostAddAuthMessagePrinter } from '../utils/post-add-auth-message-printer';
 
 /**
- * Factory function that returns a ServiceQuestionsResult consumer that handles all of the resource generation logic
+ * Factory function that returns a ServiceQuestionsResult consumer that handles all of the resource generation logic.
+ * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
 export const getAddAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
@@ -14,7 +15,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
   let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
   const disallowedChars = /[^A-Za-z0-9]+/g;
   projectName = projectName.replace(disallowedChars, '');
-  return getAddAuthDefaultsApplier(
+  await getAddAuthDefaultsApplier(
     defaultValuesFilename,
     projectName,
   )(request)
@@ -27,4 +28,5 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
       context.print.error('There was an error adding the auth resource');
       context.usageData.emitError(err);
     });
+  return request.resourceName!;
 };

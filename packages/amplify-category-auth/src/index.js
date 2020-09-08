@@ -7,14 +7,13 @@ const sequential = require('promise-sequential');
 
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const { getAuthResourceName } = require('./utils/getAuthResourceName');
+const { updateConfigOnEnvInit, migrate } = require('./provider-utils/awscloudformation');
 const {
-  updateConfigOnEnvInit,
   copyCfnTemplate,
   saveResourceParameters,
-  ENV_SPECIFIC_PARAMS,
-  migrate,
   removeDeprecatedProps,
-} = require('./provider-utils/awscloudformation');
+} = require('./provider-utils/awscloudformation/utils/synthesize-resources');
+const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/constants');
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
