@@ -20,7 +20,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     },
     checkDependencies: async runtimeValue => checkDependencies(runtimeValue),
     package: async request => packageResource(request, context),
-    build: async request => buildResource(request),
+    build: async request => buildResource(request, context),
     invoke: async request => ({}), // Stubbed.
   };
 };
