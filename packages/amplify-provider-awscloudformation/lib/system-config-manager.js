@@ -7,8 +7,8 @@ const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
 const { pathManager } = require('amplify-cli-core');
 
-const credentialsFilePath = pathManager.getAWScredentialsFilePath();
-const configFilePath = pathManager.getAWSconfigFilePath();
+const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
+const configFilePath = pathManager.getAWSConfigFilePath();
 
 function setProfile(awsConfig, profileName) {
   fs.ensureDirSync(pathManager.getDotAWSDirPath());

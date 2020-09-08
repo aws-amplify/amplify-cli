@@ -33,8 +33,8 @@ export async function run() {
       notifier.notify({ defer: false, isGlobal: true });
     }
 
-    ensureFilePermissions(pathManager.getAWScredentialsFilePath());
-    ensureFilePermissions(pathManager.getAWSconfigFilePath());
+    ensureFilePermissions(pathManager.getAWSCredentialsFilePath());
+    ensureFilePermissions(pathManager.getAWSConfigFilePath());
 
     let verificationResult = verifyInput(pluginPlatform, input);
 
