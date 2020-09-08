@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.5...amplify-category-function@2.24.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
 ## [2.23.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.4...amplify-category-function@2.23.5) (2020-09-03)
 
 

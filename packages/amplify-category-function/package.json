@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "2.23.5",
+  "version": "2.24.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-category-storage": "2.7.5",
+    "amplify-category-storage": "2.7.6",
     "amplify-cli-core": "1.3.0",
     "amplify-function-plugin-interface": "1.4.1",
     "enquirer": "^2.3.5",
